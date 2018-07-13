@@ -52,7 +52,7 @@ static NSMutableDictionary *players;
         player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
         cbs = linphone_player_get_callbacks(player);
         linphone_player_set_user_data(player, (__bridge void *)self);
-        linphone_player_cbs_set_eof_reached(cbs, on_eof_reached2);
+        linphone_player_cbs_set_eof_reached(cbs, on_eof_reached);
         file = filePath;
     }
     return self;
@@ -82,9 +82,11 @@ static NSMutableDictionary *players;
 
 #pragma mark - Callbacks
 
-void on_eof_reached2(LinphonePlayer *pl) {
-    printf("EOF reached\n");
+void on_eof_reached(LinphonePlayer *pl) {
+    NSLog(@"EOF reached");
     linphone_player_seek(pl, 0);
+    UILinphoneAudioPlayer *player = (__bridge UILinphoneAudioPlayer *)linphone_player_get_user_data(pl);
+    [player.playButton setTitle:@"Play" forState:UIControlStateNormal];
 }
 
 #pragma mark - ViewController methods
@@ -149,10 +151,12 @@ void on_eof_reached2(LinphonePlayer *pl) {
             break;
         case LinphonePlayerPaused:
             NSLog(@"Play");
+            [_playButton setTitle:@"Pause" forState:UIControlStateNormal];
             linphone_player_start(player);
             break;
         case LinphonePlayerPlaying:
             NSLog(@"Pause");
+            [_playButton setTitle:@"Play" forState:UIControlStateNormal];
             linphone_player_pause(player);
             break;
     }
@@ -163,6 +167,7 @@ void on_eof_reached2(LinphonePlayer *pl) {
     NSLog(@"Stop");
     linphone_player_pause(player);
     linphone_player_seek(player, 0);
+    [_playButton setTitle:@"Play" forState:UIControlStateNormal];
     _timeProgress.progress = 0;
     [self updateTimeLabel:0];
 }
@@ -176,6 +181,7 @@ void on_eof_reached2(LinphonePlayer *pl) {
     if (loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
         float progress = (loc.x - timeLoc.x) / timeSize.width;
         _timeProgress.progress = progress;
+        [self updateTimeLabel:(int)(progress * duration)];
         linphone_player_seek(player, (int)(progress * duration));
     }
 }

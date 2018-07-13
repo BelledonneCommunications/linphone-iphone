@@ -27,10 +27,7 @@
 #import "PhoneMainView.h"
 #import "UILinphoneAudioPlayer.h"
 
-@implementation ChatConversationTableView {
-    @private
-    NSMutableSet *audioPlayers;
-}
+@implementation ChatConversationTableView
 
 #pragma mark - Lifecycle Functions
 
@@ -45,24 +42,9 @@
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
     _imagesInChatroom = [NSMutableDictionary dictionary];
-    audioPlayers = [NSMutableSet set];
 }
 
 - (void)clearAudioPlayers {
-//    for (UIChatBubbleSoundCell *cell in audioPlayers) {
-//        cell.shouldClosePlayer = YES;
-//        if (cell.player && linphone_player_get_state(cell.player) == LinphonePlayerPaused) {
-//            linphone_player_close(cell.player);
-//            linphone_player_unref(cell.player);
-//            cell.player = NULL;
-//            cell.cbs = NULL;
-//            cell.loadButton.hidden = NO;
-//            cell.loadButton.enabled = YES;
-//            cell.playerView.hidden = YES;
-//            cell.playerView.userInteractionEnabled = NO;
-//        }
-//        [UIChatBubbleSoundCell setPlayingMessage:NULL];
-//    }
     [UILinphoneAudioPlayer closePlayers];
 }
 
@@ -193,9 +175,9 @@
     if (room != _chatRoom) {
         [((ChatConversationView *)_chatRoomDelegate).recordView reset];
         [((ChatConversationView *)_chatRoomDelegate) changeToMessageView];
+        [self clearAudioPlayers];
     }
 	_chatRoom = room;
-    [self clearAudioPlayers];
 	[self reloadData];
 }
 
@@ -233,8 +215,6 @@
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if ([cell isMemberOfClass:UIChatBubbleSoundCell.class])
-            [audioPlayers addObject:cell];
 		return cell;
 	} else {
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);

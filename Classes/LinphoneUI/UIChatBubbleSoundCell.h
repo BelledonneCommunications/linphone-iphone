@@ -15,24 +15,10 @@
 #import "UILinphoneAudioPlayer.h"
 
 @interface UIChatBubbleSoundCell : UIChatBubbleTextCell
-@property (weak, nonatomic) IBOutlet UIProgressView *timeProgressBar;
-@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
-@property (weak, nonatomic) IBOutlet UIButton *playPauseButton;
-@property (weak, nonatomic) IBOutlet UIButton *stopButton;
-@property LinphonePlayer *player;
-@property LinphonePlayerCbs *cbs;
-@property (strong, nonatomic) NSString *fileName;
-@property (strong, nonatomic) NSString *durationString;
-@property int duration;
 @property (weak, nonatomic) IBOutlet UIView *playerView;
-@property BOOL shouldClosePlayer;
-@property BOOL eofReached;
 @property (weak, nonatomic) IBOutlet UIButton *loadButton;
-@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *seekRecognizer;
+@property (weak, nonatomic) IBOutlet UIView *content;
 
-- (IBAction)onPlay:(id)sender;
-- (IBAction)onStop:(id)sender;
 - (IBAction)onLoad:(id)sender;
-- (void)updateTimeLabel:(int)currentTime;
 
 @end

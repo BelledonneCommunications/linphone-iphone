@@ -18,16 +18,12 @@
                 <outlet property="bottomBarColor" destination="K1o-Sm-f29" id="32h-9c-F1E"/>
                 <outlet property="bubbleView" destination="iN0-l3-epB" id="ULW-Ew-dnF"/>
                 <outlet property="contactDateLabel" destination="iLT-lZ-7OZ" id="B9p-xC-Zrr"/>
+                <outlet property="content" destination="1a9-bo-5IS" id="E42-1t-9fY"/>
                 <outlet property="imdmIcon" destination="4Fx-9h-L5d" id="WMD-1W-b4v"/>
                 <outlet property="imdmLabel" destination="jik-hh-0FW" id="gVv-sD-x5x"/>
                 <outlet property="loadButton" destination="cDE-5M-6aV" id="ogX-vR-Ir6"/>
-                <outlet property="playPauseButton" destination="ZkM-Ue-oTM" id="hit-vR-3s2"/>
                 <outlet property="playerView" destination="75O-hf-9RH" id="lpP-4e-ZLJ"/>
-                <outlet property="seekRecognizer" destination="XGu-jC-eAa" id="KOT-0R-2la"/>
                 <outlet property="statusInProgressSpinner" destination="saN-77-zGO" id="iwT-zo-beV"/>
-                <outlet property="stopButton" destination="ZcR-1b-Hys" id="nI4-r4-D6W"/>
-                <outlet property="timeLabel" destination="qLJ-yN-IDo" id="aBn-c0-bPr"/>
-                <outlet property="timeProgressBar" destination="fye-GP-QTB" id="QQ3-Kc-Ddi"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -99,43 +95,6 @@
                         </button>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="75O-hf-9RH">
                             <rect key="frame" x="0.0" y="52.5" width="365" height="40.5"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZkM-Ue-oTM">
-                                    <rect key="frame" x="10" y="5.5" width="74" height="30"/>
-                                    <state key="normal" title="Play/Pause"/>
-                                    <connections>
-                                        <action selector="onPlay:" destination="-1" eventType="touchUpInside" id="b20-6V-DM7"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZcR-1b-Hys">
-                                    <rect key="frame" x="94" y="5.5" width="32" height="30"/>
-                                    <gestureRecognizers/>
-                                    <state key="normal" title="Stop"/>
-                                    <connections>
-                                        <action selector="onStop:" destination="-1" eventType="touchUpInside" id="KkD-zg-lnN"/>
-                                    </connections>
-                                </button>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qLJ-yN-IDo">
-                                    <rect key="frame" x="319.5" y="12" width="35.5" height="17"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <nil key="textColor"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fye-GP-QTB">
-                                    <rect key="frame" x="136" y="19.5" width="173.5" height="2"/>
-                                </progressView>
-                            </subviews>
-                            <constraints>
-                                <constraint firstItem="fye-GP-QTB" firstAttribute="leading" secondItem="ZcR-1b-Hys" secondAttribute="trailing" constant="10" id="8M1-Rh-DjV"/>
-                                <constraint firstItem="qLJ-yN-IDo" firstAttribute="centerY" secondItem="75O-hf-9RH" secondAttribute="centerY" id="8kH-UT-xkE"/>
-                                <constraint firstItem="qLJ-yN-IDo" firstAttribute="leading" secondItem="fye-GP-QTB" secondAttribute="trailing" constant="10" id="Cyx-Is-Bhk"/>
-                                <constraint firstItem="ZkM-Ue-oTM" firstAttribute="leading" secondItem="75O-hf-9RH" secondAttribute="leading" constant="10" id="I0d-xJ-iPt"/>
-                                <constraint firstAttribute="trailing" secondItem="qLJ-yN-IDo" secondAttribute="trailing" constant="10" id="UZZ-d6-UX1"/>
-                                <constraint firstItem="ZcR-1b-Hys" firstAttribute="leading" secondItem="ZkM-Ue-oTM" secondAttribute="trailing" constant="10" id="dVb-Gw-eSS"/>
-                                <constraint firstItem="ZcR-1b-Hys" firstAttribute="centerY" secondItem="75O-hf-9RH" secondAttribute="centerY" id="m26-SG-OcB"/>
-                                <constraint firstItem="ZkM-Ue-oTM" firstAttribute="centerY" secondItem="75O-hf-9RH" secondAttribute="centerY" id="rEf-JG-8fs"/>
-                                <constraint firstItem="fye-GP-QTB" firstAttribute="centerY" secondItem="75O-hf-9RH" secondAttribute="centerY" id="ucD-Bb-w1y"/>
-                            </constraints>
                         </view>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -178,16 +137,8 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <connections>
-                <outletCollection property="gestureRecognizers" destination="XGu-jC-eAa" appends="YES" id="Hrb-Yj-jsi"/>
-            </connections>
             <point key="canvasLocation" x="56.5" y="-213"/>
         </view>
-        <tapGestureRecognizer id="XGu-jC-eAa" userLabel="onTapBar">
-            <connections>
-                <action selector="onTapBar:" destination="-1" id="f58-kl-JVY"/>
-            </connections>
-        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="259" height="259"/>
