@@ -25,6 +25,7 @@
 #import "UIChatBubbleSoundCell.h"
 #import "UIChatNotifiedEventCell.h"
 #import "PhoneMainView.h"
+#import "UILinphoneAudioPlayer.h"
 
 @implementation ChatConversationTableView {
     @private
@@ -48,18 +49,21 @@
 }
 
 - (void)clearAudioPlayers {
-    for (UIChatBubbleSoundCell *cell in audioPlayers) {
-        cell.shouldClosePlayer = YES;
-        if (cell.player && linphone_player_get_state(cell.player) == LinphonePlayerPaused) {
-            linphone_player_close(cell.player);
-            linphone_player_unref(cell.player);
-            cell.player = NULL;
-            cell.cbs = NULL;
-        }
-        [cell updateTimeLabel:0];
-        cell.timeProgressBar.progress = 0;
-        [cell.playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
-    }
+//    for (UIChatBubbleSoundCell *cell in audioPlayers) {
+//        cell.shouldClosePlayer = YES;
+//        if (cell.player && linphone_player_get_state(cell.player) == LinphonePlayerPaused) {
+//            linphone_player_close(cell.player);
+//            linphone_player_unref(cell.player);
+//            cell.player = NULL;
+//            cell.cbs = NULL;
+//            cell.loadButton.hidden = NO;
+//            cell.loadButton.enabled = YES;
+//            cell.playerView.hidden = YES;
+//            cell.playerView.userInteractionEnabled = NO;
+//        }
+//        [UIChatBubbleSoundCell setPlayingMessage:NULL];
+//    }
+    [UILinphoneAudioPlayer closePlayers];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

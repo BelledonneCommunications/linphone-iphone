@@ -17,6 +17,7 @@
 
 @implementation UIChatBubbleSoundCell {
     ChatConversationTableView *chatTableView;
+    UILinphoneAudioPlayer *audioPlayer;
 }
 
 #pragma mark - Lifecycle Functions
@@ -74,9 +75,10 @@
             linphone_player_close(_player);
             linphone_player_unref(_player);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateTimeLabel:0];
-                _timeProgressBar.progress = 0;
-                [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
+                _loadButton.hidden = NO;
+                _loadButton.enabled = YES;
+                _playerView.hidden = YES;
+                _playerView.userInteractionEnabled = NO;
             });
             _player = NULL;
             _cbs = NULL;
@@ -171,23 +173,25 @@ void on_eof_reached(LinphonePlayer *pl) {
 }
 
 - (IBAction)onLoad:(id)sender {
-    _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
-    _cbs = linphone_player_get_callbacks(_player);
-    linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
-    linphone_player_set_user_data(_player, (__bridge void*)self);
-    linphone_player_open(_player, _fileName.UTF8String);
-    _duration = linphone_player_get_duration(_player);
-    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
-    [self updateTimeLabel:0];
-    _timeProgressBar.progress = 0;
-    [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
-    NSLog(@"Duration : %@", _durationString);
-    _shouldClosePlayer = NO;
-    _eofReached = NO;
+//    _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
+//    _cbs = linphone_player_get_callbacks(_player);
+//    linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
+//    linphone_player_set_user_data(_player, (__bridge void*)self);
+//    linphone_player_open(_player, _fileName.UTF8String);
+//    _duration = linphone_player_get_duration(_player);
+//    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
+//    [self updateTimeLabel:0];
+//    _timeProgressBar.progress = 0;
+//    [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
+//    NSLog(@"Duration : %@", _durationString);
+//    _shouldClosePlayer = NO;
+//    _eofReached = NO;
     _loadButton.hidden = YES;
-    _loadButton.enabled = NO;
-    _playerView.hidden = NO;
-    _playerView.userInteractionEnabled = YES;
+    audioPlayer.view.hidden = NO;
+    [audioPlayer open];
+//    _loadButton.enabled = NO;
+//    _playerView.hidden = NO;
+//    _playerView.userInteractionEnabled = YES;
 }
 
 - (IBAction)onTapBar:(UITapGestureRecognizer *)sender {
@@ -217,18 +221,36 @@ void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"Type : %s", linphone_content_get_type(content));
     NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
     NSString *filePath = [LinphoneManager documentFile:localFile];
-    NSLog(@"File path : %@", filePath);
-    _fileName = filePath;
-    if (_player) {
-        if(linphone_player_get_state(_player) != LinphonePlayerPlaying)
-            _shouldClosePlayer = YES;
-        else
-            return;
+//    NSLog(@"File path : %@", filePath);
+//    _fileName = filePath;
+//    if (_player) {
+//        if(linphone_player_get_state(_player) != LinphonePlayerPlaying)
+//            _shouldClosePlayer = YES;
+//        else if ([self.class playingMessage] == self.message)
+//            return;
+//    }
+    if (audioPlayer)
+        [audioPlayer.view removeFromSuperview];
+    audioPlayer = [UILinphoneAudioPlayer playerForMessage:self.message];
+    if (!audioPlayer) {
+        audioPlayer = [UILinphoneAudioPlayer audioPlayerWithFilePath:filePath];
+        [UILinphoneAudioPlayer registerPlayer:audioPlayer forMessage:self.message];
+        audioPlayer.view.hidden = YES;
+        _loadButton.hidden = NO;
+    } else {
+        if ([audioPlayer isOpened]) {
+            audioPlayer.view.hidden = NO;
+            _loadButton.hidden = YES;
+        } else {
+            audioPlayer.view.hidden = YES;
+            _loadButton.hidden = NO;
+        }
     }
-    _loadButton.hidden = NO;
-    _loadButton.enabled = YES;
+    [self.bubbleView addSubview:audioPlayer.view];
+    [self bringSubviewToFront:audioPlayer.view];
+    audioPlayer.view.frame = _playerView.frame;
+    audioPlayer.view.bounds = _playerView.bounds;
     _playerView.hidden = YES;
-    _playerView.userInteractionEnabled = NO;
 }
 
 @end

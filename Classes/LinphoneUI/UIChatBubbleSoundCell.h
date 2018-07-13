@@ -12,6 +12,7 @@
 #import "FileTransferDelegate.h"
 #import "ChatConversationTableView.h"
 #import "UIChatBubbleTextCell.h"
+#import "UILinphoneAudioPlayer.h"
 
 @interface UIChatBubbleSoundCell : UIChatBubbleTextCell
 @property (weak, nonatomic) IBOutlet UIProgressView *timeProgressBar;
@@ -28,7 +29,6 @@
 @property BOOL eofReached;
 @property (weak, nonatomic) IBOutlet UIButton *loadButton;
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *seekRecognizer;
-
 
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
