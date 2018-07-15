@@ -356,17 +356,16 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
         if(localFile) {
             CGSize fileSize = CGSizeMake(200, 80);
             size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
-        } else if (localVideo) {
-            //TODO
-            CGSize videoSize = CGSizeMake(320, 240);
-            size = [self getMediaMessageSizefromOriginalSize:videoSize withWidth:width];
-            size.height += CELL_MESSAGE_X_MARGIN;
         } else {
-            if (!localImage) {
+            if (!localImage && !localVideo) {
                 //We are loading the image
                 return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN);
             }
-            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            PHFetchResult<PHAsset *> *assets;
+            if(localImage)
+                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            else
+                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
             if (![assets firstObject]) {
                 return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
             }

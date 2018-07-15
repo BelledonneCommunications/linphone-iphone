@@ -187,6 +187,7 @@
             else if (localVideo) {
                 if (_messageImageView.image == nil) {
                     [self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
+                    _imageGestureRecognizer.enabled = NO;
                 }
             }
              else if (localFile) {
