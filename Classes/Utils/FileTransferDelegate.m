@@ -170,7 +170,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
             }];
             
         } else {
-            [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz]
+            [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
             NSString *key =  @"localfile" ;
             NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
         
