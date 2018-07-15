@@ -235,9 +235,11 @@
 	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
-        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
-        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-        NSString *fileName = localVideo ? localVideo : localFile;
+        
+        // TODO: do resend for video and files
+        /*NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];*/
+
 		[self onDelete];
         if(localImage){
             ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
@@ -266,10 +268,10 @@
                                                             }
                 }];
             }
-        } else if(fileName) {
+        } /*else if(fileName) {
             NSString *filePath = [LinphoneManager documentFile:fileName];
             [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:filePath] withUrl:[NSURL URLWithString:filePath]];
-        }
+        }*/
 	} else {
         [self onDelete];
 		double delayInSeconds = 0.4;
@@ -356,16 +358,16 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
         if(localFile) {
             CGSize fileSize = CGSizeMake(200, 80);
             size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
-        } else if (localVideo) {
-            CGSize videoSize = CGSizeMake(320, 240);
-            size = [self getMediaMessageSizefromOriginalSize:videoSize withWidth:width];
-            size.height += CELL_MESSAGE_X_MARGIN;
         } else {
-            if (!localImage) {
+            if (!localImage && !localVideo) {
                 //We are loading the image
                 return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN);
             }
-            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            PHFetchResult<PHAsset *> *assets;
+            if(localImage)
+                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            else
+                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
             if (![assets firstObject]) {
                 return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
             }

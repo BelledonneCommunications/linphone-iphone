@@ -28,7 +28,6 @@
 @protocol ChatConversationDelegate <NSObject>
 
 - (BOOL)startImageUpload:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality;
-- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url;
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url;
 - (void)tableViewIsScrolling;
 

@@ -129,35 +129,6 @@
                                             }];
 }
 
-- (void) loadVideoAsset: (AVAsset *) asset {
-    // Calculate a time for the snapshot - I'm using the half way mark.
-    CMTime duration = [asset duration];
-    CMTime snapshot = CMTimeMake(duration.value / 2, duration.timescale);
-    // Create a generator and copy image at the time.
-    // I'm not capturing the actual time or an error.
-    AVAssetImageGenerator *generator =
-    [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
-    CGImageRef imageRef = [generator copyCGImageAtTime:snapshot
-                                            actualTime:nil
-                                                 error:nil];
-    
-    UIImage *thumb = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease(imageRef);
-    
-    UIGraphicsBeginImageContext(videoDefaultSize);
-    [thumb drawInRect:CGRectMake(0, 0, videoDefaultSize.width, videoDefaultSize.height)];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    [self loadImageAsset:nil image:image];
-    
-    // put the play button in the top
-    CGRect newFrame = _playButton.frame;
-    newFrame.origin.x = _finalImage.frame.origin.x/2;
-    newFrame.origin.y = _finalImage.frame.origin.y/2;
-    _playButton.frame = newFrame;
-}
-
 - (void) loadFileAsset {
     dispatch_async(dispatch_get_main_queue(), ^{
         _fileName.hidden = NO;
@@ -210,28 +181,16 @@
             if (localImage) {
                 // we did not load the image yet, so start doing so
                 if (_messageImageView.image == nil) {
-                    [_messageImageView startLoading];
-                    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
-                    UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
-                    if (![assets firstObject])
-                        [self loadPlaceholder];
-                    PHAsset *asset = [assets firstObject];
-                    if (img)
-                        [self loadImageAsset:asset image:img];
-                    else
-                        [self loadAsset:asset];
+                    [self loadFirstImage:localImage type:PHAssetMediaTypeImage];
                 }
-            } else if (localVideo) {
+            }
+            else if (localVideo) {
                 if (_messageImageView.image == nil) {
-                    [_messageImageView startLoading];
-                    // read video from Documents
-                    NSString *filePath = [LinphoneManager documentFile:localVideo];
-                    NSURL *url = [NSURL fileURLWithPath:filePath];
-                    AVAsset *asset = [AVAsset assetWithURL:url];
-                    if (asset)
-                        [self loadVideoAsset:asset];
+                    [self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
+                    _imageGestureRecognizer.enabled = NO;
                 }
-            } else if (localFile) {
+            }
+             else if (localFile) {
                 NSString *text = [NSString stringWithFormat:@"📎  %@",localFile];
                 _fileName.text = text;
                 [self loadFileAsset];
@@ -256,8 +215,25 @@
     }
 }
 
+- (void)loadFirstImage:(NSString *)key type:(PHAssetMediaType)type {
+    [_messageImageView startLoading];
+    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:key] options:nil];
+    UIImage *img = nil;
+    
+    img = [chatTableView.imagesInChatroom objectForKey:key];
+    PHAsset *asset = [assets firstObject];
+    if (!asset)
+        [self loadPlaceholder];
+    else if (asset.mediaType == type)
+        img = nil;
+    if (img)
+        [self loadImageAsset:asset image:img];
+    else
+        [self loadAsset:asset];
+}
+
 - (void)fileErrorBlock {
-    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Can't open this file", nil)];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Can't find this file", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"OK", nil) block:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -278,33 +254,35 @@
 }
 
 - (IBAction)onPlayClick:(id)sender {
-    NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
-    NSString *filePath = [LinphoneManager documentFile:localVideo];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    if ([fileManager fileExistsAtPath:filePath]) {
-        // create a player view controller
-        AVPlayer *player = [AVPlayer playerWithURL:[[NSURL alloc] initFileURLWithPath:filePath]];
-        AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
-        [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
-        controller.player = player;
-        [player play];
-    } else {
-        [self fileErrorBlock];
-    }
+    PHAsset *asset = [_messageImageView asset];
+    PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+   // options.synchronous = TRUE;
+    [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+        if(playerItem) {
+            AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
+            AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
+            [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+            controller.player = player;
+            [player play];
+        }
+        else {
+            [self fileErrorBlock];
+        }
+    }];
 }
 
 - (IBAction)onOpenClick:(id)event {
-    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-    NSString *filePath = [LinphoneManager documentFile:localFile];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-
-    if ([fileManager fileExistsAtPath:filePath]) {
-        ChatConversationView *view = VIEW(ChatConversationView);
-        [view openResults:filePath];
-    } else {
-        [self fileErrorBlock];
-    }
+    ChatConversationView *view = VIEW(ChatConversationView);
+    NSString *cachedFile = [LinphoneManager getMessageAppDataForKey:@"cachedfile" inMessage:self.message];
+    if (cachedFile) {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if ([fileManager fileExistsAtPath:cachedFile]) {
+            [view openFile:cachedFile];
+        } else {
+            [self fileErrorBlock];
+        }        
+    } else
+        [view getIcloudFiles];
 }
 
 
