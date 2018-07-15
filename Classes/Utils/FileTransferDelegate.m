@@ -270,6 +270,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
                                                      linphone_iphone_file_transfer_send);
 
     // internal url is saved in the appdata for display and later save
+    LOGE(@"nnnn %@    %@",key, keyData);
     [LinphoneManager setValueInMessageAppData:keyData forKey:key inMessage:_message];
     [LinphoneManager setValueInMessageAppData:qualityData forKey:@"uploadQuality" inMessage:_message];
     
@@ -291,7 +292,10 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 
 - (void)uploadVideo:(NSData *)data withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom  {
     NSString *name = [NSString stringWithFormat:@"IMG-%f.MOV",  [NSDate timeIntervalSinceReferenceDate]];
-    [self uploadData:data forChatRoom:chatRoom type:@"video" subtype:nil name:name key:@"localvideo" keyData:phAssetId qualityData:nil];
+    if (phAssetId)
+        [self uploadData:data forChatRoom:chatRoom type:@"video" subtype:nil name:name key:@"localvideo" keyData:phAssetId qualityData:nil];
+    else
+        [self uploadData:data forChatRoom:chatRoom type:@"video" subtype:nil name:name key:@"localvideo" keyData:@"ending..." qualityData:nil];
 }
 
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {

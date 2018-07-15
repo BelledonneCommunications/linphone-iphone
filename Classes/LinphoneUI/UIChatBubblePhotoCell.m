@@ -181,34 +181,12 @@
             if (localImage) {
                 // we did not load the image yet, so start doing so
                 if (_messageImageView.image == nil) {
-                    [_messageImageView startLoading];
-                    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
-                    UIImage *img = nil;
-                    
-                    img = [chatTableView.imagesInChatroom objectForKey:localImage];
-                    if (![assets firstObject])
-                        [self loadPlaceholder];
-                    PHAsset *asset = [assets firstObject];
-                    if (img)
-                        [self loadImageAsset:asset image:img];
-                    else
-                        [self loadAsset:asset];
+                    [self loadFirstImage:localImage type:PHAssetMediaTypeImage];
                 }
             }
             else if (localVideo) {
                 if (_messageImageView.image == nil) {
-                    [_messageImageView startLoading];
-                    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-                    UIImage *img = nil;
-                    
-                    img = [chatTableView.imagesInChatroom objectForKey:localVideo];
-                    if (![assets firstObject])
-                        [self loadPlaceholder];
-                    PHAsset *asset = [assets firstObject];
-                    if (img)
-                        [self loadImageAsset:asset image:img];
-                    else
-                        [self loadAsset:asset];
+                    [self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
                 }
             }
              else if (localFile) {
@@ -236,8 +214,25 @@
     }
 }
 
+- (void)loadFirstImage:(NSString *)key type:(PHAssetMediaType)type {
+    [_messageImageView startLoading];
+    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:key] options:nil];
+    UIImage *img = nil;
+    
+    img = [chatTableView.imagesInChatroom objectForKey:key];
+    PHAsset *asset = [assets firstObject];
+    if (!asset)
+        [self loadPlaceholder];
+    else if (asset.mediaType == type)
+        img = nil;
+    if (img)
+        [self loadImageAsset:asset image:img];
+    else
+        [self loadAsset:asset];
+}
+
 - (void)fileErrorBlock {
-    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Can't open this file", nil)];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Can't find this file", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"OK", nil) block:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
