@@ -357,6 +357,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
             CGSize fileSize = CGSizeMake(200, 80);
             size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
         } else if (localVideo) {
+            //TODO
             CGSize videoSize = CGSizeMake(320, 240);
             size = [self getMediaMessageSizefromOriginalSize:videoSize withWidth:width];
             size.height += CELL_MESSAGE_X_MARGIN;

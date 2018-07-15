@@ -233,38 +233,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)shareFile {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
-    
-    NSDictionary *dict = [defaults valueForKey:@"img"];
-    NSDictionary *dictWeb = [defaults valueForKey:@"web"];
-    NSDictionary *dictFile = [defaults valueForKey:@"mov"];
-    NSDictionary *dictText = [defaults valueForKey:@"text"];
+    NSDictionary *dict = [defaults valueForKey:@"photoData"];
+    NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
+    NSDictionary *dictUrl = [defaults valueForKey:@"url"];
     if (dict) {
-        //share photo
-        UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+        //file shared from photo lib
+        NSString *fileName = dict[@"url"];
+        NSString *key = [[fileName componentsSeparatedByString:@"."] firstObject];
         NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
-        [self chooseImageQuality:image assetId:[[assetDict objectForKey:dict[@"url"]] localIdentifier]];
-        [defaults removeObjectForKey:@"img"];
-    } else if (dictWeb) {
-        //share url, if local file, then upload file
-        NSString *url  = dictWeb[@"url"];
-        NSURL *fileUrl = [NSURL fileURLWithPath:url];
-        if ([url hasPrefix:@"file"]) {
-            //local file
-            NSData *data = dictWeb[@"nsData"];
-            [self confirmShare:data url:fileUrl text:nil assetId:nil];
+        if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"]) {
+            UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+            [self chooseImageQuality:image assetId:[[assetDict objectForKey:key] localIdentifier]];
+        } else if ([fileName hasSuffix:@"MOV"]) {
+            [self confirmShare:dict[@"nsData"] url:nil fileName:nil assetId:[[assetDict objectForKey:key] localIdentifier]];
         } else {
-            [self confirmShare:nil url:nil text:url assetId:nil];
+            LOGE(@"Unable to parse file %@",fileName);
         }
-        [defaults removeObjectForKey:@"web"];
-    }else if (dictFile) {
-        //share file
-        NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
-        [self confirmShare:dictFile[@"nsData"] url:nil text:nil assetId:[[assetDict objectForKey:dictFile[@"url"]] localIdentifier]];
-        [defaults removeObjectForKey:@"mov"];
-    }else if (dictText) {
-        //share text
-        [self confirmShare:nil url:nil text:dictText[@"name"] assetId:nil];
-        [defaults removeObjectForKey:@"text"];
+        
+        [defaults removeObjectForKey:@"photoData"];
+    } else if (dictFile) {
+        NSString *fileName = dictFile[@"url"];
+        [self confirmShare:dictFile[@"nsData"] url:nil fileName:fileName assetId:nil];
+        
+        [defaults removeObjectForKey:@"icloudData"];
+    } else if (dictUrl) {
+        NSString *url = dictUrl[@"url"];
+        [self confirmShare:nil url:url fileName:nil assetId:nil];
+        
+        [defaults removeObjectForKey:@"url"];
     }
 }
 
@@ -358,15 +354,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	});
 }
 
-- (void)confirmShare:(NSData *)data url:(NSURL *)url text:(NSString *)text assetId:(NSString *)phAssetId {
+- (void)confirmShare:(NSData *)data url:(NSString *)url fileName:(NSString *)fileName assetId:(NSString *)phAssetId {
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [sheet addButtonWithTitle:@"send to this friend"
                                 block:^() {
-                                    if(phAssetId)
-                                        [self startFileUpload:data assetId:phAssetId];
+                                    if (url)
+                                        [self sendMessage:url withExterlBodyUrl:nil withInternalURL:nil];
+                                    else if (fileName)
+                                        [self startFileUpload:data withName:fileName];
                                     else
-                                        [self sendMessage:text withExterlBodyUrl:nil withInternalURL:nil];
+                                        [self startFileUpload:data assetId:phAssetId];
                                 }];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -635,9 +633,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     return TRUE;
 }
 
-- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url  {
+- (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name  {
     FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-    [fileTransfer uploadFile:data forChatRoom:_chatRoom withUrl:url];
+    [fileTransfer uploadFile:data forChatRoom:_chatRoom withName:name];
     [_tableController scrollToBottom:true];
     return TRUE;
 }
@@ -909,7 +907,17 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 	[view.tableController scrollToBottom:true];
 }
 
-- (void)openResults:(NSString *) filePath
+- (void)getIcloudFiles
+{
+    _documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"]
+                                                                             inMode:UIDocumentPickerModeImport];
+    _documentPicker.delegate = self;
+    
+    _documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self presentViewController:_documentPicker animated:YES completion:nil];
+}
+
+- (void)openFile:(NSString *) filePath
 {
     // Open the controller.
     _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
@@ -921,6 +929,21 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
         [[[UIAlertView alloc] initWithTitle:@"Info" message:@"There is no app found to open it" delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil] show];
         
     }
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
+
+    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+    [fileCoordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingWithoutChanges error:nil byAccessor:^(NSURL * _Nonnull newURL) {
+        
+        NSString *fileName = [newURL lastPathComponent];
+        NSData *data = [NSData dataWithContentsOfURL:newURL];
+    
+        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+        
+        [[NSFileManager defaultManager] createFileAtPath:filePath contents:data attributes:nil];
+        [self openFile:filePath];
+   }];
 }
 
 - (void)deleteImageWithAssetId:(NSString *)assetId {

@@ -170,8 +170,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
             }];
             
         } else {
-            [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
-            LOGE(@"xxxxxxxxxx");
+            [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz]
             NSString *key =  @"localfile" ;
             NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
         
@@ -179,12 +178,14 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
            
             //write file to path
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *filePath = [LinphoneManager documentFile:name];
+                NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+                //NSString *filePath = [LinphoneManager documentFile:name];
                 [[NSFileManager defaultManager] createFileAtPath:filePath
                                                     contents:thiz.data
                                                   attributes:nil];
         
                 [LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
+                [LinphoneManager setValueInMessageAppData:filePath forKey:@"cachedfile" inMessage:message];
                      
                 [NSNotificationCenter.defaultCenter
                  postNotificationName:kLinphoneFileTransferRecvUpdate
@@ -289,22 +290,12 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (void)uploadVideo:(NSData *)data withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom  {
-    NSString *name = [NSString stringWithFormat:@"%f.mov",  [NSDate timeIntervalSinceReferenceDate]];
+    NSString *name = [NSString stringWithFormat:@"IMG-%f.MOV",  [NSDate timeIntervalSinceReferenceDate]];
     [self uploadData:data forChatRoom:chatRoom type:@"video" subtype:nil name:name key:@"localvideo" keyData:phAssetId qualityData:nil];
 }
 
-- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withUrl:(NSURL *)url {
-    NSString *name = [url lastPathComponent];
-    //save file to Documents
-    NSString *filePath = [LinphoneManager documentFile:name];
-    [[NSFileManager defaultManager] createFileAtPath:filePath
-                                            contents:[NSMutableData dataWithData:data]
-                                          attributes:nil];
-        
-    if ([[url pathExtension] isEqualToString:@"MOV"])
-        [self uploadData:data forChatRoom:chatRoom type:@"video" subtype:nil name:name key:@"localvideo" keyData:name qualityData:nil];
-    else
-        [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
+- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {
+    [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
 }
 
 

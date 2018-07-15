@@ -129,35 +129,6 @@
                                             }];
 }
 
-- (void) loadVideoAsset: (AVAsset *) asset {
-    // Calculate a time for the snapshot - I'm using the half way mark.
-    CMTime duration = [asset duration];
-    CMTime snapshot = CMTimeMake(duration.value / 2, duration.timescale);
-    // Create a generator and copy image at the time.
-    // I'm not capturing the actual time or an error.
-    AVAssetImageGenerator *generator =
-    [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
-    CGImageRef imageRef = [generator copyCGImageAtTime:snapshot
-                                            actualTime:nil
-                                                 error:nil];
-    
-    UIImage *thumb = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease(imageRef);
-    
-    UIGraphicsBeginImageContext(videoDefaultSize);
-    [thumb drawInRect:CGRectMake(0, 0, videoDefaultSize.width, videoDefaultSize.height)];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    [self loadImageAsset:nil image:image];
-    
-    // put the play button in the top
-    CGRect newFrame = _playButton.frame;
-    newFrame.origin.x = _finalImage.frame.origin.x/2;
-    newFrame.origin.y = _finalImage.frame.origin.y/2;
-    _playButton.frame = newFrame;
-}
-
 - (void) loadFileAsset {
     dispatch_async(dispatch_get_main_queue(), ^{
         _fileName.hidden = NO;
@@ -212,7 +183,9 @@
                 if (_messageImageView.image == nil) {
                     [_messageImageView startLoading];
                     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
-                    UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
+                    UIImage *img = nil;
+                    
+                    img = [chatTableView.imagesInChatroom objectForKey:localImage];
                     if (![assets firstObject])
                         [self loadPlaceholder];
                     PHAsset *asset = [assets firstObject];
@@ -221,23 +194,24 @@
                     else
                         [self loadAsset:asset];
                 }
-            } else if (localVideo) {
+            }
+            else if (localVideo) {
                 if (_messageImageView.image == nil) {
-                    
+                    [_messageImageView startLoading];
                     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-                    if([assets firstObject] .mediaType == PHAssetMediaTypeVideo) {
-                        [_messageImageView startLoading];
-                        UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
-                        if (![assets firstObject])
-                            [self loadPlaceholder];
-                        PHAsset *asset = [assets firstObject];
-                        if (img)
-                            [self loadImageAsset:asset image:img];
-                        else
-                            [self loadAsset:asset];
-                    }
+                    UIImage *img = nil;
+                    
+                    img = [chatTableView.imagesInChatroom objectForKey:localVideo];
+                    if (![assets firstObject])
+                        [self loadPlaceholder];
+                    PHAsset *asset = [assets firstObject];
+                    if (img)
+                        [self loadImageAsset:asset image:img];
+                    else
+                        [self loadAsset:asset];
                 }
-            } else if (localFile) {
+            }
+             else if (localFile) {
                 NSString *text = [NSString stringWithFormat:@"📎  %@",localFile];
                 _fileName.text = text;
                 [self loadFileAsset];
@@ -296,22 +270,23 @@
             [player play];
         }
         else {
-             LOGE(@"Can't read video");
+            [self fileErrorBlock];
         }
     }];
 }
 
 - (IBAction)onOpenClick:(id)event {
-    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-    NSString *filePath = [LinphoneManager documentFile:localFile];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-
-    if ([fileManager fileExistsAtPath:filePath]) {
-        ChatConversationView *view = VIEW(ChatConversationView);
-        [view openResults:filePath];
-    } else {
-        [self fileErrorBlock];
-    }
+    ChatConversationView *view = VIEW(ChatConversationView);
+    NSString *cachedFile = [LinphoneManager getMessageAppDataForKey:@"cachedfile" inMessage:self.message];
+    if (cachedFile) {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if ([fileManager fileExistsAtPath:cachedFile]) {
+            [view openFile:cachedFile];
+        } else {
+            [self fileErrorBlock];
+        }        
+    } else
+        [view getIcloudFiles];
 }
 
 
