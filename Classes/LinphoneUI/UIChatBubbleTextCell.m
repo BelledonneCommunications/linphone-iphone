@@ -235,9 +235,11 @@
 	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
+        
+        // TODO: do resend for video and files
         /*NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
-        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-        NSString *fileName = localVideo ? localVideo : localFile;*/
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];*/
+
 		[self onDelete];
         if(localImage){
             ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
