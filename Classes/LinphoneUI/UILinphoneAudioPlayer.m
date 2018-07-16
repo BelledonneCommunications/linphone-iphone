@@ -13,6 +13,7 @@
     LinphonePlayerCbs *cbs;
     NSString *file;
     int duration;
+    BOOL eofReached;
 }
 
 #pragma mark - Factory
@@ -54,6 +55,7 @@ static NSMutableDictionary *players;
         linphone_player_set_user_data(player, (__bridge void *)self);
         linphone_player_cbs_set_eof_reached(cbs, on_eof_reached);
         file = filePath;
+        eofReached = NO;
     }
     return self;
 }
@@ -84,9 +86,11 @@ static NSMutableDictionary *players;
 
 void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"EOF reached");
-    linphone_player_seek(pl, 0);
     UILinphoneAudioPlayer *player = (__bridge UILinphoneAudioPlayer *)linphone_player_get_user_data(pl);
-    [player.playButton setTitle:@"Play" forState:UIControlStateNormal];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [player.playButton setTitle:@"Play" forState:UIControlStateNormal];
+    });
+    player->eofReached = YES;
 }
 
 #pragma mark - ViewController methods
@@ -145,6 +149,10 @@ void on_eof_reached(LinphonePlayer *pl) {
 #pragma mark - Event handlers
 
 - (IBAction)onPlay:(id)sender {
+    if (eofReached) {
+        linphone_player_seek(player, 0);
+        eofReached = NO;
+    }
     LinphonePlayerState state = linphone_player_get_state(player);
     switch (state) {
         case LinphonePlayerClosed:
@@ -167,6 +175,7 @@ void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"Stop");
     linphone_player_pause(player);
     linphone_player_seek(player, 0);
+    eofReached = NO;
     [_playButton setTitle:@"Play" forState:UIControlStateNormal];
     _timeProgress.progress = 0;
     [self updateTimeLabel:0];
