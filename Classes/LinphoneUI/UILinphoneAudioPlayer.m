@@ -146,6 +146,13 @@ void on_eof_reached(LinphonePlayer *pl) {
     });
 }
 
+- (void)pause {
+    if ([self isOpened]) {
+        linphone_player_pause(player);
+        [_playButton setTitle:@"Play" forState:UIControlStateNormal];
+    }
+}
+
 #pragma mark - Event handlers
 
 - (IBAction)onPlay:(id)sender {

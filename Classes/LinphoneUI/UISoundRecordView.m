@@ -7,17 +7,17 @@
 
 #import "UISoundRecordView.h"
 #import "PhoneMainView.h"
+#import "UILinphoneAudioPlayer.h"
 
 @implementation UISoundRecordView {
     @private
     LinphoneRecordState state;
-    LinphonePlayer *player;
-    LinphonePlayerCbs *cbs;
-    int duration;
-    BOOL shouldClosePlayer;
     NSString *durationString;
     NSString *file;
+    UILinphoneAudioPlayer *player;
 }
+
+#pragma mark - Lifecycle
 
 - (id)init {
     if (self = [super init]) {
@@ -33,31 +33,21 @@
         [self addSubview:sub];
         self.recordView = sub;
         [self reset];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(pausePlayer:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
     }
     return self;
 }
 
-- (void)initPlayer {
-    player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
-    cbs = linphone_player_get_callbacks(player);
-    file = [LinphoneManager bundleFile:@"hold.mkv"]; //tmp
-    linphone_player_open(player, file.UTF8String);
-    duration = linphone_player_get_duration(player);
-    durationString = [self.class timeToString:duration];
-    shouldClosePlayer = NO;
+- (void)closePlayer {
+    [player close];
 }
 
-- (void)closePlayer {
-    if (!player)
-        return;
-    if (linphone_player_get_state(player) == LinphonePlayerPlaying) {
-        shouldClosePlayer = YES;
-        return;
-    }
-    linphone_player_close(player);
-    linphone_player_unref(player);
-    player = NULL;
-    cbs = NULL;
+- (void)reset {
+    state = LinphoneRecordNotStarted;
+    [_recordButton setTitle:@"Record" forState:UIControlStateNormal];
 }
 
 #pragma mark - Utils
@@ -78,47 +68,11 @@
     return ret;
 }
 
-- (void)updateTimeLabel:(int)currentTime {
-    _timeLabel.text = [NSString stringWithFormat:@"%@ / %@", [self.class timeToString:currentTime], durationString];
+- (void)pausePlayer:(NSNotification *)notif {
+    [player pause];
 }
 
-- (void)update:(LinphonePlayer *)pl {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        while (linphone_player_get_state(pl) == LinphonePlayerPlaying) {
-            int start = linphone_player_get_current_position(pl);
-            while (start + 1000 < duration && start + 1000 > linphone_player_get_current_position(pl)) {
-                [NSThread sleepForTimeInterval:0.01];
-                if (linphone_player_get_state(pl) == LinphonePlayerPaused)
-                    break;
-            }
-            start = linphone_player_get_current_position(pl);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _timeBar.progress = (float)start / (float)duration;
-                [self updateTimeLabel:start];
-            });
-            if (shouldClosePlayer)
-                break;
-        }
-        if (shouldClosePlayer) {
-            linphone_player_close(player);
-            linphone_player_unref(player);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateTimeLabel:0];
-                _timeBar.progress = 0;
-                [_playButton setTitle:@"Play" forState:UIControlStateNormal];
-            });
-            player = NULL;
-            cbs = NULL;
-        }
-    });
-}
-
-- (void)reset {
-    state = LinphoneRecordNotStarted;
-    [_recordButton setTitle:@"Record" forState:UIControlStateNormal];
-    [_playButton setTitle:@"Play" forState:UIControlStateNormal];
-    _timeBar.progress = 0;
-}
+#pragma mark - Event handling
 
 - (IBAction)onRecord:(UIButton *)sender {
     switch(state) {
@@ -152,12 +106,19 @@
     }
     LOGI(@"Stopped recording");
     state = LinphoneRecordFinished;
+    // replace with real file
+    file = [LinphoneManager bundleFile:@"hold.mkv"];
     // moving to sending view
     _sendingView.frame = _recordView.frame;
     _sendingView.bounds = _recordView.bounds;
+    player = [UILinphoneAudioPlayer audioPlayerWithFilePath:file];
+    player.view.frame = _playerView.frame;
+    player.view.bounds = _playerView.bounds;
+    [_sendingView addSubview:player.view];
+    _playerView.hidden = YES;
+    [player open];
     [_recordView.superview addSubview:_sendingView];
     [_recordView removeFromSuperview];
-    [self initPlayer];
 }
 
 - (IBAction)onCancel:(UIButton *)sender {
@@ -169,41 +130,11 @@
 
 - (IBAction)onSend:(UIButton *)sender {
     LOGI(@"Sending audio message...");
-    NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager bundleFile:@"hold.mkv"]];
-    NSLog(@"Size of data : %d", (unsigned int)data.length);
-    [VIEW(ChatConversationView) startFileUpload:[NSData dataWithContentsOfFile:[LinphoneManager bundleFile:@"hold.mkv"]] withUrl:[NSURL URLWithString:[@"file://" stringByAppendingString:[LinphoneManager bundleFile:@"hold.mkv"]]]];
+    [VIEW(ChatConversationView) startFileUpload:[NSData dataWithContentsOfFile:file]
+                                        withUrl:[NSURL URLWithString:file]];
     [VIEW(ChatConversationView) changeToMessageView];
     [self reset];
     [self closePlayer];
-}
-
-- (IBAction)onPlay:(UIButton *)sender {
-    switch (linphone_player_get_state(player)) {
-        case LinphonePlayerPaused:
-            LOGI(@"Play");
-            [_playButton setTitle:@"Pause" forState:UIControlStateNormal];
-            linphone_player_start(player);
-            [self update:player];
-            break;
-        case LinphonePlayerPlaying:
-            [_playButton setTitle:@"Play" forState:UIControlStateNormal];
-            LOGI(@"Pause");
-            linphone_player_pause(player);
-        default:
-            break;
-    }
-}
-
-- (IBAction)onTapBar:(UITapGestureRecognizer *)sender {
-    if (sender.state != UIGestureRecognizerStateEnded)
-        return;
-    CGPoint loc = [sender locationInView:_sendingView];
-    CGPoint timeLoc = _timeBar.frame.origin;
-    CGSize timeSize = _timeBar.frame.size;
-    if (loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
-        float progress = (loc.x - timeLoc.x) / timeSize.width;
-        _timeBar.progress = progress;
-    }
 }
 
 @end

@@ -20,6 +20,7 @@
 - (void)close;
 - (BOOL)isOpened;
 - (void)open;
+- (void)pause;
 
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
