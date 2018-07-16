@@ -98,6 +98,7 @@
                         </view>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <gestureRecognizers/>
                     <constraints>
                         <constraint firstItem="saN-77-zGO" firstAttribute="top" secondItem="1a9-bo-5IS" secondAttribute="top" id="6tj-Ko-s9M"/>
                         <constraint firstAttribute="bottom" secondItem="K1o-Sm-f29" secondAttribute="bottom" id="9Qc-N2-Zac"/>
@@ -125,6 +126,9 @@
                         <constraint firstItem="75O-hf-9RH" firstAttribute="leading" secondItem="1a9-bo-5IS" secondAttribute="leading" id="uCD-vx-Jhh"/>
                         <constraint firstAttribute="bottom" secondItem="4Fx-9h-L5d" secondAttribute="bottom" constant="3" id="zoF-qK-Djn"/>
                     </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="DhQ-h7-tAe" appends="YES" id="Xjl-Wa-WzY"/>
+                    </connections>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -139,6 +143,11 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <point key="canvasLocation" x="56.5" y="-213"/>
         </view>
+        <tapGestureRecognizer id="DhQ-h7-tAe" userLabel="onResendClick">
+            <connections>
+                <action selector="onResend:" destination="-1" id="9wq-kS-DnK"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="259" height="259"/>

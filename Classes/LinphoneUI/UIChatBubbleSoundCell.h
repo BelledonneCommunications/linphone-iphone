@@ -15,5 +15,6 @@
 
 - (IBAction)onLoad:(id)sender;
 - (void)setAudioPlayer:(UILinphoneAudioPlayer *)player;
+- (IBAction)onResend:(id)sender;
 
 @end

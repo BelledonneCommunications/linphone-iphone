@@ -76,6 +76,10 @@
     [audioPlayer open];
 }
 
+- (IBAction)onResend:(id)sender {
+    [super onResend];
+}
+
 #pragma mark - Overriden methods
 
 - (void)setEvent:(LinphoneEventLog *)event {
