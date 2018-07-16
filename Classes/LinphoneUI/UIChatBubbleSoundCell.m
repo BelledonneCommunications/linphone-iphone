@@ -61,6 +61,16 @@
 #pragma mark - Event handlers
 
 - (IBAction)onLoad:(id)sender {
+    if (!audioPlayer) {
+        [audioPlayer.view removeFromSuperview];
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
+        NSString *filePath = [LinphoneManager documentFile:localFile];
+        audioPlayer = [UILinphoneAudioPlayer audioPlayerWithFilePath:filePath];
+        [UILinphoneAudioPlayer registerPlayer:audioPlayer forMessage:self.message];
+        [_content addSubview:audioPlayer.view];
+        audioPlayer.view.frame = _playerView.frame;
+        audioPlayer.view.bounds = _playerView.bounds;
+    }
     _loadButton.hidden = YES;
     audioPlayer.view.hidden = NO;
     [audioPlayer open];
@@ -77,17 +87,10 @@
     LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
     NSLog(@"File name : %s", linphone_content_get_name(content));
     NSLog(@"Type : %s", linphone_content_get_type(content));
-    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
-    NSString *filePath = [LinphoneManager documentFile:localFile];
     if (audioPlayer)
         [audioPlayer.view removeFromSuperview];
     audioPlayer = [UILinphoneAudioPlayer playerForMessage:self.message];
-    if (!audioPlayer) {
-        audioPlayer = [UILinphoneAudioPlayer audioPlayerWithFilePath:filePath];
-        [UILinphoneAudioPlayer registerPlayer:audioPlayer forMessage:self.message];
-        audioPlayer.view.hidden = YES;
-        _loadButton.hidden = NO;
-    } else if ([audioPlayer isOpened]) {
+    if (audioPlayer && [audioPlayer isOpened]) {
         audioPlayer.view.hidden = NO;
         _loadButton.hidden = YES;
     } else {
