@@ -184,11 +184,6 @@
 #pragma mark - Property Functions
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
-    if (room != _chatRoom) {
-        [((ChatConversationView *)_chatRoomDelegate).recordView reset];
-        [((ChatConversationView *)_chatRoomDelegate) changeToMessageView];
-        [self clearAudioPlayers];
-    }
 	_chatRoom = room;
 	[self reloadData];
 }

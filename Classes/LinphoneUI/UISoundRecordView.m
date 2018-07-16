@@ -114,8 +114,7 @@
     player = [UILinphoneAudioPlayer audioPlayerWithFilePath:file];
     player.view.frame = _playerView.frame;
     player.view.bounds = _playerView.bounds;
-    [_sendingView addSubview:player.view];
-    _playerView.hidden = YES;
+    [_playerView addSubview:player.view];
     [player open];
     [_recordView.superview addSubview:_sendingView];
     [_recordView removeFromSuperview];

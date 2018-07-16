@@ -61,7 +61,7 @@
 #pragma mark - Event handlers
 
 - (IBAction)onLoad:(id)sender {
-    if (!audioPlayer) {
+    if (!audioPlayer || audioPlayer != [UILinphoneAudioPlayer playerForMessage:self.message]) {
         [audioPlayer.view removeFromSuperview];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
         NSString *filePath = [LinphoneManager documentFile:localFile];

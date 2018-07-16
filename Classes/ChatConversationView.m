@@ -254,7 +254,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
 	_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
 	[_messageField setText:@""];
-	[_tableController setChatRoom:_chatRoom];
+    if (_tableController.chatRoom != _chatRoom) {
+        [_recordView reset];
+        [self changeToMessageView];
+        [_tableController clearAudioPlayers];
+        [_tableController setChatRoom:_chatRoom];
+    }
 
 	_chatView.hidden = NO;
 	[self update];
