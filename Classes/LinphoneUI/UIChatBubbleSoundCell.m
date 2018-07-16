@@ -6,7 +6,6 @@
 //
 
 #import "UIChatBubbleSoundCell.h"
-#import "LinphoneManager.h"
 #import "PhoneMainView.h"
 
 #import <AssetsLibrary/ALAsset.h>
@@ -41,6 +40,24 @@
     return self;
 }
 
+#pragma mark - Getters & setters
+
+- (void)setAudioPlayer:(UILinphoneAudioPlayer *)player {
+    if (!player)
+        return;
+    if (audioPlayer)
+        [audioPlayer.view removeFromSuperview];
+    audioPlayer = player;
+    [UILinphoneAudioPlayer registerPlayer:player forMessage:self.message];
+    audioPlayer.view.hidden = YES;
+    _loadButton.hidden = NO;
+    [_content addSubview:audioPlayer.view];
+    [self bringSubviewToFront:audioPlayer.view];
+    audioPlayer.view.frame = _playerView.frame;
+    audioPlayer.view.bounds = _playerView.bounds;
+    _playerView.hidden = YES;
+}
+
 #pragma mark - Event handlers
 
 - (IBAction)onLoad:(id)sender {
@@ -70,14 +87,12 @@
         [UILinphoneAudioPlayer registerPlayer:audioPlayer forMessage:self.message];
         audioPlayer.view.hidden = YES;
         _loadButton.hidden = NO;
+    } else if ([audioPlayer isOpened]) {
+        audioPlayer.view.hidden = NO;
+        _loadButton.hidden = YES;
     } else {
-        if ([audioPlayer isOpened]) {
-            audioPlayer.view.hidden = NO;
-            _loadButton.hidden = YES;
-        } else {
-            audioPlayer.view.hidden = YES;
-            _loadButton.hidden = NO;
-        }
+        audioPlayer.view.hidden = YES;
+        _loadButton.hidden = NO;
     }
     [_content addSubview:audioPlayer.view];
     [self bringSubviewToFront:audioPlayer.view];

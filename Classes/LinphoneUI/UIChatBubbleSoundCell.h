@@ -6,12 +6,6 @@
 //
 
 #import "UIChatBubbleTextCell.h"
-
-#import "UILoadingImageView.h"
-#import "UITextViewNoDefine.h"
-#import "FileTransferDelegate.h"
-#import "ChatConversationTableView.h"
-#import "UIChatBubbleTextCell.h"
 #import "UILinphoneAudioPlayer.h"
 
 @interface UIChatBubbleSoundCell : UIChatBubbleTextCell
@@ -20,5 +14,6 @@
 @property (weak, nonatomic) IBOutlet UIView *content;
 
 - (IBAction)onLoad:(id)sender;
+- (void)setAudioPlayer:(UILinphoneAudioPlayer *)player;
 
 @end
