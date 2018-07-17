@@ -23,6 +23,7 @@ typedef enum LinphoneRecordState {
 @property (strong, nonatomic) IBOutlet UIView *sendingView;
 @property (weak, nonatomic) IBOutlet UIButton *sendButton;
 @property (weak, nonatomic) IBOutlet UIView *playerView;
+@property (weak, nonatomic) IBOutlet UIButton *cancelButton2;
 
 - (void)reset;
 - (void)closePlayer;

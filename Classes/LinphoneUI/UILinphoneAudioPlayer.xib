@@ -24,15 +24,25 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DUO-wG-b7H">
-                    <rect key="frame" x="10" y="107" width="30" height="30"/>
+                    <rect key="frame" x="10" y="112" width="20" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="0Ih-RU-H6C"/>
+                        <constraint firstAttribute="height" constant="20" id="SxX-FF-vrP"/>
+                    </constraints>
+                    <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Play"/>
                     <connections>
                         <action selector="onPlay:" destination="-1" eventType="touchUpInside" id="mdn-z8-Vx0"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FXh-QI-38P">
-                    <rect key="frame" x="50" y="107" width="32" height="30"/>
+                    <rect key="frame" x="40" y="112" width="20" height="20"/>
                     <gestureRecognizers/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="L60-0M-7lU"/>
+                        <constraint firstAttribute="width" constant="20" id="XbH-oS-0HR"/>
+                    </constraints>
+                    <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Stop"/>
                     <connections>
                         <action selector="onStop:" destination="-1" eventType="touchUpInside" id="DwC-vv-yxp"/>
@@ -45,7 +55,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Un6-Ly-zHN">
-                    <rect key="frame" x="92" y="121" width="173.5" height="2"/>
+                    <rect key="frame" x="70" y="121" width="195.5" height="2"/>
                 </progressView>
             </subviews>
             <gestureRecognizers/>

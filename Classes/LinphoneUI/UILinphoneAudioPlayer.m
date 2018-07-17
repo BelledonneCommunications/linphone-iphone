@@ -6,6 +6,7 @@
 //
 
 #import "UILinphoneAudioPlayer.h"
+#import "Utils.h"
 
 @implementation UILinphoneAudioPlayer {
     @private
@@ -54,7 +55,10 @@
     [self updateTimeLabel:0];
     _timeProgress.progress = 0;
     eofReached = NO;
-    [_playButton setTitle:@"Play" forState:UIControlStateNormal];
+    [_playButton setTitle:@"" forState:UIControlStateNormal];
+    [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
+    [_stopButton setTitle:@"" forState:UIControlStateNormal];
+    [_stopButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemRefresh:[UIColor blackColor]] forState:UIControlStateNormal];
 }
 
 - (BOOL)isOpened {
@@ -72,7 +76,8 @@ void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"EOF reached");
     UILinphoneAudioPlayer *player = (__bridge UILinphoneAudioPlayer *)linphone_player_get_user_data(pl);
     dispatch_async(dispatch_get_main_queue(), ^{
-        [player.playButton setTitle:@"Play" forState:UIControlStateNormal];
+        [player.playButton setTitle:@"" forState:UIControlStateNormal];
+        [player.playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
     });
     player->eofReached = YES;
 }
@@ -105,7 +110,6 @@ void on_eof_reached(LinphonePlayer *pl) {
     return ret;
 }
 
-
 #pragma mark - Updating
 
 - (void)updateTimeLabel:(int)currentTime {
@@ -133,7 +137,8 @@ void on_eof_reached(LinphonePlayer *pl) {
 - (void)pause {
     if ([self isOpened]) {
         linphone_player_pause(player);
-        [_playButton setTitle:@"Play" forState:UIControlStateNormal];
+        [_playButton setTitle:@"" forState:UIControlStateNormal];
+        [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
     }
 }
 
@@ -150,12 +155,14 @@ void on_eof_reached(LinphonePlayer *pl) {
             break;
         case LinphonePlayerPaused:
             NSLog(@"Play");
-            [_playButton setTitle:@"Pause" forState:UIControlStateNormal];
+            [_playButton setTitle:@"" forState:UIControlStateNormal];
+            [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPause:[UIColor blackColor]] forState:UIControlStateNormal];
             linphone_player_start(player);
             break;
         case LinphonePlayerPlaying:
             NSLog(@"Pause");
-            [_playButton setTitle:@"Play" forState:UIControlStateNormal];
+            [_playButton setTitle:@"" forState:UIControlStateNormal];
+            [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
             linphone_player_pause(player);
             break;
     }
@@ -167,7 +174,8 @@ void on_eof_reached(LinphonePlayer *pl) {
     linphone_player_pause(player);
     linphone_player_seek(player, 0);
     eofReached = NO;
-    [_playButton setTitle:@"Play" forState:UIControlStateNormal];
+    [_playButton setTitle:@"" forState:UIControlStateNormal];
+    [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
     _timeProgress.progress = 0;
     [self updateTimeLabel:0];
 }

@@ -8,6 +8,7 @@
 #import "UISoundRecordView.h"
 #import "PhoneMainView.h"
 #import "UILinphoneAudioPlayer.h"
+#import "Utils.h"
 
 @implementation UISoundRecordView {
     @private
@@ -33,6 +34,10 @@
         [self addSubview:sub];
         self.recordView = sub;
         [self reset];
+        [_cancelButton setTitle:@"" forState:UIControlStateNormal];
+        [_cancelButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemTrash:[UIColor blackColor]] forState:UIControlStateNormal];
+        [_cancelButton2 setTitle:@"" forState:UIControlStateNormal];
+        [_cancelButton2 setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemTrash:[UIColor blackColor]] forState:UIControlStateNormal];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(pausePlayer:)
                                                      name:UIApplicationWillResignActiveNotification

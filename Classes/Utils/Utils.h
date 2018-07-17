@@ -64,6 +64,12 @@ typedef enum {
 
 @end
 
+@interface UIImage (systemIcons)
+
++ (UIImage *)imageFromSystemBarButton:(UIBarButtonSystemItem)systemItem :(UIColor *) color;
+
+@end
+
 @interface UIImage (squareCrop)
 
 - (UIImage *)squareCrop;

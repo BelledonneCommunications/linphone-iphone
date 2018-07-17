@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UISoundRecordView">
             <connections>
                 <outlet property="cancelButton" destination="7jJ-bD-8ll" id="hoH-xg-e5C"/>
+                <outlet property="cancelButton2" destination="eqH-gG-h8h" id="Iq6-2F-s4N"/>
                 <outlet property="playerView" destination="X79-f8-8CY" id="U8P-ht-W6Z"/>
                 <outlet property="recordButton" destination="1GF-Qk-32J" id="Fnz-Lw-xgm"/>
                 <outlet property="recordLength" destination="IXq-ku-zdC" id="CsN-BX-387"/>
@@ -31,6 +32,7 @@
                 </imageView>
                 <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1GF-Qk-32J">
                     <rect key="frame" x="10" y="17" width="49" height="30"/>
+                    <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Record"/>
                     <connections>
                         <action selector="onRecord:" destination="-1" eventType="touchUpInside" id="cuu-7z-cLO"/>
@@ -38,6 +40,7 @@
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Yn-Sa-1KG">
                     <rect key="frame" x="69" y="17" width="32" height="30"/>
+                    <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Stop"/>
                     <connections>
                         <action selector="onStop:" destination="-1" eventType="touchUpInside" id="ijr-my-wUT"/>
@@ -51,6 +54,7 @@
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eqH-gG-h8h">
                     <rect key="frame" x="323" y="17" width="48" height="30"/>
+                    <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Cancel"/>
                     <connections>
                         <action selector="onCancel:" destination="-1" eventType="touchUpInside" id="Y4S-Jj-u4M"/>
@@ -83,20 +87,30 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="65"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="X79-f8-8CY">
-                    <rect key="frame" x="0.0" y="0.0" width="317" height="65"/>
+                    <rect key="frame" x="0.0" y="0.0" width="335" height="65"/>
                 </view>
-                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="K3O-60-i5v">
-                    <rect key="frame" x="317" y="2" width="48" height="60"/>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="K3O-60-i5v">
+                    <rect key="frame" x="335" y="-0.5" width="30" height="65"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vi3-RH-kSb">
-                            <rect key="frame" x="0.0" y="0.0" width="48" height="30"/>
-                            <state key="normal" title="Send"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vi3-RH-kSb">
+                            <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="30" id="Fxl-OX-Xcp"/>
+                                <constraint firstAttribute="height" constant="30" id="vON-CU-gkU"/>
+                            </constraints>
+                            <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <state key="normal" image="chat_send_default.png"/>
                             <connections>
                                 <action selector="onSend:" destination="-1" eventType="touchUpInside" id="v0U-ai-sdZ"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7jJ-bD-8ll">
-                            <rect key="frame" x="0.0" y="30" width="48" height="30"/>
+                            <rect key="frame" x="0.0" y="35" width="30" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="30" id="Q5w-do-CuA"/>
+                                <constraint firstAttribute="height" constant="30" id="Wf2-II-RQf"/>
+                            </constraints>
+                            <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Cancel"/>
                             <connections>
                                 <action selector="onCancel:" destination="-1" eventType="touchUpInside" id="Ia1-TP-5a1"/>
@@ -120,18 +134,11 @@
                 <constraint firstItem="K3O-60-i5v" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="oUH-qK-Swb"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <connections>
-                <outletCollection property="gestureRecognizers" destination="HDe-Hb-JWa" appends="YES" id="jrT-DQ-tyv"/>
-            </connections>
             <point key="canvasLocation" x="-2.5" y="-33.5"/>
         </view>
-        <tapGestureRecognizer id="HDe-Hb-JWa">
-            <connections>
-                <action selector="onTapBar:" destination="-1" id="2cx-Iy-a4z"/>
-            </connections>
-        </tapGestureRecognizer>
     </objects>
     <resources>
+        <image name="chat_send_default.png" width="41" height="41"/>
         <image name="color_F.png" width="2" height="2"/>
     </resources>
 </document>
