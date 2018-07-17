@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIChatBubbleSoundCell.h"
 
 @interface UILinphoneAudioPlayer : UIViewController
 @property (weak, nonatomic) IBOutlet UIButton *playButton;
@@ -14,14 +15,11 @@
 @property (weak, nonatomic) IBOutlet UIProgressView *timeProgress;
 
 + (id)audioPlayerWithFilePath:(NSString *)filePath;
-+ (void)registerPlayer:(UILinphoneAudioPlayer *)aPlayer forMessage:(LinphoneChatMessage *)msg;
-+ (UILinphoneAudioPlayer *)playerForMessage:(LinphoneChatMessage *)msg;
-+ (void)closePlayers;
 - (void)close;
 - (BOOL)isOpened;
 - (void)open;
 - (void)pause;
-
+- (void)setFile:(NSString *)fileName;
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
 - (IBAction)onTapTimeBar:(UITapGestureRecognizer *)sender;

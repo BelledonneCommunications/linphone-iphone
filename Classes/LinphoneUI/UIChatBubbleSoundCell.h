@@ -14,7 +14,7 @@
 @property (weak, nonatomic) IBOutlet UIView *content;
 
 - (IBAction)onLoad:(id)sender;
-- (void)setAudioPlayer:(UILinphoneAudioPlayer *)player;
 - (IBAction)onResend:(id)sender;
++ (void)closeAudioPlayer;
 
 @end

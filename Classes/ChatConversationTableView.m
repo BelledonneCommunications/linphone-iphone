@@ -45,19 +45,7 @@
 }
 
 - (void)clearAudioPlayers {
-    [UILinphoneAudioPlayer closePlayers];
-}
-
-- (void)recreateAudioPlayers {
-    for (UITableViewCell *cell in self.tableView.visibleCells) {
-        if (![cell isMemberOfClass:UIChatBubbleSoundCell.class])
-            continue;
-        UIChatBubbleSoundCell *c = (UIChatBubbleSoundCell *)cell;
-        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:c.message];
-        NSString *filePath = [LinphoneManager documentFile:localFile];
-        UILinphoneAudioPlayer *player = [UILinphoneAudioPlayer audioPlayerWithFilePath:filePath];
-        [c setAudioPlayer:player];
-    }
+    [UIChatBubbleSoundCell closeAudioPlayer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

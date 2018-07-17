@@ -134,10 +134,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                            selector:@selector(clearAudioPlayers:)
                                                name:UIApplicationWillResignActiveNotification
                                              object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(recreateAudioPlayers:)
-                                               name:UIApplicationDidBecomeActiveNotification
-                                             object:nil];
 }
 
 - (void)changeToMessageView {
@@ -312,10 +308,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdateEvent:(NSNotification *)notif {
 	[_backToCallButton update];
-}
-
-- (void)recreateAudioPlayers:(NSNotification *)notif {
-    [_tableController recreateAudioPlayers];
 }
 
 - (void)clearAudioPlayers:(NSNotification *)notification {

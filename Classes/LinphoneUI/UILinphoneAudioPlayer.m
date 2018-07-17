@@ -17,33 +17,9 @@
 }
 
 #pragma mark - Factory
-static NSMutableDictionary *players;
-
-+ (void)registerPlayer:(UILinphoneAudioPlayer *)aPlayer forMessage:(LinphoneChatMessage *)msg {
-    @synchronized(self) {
-        if (!players)
-            players = [NSMutableDictionary dictionary];
-        [players setObject:aPlayer forKey:[NSValue valueWithPointer:msg]];
-    }
-}
-
-+ (UILinphoneAudioPlayer *)playerForMessage:(LinphoneChatMessage *)msg {
-    @synchronized(self) {
-        return [players objectForKey:[NSValue valueWithPointer:msg]];
-    }
-}
 
 + (id)audioPlayerWithFilePath:(NSString *)filePath {
     return [[self alloc] initWithFilePath:filePath];
-}
-
-+ (void)closePlayers {
-    @synchronized(self) {
-        for (UILinphoneAudioPlayer *p in [players allValues]) {
-            [p close];
-        }
-        [players removeAllObjects];
-    }
 }
 
 #pragma mark - Life cycle
@@ -76,10 +52,18 @@ static NSMutableDictionary *players;
     linphone_player_open(player, file.UTF8String);
     duration = linphone_player_get_duration(player);
     [self updateTimeLabel:0];
+    _timeProgress.progress = 0;
+    eofReached = NO;
+    [_playButton setTitle:@"Play" forState:UIControlStateNormal];
 }
 
 - (BOOL)isOpened {
     return player && linphone_player_get_state(player) != LinphonePlayerClosed;
+}
+
+- (void)setFile:(NSString *)fileName {
+    linphone_player_close(player);
+    file = fileName;
 }
 
 #pragma mark - Callbacks

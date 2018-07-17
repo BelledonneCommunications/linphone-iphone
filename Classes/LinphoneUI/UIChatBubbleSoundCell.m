@@ -16,7 +16,52 @@
 
 @implementation UIChatBubbleSoundCell {
     ChatConversationTableView *chatTableView;
-    UILinphoneAudioPlayer *audioPlayer;
+}
+
+static UILinphoneAudioPlayer *player;
+static LinphoneChatMessage *currentMessage;
+
++ (void)acquirePlayerForMessage:(LinphoneChatMessage *)msg {
+    @synchronized(self) {
+        if (!player)
+            player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[LinphoneManager documentFile:[LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:msg]]];
+        else
+            [player setFile:[LinphoneManager documentFile:[LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:msg]]];
+        currentMessage = msg;
+    }
+}
+
++ (UILinphoneAudioPlayer *)player {
+    @synchronized(self) {
+        return player;
+    }
+}
+
++ (LinphoneChatMessage *)currentMessage {
+    @synchronized(self) {
+        return currentMessage;
+    }
+}
+
++ (void)resetBubblesUI {
+    ChatConversationTableView *chatTableView = VIEW(ChatConversationView).tableController;
+    for (UITableViewCell *c in chatTableView.tableView.visibleCells) {
+        if (![c isMemberOfClass:self.class])
+            continue;
+        UIChatBubbleSoundCell *cell = (UIChatBubbleSoundCell *)c;
+        if (cell.message != [self currentMessage])
+            cell.loadButton.hidden = NO;
+    }
+}
+
++ (void)closeAudioPlayer {
+    @synchronized(self) {
+        if (player)
+            [player close];
+        player = nil;
+        currentMessage = NULL;
+    }
+    [self resetBubblesUI];
 }
 
 #pragma mark - Lifecycle Functions
@@ -40,40 +85,20 @@
     return self;
 }
 
-#pragma mark - Getters & setters
-
-- (void)setAudioPlayer:(UILinphoneAudioPlayer *)player {
-    if (!player)
-        return;
-    if (audioPlayer)
-        [audioPlayer.view removeFromSuperview];
-    audioPlayer = player;
-    [UILinphoneAudioPlayer registerPlayer:player forMessage:self.message];
-    audioPlayer.view.hidden = YES;
-    _loadButton.hidden = NO;
-    [_content addSubview:audioPlayer.view];
-    [self bringSubviewToFront:audioPlayer.view];
-    audioPlayer.view.frame = _playerView.frame;
-    audioPlayer.view.bounds = _playerView.bounds;
-    _playerView.hidden = YES;
-}
-
 #pragma mark - Event handlers
 
 - (IBAction)onLoad:(id)sender {
-    if (!audioPlayer || audioPlayer != [UILinphoneAudioPlayer playerForMessage:self.message]) {
-        [audioPlayer.view removeFromSuperview];
-        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
-        NSString *filePath = [LinphoneManager documentFile:localFile];
-        audioPlayer = [UILinphoneAudioPlayer audioPlayerWithFilePath:filePath];
-        [UILinphoneAudioPlayer registerPlayer:audioPlayer forMessage:self.message];
-        [_content addSubview:audioPlayer.view];
-        audioPlayer.view.frame = _playerView.frame;
-        audioPlayer.view.bounds = _playerView.bounds;
-    }
+    [self.class acquirePlayerForMessage:self.message];
+    [self.class resetBubblesUI];
+    UILinphoneAudioPlayer *p = [self.class player];
+    [p.view removeFromSuperview];
+    [_content addSubview:p.view];
+    [self bringSubviewToFront:p.view];
+    p.view.frame = _playerView.frame;
+    p.view.bounds = _playerView.bounds;
     _loadButton.hidden = YES;
-    audioPlayer.view.hidden = NO;
-    [audioPlayer open];
+    p.view.hidden = NO;
+    [p open];
 }
 
 - (IBAction)onResend:(id)sender {
@@ -91,20 +116,24 @@
     LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
     NSLog(@"File name : %s", linphone_content_get_name(content));
     NSLog(@"Type : %s", linphone_content_get_type(content));
-    if (audioPlayer)
-        [audioPlayer.view removeFromSuperview];
-    audioPlayer = [UILinphoneAudioPlayer playerForMessage:self.message];
-    if (audioPlayer && [audioPlayer isOpened]) {
-        audioPlayer.view.hidden = NO;
+    UILinphoneAudioPlayer *p = [self.class player];
+    if ([self.class currentMessage] == self.message) {
+        [p.view removeFromSuperview];
+        [_content addSubview:p.view];
+        [self bringSubviewToFront:p.view];
+        p.view.frame = _playerView.frame;
+        p.view.bounds = _playerView.bounds;
         _loadButton.hidden = YES;
+        p.view.hidden = NO;
     } else {
-        audioPlayer.view.hidden = YES;
         _loadButton.hidden = NO;
+        // self could be the same cell instance than the one used
+        // for the current active player
+        // so the player view needs to be hidden
+        // since it shouldn't be displayed here
+        if ([_content.subviews containsObject:p.view])
+            p.view.hidden = YES;
     }
-    [_content addSubview:audioPlayer.view];
-    [self bringSubviewToFront:audioPlayer.view];
-    audioPlayer.view.frame = _playerView.frame;
-    audioPlayer.view.bounds = _playerView.bounds;
     _playerView.hidden = YES;
 }
 
