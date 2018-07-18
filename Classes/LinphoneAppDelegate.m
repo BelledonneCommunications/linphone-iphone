@@ -31,6 +31,8 @@
 #include "LinphoneManager.h"
 #include "linphone/linphonecore.h"
 
+#import <Intents/Intents.h>
+
 @implementation LinphoneAppDelegate
 
 @synthesize configURL;
@@ -290,6 +292,8 @@
     //output what state the app is in. This will be used to see when the app is started in the background
     LOGI(@"app launched with state : %li", (long)application.applicationState);
     LOGI(@"FINISH LAUNCHING WITH OPTION : %@", launchOptions.description);
+    
+    [INPreferences requestSiriAuthorization:^(INSiriAuthorizationStatus status){}];
     
     UIApplicationShortcutItem *shortcutItem = [launchOptions objectForKey:@"UIApplicationLaunchOptionsShortcutItemKey"];
     if (shortcutItem) {

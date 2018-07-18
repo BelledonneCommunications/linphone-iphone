@@ -96,6 +96,8 @@
 	<string>Add tranfered files to your library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Your contacts information will be sent to Siri</string>
 	<key>NSVoIPUsageDescription</key>
 	<string>Make audio/video calls</string>
 	<key>UIApplicationExitsOnSuspend</key>

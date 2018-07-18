@@ -76,6 +76,9 @@
 		5E32944D20E4C29700BBA896 /* chat_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AE1E8266CC0037A187 /* chat_read.png */; };
 		5E3391EC20E387E000F66299 /* color_A.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEC701D3CD5570014B822 /* color_A.png */; };
 		5E3391F320E387E700F66299 /* color_D.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEC721D3CD5570014B822 /* color_D.png */; };
+		5E33AF2820FF68910074AA3E /* IntentHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E33AF2720FF68910074AA3E /* IntentHandler.m */; };
+		5E33AF2C20FF68910074AA3E /* siriExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E33AF2420FF68900074AA3E /* siriExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5E33AF4820FF775F0074AA3E /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E33AF4120FF775E0074AA3E /* Intents.framework */; };
 		5E58962420DCE5700030868C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		5E58962620DCE5700030868C /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
 		5E58962A20DCE5700030868C /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E58962920DCE5700030868C /* NotificationViewController.m */; };
@@ -848,6 +851,13 @@
 			remoteGlobalIDString = 5E3128FF20D7A37E00CF3AAE;
 			remoteInfo = latestChatroomsWidget;
 		};
+		5E33AF2A20FF68910074AA3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5E33AF2320FF68900074AA3E;
+			remoteInfo = siriExtension;
+		};
 		5E58962F20DCE5710030868C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -945,6 +955,7 @@
 				5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */,
 				5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */,
 				5E58963120DCE5710030868C /* richNotifications.appex in Embed App Extensions */,
+				5E33AF2C20FF68910074AA3E /* siriExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1094,6 +1105,11 @@
 		5E31290420D7A37E00CF3AAE /* TodayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TodayViewController.m; sourceTree = "<group>"; };
 		5E31290720D7A37E00CF3AAE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		5E31290920D7A37E00CF3AAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5E33AF2420FF68900074AA3E /* siriExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = siriExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E33AF2620FF68910074AA3E /* IntentHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IntentHandler.h; sourceTree = "<group>"; };
+		5E33AF2720FF68910074AA3E /* IntentHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IntentHandler.m; sourceTree = "<group>"; };
+		5E33AF2920FF68910074AA3E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5E33AF4120FF775E0074AA3E /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		5E58962320DCE5700030868C /* richNotifications.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = richNotifications.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E58962520DCE5700030868C /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		5E58962820DCE5700030868C /* NotificationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationViewController.h; sourceTree = "<group>"; };
@@ -2036,6 +2052,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E33AF4820FF775F0074AA3E /* Intents.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
 				24E1C7C01F9A235600D3F981 /* Contacts.framework in Frameworks */,
@@ -2089,6 +2106,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				5E31290120D7A37E00CF3AAE /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5E33AF2120FF68900074AA3E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2317,6 +2341,7 @@
 				5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */,
 				5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */,
 				5E58962320DCE5700030868C /* richNotifications.appex */,
+				5E33AF2420FF68900074AA3E /* siriExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2438,6 +2463,7 @@
 				5EEE8F9C20C80C23006E4176 /* latestCallsWidget */,
 				5E31290220D7A37E00CF3AAE /* latestChatroomsWidget */,
 				5E58962720DCE5700030868C /* richNotifications */,
+				5E33AF2520FF68910074AA3E /* siriExtension */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */,
@@ -2464,6 +2490,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5E33AF4120FF775E0074AA3E /* Intents.framework */,
 				61F1996E20C6B1D5006B069A /* AVKit.framework */,
 				8C435FA520BC34DA004CCA25 /* belr.framework */,
 				8C435F8B20BBF862004CCA25 /* belcard.framework */,
@@ -2544,6 +2571,16 @@
 				5E31290920D7A37E00CF3AAE /* Info.plist */,
 			);
 			path = latestChatroomsWidget;
+			sourceTree = "<group>";
+		};
+		5E33AF2520FF68910074AA3E /* siriExtension */ = {
+			isa = PBXGroup;
+			children = (
+				5E33AF2620FF68910074AA3E /* IntentHandler.h */,
+				5E33AF2720FF68910074AA3E /* IntentHandler.m */,
+				5E33AF2920FF68910074AA3E /* Info.plist */,
+			);
+			path = siriExtension;
 			sourceTree = "<group>";
 		};
 		5E58962720DCE5700030868C /* richNotifications */ = {
@@ -3378,6 +3415,7 @@
 				5EEE8FA520C80C23006E4176 /* PBXTargetDependency */,
 				5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */,
 				5E58963020DCE5710030868C /* PBXTargetDependency */,
+				5E33AF2B20FF68910074AA3E /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -3399,6 +3437,23 @@
 			name = latestChatroomsWidget;
 			productName = latestChatroomsWidget;
 			productReference = 5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		5E33AF2320FF68900074AA3E /* siriExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E33AF2D20FF68910074AA3E /* Build configuration list for PBXNativeTarget "siriExtension" */;
+			buildPhases = (
+				5E33AF2020FF68900074AA3E /* Sources */,
+				5E33AF2120FF68900074AA3E /* Frameworks */,
+				5E33AF2220FF68900074AA3E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = siriExtension;
+			productName = siriExtension;
+			productReference = 5E33AF2420FF68900074AA3E /* siriExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		5E58962220DCE5700030868C /* richNotifications */ = {
@@ -3531,6 +3586,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.Siri = {
+								enabled = 1;
+							};
 							com.apple.iCloud = {
 								enabled = 0;
 							};
@@ -3545,6 +3603,11 @@
 								enabled = 1;
 							};
 						};
+					};
+					5E33AF2320FF68900074AA3E = {
+						CreatedOnToolsVersion = 9.4;
+						DevelopmentTeam = Z2V957B3D6;
+						ProvisioningStyle = Automatic;
 					};
 					5E58962220DCE5700030868C = {
 						CreatedOnToolsVersion = 9.4;
@@ -3626,6 +3689,7 @@
 				5EEE8F9920C80C23006E4176 /* latestCallsWidget */,
 				5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */,
 				5E58962220DCE5700030868C /* richNotifications */,
+				5E33AF2320FF68900074AA3E /* siriExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -4226,6 +4290,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5E33AF2220FF68900074AA3E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E58962120DCE5700030868C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4488,6 +4559,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5E33AF2020FF68900074AA3E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E33AF2820FF68910074AA3E /* IntentHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5E58961F20DCE5700030868C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4555,6 +4634,11 @@
 			isa = PBXTargetDependency;
 			target = 5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */;
 			targetProxy = 5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */;
+		};
+		5E33AF2B20FF68910074AA3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5E33AF2320FF68900074AA3E /* siriExtension */;
+			targetProxy = 5E33AF2A20FF68910074AA3E /* PBXContainerItemProxy */;
 		};
 		5E58963020DCE5710030868C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5673,6 +5757,178 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = DistributionAdhoc;
+		};
+		5E33AF2E20FF68910074AA3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = siriExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.siriExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5E33AF2F20FF68910074AA3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = siriExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.siriExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5E33AF3020FF68910074AA3E /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = siriExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.siriExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribution;
+		};
+		5E33AF3120FF68910074AA3E /* DistributionAdhoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = siriExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.siriExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6854,6 +7110,17 @@
 				5E31290F20D7A37E00CF3AAE /* Release */,
 				5E31291020D7A37E00CF3AAE /* Distribution */,
 				5E31291120D7A37E00CF3AAE /* DistributionAdhoc */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5E33AF2D20FF68910074AA3E /* Build configuration list for PBXNativeTarget "siriExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E33AF2E20FF68910074AA3E /* Debug */,
+				5E33AF2F20FF68910074AA3E /* Release */,
+				5E33AF3020FF68910074AA3E /* Distribution */,
+				5E33AF3120FF68910074AA3E /* DistributionAdhoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
