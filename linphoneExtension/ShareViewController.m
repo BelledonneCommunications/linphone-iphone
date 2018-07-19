@@ -91,23 +91,22 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
                 NSLog(@"NSExtensionItem Error, provider = %@", provider);
                 [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
             }
+            
+            UIResponder *responder = self;
+            while (responder != nil) {
+                if ([responder respondsToSelector:@selector(openURL:)]) {
+                    [responder performSelector:@selector(openURL:)
+                                    withObject:[NSURL URLWithString:@"message-linphone://" ]];
+                    [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+                    break;
+                }
+                responder = [responder nextResponder];
+            }
+            [defaults synchronize];
         } else {
             //share text
-            NSDictionary *dict = @{@"url" : self.contentText};
-            [defaults setObject:dict forKey:@"url"];
+            NSLog(@"Unsupported provider = %@", provider);
         }
-       
-        UIResponder *responder = self;
-        while (responder != nil) {
-            if ([responder respondsToSelector:@selector(openURL:)]) {
-                [responder performSelector:@selector(openURL:)
-                                withObject:[NSURL URLWithString:@"message-linphone://" ]];
-                [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
-                break;
-            }
-            responder = [responder nextResponder];
-        }
-        [defaults synchronize];
     }];
 }
 
