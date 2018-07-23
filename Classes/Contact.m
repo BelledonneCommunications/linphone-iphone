@@ -28,6 +28,8 @@
   _phones = [[NSMutableArray alloc] init];
   _sipAddresses = [[NSMutableArray alloc] init];
   _emails = [[NSMutableArray alloc] init];
+    BOOL updatedSocialProfiles = NO;
+    NSMutableArray *socialProfiles = [_person.socialProfiles mutableCopy];
   if (_person) {
 	  _identifier = _person.identifier;
 	  _firstName = _person.givenName;
@@ -42,6 +44,24 @@
 				  if ([FastAddressBook isSipAddress:sipAddr]) {
 					  NSString *username =  sipAddr.value.username;
 					[_sipAddresses addObject:username];
+                      if ([FastAddressBook isSipURIValid:username]) {
+                          NSString *userIdentifier = [NSString stringWithUTF8String:linphone_address_as_string_uri_only([LinphoneUtils normalizeSipOrPhoneAddress:username])];
+                          CNSocialProfile *socialProfile = [[CNSocialProfile alloc] initWithUrlString:nil
+                                                                                             username:nil
+                                                                                       userIdentifier:userIdentifier
+                                                                                              service:@"SIP"];
+                          CNLabeledValue<CNSocialProfile *> *socialProfileValue = [[CNLabeledValue alloc] initWithLabel:NULL value:socialProfile];
+                          BOOL needToAddSocialProfile = YES;
+                          for (CNLabeledValue<CNSocialProfile *> *v in _person.socialProfiles) {
+                              if (![v.value.userIdentifier isEqualToString:userIdentifier])
+                                  continue;
+                              needToAddSocialProfile = NO;
+                          }
+                          if (needToAddSocialProfile) {
+                              [socialProfiles addObject:socialProfileValue];
+                              updatedSocialProfiles = YES;
+                          }
+                      }
 				  }
 			  }
 		  }
@@ -82,6 +102,10 @@
 	  LOGE(@"Contact cannot be initialized");
 	  return nil;
   }
+    if (updatedSocialProfiles) {
+        [_person setValue:socialProfiles forKey:CNContactSocialProfilesKey];
+        [LinphoneManager.instance.fastAddressBook saveCNContact:_person contact:self];
+    }
 
  /* LOGI(@"Contact %@ %@ initialized with %d phones, %d sip, %d emails",
        self.firstName ?: @"", self.lastName ?: @"", self.phones.count,
