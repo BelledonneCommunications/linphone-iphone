@@ -129,6 +129,11 @@
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
 	LOGD(@"CallKit : Starting Call");
+    CXCallUpdate *update = [[CXCallUpdate alloc] init];
+    update.remoteHandle = action.handle;
+    update.localizedCallerName = action.contactIdentifier;
+    
+    [self.provider reportCallWithUUID:action.callUUID updated:update];
 	// To restart Audio Unit
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];

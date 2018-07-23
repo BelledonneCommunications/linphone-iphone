@@ -161,7 +161,8 @@
 									 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
 									 CNContactPostalAddressesKey, CNContactIdentifierKey,
 									 CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
-									 CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey
+                                     CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey,
+                                     CNContactSocialProfilesKey
 									 ];
 			CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
 
@@ -315,7 +316,8 @@
     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
     CNContactIdentifierKey, CNContactInstantMessageAddressesKey,
-    CNInstantMessageAddressUsernameKey, CNContactImageDataKey
+    CNInstantMessageAddressUsernameKey, CNContactImageDataKey,
+    CNContactSocialProfilesKey
   ];
   CNMutableContact *mCNContact =
       [[store unifiedContactWithIdentifier:acontact.identifier
@@ -334,7 +336,8 @@
 							 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
 							 CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
 							 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-							 CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey
+                             CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+                             CNContactSocialProfilesKey
 							 ];
 	CNMutableContact *mCNContact =
 	[[store unifiedContactWithIdentifier:contact.identifier
@@ -403,7 +406,8 @@
     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
     CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-    CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey
+    CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+    CNContactSocialProfilesKey
   ];
   CNMutableContact *mCNContact =
       [[store unifiedContactWithIdentifier:contact.identifier
@@ -419,6 +423,7 @@
 	  [mCNContact setEmailAddresses:contact.person.emailAddresses];
 	  [mCNContact
 		  setInstantMessageAddresses:contact.person.instantMessageAddresses];
+        [mCNContact setSocialProfiles:contact.person.socialProfiles];
 	  [mCNContact setImageData:UIImageJPEGRepresentation(contact.avatar, 0.9f)];
 
 	  [saveRequest updateContact:mCNContact];

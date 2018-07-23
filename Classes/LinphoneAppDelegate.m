@@ -53,6 +53,17 @@
 
 #pragma mark -
 
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
+    INIntent *i = userActivity.interaction.intent;
+    if ([i isMemberOfClass:INStartAudioCallIntent.class]) {
+        INStartAudioCallIntent *intent = (INStartAudioCallIntent *)i;
+        INPerson *person = intent.contacts[0];
+        [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
+        return YES;
+    }
+    return NO;
+}
+
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[LinphoneManager.instance enterBackgroundMode];

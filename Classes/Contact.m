@@ -208,15 +208,24 @@
 	}
 
 	NSString *normSip = [sip hasPrefix:@" "] ? [sip substringFromIndex:1] : sip;
-	CNInstantMessageAddress *cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"];
-	CNLabeledValue *sipAddress = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
-	NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
-	if ((index + 1) > [_person.instantMessageAddresses count])
+    CNInstantMessageAddress *cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"];
+    CNLabeledValue *sipAddress = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
+    NSString *normalizedSip = ([FastAddressBook isSipURIValid:normSip])?[NSString stringWithUTF8String:linphone_address_as_string_uri_only([LinphoneUtils normalizeSipOrPhoneAddress:normSip])]:@"";
+    CNSocialProfile *cNSipMsgAddr2 = [[CNSocialProfile alloc] initWithUrlString:nil username:normalizedSip userIdentifier:normalizedSip service:@"SIP"];
+    CNLabeledValue *sipAddress2 = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr2];
+    NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
+    NSMutableArray<CNLabeledValue<CNSocialProfile *> *> *tmpSipAddresses2 = [_person.socialProfiles mutableCopy];
+    if ((index + 1) > [_person.instantMessageAddresses count])
 		[tmpSipAddresses addObject:sipAddress];
-	else
+    else
 		[tmpSipAddresses replaceObjectAtIndex:index withObject:sipAddress];
+    if (index + 1 > _person.socialProfiles.count)
+        [tmpSipAddresses2 addObject:sipAddress2];
+    else
+        [tmpSipAddresses2 replaceObjectAtIndex:index withObject:sipAddress2];
 
 	[_person setValue:tmpSipAddresses forKey:CNContactInstantMessageAddressesKey];
+    [_person setValue:tmpSipAddresses2 forKey:CNContactSocialProfilesKey];
 	_sipAddresses[index] = normSip;
 	return TRUE;
 }
@@ -266,12 +275,19 @@
 	if (![sip isEqualToString:@" "]) {
 		if (_person) {
 			normSip = [sip containsString:@"@"] ? [sip componentsSeparatedByString:@"@"][0] : sip;
-			CNInstantMessageAddress *cNSipMsgAddr;
-			cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"]; //service:[normSip componentsSeparatedByString:@"@"][1]];
-			CNLabeledValue *sipAddress = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
-			NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
-           	[tmpSipAddresses addObject:sipAddress];
-           	[_person setValue:tmpSipAddresses forKey:CNContactInstantMessageAddressesKey];
+            CNInstantMessageAddress *cNSipMsgAddr;
+            cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"]; //service:[normSip componentsSeparatedByString:@"@"][1]];
+            CNLabeledValue *sipAddress = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
+            NSString *normalizedSip = [NSString stringWithUTF8String:linphone_address_as_string_uri_only([LinphoneUtils normalizeSipOrPhoneAddress:normSip])];
+            CNSocialProfile *cNSipMsgAddr2;
+            cNSipMsgAddr2 = [[CNSocialProfile alloc] initWithUrlString:nil username:normalizedSip userIdentifier:normalizedSip service:@"SIP"]; //service:[normSip componentsSeparatedByString:@"@"][1]];
+            CNLabeledValue *sipAddress2 = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr2];
+            NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
+            NSMutableArray<CNLabeledValue<CNSocialProfile *> *> *tmpSipAddresses2 = [_person.socialProfiles mutableCopy];
+            [tmpSipAddresses addObject:sipAddress];
+            [tmpSipAddresses2 addObject:sipAddress2];
+            [_person setValue:tmpSipAddresses forKey:CNContactInstantMessageAddressesKey];
+            [_person setValue:tmpSipAddresses2 forKey:CNContactSocialProfilesKey];
 			ret = TRUE;
 		} else {
 			LinphoneAddress *addr = linphone_core_interpret_url(LC, sip.UTF8String) ?: linphone_address_new(sip.UTF8String);
@@ -350,10 +366,13 @@
 - (BOOL)removeSipAddressAtIndex:(NSInteger)index {
 	BOOL ret = FALSE;
 	if (_person) {
-		NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>*tmpSipAddress = [_person.instantMessageAddresses mutableCopy];
+        NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>*tmpSipAddress = [_person.instantMessageAddresses mutableCopy];
+        NSMutableArray<CNLabeledValue<CNSocialProfile *> *>*tmpSipAddress2 = [_person.socialProfiles mutableCopy];
 		if ([tmpSipAddress count] > index) {
-			[tmpSipAddress removeObjectAtIndex:index];
-			[_person setValue:tmpSipAddress forKey:CNContactInstantMessageAddressesKey];
+            [tmpSipAddress removeObjectAtIndex:index];
+            [_person setValue:tmpSipAddress forKey:CNContactInstantMessageAddressesKey];
+            [tmpSipAddress2 removeObjectAtIndex:index];
+            [_person setValue:tmpSipAddress2 forKey:CNContactSocialProfilesKey];
 		}
 		ret = TRUE;
 	} else {

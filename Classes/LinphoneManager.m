@@ -611,7 +611,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				BOOL video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
 							  linphone_video_activation_policy_get_automatically_accept(linphone_core_get_video_activation_policy(LC)) &&
 							  linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
-				[LinphoneManager.instance.providerDelegate reportIncomingCall:call withUUID:uuid handle:address video:video];
+				[LinphoneManager.instance.providerDelegate reportIncomingCall:call withUUID:uuid handle:[FastAddressBook getContactWithAddress:addr] ? [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)] : address video:video];
 #else
 				[PhoneMainView.instance displayIncomingCall:call];
 #endif
@@ -780,8 +780,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                     [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid forKey:callKit_callIdNS];
 					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callIdNS forKey:callKit_uuid];
                     NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(callKit_call)];
-					CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
+                    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_call_get_remote_address(callKit_call))] ?: address];
 					CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:callKit_uuid handle:handle];
+                    [act setContactIdentifier:address];
                     CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
                     [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr completion:^(NSError *err){}];
 					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid startedConnectingAtDate:nil];
@@ -2688,8 +2689,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[LinphoneManager.instance.providerDelegate.calls setObject:@"" forKey:uuid];
 		LinphoneManager.instance.providerDelegate.pendingAddr = linphone_address_clone(iaddr);
 		NSString *address = [FastAddressBook displayNameForAddress:iaddr];
-		CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
+        CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(iaddr)] ?: address];
 		CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
+        [act setContactIdentifier:address];
 		CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
 		[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
 																	  completion:^(NSError *err){

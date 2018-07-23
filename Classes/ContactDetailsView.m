@@ -527,7 +527,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 							 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
 							 CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
 							 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-							 CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey
+							 CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+                             CNContactSocialProfilesKey
 							 ];
 	CNMutableContact *mCNContact =
 	[[store unifiedContactWithIdentifier:contactToCheck.identifier keysToFetch:keysToFetch error:nil] mutableCopy];
