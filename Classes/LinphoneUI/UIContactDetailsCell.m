@@ -61,13 +61,13 @@
 
 	_linphoneImage.hidden = TRUE;
 	if (contact) {
-		self.linphoneImage.hidden =
+		self.inviteButton.hidden = !(self.linphoneImage.hidden =
 			!((contact.friend &&
 			   linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(
 				   contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) ||
 			  (!linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC),
 													  _addressLabel.text.UTF8String) &&
-			   [FastAddressBook isSipURIValid:_addressLabel.text]));
+			   [FastAddressBook isSipURIValid:_addressLabel.text])));
 	}
 
 	if (addr) {
@@ -145,6 +145,19 @@
 	[tableView.dataSource tableView:tableView
 				 commitEditingStyle:UITableViewCellEditingStyleDelete
 				  forRowAtIndexPath:indexPath];
+}
+
+#pragma mark - SMS invite
+
+- (IBAction)onSMSInviteClick:(id)sender {
+    MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
+    if([MFMessageComposeViewController canSendText]) {
+        controller.body = NSLocalizedString(@"Hello! Join me on Linphone! You can download it at: http://www.linphone.org/technical-corner/linphone/downloads",nil);
+        controller.recipients = [NSArray arrayWithObjects:[self.addressLabel text], nil];
+        
+        controller.messageComposeDelegate = PhoneMainView.instance;
+        [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+    }
 }
 
 @end

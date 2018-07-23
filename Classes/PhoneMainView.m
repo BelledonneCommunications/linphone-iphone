@@ -977,4 +977,10 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 	}
 }
 
+#pragma mark - SMS invite callback
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+    [controller dismissModalViewControllerAnimated:YES];
+}
+
 @end
