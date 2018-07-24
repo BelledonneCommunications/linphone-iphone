@@ -58,7 +58,27 @@
     if ([i isMemberOfClass:INStartAudioCallIntent.class]) {
         INStartAudioCallIntent *intent = (INStartAudioCallIntent *)i;
         INPerson *person = intent.contacts[0];
-        [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
+        if (person.personHandle.type == CXHandleTypeGeneric)
+            [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
+        else {
+            CNContactStore *store = [[CNContactStore alloc] init];
+            NSError *error;
+            NSArray *keysToFetch = @[
+                                     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+                                     CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+                                     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+                                     CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+                                     CNContactSocialProfilesKey
+                                     ];
+            CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
+                                                    keysToFetch:keysToFetch
+                                                          error:&error];
+            Contact *contact = [[Contact alloc] initWithCNContact:cn];
+            if (contact.sipAddresses.count > 0)
+                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]]];
+            else
+                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
+        }
         return YES;
     }
     return NO;
