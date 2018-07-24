@@ -96,11 +96,11 @@
                             <rect key="frame" x="342" y="51" width="25" height="25"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
-                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
-                            <rect key="frame" x="293" y="48" width="37" height="30"/>
+                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
+                            <rect key="frame" x="298" y="50" width="27" height="27"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Invite"/>
-                            <state key="normal" title="Invite"/>
+                            <state key="normal" image="add_field_default.png"/>
                             <connections>
                                 <action selector="onSMSInviteClick:" destination="-1" eventType="touchUpInside" id="E8o-h2-mml"/>
                             </connections>
@@ -115,6 +115,7 @@
         </view>
     </objects>
     <resources>
+        <image name="add_field_default.png" width="27" height="27"/>
         <image name="call_start_body_default.png" width="51" height="51"/>
         <image name="call_start_body_disabled.png" width="51" height="51"/>
         <image name="call_start_body_over.png" width="51" height="51"/>
