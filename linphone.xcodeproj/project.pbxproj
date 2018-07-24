@@ -5169,6 +5169,7 @@
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5271,6 +5272,7 @@
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5373,6 +5375,7 @@
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5475,6 +5478,7 @@
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;

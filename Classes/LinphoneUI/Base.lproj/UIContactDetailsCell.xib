@@ -97,9 +97,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
-                            <rect key="frame" x="288" y="48" width="46" height="30"/>
+                            <rect key="frame" x="293" y="48" width="37" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" title="Button"/>
+                            <accessibility key="accessibilityConfiguration" label="Invite"/>
+                            <state key="normal" title="Invite"/>
                             <connections>
                                 <action selector="onSMSInviteClick:" destination="-1" eventType="touchUpInside" id="E8o-h2-mml"/>
                             </connections>

@@ -61,13 +61,15 @@
 
 	_linphoneImage.hidden = TRUE;
 	if (contact) {
-		self.inviteButton.hidden = !(self.linphoneImage.hidden =
+		self.linphoneImage.hidden =
 			!((contact.friend &&
 			   linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(
 				   contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) ||
 			  (!linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC),
 													  _addressLabel.text.UTF8String) &&
-			   [FastAddressBook isSipURIValid:_addressLabel.text])));
+			   [FastAddressBook isSipURIValid:_addressLabel.text]));
+        ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
+        self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
 	}
 
 	if (addr) {
