@@ -225,6 +225,36 @@
 	}
 }
 
+- (NSInteger)indexInCNContactInstantAddressesForIndex:(NSInteger)index {
+    NSArray<CNLabeledValue<CNInstantMessageAddress *> *> *instantAddresses = _person.instantMessageAddresses;
+    NSInteger i = 0;
+    while (i <= index) {
+        CNLabeledValue<CNInstantMessageAddress *> *address = instantAddresses[i];
+        NSString *service = address.value.service;
+        if (!service || ![service isEqual:@"SIP"])
+            index++;
+        i++;
+        if (index >= instantAddresses.count)
+            break;
+    }
+    return index;
+}
+
+- (NSInteger)indexInCNContactSocialProfilesForIndex:(NSInteger)index {
+    NSArray<CNLabeledValue<CNSocialProfile *> *> *socialProfiles = _person.socialProfiles;
+    NSInteger i = 0;
+    while (i <= index) {
+        CNLabeledValue<CNSocialProfile *> *socialProfile = socialProfiles[i];
+        NSString *service = socialProfile.value.service;
+        if (!service || ![service isEqual:@"SIP"])
+            index++;
+        i++;
+        if (index >= socialProfiles.count)
+            break;
+    }
+    return index;
+}
+
 - (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index {
 	if (!_person || [sip isEqualToString:@" "]) {
 		LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping", __FUNCTION__);
@@ -239,14 +269,16 @@
     CNLabeledValue *sipAddress2 = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr2];
     NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
     NSMutableArray<CNLabeledValue<CNSocialProfile *> *> *tmpSipAddresses2 = [_person.socialProfiles mutableCopy];
-    if ((index + 1) > [_person.instantMessageAddresses count])
+    NSInteger newIndex = [self indexInCNContactInstantAddressesForIndex:index];
+    NSInteger newIndex2 = [self indexInCNContactSocialProfilesForIndex:index];
+    if ((newIndex + 1) > [_person.instantMessageAddresses count])
 		[tmpSipAddresses addObject:sipAddress];
     else
-		[tmpSipAddresses replaceObjectAtIndex:index withObject:sipAddress];
-    if (index + 1 > _person.socialProfiles.count)
+		[tmpSipAddresses replaceObjectAtIndex:newIndex withObject:sipAddress];
+    if (newIndex2 + 1 > _person.socialProfiles.count)
         [tmpSipAddresses2 addObject:sipAddress2];
     else
-        [tmpSipAddresses2 replaceObjectAtIndex:index withObject:sipAddress2];
+        [tmpSipAddresses2 replaceObjectAtIndex:newIndex2 withObject:sipAddress2];
 
 	[_person setValue:tmpSipAddresses forKey:CNContactInstantMessageAddressesKey];
     [_person setValue:tmpSipAddresses2 forKey:CNContactSocialProfilesKey];
@@ -392,10 +424,14 @@
 	if (_person) {
         NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>*tmpSipAddress = [_person.instantMessageAddresses mutableCopy];
         NSMutableArray<CNLabeledValue<CNSocialProfile *> *>*tmpSipAddress2 = [_person.socialProfiles mutableCopy];
-		if ([tmpSipAddress count] > index) {
-            [tmpSipAddress removeObjectAtIndex:index];
+        NSInteger newIndex = [self indexInCNContactInstantAddressesForIndex:index];
+        NSInteger newIndex2 = [self indexInCNContactSocialProfilesForIndex:index];
+		if ([tmpSipAddress count] > newIndex) {
+            [tmpSipAddress removeObjectAtIndex:newIndex];
             [_person setValue:tmpSipAddress forKey:CNContactInstantMessageAddressesKey];
-            [tmpSipAddress2 removeObjectAtIndex:index];
+        }
+        if (tmpSipAddress2.count > newIndex2) {
+            [tmpSipAddress2 removeObjectAtIndex:newIndex2];
             [_person setValue:tmpSipAddress2 forKey:CNContactSocialProfilesKey];
 		}
 		ret = TRUE;
