@@ -58,7 +58,7 @@
     if ([i isMemberOfClass:INStartAudioCallIntent.class]) {
         INStartAudioCallIntent *intent = (INStartAudioCallIntent *)i;
         INPerson *person = intent.contacts[0];
-        if (person.personHandle.type == CXHandleTypeGeneric)
+        if (person.personHandle != nil && (person.personHandle.type == CXHandleTypeGeneric || person.personHandle.type == INPersonHandleTypeUnknown))
             [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
         else {
             CNContactStore *store = [[CNContactStore alloc] init];

@@ -148,6 +148,7 @@
 	[_addressBookMap removeAllObjects];
 	_addressBookMap = [NSMutableDictionary dictionary];
 	CNEntityType entityType = CNEntityTypeContacts;
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.siri"];
 	[store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
 		BOOL success = FALSE;
 		if(granted){
@@ -174,6 +175,10 @@
 
 					dispatch_async(dispatch_get_main_queue(), ^{
 						Contact *newContact = [[Contact alloc] initWithCNContact:contact];
+                        NSMutableDictionary *addresses = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:@"addresses"]] ?: [NSMutableDictionary dictionary];
+                        NSArray *sipAddr = [NSArray arrayWithArray:newContact.sipAddresses];
+                        [addresses setObject:sipAddr forKey:[newContact.displayName lowercaseString]];
+                        [defaults setObject:addresses forKey:@"addresses"];
 						[self registerAddrsFor:newContact];
 					});
 

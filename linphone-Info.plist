@@ -101,6 +101,7 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>INSendMessageIntent</string>
+		<string>INStartAudioCallIntent</string>
 	</array>
 	<key>NSVoIPUsageDescription</key>
 	<string>Make audio/video calls</string>

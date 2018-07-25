@@ -89,8 +89,51 @@
 
 #pragma mark - INStartAudioCallIntentHandling
 
+- (void)resolveContactsForStartAudioCall:(INStartAudioCallIntent *)intent withCompletion:(void (^)(NSArray<INPersonResolutionResult *> * _Nonnull))completion {
+    NSArray<INPerson *> *contacts = intent.contacts;
+    NSMutableArray<INPersonResolutionResult *> *responses = [NSMutableArray array];
+    for (id iterator in contacts)
+        [responses addObject:[INPersonResolutionResult unsupported]];
+    if (contacts.count == 0) {
+        completion(@[[INPersonResolutionResult needsValue]]);
+        return;
+    }
+    NSString *contactName = [contacts.firstObject.displayName lowercaseString];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.siri"];
+    NSDictionary<NSString *, NSArray *> *addresses = [defaults objectForKey:@"addresses"];
+    NSMutableArray<INPerson *> *matchingContacts = [NSMutableArray array];
+    for (NSString *name in addresses.allKeys) {
+        if ([[name lowercaseString] containsString:[contactName lowercaseString]] || [[contactName lowercaseString] containsString:[name lowercaseString]]) {
+            INPersonHandle *handle = [[INPersonHandle alloc] initWithValue:[addresses objectForKey:name].firstObject type:INPersonHandleTypeUnknown];
+            INPerson *contact = [[INPerson alloc] initWithPersonHandle:handle nameComponents:nil displayName:name image:nil contactIdentifier:nil customIdentifier:handle.value];
+            [matchingContacts addObject:contact];
+        }
+    }
+    INPersonResolutionResult *response;
+    switch(matchingContacts.count) {
+        case 0:
+            response = [INPersonResolutionResult unsupported];
+            break;
+        case 1:
+            response = [INPersonResolutionResult confirmationRequiredWithPersonToConfirm:matchingContacts.firstObject];
+            break;
+        default:
+            response = [INPersonResolutionResult disambiguationWithPeopleToDisambiguate:matchingContacts];
+    }
+    [responses setObject:response atIndexedSubscript:0];
+    completion(responses);
+}
+
+- (void)confirmStartAudioCall:(INStartAudioCallIntent *)intent completion:(void (^)(INStartAudioCallIntentResponse * _Nonnull))completion {
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:NSStringFromClass(INStartAudioCallIntent.class)];
+    INStartAudioCallIntentResponse *response = [[INStartAudioCallIntentResponse alloc] initWithCode:INStartAudioCallIntentResponseCodeReady userActivity:activity];
+    completion(response);
+}
+
 - (void)handleStartAudioCall:(nonnull INStartAudioCallIntent *)intent completion:(nonnull void (^)(INStartAudioCallIntentResponse * _Nonnull))completion {
-    completion([[INStartAudioCallIntentResponse alloc] initWithCode:INStartAudioCallIntentResponseCodeFailure userActivity:nil]);
+    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:NSStringFromClass(INStartAudioCallIntent.class)];
+    INStartAudioCallIntentResponse *response = [[INStartAudioCallIntentResponse alloc] initWithCode:INStartAudioCallIntentResponseCodeContinueInApp userActivity:activity];
+    completion(response);
 }
 
 @end
