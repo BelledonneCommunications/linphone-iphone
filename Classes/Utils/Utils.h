@@ -51,6 +51,8 @@ typedef enum {
 
 + (NSMutableDictionary <NSString *, PHAsset *> *)photoAssetsDictionary;
 
++ (NSString *)recordingFilePathFromCall:(const LinphoneAddress *)iaddr;
+
 @end
 
 @interface NSNumber (HumanReadableSize)

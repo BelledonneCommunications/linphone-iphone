@@ -2617,6 +2617,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	linphone_call_params_enable_video(lcallParams, video);
 
+    //We set the record file name here because we can't do it after the call is started.
+    NSString *writablePath = [LinphoneUtils recordingFilePathFromCall:linphone_call_log_get_from_address(linphone_call_get_call_log(call))];
+    LOGD(@"record file path: %@\n", writablePath);
+    
+    linphone_call_params_set_record_file(lcallParams, [writablePath cStringUsingEncoding:NSUTF8StringEncoding]);
+    
 	linphone_call_accept_with_params(call, lcallParams);
 }
 
@@ -2726,6 +2732,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		LinphoneManager.instance.nextCallIsTransfer = NO;
 		ms_free(caddr);
 	} else {
+        //We set the record file name here because we can't do it after the call is started.
+        NSString *writablePath = [LinphoneUtils recordingFilePathFromCall:addr];
+        LOGD(@"record file path: %@\n", writablePath);
+        linphone_call_params_set_record_file(lcallParams, [writablePath cStringUsingEncoding:NSUTF8StringEncoding]);
 		call = linphone_core_invite_address_with_params(theLinphoneCore, addr, lcallParams);
 		if (call) {
 			// The LinphoneCallAppData object should be set on call creation with callback
