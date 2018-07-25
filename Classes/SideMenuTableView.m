@@ -60,6 +60,12 @@
 												  }]];
 	}
 
+    [_sideMenuEntries
+     addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Recordings", nil)
+                                           tapBlock:^() {
+                                               [PhoneMainView.instance
+                                                changeCurrentView:AssistantView.compositeViewDescription];
+                                           }]];
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {

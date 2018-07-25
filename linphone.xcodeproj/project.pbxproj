@@ -745,6 +745,11 @@
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
 		CF15F21F20E4F9A3008B1DE6 /* UIImageViewDeletable.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */; };
+		CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602D5210867E800749F76 /* RecordingsListView.m */; };
+		CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602D6210867E800749F76 /* RecordingsListView.xib */; };
+		CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E021086EB200749F76 /* RecordingsListTableView.m */; };
+		CF7602E72108759A00749F76 /* UIRecordingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E52108759A00749F76 /* UIRecordingCell.m */; };
+		CF7602E82108759A00749F76 /* UIRecordingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602E62108759A00749F76 /* UIRecordingCell.xib */; };
 		CFBD7A2A20E504AE007C5286 /* delete_img.png in Resources */ = {isa = PBXBuildFile; fileRef = CFBD7A2320E504AD007C5286 /* delete_img.png */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
@@ -1851,6 +1856,14 @@
 		CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIImageViewDeletable.h; sourceTree = "<group>"; };
 		CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageViewDeletable.m; sourceTree = "<group>"; };
 		CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIImageViewDeletable.xib; sourceTree = "<group>"; };
+		CF7602D4210867E800749F76 /* RecordingsListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListView.h; sourceTree = "<group>"; };
+		CF7602D5210867E800749F76 /* RecordingsListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListView.m; sourceTree = "<group>"; };
+		CF7602D6210867E800749F76 /* RecordingsListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingsListView.xib; sourceTree = "<group>"; };
+		CF7602DF21086EB100749F76 /* RecordingsListTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListTableView.h; sourceTree = "<group>"; };
+		CF7602E021086EB200749F76 /* RecordingsListTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListTableView.m; sourceTree = "<group>"; };
+		CF7602E42108759A00749F76 /* UIRecordingCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIRecordingCell.h; sourceTree = "<group>"; };
+		CF7602E52108759A00749F76 /* UIRecordingCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIRecordingCell.m; sourceTree = "<group>"; };
+		CF7602E62108759A00749F76 /* UIRecordingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIRecordingCell.xib; sourceTree = "<group>"; };
 		CFBD7A2320E504AD007C5286 /* delete_img.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = delete_img.png; sourceTree = "<group>"; };
 		D306459C1611EC2900BB571E /* UILoadingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILoadingImageView.h; sourceTree = "<group>"; };
 		D306459D1611EC2900BB571E /* UILoadingImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILoadingImageView.m; sourceTree = "<group>"; };
@@ -2205,12 +2218,6 @@
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
 				638F1A861C2167C2004B8E02 /* CallView~ipad.xib */,
-				8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */,
-				8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */,
-				8CBD7BA220B6B7FD00E5DCC0 /* ChatConversationInfoView.xib */,
-				8CD99A3D2090BA24008A7CDA /* ChatConversationImdnView.h */,
-				8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */,
-				8CBD7BA520B6B80D00E5DCC0 /* ChatConversationImdnView.xib */,
 				8C9C5E0B1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.h */,
 				8C9C5E0C1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m */,
 				6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */,
@@ -2218,6 +2225,12 @@
 				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
 				6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */,
 				63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */,
+				8CD99A3D2090BA24008A7CDA /* ChatConversationImdnView.h */,
+				8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */,
+				8CBD7BA520B6B80D00E5DCC0 /* ChatConversationImdnView.xib */,
+				8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */,
+				8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */,
+				8CBD7BA220B6B7FD00E5DCC0 /* ChatConversationInfoView.xib */,
 				D32B6E2715A5BC430033019F /* ChatConversationTableView.h */,
 				D32B6E2815A5BC430033019F /* ChatConversationTableView.m */,
 				D3F795D315A582800077328B /* ChatConversationView.h */,
@@ -2238,9 +2251,9 @@
 				D35497FB15875372000081D8 /* ContactsListView.h */,
 				D35497FC15875372000081D8 /* ContactsListView.m */,
 				D38187C015FE342800C3EDCA /* ContactsListView.xib */,
+				631098501D4660630041F2B3 /* CountryListView.xib */,
 				631098471D4660580041F2B3 /* CountryListView.h */,
 				631098481D4660580041F2B3 /* CountryListView.m */,
-				631098501D4660630041F2B3 /* CountryListView.xib */,
 				22F2508B107141E100AC9B3F /* DialerView.h */,
 				22F2508C107141E100AC9B3F /* DialerView.m */,
 				D38187C415FE345B00C3EDCA /* DialerView.xib */,
@@ -2268,8 +2281,6 @@
 				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
-				8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */,
-				8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */,
 				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
 				D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */,
 				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
@@ -2279,6 +2290,13 @@
 				D3F83F8C158229C500336684 /* PhoneMainView.h */,
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
 				639E9CB31C0DB88200019A75 /* PhoneMainView.xib */,
+				8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */,
+				8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */,
+				CF7602DF21086EB100749F76 /* RecordingsListTableView.h */,
+				CF7602E021086EB200749F76 /* RecordingsListTableView.m */,
+				CF7602D4210867E800749F76 /* RecordingsListView.h */,
+				CF7602D5210867E800749F76 /* RecordingsListView.m */,
+				CF7602D6210867E800749F76 /* RecordingsListView.xib */,
 				D35E759C159460B50066B1C1 /* SettingsView.h */,
 				D35E759D159460B50066B1C1 /* SettingsView.m */,
 				636316D61A1DEC650009B839 /* SettingsView.xib */,
@@ -2385,6 +2403,9 @@
 				63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */,
 				63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */,
 				639E9CAB1C0DB7FB00019A75 /* UIConfirmationDialog.xib */,
+				CF7602E42108759A00749F76 /* UIRecordingCell.h */,
+				CF7602E52108759A00749F76 /* UIRecordingCell.m */,
+				CF7602E62108759A00749F76 /* UIRecordingCell.xib */,
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
 				F088488D19FF8C41007FFCF3 /* UIContactCell.xib */,
@@ -3818,6 +3839,7 @@
 				633FEDE91D3CD5590014B822 /* call_status_missed~ipad@2x.png in Resources */,
 				8CE24F4C1F8234A30077AC0A /* next_default@2x.png in Resources */,
 				244523B11E8266CC0037A187 /* chat_read.png in Resources */,
+				CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */,
 				639E9CAC1C0DB80300019A75 /* UIContactDetailsCell.xib in Resources */,
 				633FEE511D3CD5590014B822 /* deselect_all@2x.png in Resources */,
 				8CF25D951F9F336100BEA0C1 /* check_unselected@2x.png in Resources */,
@@ -3914,6 +3936,7 @@
 				633FEEA41D3CD55A0014B822 /* numpad_1_default@2x.png in Resources */,
 				63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */,
 				633FEED11D3CD55A0014B822 /* numpad_6~ipad.png in Resources */,
+				CF7602E82108759A00749F76 /* UIRecordingCell.xib in Resources */,
 				633FEED21D3CD55A0014B822 /* numpad_6~ipad@2x.png in Resources */,
 				633FEDCD1D3CD5590014B822 /* call_quality_indicator_0@2x.png in Resources */,
 				636316D41A1DEC650009B839 /* SettingsView.xib in Resources */,
@@ -4384,6 +4407,7 @@
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
 				8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */,
+				CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */,
 				63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */,
 				D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */,
 				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
@@ -4447,6 +4471,7 @@
 				D3807FC115C28940005BE9BC /* DCRoundSwitchKnobLayer.m in Sources */,
 				6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */,
 				D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */,
+				CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */,
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
 				633E41821D74259000320475 /* AssistantLinkView.m in Sources */,
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
@@ -4459,6 +4484,7 @@
 				D3807FF215C2894A005BE9BC /* IASKSettingsStoreFile.m in Sources */,
 				D3807FF415C2894A005BE9BC /* IASKSettingsStoreUserDefaults.m in Sources */,
 				639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */,
+				CF7602E72108759A00749F76 /* UIRecordingCell.m in Sources */,
 				D3807FF615C2894A005BE9BC /* IASKSpecifier.m in Sources */,
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
