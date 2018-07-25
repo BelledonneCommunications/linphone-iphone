@@ -227,6 +227,8 @@
 
 - (NSInteger)indexInCNContactInstantAddressesForIndex:(NSInteger)index {
     NSArray<CNLabeledValue<CNInstantMessageAddress *> *> *instantAddresses = _person.instantMessageAddresses;
+    if (instantAddresses.count == 0)
+        return index;
     NSInteger i = 0;
     while (i <= index) {
         CNLabeledValue<CNInstantMessageAddress *> *address = instantAddresses[i];
@@ -242,6 +244,8 @@
 
 - (NSInteger)indexInCNContactSocialProfilesForIndex:(NSInteger)index {
     NSArray<CNLabeledValue<CNSocialProfile *> *> *socialProfiles = _person.socialProfiles;
+    if (socialProfiles.count == 0)
+        return index;
     NSInteger i = 0;
     while (i <= index) {
         CNLabeledValue<CNSocialProfile *> *socialProfile = socialProfiles[i];
