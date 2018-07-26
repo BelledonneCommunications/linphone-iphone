@@ -745,6 +745,8 @@
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
 		CF15F21F20E4F9A3008B1DE6 /* UIImageViewDeletable.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */; };
+		CF1DE92D210A0F5D00A0A97E /* UILinphoneAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */; };
+		CF1DE92E210A0F5D00A0A97E /* UILinphoneAudioPlayer.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */; };
 		CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602D5210867E800749F76 /* RecordingsListView.m */; };
 		CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602D6210867E800749F76 /* RecordingsListView.xib */; };
 		CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E021086EB200749F76 /* RecordingsListTableView.m */; };
@@ -1761,7 +1763,6 @@
 		8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mswebrtc.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mswebrtc.framework"; sourceTree = "<group>"; };
 		8C5BCECD1EB3859200A9AAEF /* ortp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ortp.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/ortp.framework"; sourceTree = "<group>"; };
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
-		8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		8C601FD220B462B0004FF95C /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
@@ -1860,6 +1861,9 @@
 		CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIImageViewDeletable.h; sourceTree = "<group>"; };
 		CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageViewDeletable.m; sourceTree = "<group>"; };
 		CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIImageViewDeletable.xib; sourceTree = "<group>"; };
+		CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphoneAudioPlayer.m; sourceTree = "<group>"; };
+		CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UILinphoneAudioPlayer.xib; sourceTree = "<group>"; };
+		CF1DE92C210A0F5C00A0A97E /* UILinphoneAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneAudioPlayer.h; sourceTree = "<group>"; };
 		CF7602D4210867E800749F76 /* RecordingsListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListView.h; sourceTree = "<group>"; };
 		CF7602D5210867E800749F76 /* RecordingsListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListView.m; sourceTree = "<group>"; };
 		CF7602D6210867E800749F76 /* RecordingsListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingsListView.xib; sourceTree = "<group>"; };
@@ -2350,9 +2354,6 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
-				CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */,
-				CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */,
-				CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */,
 				63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */,
 				63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */,
 				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
@@ -2381,27 +2382,24 @@
 				D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleTextCell.h */,
 				D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */,
 				639E9CA51C0DB7EA00019A75 /* UIChatBubbleTextCell.xib */,
-				8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */,
-				8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */,
-				8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */,
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
-				8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */,
-				8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */,
-				8CBD7BA820B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib */,
 				8CD99A402090CE25008A7CDA /* UIChatConversationImdnTableViewCell.h */,
 				8CD99A412090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m */,
 				8CBD7BAB20B6B82A00E5DCC0 /* UIChatConversationImdnTableViewCell.xib */,
-				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
-				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
-				8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */,
+				8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */,
+				8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */,
+				8CBD7BA820B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib */,
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
 				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
 				639E9CA81C0DB7F200019A75 /* UIChatCreateCell.xib */,
-				8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */,
-				8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */,
-				8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */,
+				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
+				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
+				8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */,
+				8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */,
+				8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */,
+				8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */,
 				639E9C7E1C0DB13D00019A75 /* UICheckBoxTableView.h */,
 				639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */,
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
@@ -2411,15 +2409,9 @@
 				63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */,
 				63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */,
 				639E9CAB1C0DB7FB00019A75 /* UIConfirmationDialog.xib */,
-				CF7602E42108759A00749F76 /* UIRecordingCell.h */,
-				CF7602E52108759A00749F76 /* UIRecordingCell.m */,
-				CF7602E62108759A00749F76 /* UIRecordingCell.xib */,
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
 				F088488D19FF8C41007FFCF3 /* UIContactCell.xib */,
-				24A345A71D95799900881A5C /* UIShopTableCell.h */,
-				24A345A51D95798A00881A5C /* UIShopTableCell.m */,
-				24A3459D1D95797700881A5C /* UIShopTableCell.xib */,
 				D3C6526515AC1A8F0092A874 /* UIContactDetailsCell.h */,
 				D3C6526615AC1A8F0092A874 /* UIContactDetailsCell.m */,
 				639E9CAE1C0DB80300019A75 /* UIContactDetailsCell.xib */,
@@ -2432,18 +2424,31 @@
 				639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */,
 				636BC9951B5F921B00C754CE /* UIIconButton.h */,
 				636BC9961B5F921B00C754CE /* UIIconButton.m */,
+				CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */,
+				CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */,
+				CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */,
 				634610041B61330300548952 /* UILabel+Boldify.h */,
 				634610051B61330300548952 /* UILabel+Boldify.m */,
+				CF1DE92C210A0F5C00A0A97E /* UILinphoneAudioPlayer.h */,
+				CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */,
+				CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */,
 				D306459C1611EC2900BB571E /* UILoadingImageView.h */,
 				D306459D1611EC2900BB571E /* UILoadingImageView.m */,
 				2214EBF112F86360002A5394 /* UIMutedMicroButton.h */,
 				2214EBF212F86360002A5394 /* UIMutedMicroButton.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
+				CF7602E42108759A00749F76 /* UIRecordingCell.h */,
+				CF7602E52108759A00749F76 /* UIRecordingCell.m */,
+				CF7602E62108759A00749F76 /* UIRecordingCell.xib */,
 				6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */,
 				6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */,
 				63FB30331A680E73008CA393 /* UIRoundedImageView.h */,
 				63FB30341A680E73008CA393 /* UIRoundedImageView.m */,
+				8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */,
+				24A345A51D95798A00881A5C /* UIShopTableCell.m */,
+				8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */,
+				24A345A71D95799900881A5C /* UIShopTableCell.h */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
 				22968A5E12F875C600588287 /* UISpeakerButton.m */,
 				630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */,
@@ -2454,6 +2459,8 @@
 				D32648431588F6FB00930C67 /* UIToggleButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
+				24A345A51D95798A00881A5C /* UIShopTableCell.m */,
+				24A3459D1D95797700881A5C /* UIShopTableCell.xib */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -4069,6 +4076,7 @@
 				633FEEA81D3CD55A0014B822 /* numpad_1_over~ipad@2x.png in Resources */,
 				D38187AD15FE340100C3EDCA /* ChatConversationView.xib in Resources */,
 				633FEE7C1D3CD5590014B822 /* history_missed_disabled.png in Resources */,
+				CF1DE92E210A0F5D00A0A97E /* UILinphoneAudioPlayer.xib in Resources */,
 				633FEDF11D3CD5590014B822 /* call_transfer_disabled@2x.png in Resources */,
 				633FEDFF1D3CD5590014B822 /* camera_switch_disabled@2x.png in Resources */,
 				633FEDDF1D3CD5590014B822 /* call_start_body_over@2x.png in Resources */,
@@ -4394,6 +4402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */,
+				CF1DE92D210A0F5D00A0A97E /* UILinphoneAudioPlayer.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				8CD99A3C2090B9FA008A7CDA /* ChatConversationImdnView.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,

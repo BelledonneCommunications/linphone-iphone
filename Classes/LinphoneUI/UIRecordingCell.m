@@ -85,7 +85,19 @@ static UILinphoneAudioPlayer *player;
 }
 
 - (void)setSelected:(BOOL)selected {
+    if (!selected)
+        return;
+    if (!player)
+        player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[self recording]];
+    else
+        [player setFile:[self recording]];
     
+    UILinphoneAudioPlayer *p = player;
+    [p.view removeFromSuperview];
+    [self addSubview:p.view];
+    [self bringSubviewToFront:p.view];
+    p.view.frame = _playerView.frame;
+    p.view.bounds = _playerView.bounds;
 }
 
 
