@@ -62,6 +62,12 @@ typedef enum {
 
 @end
 
+@interface UIImage (systemIcons)
+
++ (UIImage *)imageFromSystemBarButton:(UIBarButtonSystemItem)systemItem :(UIColor *) color;
+
+@end
+
 @interface NSString (linphoneExt)
 
 - (NSString *)md5;

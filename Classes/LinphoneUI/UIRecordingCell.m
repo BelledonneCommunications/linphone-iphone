@@ -84,21 +84,22 @@ static UILinphoneAudioPlayer *player;
     [self setFrame:frame];
 }
 
-- (void)setSelected:(BOOL)selected {
+-(void)setSelected:(BOOL)selected animated:(BOOL)animated{
+    [super setSelected:selected animated:animated];
     if (!selected)
         return;
     if (!player)
         player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[self recording]];
     else
         [player setFile:[self recording]];
-    
-    UILinphoneAudioPlayer *p = player;
-    [p.view removeFromSuperview];
-    [self addSubview:p.view];
-    [self bringSubviewToFront:p.view];
-    p.view.frame = _playerView.frame;
-    p.view.bounds = _playerView.bounds;
+    if ([player isOpened])
+        [player close];
+    [player.view removeFromSuperview];
+    [self addSubview:player.view];
+    [self bringSubviewToFront:player.view];
+    player.view.frame = _playerView.frame;
+    player.view.bounds = _playerView.bounds;
+    [player open];
 }
-
 
 @end

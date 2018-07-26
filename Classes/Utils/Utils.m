@@ -569,6 +569,29 @@
 
 @end
 
+@implementation UIImage (systemIcons)
+
++ (UIImage *)imageFromSystemBarButton:(UIBarButtonSystemItem)systemItem :(UIColor *) color {
+    // thanks to Renetik https://stackoverflow.com/a/49822488
+    UIToolbar *bar = UIToolbar.new;
+    UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:systemItem target:nil action:nil];
+    [bar setItems:@[buttonItem] animated:NO];
+    [bar snapshotViewAfterScreenUpdates:YES];
+    for (UIView *view in [(id) buttonItem view].subviews)
+        if ([view isKindOfClass:UIButton.class]) {
+            UIImage *image = [((UIButton *) view).imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
+            //[color set];
+            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+            image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            return image;
+        }
+    return nil;
+}
+
+@end
+
 @implementation NSString (md5)
 
 - (NSString *)md5 {
