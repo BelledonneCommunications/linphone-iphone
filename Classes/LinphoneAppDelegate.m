@@ -56,6 +56,8 @@
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
     INIntent *i = userActivity.interaction.intent;
     if ([i isMemberOfClass:INStartAudioCallIntent.class]) {
+        if (((INStartAudioCallIntentResponse *)userActivity.interaction.intentResponse).code == INStartAudioCallIntentResponseCodeFailureAppConfigurationRequired)
+            return NO;
         INStartAudioCallIntent *intent = (INStartAudioCallIntent *)i;
         INPerson *person = intent.contacts[0];
         if (person.personHandle != nil && (person.personHandle.type == CXHandleTypeGeneric || person.personHandle.type == INPersonHandleTypeUnknown))
@@ -81,6 +83,8 @@
         }
         return YES;
     } else if ([i isMemberOfClass:INSendMessageIntent.class]) {
+        if (((INSendMessageIntentResponse *)userActivity.interaction.intentResponse).code == INSendMessageIntentResponseCodeFailureRequiringAppLaunch)
+            return NO;
         INSendMessageIntent *intent = (INSendMessageIntent *)i;
         INPerson *person = intent.recipients[0];
         if (person.contactIdentifier && ![person.contactIdentifier isEqual:@""]) {

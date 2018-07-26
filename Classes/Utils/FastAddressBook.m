@@ -208,6 +208,10 @@
 	[NSNotificationCenter.defaultCenter
 	 postNotificationName:kLinphoneAddressBookUpdate
 	 object:self];
+    if (linphone_core_get_proxy_config_list(LC) != NULL)
+        [defaults setObject:@YES forKey:@"loggedIn"];
+    else
+        [defaults setObject:@NO forKey:@"loggedIn"];
 }
 
 -(void) updateAddressBook:(NSNotification*) notif {

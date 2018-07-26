@@ -970,7 +970,11 @@
 		// if we removed the default proxy config, set another one instead
 		if (linphone_core_get_proxy_config_list(LC) != NULL) {
 			linphone_core_set_default_proxy_index(LC, 0);
-		}
+        } else {
+            // tell siri that no account is logged in to prevent from starting a siri call/message
+            NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.siri"];
+            [defaults setObject:@NO forKey:@"loggedIn"];
+        }
 	}
 	[self transformLinphoneCoreToKeys];
 }
