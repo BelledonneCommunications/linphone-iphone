@@ -86,13 +86,12 @@
                             <state key="selected" image="select_all_default.png"/>
                             <state key="highlighted" backgroundImage="color_E.png"/>
                             <connections>
-                                <action selector="onAllClick:" destination="-1" eventType="touchUpInside" id="CfU-Uf-lX8"/>
                                 <action selector="onSelectionToggle:" destination="1pR-qo-CIP" eventType="touchUpInside" id="Hfi-f6-qfI"/>
                             </connections>
                         </button>
                     </subviews>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3b0-Nd-4r0">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3b0-Nd-4r0">
                     <rect key="frame" x="0.0" y="94" width="375" height="573"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -101,6 +100,14 @@
                         <outlet property="delegate" destination="1pR-qo-CIP" id="eJQ-AV-7ts"/>
                     </connections>
                 </tableView>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No recording found" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zXd-Ic-rwm" userLabel="emptyTableLabel">
+                    <rect key="frame" x="0.0" y="94" width="375" height="573"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
@@ -111,6 +118,7 @@
                 <outlet property="cancelButton" destination="CqG-tB-maQ" id="C90-0S-5WL"/>
                 <outlet property="deleteButton" destination="zDs-pW-vyA" id="mgV-PB-law"/>
                 <outlet property="editButton" destination="CWx-9g-0JG" id="hAA-6f-kX8"/>
+                <outlet property="emptyView" destination="zXd-Ic-rwm" id="D4k-nO-LKW"/>
                 <outlet property="toggleSelectionButton" destination="16S-9G-2cb" id="6pj-Yn-hy1"/>
                 <outlet property="view" destination="3b0-Nd-4r0" id="ng8-q5-bwm"/>
             </connections>

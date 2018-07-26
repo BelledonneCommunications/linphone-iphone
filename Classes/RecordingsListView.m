@@ -53,6 +53,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     tableController.tableView.accessibilityIdentifier = @"Recordings table";
+    tableController.tableView.tableFooterView = [[UIView alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

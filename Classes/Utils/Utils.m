@@ -510,7 +510,6 @@
     return addr;
 }
 
-
 + (NSString *)recordingFilePathFromCall:(const LinphoneAddress *)iaddr {
     NSString *filepath = @"recording_";
     const char *address = linphone_address_get_username(iaddr);
@@ -530,8 +529,23 @@
     writablePath = [writablePath stringByAppendingString:filepath];
     LOGD(@"file path is: %@\n", writablePath);
     return writablePath;
-    //file name is contact-name_dayName-day-monthName-year-hour-minutes-seconds
+    //file name is recording_contact-name_dayName-day-monthName-year-hour-minutes-seconds
+    //The recording prefix is used to identify recordings in the cache directory.
     //We will use name_dayName-day-monthName-year to separate recordings by days, then hour-minutes-seconds to order them in each day.
+}
+
++ (NSArray *)parseRecordingName:(NSString *)filename {
+    NSString *rec = @"recording_"; //key that helps find recordings
+    NSString *subName = [filename substringFromIndex:[filename rangeOfString:rec].location]; //We remove the parent folders if they exist in the filename
+    NSArray *splitString = [subName componentsSeparatedByString:@"_"];
+    //splitString: first element is the 'recording' prefix, last element is the date with the "E-d-MMM-yyyy-HH-mm-ss" format.
+    NSString *name = [[splitString subarrayWithRange:NSMakeRange(1, [splitString count] -2)] componentsJoinedByString:@""];
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    [format setDateFormat:@"E-d-MMM-yyyy-HH-mm-ss"];
+    NSString *dateWithMkv = [splitString objectAtIndex:[splitString count]-1]; //this will be in the form "E-d-MMM-yyyy-HH-mm-ss.mkv", we have to delete the extension
+    NSDate *date = [format dateFromString:[dateWithMkv substringToIndex:[dateWithMkv length] - 4]];
+    NSArray *res = [NSArray arrayWithObjects:name, date, nil];
+    return res;
 }
 
 @end

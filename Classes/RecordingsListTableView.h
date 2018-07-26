@@ -9,14 +9,13 @@
 
 #import "UICheckBoxTableView.h"
 
-#import "OrderedDictionary.h"
-
 @interface RecordingsListTableView : UICheckBoxTableView {
 @private
-    OrderedDictionary *recordings;
+    NSMutableDictionary *recordings;
     //This has sub arrays indexed with the date of the recordings, themselves containings the recordings.
+    NSString *writablePath;
+    //This is the path to the folder where we write the recordings to. We should probably define it in LinphoneManager though.
 }
-@property(nonatomic) BOOL ongoing;
 - (void)loadData;
 - (void)removeAllRecordings;
 

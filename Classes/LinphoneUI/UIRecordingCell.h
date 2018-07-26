@@ -10,10 +10,11 @@
 @interface UIRecordingCell : UITableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 
 @property(nonatomic, assign) NSString *recording;
 
 - (id)initWithIdentifier:(NSString*)identifier;
+
+- (void)updateFrame;
 
 @end

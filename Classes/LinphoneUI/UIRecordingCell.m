@@ -15,15 +15,15 @@
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString *)identifier {
-    if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
+    if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier])) {
         NSArray *arrayOfViews =
         [[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
         
         // resize cell to match .nib size. It is needed when resized the cell to
         // correctly adapt its height too
-        UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
-        [self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
-        [self addSubview:sub];
+        UIRecordingCell *sub = [arrayOfViews objectAtIndex:0];
+        [self setFrame:CGRectMake(0, 0, sub.frame.size.width, 40)];
+        self = sub;
         self.recording = NULL;
     }
     return self;
@@ -40,18 +40,14 @@
     _recording = arecording;
     if(_recording) {
         //TODO: Parse file name to get name of contact and date
+        NSArray *parsedRecording = [LinphoneUtils parseRecordingName:_recording];
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+        [dateFormat setDateFormat:@"HH:mm:ss"];
+        _nameLabel.text = [[[parsedRecording objectAtIndex:0] stringByAppendingString:@" @ "] stringByAppendingString:[dateFormat stringFromDate:[parsedRecording objectAtIndex:1]]];
     }
 }
 
 #pragma mark -
-
-- (void)touchUp:(id)sender {
-    [self setHighlighted:true animated:true];
-}
-
-- (void)touchDown:(id)sender {
-    [self setHighlighted:false animated:true];
-}
 
 - (NSString *)accessibilityLabel {
     return _nameLabel.text;
@@ -69,6 +65,20 @@
     if (animated) {
         [UIView commitAnimations];
     }
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
+}
+
+- (void)updateFrame {
+    CGRect frame = self.frame;
+    if (!self.selected) {
+        frame.size.height = 40;
+    } else {
+        frame.size.height = 150;
+    }
+    [self setFrame:frame];
 }
 
 

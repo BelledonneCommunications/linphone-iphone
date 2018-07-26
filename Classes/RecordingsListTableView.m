@@ -12,13 +12,14 @@
 #import "Utils.h"
 
 @implementation RecordingsListTableView
-NSArray *sortedRecordings;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initRecordingsTableViewController {
-    recordings = [[OrderedDictionary alloc] init];
-    sortedRecordings = [[NSArray alloc] init];
+    recordings = [NSMutableDictionary dictionary];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    writablePath = [paths objectAtIndex:0];
+    writablePath = [writablePath stringByAppendingString:@"/"];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -26,6 +27,7 @@ NSArray *sortedRecordings;
     if (![self selectFirstRow]) {
         //TODO: Make first cell expand to show player
     }
+    [self loadData];
 }
 
 - (id)init {
@@ -33,7 +35,6 @@ NSArray *sortedRecordings;
     if (self) {
         [self initRecordingsTableViewController];
     }
-    _ongoing = FALSE;
     return self;
 }
 
@@ -60,7 +61,6 @@ NSArray *sortedRecordings;
 
 
 - (void)loadData {
-    _ongoing = TRUE;
     LOGI(@"====>>>> Load recording list - Start");
     
     //Clear recording cells
@@ -70,18 +70,52 @@ NSArray *sortedRecordings;
             [[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setRecording:nil];
         }
     }
+    recordings = [NSMutableDictionary dictionary];
+    NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
+    for (NSString *file in directoryContent) {
+        if (![file hasPrefix:@"recording_"]) {
+            continue;
+        }
+        NSArray *parsedName = [LinphoneUtils parseRecordingName:file];
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+        [dateFormat setDateFormat:@"EEEE, MMM d, yyyy"];
+        NSString *dayPretty = [dateFormat stringFromDate:[parsedName objectAtIndex:1]];
+        NSMutableArray *recOfDay = [recordings objectForKey:dayPretty];
+        if (recOfDay) {
+            // Loop through the object until a later object, then insert it right before
+            int i;
+            for (i = 0; i < [recOfDay count]; ++i) {
+                NSString *fileAtIndex = [recOfDay objectAtIndex:i];
+                NSArray *parsedNameAtIndex = [LinphoneUtils parseRecordingName:fileAtIndex];
+                if ([[parsedName objectAtIndex:1] compare:[parsedNameAtIndex objectAtIndex:1]] == NSOrderedDescending) {
+                    break;
+                }
+            }
+            [recOfDay insertObject:[writablePath stringByAppendingString:file] atIndex:i];
+        } else {
+            recOfDay = [NSMutableArray arrayWithObjects:[writablePath stringByAppendingString:file], nil];
+            [recordings setObject:recOfDay forKey:dayPretty];
+        }
+    }
     
-    //TODO: Fill the recordings dictionnary with the recording names, keys are dates
     
     LOGI(@"====>>>> Load recording list - End");
     [super loadData];
-    _ongoing = FALSE;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSIndexPath *selectedRow = [self.tableView indexPathForSelectedRow];
+    if (selectedRow && [selectedRow compare:indexPath] == NSOrderedSame) {
+        return 150;
+    } else {
+        return 40;
+    }
 }
 
 #pragma mark - UITableViewDataSource Functions
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return [recordings allKeys];
+    return nil;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -89,7 +123,8 @@ NSArray *sortedRecordings;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [(OrderedDictionary *)[recordings objectForKey:[recordings keyAtIndex:section]] count];
+    NSArray *sortedKey = [self getSortedKeys];
+    return [(NSArray *)[recordings objectForKey:[sortedKey objectAtIndex:section]] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,11 +133,14 @@ NSArray *sortedRecordings;
     if (cell == nil) {
         cell = [[UIRecordingCell alloc] initWithIdentifier:kCellId];
     }
-    NSString *recording = @"";
-    //TODO: Set recording to the path of the recording
-    [cell setRecording:recording];
+    NSString *date = [[self getSortedKeys] objectAtIndex:[indexPath section]];
+    NSMutableArray *subAr = [recordings objectForKey:date];
+    NSString *recordingPath = subAr[indexPath.row];
+    [cell setRecording:recordingPath];
     [super accessoryForCell:cell atPath:indexPath];
-    
+    //accessoryForCell set it to gray but we don't want it
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    [cell updateFrame];
     return cell;
 }
 
@@ -114,7 +152,7 @@ NSArray *sortedRecordings;
     UILabel *tempLabel = [[UILabel alloc] initWithFrame:frame];
     tempLabel.backgroundColor = [UIColor clearColor];
     tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]];
-    tempLabel.text = [recordings keyAtIndex:section];
+    tempLabel.text = [[self getSortedKeys] objectAtIndex:section];
     tempLabel.textAlignment = NSTextAlignmentCenter;
     tempLabel.font = [UIFont boldSystemFontOfSize:17];
     tempLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
@@ -126,7 +164,9 @@ NSArray *sortedRecordings;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     if (![self isEditing]) {
-        //TODO: Expand selected cell to display player
+        [tableView beginUpdates];
+        [(UIRecordingCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath] updateFrame];
+        [tableView endUpdates];
     }
 }
 
@@ -138,9 +178,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [tableView beginUpdates];
         
         
-        NSString *date = [recordings keyAtIndex:[indexPath section]];
+        NSString *date = [[self getSortedKeys] objectAtIndex:[indexPath section]];
         NSMutableArray *subAr = [recordings objectForKey:date];
-        //NSString *recording = subAr[indexPath.row];
+        NSString *recordingPath = subAr[indexPath.row];
         [subAr removeObjectAtIndex:indexPath.row];
         if (subAr.count == 0) {
             [recordings removeObjectForKey:date];
@@ -150,7 +190,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         
         UIRecordingCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
         [cell setRecording:NULL];
-        //TODO: Delete recording file here
+        
+        remove([recordingPath cStringUsingEncoding:NSUTF8StringEncoding]);
+        
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
         
@@ -162,16 +204,28 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [super removeSelectionUsing:^(NSIndexPath *indexPath) {
         [NSNotificationCenter.defaultCenter removeObserver:self];
         
-        NSString *date = [recordings keyAtIndex:[indexPath section]];
+        NSString *date = [[self getSortedKeys] objectAtIndex:[indexPath section]];
         NSMutableArray *subAr = [recordings objectForKey:date];
-        //NSString *recording = subAr[indexPath.row];
+        NSString *recordingPath = subAr[indexPath.row];
         [subAr removeObjectAtIndex:indexPath.row];
         if (subAr.count == 0) {
             [recordings removeObjectForKey:date];
         }
         UIRecordingCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
         [cell setRecording:NULL];
-        //TODO: Delete recording file here
+        remove([recordingPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    }];
+}
+
+#pragma mark - Utilities
+
+- (NSArray *)getSortedKeys {
+    return [[recordings allKeys] sortedArrayUsingComparator:^NSComparisonResult(NSString *day2, NSString *day1){
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+        [dateFormat setDateFormat:@"EEEE, MMM d, yyyy"];
+        NSDate *date1 = [dateFormat dateFromString:day1];
+        NSDate *date2 = [dateFormat dateFromString:day2];
+        return [date1 compare:date2];
     }];
 }
 
