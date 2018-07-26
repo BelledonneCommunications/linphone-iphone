@@ -726,11 +726,15 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
         LinphoneCall *call = linphone_core_get_current_call(LC);
         linphone_call_stop_recording(call);
         
+        callRecording = FALSE;
+        
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *writablePath = [paths objectAtIndex:0];
-        writablePath = [writablePath stringByAppendingString:@""];
-        
-        callRecording = FALSE;
+        writablePath = [writablePath stringByAppendingString:@"/"];
+        NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
+        if (directoryContent) {
+            return;
+        }
     } else {
         LOGD(@"Recording Starts");
         
