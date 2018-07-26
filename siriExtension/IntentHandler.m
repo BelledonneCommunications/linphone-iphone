@@ -14,39 +14,52 @@
 @implementation IntentHandler
 
 - (id)handlerForIntent:(INIntent *)intent {
-    // This is the default implementation.  If you want different objects to handle different intents,
-    // you can override this and return the handler you want for that particular intent.
-    
     return self;
 }
 
 #pragma mark - INSendMessageIntentHandling
 
-// Implement resolution methods to provide additional information about your intent (optional).
 - (void)resolveRecipientsForSendMessage:(INSendMessageIntent *)intent withCompletion:(void (^)(NSArray<INPersonResolutionResult *> *resolutionResults))completion {
-    NSArray<INPerson *> *recipients = intent.recipients;
-    // If no recipients were provided we'll need to prompt for a value.
-    if (recipients.count == 0) {
+    NSArray<INPerson *> *contacts = intent.recipients;
+    if (contacts.count == 0) {
         completion(@[[INPersonResolutionResult needsValue]]);
         return;
     }
-    NSMutableArray<INPersonResolutionResult *> *resolutionResults = [NSMutableArray array];
-    
-    for (INPerson *recipient in recipients) {
-        NSArray<INPerson *> *matchingContacts = @[recipient]; // Implement your contact matching logic here to create an array of matching contacts
-        if (matchingContacts.count > 1) {
-            // We need Siri's help to ask user to pick one from the matches.
-            [resolutionResults addObject:[INPersonResolutionResult disambiguationWithPeopleToDisambiguate:matchingContacts]];
-
-        } else if (matchingContacts.count == 1) {
-            // We have exactly one matching contact
-            [resolutionResults addObject:[INPersonResolutionResult successWithResolvedPerson:recipient]];
-        } else {
-            // We have no contacts matching the description provided
-            [resolutionResults addObject:[INPersonResolutionResult unsupported]];
+    NSMutableArray<INPersonResolutionResult *> *responses = [NSMutableArray array];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.siri"];
+    NSDictionary<NSString *, NSArray *> *addresses = [defaults objectForKey:@"addresses"];
+    for (id iterator in contacts)
+        [responses addObject:[INPersonResolutionResult notRequired]];
+    NSString *contactName = [contacts[0].displayName lowercaseString];
+    NSMutableArray<INPerson *> *matchingContacts = [NSMutableArray array];
+    for (NSString *name in addresses.allKeys) {
+        if ([[name lowercaseString] containsString:[contactName lowercaseString]]) {
+            INPersonHandle *handle = [[INPersonHandle alloc] initWithValue:[addresses objectForKey:name].firstObject type:INPersonHandleTypeUnknown];
+            INPerson *contact = [[INPerson alloc] initWithPersonHandle:handle nameComponents:nil displayName:name image:nil contactIdentifier:nil customIdentifier:handle.value];
+            [matchingContacts addObject:contact];
         }
     }
-    completion(resolutionResults);
+    INPersonResolutionResult *response;
+    switch(matchingContacts.count) {
+        case 0:
+            response = [INPersonResolutionResult unsupported];
+            break;
+        case 1:
+            response = [INPersonResolutionResult successWithResolvedPerson:matchingContacts.firstObject];
+            break;
+        default:{
+            BOOL match = NO;
+            for (INPerson *person in matchingContacts)
+                if ([person.displayName isEqualToString:contactName]) {
+                    response = [INPersonResolutionResult confirmationRequiredWithPersonToConfirm:person];
+                    match = YES;
+                }
+            if (!match)
+                response = [INPersonResolutionResult disambiguationWithPeopleToDisambiguate:matchingContacts];
+        }
+    }
+    [responses setObject:response atIndexedSubscript:0];
+    completion(responses);
 }
 
 - (void)resolveContentForSendMessage:(INSendMessageIntent *)intent withCompletion:(void (^)(INStringResolutionResult *resolutionResult))completion {
@@ -58,23 +71,19 @@
     }
 }
 
-// Once resolution is completed, perform validation on the intent and provide confirmation (optional).
-
 - (void)confirmSendMessage:(INSendMessageIntent *)intent completion:(void (^)(INSendMessageIntentResponse *response))completion {
-    // Verify user is authenticated and your app is ready to send a message.
-    
     NSUserActivity *userActivity = [[NSUserActivity alloc] initWithActivityType:NSStringFromClass([INSendMessageIntent class])];
     INSendMessageIntentResponse *response = [[INSendMessageIntentResponse alloc] initWithCode:INSendMessageIntentResponseCodeReady userActivity:userActivity];
     completion(response);
 }
 
-// Handle the completed intent (required).
-
 - (void)handleSendMessage:(INSendMessageIntent *)intent completion:(void (^)(INSendMessageIntentResponse *response))completion {
-    // Implement your application logic to send a message here.
-    
     NSUserActivity *userActivity = [[NSUserActivity alloc] initWithActivityType:NSStringFromClass([INSendMessageIntent class])];
-    INSendMessageIntentResponse *response = [[INSendMessageIntentResponse alloc] initWithCode:INSendMessageIntentResponseCodeSuccess userActivity:userActivity];
+    /*
+     this solution requires to manually open the app in Siri since SiriKit
+     doesn't provide a INSendMessageIntentResponseCodeContinueInApp code
+    */
+    INSendMessageIntentResponse *response = [[INSendMessageIntentResponse alloc] initWithCode:INSendMessageIntentResponseCodeInProgress userActivity:userActivity];
     completion(response);
 }
 

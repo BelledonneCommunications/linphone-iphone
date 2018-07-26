@@ -83,24 +83,32 @@
     } else if ([i isMemberOfClass:INSendMessageIntent.class]) {
         INSendMessageIntent *intent = (INSendMessageIntent *)i;
         INPerson *person = intent.recipients[0];
-        CNContactStore *store = [[CNContactStore alloc] init];
-        NSError *error;
-        NSArray *keysToFetch = @[
-                                 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-                                 CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
-                                 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-                                 CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
-                                 CNContactSocialProfilesKey
-                                 ];
-        CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
-                                                keysToFetch:keysToFetch
-                                                      error:&error];
-        Contact *contact = [[Contact alloc] initWithCNContact:cn];
-        if (contact.sipAddresses.count > 0) {
-            LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]]);
+        if (person.contactIdentifier && ![person.contactIdentifier isEqual:@""]) {
+            CNContactStore *store = [[CNContactStore alloc] init];
+            NSError *error;
+            NSArray *keysToFetch = @[
+                                    CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+                                    CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+                                    CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+                                    CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+                                    CNContactSocialProfilesKey
+                                    ];
+            CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
+                                                    keysToFetch:keysToFetch
+                                                          error:&error];
+            Contact *contact = [[Contact alloc] initWithCNContact:cn];
+            if (contact.sipAddresses.count > 0) {
+                LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]]);
+                [PhoneMainView.instance goToChatRoom:cr];
+            } else
+                return NO;
+        } else {
+            NSString *text = intent.content;
+            LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]);
             [PhoneMainView.instance goToChatRoom:cr];
-        } else
-            return NO;
+            LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, text.UTF8String);
+            linphone_chat_room_send_chat_message(cr, msg);
+        }
         return YES;
     }
     return NO;
