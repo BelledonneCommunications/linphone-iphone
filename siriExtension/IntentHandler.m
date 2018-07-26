@@ -7,15 +7,6 @@
 
 #import "IntentHandler.h"
 
-// As an example, this class is set up to handle Message intents.
-// You will want to replace this or add other intents as appropriate.
-// The intents you wish to handle must be declared in the extension's Info.plist.
-
-// You can test your example integration by saying things to Siri like:
-// "Send a message using <myApp>"
-// "<myApp> John saying hello"
-// "Search for messages in <myApp>"
-
 @interface IntentHandler () <INSendMessageIntentHandling, INStartAudioCallIntentHandling>
 
 @end
@@ -91,19 +82,19 @@
 
 - (void)resolveContactsForStartAudioCall:(INStartAudioCallIntent *)intent withCompletion:(void (^)(NSArray<INPersonResolutionResult *> * _Nonnull))completion {
     NSArray<INPerson *> *contacts = intent.contacts;
-    NSMutableArray<INPersonResolutionResult *> *responses = [NSMutableArray array];
-    for (id iterator in contacts)
-        [responses addObject:[INPersonResolutionResult unsupported]];
     if (contacts.count == 0) {
         completion(@[[INPersonResolutionResult needsValue]]);
         return;
     }
-    NSString *contactName = [contacts.firstObject.displayName lowercaseString];
+    NSMutableArray<INPersonResolutionResult *> *responses = [NSMutableArray array];
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.siri"];
     NSDictionary<NSString *, NSArray *> *addresses = [defaults objectForKey:@"addresses"];
+    for (id iterator in contacts)
+        [responses addObject:[INPersonResolutionResult notRequired]];
+    NSString *contactName = [contacts[0].displayName lowercaseString];
     NSMutableArray<INPerson *> *matchingContacts = [NSMutableArray array];
     for (NSString *name in addresses.allKeys) {
-        if ([[name lowercaseString] containsString:[contactName lowercaseString]] || [[contactName lowercaseString] containsString:[name lowercaseString]]) {
+        if ([[name lowercaseString] containsString:[contactName lowercaseString]]) {
             INPersonHandle *handle = [[INPersonHandle alloc] initWithValue:[addresses objectForKey:name].firstObject type:INPersonHandleTypeUnknown];
             INPerson *contact = [[INPerson alloc] initWithPersonHandle:handle nameComponents:nil displayName:name image:nil contactIdentifier:nil customIdentifier:handle.value];
             [matchingContacts addObject:contact];
@@ -115,10 +106,18 @@
             response = [INPersonResolutionResult unsupported];
             break;
         case 1:
-            response = [INPersonResolutionResult confirmationRequiredWithPersonToConfirm:matchingContacts.firstObject];
+            response = [INPersonResolutionResult successWithResolvedPerson:matchingContacts.firstObject];
             break;
-        default:
+        default:{
+            BOOL match = NO;
+            for (INPerson *person in matchingContacts)
+                if ([person.displayName isEqualToString:contactName]) {
+                    response = [INPersonResolutionResult confirmationRequiredWithPersonToConfirm:person];
+                    match = YES;
+                }
+            if (!match)
             response = [INPersonResolutionResult disambiguationWithPeopleToDisambiguate:matchingContacts];
+        }
     }
     [responses setObject:response atIndexedSubscript:0];
     completion(responses);
