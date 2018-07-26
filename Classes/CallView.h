@@ -76,6 +76,7 @@
 @property(weak, nonatomic) IBOutlet UIBouncingView *chatNotificationView;
 @property(weak, nonatomic) IBOutlet UILabel *chatNotificationLabel;
 @property (weak, nonatomic) IBOutlet UIButton *recordButton;
+@property (weak, nonatomic) IBOutlet UIButton *recordButtonOnView;
 
 @property(weak, nonatomic) IBOutlet UIView *bottomBar;
 @property(nonatomic, strong) IBOutlet UIDigitButton *oneButton;

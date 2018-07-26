@@ -718,10 +718,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (IBAction)onRecordClick:(id)sender {
+    if (![_optionsView isHidden])
+        [self hideOptions:TRUE animated:ANIMATED];
     if (callRecording) {
         LOGD(@"Recording Stops");
         [_recordButton setImage:[UIImage imageNamed:@"rec_on_default.png"] forState:UIControlStateNormal];
-        
+        [_recordButtonOnView setHidden:TRUE];
         
         LinphoneCall *call = linphone_core_get_current_call(LC);
         linphone_call_stop_recording(call);
@@ -739,6 +741,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
         LOGD(@"Recording Starts");
         
         [_recordButton setImage:[UIImage imageNamed:@"rec_off_default.png"] forState:UIControlStateNormal];
+        [_recordButtonOnView setHidden:FALSE];
         
         LinphoneCall *call = linphone_core_get_current_call(LC);
         linphone_call_start_recording(call);
