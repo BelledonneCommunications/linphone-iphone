@@ -9,8 +9,11 @@
 #import "PhoneMainView.h"
 #import "UILabel+Boldify.h"
 #import "Utils.h"
+#import "UILinphoneAudioPlayer.h"
 
 @implementation UIRecordingCell
+
+static UILinphoneAudioPlayer *player;
 
 #pragma mark - Lifecycle Functions
 
@@ -79,6 +82,10 @@
         frame.size.height = 150;
     }
     [self setFrame:frame];
+}
+
+- (void)setSelected:(BOOL)selected {
+    
 }
 
 

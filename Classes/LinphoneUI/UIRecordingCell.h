@@ -10,6 +10,7 @@
 @interface UIRecordingCell : UITableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UIView *playerView;
 
 @property(nonatomic, assign) NSString *recording;
 
