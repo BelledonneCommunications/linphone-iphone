@@ -26,8 +26,10 @@ typedef enum _RecordingSelectionMode { RecordingSelectionModeNone, RecordingSele
 @property(strong, nonatomic) IBOutlet RecordingsListTableView *tableController;
 @property(strong, nonatomic) IBOutlet UIView *topBar;
 @property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
+@property (strong, nonatomic) IBOutlet UIIconButton *backButton;
 
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
+- (IBAction)onBackPressed:(id)sender;
 
 @end

@@ -92,7 +92,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-    _deleteButton.hidden = !self.tableController.isEditing;
+    _backButton.hidden = self.tableController.isEditing;
+}
+
+- (IBAction)onBackPressed:(id)sender {
+    [PhoneMainView.instance popCurrentView];
 }
 
 @end
