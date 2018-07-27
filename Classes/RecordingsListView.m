@@ -58,7 +58,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
     if (tableController.isEditing) {
         tableController.editing = NO;
     }

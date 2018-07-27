@@ -16,7 +16,13 @@
 static UILinphoneAudioPlayer *player;
 
 #pragma mark - Lifecycle Functions
-
+/*
+ * TODO:
+ * - When we scroll past a selected row, the player loads incorrectly (no buttons). Probably a problem in the player code.
+ * - mkv recording is probably buggy, wrong eof. wav playing works but does not display the length/timestamp.
+ * - When coming back from the action extension (to share a recording), we have to pop and reload the view for it to dislpay correctly. Find out why?
+ * - The share button is greyed out when not clicking it. idk why, it's really weird.
+*/
 - (id)initWithIdentifier:(NSString *)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier])) {
         NSArray *arrayOfViews =
@@ -28,6 +34,8 @@ static UILinphoneAudioPlayer *player;
         [self setFrame:CGRectMake(0, 0, sub.frame.size.width, 40)];
         self = sub;
         self.recording = NULL;
+        _shareButton.target = self;
+        _shareButton.action = @selector(onShareButtonPressed);
     }
     return self;
 }
@@ -42,7 +50,6 @@ static UILinphoneAudioPlayer *player;
 - (void)setRecording:(NSString *)arecording {
     _recording = arecording;
     if(_recording) {
-        //TODO: Parse file name to get name of contact and date
         NSArray *parsedRecording = [LinphoneUtils parseRecordingName:_recording];
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
         [dateFormat setDateFormat:@"HH:mm:ss"];
@@ -86,8 +93,10 @@ static UILinphoneAudioPlayer *player;
 
 -(void)setSelected:(BOOL)selected animated:(BOOL)animated{
     [super setSelected:selected animated:animated];
-    if (!selected)
+    _toolbar.hidden = !selected;
+    if (!selected) {
         return;
+    }
     if (!player)
         player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[self recording]];
     else
@@ -100,6 +109,19 @@ static UILinphoneAudioPlayer *player;
     player.view.frame = _playerView.frame;
     player.view.bounds = _playerView.bounds;
     [player open];
+}
+
+- (void)onShareButtonPressed {
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[[NSURL fileURLWithPath:_recording]] applicationActivities:nil];
+    [activityVC setCompletionWithItemsHandler:^(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
+        //This is used to select the same row when we get back to the recordings view.
+        NSString *file = player.file;
+        //This reloads the view, if don't it's empty for some reason. Idealy we'd want to do this before closing the view but it's functionnal.
+        [PhoneMainView.instance popCurrentView];
+        [PhoneMainView.instance changeCurrentView:RecordingsListView.compositeViewDescription];
+        [[(RecordingsListView *)VIEW(RecordingsListView) tableController] setSelected:file];
+    }];
+    [PhoneMainView.instance presentViewController:activityVC animated:YES completion:nil];
 }
 
 @end

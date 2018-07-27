@@ -18,5 +18,6 @@
 }
 - (void)loadData;
 - (void)removeAllRecordings;
+- (void)setSelected:(NSString *)filepath;
 
 @end

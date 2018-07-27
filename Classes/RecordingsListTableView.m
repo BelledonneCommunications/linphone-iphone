@@ -63,13 +63,6 @@
 - (void)loadData {
     LOGI(@"====>>>> Load recording list - Start");
     
-    //Clear recording cells
-    for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j){
-        for (NSInteger i = 0; i < [self.tableView numberOfRowsInSection:j]; ++i)
-        {
-            [[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setRecording:nil];
-        }
-    }
     recordings = [NSMutableDictionary dictionary];
     NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
     for (NSString *file in directoryContent) {
@@ -215,6 +208,29 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [cell setRecording:NULL];
         remove([recordingPath cStringUsingEncoding:NSUTF8StringEncoding]);
     }];
+}
+
+- (void)setSelected:(NSString *)filepath {
+    NSArray *parsedName = [LinphoneUtils parseRecordingName:filepath];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"EEEE, MMM d, yyyy"];
+    NSString *dayPretty = [dateFormat stringFromDate:[parsedName objectAtIndex:1]];
+    NSUInteger section;
+    NSArray *keys = [recordings allKeys];
+    for (section = 0; section < [keys count]; ++section) {
+        if ([dayPretty isEqualToString:(NSString *)[keys objectAtIndex:section]]) {
+            break;
+        }
+    }
+    NSUInteger row;
+    NSArray *recs = [recordings objectForKey:dayPretty];
+    for (row = 0; row < [recs count]; ++row) {
+        if ([filepath isEqualToString:(NSString *)[recs objectAtIndex:row]]) {
+            break;
+        }
+    }
+    NSUInteger indexes[] = {section, row};
+    [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathWithIndexes:indexes length:2] animated:TRUE scrollPosition:UITableViewScrollPositionNone];
 }
 
 #pragma mark - Utilities

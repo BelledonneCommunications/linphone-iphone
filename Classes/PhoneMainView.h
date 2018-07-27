@@ -44,6 +44,7 @@
 #import "HistoryDetailsView.h"
 #import "HistoryListView.h"
 #import "ImageView.h"
+#import "RecordingsListView.h"
 #import "SettingsView.h"
 #import "SideMenuView.h"
 #import "UIConfirmationDialog.h"
