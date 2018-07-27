@@ -12,6 +12,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *stopButton;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (weak, nonatomic) IBOutlet UIProgressView *timeProgress;
+@property (weak, nonatomic) NSString *file;
 
 + (id)audioPlayerWithFilePath:(NSString *)filePath;
 - (void)close;

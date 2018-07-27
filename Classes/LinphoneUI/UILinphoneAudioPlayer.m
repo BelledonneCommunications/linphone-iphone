@@ -12,10 +12,11 @@
     @private
     LinphonePlayer *player;
     LinphonePlayerCbs *cbs;
-    NSString *file;
     int duration;
     BOOL eofReached;
 }
+
+@synthesize file;
 
 #pragma mark - Factory
 
