@@ -44,7 +44,7 @@
 				  if ([FastAddressBook isSipAddress:sipAddr]) {
 					  NSString *username =  sipAddr.value.username;
 					[_sipAddresses addObject:username];
-                      if ([FastAddressBook isSipURIValid:username]) {
+                      if ([FastAddressBook isSipURIValid:username] && linphone_core_get_proxy_config_list(LC) != NULL) {
                           NSString *userIdentifier = [NSString stringWithUTF8String:linphone_address_as_string_uri_only([LinphoneUtils normalizeSipOrPhoneAddress:username])];
                           CNSocialProfile *socialProfile = [[CNSocialProfile alloc] initWithUrlString:nil
                                                                                              username:nil
