@@ -1350,7 +1350,7 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 		UIAlertAction *callAction = [UIAlertAction actionWithTitle:action
 															 style:UIAlertActionStyleDefault
 														   handler:^(UIAlertAction *action) {
-															 [LinphoneManager.instance call:address];
+															 [LinphoneManager.instance call:address withVideo:NO];
 														   }];
 
 		[errView addAction:defaultAction];
@@ -1479,7 +1479,7 @@ void linphone_iphone_qr_code_found(LinphoneCore *lc, const char *result) {
 		UIAlertAction *callAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Call", nil)
 															 style:UIAlertActionStyleDefault
 														   handler:^(UIAlertAction *action) {
-															 [self call:linphone_chat_room_get_peer_address(room)];
+															 [self call:linphone_chat_room_get_peer_address(room) withVideo:NO];
 														   }];
 		[errView addAction:callAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
@@ -2631,7 +2631,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	[ChatConversationView markAsRead:room];
 }
 
-- (void)call:(const LinphoneAddress *)iaddr {
+- (void)call:(const LinphoneAddress *)iaddr withVideo:(BOOL)video {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
@@ -2692,16 +2692,17 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
         CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(iaddr)] ?: address];
 		CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:uuid handle:handle];
         [act setContactIdentifier:address];
+        act.video = video;
 		CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
 		[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
 																	  completion:^(NSError *err){
 																	  }];
 	} else {
-		[self doCall:iaddr];
+		[self doCall:iaddr withVideo:video];
 	}
 }
 
-- (BOOL)doCall:(const LinphoneAddress *)iaddr {
+- (BOOL)doCall:(const LinphoneAddress *)iaddr withVideo:(BOOL)video{
 	LinphoneAddress *addr = linphone_address_clone(iaddr);
 	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
 
@@ -2711,6 +2712,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		LOGI(@"Enabling low bandwidth mode");
 		linphone_call_params_enable_low_bandwidth(lcallParams, YES);
 	}
+    if (video) {
+        linphone_call_params_enable_video(lcallParams, YES);
+    }
 
 	if (displayName != nil) {
 		linphone_address_set_display_name(addr, displayName.UTF8String);

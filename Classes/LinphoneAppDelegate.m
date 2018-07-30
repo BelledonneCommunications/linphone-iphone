@@ -61,7 +61,7 @@
         INStartAudioCallIntent *intent = (INStartAudioCallIntent *)i;
         INPerson *person = intent.contacts[0];
         if (person.personHandle != nil && (person.personHandle.type == CXHandleTypeGeneric || person.personHandle.type == INPersonHandleTypeUnknown))
-            [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
+            [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value] withVideo:NO];
         else {
             CNContactStore *store = [[CNContactStore alloc] init];
             NSError *error;
@@ -77,9 +77,36 @@
                                                           error:&error];
             Contact *contact = [[Contact alloc] initWithCNContact:cn];
             if (contact.sipAddresses.count > 0)
-                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]]];
+                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]] withVideo:NO];
             else
-                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]];
+                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value] withVideo:NO];
+        }
+        return YES;
+    } else if ([i isMemberOfClass:INStartVideoCallIntent.class]) {
+        if (((INStartVideoCallIntentResponse *)userActivity.interaction.intentResponse).code == INStartVideoCallIntentResponseCodeFailureAppConfigurationRequired)
+            return NO;
+        INStartVideoCallIntent *intent = (INStartVideoCallIntent *)i;
+        INPerson *person = intent.contacts[0];
+        if (person.personHandle != nil && (person.personHandle.type == CXHandleTypeGeneric || person.personHandle.type == INPersonHandleTypeUnknown))
+            [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value] withVideo:YES];
+        else {
+            CNContactStore *store = [[CNContactStore alloc] init];
+            NSError *error;
+            NSArray *keysToFetch = @[
+                                     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+                                     CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+                                     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+                                     CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+                                     CNContactSocialProfilesKey
+                                     ];
+            CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
+                                                    keysToFetch:keysToFetch
+                                                          error:&error];
+            Contact *contact = [[Contact alloc] initWithCNContact:cn];
+            if (contact.sipAddresses.count > 0)
+                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]] withVideo:YES];
+            else
+                [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value] withVideo:YES];
         }
         return YES;
     } else if ([i isMemberOfClass:INSendMessageIntent.class]) {
@@ -109,9 +136,11 @@
         } else {
             NSString *text = intent.content;
             LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]);
-            [PhoneMainView.instance goToChatRoom:cr];
-            LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, text.UTF8String);
+            LinphoneChatMessage *msg = (cr && text && ![text isEqualToString:@""]) ? linphone_chat_room_create_message(cr, text.UTF8String) : NULL;
+            if (!cr || !msg)
+                return NO;
             linphone_chat_room_send_chat_message(cr, msg);
+            [PhoneMainView.instance goToChatRoom:cr];
         }
         return YES;
     }

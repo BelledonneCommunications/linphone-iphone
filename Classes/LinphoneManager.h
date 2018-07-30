@@ -163,8 +163,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room;
-- (void)call:(const LinphoneAddress *)address;
-- (BOOL)doCall:(const LinphoneAddress *)iaddr;
+- (void)call:(const LinphoneAddress *)address withVideo:(BOOL)video;
+- (BOOL)doCall:(const LinphoneAddress *)iaddr withVideo:(BOOL)video;
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;

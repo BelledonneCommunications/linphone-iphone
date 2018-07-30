@@ -87,7 +87,7 @@
 
 	if ([address length] > 0) {
 		LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:address];
-		[LinphoneManager.instance call:addr];
+		[LinphoneManager.instance call:addr withVideo:NO];
 		if (addr)
 			linphone_address_destroy(addr);
 	}

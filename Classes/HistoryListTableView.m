@@ -295,7 +295,7 @@
 				[cell onDetails:self];
 			} else {
 				const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-				[LinphoneManager.instance call:addr];
+				[LinphoneManager.instance call:addr withVideo:NO];
 			}
 		}
 	}

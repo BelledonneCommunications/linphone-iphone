@@ -370,7 +370,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	if (textField.text.length > 0) {
 		LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:textField.text];
-		[LinphoneManager.instance call:addr];
+		[LinphoneManager.instance call:addr withVideo:NO];
 		if (addr)
 			linphone_address_destroy(addr);
 	}
@@ -435,7 +435,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:voiceMail];
 	if (addr) {
 		linphone_address_set_display_name(addr, NSLocalizedString(@"Voice mail", nil).UTF8String);
-		[lm call:addr];
+		[lm call:addr withVideo:NO];
 		linphone_address_destroy(addr);
 	} else {
 		LOGE(@"Cannot call voice mail because URI not set or invalid!");

@@ -128,7 +128,7 @@
 
 - (IBAction)onCallClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
-	[LinphoneManager.instance call:addr];
+	[LinphoneManager.instance call:addr withVideo:NO];
 	if (addr)
 		linphone_address_destroy(addr);
 }
