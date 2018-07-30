@@ -30,6 +30,7 @@
 			<array>
 				<string>INSendMessageIntent</string>
 				<string>INStartAudioCallIntent</string>
+				<string>INStartVideoCallIntent</string>
 			</array>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
