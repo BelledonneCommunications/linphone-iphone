@@ -57,6 +57,23 @@
   	return nil;
 }
 
++ (Contact *)getContactWithContactIdentifier:(NSString *)identifier {
+    CNContactStore *store = [[CNContactStore alloc] init];
+    NSError *error;
+    NSArray *keysToFetch = @[
+                             CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+                             CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+                             CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+                             CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
+                             CNContactSocialProfilesKey
+                             ];
+    CNContact *cn = [store unifiedContactWithIdentifier:identifier
+                                            keysToFetch:keysToFetch
+                                                  error:&error];
+    Contact *contact = [[Contact alloc] initWithCNContact:cn];
+    return contact;
+}
+
 + (Contact *)getContactWithAddress:(const LinphoneAddress *)address {
 	Contact *contact = nil;
 	if (address) {

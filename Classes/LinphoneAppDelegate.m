@@ -63,19 +63,7 @@
         if (person.personHandle != nil && (person.personHandle.type == CXHandleTypeGeneric || person.personHandle.type == INPersonHandleTypeUnknown))
             [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value] withVideo:NO];
         else {
-            CNContactStore *store = [[CNContactStore alloc] init];
-            NSError *error;
-            NSArray *keysToFetch = @[
-                                     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-                                     CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
-                                     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-                                     CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
-                                     CNContactSocialProfilesKey
-                                     ];
-            CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
-                                                    keysToFetch:keysToFetch
-                                                          error:&error];
-            Contact *contact = [[Contact alloc] initWithCNContact:cn];
+            Contact *contact = [FastAddressBook getContactWithContactIdentifier:person.contactIdentifier];
             if (contact.sipAddresses.count > 0)
                 [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]] withVideo:NO];
             else
@@ -90,19 +78,7 @@
         if (person.personHandle != nil && (person.personHandle.type == CXHandleTypeGeneric || person.personHandle.type == INPersonHandleTypeUnknown))
             [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value] withVideo:YES];
         else {
-            CNContactStore *store = [[CNContactStore alloc] init];
-            NSError *error;
-            NSArray *keysToFetch = @[
-                                     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-                                     CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
-                                     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-                                     CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
-                                     CNContactSocialProfilesKey
-                                     ];
-            CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
-                                                    keysToFetch:keysToFetch
-                                                          error:&error];
-            Contact *contact = [[Contact alloc] initWithCNContact:cn];
+            Contact *contact = [FastAddressBook getContactWithContactIdentifier:person.contactIdentifier];
             if (contact.sipAddresses.count > 0)
                 [LinphoneManager.instance call:[LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]] withVideo:YES];
             else
@@ -115,19 +91,7 @@
         INSendMessageIntent *intent = (INSendMessageIntent *)i;
         INPerson *person = intent.recipients[0];
         if (person.contactIdentifier && ![person.contactIdentifier isEqual:@""]) {
-            CNContactStore *store = [[CNContactStore alloc] init];
-            NSError *error;
-            NSArray *keysToFetch = @[
-                                    CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-                                    CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
-                                    CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-                                    CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey,
-                                    CNContactSocialProfilesKey
-                                    ];
-            CNContact *cn = [store unifiedContactWithIdentifier:person.contactIdentifier
-                                                    keysToFetch:keysToFetch
-                                                          error:&error];
-            Contact *contact = [[Contact alloc] initWithCNContact:cn];
+            Contact *contact = [FastAddressBook getContactWithContactIdentifier:person.contactIdentifier];
             if (contact.sipAddresses.count > 0) {
                 LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]]);
                 [PhoneMainView.instance goToChatRoom:cr];

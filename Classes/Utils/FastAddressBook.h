@@ -39,6 +39,7 @@
 
 // TOOLS
 
++ (Contact *)getContactWithContactIdentifier:(NSString *)identifier;
 + (Contact *)getContactWithAddress:(const LinphoneAddress *)address;
 - (CNContact *)getCNContactFromContact:(Contact *)acontact;
 
