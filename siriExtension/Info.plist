@@ -25,7 +25,9 @@
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>IntentsRestrictedWhileLocked</key>
-			<array/>
+			<array>
+				<string>INStartVideoCallIntent</string>
+			</array>
 			<key>IntentsSupported</key>
 			<array>
 				<string>INSendMessageIntent</string>

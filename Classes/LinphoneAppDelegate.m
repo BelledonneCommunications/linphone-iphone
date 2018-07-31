@@ -51,7 +51,7 @@
 	[[UIApplication sharedApplication] setDelegate:self];
 }
 
-#pragma mark -
+#pragma mark - Intent handling
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
     INIntent *i = userActivity.interaction.intent;
@@ -91,6 +91,7 @@
         INSendMessageIntent *intent = (INSendMessageIntent *)i;
         INPerson *person = intent.recipients[0];
         if (person.contactIdentifier && ![person.contactIdentifier isEqual:@""]) {
+            // From native contact view, just go to the room as there's no text provided
             Contact *contact = [FastAddressBook getContactWithContactIdentifier:person.contactIdentifier];
             if (contact.sipAddresses.count > 0) {
                 LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:contact.sipAddresses[0]]);
@@ -98,18 +99,22 @@
             } else
                 return NO;
         } else {
+            // Siri Intent, with text provided
             NSString *text = intent.content;
             LinphoneChatRoom *cr = linphone_core_get_chat_room(LC, [LinphoneUtils normalizeSipOrPhoneAddress:person.personHandle.value]);
             LinphoneChatMessage *msg = (cr && text && ![text isEqualToString:@""]) ? linphone_chat_room_create_message(cr, text.UTF8String) : NULL;
             if (!cr || !msg)
                 return NO;
             linphone_chat_room_send_chat_message(cr, msg);
+            linphone_chat_message_unref(msg);
             [PhoneMainView.instance goToChatRoom:cr];
         }
         return YES;
     }
     return NO;
 }
+
+#pragma mark - Lifecycle
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
