@@ -265,6 +265,7 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 		linphone_error_info_unref(cfg->ei);
 	}
 
+	if (cfg->service_route) linphone_address_unref(cfg->service_route);
 	if (cfg->contact_address) linphone_address_unref(cfg->contact_address);
 	if (cfg->contact_address_without_params)
 		linphone_address_unref(cfg->contact_address_without_params);
@@ -1416,8 +1417,22 @@ const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProx
 }
 
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
-	return cfg->op?(const LinphoneAddress*) cfg->op->getServiceRoute():NULL;
+	if (!cfg->op)
+		return NULL;
+	const SalAddress *salAddr = cfg->op->getServiceRoute();
+	if (!salAddr)
+		return NULL;
+	if (cfg->service_route)
+		L_GET_PRIVATE_FROM_C_OBJECT(cfg->service_route)->setInternalAddress(const_cast<SalAddress *>(salAddr));
+	else {
+		char *buf = sal_address_as_string(salAddr);
+		const_cast<LinphoneProxyConfig *>(cfg)->service_route = linphone_address_new(buf);
+		ms_free(buf);
+	}
+
+	return cfg->service_route;
 }
+
 const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
 	const char* addr=NULL;
 	const char* ret="udp"; /*default value*/

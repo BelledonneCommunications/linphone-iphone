@@ -89,6 +89,7 @@ struct _LinphoneProxyConfig
 	char *reg_identity;
 	LinphoneAddress* identity_address;
 	LinphoneAddress *contact_address;
+	LinphoneAddress *service_route;
 	LinphoneAddress *contact_address_without_params;
 	bctbx_list_t *reg_routes;
 	char *quality_reporting_collector;
