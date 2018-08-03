@@ -210,7 +210,7 @@
 	[_chatRoomDelegate tableViewIsScrolling];
 }
 
-static const CGFloat MESSAGE_SPACING_PERCENTAGE = 5.f;
+static const CGFloat MESSAGE_SPACING_PERCENTAGE = 0.f;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
@@ -231,7 +231,6 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 5.f;
         if (nextEvent) {
             LinphoneChatMessage *nextChat = linphone_event_log_get_chat_message(nextEvent);
             if (!linphone_address_equal(linphone_chat_message_get_from_address(nextChat), linphone_chat_message_get_from_address(chat))) {
-                LOGD(@"BITE");
                 height += tableView.frame.size.height * MESSAGE_SPACING_PERCENTAGE / 100;
             }
         }
