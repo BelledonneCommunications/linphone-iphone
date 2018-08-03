@@ -53,7 +53,7 @@
 	NSError *err = nil;
 	[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
                          mode:AVAudioSessionModeVoiceChat
-                      options:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionMixWithOthers
+                      options:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
 						error:&err];
 	if (err) {
 		LOGE(@"Unable to change audio session because: %@", err.localizedDescription);
