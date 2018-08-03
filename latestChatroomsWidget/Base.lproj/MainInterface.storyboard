@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Today View Controller-->
+        <scene sceneID="cwh-vc-ff4">
+            <objects>
+                <viewController id="M4Y-Lb-cyx" customClass="TodayViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="37"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="kvZ-RU-0JV">
+                                <rect key="frame" x="16" y="-26" width="288" height="87.5"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="P4U-hP-N9F">
+                                        <rect key="frame" x="0.0" y="0.0" width="60" height="87.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dGY-Wo-tng">
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60.5"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="a43-Du-y1b"/>
+                                                    <constraint firstAttribute="height" constant="60" id="gNd-AG-oLn"/>
+                                                </constraints>
+                                                <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="firstButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="n6M-cY-cWU"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpJ-Wl-BT1">
+                                                <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="fpJ-Wl-BT1" firstAttribute="centerX" secondItem="P4U-hP-N9F" secondAttribute="centerX" id="3Zz-Mm-hxc"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="79U-UR-Bp2">
+                                        <rect key="frame" x="76" y="0.0" width="60" height="87.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aiZ-1q-Ssd">
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="0Me-vh-jt4"/>
+                                                    <constraint firstAttribute="height" constant="60" id="9hj-Pa-s8F"/>
+                                                    <constraint firstAttribute="width" constant="60" id="iil-bF-24j"/>
+                                                </constraints>
+                                                <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="secondButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="e09-4G-NJf"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fEo-fa-uyD">
+                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="fEo-fa-uyD" firstAttribute="centerX" secondItem="79U-UR-Bp2" secondAttribute="centerX" id="FPk-ST-xe3"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Xgm-go-u3S">
+                                        <rect key="frame" x="152" y="0.0" width="60" height="87.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VgA-lq-CQL">
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="TEZ-z7-Yce"/>
+                                                    <constraint firstAttribute="height" constant="60" id="rtD-OM-bmH"/>
+                                                </constraints>
+                                                <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="thirdButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="OtO-nr-X1J"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zM6-aO-Pes">
+                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="zM6-aO-Pes" firstAttribute="centerX" secondItem="Xgm-go-u3S" secondAttribute="centerX" id="lGV-8K-Ol0"/>
+                                        </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="nHe-ID-vxE">
+                                        <rect key="frame" x="228" y="0.0" width="60" height="87.5"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7je-G1-IfQ">
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="Pm8-lw-PB4"/>
+                                                    <constraint firstAttribute="height" constant="60" id="SYf-Yl-EDf"/>
+                                                </constraints>
+                                                <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="fourthButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="a2u-BT-Fkp"/>
+                                                </connections>
+                                            </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bpY-VL-FDz">
+                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="bpY-VL-FDz" firstAttribute="centerX" secondItem="nHe-ID-vxE" secondAttribute="centerX" id="PD7-gj-AXr"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="kvZ-RU-0JV" firstAttribute="centerY" secondItem="S3S-Oj-5AN" secondAttribute="centerY" id="1dD-eI-ohO"/>
+                            <constraint firstItem="kvZ-RU-0JV" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" constant="16" id="9XT-er-59s"/>
+                            <constraint firstItem="kvZ-RU-0JV" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="l30-a1-mDN"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="ssy-KU-ocm"/>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="37"/>
+                    <connections>
+                        <outletCollection property="stackViews" destination="P4U-hP-N9F" id="3f1-th-6ZO"/>
+                        <outletCollection property="stackViews" destination="79U-UR-Bp2" id="ix2-7S-Rim"/>
+                        <outletCollection property="stackViews" destination="Xgm-go-u3S" id="VYM-Ld-joW"/>
+                        <outletCollection property="stackViews" destination="nHe-ID-vxE" id="iGd-Ix-Pj6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="avatar.png" width="259" height="259"/>
+    </resources>
+</document>

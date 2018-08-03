@@ -29,4 +29,5 @@
 @property(strong, nonatomic) NSMutableDictionary *sections;
 @property(strong, nonatomic) NSMutableArray *sortedDays;
 
++ (void) saveDataToUserDefaults;
 @end

@@ -35,6 +35,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *chatLatestTimeLabel;
 @property(weak, nonatomic) IBOutlet UIBouncingView *unreadCountView;
 @property(weak, nonatomic) IBOutlet UILabel *unreadCountLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *imdmIcon;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

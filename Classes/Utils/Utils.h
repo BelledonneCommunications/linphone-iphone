@@ -68,6 +68,7 @@ typedef enum {
 
 - (UIImage *)squareCrop;
 - (UIImage *)scaleToSize:(CGSize)size squared:(BOOL)squared;
++ (UIImage *)resizeImage:(UIImage *)image withMaxWidth:(float)maxWidth andMaxHeight:(float)maxHeight;
 
 @end
 

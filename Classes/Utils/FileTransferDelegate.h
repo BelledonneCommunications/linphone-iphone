@@ -13,6 +13,7 @@
 @interface FileTransferDelegate : NSObject
 
 - (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality;
+- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withUrl:(NSURL *)url;
 - (void)cancel;
 - (BOOL)download:(LinphoneChatMessage *)message;
 - (void)stopAndDestroy;

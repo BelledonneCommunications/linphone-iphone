@@ -117,3 +117,6 @@
 [submodule "submodules/externals/soci"]
 	path = submodules/externals/soci
 	url = https://gitlab.linphone.org/BC/public/external/soci.git
+[submodule "submodules/externals/zxing-cpp"]
+	path = submodules/externals/zxing-cpp
+	url = https://gitlab.linphone.org/BC/public/external/zxing-cpp.git

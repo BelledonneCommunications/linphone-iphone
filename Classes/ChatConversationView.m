@@ -24,6 +24,7 @@
 #import "UIChatBubbleTextCell.h"
 
 @implementation ChatConversationView
+static NSString* groupName = @"group.belledonne-communications.linphone";
 
 #pragma mark - Lifecycle Functions
 
@@ -84,7 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
+    _markAsRead = TRUE;
 	// if we use fragments, remove back button
 	if (IPAD) {
 		_backButton.hidden = YES;
@@ -205,11 +206,51 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	_chatView.hidden = NO;
 	[self update];
+    [self shareFile];
+}
+
+- (void)shareFile {
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+    
+    NSDictionary *dict = [defaults valueForKey:@"img"];
+    NSDictionary *dictWeb = [defaults valueForKey:@"web"];
+    NSDictionary *dictFile = [defaults valueForKey:@"mov"];
+    NSDictionary *dictText = [defaults valueForKey:@"text"];
+    if (dict) {
+        //share photo
+        NSData *data = dict[@"nsData"];
+        UIImage *image = [[UIImage alloc] initWithData:data];
+        [self chooseImageQuality:image url:nil];
+        [defaults removeObjectForKey:@"img"];
+    } else if (dictWeb) {
+        //share url, if local file, then upload file
+        NSString *url  = dictWeb[@"url"];
+        NSURL *fileUrl = [NSURL fileURLWithPath:url];
+        if ([url hasPrefix:@"file"]) {
+            //local file
+            NSData *data = dictWeb[@"nsData"];
+            [self confirmShare:data url:fileUrl text:nil];
+        } else {
+            [self confirmShare:nil url:nil text:url];
+        }
+        [defaults removeObjectForKey:@"web"];
+    }else if (dictFile) {
+        //share file
+        NSData *data  = dictFile[@"nsData"];
+        [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]] text:nil];
+        [defaults removeObjectForKey:@"mov"];
+    }else if (dictText) {
+        //share text
+        [self confirmShare:nil url:nil text:dictText[@"name"]];
+        [defaults removeObjectForKey:@"text"];
+    }
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
-	if (_chatRoom)
+	if (_chatRoom && _markAsRead)
 		[ChatConversationView markAsRead:_chatRoom];
+
+    _markAsRead = TRUE;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
@@ -253,8 +294,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if (internalUrl) {
-		// internal url is saved in the appdata for display and later save
-		[LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
+        // internal url is saved in the appdata for display and later save
+        [LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
 	}
 
 	// we must ref & unref message because in case of error, it will be destroy otherwise
@@ -316,6 +357,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[sheet showInView:PhoneMainView.instance.view];
 	  });
 	});
+}
+
+- (void)confirmShare:(NSData *)data url:(NSURL *)url text:(NSString *)text {
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+       
+            [sheet addButtonWithTitle:@"send to this friend"
+                                block:^() {
+                                    if(data && url)
+                                        [self startFileUpload:data withUrl:url];
+                                    else
+                                        [self sendMessage:text withExterlBodyUrl:nil withInternalURL:nil];
+                                     
+                                }];
+     
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [sheet showInView:PhoneMainView.instance.view];
+        });
+    });
 }
 
 - (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
@@ -547,6 +608,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return TRUE;
 }
 
+- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url {
+    FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
+    [fileTransfer uploadFile:data forChatRoom:_chatRoom withUrl:url];
+    [_tableController scrollToBottom:true];
+    return TRUE;
+}
+
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url {
 	[self sendMessage:message withExterlBodyUrl:[NSURL URLWithString:url] withInternalURL:nil];
 }
@@ -760,6 +828,7 @@ void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
+    [ChatsListTableView saveDataToUserDefaults];
 
 	if (IPAD)
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
@@ -781,6 +850,20 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
+}
+
+- (void)openResults:(NSString *) filePath
+{
+    // Open the controller.
+    _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
+    _documentInteractionController.delegate = self;
+    
+    BOOL canOpen =  [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
+    //NO app can open the file
+    if (canOpen == NO) {
+        [[[UIAlertView alloc] initWithTitle:@"Info" message:@"There is no app found to open it" delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil] show];
+        
+    }
 }
 
 @end

@@ -1,8 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIChatCell">
@@ -11,6 +15,7 @@
                 <outlet property="avatarImage" destination="19" id="30"/>
                 <outlet property="chatContentLabel" destination="21" id="24"/>
                 <outlet property="chatLatestTimeLabel" destination="r7A-Mk-LQX" id="J0r-yr-YLk"/>
+                <outlet property="imdmIcon" destination="aa2-Kl-c1H" id="rnr-XY-r9K"/>
                 <outlet property="unreadCountLabel" destination="ZXq-Do-7Ua" id="anx-Na-sYz"/>
                 <outlet property="unreadCountView" destination="7DE-KJ-9Q3" id="hkt-rA-EKa"/>
             </connections>
@@ -29,7 +34,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label=""/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
-                    <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" text="John Doe" lineBreakMode="tailTruncation" minimumFontSize="10" adjustsFontSizeToFit="NO" id="20" userLabel="addressLabel">
@@ -37,15 +42,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contact name"/>
                     <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" text="This is a placeholder message" lineBreakMode="tailTruncation" numberOfLines="3" adjustsFontSizeToFit="NO" id="21" userLabel="chatContentLabel">
-                    <rect key="frame" x="59" y="31" width="316" height="29"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Message"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" id="7DE-KJ-9Q3" userLabel="unreadCountView" customClass="UIBouncingView">
@@ -64,12 +61,27 @@
                                 <bool key="isElement" value="NO"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="chat_read.png" id="aa2-Kl-c1H" userLabel="imdmIcon">
+                    <rect key="frame" x="59" y="39" width="13" height="13"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Delivery failed">
+                        <accessibilityTraits key="traits" button="YES" image="YES"/>
+                    </accessibility>
+                </imageView>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" misplaced="YES" text="This is a placeholder message" lineBreakMode="tailTruncation" numberOfLines="3" adjustsFontSizeToFit="NO" id="21" userLabel="chatContentLabel">
+                    <rect key="frame" x="80" y="31" width="316" height="29"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Message"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -77,7 +89,8 @@
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="255" height="255"/>
-        <image name="history_chat_indicator.png" width="13" height="13"/>
+        <image name="avatar.png" width="259" height="259"/>
+        <image name="chat_read.png" width="24" height="24"/>
+        <image name="history_chat_indicator.png" width="14" height="13"/>
     </resources>
 </document>

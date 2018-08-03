@@ -644,6 +644,36 @@
 	return scaledImage;
 }
 
++ (UIImage *)resizeImage:(UIImage *)image withMaxWidth:(float)maxWidth andMaxHeight:(float)maxHeight {
+    float actualHeight = image.size.height;
+    float actualWidth = image.size.width;
+    float imgRatio = actualWidth / actualHeight;
+    float maxRatio = maxWidth / maxHeight;
+    float compressionQuality = 1;
+    if (actualHeight > maxHeight || actualWidth > maxWidth)
+    {
+        if (imgRatio < maxRatio) {
+            imgRatio = maxHeight / actualHeight;
+            actualWidth = imgRatio * actualWidth;
+            actualHeight = maxHeight;
+        } else if (imgRatio > maxRatio) {
+            imgRatio = maxWidth / actualWidth;
+            actualHeight = imgRatio * actualHeight;
+            actualWidth = maxWidth;
+        } else {
+            actualHeight = maxHeight;
+            actualWidth = maxWidth;
+        }
+    }
+    CGRect rect = CGRectMake(0.0, 0.0, actualWidth, actualHeight);
+    UIGraphicsBeginImageContext(rect.size);
+    [image drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return [UIImage imageWithData:imageData];
+}
+
 @end
 
 @implementation UIColor (LightAndDark)
