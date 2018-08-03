@@ -37,6 +37,7 @@
 		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 		[self addSubview:sub];
 	}
+	[_imdmIcon setHidden:TRUE];
 	return self;
 }
 
@@ -95,8 +96,7 @@
                     text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];
                 _chatContentLabel.attributedText = nil;
                 _chatContentLabel.text = text;
-            }
-            else {
+            } else {
                 NSString *name = [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)];
                 if ([name length] > 25) {
                     name = [[name substringToIndex:25] stringByAppendingString:@"[...]"];
