@@ -913,7 +913,7 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
                                                                              inMode:UIDocumentPickerModeImport];
     _documentPicker.delegate = self;
     
-    _documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+    _documentPicker.modalPresentationStyle = UIModalPresentationOverCurrentContext ;
     [self presentViewController:_documentPicker animated:YES completion:nil];
 }
 
