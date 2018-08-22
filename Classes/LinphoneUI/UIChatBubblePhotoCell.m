@@ -279,8 +279,10 @@
         } else {
             [self fileErrorBlock];
         }        
-    } else
-        [view getIcloudFiles];
+    } else {
+        [LinphoneManager setValueInMessageAppData:@"onFileClick" forKey:@"icloudFileOption" inMessage:self.message];
+        [super getIcloudFiles];
+    }
 }
 
 

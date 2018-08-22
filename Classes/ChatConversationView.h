@@ -32,7 +32,7 @@
 #include "linphone/linphonecore.h"
 
 @interface ChatConversationView
-	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate, UIDocumentPickerDelegate, 
+	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
                         UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate, UICollectionViewDataSource> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
@@ -61,7 +61,6 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
-@property (nonatomic, strong) UIDocumentPickerViewController *documentPicker;
 @property NSMutableArray <UIImage *> *imagesArray;
 @property NSMutableArray <NSString *> *assetIdsArray;
 @property NSMutableArray <NSNumber *> *qualitySettingsArray;
@@ -81,7 +80,6 @@
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
 - (void)update;
-- (void)getIcloudFiles;
 - (void)openFile:(NSString *) filePath;
 - (void)clearMessageView;
 
