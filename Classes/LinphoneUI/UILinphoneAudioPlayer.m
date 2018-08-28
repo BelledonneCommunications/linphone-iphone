@@ -50,6 +50,16 @@
     [self.view removeFromSuperview];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [_playButton setTitle:@"" forState:UIControlStateNormal];
+    if (player && linphone_player_get_state(player) == LinphonePlayerPlaying)
+        [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPause:[UIColor blackColor]] forState:UIControlStateNormal];
+    else
+        [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
+    [_stopButton setTitle:@"" forState:UIControlStateNormal];
+    [_stopButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemRefresh:[UIColor blackColor]] forState:UIControlStateNormal];
+}
+
 - (void)open {
     linphone_player_open(player, file.UTF8String);
     duration = linphone_player_get_duration(player);

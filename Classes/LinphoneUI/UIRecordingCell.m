@@ -20,7 +20,6 @@ static UILinphoneAudioPlayer *player;
  * TODO:
  * - When we scroll past a selected row, the player loads incorrectly (no buttons). Probably a problem in the player code.
  * - mkv recording is probably buggy, wrong eof. wav playing works but does not display the length/timestamp.
- * - When coming back from the action extension (to share a recording), we have to pop and reload the view for it to dislpay correctly. Find out why?
  * - The share button is greyed out when not clicking it. idk why, it's really weird.
 */
 - (id)initWithIdentifier:(NSString *)identifier {
