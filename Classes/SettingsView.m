@@ -520,7 +520,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
         if (removeFromHiddenKeys)
             [LinphoneManager.instance lpConfigSetInt:10000000 forKey:@"auto_download_incoming_files_max_size"];
         [keys addObject:@"auto_download_incoming_files_max_size"];
-    }
+	} else if ([@"tunnel_dual_mode" compare:notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"tunnel_dual_mode"] boolValue];
+		[keys addObject:@"tunnel_address_2_preference"];
+		[keys addObject:@"tunnel_port_2_preference"];
+	}
 
 	for (NSString *key in keys) {
 		if (removeFromHiddenKeys)
@@ -698,6 +702,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 
 	if (!linphone_core_tunnel_available()) {
 		[hiddenKeys addObject:@"tunnel_menu"];
+	} else {
+		if (![settingsStore boolForKey:@"tunnel_dual_mode"]) {
+			[hiddenKeys addObject:@"tunnel_address_2_preference"];
+			[hiddenKeys addObject:@"tunnel_port_2_preference"];
+		}
 	}
 
 	if (![lm lpConfigBoolForKey:@"account_mandatory_advanced_preference"]) {

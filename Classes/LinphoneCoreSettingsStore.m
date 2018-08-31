@@ -399,16 +399,26 @@
 	// tunnel section
 	if (linphone_core_tunnel_available()) {
 		LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
-		[self setObject:[lm lpConfigStringForKey:@"tunnel_mode_preference" withDefault:@"off"]
+		[self setObject:[lm lpConfigStringForKey:@"tunnel_mode_preference" withDefault:@"auto"]
 				 forKey:@"tunnel_mode_preference"];
 		const MSList *configs = linphone_tunnel_get_servers(tunnel);
 		if (configs != NULL) {
 			LinphoneTunnelConfig *ltc = (LinphoneTunnelConfig *)configs->data;
 			[self setCString:linphone_tunnel_config_get_host(ltc) forKey:@"tunnel_address_preference"];
 			[self setInteger:linphone_tunnel_config_get_port(ltc) forKey:@"tunnel_port_preference"];
+			if (linphone_tunnel_config_get_host2(ltc) == NULL) {
+				[self setBool:FALSE forKey:@"tunnel_dual_mode"];
+			} else {
+				[self setBool:TRUE forKey:@"tunnel_dual_mode"];
+				[self setCString:linphone_tunnel_config_get_host2(ltc) forKey:@"tunnel_address_2_preference"];
+				[self setInteger:linphone_tunnel_config_get_port2(ltc) forKey:@"tunnel_port_2_preference"];
+			}
 		} else {
 			[self setCString:"" forKey:@"tunnel_address_preference"];
 			[self setInteger:443 forKey:@"tunnel_port_preference"];
+			[self setBool:FALSE forKey:@"tunnel_dual_mode"];
+			[self setCString:"" forKey:@"tunnel_address_2_preference"];
+			[self setInteger:443 forKey:@"tunnel_port_2_preference"];
 		}
 	}
 
@@ -843,17 +853,29 @@
 			NSString *lTunnelPrefMode = [self stringForKey:@"tunnel_mode_preference"];
 			NSString *lTunnelPrefAddress = [self stringForKey:@"tunnel_address_preference"];
 			int lTunnelPrefPort = [self integerForKey:@"tunnel_port_preference"];
+			BOOL lTunnelDualMode = [self boolForKey:@"tunnel_dual_mode"];
+			NSString *lTunnelPrefAddress2 = [self stringForKey:@"tunnel_address_2_preference"];
+			int lTunnelPrefPort2 = [self integerForKey:@"tunnel_port_2_preference"];
 			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 			LinphoneTunnelMode mode = LinphoneTunnelModeDisable;
-			int lTunnelPort = 443;
-			if (lTunnelPrefPort)
-				lTunnelPort = lTunnelPrefPort;
+			if (!lTunnelPrefPort)
+				lTunnelPrefPort = 443;
+			if (!lTunnelPrefPort2)
+				lTunnelPrefPort2 = 443;
 
+			linphone_tunnel_set_mode(tunnel, LinphoneTunnelModeDisable);
 			linphone_tunnel_clean_servers(tunnel);
 			if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
 				LinphoneTunnelConfig *ltc = linphone_tunnel_config_new();
 				linphone_tunnel_config_set_host(ltc, [lTunnelPrefAddress UTF8String]);
-				linphone_tunnel_config_set_port(ltc, lTunnelPort);
+				linphone_tunnel_config_set_port(ltc, lTunnelPrefPort);
+				
+				linphone_tunnel_enable_dual_mode(tunnel, lTunnelDualMode);
+				if (lTunnelDualMode && lTunnelPrefAddress2 && [lTunnelPrefAddress2 length]) {
+					linphone_tunnel_config_set_host2(ltc, [lTunnelPrefAddress2 UTF8String]);
+					linphone_tunnel_config_set_port2(ltc, lTunnelPrefPort2);
+				}
+				
 				linphone_tunnel_add_server(tunnel, ltc);
 
 				if ([lTunnelPrefMode isEqualToString:@"off"])
