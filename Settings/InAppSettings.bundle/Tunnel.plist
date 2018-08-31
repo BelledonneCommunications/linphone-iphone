@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
-			<string>off</string>
+			<string>Auto</string>
 			<key>Titles</key>
 			<array>
 				<string>Off</string>
@@ -39,6 +39,38 @@
 		<dict>
 			<key>Key</key>
 			<string>tunnel_port_preference</string>
+			<key>Title</key>
+			<string>Port</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>NumbersAndPunctuation</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_dual_mode</string>
+			<key>Title</key>
+			<string>Enable dual mode</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_address_2_preference</string>
+			<key>Title</key>
+			<string>Address</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>tunnel_port_2_preference</string>
 			<key>Title</key>
 			<string>Port</string>
 			<key>Type</key>
