@@ -210,6 +210,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_room_cbs_set_is_composing_received(_chatRoomCbs, on_chat_room_is_composing_received);
 		linphone_chat_room_cbs_set_conference_joined(_chatRoomCbs, on_chat_room_conference_joined);
 		linphone_chat_room_cbs_set_conference_left(_chatRoomCbs, on_chat_room_conference_left);
+         linphone_chat_room_cbs_set_security_event(_chatRoomCbs, on_chat_room_conference_alert);
 		linphone_chat_room_cbs_set_user_data(_chatRoomCbs, (__bridge void*)self);
 		linphone_chat_room_add_callbacks(_chatRoom, _chatRoomCbs);
 	}
@@ -927,6 +928,8 @@ void on_chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventL
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view updateParticipantLabel];
 	[view.tableController scrollToBottom:true];
+    UIImage *image = [FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(cr)];
+    [view.encryptedButton setImage:image forState:UIControlStateNormal];
 }
 
 void on_chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
@@ -999,6 +1002,14 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
     DevicesListView *view = VIEW(DevicesListView);
     view.room = _chatRoom;
     [PhoneMainView.instance popToView:view.compositeViewDescription];
+}
+
+void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+    ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
+    [view.tableController addEventEntry:(LinphoneEventLog *)event_log];
+    [view.tableController scrollToBottom:true];
+    UIImage *image = [FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(cr)];
+    [view.encryptedButton setImage:image forState:UIControlStateNormal];
 }
 
 - (void)openFileWithURL:(NSURL *)url
