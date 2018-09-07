@@ -2585,6 +2585,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_call_params_enable_video(lcallParams, video);
 
 	linphone_call_accept_with_params(call, lcallParams);
+	linphone_call_params_unref(lcallParams);
 }
 
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
