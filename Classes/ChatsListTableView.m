@@ -161,7 +161,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         }
         [dict setObject:display
                  forKey:@"display"];
-        [dict setObject:[NSNumber numberWithBool:linphone_chat_room_get_conference_address(cr)]
+        [dict setObject:[NSNumber numberWithBool:!!linphone_chat_room_get_conference_address(cr)]
                  forKey:@"nbParticipants"];
         [addresses addObject:dict];
         if (addresses.count >= 4) //send no more data than needed
