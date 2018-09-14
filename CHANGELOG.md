@@ -12,6 +12,9 @@ Group changes to describe their impact on the project, as follows:
 
 ## [Unreleased]
 
+### Added
+- Support of H265 video format based on Apple's VideoToolbox framework.
+
 ### Fixed
 - Fix Bluetooth management
 
