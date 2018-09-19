@@ -2466,7 +2466,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	AVAudioSessionRouteDescription *newRoute = [AVAudioSession sharedInstance].currentRoute;
 
-	if (newRoute) {
+	if (newRoute && newRoute.outputs.count > 0) {
 		NSString *route = newRoute.outputs[0].portType;
 		LOGI(@"Current audio route is [%s]", [route UTF8String]);
 
