@@ -678,7 +678,6 @@
 		8C435FB420BC3685004CCA25 /* belr.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C435FB520BC368D004CCA25 /* belr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; };
 		8C435FB620BC368D004CCA25 /* belr.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C56289E20236AA7007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
 		8C56289F20236C25007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
 		8C5BCED01EB3859200A9AAEF /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
 		8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -3721,7 +3720,6 @@
 				633FEDB61D3CD5590014B822 /* call_alt_start_default.png in Resources */,
 				6352A5761BE0D4B800594C1C /* CallSideMenuView.xib in Resources */,
 				633FEF0D1D3CD55A0014B822 /* options_transfer_call_disabled@2x.png in Resources */,
-				8C56289E20236AA7007A8ECC /* db in Resources */,
 				633FEDEF1D3CD5590014B822 /* call_transfer_default@2x.png in Resources */,
 				633FEF391D3CD55A0014B822 /* routes_selected@2x.png in Resources */,
 				633FEE491D3CD5590014B822 /* delete_default@2x.png in Resources */,
