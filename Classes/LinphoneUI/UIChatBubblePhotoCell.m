@@ -410,21 +410,25 @@
         imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - 40];
         imgFrame.origin.x = (bubbleFrame.size.width - imgFrame.size.width)/2;
         self.finalAssetView.frame = imgFrame;
-     
-        // Positioning text message
-        const char *utf8Text = linphone_chat_message_get_text_content(self.message);
-        
-        CGRect textFrame = self.messageText.frame;
-        textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
-        if (!utf8Text) {
-            textFrame.size.height = 0;
-        } else {
-            textFrame.size.height = bubbleFrame.size.height - textFrame.origin.x;
-        }
-        
-        self.messageText.frame = textFrame;
-        LOGD([NSString stringWithFormat:@"Text of the photoCell: %@, size of the text of the photoCell: %@", [self.messageText text], NSStringFromCGSize(textFrame.size)]);
     }
+
+    // Positioning text message
+    const char *utf8Text = linphone_chat_message_get_text_content(self.message);
+    
+    CGRect textFrame = self.messageText.frame;
+    if (_finalImage.image)
+        textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
+    else
+        // When image hasn't be download
+        textFrame.origin = CGPointMake(textFrame.origin.x, 42);
+    if (!utf8Text) {
+        textFrame.size.height = 0;
+    } else {
+        textFrame.size.height = bubbleFrame.size.height - 90;//textFrame.origin.x;
+    }
+    
+    self.messageText.frame = textFrame;
+    LOGD([NSString stringWithFormat:@"Text of the photoCell: %@, size of the text of the photoCell: %@", [self.messageText text], NSStringFromCGSize(textFrame.size)]);
 }
 
 @end

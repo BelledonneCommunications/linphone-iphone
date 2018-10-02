@@ -416,9 +416,17 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
             CGSize fileSize = CGSizeMake(200, 80);
             size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
         } else {
+            CGSize textSize = CGSizeMake(0, 0);
+            if (![messageText isEqualToString:@"🗻"]) {
+                textSize = [self computeBoundingBox:messageText
+                                                      size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                                      font:messageFont];
+                size.height += textSize.height;
+            }
+            
             if (!localImage && !localVideo) {
                 //We are loading the image
-                return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN);
+                return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height);
             }
             PHFetchResult<PHAsset *> *assets;
             if(localImage)
@@ -435,13 +443,9 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
             size.height += 40;
             size.width -= CELL_MESSAGE_X_MARGIN;
             
-            if (![messageText isEqualToString:@"🗻"]) {
-                CGSize textSize = [self computeBoundingBox:messageText
-                                                      size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-                                                      font:messageFont];
-                size.height += textSize.height;
-                size.width = MAX(textSize.width, size.width);
-            }
+            // add size for message text
+            size.height += textSize.height;
+            size.width = MAX(textSize.width, size.width);
         }
 	}
     
