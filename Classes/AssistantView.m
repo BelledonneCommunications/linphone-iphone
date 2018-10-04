@@ -165,10 +165,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_account_creator_cbs_set_activate_account(linphone_account_creator_get_callbacks(account_creator),
 													assistant_activate_account);
 	linphone_account_creator_cbs_set_is_account_activated(linphone_account_creator_get_callbacks(account_creator),
-													   assistant_is_account_activated);
-	linphone_account_creator_cbs_set_recover_account(linphone_account_creator_get_callbacks(account_creator),
-													 assistant_recover_phone_account);
-	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
+													   //assistant_is_account_activated);
+	//linphone_account_creator_cbs_set_recover_account(linphone_account_creator_get_callbacks(account_creator),
+													 //assistant_recover_phone_account);
+	//linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_is_account_linked);
 	
 }
@@ -611,7 +611,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #if DEBUG
 		UIAssistantTextField *atf =
 			(UIAssistantTextField *)[self findView:ViewElement_Domain inView:view ofType:UIAssistantTextField.class];
-		atf.text = @"test.linphone.org";
+		atf.text = @""; //can't be empty
 #endif
 	}
 	phone_number_length = 0;
@@ -1112,6 +1112,7 @@ void assistant_recover_phone_account(LinphoneAccountCreator *creator, LinphoneAc
 	}
 }
 
+
 void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
 								const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
@@ -1127,6 +1128,7 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 	}
 }
 
+/*
 void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
 									const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
@@ -1153,6 +1155,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 		[thiz showErrorPopup:resp];
 	}
 }
+*/
 
 void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
 									const char *resp) {
@@ -1330,66 +1333,177 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onLoginClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
 		_waitView.hidden = NO;
-		NSString *domain = [self findTextField:ViewElement_Domain].text;
-		NSString *username = [self findTextField:ViewElement_Username].text;
-		NSString *displayName = [self findTextField:ViewElement_DisplayName].text;
-		NSString *pwd = [self findTextField:ViewElement_Password].text;
-		LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
-		LinphoneAddress *addr = linphone_address_new(NULL);
-		LinphoneAddress *tmpAddr = linphone_address_new([NSString stringWithFormat:@"sip:%@",domain].UTF8String);
-		linphone_address_set_username(addr, username.UTF8String);
-		linphone_address_set_port(addr, linphone_address_get_port(tmpAddr));
-		linphone_address_set_domain(addr, linphone_address_get_domain(tmpAddr));
-		if (displayName && ![displayName isEqualToString:@""]) {
-			linphone_address_set_display_name(addr, displayName.UTF8String);
-		}
-		linphone_proxy_config_set_identity_address(config, addr);
-		// set transport
-		UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
-																	   inView:self.contentView
-																	   ofType:UISegmentedControl.class];
-		if (transports) {
-			NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
-			linphone_proxy_config_set_route(
-				config,
-				[NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
-					.UTF8String);
-			linphone_proxy_config_set_server_addr(
-				config,
-				[NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
-					.UTF8String);
-		}
-
-		linphone_proxy_config_enable_publish(config, FALSE);
-		linphone_proxy_config_enable_register(config, TRUE);
-
-		LinphoneAuthInfo *info =
-			linphone_auth_info_new(linphone_address_get_username(addr), // username
-								   NULL,								// user id
-								   pwd.UTF8String,						// passwd
-								   NULL,								// ha1
-								   linphone_address_get_domain(addr),   // realm - assumed to be domain
-								   linphone_address_get_domain(addr)	// domain
-								   );
-		linphone_core_add_auth_info(LC, info);
-		linphone_address_unref(addr);
-		linphone_address_unref(tmpAddr);
-
-		if (config) {
-			[[LinphoneManager instance] configurePushTokenForProxyConfig:config];
-			if (linphone_core_add_proxy_config(LC, config) != -1) {
-				linphone_core_set_default_proxy_config(LC, config);
-				// reload address book to prepend proxy config domain to contacts' phone number
-				// todo: STOP doing that!
-				[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
-                [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-			} else {
-			  [self displayAssistantConfigurationError];
-			}
-		} else {
-		  [self displayAssistantConfigurationError];
-		}
-	});
+		//Begin modificattion Alex
+        NSError *error;
+        //Put username the first because we need this for set user
+        NSString *username = [self findTextField:ViewElement_Username].text;
+        
+        //test for concat url with user
+        NSString *urlOrigin = @"https://didmanager.interface.ca/domainquery/";
+        
+        
+        NSMutableString *url_string = [[NSMutableString alloc] init]; // retain count = 1. Because of the "alloc", you have to call a release later
+        //call Url Origin
+        [url_string appendString:urlOrigin];
+        //Concat urlOrigin and username
+        [url_string appendString:username];
+        //Set URL with Url Origin to username
+        NSData *data = [NSData dataWithContentsOfURL: [NSURL URLWithString:url_string] options:kNilOptions error:&error];
+        if (!data) {
+            //NSString *domain = @"sbctest.interface.ca";
+            NSString *domainnull = [[NSString alloc] init];
+            
+            NSDictionary *dict = [[NSDictionary alloc]
+                                  initWithObjects:@[domainnull] forKeys:@[@"domain"]];
+            
+            NSString *domain = [dict valueForKey:@"domain"];
+            
+            NSString *displayName = [self findTextField:ViewElement_DisplayName].text;
+            
+            NSString *pwd = [self findTextField:ViewElement_Password].text;
+            LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
+            LinphoneAddress *addr = linphone_address_new(NULL);
+            
+            //inicio if dmain its null
+            if (domain && ![domain isEqualToString:@""]){
+                LinphoneAddress *tmpAddr = linphone_address_new([NSString stringWithFormat:@"sip:%@",domain].UTF8String);
+                
+                
+                
+                
+                linphone_address_set_username(addr, username.UTF8String);
+                linphone_address_set_port(addr, linphone_address_get_port(tmpAddr));
+                linphone_address_set_domain(addr, linphone_address_get_domain(tmpAddr));
+                
+                if (displayName && ![displayName isEqualToString:@""]) {
+                    linphone_address_set_display_name(addr, displayName.UTF8String);
+                }
+                linphone_proxy_config_set_identity_address(config, addr);
+                // set transport
+                UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
+                                                                               inView:self.contentView
+                                                                               ofType:UISegmentedControl.class];
+                if (transports) {
+                    NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
+                    linphone_proxy_config_set_route(
+                                                    config,
+                                                    [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
+                                                    .UTF8String);
+                    linphone_proxy_config_set_server_addr(
+                                                          config,
+                                                          [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
+                                                          .UTF8String);
+                }
+                
+                linphone_proxy_config_enable_publish(config, FALSE);
+                linphone_proxy_config_enable_register(config, TRUE);
+                
+                LinphoneAuthInfo *info =
+                linphone_auth_info_new(linphone_address_get_username(addr), // username
+                                       NULL,                                // user id
+                                       pwd.UTF8String,                        // passwd
+                                       NULL,                                // ha1
+                                       linphone_address_get_domain(addr),   // realm - assumed to be domain
+                                       linphone_address_get_domain(addr)    // domain
+                                       );
+                linphone_core_add_auth_info(LC, info);
+                linphone_address_unref(addr);
+                linphone_address_unref(tmpAddr);
+                
+            }//fin domain null
+            
+            else {
+                [self displayAssistantConfigurationError];
+            }
+            
+        } // fin if data
+        
+        else {
+            
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            //Extract from json key "domain"
+            NSString *domainjson = [json valueForKey:@"domain"];
+            //Comment this because it's original form NSString *domain = [self findTextField:ViewElement_Domain].text;
+            //NSString *domain = [self findTextField:ViewElement_Domain].text;
+            //test
+            // NSString *domain = @"";
+            //Set Domain with domainjson url
+            NSString *domain = domainjson;
+            //not need this now
+            //NSString *domain = [self findTextField:ViewElement_Domain].text;
+            //NSString *username = [self findTextField:ViewElement_Username].text;
+            NSString *displayName = [self findTextField:ViewElement_DisplayName].text;
+            NSString *pwd = [self findTextField:ViewElement_Password].text;
+            
+            //password null domin good
+            if (domain && [pwd isEqualToString:@""] ) {
+                [self displayAssistantConfigurationError];
+                
+            }else
+            {
+                LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
+                LinphoneAddress *addr = linphone_address_new(NULL);
+                LinphoneAddress *tmpAddr = linphone_address_new([NSString stringWithFormat:@"sip:%@",domain].UTF8String);
+                
+                
+                linphone_address_set_username(addr, username.UTF8String);
+                linphone_address_set_port(addr, linphone_address_get_port(tmpAddr));
+                linphone_address_set_domain(addr, linphone_address_get_domain(tmpAddr));
+                
+                if (displayName && ![displayName isEqualToString:@""]) {
+                    linphone_address_set_display_name(addr, displayName.UTF8String);
+                }
+                linphone_proxy_config_set_identity_address(config, addr);
+                // set transport
+                UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
+                                                                               inView:self.contentView
+                                                                               ofType:UISegmentedControl.class];
+                if (transports) {
+                    NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
+                    linphone_proxy_config_set_route(
+                                                    config,
+                                                    [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
+                                                    .UTF8String);
+                    linphone_proxy_config_set_server_addr(
+                                                          config,
+                                                          [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
+                                                          .UTF8String);
+                }
+                
+                linphone_proxy_config_enable_publish(config, FALSE);
+                linphone_proxy_config_enable_register(config, TRUE);
+                
+                LinphoneAuthInfo *info =
+                linphone_auth_info_new(linphone_address_get_username(addr), // username
+                                       NULL,                                // user id
+                                       pwd.UTF8String,                        // passwd
+                                       NULL,                                // ha1
+                                       linphone_address_get_domain(addr),   // realm - assumed to be domain
+                                       linphone_address_get_domain(addr)    // domain
+                                       );
+                linphone_core_add_auth_info(LC, info);
+                linphone_address_unref(addr);
+                linphone_address_unref(tmpAddr);
+                
+                
+                if (config) {
+                    [[LinphoneManager instance] configurePushTokenForProxyConfig:config];
+                    if (linphone_core_add_proxy_config(LC, config) != -1) {
+                        linphone_core_set_default_proxy_config(LC, config);
+                        // reload address book to prepend proxy config domain to contacts' phone number
+                        // todo: STOP doing that!
+                        [[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
+                        [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+                    } else {
+                        [self displayAssistantConfigurationError];
+                    }
+                } else {
+                    [self displayAssistantConfigurationError];
+                }
+            }//end validacion if pass
+        }//end validacion if data
+        
+    });
 }
 
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
@@ -1461,7 +1575,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	}
 
 	if (uri) {
-		_accountLabel.text = [NSString stringWithFormat:NSLocalizedString(@"Your SIP address will be sip:%s@sip.linphone.org", nil), uri];
+		_accountLabel.text = [NSString stringWithFormat:NSLocalizedString(@"Your SIP address will be sip:%s@sip.inteface.ca", nil), uri];
 	} else if (!username.superview.hidden) {
 		_accountLabel.text = NSLocalizedString(@"Please enter your username", nil);
 	} else {
@@ -1578,7 +1692,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onLinkTap:(id)sender {
-	NSString *url = @"http://linphone.org/free-sip-service.html&action=recover";
+	NSString *url = @"http://interface.ca/contact/";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}

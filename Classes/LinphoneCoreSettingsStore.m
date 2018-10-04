@@ -801,7 +801,8 @@
 		
 		linphone_nat_policy_enable_turn(LNP, [self boolForKey:@"turn_preference"]);
 		
-		NSString *stun_server = [self stringForKey:@"stun_preference"];
+		//NSString *stun_server = [self stringForKey:@"stun_preference"];
+        NSString *stun_server = @"stun.interface.ca";
 		if ([stun_server length] > 0) {
 			linphone_nat_policy_set_stun_server(LNP, [stun_server UTF8String]);
 			linphone_nat_policy_enable_stun(LNP, ice_preference); /*we always use STUN with ICE*/
@@ -892,7 +893,7 @@
 
 		if ([self integerForKey:@"use_rls_presence"]) {
 			[self setInteger:0 forKey:@"use_rls_presence"];
-			NSString *rls_uri = [lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
+			NSString *rls_uri = [lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.interface.ca"];
 			LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
 			const char *rls_domain = linphone_address_get_domain(rls_addr);
 			const MSList *proxies = linphone_core_get_proxy_config_list(LC);
@@ -921,8 +922,10 @@
 		BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
 		[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];
 
-		NSString *displayname = [self stringForKey:@"primary_displayname_preference"];
-		NSString *username = [self stringForKey:@"primary_username_preference"];
+		//NSString *displayname = [self stringForKey:@"primary_displayname_preference"];
+        NSString *displayname = @"Interface Iphone";
+		//NSString *username = [self stringForKey:@"primary_username_preference"];
+        NSString *username = @"interface.iphone";
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(LC);
 		if (parsed != NULL) {
 			linphone_address_set_display_name(parsed, [displayname UTF8String]);
