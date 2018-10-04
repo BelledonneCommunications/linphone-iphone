@@ -5,13 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>Linphone</string>
+	<string>Interface Phone</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIcons~ipad</key>
 	<dict/>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.interface.phone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
@@ -20,11 +20,11 @@
 		<string>fr</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>Interface Phone</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0.1</string>
+	<string>5</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -33,7 +33,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string>linphone_icon_72@2x</string>
 			<key>CFBundleURLName</key>
-			<string>org.linphone.phone</string>
+			<string>com.interface.phone</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>sip</string>
@@ -45,7 +45,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string>linphone_icon_72@2x</string>
 			<key>CFBundleURLName</key>
-			<string>org.linphone.phone</string>
+			<string>com.interface.phone</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>linphone-config</string>
@@ -57,10 +57,13 @@
 			<key>CFBundleURLIconFile</key>
 			<string>linphone_icon_72@2x</string>
 			<key>CFBundleURLName</key>
-			<string>org.linphone.phone</string>
+			<string>com.interface.phone</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>message-linphone</string>
+				<string>UIApplicationShortcutWidget</string>
+				<string>UIApplicationShortcutWidget</string>
+				<string>UIApplicationShortcutWidget</string>
 			</array>
 		</dict>
 		<dict>
@@ -69,7 +72,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string>linphone_icon_72@2x</string>
 			<key>CFBundleURLName</key>
-			<string>org.linphone.phone</string>
+			<string>com.interface.phone</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>linphone-widget</string>
@@ -79,11 +82,16 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/>
+	<false/>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>b5cb085f-772a-4a4f-8c77-5d1332b1f93f</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Use your BT headset</string>
 	<key>NSCameraUsageDescription</key>
@@ -111,8 +119,7 @@
 			<string>linphone.phone.action.newMessage</string>
 		</dict>
 	</array>
-	<key>UIApplicationShortcutWidget</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER).widget.latestChatrooms</string>
+	
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

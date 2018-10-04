@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,19 +22,19 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view tag="299" contentMode="scaleToFill" id="HJH-1o-RXN">
-                    <frame key="frameInset" minY="66"/>
+                    <rect key="frame" x="0.0" y="66" width="375" height="601"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <view tag="2" contentMode="scaleToFill" id="Whz-oo-Pwx" userLabel="topBar">
-                            <frame key="frameInset" height="66"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="h54-RV-eE6" userLabel="backgroundColor">
-                                    <frame key="frameInset" height="100.00%"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ETk-tB-ZNl" userLabel="dialerBackButton" customClass="UIIconButton">
-                                    <frame key="frameInset" minY="0.0%" width="20.80%" height="100.00%"/>
+                                    <rect key="frame" x="297" y="0.0" width="78" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add contact"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -45,16 +48,16 @@
                                     </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SHOP" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iNt-9d-7si" userLabel="titleLabel">
-                                    <frame key="frameInset" minX="0.0%" minY="0.0%" width="100.00%" height="100.00%"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                                    <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="textColor" red="0.67843137249999996" green="0.80392156859999997" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
                         </view>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" bounces="NO" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="cnd-cB-B4W">
-                            <frame key="frameInset" minY="66"/>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="cnd-cB-B4W">
+                            <rect key="frame" x="0.0" y="66" width="375" height="535"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
@@ -62,12 +65,12 @@
                                 <outlet property="delegate" destination="sBe-ML-IzT" id="T0H-aj-0UQ"/>
                             </connections>
                         </tableView>
-                        <view hidden="YES" tag="288" contentMode="scaleToFill" misplaced="YES" id="tuB-rE-DiO" userLabel="waitView">
-                            <frame key="frameInset" minY="66" maxY="-33"/>
+                        <view hidden="YES" tag="288" contentMode="scaleToFill" id="tuB-rE-DiO" userLabel="waitView">
+                            <rect key="frame" x="0.0" y="66" width="375" height="568"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <activityIndicatorView opaque="NO" tag="9" contentMode="scaleToFill" animating="YES" style="gray" id="7Jb-oC-FC5" userLabel="activityIndicatorView">
-                                    <frame key="frameInset" minX="50.42%" minY="49.82%" width="20" height="20"/>
+                                    <rect key="frame" x="179" y="273" width="20" height="20"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 </activityIndicatorView>
                             </subviews>
@@ -79,14 +82,14 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="-414.5" y="-738.5"/>
+            <point key="canvasLocation" x="-663.20000000000005" y="-664.31784107946032"/>
         </view>
         <tableViewController id="sBe-ML-IzT" customClass="ShopTableView">
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <connections>
                 <outlet property="view" destination="cnd-cB-B4W" id="hcK-9Y-fd5"/>
             </connections>
-            <point key="canvasLocation" x="34" y="-724"/>
+            <point key="canvasLocation" x="54.399999999999999" y="-651.2743628185907"/>
         </tableViewController>
     </objects>
     <resources>
@@ -95,9 +98,4 @@
         <image name="dialer_back_default.png" width="27" height="27"/>
         <image name="dialer_back_disabled.png" width="27" height="27"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
-    </simulatedMetricsContainer>
 </document>

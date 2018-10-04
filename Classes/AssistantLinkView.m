@@ -59,7 +59,7 @@
 	if (cfg &&
 		strcmp([LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 													inSection:@"app"
-												  withDefault:@"sip.linphone.org"]
+												  withDefault:@"sip.interface.ca"]
 				   .UTF8String,
 			   linphone_proxy_config_get_domain(cfg)) == 0) {
 		linphone_account_creator_set_username(
@@ -73,7 +73,7 @@
 		}
 		linphone_account_creator_set_domain(account_creator, linphone_proxy_config_get_domain(cfg));
 	} else {
-		LOGW(@"Default proxy is NOT a sip.linphone.org, aborting");
+		LOGW(@"Default proxy is NOT a sbctest.interface.ca, aborting");
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 	}
 

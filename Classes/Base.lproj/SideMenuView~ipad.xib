@@ -1,8 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SideMenuView">
@@ -35,7 +39,7 @@
                         <view hidden="YES" alpha="0.80000000000000004" contentMode="scaleToFill" id="ccB-VK-LF9">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="625"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="56h-cQ-B5V" appends="YES" id="umX-R7-2IR"/>
                             </connections>
@@ -52,14 +56,14 @@
                                     <rect key="frame" x="76" y="15" width="111" height="31"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
-                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="middleTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="ypg-P8-Els" userLabel="addressLabel">
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.interface.ca" lineBreakMode="middleTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="ypg-P8-Els" userLabel="addressLabel">
                                     <rect key="frame" x="74" y="54" width="95" height="22"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="textColor" red="0.67843137249999996" green="0.80392156859999997" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="led_connected.png" id="tNM-uE-Eum" userLabel="presenceImage">
@@ -82,31 +86,29 @@
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ttt-1k-jAm">
                             <rect key="frame" x="0.0" y="100" width="187" height="525"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="Yyh-z6-IGO" id="ytx-b8-NGX"/>
                                 <outlet property="delegate" destination="Yyh-z6-IGO" id="c1j-vG-TbB"/>
                             </connections>
                         </tableView>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     <gestureRecognizers/>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="JRs-i1-zCl" appends="YES" id="SPs-Nb-Y0e"/>
                     </connections>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="322.5" y="209.5"/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <point key="canvasLocation" x="516" y="188.45577211394306"/>
         </view>
         <tableViewController id="Yyh-z6-IGO" customClass="SideMenuTableView">
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-            <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
             <connections>
                 <outlet property="view" destination="Ttt-1k-jAm" id="Njc-lf-vXv"/>
             </connections>
-            <point key="canvasLocation" x="815" y="194"/>
+            <point key="canvasLocation" x="1304" y="174.51274362818592"/>
         </tableViewController>
         <tapGestureRecognizer id="Kej-uL-ntg" userLabel="OnAvatarClicked">
             <connections>
@@ -125,8 +127,8 @@
         </tapGestureRecognizer>
     </objects>
     <resources>
-        <image name="avatar.png" width="255" height="255"/>
+        <image name="avatar.png" width="259" height="259"/>
         <image name="color_F.png" width="2" height="2"/>
-        <image name="led_connected.png" width="11" height="11"/>
+        <image name="led_connected.png" width="12" height="12"/>
     </resources>
 </document>

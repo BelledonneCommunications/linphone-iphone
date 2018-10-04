@@ -26,7 +26,7 @@ edge_bw=10
 edge_ping_time=10
 firewall_policy=ice
 mtu=1300
-stun_server=stun.linphone.org
+stun_server=stun.interface.ca
 
 [rtp]
 audio_jitt_comp=60
@@ -37,7 +37,7 @@ video_rtp_port=9200-9299
 
 [sip]
 auto_net_state_mon=0
-contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
+contact="Interface iPhone" <sip:interface.iphone@unknown-host>
 guess_hostname=1
 inc_timeout=45
 keepalive_period=30000

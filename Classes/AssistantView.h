@@ -36,6 +36,7 @@
 	long phone_number_length;
 }
 
+@property (strong, nonatomic) NSObject *domain;
 @property(nonatomic) UICompositeViewDescription *outgoingView;
 @property (weak, nonatomic) IBOutlet UILabel *subtileLabel_useLinphoneAccount;
 

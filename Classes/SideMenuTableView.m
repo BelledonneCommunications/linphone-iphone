@@ -60,7 +60,8 @@
 												  }]];
 	}
 
-	[_sideMenuEntries
+	/*
+    [_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance
@@ -75,6 +76,7 @@
 														changeCurrentView:ShopView.compositeViewDescription];
 												  }]];
 	}
+     */
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
 															tapBlock:^() {
 															  [PhoneMainView.instance

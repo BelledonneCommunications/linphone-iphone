@@ -1,8 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallIncomingView">
@@ -38,14 +42,14 @@
                             <rect key="frame" x="0.0" y="209" width="375" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" red="0.67843137249999996" green="0.80392156859999997" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="hjQ-4P-bKP" userLabel="nameLabel">
                             <rect key="frame" x="0.0" y="149" width="375" height="52"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Cro-ww-VIC" userLabel="headerBar">
@@ -56,8 +60,8 @@
                             </accessibility>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
                             <state key="normal" title="INCOMING CALL" backgroundImage="color_F.png">
-                                <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.67843137249999996" green="0.80392156859999997" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                         </button>
                         <view tag="6" contentMode="scaleToFill" id="4" userLabel="tabBar">
@@ -70,7 +74,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Decline"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_hangup_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_I.png"/>
@@ -84,7 +88,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_audio_start_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
@@ -93,7 +97,7 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view hidden="YES" tag="9" contentMode="scaleToFill" id="vIQ-QP-ooa" userLabel="tabVideoBar">
                             <rect key="frame" x="0.0" y="562" width="375" height="63"/>
@@ -105,7 +109,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Decline"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_hangup_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_I.png"/>
@@ -119,7 +123,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_audio_start_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
@@ -133,7 +137,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_video_start_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_video_start_disabled.png"/>
                                     <state key="selected" image="call_video_start_disabled.png"/>
@@ -143,61 +147,60 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="-88.5" y="47.5"/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <point key="canvasLocation" x="-141.59999999999999" y="42.728635682158924"/>
         </view>
         <view contentMode="scaleToFill" id="Znq-C0-ZAc" userLabel="iphone6MetricsView">
-            <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view tag="1" contentMode="scaleToFill" id="r7T-Et-xrQ">
-                    <rect key="frame" x="0.0" y="42" width="667" height="333"/>
+                    <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="E9b-qt-GBq" userLabel="headerBar">
-                            <rect key="frame" x="0.0" y="0.0" width="667" height="66"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration">
                                 <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
                             <state key="normal" title="INCOMING CALL" backgroundImage="color_F.png">
-                                <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="titleColor" red="0.67843137249999996" green="0.80392156859999997" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </state>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="tsb-6p-cAk" userLabel="addressLabel">
-                            <rect key="frame" x="298" y="166" width="369" height="33"/>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.interface.ca" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="tsb-6p-cAk" userLabel="addressLabel">
+                            <rect key="frame" x="83" y="184" width="208" height="62"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" red="0.67843137249999996" green="0.80392156859999997" blue="0.43137254899999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="WsB-At-ejv" userLabel="nameLabel">
-                            <rect key="frame" x="298" y="121" width="369" height="37"/>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="WsB-At-ejv" userLabel="nameLabel">
+                            <rect key="frame" x="8" y="140" width="359" height="69"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view tag="6" contentMode="scaleToFill" id="0Tc-7G-eqT" userLabel="tabBar">
-                            <rect key="frame" x="0.0" y="270" width="667" height="63"/>
+                            <rect key="frame" x="0.0" y="562" width="375" height="63"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
                                 <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qpN-iY-3Ao" userLabel="declineButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="334" height="63"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="187" height="63"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Decline"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_hangup_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_I.png"/>
@@ -206,12 +209,12 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8dX-3c-mba" userLabel="acceptButton">
-                                    <rect key="frame" x="333" y="0.0" width="334" height="63"/>
+                                    <rect key="frame" x="187" y="0.0" width="188" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_audio_start_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
@@ -220,19 +223,19 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view hidden="YES" tag="9" contentMode="scaleToFill" id="PPE-Fd-wDf" userLabel="tabVideoBar">
-                            <rect key="frame" x="0.0" y="270" width="667" height="63"/>
+                            <rect key="frame" x="0.0" y="562" width="375" height="63"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
                                 <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="i8b-dr-IYG" userLabel="declineButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="222" height="63"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="124" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Decline"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_hangup_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_I.png"/>
@@ -241,12 +244,12 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="QYg-9G-We0" userLabel="acceptAudioOnlyButton">
-                                    <rect key="frame" x="222" y="0.0" width="223" height="63"/>
+                                    <rect key="frame" x="124" y="0.0" width="126" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_audio_start_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
@@ -255,12 +258,12 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="sbd-NW-OZx" userLabel="acceptButton">
-                                    <rect key="frame" x="445" y="0.0" width="222" height="63"/>
+                                    <rect key="frame" x="250" y="0.0" width="125" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                     <state key="normal" image="call_video_start_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="call_video_start_disabled.png"/>
                                     <state key="selected" image="call_video_start_disabled.png"/>
@@ -270,10 +273,10 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFit" image="avatar.png" id="Q0C-CO-AYR" userLabel="avatarImage" customClass="UIRoundedImageView">
-                            <rect key="frame" x="110" y="74" width="180" height="180"/>
+                            <rect key="frame" x="136" y="76" width="102" height="472"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                 <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
@@ -281,23 +284,21 @@
                             </accessibility>
                         </imageView>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="476.5" y="-98.5"/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <point key="canvasLocation" x="762.39999999999998" y="-88.605697151424295"/>
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="1271" height="1271"/>
+        <image name="avatar.png" width="259" height="259"/>
         <image name="call_audio_start_default.png" width="36" height="36"/>
         <image name="call_audio_start_disabled.png" width="36" height="36"/>
-        <image name="call_hangup_default.png" width="41" height="36"/>
-        <image name="call_hangup_disabled.png" width="41" height="36"/>
-        <image name="call_video_start_default.png" width="39" height="36"/>
-        <image name="call_video_start_disabled.png" width="39" height="36"/>
+        <image name="call_hangup_default.png" width="42" height="36"/>
+        <image name="call_hangup_disabled.png" width="42" height="36"/>
+        <image name="call_video_start_default.png" width="40" height="36"/>
+        <image name="call_video_start_disabled.png" width="40" height="36"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="color_D.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>
