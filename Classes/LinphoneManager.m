@@ -264,7 +264,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
 		_linphoneManagerAddressBookMap = [[OrderedDictionary alloc] init];
 		pushCallIDs = [[NSMutableArray alloc] init];
-		_photoLibrary = [[ALAssetsLibrary alloc] init];
 		_isTesting = [LinphoneManager isRunningTests];
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
@@ -289,6 +288,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		}
 
 		[self migrateFromUserPrefs];
+        [self loadAvatar];
 	}
 	return self;
 }
@@ -1231,7 +1231,39 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		}
 		content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 		content.categoryIdentifier = @"msg_cat";
-		content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID};
+        // save data to user info for rich notification content
+        NSMutableArray *msgs = [NSMutableArray array];
+        bctbx_list_t *history = linphone_chat_room_get_history(room, 6);
+        while (history) {
+            NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
+            LinphoneChatMessage *msg = history->data;
+            const char *state = linphone_chat_message_state_to_string(linphone_chat_message_get_state(msg));
+            bool_t isOutgoing = linphone_chat_message_is_outgoing(msg);
+            bool_t isFileTransfer = (linphone_chat_message_get_file_transfer_information(msg) != NULL);
+            const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
+            NSString *displayNameDate = [NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(msg)
+                                                                                                withFormat:LinphoneDateChatBubble],
+                                         [FastAddressBook displayNameForAddress:fromAddress]];
+            UIImage *fromImage = [UIImage resizeImage:[FastAddressBook imageForAddress:fromAddress]
+                                         withMaxWidth:200
+                                         andMaxHeight:200];
+            NSData *fromImageData = UIImageJPEGRepresentation(fromImage, 1);
+            [msgData setObject:[NSString stringWithUTF8String:state] forKey:@"state"];
+            [msgData setObject:displayNameDate forKey:@"displayNameDate"];
+            [msgData setObject:[NSNumber numberWithBool:isFileTransfer] forKey:@"isFileTransfer"];
+            [msgData setObject:fromImageData forKey:@"fromImageData"];
+            if (isFileTransfer) {
+                LinphoneContent *file = linphone_chat_message_get_file_transfer_information(msg);
+                const char *filename = linphone_content_get_name(file);
+                [msgData setObject:[NSString stringWithUTF8String:filename] forKey:@"msg"];
+            } else {
+                [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
+            }
+            [msgData setObject:[NSNumber numberWithBool:isOutgoing] forKey:@"isOutgoing"];
+            [msgs addObject:msgData];
+            history = bctbx_list_next(history);
+        }
+        content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
 		content.accessibilityLabel = @"Message notif";
 		UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
 		[[UNUserNotificationCenter currentNotificationCenter]
@@ -2888,20 +2920,19 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (void)setValueInMessageAppData:(id)value forKey:(NSString *)key inMessage:(LinphoneChatMessage *)msg {
+        NSMutableDictionary *appDataDict = [NSMutableDictionary dictionary];
+        const char *appData = linphone_chat_message_get_appdata(msg);
+        if (appData) {
+            appDataDict = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:appData length:strlen(appData)]
+                                                          options:NSJSONReadingMutableContainers
+                                                            error:nil];
+        }
 
-	NSMutableDictionary *appDataDict = [NSMutableDictionary dictionary];
-	const char *appData = linphone_chat_message_get_appdata(msg);
-	if (appData) {
-		appDataDict = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:appData length:strlen(appData)]
-													  options:NSJSONReadingMutableContainers
-														error:nil];
-	}
+        [appDataDict setValue:value forKey:key];
 
-	[appDataDict setValue:value forKey:key];
-
-	NSData *data = [NSJSONSerialization dataWithJSONObject:appDataDict options:0 error:nil];
-	NSString *appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String]);
+        NSData *data = [NSJSONSerialization dataWithJSONObject:appDataDict options:0 error:nil];
+        NSString *appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String]);
 }
 
 #pragma mark - LPConfig Functions
@@ -3078,4 +3109,33 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
     const char *curVersionCString = [curVersion cStringUsingEncoding:NSUTF8StringEncoding];
     linphone_core_check_for_update(theLinphoneCore, curVersionCString);
 }
+
+- (void)loadAvatar {
+    NSString *assetId = [self lpConfigStringForKey:@"avatar"];
+    __block UIImage *ret = nil;
+    if (assetId) {
+        PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:assetId] options:nil];
+        if (![assets firstObject]) {
+            LOGE(@"Can't fetch avatar image.");
+        }
+        PHAsset *asset = [assets firstObject];
+        // load avatar synchronously so that we can return UIIMage* directly - since we are
+        // only using thumbnail, it must be pretty fast to fetch even without cache.
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.synchronous = TRUE;
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
+                                                resultHandler:^(UIImage *image, NSDictionary * info) {
+                                                    if (image)
+                                                        ret = [UIImage UIImageThumbnail:image thumbSize:150];
+                                                    else
+                                                        LOGE(@"Can't read avatar");
+                                                }];
+    }
+    
+    if (!ret) {
+        ret = [UIImage imageNamed:@"avatar.png"];
+    }
+    _avatar = ret;
+}
+
 @end

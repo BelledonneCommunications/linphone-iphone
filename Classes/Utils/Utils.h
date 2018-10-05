@@ -49,6 +49,8 @@ typedef enum {
 + (NSString *)durationToString:(int)duration;
 + (NSString *)intervalToString:(NSTimeInterval)interval ;
 
++ (NSMutableDictionary <NSString *, PHAsset *> *)photoAssetsDictionary;
+
 @end
 
 @interface NSNumber (HumanReadableSize)
@@ -99,6 +101,16 @@ typedef enum {
 @interface UIImage (ForceDecode)
 
 + (UIImage *)decodedImageWithImage:(UIImage *)image;
+
+@end
+
+@interface UIImage (ResizeAndThumbnail)
+
++ (UIImage *)UIImageThumbnail:(UIImage *)image thumbSize:(CGFloat) tbSize;
+
++ (UIImage *)UIImageResize:(UIImage *)image toSize:(CGSize) newSize;
+
++ (CGImageRef)resizeCGImage:(CGImageRef)image toWidth:(int)width andHeight:(int)height;
 
 @end
 

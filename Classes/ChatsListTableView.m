@@ -141,6 +141,10 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
     while (sorted) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         LinphoneChatRoom *cr = sorted->data;
+        if (!cr) {
+            sorted = sorted->next;
+            continue;
+        }
         const LinphoneAddress *peer_address = linphone_chat_room_get_peer_address(cr);
         const LinphoneAddress *local_address = linphone_chat_room_get_local_address(cr);
         NSString *display;
@@ -148,9 +152,17 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
                  forKey:@"peer"];
         [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(local_address)]
                  forKey:@"local"];
-        if (linphone_chat_room_get_conference_address(cr))
+        if (linphone_chat_room_get_conference_address(cr)) {
+            if (!linphone_chat_room_get_subject(cr)) {
+                sorted = sorted->next;
+                continue;
+            }
             display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
-        else {
+        } else {
+            if (!linphone_address_get_username(peer_address)) {
+                sorted = sorted->next;
+                continue;
+            }
             display = [NSString stringWithUTF8String:linphone_address_get_display_name(peer_address)?:linphone_address_get_username(peer_address)];
             if ([FastAddressBook imageForAddress:peer_address])
                 [dict setObject:UIImageJPEGRepresentation([UIImage resizeImage:[FastAddressBook imageForAddress:peer_address]

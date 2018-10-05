@@ -13,8 +13,17 @@ Group changes to describe their impact on the project, as follows:
 ## [Unreleased]
 
 ### Added
+- Auto-layout of images in chat messages
+- Selection of multiple images to send in a chat message
+- Sending text with image
+- Latest Calls widget
+- Latest Chatrooms widget
+- Homescreen quick action : New message
+- Rich message notifications with Linphone UI
 - Support of H265 video format based on Apple's VideoToolbox framework.
 
+### Changed
+- Use of Photokit instead of Asset Library for image handling
 ### Fixed
 - Fix Bluetooth management
 

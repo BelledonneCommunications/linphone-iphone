@@ -27,12 +27,13 @@
 #import "UIRoundedImageView.h"
 #import "UIBackToCallButton.h"
 #import "Utils/HPGrowingTextView/HPGrowingTextView.h"
+#import "UIImageViewDeletable.h"
 
 #include "linphone/linphonecore.h"
 
 @interface ChatConversationView
-	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
-                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate> {
+	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate, UIDocumentPickerDelegate, 
+                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate, UICollectionViewDataSource> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
@@ -60,6 +61,13 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
+@property (nonatomic, strong) UIDocumentPickerViewController *documentPicker;
+@property NSMutableArray <UIImage *> *imagesArray;
+@property NSMutableArray <NSString *> *assetIdsArray;
+@property NSMutableArray <NSNumber *> *qualitySettingsArray;
+@property (weak, nonatomic) IBOutlet UICollectionView *imagesCollectionView;
+@property (weak, nonatomic) IBOutlet UIView *imagesView;
+
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 
 - (void)configureForRoom:(BOOL)editing;
@@ -73,6 +81,8 @@
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
 - (void)update;
-- (void)openResults:(NSString *) filePath;
+- (void)getIcloudFiles;
+- (void)openFile:(NSString *) filePath;
+- (void)clearMessageView;
 
 @end

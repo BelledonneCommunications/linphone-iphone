@@ -923,6 +923,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 		linphone_chat_room_remove_callbacks(view.chatRoom, view.chatRoomCbs);
 
 	view.chatRoomCbs = NULL;
+    if (view.chatRoom != cr)
+        [view clearMessageView];
 	view.chatRoom = cr;
 	self.currentRoom = view.chatRoom;
 	if (PhoneMainView.instance.currentView == view.compositeViewDescription)

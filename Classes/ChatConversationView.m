@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#import <Photos/PHAssetChangeRequest.h>
+
 #import "ChatConversationView.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -99,6 +101,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_messageField.contentInset = UIEdgeInsetsMake(-15, 0, 0, 0);
 	//	_messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
 	[_tableController setChatRoomDelegate:self];
+    [_imagesCollectionView registerClass:[UIImageViewDeletable class] forCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class])];
+    [_imagesCollectionView setDataSource:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -123,6 +127,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
+    
+    if ([_imagesArray count] > 0) {
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y - 100;
+                             imagesFrame.size.height = 100;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height -= 100;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:nil];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -151,6 +173,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
+    [self refreshImageDrawer];
 }
 
 #pragma mark -
@@ -201,7 +224,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
 	_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
 	_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
-	[_messageField setText:@""];
 	[_tableController setChatRoom:_chatRoom];
 
 	_chatView.hidden = NO;
@@ -211,38 +233,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)shareFile {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
-    
-    NSDictionary *dict = [defaults valueForKey:@"img"];
-    NSDictionary *dictWeb = [defaults valueForKey:@"web"];
-    NSDictionary *dictFile = [defaults valueForKey:@"mov"];
-    NSDictionary *dictText = [defaults valueForKey:@"text"];
+    NSDictionary *dict = [defaults valueForKey:@"photoData"];
+    NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
+    NSDictionary *dictUrl = [defaults valueForKey:@"url"];
     if (dict) {
-        //share photo
-        NSData *data = dict[@"nsData"];
-        UIImage *image = [[UIImage alloc] initWithData:data];
-        [self chooseImageQuality:image url:nil];
-        [defaults removeObjectForKey:@"img"];
-    } else if (dictWeb) {
-        //share url, if local file, then upload file
-        NSString *url  = dictWeb[@"url"];
-        NSURL *fileUrl = [NSURL fileURLWithPath:url];
-        if ([url hasPrefix:@"file"]) {
-            //local file
-            NSData *data = dictWeb[@"nsData"];
-            [self confirmShare:data url:fileUrl text:nil];
+        //file shared from photo lib
+        NSString *fileName = dict[@"url"];
+        NSString *key = [[fileName componentsSeparatedByString:@"."] firstObject];
+        NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
+        if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"]) {
+            UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+            [self chooseImageQuality:image assetId:[[assetDict objectForKey:key] localIdentifier]];
+        } else if ([fileName hasSuffix:@"MOV"]) {
+            [self confirmShare:dict[@"nsData"] url:nil fileName:nil assetId:[[assetDict objectForKey:key] localIdentifier]];
         } else {
-            [self confirmShare:nil url:nil text:url];
+            LOGE(@"Unable to parse file %@",fileName);
         }
-        [defaults removeObjectForKey:@"web"];
-    }else if (dictFile) {
-        //share file
-        NSData *data  = dictFile[@"nsData"];
-        [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]] text:nil];
-        [defaults removeObjectForKey:@"mov"];
-    }else if (dictText) {
-        //share text
-        [self confirmShare:nil url:nil text:dictText[@"name"]];
-        [defaults removeObjectForKey:@"text"];
+        
+        [defaults removeObjectForKey:@"photoData"];
+    } else if (dictFile) {
+        NSString *fileName = dictFile[@"url"];
+        [self confirmShare:dictFile[@"nsData"] url:nil fileName:fileName assetId:nil];
+        
+        [defaults removeObjectForKey:@"icloudData"];
+    } else if (dictUrl) {
+        NSString *url = dictUrl[@"url"];
+        [self confirmShare:nil url:url fileName:nil assetId:nil];
+        
+        [defaults removeObjectForKey:@"url"];
     }
 }
 
@@ -308,38 +326,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return TRUE;
 }
 
-- (void)saveAndSend:(UIImage *)image url:(NSURL *)url withQuality:(float)quality{
-	// photo from Camera, must be saved first
-	if (url == nil) {
-		[LinphoneManager.instance.photoLibrary
-			writeImageToSavedPhotosAlbum:image.CGImage
-							 orientation:(ALAssetOrientation)[image imageOrientation]
-						 completionBlock:^(NSURL *assetURL, NSError *error) {
-						   if (error) {
-							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-							   
-							   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-																								message:NSLocalizedString(@"Cannot write image to photo library",
-																														  nil)
-																						 preferredStyle:UIAlertControllerStyleAlert];
-							   
-							   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																					   style:UIAlertActionStyleDefault
-																					 handler:^(UIAlertAction * action) {}];
-							   
-							   [errView addAction:defaultAction];
-							   [self presentViewController:errView animated:YES completion:nil];
-						   } else {
-							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-							   [self startImageUpload:image url:assetURL withQuality:quality];
-						   }
-						 }];
-	} else {
-		[self startImageUpload:image url:url withQuality:quality];
-	}
+- (void)saveAndSend:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality{
+    
+    [_imagesArray addObject:image];
+    [_assetIdsArray addObject:phAssetId];
+    [_qualitySettingsArray addObject:@(quality)];
+    [self refreshImageDrawer];
 }
 
-- (void)chooseImageQuality:(UIImage *)image url:(NSURL *)url {
+- (void)chooseImageQuality:(UIImage *)image assetId:(NSString *)phAssetId {
 	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 	  for (NSString *key in [imageQualities allKeys]) {
@@ -349,7 +344,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
 		  [sheet addButtonWithTitle:text
 							  block:^() {
-								[self saveAndSend:image url:url withQuality:[quality floatValue]];
+                                  [self saveAndSend:image assetId:phAssetId withQuality:[quality floatValue]];
 							  }];
 	  }
 	  [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -359,17 +354,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	});
 }
 
-- (void)confirmShare:(NSData *)data url:(NSURL *)url text:(NSString *)text {
+- (void)confirmShare:(NSData *)data url:(NSString *)url fileName:(NSString *)fileName assetId:(NSString *)phAssetId {
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-       
             [sheet addButtonWithTitle:@"send to this friend"
                                 block:^() {
-                                    if(data && url)
-                                        [self startFileUpload:data withUrl:url];
+                                    if (url)
+                                        [self sendMessage:url withExterlBodyUrl:nil withInternalURL:nil];
+                                    else if (fileName)
+                                        [self startFileUpload:data withName:fileName];
                                     else
-                                        [self sendMessage:text withExterlBodyUrl:nil withInternalURL:nil];
-                                     
+                                        [self startFileUpload:data assetId:phAssetId];
                                 }];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -481,6 +476,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		messageRect.size.height += diff;
 		[_messageView setFrame:messageRect];
 
+        if ([_imagesArray count] > 0) {
+            CGRect _imagesRect = [_imagesView frame];
+            _imagesRect.origin.y -= diff;
+            [_imagesView setFrame:_imagesRect];
+        }
+        
 		// Always stay at bottom
 		if (scrollOnGrowingEnabled) {
 			CGRect tableFrame = [_tableController.view frame];
@@ -518,6 +519,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSendClick:(id)event {
+    if ([_imagesArray count] > 0) {
+        int i = 0;
+        for (i = 0; i < [_imagesArray count] - 1; ++i) {
+            [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue];
+        }
+        [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue andMessage:[self.messageField text]];
+        [self clearMessageView];
+        return;
+    }
 	if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil]) {
 		scrollOnGrowingEnabled = FALSE;
 		[_messageField setText:@""];
@@ -601,16 +611,31 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark ChatRoomDelegate
 
-- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url withQuality:(float)quality {
+- (BOOL)startImageUpload:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-	[fileTransfer upload:image withURL:url forChatRoom:_chatRoom withQuality:quality];
+	[fileTransfer upload:image withassetId:phAssetId forChatRoom:_chatRoom withQuality:quality];
 	[_tableController scrollToBottom:true];
 	return TRUE;
 }
 
-- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url {
+- (BOOL)startImageUpload:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality andMessage:(NSString *)message {
     FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-    [fileTransfer uploadFile:data forChatRoom:_chatRoom withUrl:url];
+    [fileTransfer setText:message];
+    [fileTransfer upload:image withassetId:phAssetId forChatRoom:_chatRoom withQuality:quality];
+    [_tableController scrollToBottom:true];
+    return TRUE;
+}
+
+- (BOOL)startFileUpload:(NSData *)data assetId:phAssetId {
+    FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
+    [fileTransfer uploadVideo:data withassetId:phAssetId forChatRoom:_chatRoom];
+    [_tableController scrollToBottom:true];
+    return TRUE;
+}
+
+- (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name  {
+    FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
+    [fileTransfer uploadFile:data forChatRoom:_chatRoom withName:name];
     [_tableController scrollToBottom:true];
     return TRUE;
 }
@@ -621,7 +646,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark ImagePickerDelegate
 
-- (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+- (void)imagePickerDelegateImage:(UIImage *)image info:(NSString *)phAssetId {
 	// When getting image from the camera, it may be 90° rotated due to orientation
 	// (image.imageOrientation = UIImageOrientationRight). Just rotate it to be face up.
 	if (image.imageOrientation != UIImageOrientationUp) {
@@ -635,9 +660,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (IPAD) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
-
-	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
-	[self chooseImageQuality:image url:url];
+    [self chooseImageQuality:image assetId:phAssetId];
 }
 
 - (void)tableViewIsScrolling {
@@ -651,6 +674,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)keyboardWillHide:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
+    
 	[UIView animateWithDuration:duration
 		delay:0
 		options:UIViewAnimationOptionBeginFromCurrentState
@@ -694,6 +720,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  }
 			  }
 		  }
+            
+            
+            if ([_imagesArray count] > 0){
+                // resizing imagesView
+                CGRect imagesFrame = [_imagesView frame];
+                imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+                imagesFrame.size.height = heightDiff;
+                [_imagesView setFrame:imagesFrame];
+                // resizing chatTable
+                CGRect tableViewFrame = [_tableController.tableView frame];
+                tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
+                [_tableController.tableView setFrame:tableViewFrame];
+            }
 		}
 		completion:^(BOOL finished){
 
@@ -702,7 +741,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)keyboardWillShow:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-
+    
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
+    
 	[UIView animateWithDuration:duration
 		delay:0
 		options:UIViewAnimationOptionBeginFromCurrentState
@@ -749,6 +790,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
 			  [_tableController.view setFrame:tableFrame];
 		  }
+            
+            if ([_imagesArray count] > 0){
+                // resizing imagesView
+                CGRect imagesFrame = [_imagesView frame];
+                imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+                imagesFrame.size.height = heightDiff;
+                [_imagesView setFrame:imagesFrame];
+                // resizing chatTable
+                CGRect tableViewFrame = [_tableController.tableView frame];
+                tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
+                [_tableController.tableView setFrame:tableViewFrame];
+            }
 
 		  // Scroll
 		  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
@@ -761,8 +814,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 									animated:FALSE];
 			  }
 		  }
+            
 		}
 		completion:^(BOOL finished){
+            
 		}];
 }
 
@@ -852,7 +907,17 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 	[view.tableController scrollToBottom:true];
 }
 
-- (void)openResults:(NSString *) filePath
+- (void)getIcloudFiles
+{
+    _documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"]
+                                                                             inMode:UIDocumentPickerModeImport];
+    _documentPicker.delegate = self;
+    
+    _documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self presentViewController:_documentPicker animated:YES completion:nil];
+}
+
+- (void)openFile:(NSString *) filePath
 {
     // Open the controller.
     _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
@@ -863,6 +928,97 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
     if (canOpen == NO) {
         [[[UIAlertView alloc] initWithTitle:@"Info" message:@"There is no app found to open it" delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil] show];
         
+    }
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
+
+    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+    [fileCoordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingWithoutChanges error:nil byAccessor:^(NSURL * _Nonnull newURL) {
+        
+        NSString *fileName = [newURL lastPathComponent];
+        NSData *data = [NSData dataWithContentsOfURL:newURL];
+    
+        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+        
+        [[NSFileManager defaultManager] createFileAtPath:filePath contents:data attributes:nil];
+        [self openFile:filePath];
+   }];
+}
+
+- (void)deleteImageWithAssetId:(NSString *)assetId {
+    NSUInteger key = [_assetIdsArray indexOfObject:assetId];
+    [_imagesArray removeObjectAtIndex:key];
+    [_assetIdsArray removeObjectAtIndex:key];
+    [self refreshImageDrawer];
+}
+
+- (void)clearMessageView {
+    [_messageField setText:@""];
+    _imagesArray = [NSMutableArray array];
+    _assetIdsArray = [NSMutableArray array];
+    
+    [self refreshImageDrawer];
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [_imagesArray count];
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UIImageViewDeletable *imgView = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class]) forIndexPath:indexPath];
+    CGRect imgFrame = imgView.frame;
+    imgFrame.origin.y = 5;
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+        imgFrame.size.height = 50;
+    } else {
+        imgFrame.size.height = 100;
+    }
+    [imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
+    [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
+    [imgView setDeleteDelegate:self];
+    [imgView setFrame:imgFrame];
+    [_sendButton setEnabled:TRUE];
+    return imgView;
+}
+
+- (void)refreshImageDrawer {
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
+    
+    if ([_imagesArray count] == 0) {
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y;
+                             imagesFrame.size.height = 0;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:nil];
+        if ([_messageField.text isEqualToString:@""])
+            [_sendButton setEnabled:FALSE];
+    } else {
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+                             imagesFrame.size.height = heightDiff;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:^(BOOL result){[_imagesCollectionView reloadData];}];
     }
 }
 

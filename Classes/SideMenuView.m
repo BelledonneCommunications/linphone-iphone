@@ -104,7 +104,7 @@
 
 #pragma mark - Image picker delegate
 
-- (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+- (void)imagePickerDelegateImage:(UIImage *)image info:(NSString *)phAssetId {
 	// When getting image from the camera, it may be 90° rotated due to orientation
 	// (image.imageOrientation = UIImageOrientationRight). Just rotate it to be face up.
 	if (image.imageOrientation != UIImageOrientationUp) {
@@ -113,33 +113,16 @@
 		image = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 	}
+    
+    [LinphoneManager.instance lpConfigSetString:phAssetId forKey:@"avatar"];
+    _avatarImage.image = [LinphoneUtils selfAvatar];
+    [LinphoneManager.instance loadAvatar];
 
 	// Dismiss popover on iPad
 	if (IPAD) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	} else {
 		[PhoneMainView.instance.mainViewController hideSideMenu:NO];
-	}
-
-	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
-
-	// taken from camera, must be saved to device first
-	if (!url) {
-		[LinphoneManager.instance.photoLibrary
-			writeImageToSavedPhotosAlbum:image.CGImage
-							 orientation:(ALAssetOrientation)[image imageOrientation]
-						 completionBlock:^(NSURL *assetURL, NSError *error) {
-						   if (error) {
-							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-						   } else {
-							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-						   }
-						   [LinphoneManager.instance lpConfigSetString:assetURL.absoluteString forKey:@"avatar"];
-						   _avatarImage.image = [LinphoneUtils selfAvatar];
-						 }];
-	} else {
-		[LinphoneManager.instance lpConfigSetString:url.absoluteString forKey:@"avatar"];
-		_avatarImage.image = [LinphoneUtils selfAvatar];
 	}
 }
 
