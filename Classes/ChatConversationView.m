@@ -626,7 +626,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     return TRUE;
 }
 
-- (BOOL)startFileUpload:(NSData *)data assetId:phAssetId {
+- (BOOL)startFileUpload:(NSData *)data assetId:(NSString *)phAssetId {
     FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
     [fileTransfer uploadVideo:data withassetId:phAssetId forChatRoom:_chatRoom];
     [_tableController scrollToBottom:true];
@@ -907,16 +907,6 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 	[view.tableController scrollToBottom:true];
 }
 
-- (void)getIcloudFiles
-{
-    _documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"]
-                                                                             inMode:UIDocumentPickerModeImport];
-    _documentPicker.delegate = self;
-    
-    _documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentViewController:_documentPicker animated:YES completion:nil];
-}
-
 - (void)openFile:(NSString *) filePath
 {
     // Open the controller.
@@ -929,21 +919,6 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
         [[[UIAlertView alloc] initWithTitle:@"Info" message:@"There is no app found to open it" delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil] show];
         
     }
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-
-    NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
-    [fileCoordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingWithoutChanges error:nil byAccessor:^(NSURL * _Nonnull newURL) {
-        
-        NSString *fileName = [newURL lastPathComponent];
-        NSData *data = [NSData dataWithContentsOfURL:newURL];
-    
-        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
-        
-        [[NSFileManager defaultManager] createFileAtPath:filePath contents:data attributes:nil];
-        [self openFile:filePath];
-   }];
 }
 
 - (void)deleteImageWithAssetId:(NSString *)assetId {

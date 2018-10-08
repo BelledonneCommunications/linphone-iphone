@@ -19,8 +19,10 @@
                 <outlet property="cancelButton" destination="6dl-Nz-rdv" id="ygz-nv-omC"/>
                 <outlet property="contactDateLabel" destination="JyR-RQ-uwF" id="Tc4-9t-i5V"/>
                 <outlet property="downloadButton" destination="N75-gL-R6t" id="EgN-Ab-Ded"/>
-                <outlet property="fileName" destination="Dho-UV-6Ev" id="Iro-II-w8a"/>
+                <outlet property="fileButton" destination="IGl-nl-xIE" id="tLL-3L-Byt"/>
+                <outlet property="fileName" destination="WkE-rP-Y0R" id="bjY-zl-mhs"/>
                 <outlet property="fileTransferProgress" destination="USm-wC-GvG" id="POt-YD-NCG"/>
+                <outlet property="fileView" destination="UzU-cc-LbF" id="OlG-uv-m4j"/>
                 <outlet property="finalAssetView" destination="VYJ-RC-Jmg" id="fnb-mY-nPR"/>
                 <outlet property="finalImage" destination="gzv-K4-5OL" id="YIw-kM-Ld6"/>
                 <outlet property="imageGestureRecognizer" destination="aDF-hC-ddO" id="2jh-Rr-eKk"/>
@@ -29,7 +31,6 @@
                 <outlet property="imdmLabel" destination="44j-me-Iqi" id="m5R-Dm-V8g"/>
                 <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
                 <outlet property="messageText" destination="cx9-0K-P9L" id="kPh-s4-Ioy"/>
-                <outlet property="openRecognizer" destination="NYA-II-xYn" id="pVM-vD-4Rg"/>
                 <outlet property="playButton" destination="cvc-tl-Pcf" id="eKJ-2T-LUl"/>
                 <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
                 <outlet property="statusInProgressSpinner" destination="Eab-ND-ix3" id="UuC-eY-MSf"/>
@@ -74,14 +75,6 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <gestureRecognizers/>
                                 </imageView>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dho-UV-6Ev" userLabel="fileName">
-                                    <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GmN-7v-uuO" userLabel="imageSubView">
                                     <rect key="frame" x="0.0" y="155" width="297" height="75"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
@@ -144,7 +137,6 @@
                             </subviews>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="lKJ-ra-dwR"/>
-                                <outletCollection property="gestureRecognizers" destination="NYA-II-xYn" appends="YES" id="fK6-ld-zOX"/>
                             </connections>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="6dA-3U-OPW" userLabel="bottomBarColor">
@@ -179,6 +171,29 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UzU-cc-LbF" userLabel="fileView">
+                            <rect key="frame" x="0.0" y="55" width="280" height="128"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WkE-rP-Y0R" userLabel="fileName">
+                                    <rect key="frame" x="25" y="0.0" width="180" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IGl-nl-xIE" userLabel="fileButton">
+                                    <rect key="frame" x="205" y="0.0" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" red="1" green="0.39905477280000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <state key="normal" title="Open"/>
+                                    <connections>
+                                        <action selector="onFileClick:" destination="-1" eventType="touchUpInside" id="JRN-AA-UEJ"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
                     </subviews>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
@@ -198,11 +213,6 @@
         <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
             <connections>
                 <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>
-            </connections>
-        </tapGestureRecognizer>
-        <tapGestureRecognizer id="NYA-II-xYn" userLabel="openClick">
-            <connections>
-                <action selector="onOpenClick:" destination="-1" id="XaJ-Or-uQQ"/>
             </connections>
         </tapGestureRecognizer>
     </objects>

@@ -72,7 +72,6 @@
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;
-    _openRecognizer.enabled = NO;
 	_messageImageView.image = nil;
     _finalImage.image = nil;
     _finalImage.hidden = TRUE;
@@ -131,9 +130,8 @@
 
 - (void) loadFileAsset {
     dispatch_async(dispatch_get_main_queue(), ^{
-        _fileName.hidden = NO;
+        _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
         _imageGestureRecognizer.enabled = NO;
-        _openRecognizer.enabled = YES;
     });
 }
 
@@ -167,14 +165,14 @@
     
     if (!(localImage || localVideo || localFile)) {
         _playButton.hidden = YES;
-        _fileName.hidden = YES;
+        _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
         _messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
         _downloadButton.hidden = !_cancelButton.hidden;
         _fileTransferProgress.hidden = NO;
     } else {
         // file is being saved on device - just wait for it
         if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
-            _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden  = YES;
+            _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
             fullScreenImage = YES;
         } else if(!assetIsLoaded) {
             assetIsLoaded = TRUE;
@@ -191,7 +189,7 @@
                 }
             }
              else if (localFile) {
-                NSString *text = [NSString stringWithFormat:@"📎  %@",localFile];
+                NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
                 _fileName.text = text;
                 [self loadFileAsset];
             }
@@ -202,12 +200,12 @@
                 _fileTransferProgress.hidden = NO;
                 _downloadButton.hidden = YES;
                 _playButton.hidden = YES;
-                _fileName.hidden = YES;
+                _fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
             } else {
                 _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
                 fullScreenImage = YES;
                 _playButton.hidden = localVideo ? NO : YES;
-                _fileName.hidden = localFile ? NO : YES;
+                _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
                 // Should fix cell not resizing after doanloading image.
                 [self layoutSubviews];
             }
@@ -250,7 +248,7 @@
 	_cancelButton.hidden = NO;
 	_downloadButton.hidden = YES;
     _playButton.hidden = YES;
-    _fileName.hidden = YES;
+    _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
 }
 
 - (IBAction)onPlayClick:(id)sender {
@@ -271,7 +269,7 @@
     }];
 }
 
-- (IBAction)onOpenClick:(id)event {
+- (IBAction)onFileClick:(id)sender {
     ChatConversationView *view = VIEW(ChatConversationView);
     NSString *cachedFile = [LinphoneManager getMessageAppDataForKey:@"cachedfile" inMessage:self.message];
     if (cachedFile) {
@@ -281,8 +279,10 @@
         } else {
             [self fileErrorBlock];
         }        
-    } else
-        [view getIcloudFiles];
+    } else {
+        [LinphoneManager setValueInMessageAppData:@"onFileClick" forKey:@"icloudFileOption" inMessage:self.message];
+        [super getIcloudFiles];
+    }
 }
 
 
@@ -401,7 +401,7 @@
     }
     
     bubbleFrame.origin.x = origin_x;
-    
+
     super.bubbleView.frame = bubbleFrame;
     
     // Resizing Image view

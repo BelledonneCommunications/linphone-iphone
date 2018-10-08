@@ -163,9 +163,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self dismiss];
     
     NSURL *alassetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
-    PHFetchResult<PHAsset *> *phFetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[alassetURL] options:nil];
-    PHAsset *phasset = [phFetchResult firstObject];
-    //PHAsset *phasset = [info objectForKey:UIImagePickerControllerPHAsset];
+    PHAsset *phasset = nil;
+    // when photo from camera, it hasn't be saved
+    if (alassetURL) {
+        PHFetchResult<PHAsset *> *phFetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[alassetURL] options:nil];
+        phasset = [phFetchResult firstObject];
+    }
+    
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage] ? [info objectForKey:UIImagePickerControllerEditedImage] : [info objectForKey:UIImagePickerControllerOriginalImage];
     if (!phasset) {
         __block PHObjectPlaceholder *placeHolder;

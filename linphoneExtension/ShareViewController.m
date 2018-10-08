@@ -77,12 +77,12 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
                     NSDictionary *dict = @{@"nsData" : nsData,
                                            @"url" : filename};
                     [defaults setObject:dict forKey:@"photoData"];
-                } else if ([imgPath containsString:@"var/mobile/Library/Mobile Documents/com~apple~CloudDocs"]) {
+                } else if ([imgPath containsString:@"var/mobile/Library/Mobile Documents/com~apple~CloudDocs"] || [[url scheme] isEqualToString:@"file"]) {
                     // shared files from icloud drive
                     NSDictionary *dict = @{@"nsData" : nsData,
                                            @"url" : filename};
                     [defaults setObject:dict forKey:@"icloudData"];
-                }else  {
+                } else  {
                     //Others
                     NSDictionary *dict = @{@"url" : [url absoluteString]};
                     [defaults setObject:dict forKey:@"url"];
