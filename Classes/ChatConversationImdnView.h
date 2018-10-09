@@ -14,6 +14,10 @@
 #import "UIRoundBorderedButton.h"
 
 @interface ChatConversationImdnView : UIViewController <UICompositeViewDelegate, UITableViewDelegate, UITableViewDataSource>
+{
+  @private
+    NSString *messageText;
+}
 
 @property(nonatomic) LinphoneChatMessage *msg;
 @property(nonatomic) bctbx_list_t *displayedList;

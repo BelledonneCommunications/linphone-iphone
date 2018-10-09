@@ -392,9 +392,13 @@ static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
-	NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
-	static UIFont *messageFont = nil;
-    
+    return [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
+}
+
++ (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText{
+    NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
+    static UIFont *messageFont = nil;
+
 	if (!messageFont) {
 		UIChatBubbleTextCell *cell =
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
@@ -403,56 +407,64 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 	width -= 40; /*checkbox */
 	CGSize size;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
-	if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
-		size = [self computeBoundingBox:messageText
-								   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-								   font:messageFont];
-	} else {
-		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
-        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
-        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
-        
-        if(localFile) {
-            CGSize fileSize = CGSizeMake(200, 80);
-            size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+    if (imdnText) {
+        size = [self computeBoundingBox:imdnText
+                                   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                   font:messageFont];
+        size.height += 20;
+    } else {
+        if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
+            size = [self computeBoundingBox:messageText
+                                       size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                       font:messageFont];
         } else {
-            CGSize textSize = CGSizeMake(0, 0);
-            if (![messageText isEqualToString:@"🗻"]) {
-                textSize = [self computeBoundingBox:messageText
-                                                      size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-                                                      font:messageFont];
+            NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
+            NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
+            NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
+        
+            if(localFile) {
+                CGSize fileSize = CGSizeMake(200, 80);
+                size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+            } else {
+                CGSize textSize = CGSizeMake(0, 0);
+                if (![messageText isEqualToString:@"🗻"]) {
+                    textSize = [self computeBoundingBox:messageText
+                                                        size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                                        font:messageFont];
+                    size.height += textSize.height;
+                }
+            
+                if (!localImage && !localVideo) {
+                    //We are loading the image
+                    return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height);
+                }
+                PHFetchResult<PHAsset *> *assets;
+                if(localImage)
+                    assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+                else
+                    assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
+                if (![assets firstObject]) {
+                    return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
+                }
+                PHAsset *asset = [assets firstObject];
+                CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
+                size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
+                //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
+                size.height += 40;
+                size.width -= CELL_MESSAGE_X_MARGIN;
+            
+                // add size for message text
                 size.height += textSize.height;
+                size.width = MAX(textSize.width, size.width);
             }
-            
-            if (!localImage && !localVideo) {
-                //We are loading the image
-                return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height);
-            }
-            PHFetchResult<PHAsset *> *assets;
-            if(localImage)
-                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
-            else
-                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-            if (![assets firstObject]) {
-                return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
-            }
-            PHAsset *asset = [assets firstObject];
-            CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
-            size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
-            //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
-            size.height += 40;
-            size.width -= CELL_MESSAGE_X_MARGIN;
-            
-            // add size for message text
-            size.height += textSize.height;
-            size.width = MAX(textSize.width, size.width);
         }
-	}
+    }
     
-	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
-	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
-	return size;
+    size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+    size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+    return size;
 }
+
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
 	static UIFont *dateFont = nil;
 	static CGSize dateViewSize;

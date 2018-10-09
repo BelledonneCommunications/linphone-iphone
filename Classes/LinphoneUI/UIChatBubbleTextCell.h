@@ -43,6 +43,7 @@
 @property (nonatomic, strong) UIDocumentPickerViewController *documentPicker;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
++ (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 
 - (void)setEvent:(LinphoneEventLog *)event;
