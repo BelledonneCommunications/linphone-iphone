@@ -926,20 +926,6 @@
 			remoteGlobalIDString = FAB8A0141CAC546A00C6DFC1;
 			remoteInfo = KIFFrameworkConsumerTests;
 		};
-		8C0E4A0121522B7F0058DBDA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CD87D4C1EF5105800ACA260;
-			remoteInfo = LinphoneManager;
-		};
-		8C0E4A0321522B7F0058DBDA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CD87D541EF5105900ACA260;
-			remoteInfo = LinphoneManagerTests;
-		};
 		F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -2455,7 +2441,6 @@
 				63FB30331A680E73008CA393 /* UIRoundedImageView.h */,
 				63FB30341A680E73008CA393 /* UIRoundedImageView.m */,
 				8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */,
-				24A345A51D95798A00881A5C /* UIShopTableCell.m */,
 				8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */,
 				24A345A71D95799900881A5C /* UIShopTableCell.h */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
@@ -2659,8 +2644,6 @@
 				63058A071B4E816A00EFAE36 /* KIF.framework */,
 				633FC7C81CD7466400774B8B /* KIFFrameworkConsumer.app */,
 				633FC7CA1CD7466400774B8B /* KIFFrameworkConsumerTests.xctest */,
-				8C0E4A0221522B7F0058DBDA /* LinphoneManager.framework */,
-				8C0E4A0421522B7F0058DBDA /* LinphoneManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3723,20 +3706,6 @@
 			fileType = wrapper.cfbundle;
 			path = KIFFrameworkConsumerTests.xctest;
 			remoteRef = 633FC7C91CD7466400774B8B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8C0E4A0221522B7F0058DBDA /* LinphoneManager.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LinphoneManager.framework;
-			remoteRef = 8C0E4A0121522B7F0058DBDA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8C0E4A0421522B7F0058DBDA /* LinphoneManagerTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = LinphoneManagerTests.xctest;
-			remoteRef = 8C0E4A0321522B7F0058DBDA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -5245,7 +5214,7 @@
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5351,7 +5320,7 @@
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5457,7 +5426,7 @@
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
@@ -5563,7 +5532,7 @@
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 				);
 				OTHER_LDFLAGS = "-ObjC";
