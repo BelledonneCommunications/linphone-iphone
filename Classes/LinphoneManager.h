@@ -20,7 +20,7 @@
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import <AudioToolbox/AudioToolbox.h>
-#import <AssetsLibrary/ALAssetsLibrary.h>
+#import <Photos/Photos.h>
 #import <CoreTelephony/CTCallCenter.h>
 
 #import <sqlite3.h>
@@ -208,6 +208,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)checkNewVersion;
 
+- (void)loadAvatar;
+
 @property ProviderDelegate *providerDelegate;
 
 @property (readonly) BOOL isTesting;
@@ -225,7 +227,6 @@ typedef struct _LinphoneManagerSounds {
 @property (nonatomic, assign) BOOL speakerEnabled;
 @property (nonatomic, assign) BOOL bluetoothAvailable;
 @property (nonatomic, assign) BOOL bluetoothEnabled;
-@property (readonly) ALAssetsLibrary *photoLibrary;
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
 @property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
@@ -238,5 +239,6 @@ typedef struct _LinphoneManagerSounds {
 @property NSDictionary *pushDict;
 @property(strong, nonatomic) OrderedDictionary *linphoneManagerAddressBookMap;
 @property (nonatomic, assign) BOOL contactsUpdated;
+@property UIImage *avatar;
 
 @end

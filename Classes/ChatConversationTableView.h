@@ -27,8 +27,9 @@
 
 @protocol ChatConversationDelegate <NSObject>
 
-- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url withQuality:(float)quality;
-- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url;
+- (BOOL)startImageUpload:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality;
+- (BOOL)startFileUpload:(NSData *)data assetId:(NSString *)phAssetId;
+- (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name;
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url;
 - (void)tableViewIsScrolling;
 
@@ -41,6 +42,7 @@
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
+@property NSMutableDictionary<NSString *, UIImage *> *imagesInChatroom;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;

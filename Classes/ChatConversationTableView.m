@@ -39,29 +39,36 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
+    _imagesInChatroom = [NSMutableDictionary dictionary];
 }
 
 #pragma mark -
 
 - (void)clearEventList {
-	[eventList removeAllObjects];
+    for (NSValue *value in eventList) {
+        LinphoneEventLog *event = value.pointerValue;
+        linphone_event_log_unref(event);
+    }
+    [eventList removeAllObjects];
 }
 
 - (void)updateData {
+    [self clearEventList];
 	if (!_chatRoom)
 		return;
-	[self clearEventList];
+    
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
 	bctbx_list_t *chatRoomEvents = (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
 		? linphone_chat_room_get_history_message_events(_chatRoom, 0)
 		: linphone_chat_room_get_history_events(_chatRoom, 0);
-
+    bctbx_list_t *head = chatRoomEvents;
 	eventList = [[NSMutableArray alloc] initWithCapacity:bctbx_list_size(chatRoomEvents)];
 	while (chatRoomEvents) {
 		LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
 		[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
 		chatRoomEvents = chatRoomEvents->next;
 	}
+    bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
 
 	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =
@@ -83,7 +90,6 @@
 - (void)addEventEntry:(LinphoneEventLog *)event {
 	[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
 	int pos = (int)eventList.count - 1;
-
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
 	[self.tableView beginUpdates];
 	[self.tableView insertRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationFade];
@@ -98,16 +104,16 @@
 	}
 	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]]
 						  withRowAnimation:FALSE]; // just reload
-	return;
+    return;
 }
 
 - (void)scrollToBottom:(BOOL)animated {
-	[self.tableView reloadData];
+	//[self.tableView reloadData];
 	size_t count = eventList.count;
 	if (!count)
 		return;
 
-	[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]];
+	//[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]];
 	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 						  atScrollPosition:UITableViewScrollPositionBottom
 								  animated:YES];

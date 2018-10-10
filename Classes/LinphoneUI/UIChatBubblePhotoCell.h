@@ -34,10 +34,12 @@
 @property(weak, nonatomic) IBOutlet UIProgressView *fileTransferProgress;
 @property(weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIView *imageSubView;
-@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *openRecognizer;
 @property(weak, nonatomic) IBOutlet UIView *totalView;
+@property (weak, nonatomic) IBOutlet UIView *finalAssetView;
 @property (weak, nonatomic) IBOutlet UIImageView *finalImage;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
+@property (weak, nonatomic) IBOutlet UIButton *fileButton;
+@property (weak, nonatomic) IBOutlet UIView *fileView;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
@@ -47,8 +49,7 @@
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onResendClick:(id)event;
 - (IBAction)onPlayClick:(id)sender;
-- (IBAction)onOpenClick:(id)event;
-
+- (IBAction)onFileClick:(id)sender;
 
 @end
 

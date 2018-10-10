@@ -23,7 +23,7 @@
 #import "ChatConversationTableView.h"
 #import "UIRoundedImageView.h"
 
-@interface UIChatBubbleTextCell : UITableViewCell
+@interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate>
 
 @property(readonly, nonatomic) LinphoneEventLog *event;
 @property(readonly, nonatomic) LinphoneChatMessage *message;
@@ -40,11 +40,14 @@
 @property(weak, nonatomic) IBOutlet UIImageView *imdmIcon;
 @property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
 
+@property (nonatomic, strong) UIDocumentPickerViewController *documentPicker;
+
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
+- (void)getIcloudFiles;
 
 - (void)onDelete;
 - (void)onResend;
@@ -55,5 +58,6 @@
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message;
 + (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
++ (NSString *)ContactDateForChat:(LinphoneChatMessage *)message;
 
 @end

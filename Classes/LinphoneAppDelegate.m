@@ -685,6 +685,9 @@
 															   userInfo:sheet
 																repeats:NO];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"zrtp_request"]) {
+			if (!call)
+				return;
+			
 			NSString *code = [NSString stringWithUTF8String:linphone_call_get_authentication_token(call)];
 			NSString *myCode;
 			NSString *correspondantCode;
