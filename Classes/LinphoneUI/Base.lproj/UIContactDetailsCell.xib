@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -18,6 +18,7 @@
                 <outlet property="deleteButton" destination="C2f-aP-xjR" id="sxr-th-6rq"/>
                 <outlet property="editTextfield" destination="dTn-Hc-bGM" id="bkN-xg-S9D"/>
                 <outlet property="editView" destination="rAa-qu-PDc" id="cGz-D2-GiI"/>
+                <outlet property="inviteButton" destination="lgb-5W-T0c" id="iOl-Fl-AXH"/>
                 <outlet property="linphoneImage" destination="ZaI-29-AOK" id="dY1-vO-spk"/>
             </connections>
         </placeholder>
@@ -95,6 +96,15 @@
                             <rect key="frame" x="342" y="51" width="25" height="25"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
+                            <rect key="frame" x="298" y="50" width="27" height="27"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Invite"/>
+                            <state key="normal" image="add_field_default.png"/>
+                            <connections>
+                                <action selector="onSMSInviteClick:" destination="-1" eventType="touchUpInside" id="E8o-h2-mml"/>
+                            </connections>
+                        </button>
                     </subviews>
                 </view>
             </subviews>
@@ -105,6 +115,7 @@
         </view>
     </objects>
     <resources>
+        <image name="add_field_default.png" width="27" height="27"/>
         <image name="call_start_body_default.png" width="51" height="51"/>
         <image name="call_start_body_disabled.png" width="51" height="51"/>
         <image name="call_start_body_over.png" width="51" height="51"/>

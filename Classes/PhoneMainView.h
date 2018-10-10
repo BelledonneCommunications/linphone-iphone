@@ -18,6 +18,7 @@
  */
 
 #import <MediaPlayer/MediaPlayer.h>
+#import <MessageUI/MessageUI.h>
 
 /* These imports are here so that we can import PhoneMainView.h without bothering to import all the rest of the view headers */
 #import "StatusBarView.h"
@@ -74,7 +75,7 @@
 
 @end
 
-@interface PhoneMainView : UIViewController<IncomingCallViewDelegate> {
+@interface PhoneMainView : UIViewController<IncomingCallViewDelegate, MFMessageComposeViewControllerDelegate> {
     @private
     NSMutableArray *inhibitedEvents;
 }
@@ -104,6 +105,7 @@
 - (void)startUp;
 - (void)displayIncomingCall:(LinphoneCall*) call;
 - (void)setVolumeHidden:(BOOL)hidden;
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result;
 
 - (void)addInhibitedEvent:(id)event;
 - (BOOL)removeInhibitedEvent:(id)event;
