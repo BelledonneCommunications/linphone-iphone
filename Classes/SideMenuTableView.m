@@ -15,6 +15,7 @@
 #import "StatusBarView.h"
 #import "ShopView.h"
 #import "LinphoneManager.h"
+#import "RecordingsListView.h"
 
 @implementation SideMenuEntry
 
@@ -60,6 +61,12 @@
 												  }]];
 	}
 
+    [_sideMenuEntries
+     addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Recordings", nil)
+                                           tapBlock:^() {
+                                               [PhoneMainView.instance
+                                                changeCurrentView:RecordingsListView.compositeViewDescription];
+                                           }]];
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {

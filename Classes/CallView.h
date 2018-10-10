@@ -42,6 +42,7 @@
 	NSTimer *hideControlsTimer;
 	NSTimer *videoDismissTimer;
 	BOOL videoHidden;
+    BOOL callRecording;
 	VideoZoomHandler *videoZoomHandler;
 }
 
@@ -74,6 +75,8 @@
 @property(weak, nonatomic) IBOutlet UIPauseButton *conferencePauseButton;
 @property(weak, nonatomic) IBOutlet UIBouncingView *chatNotificationView;
 @property(weak, nonatomic) IBOutlet UILabel *chatNotificationLabel;
+@property (weak, nonatomic) IBOutlet UIButton *recordButton;
+@property (weak, nonatomic) IBOutlet UIButton *recordButtonOnView;
 
 @property(weak, nonatomic) IBOutlet UIView *bottomBar;
 @property(nonatomic, strong) IBOutlet UIDigitButton *oneButton;
@@ -107,5 +110,6 @@
 - (IBAction)onOptionsConferenceClick:(id)sender;
 - (IBAction)onNumpadClick:(id)sender;
 - (IBAction)onChatClick:(id)sender;
+- (IBAction)onRecordClick:(id)sender;
 
 @end

@@ -48,6 +48,7 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		videoHidden = TRUE;
+        callRecording = FALSE;
 	}
 	return self;
 }
@@ -714,6 +715,39 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	const LinphoneCall *currentCall = linphone_core_get_current_call(LC);
 	const LinphoneAddress *addr = currentCall ? linphone_call_get_remote_address(currentCall) : NULL;
 	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
+}
+
+- (IBAction)onRecordClick:(id)sender {
+    if (![_optionsView isHidden])
+        [self hideOptions:TRUE animated:ANIMATED];
+    if (callRecording) {
+        LOGD(@"Recording Stops");
+        [_recordButton setImage:[UIImage imageNamed:@"rec_on_default.png"] forState:UIControlStateNormal];
+        [_recordButtonOnView setHidden:TRUE];
+        
+        LinphoneCall *call = linphone_core_get_current_call(LC);
+        linphone_call_stop_recording(call);
+        
+        callRecording = FALSE;
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *writablePath = [paths objectAtIndex:0];
+        writablePath = [writablePath stringByAppendingString:@"/"];
+        NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
+        if (directoryContent) {
+            return;
+        }
+    } else {
+        LOGD(@"Recording Starts");
+        
+        [_recordButton setImage:[UIImage imageNamed:@"rec_off_default.png"] forState:UIControlStateNormal];
+        [_recordButtonOnView setHidden:FALSE];
+        
+        LinphoneCall *call = linphone_core_get_current_call(LC);
+        linphone_call_start_recording(call);
+        
+        callRecording = TRUE;
+    }
 }
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {

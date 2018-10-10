@@ -51,11 +51,20 @@ typedef enum {
 
 + (NSMutableDictionary <NSString *, PHAsset *> *)photoAssetsDictionary;
 
++ (NSString *)recordingFilePathFromCall:(const LinphoneAddress *)iaddr;
++ (NSArray *)parseRecordingName:(NSString *)filename;
+
 @end
 
 @interface NSNumber (HumanReadableSize)
 
 - (NSString*)toHumanReadableSize;
+
+@end
+
+@interface UIImage (systemIcons)
+
++ (UIImage *)imageFromSystemBarButton:(UIBarButtonSystemItem)systemItem :(UIColor *) color;
 
 @end
 
