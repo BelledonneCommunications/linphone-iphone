@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1523F17A2174B096009E32C0 /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
+		1523F1812174B0BA009E32C0 /* mediastreamer2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
+		15F12E682174AB4B00B7DE49 /* mediastreamer2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		15F12E692174AB9000B7DE49 /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */; };
 		15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -669,8 +673,6 @@
 		8C3EAA061EB8CEE700B732B6 /* bctoolbox.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA071EB8CEE700B732B6 /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
 		8C3EAA081EB8CEE700B732B6 /* linphone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA0A1EB8CEE700B732B6 /* mediastreamer_base.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA0C1EB8CEE700B732B6 /* mediastreamer_voip.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA0D1EB8CEE700B732B6 /* mssilk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; };
 		8C3EAA0E1EB8CEE700B732B6 /* mssilk.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA0F1EB8CEE700B732B6 /* mswebrtc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */; };
@@ -694,10 +696,6 @@
 		8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C5BCED21EB3859200A9AAEF /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
 		8C5BCED31EB3859200A9AAEF /* linphone.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCED41EB3859200A9AAEF /* mediastreamer_base.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */; };
-		8C5BCED51EB3859300A9AAEF /* mediastreamer_base.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCED61EB3859300A9AAEF /* mediastreamer_voip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */; };
-		8C5BCED71EB3859300A9AAEF /* mediastreamer_voip.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C5BCED81EB3859300A9AAEF /* mssilk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; };
 		8C5BCED91EB3859300A9AAEF /* mssilk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C5BCEDA1EB3859300A9AAEF /* mswebrtc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */; };
@@ -915,20 +913,6 @@
 			remoteGlobalIDString = FAB8A0141CAC546A00C6DFC1;
 			remoteInfo = KIFFrameworkConsumerTests;
 		};
-		8C0E4A0121522B7F0058DBDA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CD87D4C1EF5105800ACA260;
-			remoteInfo = LinphoneManager;
-		};
-		8C0E4A0321522B7F0058DBDA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CD87D541EF5105900ACA260;
-			remoteInfo = LinphoneManagerTests;
-		};
 		F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -966,10 +950,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				15F12E682174AB4B00B7DE49 /* mediastreamer2.framework in Embed Frameworks */,
 				8C435FB620BC368D004CCA25 /* belr.framework in Embed Frameworks */,
 				8C5BCED31EB3859200A9AAEF /* linphone.framework in Embed Frameworks */,
-				8C5BCED51EB3859300A9AAEF /* mediastreamer_base.framework in Embed Frameworks */,
-				8C5BCED71EB3859300A9AAEF /* mediastreamer_voip.framework in Embed Frameworks */,
 				8C5BCEDB1EB3859300A9AAEF /* mswebrtc.framework in Embed Frameworks */,
 				8C3EA9F11EB8A78C00B732B6 /* msx264.framework in Embed Frameworks */,
 				8C3EA9E61EB892D600B732B6 /* mscodec2.framework in Embed Frameworks */,
@@ -1000,8 +983,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				1523F1812174B0BA009E32C0 /* mediastreamer2.framework in CopyFiles */,
 				8C435F9820BBF874004CCA25 /* belcard.framework in CopyFiles */,
-				8C3EAA0C1EB8CEE700B732B6 /* mediastreamer_voip.framework in CopyFiles */,
 				8C3EAA0E1EB8CEE700B732B6 /* mssilk.framework in CopyFiles */,
 				8C3EAA081EB8CEE700B732B6 /* linphone.framework in CopyFiles */,
 				8C435FB420BC3685004CCA25 /* belr.framework in CopyFiles */,
@@ -1011,7 +994,6 @@
 				8C3EAA021EB8CEE700B732B6 /* mscodec2.framework in CopyFiles */,
 				8C3EAA101EB8CEE700B732B6 /* mswebrtc.framework in CopyFiles */,
 				8C3EAA041EB8CEE700B732B6 /* msopenh264.framework in CopyFiles */,
-				8C3EAA0A1EB8CEE700B732B6 /* mediastreamer_base.framework in CopyFiles */,
 				8C3EAA001EB8CEE700B732B6 /* msamr.framework in CopyFiles */,
 				8C3EAA061EB8CEE700B732B6 /* bctoolbox.framework in CopyFiles */,
 				8C3EAA121EB8CEE700B732B6 /* ortp.framework in CopyFiles */,
@@ -1022,6 +1004,7 @@
 
 /* Begin PBXFileReference section */
 		152F22351B15E889008C0621 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
@@ -1757,8 +1740,6 @@
 		8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "bctoolbox-tester.framework"; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework"; sourceTree = "<group>"; };
 		8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = bctoolbox.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox.framework"; sourceTree = "<group>"; };
 		8C5BCEC81EB3859200A9AAEF /* linphone.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphone.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphone.framework"; sourceTree = "<group>"; };
-		8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer_base.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer_base.framework"; sourceTree = "<group>"; };
-		8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer_voip.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer_voip.framework"; sourceTree = "<group>"; };
 		8C5BCECB1EB3859200A9AAEF /* mssilk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mssilk.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mssilk.framework"; sourceTree = "<group>"; };
 		8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mswebrtc.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mswebrtc.framework"; sourceTree = "<group>"; };
 		8C5BCECD1EB3859200A9AAEF /* ortp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ortp.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/ortp.framework"; sourceTree = "<group>"; };
@@ -2047,10 +2028,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15F12E692174AB9000B7DE49 /* mediastreamer2.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
 				24E1C7C01F9A235600D3F981 /* Contacts.framework in Frameworks */,
-				8C5BCED61EB3859300A9AAEF /* mediastreamer_voip.framework in Frameworks */,
 				8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */,
 				8C5BCED81EB3859300A9AAEF /* mssilk.framework in Frameworks */,
 				8C3EA9E31EB892D600B732B6 /* msamr.framework in Frameworks */,
@@ -2070,7 +2051,6 @@
 				2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */,
 				224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */,
 				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
-				8C5BCED41EB3859200A9AAEF /* mediastreamer_base.framework in Frameworks */,
 				2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */,
 				8C5BCED21EB3859200A9AAEF /* linphone.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -2141,6 +2121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1523F17A2174B096009E32C0 /* mediastreamer2.framework in Frameworks */,
 				8C3EA9FD1EB8CEE700B732B6 /* msx264.framework in Frameworks */,
 				63CE58451C85EC1000304800 /* VideoToolbox.framework in Frameworks */,
 				15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */,
@@ -2441,6 +2422,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */,
 				8C23BCB71D82AAC3005F19BB /* linphone.entitlements */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				61AE364C20C00B370089D9D3 /* linphoneExtension */,
@@ -2489,8 +2471,6 @@
 				8C3EA9E21EB892D600B732B6 /* msopenh264.framework */,
 				8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */,
 				8C5BCEC81EB3859200A9AAEF /* linphone.framework */,
-				8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */,
-				8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */,
 				8C5BCECB1EB3859200A9AAEF /* mssilk.framework */,
 				8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */,
 				8C5BCECD1EB3859200A9AAEF /* ortp.framework */,
@@ -2623,8 +2603,6 @@
 				63058A071B4E816A00EFAE36 /* KIF.framework */,
 				633FC7C81CD7466400774B8B /* KIFFrameworkConsumer.app */,
 				633FC7CA1CD7466400774B8B /* KIFFrameworkConsumerTests.xctest */,
-				8C0E4A0221522B7F0058DBDA /* LinphoneManager.framework */,
-				8C0E4A0421522B7F0058DBDA /* LinphoneManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3683,20 +3661,6 @@
 			fileType = wrapper.cfbundle;
 			path = KIFFrameworkConsumerTests.xctest;
 			remoteRef = 633FC7C91CD7466400774B8B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8C0E4A0221522B7F0058DBDA /* LinphoneManager.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LinphoneManager.framework;
-			remoteRef = 8C0E4A0121522B7F0058DBDA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8C0E4A0421522B7F0058DBDA /* LinphoneManagerTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = LinphoneManagerTests.xctest;
-			remoteRef = 8C0E4A0321522B7F0058DBDA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
