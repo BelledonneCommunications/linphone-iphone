@@ -130,7 +130,6 @@
 		631098521D4660630041F2B3 /* CountryListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 631098501D4660630041F2B3 /* CountryListView.xib */; };
 		63130FB21C1ED06900371918 /* SideMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
-		631348321B6FA53300C6BDCB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 631348311B6FA53300C6BDCB /* rootca.pem */; };
 		63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
 		6334DDFA1BBAC97C00631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */; };
@@ -1162,7 +1161,6 @@
 		63130FB11C1ED06900371918 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/SideMenuView~ipad.xib"; sourceTree = "<group>"; };
 		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
-		631348311B6FA53300C6BDCB /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = SOURCE_ROOT; };
 		6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateView.h; sourceTree = "<group>"; };
 		6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateView.m; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableView.h; sourceTree = "<group>"; };
@@ -3152,7 +3150,6 @@
 				63AADBD81B6A0FF200AA16FD /* linphonerc-factory */,
 				63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */,
 				63AADBC41B6A0FF200AA16FD /* Localizable.strings */,
-				631348311B6FA53300C6BDCB /* rootca.pem */,
 				63CDC4511C3BDE370085F529 /* sounds */,
 			);
 			path = Resources;
@@ -4130,7 +4127,6 @@
 				633FEEF91D3CD55A0014B822 /* numpad_star_over~ipad@2x.png in Resources */,
 				633FEDCB1D3CD5590014B822 /* call_outgoing@2x.png in Resources */,
 				633FEF501D3CD55A0014B822 /* valid_disabled.png in Resources */,
-				631348321B6FA53300C6BDCB /* rootca.pem in Resources */,
 				633FEEB31D3CD55A0014B822 /* numpad_3_default.png in Resources */,
 				633FEE1C1D3CD5590014B822 /* chat_start_body_default~ipad.png in Resources */,
 				633FEE011D3CD5590014B822 /* camera_switch_over@2x.png in Resources */,
