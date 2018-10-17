@@ -6,6 +6,7 @@ liblinphone-iphone-sdk*.zip
 xcuserdata/
 Classes/LinphoneIOSVersion.h
 Pods/
+Podfile.lock
 build
 test-reports
 WORK
