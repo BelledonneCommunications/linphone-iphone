@@ -82,5 +82,6 @@
 - (void)update;
 - (void)openFile:(NSString *) filePath;
 - (void)clearMessageView;
+- (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view inChat:(BOOL)inChat;
 
 @end
