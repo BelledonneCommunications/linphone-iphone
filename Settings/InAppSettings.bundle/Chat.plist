@@ -5,6 +5,26 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Auto Download</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>auto_download_incoming_files_max_size</string>
+			<key>Title</key>
+			<string>Files max size</string>
+			<key>DefaultValue</key>
+			<integer>-1</integer>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>NumbersAndPunctuation</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
 			<key>DefaultValue</key>
 			<string>0</string>
 			<key>Type</key>

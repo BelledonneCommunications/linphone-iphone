@@ -1127,7 +1127,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
     
     BOOL hasFile = FALSE;
     // if auto_download is available and file is downloaded
-    if (([LinphoneManager.instance lpConfigIntForKey:@"auto_download_incoming_files_max_size" inSection:@"app"] > -1) && linphone_chat_message_get_file_transfer_information(msg))
+    if ((linphone_core_get_max_size_for_auto_download_incoming_files(LC) > -1) && linphone_chat_message_get_file_transfer_information(msg))
         hasFile = TRUE;
 
 	if (!linphone_chat_message_is_file_transfer(msg) && !linphone_chat_message_is_text(msg) && !hasFile)

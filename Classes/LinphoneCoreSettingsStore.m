@@ -336,6 +336,7 @@
 	{
 		[self setInteger:linphone_core_lime_enabled(LC) forKey:@"use_lime_preference"];
 		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
+        [self setInteger:linphone_core_get_max_size_for_auto_download_incoming_files(LC) forKey:@"auto_download_incoming_files_max_size"];
 	}
 
 	// network section
@@ -784,6 +785,7 @@
 			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		}
 		linphone_core_set_file_transfer_server(LC, [self stringForKey:@"file_transfer_server_url_preference"].UTF8String);
+        linphone_core_set_max_size_for_auto_download_incoming_files(LC, [[self stringForKey:@"auto_download_incoming_files_max_size"] intValue]);
 
 		// network section
 		BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
