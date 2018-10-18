@@ -169,7 +169,6 @@ private:
 	SalMulticastRole getMulticastRole (SalStreamType type);
 	void joinMulticastGroup (int streamIndex, MediaStream *ms);
 
-	int findCryptoIndexFromTag (const SalSrtpCryptoAlgo crypto[], unsigned char tag);
 	void setDtlsFingerprint (MSMediaStreamSessions *sessions, const SalStreamDescription *sd, const SalStreamDescription *remote);
 	void setDtlsFingerprintOnAllStreams ();
 	void setupDtlsParams (MediaStream *ms);

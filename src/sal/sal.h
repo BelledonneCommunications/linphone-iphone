@@ -253,6 +253,8 @@ public:
 	belle_sip_source_t *createTimer (belle_sip_source_func_t func, void *data, unsigned int timeoutValueMs, const std::string &timerName);
 	void cancelTimer (belle_sip_source_t *timer);
 
+	//utils
+	static int findCryptoIndexFromTag (const SalSrtpCryptoAlgo crypto[], unsigned char tag);
 
 private:
 	struct SalUuid {

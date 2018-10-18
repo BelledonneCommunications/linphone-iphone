@@ -4,6 +4,7 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
+srtp_crypto_suites=AES_256_CM_HMAC_SHA1_80
 
 [auth_info_0]
 username=laure

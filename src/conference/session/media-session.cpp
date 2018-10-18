@@ -1710,14 +1710,6 @@ void MediaSessionPrivate::joinMulticastGroup (int streamIndex, MediaStream *ms) 
 
 // -----------------------------------------------------------------------------
 
-int MediaSessionPrivate::findCryptoIndexFromTag (const SalSrtpCryptoAlgo crypto[], unsigned char tag) {
-	for (int i = 0; i < SAL_CRYPTO_ALGO_MAX; i++) {
-		if (crypto[i].tag == tag)
-			return i;
-	}
-	return -1;
-}
-
 void MediaSessionPrivate::setDtlsFingerprint (MSMediaStreamSessions *sessions, const SalStreamDescription *sd, const SalStreamDescription *remote) {
 	if (sal_stream_description_has_dtls(sd)) {
 		if (sd->dtls_role == SalDtlsRoleInvalid)
@@ -1881,7 +1873,7 @@ void MediaSessionPrivate::updateCryptoParameters (SalMediaDescription *oldMd, Sa
 }
 
 bool MediaSessionPrivate::updateStreamCryptoParameters (const SalStreamDescription *localStreamDesc, SalStreamDescription *oldStream, SalStreamDescription *newStream, MediaStream *ms) {
-	int cryptoIdx = findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(newStream->crypto_local_tag));
+	int cryptoIdx = Sal::findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(newStream->crypto_local_tag));
 	if (cryptoIdx >= 0) {
 		if (localDescChanged & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED)
 			ms_media_stream_sessions_set_srtp_send_key_b64(&ms->sessions, newStream->crypto[0].algo, localStreamDesc->crypto[cryptoIdx].master_key);
@@ -2694,7 +2686,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 			// Valid local tags are > 0
 			if (sal_stream_description_has_srtp(stream)) {
 				const SalStreamDescription *localStreamDesc = sal_media_description_find_stream(localDesc, stream->proto, SalAudio);
-				int cryptoIdx = findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(stream->crypto_local_tag));
+				int cryptoIdx = Sal::findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(stream->crypto_local_tag));
 				if (cryptoIdx >= 0) {
 					ms_media_stream_sessions_set_srtp_recv_key_b64(&audioStream->ms.sessions, stream->crypto[0].algo, stream->crypto[0].master_key);
 					ms_media_stream_sessions_set_srtp_send_key_b64(&audioStream->ms.sessions, stream->crypto[0].algo, localStreamDesc->crypto[cryptoIdx].master_key);
@@ -2874,7 +2866,7 @@ void MediaSessionPrivate::startTextStream () {
 			getCurrentParams()->getPrivate()->setUsedRealtimeTextCodec(rtp_profile_get_payload(textProfile, usedPt));
 			getCurrentParams()->enableRealtimeText(true);
 			if (sal_stream_description_has_srtp(tstream)) {
-				int cryptoIdx = findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(tstream->crypto_local_tag));
+				int cryptoIdx = Sal::findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(tstream->crypto_local_tag));
 				if (cryptoIdx >= 0) {
 					ms_media_stream_sessions_set_srtp_recv_key_b64(&textStream->ms.sessions, tstream->crypto[0].algo, tstream->crypto[0].master_key);
 					ms_media_stream_sessions_set_srtp_send_key_b64(&textStream->ms.sessions, tstream->crypto[0].algo, localStreamDesc->crypto[cryptoIdx].master_key);
@@ -2967,7 +2959,7 @@ void MediaSessionPrivate::startVideoStream (CallSession::State targetState) {
 			if (isActive) {
 				if (sal_stream_description_has_srtp(vstream)) {
 					const SalStreamDescription *localStreamDesc = sal_media_description_find_stream(localDesc, vstream->proto, SalVideo);
-					int cryptoIdx = findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(vstream->crypto_local_tag));
+					int cryptoIdx = Sal::findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(vstream->crypto_local_tag));
 					if (cryptoIdx >= 0) {
 						ms_media_stream_sessions_set_srtp_recv_key_b64(&videoStream->ms.sessions, vstream->crypto[0].algo, vstream->crypto[0].master_key);
 						ms_media_stream_sessions_set_srtp_send_key_b64(&videoStream->ms.sessions, vstream->crypto[0].algo, localStreamDesc->crypto[cryptoIdx].master_key);

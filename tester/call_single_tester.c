@@ -2665,6 +2665,13 @@ static void srtp_call(void) {
 	call_base(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
 
+/*
+ *Purpose of this test is to check that even if caller and callee does not have exactly the same crypto suite configured, the matching crypto suite is used.
+ */
+static void srtp_call_with_different_crypto_suite(void) {
+	call_base_with_configfile(LinphoneMediaEncryptionSRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "laure_tcp_rc", "marie_rc");
+}
+
 static void zrtp_call(void) {
 	call_base(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
 }
@@ -6542,6 +6549,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call paused resumed with loss", call_paused_resumed_with_loss),
 	TEST_NO_TAG("Call paused resumed from callee", call_paused_resumed_from_callee),
 	TEST_NO_TAG("SRTP call", srtp_call),
+	TEST_NO_TAG("SRTP call with different crypto suite", srtp_call_with_different_crypto_suite),
 	TEST_NO_TAG("ZRTP call", zrtp_call),
 	TEST_NO_TAG("ZRTP silent call", zrtp_silent_call),
 	TEST_NO_TAG("ZRTP SAS call", zrtp_sas_call),
