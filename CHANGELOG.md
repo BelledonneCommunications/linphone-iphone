@@ -24,11 +24,16 @@ Group changes to describe their impact on the project, as follows:
 
 ### Changed
 - Use of Photokit instead of Asset Library for image handling
-### Fixed
-- Fix Bluetooth management
 
 ### Removed
 - Static build of iOS linphone SDK
+
+## [4.0.2] - 2018-10-15
+
+### Fixed
+- fix IOS12 crash
+- fix bluethooth issue with some cars
+- fix nat helper (sdk)
 
 ## [4.0.1] - 2018-06-26
 
