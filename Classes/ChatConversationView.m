@@ -83,6 +83,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[PhoneMainView.instance updateApplicationBadgeNumber];
 }
 
++ (UIImage *)getSecurityImageForChatRoom:(LinphoneChatRoom *)chatRoom {
+    if (!chatRoom)
+        return nil;
+
+    LinphoneChatRoomSecurityLevel securityLevel = linphone_chat_room_get_security_level(chatRoom);
+    switch (securityLevel) {
+        case LinphoneChatRoomSecurityLevelUnsafe:
+            return [UIImage imageNamed:@"security_alert_indicator.png"];
+        case LinphoneChatRoomSecurityLevelEncrypted:
+            return [UIImage imageNamed:@"security_1_indicator.png.png"];
+        case LinphoneChatRoomSecurityLevelSafe:
+            return [UIImage imageNamed:@"security_2_indicator.png.png"];
+                
+        default:
+            return nil;
+    }
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {

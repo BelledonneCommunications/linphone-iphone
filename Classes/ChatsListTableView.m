@@ -216,6 +216,10 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    return 86.0;
+}
+
 #pragma mark - UITableViewDelegate Functions
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

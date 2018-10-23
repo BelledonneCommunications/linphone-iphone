@@ -68,6 +68,7 @@
 @property (weak, nonatomic) IBOutlet UIView *imagesView;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
++ (UIImage *)getSecurityImageForChatRoom:(LinphoneChatRoom *)chatRoom;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
