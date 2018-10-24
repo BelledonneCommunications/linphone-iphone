@@ -80,22 +80,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 
-- (IBAction)onAddGroupChatClick:(id)sender {
-    // TODO create group chat
+- (void)newChatCreate:(BOOL)isGroup {
     ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
     view.isForEditing = false;
+    view.isGroupChat = isGroup;
     view.tableController.notFirstTime = FALSE;
     [view.tableController.contactsGroup removeAllObjects];
     [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
+- (IBAction)onAddGroupChatClick:(id)event {
+    [self newChatCreate:TRUE];
+}
+
 - (IBAction)onAddClick:(id)event {
-    // TODO create one-to-one chat
-	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
-	view.isForEditing = false;
-	view.tableController.notFirstTime = FALSE;
-	[view.tableController.contactsGroup removeAllObjects];
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[self newChatCreate:FALSE];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {

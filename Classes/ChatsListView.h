@@ -34,7 +34,7 @@
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 
-- (IBAction)onAddGroupChatClick:(id)sender;
+- (IBAction)onAddGroupChatClick:(id)event;
 - (IBAction)onAddClick:(id)event;
 - (IBAction)onEditionChangeClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;

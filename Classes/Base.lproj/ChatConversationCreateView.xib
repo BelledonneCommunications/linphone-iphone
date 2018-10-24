@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -13,10 +13,14 @@
             <connections>
                 <outlet property="allButton" destination="r3z-SM-lMq" id="DUC-gQ-gKu"/>
                 <outlet property="backButton" destination="fNt-yb-wsf" id="3Xj-Dv-LmO"/>
+                <outlet property="chiffreButton" destination="uUN-bl-g4c" id="w8f-8e-vBx"/>
+                <outlet property="chiffreImage" destination="jIQ-qM-GVG" id="mSL-Kf-21s"/>
+                <outlet property="chiffreOptionView" destination="9gK-1a-7Hl" id="gXA-hF-uGd"/>
                 <outlet property="collectionView" destination="KRQ-Fm-3cQ" id="otM-cN-lEg"/>
                 <outlet property="linphoneButton" destination="8lQ-fv-INK" id="zaP-UT-K4y"/>
                 <outlet property="nextButton" destination="rBc-dQ-eIj" id="QHB-Xp-PTA"/>
                 <outlet property="selectedButtonImage" destination="ibu-Ra-oZO" id="jvl-ay-cfh"/>
+                <outlet property="switchView" destination="d5Q-XR-FNz" id="Xeo-ZG-6cr"/>
                 <outlet property="tableController" destination="4" id="18"/>
                 <outlet property="view" destination="5" id="14"/>
                 <outlet property="waitView" destination="Ztm-hK-aBp" id="qYh-M5-heN"/>
@@ -40,7 +44,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                 </imageView>
                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d5Q-XR-FNz" userLabel="switchView">
-                                    <rect key="frame" x="112" y="0.0" width="150" height="66"/>
+                                    <rect key="frame" x="225" y="0.0" width="150" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r3z-SM-lMq" userLabel="allButton" customClass="UIIconButton">
@@ -102,6 +106,42 @@
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="463-Qr-hJG"/>
                                     </connections>
                                 </button>
+                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9gK-1a-7Hl" userLabel="chiffreOptionView">
+                                    <rect key="frame" x="72" y="0.0" width="150" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Be-pr-fmB">
+                                            <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" image="security_toogle_icon_grey.png"/>
+                                            <state key="disabled" image="security_toogle_icon_grey.png"/>
+                                        </button>
+                                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dH1-Al-sJ7">
+                                            <rect key="frame" x="56" y="24" width="36" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="security_toogle_background_green.png" translatesAutoresizingMaskIntoConstraints="NO" id="jIQ-qM-GVG" userLabel="chiffreImage">
+                                                    <rect key="frame" x="0.0" y="0.0" width="36" height="18"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uUN-bl-g4c" userLabel="chiffreButton">
+                                                    <rect key="frame" x="20" y="2" width="14" height="14"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" image="security_toogle_button.png"/>
+                                                    <connections>
+                                                        <action selector="onChiffreClick:" destination="-1" eventType="touchUpInside" id="mvq-eU-bgO"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </view>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Py-cO-YGv">
+                                            <rect key="frame" x="76" y="0.0" width="75" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" image="security_toogle_icon_green.png"/>
+                                            <state key="disabled" image="security_toogle_icon_green.png"/>
+                                        </button>
+                                    </subviews>
+                                </view>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rBc-dQ-eIj" userLabel="nextButton" customClass="UIIconButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
@@ -189,5 +229,9 @@
         <image name="contacts_sip_selected.png" width="39" height="39"/>
         <image name="next_default.png" width="24" height="22"/>
         <image name="next_disabled.png" width="24" height="22"/>
+        <image name="security_toogle_background_green.png" width="52" height="27"/>
+        <image name="security_toogle_button.png" width="21" height="21"/>
+        <image name="security_toogle_icon_green.png" width="21" height="24"/>
+        <image name="security_toogle_icon_grey.png" width="21" height="24"/>
     </resources>
 </document>

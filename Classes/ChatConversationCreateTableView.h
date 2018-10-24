@@ -20,6 +20,7 @@
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 
 @property(nonatomic) Boolean isForEditing;
+@property(nonatomic) Boolean isGroupChat;
 - (void) loadData;
 
 @end

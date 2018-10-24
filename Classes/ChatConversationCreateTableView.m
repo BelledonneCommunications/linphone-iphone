@@ -114,6 +114,10 @@
 	return _addresses.count;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    return 60.0;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UIChatCreateCell.class);
 	UIChatCreateCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
@@ -133,13 +137,14 @@
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
+    [cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 
-	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))) {
+	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC)) || !_isGroupChat) {
 		// Create directly a basic chat room if there's no factory uri
 		bctbx_list_t *addresses = NULL;
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);

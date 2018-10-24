@@ -54,6 +54,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+
+    CGRect frame = _chiffreOptionView.frame;
+    if (_isGroupChat) {
+        _nextButton.hidden = FALSE;
+        _switchView.hidden = TRUE;
+        frame.origin.x = (self.view.frame.size.width -  _chiffreOptionView.frame.size.width)/2;
+    } else {
+        _nextButton.hidden = TRUE;
+        _switchView.hidden = FALSE;
+        frame.origin.x = self.view.frame.size.width * 0.192;
+    }
+    _chiffreOptionView.frame = frame;
+
 	_waitView.hidden = YES;
 	_backButton.hidden = IPAD;
 	if(_tableController.contactsGroup.count == 0) {
@@ -72,6 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[_collectionView reloadData];
 	_tableController.isForEditing = _isForEditing;
+    _tableController.isGroupChat = _isGroupChat;
 	[self changeView:ContactsLinphone];
 }
 
@@ -104,6 +118,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	view.contacts = _tableController.contactsGroup;
 	view.create = !_isForEditing;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (IBAction)onChiffreClick:(id)sender {
+    CGRect frame = _chiffreButton.frame;
+    // TODO show encrypted contacts
+    if (frame.origin.x > 10) {
+        // encrypted
+        frame.origin.x = 2;
+        [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
+    } else {
+        // no encrypted
+        frame.origin.x = 20;
+        [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_green.png"]];
+    }
+    _chiffreButton.frame = frame;
 }
 
 - (void)dismissKeyboards {

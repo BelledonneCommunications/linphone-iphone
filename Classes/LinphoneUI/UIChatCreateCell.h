@@ -13,6 +13,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *addressLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedImage;
 @property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
+@property (weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 
