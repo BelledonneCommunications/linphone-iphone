@@ -13,6 +13,7 @@ typedef void (^SideMenuEntryBlock)(void);
 
 @interface SideMenuEntry : NSObject {
   @public
+    UIImage *img;
 	NSString *title;
 	SideMenuEntryBlock onTapBlock;
 };

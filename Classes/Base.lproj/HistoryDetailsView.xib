@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,6 +19,7 @@
                 <outlet property="emptyLabel" destination="hvz-CS-NME" id="Qws-r1-XMh"/>
                 <outlet property="headerView" destination="33" id="iv2-Rj-j3j"/>
                 <outlet property="landscapeView" destination="NHC-7w-48z" id="kTJ-YT-Ejm"/>
+                <outlet property="linphoneImage" destination="mfN-Ai-9RX" id="Ubt-oH-lra"/>
                 <outlet property="portraitView" destination="4" id="0gH-12-O02"/>
                 <outlet property="tableView" destination="baU-d4-eu3" id="3q4-5X-yCB"/>
                 <outlet property="view" destination="4" id="10"/>
@@ -88,9 +89,9 @@
                                     <color key="textColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="245" y="39" width="21" height="37"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <imageView userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" misplaced="YES" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                                    <rect key="frame" x="350" y="124" width="15" height="15"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                         <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
                                         <bool key="isElement" value="YES"/>
@@ -165,7 +166,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="254.5" y="288.5"/>
+            <point key="canvasLocation" x="-2" y="25"/>
         </view>
         <view contentMode="scaleToFill" id="LBc-mh-ozk" userLabel="iphone6MetricsView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -306,7 +307,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="348.5" y="-44.5"/>
+            <point key="canvasLocation" x="439" y="-51"/>
         </view>
         <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableView">
             <connections>
@@ -329,6 +330,6 @@
         <image name="color_F.png" width="2" height="2"/>
         <image name="contact_add_default.png" width="34" height="29"/>
         <image name="contact_add_disabled.png" width="34" height="29"/>
-        <image name="linphone_user.png" width="26" height="22"/>
+        <image name="linphone_user.png" width="26" height="26"/>
     </resources>
 </document>

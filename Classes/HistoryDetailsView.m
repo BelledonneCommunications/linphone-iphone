@@ -146,6 +146,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_addContactButton.hidden = ([FastAddressBook getContactWithAddress:addr] != nil);
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr withAddressLabel:_addressLabel];
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+    Contact *contact = [FastAddressBook getContactWithAddress:addr];
+    _linphoneImage.hidden =
+    ! ((contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen) || [FastAddressBook contactHasValidSipDomain:contact]);
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	ms_free(addrURI);
 

@@ -38,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
 @property (weak, nonatomic) UIView *waitView;
 @property (strong, nonatomic) IBOutlet UIButton *inviteButton;
+@property (weak, nonatomic) IBOutlet UILabel *inviteLabel;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 - (void)setAddress:(NSString *)address;

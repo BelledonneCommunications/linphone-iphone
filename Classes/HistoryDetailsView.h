@@ -39,6 +39,7 @@
 @property(strong, nonatomic) IBOutlet HistoryDetailsTableView *tableView;
 @property(weak, nonatomic) IBOutlet UILabel *emptyLabel;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
+@property (weak, nonatomic) IBOutlet UIRoundedImageView *linphoneImage;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;

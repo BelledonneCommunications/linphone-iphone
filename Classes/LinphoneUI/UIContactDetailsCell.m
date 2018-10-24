@@ -69,7 +69,13 @@
 													  _addressLabel.text.UTF8String) &&
 			   [FastAddressBook isSipURIValid:_addressLabel.text]));
         ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
-        self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
+        if (!ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden) {
+            self.inviteButton.hidden = self.inviteLabel.hidden = TRUE;
+            _addressLabel.textAlignment = NSTextAlignmentCenter;
+        } else {
+            self.inviteButton.hidden = self.inviteLabel.hidden = FALSE;
+            _addressLabel.textAlignment = NSTextAlignmentLeft;
+        }
 	}
 
 	if (addr) {
