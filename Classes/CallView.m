@@ -49,6 +49,10 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		videoHidden = TRUE;
         callRecording = FALSE;
+        _recordButtonOnView.hidden = TRUE;
+        CGRect frame = _callPauseButton.frame;
+        frame.origin.y = _recordButtonOnView.frame.origin.y;
+        _callPauseButton.frame = frame;
 	}
 	return self;
 }
@@ -235,9 +239,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
 	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
+    [_recordButtonOnView setHidden:!callRecording];
+    [self updateInfoView];
 }
 
 #pragma mark - UI modification
+
+- (void)updateInfoView {
+    CGRect infoFrame = _infoView.frame;
+    CGRect frame = _callPauseButton.frame;
+    if (videoHidden) {
+        infoFrame.origin.y = (_avatarImage.frame.origin.y-66)/2;
+        frame.origin.y = _recordButtonOnView.frame.origin.y;
+    } else {
+        infoFrame.origin.y = 0;
+        frame.origin.y = _videoCameraSwitch.frame.origin.y+_videoGroup.frame.origin.y;
+    }
+    _infoView.frame = infoFrame;
+    _callPauseButton.frame = frame;
+}
 
 - (void)hideSpinnerIndicator:(LinphoneCall *)call {
 	_videoWaitingForFirstImage.hidden = TRUE;
@@ -527,6 +547,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			[self displayAudioCall:animated];
 		}
 	}
+    [self updateInfoView];
 
 	if (state != LinphoneCallPausedByRemote) {
 		_pausedByRemoteView.hidden = YES;

@@ -1,7 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallView">
@@ -37,6 +42,8 @@
                 <outlet property="pausedByRemoteView" destination="0MR-ml-8RY" id="fzQ-lE-Tny"/>
                 <outlet property="pausedCallsTable" destination="162" id="ffv-xP-AXk"/>
                 <outlet property="portraitView" destination="lzH-M1-NdV" id="duc-gP-Nq1"/>
+                <outlet property="recordButton" destination="qoO-e6-zAa" id="jP0-fM-DIZ"/>
+                <outlet property="recordButtonOnView" destination="lp8-NZ-cen" id="YUo-Ym-Vxg"/>
                 <outlet property="routesBluetoothButton" destination="6uv-FV-mUL" id="c0F-7q-0m5"/>
                 <outlet property="routesButton" destination="nQp-5y-kTy" id="2u8-g5-6T1"/>
                 <outlet property="routesEarpieceButton" destination="jSA-bD-bCs" id="eeO-dk-84D"/>
@@ -89,14 +96,14 @@
                                     <rect key="frame" x="52" y="0.0" width="636" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="37"/>
-                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <tableView clipsSubviews="YES" tag="4" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="vgc-Mn-pga" userLabel="conferenceCallsTableView">
                                     <rect key="frame" x="0.0" y="66" width="800" height="1052"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="separatorColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                     <connections>
                                         <outlet property="dataSource" destination="sif-q0-7oE" id="Oes-Ng-FKF"/>
                                         <outlet property="delegate" destination="sif-q0-7oE" id="1oo-Xs-pb0"/>
@@ -107,14 +114,14 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                     <state key="normal" image="pause_big_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="pause_big_disabled.png"/>
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view clearsContextBeforeDrawing="NO" tag="6" contentMode="scaleToFill" id="9" userLabel="callView">
                             <rect key="frame" x="0.0" y="0.0" width="800" height="1248"/>
@@ -135,32 +142,32 @@
                                         <view tag="9" contentMode="scaleToFill" id="173" userLabel="background">
                                             <rect key="frame" x="0.0" y="0.0" width="800" height="1308"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                         <view tag="10" contentMode="scaleToFill" id="132" userLabel="display">
                                             <rect key="frame" x="0.0" y="0.0" width="800" height="1308"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             <accessibility key="accessibilityConfiguration">
                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
                                             </accessibility>
                                         </view>
-                                        <view tag="11" contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="590" y="965" width="210" height="280"/>
+                                        <view tag="11" contentMode="scaleAspectFit" misplaced="YES" id="127" userLabel="preview">
+                                            <rect key="frame" x="564" y="945" width="210" height="280"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                         <activityIndicatorView hidden="YES" opaque="NO" tag="12" contentMode="scaleToFill" animating="YES" style="whiteLarge" id="144" userLabel="waitIndicator">
                                             <rect key="frame" x="378" y="636" width="37" height="37"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </activityIndicatorView>
-                                        <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="160" userLabel="videoCameraSwitch" customClass="UICamSwitch">
-                                            <rect key="frame" x="65" y="140" width="52" height="52"/>
+                                        <button opaque="NO" tag="13" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="160" userLabel="videoCameraSwitch" customClass="UICamSwitch">
+                                            <rect key="frame" x="100" y="140" width="52" height="52"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Switch camera"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                             <state key="normal" image="camera_switch_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="camera_switch_disabled.png"/>
                                             <state key="selected" image="camera_switch_over.png"/>
@@ -170,24 +177,30 @@
                                             </connections>
                                         </button>
                                     </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="Oy8-QO-Jwb" userLabel="durationLabel">
-                                    <rect key="frame" x="0.0" y="40" width="800" height="26"/>
+                                <view contentMode="scaleToFill" misplaced="YES" id="5c7-9k-bmA" userLabel="infoView">
+                                    <rect key="frame" x="0.0" y="213" width="800" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                    <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="KPa-Rm-Qni" userLabel="nameLabel">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="40"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="Oy8-QO-Jwb" userLabel="durationLabel">
+                                            <rect key="frame" x="0.0" y="40" width="800" height="26"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="KPa-Rm-Qni" userLabel="nameLabel">
+                                            <rect key="frame" x="0.0" y="0.0" width="800" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </view>
                                 <view hidden="YES" alpha="0.80000000000000004" tag="16" contentMode="scaleToFill" id="0MR-ml-8RY" userLabel="pausedByRemoteView">
                                     <rect key="frame" x="0.0" y="66" width="800" height="1182"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -200,25 +213,30 @@
                                             <rect key="frame" x="221" y="413" width="375" height="100"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="callPauseButton" customClass="UIPauseButton">
-                                    <rect key="frame" x="683" y="80" width="52" height="52"/>
+                                <button opaque="NO" tag="19" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="callPauseButton" customClass="UIPauseButton">
+                                    <rect key="frame" x="672" y="915" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                     <state key="normal" image="pause_big_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="pause_big_disabled.png"/>
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" id="npP-vy-Re7" userLabel="recordButtonOnView">
+                                    <rect key="frame" x="100" y="915" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <state key="normal" image="recording.png"/>
+                                </button>
                             </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view hidden="YES" tag="20" contentMode="scaleToFill" id="aqL-q2-eR2" userLabel="noActiveCallView">
                             <rect key="frame" x="0.0" y="0.0" width="800" height="1185"/>
@@ -232,17 +250,17 @@
                                     <rect key="frame" x="221" y="656" width="375" height="100"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <tableView clipsSubviews="YES" tag="23" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="106" userLabel="pausedCallsTableView">
                             <rect key="frame" x="0.0" y="1135" width="400" height="50"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="separatorColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="162" id="168"/>
                                 <outlet property="delegate" destination="162" id="169"/>
@@ -255,11 +273,11 @@
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="25" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qZ8-m9-B0N" userLabel="1" customClass="UIDigitButton">
                                     <rect key="frame" x="0.0" y="0.0" width="128" height="97"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                     <accessibility key="accessibilityConfiguration" label="1"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_1_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="numpad_1_over.png"/>
                                     <state key="highlighted" image="numpad_1_over.png" backgroundImage="numpad_over_background.png"/>
@@ -270,7 +288,7 @@
                                     <accessibility key="accessibilityConfiguration" label="2"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_2_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_2_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -280,7 +298,7 @@
                                     <accessibility key="accessibilityConfiguration" label="3"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_3_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_3_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -290,7 +308,7 @@
                                     <accessibility key="accessibilityConfiguration" label="4"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_4_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_4_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -300,7 +318,7 @@
                                     <accessibility key="accessibilityConfiguration" label="5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_5_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_5_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -310,7 +328,7 @@
                                     <accessibility key="accessibilityConfiguration" label="6"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_6_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_6_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -320,7 +338,7 @@
                                     <accessibility key="accessibilityConfiguration" label="7"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_7_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_7_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -330,7 +348,7 @@
                                     <accessibility key="accessibilityConfiguration" label="8"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_8_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_8_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -340,7 +358,7 @@
                                     <accessibility key="accessibilityConfiguration" label="9"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_9_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_9_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -350,7 +368,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Star"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_star_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_star_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -360,7 +378,7 @@
                                     <accessibility key="accessibilityConfiguration" label="0"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_0_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_0_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -370,12 +388,12 @@
                                     <accessibility key="accessibilityConfiguration" label="Hash"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_hash_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_hash_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view hidden="YES" tag="37" contentMode="scaleToFill" id="qcR-Qb-Bst" userLabel="routesView">
                             <rect key="frame" x="600" y="987" width="100" height="198"/>
@@ -392,15 +410,15 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="route_bluetooth_default.png">
-                                        <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.19582480192184448" green="0.21824681758880615" blue="0.24259182810783386" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="route_bluetooth_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="route_bluetooth_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png">
-                                        <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
                                         <action selector="onRoutesBluetoothClick:" destination="-1" eventType="touchUpInside" id="jQt-8b-aEw"/>
@@ -413,15 +431,15 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="route_earpiece_default.png">
-                                        <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.19582480192184448" green="0.21824681758880615" blue="0.24259182810783386" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="route_earpiece_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="route_earpiece_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png">
-                                        <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
                                         <action selector="onRoutesEarpieceClick:" destination="-1" eventType="touchUpInside" id="RqY-KM-K7M"/>
@@ -434,15 +452,15 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="route_speaker_default.png">
-                                        <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.19582480192184448" green="0.21824681758880615" blue="0.24259182810783386" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="route_speaker_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="route_speaker_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png">
-                                        <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
                                         <action selector="onRoutesSpeakerClick:" destination="-1" eventType="touchUpInside" id="BPD-uO-J2t"/>
@@ -450,20 +468,20 @@
                                 </button>
                             </subviews>
                         </view>
-                        <view hidden="YES" tag="42" contentMode="scaleToFill" id="sHZ-53-Hta" userLabel="optionsView">
-                            <rect key="frame" x="700" y="987" width="100" height="198"/>
+                        <view hidden="YES" tag="42" contentMode="scaleToFill" misplaced="YES" id="sHZ-53-Hta" userLabel="optionsView">
+                            <rect key="frame" x="700" y="921" width="100" height="264"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="43" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="WcD-wQ-0ml" userLabel="backgroundColor">
-                                    <rect key="frame" x="0.0" y="0.0" width="100" height="198"/>
+                                    <rect key="frame" x="-2" y="-3" width="100" height="264"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <button opaque="NO" tag="44" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="06a-kv-hpZ" userLabel="optionConferenceButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="100" height="66"/>
+                                    <rect key="frame" x="-2" y="0.0" width="100" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
                                     <state key="normal" image="options_start_conference_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="options_start_conference_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -471,38 +489,51 @@
                                         <action selector="onOptionsConferenceClick:" destination="-1" eventType="touchUpInside" id="bQP-ga-R2R"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="45" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="reb-7F-UDV" userLabel="optionsAddButton">
-                                    <rect key="frame" x="0.0" y="66" width="100" height="66"/>
+                                <button opaque="NO" tag="45" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="reb-7F-UDV" userLabel="optionsAddButton">
+                                    <rect key="frame" x="-2" y="66" width="100" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="options_add_call_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="options_add_call_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onOptionsAddClick:" destination="-1" eventType="touchUpInside" id="diW-wF-VRO"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="46" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="S0k-bn-1bs" userLabel="optionsTransferButton">
-                                    <rect key="frame" x="0.0" y="132" width="100" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <button opaque="NO" tag="46" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="S0k-bn-1bs" userLabel="optionsTransferButton">
+                                    <rect key="frame" x="-2" y="132" width="100" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="options_transfer_call_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="options_transfer_call_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onOptionsTransferClick:" destination="-1" eventType="touchUpInside" id="lJX-ud-MuS"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="44" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="hyQ-xR-3rj" userLabel="recordButton" customClass="UIIconButton">
+                                    <rect key="frame" x="-2" y="198" width="100" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Start conference"/>
+                                    <state key="normal" image="rec_on_default.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="disabled" image="options_start_conference_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onRecordClick:" destination="-1" eventType="touchUpInside" id="qkg-To-Fft"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -520,7 +551,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Back"/>
                                             <state key="normal" image="footer_dialer_default.png" backgroundImage="color_C.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="footer_dialer_disabled.png"/>
                                             <state key="selected" image="dialer_alt_back.png"/>
@@ -534,7 +565,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Hangup"/>
                                             <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_I.png"/>
                                         </button>
@@ -543,7 +574,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Hangup"/>
                                             <state key="normal" image="footer_chat_default.png" backgroundImage="color_C.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_A.png"/>
                                             <connections>
@@ -565,11 +596,11 @@
                                                         <accessibilityTraits key="traits" none="YES"/>
                                                     </accessibility>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                     </subviews>
                                 </view>
@@ -587,7 +618,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Video"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="camera_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="camera_disabled.png"/>
                                             <state key="selected" image="camera_selected.png"/>
@@ -606,7 +637,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Micro"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="micro_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="micro_disabled.png"/>
                                             <state key="selected" image="micro_selected.png"/>
@@ -618,7 +649,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Speaker"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="speaker_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="speaker_disabled.png"/>
                                             <state key="selected" image="speaker_selected.png"/>
@@ -630,7 +661,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Route"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="routes_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="routes_disabled.png"/>
                                             <state key="selected" image="routes_selected.png"/>
@@ -645,7 +676,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Options"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="options_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="options_disabled.png"/>
                                             <state key="selected" image="options_selected.png"/>
@@ -659,10 +690,10 @@
                             </subviews>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="-278" y="15.5"/>
         </view>
@@ -682,14 +713,14 @@
                                     <rect key="frame" x="52" y="0.0" width="1129" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="37"/>
-                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <tableView clipsSubviews="YES" tag="4" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="7Ih-sO-8Uo" userLabel="conferenceCallsTableView">
                                     <rect key="frame" x="0.0" y="66" width="1290" height="548"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="separatorColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                     <connections>
                                         <outlet property="dataSource" destination="sif-q0-7oE" id="rK5-cc-mIV"/>
                                         <outlet property="delegate" destination="sif-q0-7oE" id="D5r-Mi-fHm"/>
@@ -700,14 +731,14 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                     <state key="normal" image="pause_big_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="pause_big_disabled.png"/>
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view clearsContextBeforeDrawing="NO" tag="6" contentMode="scaleToFill" id="Mg6-XQ-l02" userLabel="callView">
                             <rect key="frame" x="0.0" y="0.0" width="1290" height="758"/>
@@ -728,32 +759,32 @@
                                         <view tag="9" contentMode="scaleToFill" id="GJN-dZ-7aa" userLabel="background">
                                             <rect key="frame" x="0.0" y="0.0" width="1290" height="818"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                         <view tag="10" contentMode="scaleToFill" id="adR-fL-QtT" userLabel="display">
                                             <rect key="frame" x="0.0" y="0.0" width="1290" height="818"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             <accessibility key="accessibilityConfiguration">
                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
                                             </accessibility>
                                         </view>
-                                        <view tag="11" contentMode="scaleAspectFit" id="FcF-4P-SjT" userLabel="preview">
-                                            <rect key="frame" x="1010" y="545" width="280" height="210"/>
+                                        <view tag="11" contentMode="scaleAspectFit" misplaced="YES" id="FcF-4P-SjT" userLabel="preview">
+                                            <rect key="frame" x="990" y="525" width="280" height="210"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                         <activityIndicatorView hidden="YES" opaque="NO" tag="12" contentMode="scaleToFill" animating="YES" style="whiteLarge" id="kKz-zi-1k6" userLabel="waitIndicator">
                                             <rect key="frame" x="622" y="392" width="37" height="37"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </activityIndicatorView>
-                                        <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="7Mv-7u-XVs" userLabel="videoCameraSwitch" customClass="UICamSwitch">
-                                            <rect key="frame" x="65" y="140" width="52" height="52"/>
+                                        <button opaque="NO" tag="13" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="7Mv-7u-XVs" userLabel="videoCameraSwitch" customClass="UICamSwitch">
+                                            <rect key="frame" x="169" y="140" width="52" height="52"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Switch camera"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                             <state key="normal" image="camera_switch_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="camera_switch_disabled.png"/>
                                             <state key="selected" image="camera_switch_over.png"/>
@@ -763,24 +794,30 @@
                                             </connections>
                                         </button>
                                     </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="4Jl-GT-mfD" userLabel="durationLabel">
-                                    <rect key="frame" x="0.0" y="40" width="1290" height="26"/>
+                                <view contentMode="scaleToFill" misplaced="YES" id="1sN-Rj-tal" userLabel="infoView">
+                                    <rect key="frame" x="0.0" y="53" width="1290" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                    <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="2Zk-Vw-StV" userLabel="nameLabel">
-                                    <rect key="frame" x="0.0" y="0.0" width="1290" height="40"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="2Zk-Vw-StV" userLabel="nameLabel">
+                                            <rect key="frame" x="0.0" y="0.0" width="1290" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="4Jl-GT-mfD" userLabel="durationLabel">
+                                            <rect key="frame" x="0.0" y="40" width="1290" height="26"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </view>
                                 <view hidden="YES" alpha="0.80000001192092896" tag="16" contentMode="scaleToFill" id="va1-LU-Rb8" userLabel="pausedByRemoteView">
                                     <rect key="frame" x="0.0" y="66" width="1290" height="692"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -793,25 +830,30 @@
                                             <rect key="frame" x="458" y="266" width="375" height="47"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="aOf-Ed-RL3" userLabel="callPauseButton" customClass="UIPauseButton">
-                                    <rect key="frame" x="1173" y="80" width="52" height="52"/>
+                                <button opaque="NO" tag="19" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="aOf-Ed-RL3" userLabel="callPauseButton" customClass="UIPauseButton">
+                                    <rect key="frame" x="1114" y="450" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                     <state key="normal" image="pause_big_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="pause_big_disabled.png"/>
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" id="lp8-NZ-cen" userLabel="recordButtonOnView">
+                                    <rect key="frame" x="169" y="450" width="50" height="50"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <state key="normal" image="recording.png"/>
+                                </button>
                             </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view hidden="YES" tag="20" contentMode="scaleToFill" id="2MW-Vq-Qx7" userLabel="noActiveCallView">
                             <rect key="frame" x="0.0" y="0.0" width="1290" height="695"/>
@@ -825,17 +867,17 @@
                                     <rect key="frame" x="458" y="452" width="375" height="47"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <tableView clipsSubviews="YES" tag="23" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="Yha-y8-ihb" userLabel="pausedCallsTableView">
                             <rect key="frame" x="0.0" y="645" width="400" height="50"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="separatorColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="162" id="OIW-e7-cZ8"/>
                                 <outlet property="delegate" destination="162" id="fzm-ge-5dB"/>
@@ -848,11 +890,11 @@
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="25" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="iVs-Uz-333" userLabel="1" customClass="UIDigitButton">
                                     <rect key="frame" x="0.0" y="0.0" width="159" height="118"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                     <accessibility key="accessibilityConfiguration" label="1"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_1_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="numpad_1_over.png"/>
                                     <state key="highlighted" image="numpad_1_over.png" backgroundImage="numpad_over_background.png"/>
@@ -863,7 +905,7 @@
                                     <accessibility key="accessibilityConfiguration" label="2"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_2_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_2_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -873,7 +915,7 @@
                                     <accessibility key="accessibilityConfiguration" label="3"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_3_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_3_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -883,7 +925,7 @@
                                     <accessibility key="accessibilityConfiguration" label="4"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_4_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_4_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -893,7 +935,7 @@
                                     <accessibility key="accessibilityConfiguration" label="5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_5_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_5_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -903,7 +945,7 @@
                                     <accessibility key="accessibilityConfiguration" label="6"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_6_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_6_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -913,7 +955,7 @@
                                     <accessibility key="accessibilityConfiguration" label="7"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_7_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_7_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -923,7 +965,7 @@
                                     <accessibility key="accessibilityConfiguration" label="8"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_8_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_8_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -933,7 +975,7 @@
                                     <accessibility key="accessibilityConfiguration" label="9"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_9_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_9_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -943,7 +985,7 @@
                                     <accessibility key="accessibilityConfiguration" label="Star"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_star_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_star_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -953,7 +995,7 @@
                                     <accessibility key="accessibilityConfiguration" label="0"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_0_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_0_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
@@ -963,12 +1005,12 @@
                                     <accessibility key="accessibilityConfiguration" label="Hash"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_hash_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" image="numpad_hash_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <view hidden="YES" tag="37" contentMode="scaleToFill" id="4cN-ql-IqU" userLabel="routesView">
                             <rect key="frame" x="1090" y="497" width="100" height="198"/>
@@ -985,15 +1027,15 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="route_bluetooth_default.png">
-                                        <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.19582480192184448" green="0.21824681758880615" blue="0.24259182810783386" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="route_bluetooth_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="route_bluetooth_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png">
-                                        <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
                                         <action selector="onRoutesBluetoothClick:" destination="-1" eventType="touchUpInside" id="MRj-Zb-Fml"/>
@@ -1006,15 +1048,15 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="route_earpiece_default.png">
-                                        <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.19582480192184448" green="0.21824681758880615" blue="0.24259182810783386" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="route_earpiece_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="route_earpiece_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png">
-                                        <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
                                         <action selector="onRoutesEarpieceClick:" destination="-1" eventType="touchUpInside" id="SlB-O8-JVa"/>
@@ -1027,15 +1069,15 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="route_speaker_default.png">
-                                        <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" red="0.19582480192184448" green="0.21824681758880615" blue="0.24259182810783386" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="route_speaker_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="selected" image="route_speaker_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png">
-                                        <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.76000285148620605" green="0.21515019237995148" blue="0.12376989424228668" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
                                         <action selector="onRoutesSpeakerClick:" destination="-1" eventType="touchUpInside" id="Btz-iX-Xsg"/>
@@ -1043,12 +1085,12 @@
                                 </button>
                             </subviews>
                         </view>
-                        <view hidden="YES" tag="42" contentMode="scaleToFill" id="cQt-XN-qCW" userLabel="optionsView">
-                            <rect key="frame" x="1190" y="497" width="100" height="198"/>
+                        <view hidden="YES" tag="42" contentMode="scaleToFill" misplaced="YES" id="cQt-XN-qCW" userLabel="optionsView">
+                            <rect key="frame" x="1190" y="431" width="100" height="198"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="43" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="kOK-5V-ayw" userLabel="backgroundColor">
-                                    <rect key="frame" x="0.0" y="0.0" width="100" height="198"/>
+                                <imageView userInteractionEnabled="NO" tag="43" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_F.png" id="kOK-5V-ayw" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="0.0" width="100" height="264"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <button opaque="NO" tag="44" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="WO0-b2-8Wc" userLabel="optionConferenceButton" customClass="UIIconButton">
@@ -1056,7 +1098,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
                                     <state key="normal" image="options_start_conference_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="options_start_conference_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
@@ -1071,10 +1113,10 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="options_add_call_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="options_add_call_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
@@ -1083,19 +1125,32 @@
                                 </button>
                                 <button opaque="NO" tag="46" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="JmM-FS-reF" userLabel="optionsTransferButton">
                                     <rect key="frame" x="0.0" y="132" width="100" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="options_transfer_call_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="disabled" image="options_transfer_call_disabled.png">
-                                        <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
+                                        <color key="titleColor" red="0.58667385578155518" green="0.64151597023010254" blue="0.69586050510406494" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onOptionsTransferClick:" destination="-1" eventType="touchUpInside" id="iEu-GP-YvO"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="44" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qoO-e6-zAa" userLabel="recordButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="198" width="100" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Start conference"/>
+                                    <state key="normal" image="rec_on_default.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="disabled" image="options_start_conference_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onRecordClick:" destination="-1" eventType="touchUpInside" id="LXg-S6-0Eo"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -1118,7 +1173,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Video"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="camera_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="camera_disabled.png"/>
                                             <state key="selected" image="camera_selected.png"/>
@@ -1133,7 +1188,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Micro"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="micro_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="micro_disabled.png"/>
                                             <state key="selected" image="micro_selected.png"/>
@@ -1145,7 +1200,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Speaker"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="speaker_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="speaker_disabled.png"/>
                                             <state key="selected" image="speaker_selected.png"/>
@@ -1157,7 +1212,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Route"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="routes_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="routes_disabled.png"/>
                                             <state key="selected" image="routes_selected.png"/>
@@ -1172,7 +1227,7 @@
                                             <accessibility key="accessibilityConfiguration" label="Options"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" image="options_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="options_disabled.png"/>
                                             <state key="selected" image="options_selected.png"/>
@@ -1196,7 +1251,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Back"/>
                                             <state key="normal" image="footer_dialer_default.png" backgroundImage="color_C.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="disabled" image="footer_dialer_disabled.png"/>
                                             <state key="selected" image="dialer_alt_back.png"/>
@@ -1210,7 +1265,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Hangup"/>
                                             <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_I.png"/>
                                         </button>
@@ -1219,7 +1274,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Hangup"/>
                                             <state key="normal" image="footer_chat_default.png" backgroundImage="color_C.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_A.png"/>
                                             <connections>
@@ -1241,35 +1296,34 @@
                                                         <accessibilityTraits key="traits" none="YES"/>
                                                     </accessibility>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                     </subviews>
                                 </view>
                             </subviews>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="400.5" y="-378"/>
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="255" height="255"/>
-        <image name="call_hangup_default.png" width="41" height="36"/>
-        <image name="camera_default.png" width="32" height="19"/>
-        <image name="camera_disabled.png" width="32" height="19"/>
-        <image name="camera_selected.png" width="32" height="19"/>
-        <image name="camera_switch_default.png" width="51" height="50"/>
-        <image name="camera_switch_disabled.png" width="51" height="50"/>
-        <image name="camera_switch_over.png" width="51" height="50"/>
+        <image name="avatar.png" width="259" height="259"/>
+        <image name="call_hangup_default.png" width="42" height="36"/>
+        <image name="camera_default.png" width="33" height="19"/>
+        <image name="camera_disabled.png" width="33" height="19"/>
+        <image name="camera_selected.png" width="33" height="19"/>
+        <image name="camera_switch_default.png" width="52" height="51"/>
+        <image name="camera_switch_disabled.png" width="52" height="51"/>
+        <image name="camera_switch_over.png" width="52" height="51"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="color_C.png" width="2" height="2"/>
         <image name="color_D.png" width="2" height="2"/>
@@ -1280,62 +1334,64 @@
         <image name="footer_chat_default.png" width="27" height="27"/>
         <image name="footer_dialer_default.png" width="27" height="27"/>
         <image name="footer_dialer_disabled.png" width="27" height="27"/>
-        <image name="history_chat_indicator.png" width="13" height="13"/>
+        <image name="history_chat_indicator.png" width="14" height="13"/>
         <image name="micro_default.png" width="29" height="37"/>
         <image name="micro_disabled.png" width="29" height="37"/>
         <image name="micro_selected.png" width="29" height="37"/>
-        <image name="numpad_0_default.png" width="52" height="48"/>
-        <image name="numpad_0_over.png" width="52" height="48"/>
-        <image name="numpad_1_default.png" width="52" height="48"/>
-        <image name="numpad_1_over.png" width="52" height="48"/>
-        <image name="numpad_2_default.png" width="52" height="48"/>
-        <image name="numpad_2_over.png" width="52" height="48"/>
-        <image name="numpad_3_default.png" width="52" height="48"/>
-        <image name="numpad_3_over.png" width="52" height="48"/>
-        <image name="numpad_4_default.png" width="52" height="48"/>
-        <image name="numpad_4_over.png" width="52" height="48"/>
-        <image name="numpad_5_default.png" width="52" height="48"/>
-        <image name="numpad_5_over.png" width="52" height="48"/>
-        <image name="numpad_6_default.png" width="52" height="48"/>
-        <image name="numpad_6_over.png" width="52" height="48"/>
-        <image name="numpad_7_default.png" width="52" height="48"/>
-        <image name="numpad_7_over.png" width="52" height="48"/>
-        <image name="numpad_8_default.png" width="52" height="48"/>
-        <image name="numpad_8_over.png" width="52" height="48"/>
-        <image name="numpad_9_default.png" width="52" height="48"/>
-        <image name="numpad_9_over.png" width="52" height="48"/>
-        <image name="numpad_hash_default.png" width="52" height="48"/>
-        <image name="numpad_hash_over.png" width="52" height="48"/>
+        <image name="numpad_0_default.png" width="53" height="49"/>
+        <image name="numpad_0_over.png" width="53" height="49"/>
+        <image name="numpad_1_default.png" width="53" height="48"/>
+        <image name="numpad_1_over.png" width="53" height="48"/>
+        <image name="numpad_2_default.png" width="53" height="49"/>
+        <image name="numpad_2_over.png" width="53" height="49"/>
+        <image name="numpad_3_default.png" width="53" height="49"/>
+        <image name="numpad_3_over.png" width="53" height="49"/>
+        <image name="numpad_4_default.png" width="53" height="48"/>
+        <image name="numpad_4_over.png" width="53" height="48"/>
+        <image name="numpad_5_default.png" width="53" height="48"/>
+        <image name="numpad_5_over.png" width="53" height="48"/>
+        <image name="numpad_6_default.png" width="53" height="49"/>
+        <image name="numpad_6_over.png" width="53" height="49"/>
+        <image name="numpad_7_default.png" width="53" height="48"/>
+        <image name="numpad_7_over.png" width="53" height="48"/>
+        <image name="numpad_8_default.png" width="53" height="49"/>
+        <image name="numpad_8_over.png" width="53" height="49"/>
+        <image name="numpad_9_default.png" width="53" height="49"/>
+        <image name="numpad_9_over.png" width="53" height="49"/>
+        <image name="numpad_hash_default.png" width="53" height="49"/>
+        <image name="numpad_hash_over.png" width="53" height="49"/>
         <image name="numpad_over_background.png" width="2" height="2"/>
-        <image name="numpad_star_default.png" width="52" height="50"/>
-        <image name="numpad_star_over.png" width="52" height="50"/>
-        <image name="options_add_call_default.png" width="29" height="30"/>
-        <image name="options_add_call_disabled.png" width="29" height="30"/>
-        <image name="options_default.png" width="25" height="25"/>
-        <image name="options_disabled.png" width="25" height="25"/>
-        <image name="options_selected.png" width="25" height="25"/>
+        <image name="numpad_star_default.png" width="53" height="51"/>
+        <image name="numpad_star_over.png" width="53" height="51"/>
+        <image name="options_add_call_default.png" width="30" height="30"/>
+        <image name="options_add_call_disabled.png" width="30" height="30"/>
+        <image name="options_default.png" width="26" height="26"/>
+        <image name="options_disabled.png" width="26" height="26"/>
+        <image name="options_selected.png" width="26" height="26"/>
         <image name="options_start_conference_default.png" width="33" height="33"/>
         <image name="options_start_conference_disabled.png" width="33" height="33"/>
-        <image name="options_transfer_call_default.png" width="29" height="30"/>
-        <image name="options_transfer_call_disabled.png" width="29" height="30"/>
-        <image name="pause_big_default.png" width="51" height="50"/>
-        <image name="pause_big_disabled.png" width="51" height="50"/>
-        <image name="pause_big_over_selected.png" width="51" height="50"/>
-        <image name="route_bluetooth_default.png" width="16" height="25"/>
-        <image name="route_bluetooth_disabled.png" width="16" height="25"/>
-        <image name="route_bluetooth_selected.png" width="16" height="25"/>
+        <image name="options_transfer_call_default.png" width="30" height="30"/>
+        <image name="options_transfer_call_disabled.png" width="30" height="30"/>
+        <image name="pause_big_default.png" width="52" height="51"/>
+        <image name="pause_big_disabled.png" width="52" height="51"/>
+        <image name="pause_big_over_selected.png" width="52" height="51"/>
+        <image name="rec_on_default.png" width="18" height="28"/>
+        <image name="recording.png" width="50" height="50"/>
+        <image name="route_bluetooth_default.png" width="16" height="26"/>
+        <image name="route_bluetooth_disabled.png" width="16" height="26"/>
+        <image name="route_bluetooth_selected.png" width="16" height="26"/>
         <image name="route_earpiece_default.png" width="23" height="24"/>
         <image name="route_earpiece_disabled.png" width="23" height="24"/>
-        <image name="route_earpiece_selected.png" width="23" height="24"/>
-        <image name="route_speaker_default.png" width="27" height="25"/>
-        <image name="route_speaker_disabled.png" width="27" height="25"/>
-        <image name="route_speaker_selected.png" width="27" height="25"/>
+        <image name="route_earpiece_selected.png" width="24" height="24"/>
+        <image name="route_speaker_default.png" width="27" height="26"/>
+        <image name="route_speaker_disabled.png" width="27" height="26"/>
+        <image name="route_speaker_selected.png" width="27" height="26"/>
         <image name="routes_default.png" width="37" height="25"/>
         <image name="routes_disabled.png" width="37" height="25"/>
         <image name="routes_selected.png" width="37" height="25"/>
-        <image name="speaker_default.png" width="27" height="25"/>
-        <image name="speaker_disabled.png" width="27" height="25"/>
-        <image name="speaker_selected.png" width="27" height="25"/>
-        <image name="waiting_time.png" width="59" height="71"/>
+        <image name="speaker_default.png" width="27" height="26"/>
+        <image name="speaker_disabled.png" width="27" height="26"/>
+        <image name="speaker_selected.png" width="27" height="26"/>
+        <image name="waiting_time.png" width="60" height="72"/>
     </resources>
 </document>
