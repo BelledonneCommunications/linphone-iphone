@@ -545,7 +545,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         BOOL isOneToOneChat = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
         if (isOneToOneChat) {
             [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue];
-            if ([self.messageField text]) {
+            if (![[self.messageField text] isEqualToString:@""]) {
                 [self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil];
             }
         } else {
