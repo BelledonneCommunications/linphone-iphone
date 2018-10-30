@@ -44,8 +44,8 @@
 	UITapGestureRecognizer *limeRecognizer =
 	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLime)];
 	limeRecognizer.numberOfTapsRequired = 1;
-	[_LIMEKO addGestureRecognizer:limeRecognizer];
-	_LIMEKO.userInteractionEnabled = YES;
+	//[_LIMEKO addGestureRecognizer:limeRecognizer];
+	//_LIMEKO.userInteractionEnabled = YES;
 	UITapGestureRecognizer *resendRecognizer =
 	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
 	resendRecognizer.numberOfTapsRequired = 1;
@@ -54,8 +54,8 @@
 	UITapGestureRecognizer *resendRecognizer2 =
 	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
 	resendRecognizer2.numberOfTapsRequired = 1;
-	[_imdmLabel addGestureRecognizer:resendRecognizer2];
-	_imdmLabel.userInteractionEnabled = YES;
+	//[_imdmLabel addGestureRecognizer:resendRecognizer2];
+	//_imdmLabel.userInteractionEnabled = YES;
 
 	return self;
 }
@@ -126,7 +126,7 @@
 		return;
 	}
 
-	_statusInProgressSpinner.accessibilityLabel = @"Delivery in progress";
+	//_statusInProgressSpinner.accessibilityLabel = @"Delivery in progress";
 
 	if (_messageText && ![LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message]) {
         LOGD(_messageText.text);
@@ -145,27 +145,83 @@
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
 	BOOL outgoing = linphone_chat_message_is_outgoing(_message);
+   
+    
+    _contactDateLabel.hidden = !_isFirst;
+    if (outgoing) {
+        _contactDateLabel.text = [LinphoneUtils timeToString:linphone_chat_message_get_time(_message)
+                                                  withFormat:LinphoneDateChatBubble];
+        _contactDateLabel.textAlignment = NSTextAlignmentRight;
+        _avatarImage.hidden = TRUE;
+        
+    } else {
+        [_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_from_address(_message)]
+                      bordered:NO
+             withRoundedRadius:YES];
+        _contactDateLabel.text = [self.class ContactDateForChat:_message];
+        _contactDateLabel.textAlignment = NSTextAlignmentLeft;
+        _avatarImage.hidden = !_isFirst;
+    }
+	
 
-	if (outgoing) {
-		_avatarImage.image = [LinphoneUtils selfAvatar];
-	} else {
-		[_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_from_address(_message)]
-					  bordered:NO
-			 withRoundedRadius:YES];
-	}
-	_contactDateLabel.text = [self.class ContactDateForChat:_message];
-
-	_backgroundColorImage.image = _bottomBarColor.image =
+    _backgroundColorImage.image =
 		[UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
-	_contactDateLabel.textColor = [UIColor colorWithPatternImage:_backgroundColorImage.image];
+    
+    // set maskedCorners
+    if (@available(iOS 11.0, *)) {
+        _backgroundColorImage.layer.cornerRadius = 10;
+        if (outgoing) {
+            _backgroundColorImage.layer.maskedCorners = kCALayerMinXMaxYCorner | kCALayerMinXMinYCorner;
+            if (_isFirst)
+                _backgroundColorImage.layer.maskedCorners = _backgroundColorImage.layer.maskedCorners | kCALayerMaxXMinYCorner;
+            if (_isLast)
+                _backgroundColorImage.layer.maskedCorners = _backgroundColorImage.layer.maskedCorners | kCALayerMaxXMaxYCorner;
+        } else {
+            _backgroundColorImage.layer.maskedCorners = kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner;
+            if (_isFirst)
+                _backgroundColorImage.layer.maskedCorners = _backgroundColorImage.layer.maskedCorners | kCALayerMinXMinYCorner;
+            if (_isLast)
+                _backgroundColorImage.layer.maskedCorners = _backgroundColorImage.layer.maskedCorners | kCALayerMinXMaxYCorner;
+        }
+        _backgroundColorImage.layer.masksToBounds = YES;
+    } else {
+        // TODO it doesn't work for ios < 11.0
+        UIRectCorner corner;
+        if (outgoing) {
+            corner = UIRectCornerTopLeft | UIRectCornerBottomLeft;
+            if (_isFirst)
+                corner = corner | UIRectCornerTopRight;
+            if (_isLast)
+                corner = corner | UIRectCornerBottomRight;
+        } else {
+            corner = UIRectCornerTopRight | UIRectCornerBottomRight;
+            if (_isFirst)
+                corner = corner | UIRectCornerTopLeft;
+            if (_isLast)
+                corner = corner | UIRectCornerBottomLeft;
+        }
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:_backgroundColorImage.frame byRoundingCorners:corner cornerRadii:CGSizeMake(10,10)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame = _backgroundColorImage.frame;
+        maskLayer.path = maskPath.CGPath;
+        _backgroundColorImage.layer.mask = maskLayer;
+    }
+    
+    // need space for dateLabel
+    CGRect frame = _innerView.frame;
+    frame.origin.y = _isFirst ? 20 : 0;
+    _innerView.frame = frame;
+    
+    
+	//_contactDateLabel.textColor = [UIColor colorWithPatternImage:_backgroundColorImage.image];
 
-	if (outgoing && state == LinphoneChatMessageStateInProgress) {
+	/*if (outgoing && state == LinphoneChatMessageStateInProgress) {
 		[_statusInProgressSpinner startAnimating];
 	} else if (!outgoing && state == LinphoneChatMessageStateFileTransferError) {
 		[_statusInProgressSpinner stopAnimating];
 	} else {
 		[_statusInProgressSpinner stopAnimating];
-	}
+	}*/
 
 	[_messageText setAccessibilityLabel:outgoing ? @"Outgoing message" : @"Incoming message"];
 	if (outgoing &&
@@ -175,12 +231,12 @@
 	} else
 		[self displayImdmStatus:LinphoneChatMessageStateInProgress];
 
-	if (!outgoing && !linphone_chat_message_is_secured(_message) &&
+	/*if (!outgoing && !linphone_chat_message_is_secured(_message) &&
 		linphone_core_lime_enabled(LC) == LinphoneLimeMandatory) {
 		_LIMEKO.hidden = FALSE;
 	} else {
 		_LIMEKO.hidden = TRUE;
-	}
+	}*/
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -250,8 +306,8 @@
 }
 
 - (void)onLime {
-	if (!_LIMEKO.hidden)
-		[self displayLIMEWarning];
+	/*if (!_LIMEKO.hidden)
+		[self displayLIMEWarning];*/
 }
 
 - (void)onResend {
@@ -349,25 +405,25 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
 	if (state == LinphoneChatMessageStateDeliveredToUser) {
 		[_imdmIcon setImage:[UIImage imageNamed:@"chat_delivered"]];
-		[_imdmLabel setText:NSLocalizedString(@"Delivered", nil)];
-		[_imdmLabel setTextColor:[UIColor grayColor]];
+		//[_imdmLabel setText:NSLocalizedString(@"Delivered", nil)];
+		//[_imdmLabel setTextColor:[UIColor grayColor]];
 		[_imdmIcon setHidden:FALSE];
-		[_imdmLabel setHidden:FALSE];
+		//[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateDisplayed) {
 		[_imdmIcon setImage:[UIImage imageNamed:@"chat_read"]];
-		[_imdmLabel setText:NSLocalizedString(@"Read", nil)];
-		[_imdmLabel setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
+		//[_imdmLabel setText:NSLocalizedString(@"Read", nil)];
+		//[_imdmLabel setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
 		[_imdmIcon setHidden:FALSE];
-		[_imdmLabel setHidden:FALSE];
+		//[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
 		[_imdmIcon setImage:[UIImage imageNamed:@"chat_error"]];
-		[_imdmLabel setText:NSLocalizedString(@"Resend", nil)];
-		[_imdmLabel setTextColor:[UIColor redColor]];
+		//[_imdmLabel setText:NSLocalizedString(@"Resend", nil)];
+		//[_imdmLabel setTextColor:[UIColor redColor]];
 		[_imdmIcon setHidden:FALSE];
-		[_imdmLabel setHidden:FALSE];
+		//[_imdmLabel setHidden:FALSE];
 	} else {
 		[_imdmIcon setHidden:TRUE];
-		[_imdmLabel setHidden:TRUE];
+		//[_imdmLabel setHidden:TRUE];
 	}
 }
 
@@ -389,7 +445,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 static const CGFloat CELL_MIN_HEIGHT = 60.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
-static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
     return [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
@@ -480,6 +536,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 	CGSize messageSize = [self ViewHeightForMessage:chat withWidth:width];
 	CGSize dateSize = [self computeBoundingBox:[self ContactDateForChat:chat] size:dateViewSize font:dateFont];
 	messageSize.width = MAX(MAX(messageSize.width, MIN(dateSize.width + CELL_MESSAGE_X_MARGIN, width)), CELL_MIN_WIDTH);
+    messageSize.width = MAX(MAX(messageSize.width, MIN(CELL_MESSAGE_X_MARGIN, width)), CELL_MIN_WIDTH);
 
 	return messageSize;
 }

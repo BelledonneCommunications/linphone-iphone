@@ -93,6 +93,7 @@
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
 	[self.tableView beginUpdates];
 	[self.tableView insertRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView reloadData];
 	[self.tableView endUpdates];
 }
 
@@ -165,6 +166,51 @@
 	[self reloadData];
 }
 
+- (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
+    if (indexPath.row == 0)
+        return TRUE;
+
+    LinphoneEventLog *previousEvent = nil;
+    NSInteger indexOfPreviousEvent = indexPath.row - 1;
+    while (!previousEvent && indexOfPreviousEvent > -1) {
+        LinphoneEventLog *tmp = [[eventList objectAtIndex:indexOfPreviousEvent] pointerValue];
+        if (linphone_event_log_get_type(tmp) == LinphoneEventLogTypeConferenceChatMessage) {
+            previousEvent = tmp;
+        }
+        --indexOfPreviousEvent;
+    }
+    if (previousEvent) {
+        LinphoneChatMessage *previousChat = linphone_event_log_get_chat_message(previousEvent);
+        if (!linphone_address_equal(linphone_chat_message_get_from_address(previousChat), linphone_chat_message_get_from_address(chat))) {
+            return TRUE;
+        }
+    }
+        
+    return FALSE;
+}
+
+- (BOOL)isLastIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
+    LinphoneEventLog *nextEvent = nil;
+    NSInteger indexOfNextEvent = indexPath.row + 1;
+    while (!nextEvent && indexOfNextEvent < [eventList count]) {
+        LinphoneEventLog *tmp = [[eventList objectAtIndex:indexOfNextEvent] pointerValue];
+        if (linphone_event_log_get_type(tmp) == LinphoneEventLogTypeConferenceChatMessage) {
+            nextEvent = tmp;
+        }
+        ++indexOfNextEvent;
+    }
+    
+    if (!nextEvent)
+        return TRUE;
+
+    LinphoneChatMessage *nextChat = linphone_event_log_get_chat_message(nextEvent);
+    if (!linphone_address_equal(linphone_chat_message_get_from_address(nextChat), linphone_chat_message_get_from_address(chat))) {
+        return TRUE;
+    }
+    
+    return FALSE;
+}
+
 #pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -190,8 +236,11 @@
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
         }
 		[cell setEvent:event];
-		if (chat)
-			[cell update];
+        if (chat) {
+            cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
+            cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];
+            [cell update];
+        }
 
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
@@ -216,7 +265,7 @@
 	[_chatRoomDelegate tableViewIsScrolling];
 }
 
-static const CGFloat MESSAGE_SPACING_PERCENTAGE = 0.f;
+static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
@@ -225,21 +274,11 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 0.f;
         
         //If the message is followed by another one that is not from the same address, we add a little space under it
         CGFloat height = 0;
-        LinphoneEventLog *nextEvent = nil;
-        NSInteger indexOfNextEvent = indexPath.row + 1;
-        while (!nextEvent && indexOfNextEvent < [eventList count]) {
-            LinphoneEventLog *tmp = [[eventList objectAtIndex:indexOfNextEvent] pointerValue];
-            if (linphone_event_log_get_type(tmp) == LinphoneEventLogTypeConferenceChatMessage) {
-                nextEvent = tmp;
-            }
-            ++indexOfNextEvent;
-        }
-        if (nextEvent) {
-            LinphoneChatMessage *nextChat = linphone_event_log_get_chat_message(nextEvent);
-            if (!linphone_address_equal(linphone_chat_message_get_from_address(nextChat), linphone_chat_message_get_from_address(chat))) {
-                height += tableView.frame.size.height * MESSAGE_SPACING_PERCENTAGE / 100;
-            }
-        }
+        if ([self isLastIndexInTableView:indexPath chat:chat])
+            height += tableView.frame.size.height * MESSAGE_SPACING_PERCENTAGE / 100;
+        if (![self isFirstIndexInTableView:indexPath chat:chat])
+            height -= 20;
+
 		return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height + height;
 	}
     return [UIChatNotifiedEventCell height];
