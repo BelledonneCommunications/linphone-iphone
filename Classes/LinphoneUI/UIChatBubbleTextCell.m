@@ -442,7 +442,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 							  context:nil].size;
 }
 
-static const CGFloat CELL_MIN_HEIGHT = 60.0f;
+static const CGFloat CELL_MIN_HEIGHT = 65.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
@@ -452,6 +452,12 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 }
 
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText{
+    
+    // avoid calculating the size each time
+    NSString *chatSize = [LinphoneManager getMessageAppDataForKey:@"chatSize" inMessage:chat];
+    if (chatSize)
+        return CGSizeFromString(chatSize);
+    
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
     static UIFont *messageFont = nil;
 
@@ -460,7 +466,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		messageFont = cell.messageText.font;
 	}
-	width -= 40; /*checkbox */
+	width -= 120; /*checkbox  + avatar image + imdmLabel*/
 	CGSize size;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
     if (imdnText) {
@@ -479,7 +485,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
             NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
         
             if(localFile) {
-                CGSize fileSize = CGSizeMake(200, 80);
+                CGSize fileSize = CGSizeMake(230, 50);
                 size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
             } else {
                 CGSize textSize = CGSizeMake(0, 0);
@@ -500,24 +506,26 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
                 else
                     assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
                 if (![assets firstObject]) {
-                    return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
+                    // TODO size is not correct
+                    size = CGSizeMake(-200, -200);
+                } else {
+                    PHAsset *asset = [assets firstObject];
+                    CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
+                    originalImageSize.width = originalImageSize.width;
+                    size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
+                    
+                    // add size for message text
+                    size.height += textSize.height;
+                    size.width = MAX(textSize.width, size.width);
                 }
-                PHAsset *asset = [assets firstObject];
-                CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
-                size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
-                //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
-                size.height += 40;
-                size.width -= CELL_MESSAGE_X_MARGIN;
-            
-                // add size for message text
-                size.height += textSize.height;
-                size.width = MAX(textSize.width, size.width);
             }
         }
     }
     
     size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
     size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+    
+    [LinphoneManager setValueInMessageAppData:NSStringFromCGSize(size) forKey:@"chatSize" inMessage:chat];
     return size;
 }
 
@@ -567,9 +575,9 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
     CGSize mediaSize = CGSizeMake(0, 0);
     int availableWidth = width;
-    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+    /*if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         availableWidth = availableWidth /3;
-    }
+    }*/
     int newHeight = originalSize.height;
     float originalAspectRatio = originalSize.width / originalSize.height;
     // We resize in width and crop in height
