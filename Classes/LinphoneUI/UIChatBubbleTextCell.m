@@ -455,7 +455,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
     
     // avoid calculating the size each time
     NSString *chatSize = [LinphoneManager getMessageAppDataForKey:@"chatSize" inMessage:chat];
-    if (chatSize)
+    if (chatSize && !imdnText)
         return CGSizeFromString(chatSize);
     
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
@@ -469,58 +469,61 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 	width -= 120; /*checkbox  + avatar image + imdmLabel*/
 	CGSize size;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
+    
     if (imdnText) {
         size = [self computeBoundingBox:imdnText
-                                   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                   size:CGSizeMake(width - 4, CGFLOAT_MAX)
                                    font:messageFont];
-        size.height += 20;
+        size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+        size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN + 40, CELL_MIN_HEIGHT);
+        return size;
+    }
+
+    if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
+        size = [self computeBoundingBox:messageText
+                                    size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                    font:messageFont];
     } else {
-        if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
-            size = [self computeBoundingBox:messageText
-                                       size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-                                       font:messageFont];
-        } else {
-            NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
-            NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
-            NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
+        NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
+        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
         
-            if(localFile) {
-                CGSize fileSize = CGSizeMake(230, 50);
-                size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
-            } else {
-                CGSize textSize = CGSizeMake(0, 0);
-                if (![messageText isEqualToString:@"🗻"]) {
-                    textSize = [self computeBoundingBox:messageText
-                                                        size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-                                                        font:messageFont];
-                    size.height += textSize.height;
-                }
+        if(localFile) {
+            CGSize fileSize = CGSizeMake(230, 50);
+            size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+        } else {
+            CGSize textSize = CGSizeMake(0, 0);
+            if (![messageText isEqualToString:@"🗻"]) {
+                textSize = [self computeBoundingBox:messageText
+                                                size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                                font:messageFont];
+                size.height += textSize.height;
+            }
             
-                if (!localImage && !localVideo) {
-                    //We are loading the image
-                    return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height);
-                }
-                PHFetchResult<PHAsset *> *assets;
-                if(localImage)
-                    assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
-                else
-                    assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-                if (![assets firstObject]) {
-                    size = CGSizeMake(0, CELL_MESSAGE_Y_MARGIN + textSize.height);
-                } else {
-                    PHAsset *asset = [assets firstObject];
-                    CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
-                    originalImageSize.width = originalImageSize.width;
-                    size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
+            if (!localImage && !localVideo) {
+                //We are loading the image
+                return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
+            }
+            PHFetchResult<PHAsset *> *assets;
+            if(localImage)
+                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            else
+                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
+            if (![assets firstObject]) {
+                return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
+            } else {
+                PHAsset *asset = [assets firstObject];
+                CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
+                originalImageSize.width = originalImageSize.width;
+                size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
                     
-                    // add size for message text
-                    size.height += textSize.height;
-                    size.width = MAX(textSize.width, size.width);
-                }
+                // add size for message text
+                size.height += textSize.height;
+                size.width = MAX(textSize.width, size.width);
             }
         }
     }
-    
+
     size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
     size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
     

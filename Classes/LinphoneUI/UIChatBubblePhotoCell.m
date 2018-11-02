@@ -420,7 +420,7 @@
         textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
     else
         // When image hasn't be download
-        textFrame.origin = CGPointMake(textFrame.origin.x, 42);
+        textFrame.origin = CGPointMake(textFrame.origin.x, _imageSubView.frame.size.height + _imageSubView.frame.origin.y - 10);
     if (!utf8Text) {
         textFrame.size.height = 0;
     } else {
