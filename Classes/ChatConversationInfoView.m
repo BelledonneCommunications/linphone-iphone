@@ -261,6 +261,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 	view.tableController.notFirstTime = TRUE;
 	view.isForEditing = !_create;
+    view.isGroupChat = TRUE;
 	view.tableController.contactsGroup = [_contacts mutableCopy];
 	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
