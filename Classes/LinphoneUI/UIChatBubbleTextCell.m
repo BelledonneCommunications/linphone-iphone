@@ -506,8 +506,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
                 else
                     assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
                 if (![assets firstObject]) {
-                    // TODO size is not correct
-                    size = CGSizeMake(-200, -200);
+                    size = CGSizeMake(0, CELL_MESSAGE_Y_MARGIN + textSize.height);
                 } else {
                     PHAsset *asset = [assets firstObject];
                     CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
