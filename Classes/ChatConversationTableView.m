@@ -167,9 +167,6 @@
 }
 
 - (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
-    if (indexPath.row == 0)
-        return TRUE;
-
     LinphoneEventLog *previousEvent = nil;
     NSInteger indexOfPreviousEvent = indexPath.row - 1;
     while (!previousEvent && indexOfPreviousEvent > -1) {
@@ -179,11 +176,12 @@
         }
         --indexOfPreviousEvent;
     }
-    if (previousEvent) {
-        LinphoneChatMessage *previousChat = linphone_event_log_get_chat_message(previousEvent);
-        if (!linphone_address_equal(linphone_chat_message_get_from_address(previousChat), linphone_chat_message_get_from_address(chat))) {
-            return TRUE;
-        }
+    if (!previousEvent)
+        return TRUE;
+
+    LinphoneChatMessage *previousChat = linphone_event_log_get_chat_message(previousEvent);
+    if (!linphone_address_equal(linphone_chat_message_get_from_address(previousChat), linphone_chat_message_get_from_address(chat))) {
+        return TRUE;
     }
         
     return FALSE;
