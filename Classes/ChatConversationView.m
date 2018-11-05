@@ -290,7 +290,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
-	[_backToCallButton update];
+    [self updateSuperposedButtons];
 }
 
 - (void)update {
