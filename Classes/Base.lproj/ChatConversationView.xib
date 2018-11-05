@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -82,7 +82,7 @@
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="c6C-ow-Yhi"/>
                                     </connections>
                                 </button>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" misplaced="YES" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="40" userLabel="addressLabel">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="40" userLabel="addressLabel">
                                     <rect key="frame" x="75" y="0.0" width="142" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name">
@@ -162,7 +162,7 @@
                                         <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="eP5-bU-LEA"/>
                                     </connections>
                                 </button>
-                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="Vqb-Un-4xv" userLabel="infoButton" customClass="UIIconButton">
+                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="Vqb-Un-4xv" userLabel="infoButton" customClass="UIIconButton">
                                     <rect key="frame" x="225" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Select all"/>
@@ -178,7 +178,7 @@
                                         <action selector="onInfoClick:" destination="-1" eventType="touchUpInside" id="VfD-K7-V15"/>
                                     </connections>
                                 </button>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" misplaced="YES" text="addresses" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="Ncq-Zc-X6j" userLabel="participantsLabel">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" text="addresses" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="Ncq-Zc-X6j" userLabel="participantsLabel">
                                     <rect key="frame" x="75" y="41" width="142" height="25"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name">
@@ -271,15 +271,15 @@
                                         </view>
                                     </subviews>
                                 </view>
-                                <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" id="3qd-ys-t2L" userLabel="imagesView">
+                                <view clipsSubviews="YES" contentMode="scaleToFill" id="3qd-ys-t2L" userLabel="imagesView">
                                     <rect key="frame" x="0.0" y="427" width="375" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_F.png" id="B6X-D7-Bak" userLabel="backgroundColor">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="B6X-D7-Bak" userLabel="backgroundColor">
                                             <rect key="frame" x="2" y="1" width="375" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
-                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" showsVerticalScrollIndicator="NO" dataMode="none" id="JGQ-p2-HCX" userLabel="imagesCollectionView">
+                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" dataMode="none" id="JGQ-p2-HCX" userLabel="imagesCollectionView">
                                             <rect key="frame" x="2" y="0.0" width="374" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" red="0.98780487804878048" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -293,6 +293,11 @@
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </view>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tjL-Vc-5gN">
+                                    <rect key="frame" x="320" y="10" width="34" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" image="security_1_indicator.png"/>
+                                </button>
                             </subviews>
                         </view>
                     </subviews>
@@ -301,7 +306,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="228.5" y="-40.5"/>
+            <point key="canvasLocation" x="365.60000000000002" y="-36.431784107946029"/>
         </view>
         <view contentMode="scaleToFill" id="680-UL-sil" userLabel="iphone6MetricsView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -349,7 +354,7 @@
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="hGj-xz-K5n"/>
                                     </connections>
                                 </button>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" misplaced="YES" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="uEp-mD-eik" userLabel="addressLabel">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="uEp-mD-eik" userLabel="addressLabel">
                                     <rect key="frame" x="67" y="1" width="366" height="57"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name">
@@ -388,7 +393,7 @@
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="fNp-ya-dag"/>
                                     </connections>
                                 </button>
-                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="uVy-PC-gn9" userLabel="infoButton" customClass="UIIconButton">
+                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="uVy-PC-gn9" userLabel="infoButton" customClass="UIIconButton">
                                     <rect key="frame" x="218" y="0.0" width="33" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Select all"/>
@@ -444,7 +449,7 @@
                                         <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="17V-y4-JHi"/>
                                     </connections>
                                 </button>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" misplaced="YES" text="addresses" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="tyU-Wy-rLs" userLabel="participantsLabel">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" text="addresses" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="tyU-Wy-rLs" userLabel="participantsLabel">
                                     <rect key="frame" x="67" y="37" width="366" height="25"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name">
@@ -543,7 +548,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="-546.5" y="-152.5"/>
+            <point key="canvasLocation" x="-874.39999999999998" y="-137.18140929535232"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="29" userLabel="messagesTableView" customClass="ChatConversationTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -555,7 +560,7 @@
                 <outlet property="toggleSelectionButton" destination="c9z-aq-2UP" id="a2J-JQ-rhX"/>
                 <outlet property="view" destination="8" id="g4m-ne-lbP"/>
             </connections>
-            <point key="canvasLocation" x="639" y="328"/>
+            <point key="canvasLocation" x="1022.4" y="295.05247376311848"/>
         </tableViewController>
         <swipeGestureRecognizer direction="left" id="dzw-n4-l9i">
             <connections>
@@ -591,6 +596,7 @@
         <image name="deselect_all.png" width="27" height="27"/>
         <image name="edit_list_default.png" width="30" height="28"/>
         <image name="edit_list_disabled.png" width="30" height="28"/>
+        <image name="security_1_indicator.png" width="27" height="32"/>
         <image name="select_all_default.png" width="27" height="27"/>
         <image name="select_all_disabled.png" width="27" height="27"/>
     </resources>
