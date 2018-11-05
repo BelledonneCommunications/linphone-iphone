@@ -121,6 +121,9 @@
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
 		61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		61AEBEA321906AFC00F35E7F /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
+		61AEBEAA21906B0700F35E7F /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
+		61AEBEAB21906B0700F35E7F /* mediastreamer2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
@@ -1008,6 +1011,7 @@
 				8C5BCED91EB3859300A9AAEF /* mssilk.framework in Embed Frameworks */,
 				8C3EA9E41EB892D600B732B6 /* msamr.framework in Embed Frameworks */,
 				8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */,
+				61AEBEAB21906B0700F35E7F /* mediastreamer2.framework in Embed Frameworks */,
 				8C3EA9E81EB892D600B732B6 /* msopenh264.framework in Embed Frameworks */,
 				8C5BCEDD1EB3859300A9AAEF /* ortp.framework in Embed Frameworks */,
 			);
@@ -2126,6 +2130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61AEBEA321906AFC00F35E7F /* mediastreamer2.framework in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
@@ -2168,6 +2173,7 @@
 				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
 				8C5BCEDC1EB3859300A9AAEF /* ortp.framework in Frameworks */,
+				61AEBEAA21906B0700F35E7F /* mediastreamer2.framework in Frameworks */,
 				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
 				8C5BCED01EB3859200A9AAEF /* bctoolbox.framework in Frameworks */,
 			);
