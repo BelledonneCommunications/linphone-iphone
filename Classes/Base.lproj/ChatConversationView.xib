@@ -18,6 +18,7 @@
                 <outlet property="chatView" destination="49" id="Rxt-Zy-19x"/>
                 <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
+                <outlet property="encryptedButton" destination="tjL-Vc-5gN" id="zxw-Fs-ofB"/>
                 <outlet property="imagesCollectionView" destination="JGQ-p2-HCX" id="6dt-1f-jpa"/>
                 <outlet property="imagesView" destination="3qd-ys-t2L" id="f9L-FU-PMI"/>
                 <outlet property="infoButton" destination="Vqb-Un-4xv" id="pa1-Iz-5QQ"/>
@@ -293,10 +294,13 @@
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </view>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tjL-Vc-5gN">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tjL-Vc-5gN" userLabel="encryptedButton">
                                     <rect key="frame" x="320" y="10" width="34" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <state key="normal" image="security_1_indicator.png"/>
+                                    <connections>
+                                        <action selector="onEncryptedDevicesClick:" destination="-1" eventType="touchUpInside" id="K1W-Ao-IDg"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </view>

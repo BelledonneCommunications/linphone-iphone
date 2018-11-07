@@ -124,6 +124,14 @@
 		61AEBEA321906AFC00F35E7F /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
 		61AEBEAA21906B0700F35E7F /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
 		61AEBEAB21906B0700F35E7F /* mediastreamer2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEBC2191990A00F35E7F /* DevicesListView.m */; };
+		61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEBE2191991F00F35E7F /* DevicesListView.xib */; };
+		61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */; };
+		61AEBEC42191D7D900F35E7F /* UIDevicesDetails.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */; };
+		61AEBEC62191E47500F35E7F /* chevron_list_close.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC52191E47500F35E7F /* chevron_list_close.png */; };
+		61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */; };
+		61AEBECA2191E49300F35E7F /* chevron_list_open.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC92191E49200F35E7F /* chevron_list_open.png */; };
+		61AEBECC2191E4A300F35E7F /* chevron_list_open@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */; };
 		61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
@@ -1193,6 +1201,16 @@
 		61AE365120C00B370089D9D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		61AE365320C00B370089D9D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61AE366320C00C810089D9D3 /* linphoneExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphoneExtension.entitlements; sourceTree = "<group>"; };
+		61AEBEB5219198EF00F35E7F /* DevicesListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DevicesListView.h; sourceTree = "<group>"; };
+		61AEBEBC2191990A00F35E7F /* DevicesListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevicesListView.m; sourceTree = "<group>"; };
+		61AEBEBE2191991F00F35E7F /* DevicesListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DevicesListView.xib; sourceTree = "<group>"; };
+		61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDevicesDetails.h; sourceTree = "<group>"; };
+		61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDevicesDetails.m; sourceTree = "<group>"; };
+		61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDevicesDetails.xib; sourceTree = "<group>"; };
+		61AEBEC52191E47500F35E7F /* chevron_list_close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_close.png; sourceTree = "<group>"; };
+		61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_close@2x.png"; sourceTree = "<group>"; };
+		61AEBEC92191E49200F35E7F /* chevron_list_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_open.png; sourceTree = "<group>"; };
+		61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_open@2x.png"; sourceTree = "<group>"; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
@@ -2335,6 +2353,9 @@
 				631098501D4660630041F2B3 /* CountryListView.xib */,
 				631098471D4660580041F2B3 /* CountryListView.h */,
 				631098481D4660580041F2B3 /* CountryListView.m */,
+				61AEBEB5219198EF00F35E7F /* DevicesListView.h */,
+				61AEBEBC2191990A00F35E7F /* DevicesListView.m */,
+				61AEBEBE2191991F00F35E7F /* DevicesListView.xib */,
 				22F2508B107141E100AC9B3F /* DialerView.h */,
 				22F2508C107141E100AC9B3F /* DialerView.m */,
 				D38187C415FE345B00C3EDCA /* DialerView.xib */,
@@ -2486,6 +2507,9 @@
 				639E9CAE1C0DB80300019A75 /* UIContactDetailsCell.xib */,
 				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
 				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
+				61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */,
+				61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */,
+				61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */,
 				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
 				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
 				D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */,
@@ -2950,6 +2974,10 @@
 				633FEC6D1D3CD5570014B822 /* checkbox_checked@2x.png */,
 				633FEC6E1D3CD5570014B822 /* checkbox_unchecked.png */,
 				633FEC6F1D3CD5570014B822 /* checkbox_unchecked@2x.png */,
+				61AEBEC52191E47500F35E7F /* chevron_list_close.png */,
+				61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */,
+				61AEBEC92191E49200F35E7F /* chevron_list_open.png */,
+				61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */,
 				633FEC701D3CD5570014B822 /* color_A.png */,
 				633FEC711D3CD5570014B822 /* color_C.png */,
 				633FEC721D3CD5570014B822 /* color_D.png */,
@@ -3965,6 +3993,7 @@
 				633FEDE91D3CD5590014B822 /* call_status_missed~ipad@2x.png in Resources */,
 				8CE24F4C1F8234A30077AC0A /* next_default@2x.png in Resources */,
 				244523B11E8266CC0037A187 /* chat_read.png in Resources */,
+				61AEBEC62191E47500F35E7F /* chevron_list_close.png in Resources */,
 				CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */,
 				639E9CAC1C0DB80300019A75 /* UIContactDetailsCell.xib in Resources */,
 				633FEE511D3CD5590014B822 /* deselect_all@2x.png in Resources */,
@@ -3974,6 +4003,7 @@
 				633FEE6F1D3CD5590014B822 /* footer_history_default@2x.png in Resources */,
 				633FEF201D3CD55A0014B822 /* presence_unregistered.png in Resources */,
 				61586B8D217A173F0038AC45 /* menu_options.png in Resources */,
+				61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */,
 				633FEF341D3CD55A0014B822 /* routes_default.png in Resources */,
 				633FEE061D3CD5590014B822 /* chat_add_default.png in Resources */,
 				633FEDF21D3CD5590014B822 /* call_video_start_default.png in Resources */,
@@ -4118,6 +4148,7 @@
 				63E27A521C50EDB000D332AE /* hold.mkv in Resources */,
 				633FEEDC1D3CD55A0014B822 /* numpad_8_default@2x.png in Resources */,
 				633FEDAE1D3CD5590014B822 /* call_add_default.png in Resources */,
+				61AEBEC42191D7D900F35E7F /* UIDevicesDetails.xib in Resources */,
 				633FEE1D1D3CD5590014B822 /* chat_start_body_default~ipad@2x.png in Resources */,
 				633FEEEB1D3CD55A0014B822 /* numpad_hash_default.png in Resources */,
 				633FEF221D3CD55A0014B822 /* route_bluetooth_default.png in Resources */,
@@ -4130,6 +4161,7 @@
 				633FEE111D3CD5590014B822 /* chat_list_indicator~ipad@2x.png in Resources */,
 				633FEEFC1D3CD55A0014B822 /* options_add_call_default.png in Resources */,
 				615A2819217F28160060F920 /* chat_list_indicator@2x.png in Resources */,
+				61AEBECC2191E4A300F35E7F /* chevron_list_open@2x.png in Resources */,
 				24BFAAA5209B0630004F47A7 /* contacts_sip_default.png in Resources */,
 				633FEF441D3CD55A0014B822 /* speaker_default.png in Resources */,
 				639CEB031A1DF4EB004DE38F /* UICompositeView.xib in Resources */,
@@ -4283,6 +4315,7 @@
 				633FEE761D3CD5590014B822 /* history_all_selected.png in Resources */,
 				8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */,
 				633FEF321D3CD55A0014B822 /* route_speaker_selected.png in Resources */,
+				61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */,
 				633FEDF51D3CD5590014B822 /* call_video_start_disabled@2x.png in Resources */,
 				63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */,
 				633FEEDA1D3CD55A0014B822 /* numpad_7~ipad@2x.png in Resources */,
@@ -4320,6 +4353,7 @@
 				633FEF501D3CD55A0014B822 /* valid_disabled.png in Resources */,
 				631348321B6FA53300C6BDCB /* rootca.pem in Resources */,
 				633FEEB31D3CD55A0014B822 /* numpad_3_default.png in Resources */,
+				61AEBECA2191E49300F35E7F /* chevron_list_open.png in Resources */,
 				633FEE1C1D3CD5590014B822 /* chat_start_body_default~ipad.png in Resources */,
 				633FEE011D3CD5590014B822 /* camera_switch_over@2x.png in Resources */,
 				633FEEA01D3CD55A0014B822 /* numpad_0_over~ipad@2x.png in Resources */,
@@ -4575,6 +4609,7 @@
 				6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
+				61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */,
 				D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */,
 				24A345A61D95798A00881A5C /* UIShopTableCell.m in Sources */,
 				8C1B67061E671826001EA2FE /* AudioHelper.m in Sources */,
@@ -4613,6 +4648,7 @@
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
+				61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */,
 				D32B6E2915A5BC440033019F /* ChatConversationTableView.m in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */,
 				63D11C531C3D501200E8FCEE /* Log.m in Sources */,

@@ -66,6 +66,7 @@
 @property NSMutableArray <NSNumber *> *qualitySettingsArray;
 @property (weak, nonatomic) IBOutlet UICollectionView *imagesCollectionView;
 @property (weak, nonatomic) IBOutlet UIView *imagesView;
+@property (weak, nonatomic) IBOutlet UIButton *encryptedButton;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (UIImage *)getSecurityImageForChatRoom:(LinphoneChatRoom *)chatRoom;
@@ -80,6 +81,7 @@
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
+- (IBAction)onEncryptedDevicesClick:(id)sender;
 - (void)update;
 - (void)openFile:(NSString *) filePath;
 - (void)clearMessageView;

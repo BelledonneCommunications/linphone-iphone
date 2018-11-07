@@ -24,6 +24,7 @@
 #import "Utils.h"
 #import "FileTransferDelegate.h"
 #import "UIChatBubbleTextCell.h"
+#import "DevicesListView.h"
 
 @implementation ChatConversationView
 static NSString* groupName = @"group.belledonne-communications.linphone";
@@ -586,6 +587,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onEditionChangeClick:(id)sender {
 	_backButton.hidden = _tableController.isEditing;
 	[self updateSuperposedButtons];
+}
+
+- (IBAction)onEncryptedDevicesClick:(id)sender {
+    DevicesListView *view = VIEW(DevicesListView);
+    view.room = _chatRoom;
+    
+    [PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
 - (IBAction)onCallClick:(id)sender {
