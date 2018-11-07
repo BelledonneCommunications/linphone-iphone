@@ -69,7 +69,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *encryptedButton;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
-+ (UIImage *)getSecurityImageForChatRoom:(LinphoneChatRoom *)chatRoom;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;

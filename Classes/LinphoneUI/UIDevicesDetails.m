@@ -6,6 +6,7 @@
 //
 
 #import "UIDevicesDetails.h"
+#import "UIDeviceCell.h"
 
 @implementation UIDevicesDetails
 #pragma mark - Lifecycle Functions
@@ -43,12 +44,18 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-        UITableViewCell *cell = [[UITableViewCell alloc] init];
-        LinphoneParticipantDevice *device = (LinphoneParticipantDevice *)bctbx_list_nth_data(_devices, (int)[indexPath row]);
-            
-        cell.textLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_device_get_address(device))];
+    NSString *kCellId = NSStringFromClass(UIDeviceCell.class);
+    UIDeviceCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+    
+    if (cell == nil) {
+        cell = [[UIDeviceCell alloc] initWithIdentifier:kCellId];
+    }
+    LinphoneParticipantDevice *device = (LinphoneParticipantDevice *)bctbx_list_nth_data(_devices, (int)[indexPath row]);
+    cell.device = device;
+    cell.isOneToOne = FALSE;
+    [cell update];
 
-        return cell;
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -57,6 +64,5 @@
     cell.backgroundColor = [UIColor colorWithRed:(245 / 255.0) green:(245 / 255.0) blue:(245 / 255.0) alpha:1.0];
     
 }
-
 
 @end

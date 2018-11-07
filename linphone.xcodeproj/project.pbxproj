@@ -132,6 +132,8 @@
 		61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */; };
 		61AEBECA2191E49300F35E7F /* chevron_list_open.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC92191E49200F35E7F /* chevron_list_open.png */; };
 		61AEBECC2191E4A300F35E7F /* chevron_list_open@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */; };
+		61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 61CCC3DE21933B580060EDEA /* UIDeviceCell.m */; };
+		61CCC3E121933B660060EDEA /* UIDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61CCC3E021933B660060EDEA /* UIDeviceCell.xib */; };
 		61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
@@ -1211,6 +1213,9 @@
 		61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_close@2x.png"; sourceTree = "<group>"; };
 		61AEBEC92191E49200F35E7F /* chevron_list_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_open.png; sourceTree = "<group>"; };
 		61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_open@2x.png"; sourceTree = "<group>"; };
+		61CCC3D721933B380060EDEA /* UIDeviceCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDeviceCell.h; sourceTree = "<group>"; };
+		61CCC3DE21933B580060EDEA /* UIDeviceCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDeviceCell.m; sourceTree = "<group>"; };
+		61CCC3E021933B660060EDEA /* UIDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDeviceCell.xib; sourceTree = "<group>"; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
@@ -2507,6 +2512,9 @@
 				639E9CAE1C0DB80300019A75 /* UIContactDetailsCell.xib */,
 				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
 				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
+				61CCC3D721933B380060EDEA /* UIDeviceCell.h */,
+				61CCC3DE21933B580060EDEA /* UIDeviceCell.m */,
+				61CCC3E021933B660060EDEA /* UIDeviceCell.xib */,
 				61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */,
 				61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */,
 				61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */,
@@ -3906,6 +3914,7 @@
 				633FEF0B1D3CD55A0014B822 /* options_transfer_call_default@2x.png in Resources */,
 				633FEDE81D3CD5590014B822 /* call_status_missed~ipad.png in Resources */,
 				63AADBFF1B6A0FF200AA16FD /* assistant_external_sip.rc in Resources */,
+				61CCC3E121933B660060EDEA /* UIDeviceCell.xib in Resources */,
 				633FEE9E1D3CD55A0014B822 /* numpad_0_over@2x.png in Resources */,
 				634610121B6140A500548952 /* CallOutgoingView.xib in Resources */,
 				8CE24F581F8268850077AC0A /* conference_delete@2x.png in Resources */,
@@ -4666,6 +4675,7 @@
 				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
 				D3807FBF15C28940005BE9BC /* DCRoundSwitch.m in Sources */,
 				D3807FC115C28940005BE9BC /* DCRoundSwitchKnobLayer.m in Sources */,
+				61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */,
 				6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */,
 				D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */,
 				CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */,

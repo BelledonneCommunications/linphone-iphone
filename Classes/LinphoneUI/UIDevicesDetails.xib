@@ -13,8 +13,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIDevicesDetails">
             <connections>
                 <outlet property="addressLabel" destination="X0O-yd-2qT" id="QJ7-lu-E5n"/>
+                <outlet property="avatarImage" destination="gUM-dT-1wZ" id="WPF-6b-5Hv"/>
                 <outlet property="devicesTable" destination="Bhw-SW-cbz" id="Fc6-BV-RrV"/>
                 <outlet property="dropMenuButton" destination="fqu-53-vFp" id="qwN-sh-50p"/>
+                <outlet property="securityImage" destination="kEm-qC-OwR" id="SYs-Vr-JdZ"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>

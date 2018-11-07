@@ -44,6 +44,7 @@
 
 + (UIImage *)imageForContact:(Contact *)contact;
 + (UIImage *)imageForAddress:(const LinphoneAddress *)addr;
++ (UIImage *)imageForSecurityLevel:(LinphoneChatRoomSecurityLevel)level;
 
 + (BOOL)contactHasValidSipDomain:(Contact *)person;
 + (BOOL)isSipURIValid:(NSString*)addr;

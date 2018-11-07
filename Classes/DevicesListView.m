@@ -8,6 +8,7 @@
 #import "DevicesListView.h"
 #import "PhoneMainView.h"
 #import "UIDevicesDetails.h"
+#import "UIDeviceCell.h"
 
 @implementation DevicesMenuEntry
 
@@ -50,7 +51,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     _tableView.delegate    = self;
     _isOneToOne =  linphone_chat_room_get_capabilities(_room) & LinphoneChatRoomCapabilitiesOneToOne;
     bctbx_list_t *participants = linphone_chat_room_get_participants(_room);
-    _devicesMenuEntries = [[NSMutableArray alloc] init];
+    _devicesMenuEntries = [NSMutableArray array];
 
     if (_isOneToOne) {
         LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
@@ -71,10 +72,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     _addressLabel.text = [NSString stringWithFormat:@"%@'s devices", _addressLabel.text];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_tableView reloadData];
-}
-
-- (void) viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
 }
 
 #pragma mark - Action Functions
@@ -107,10 +104,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (_isOneToOne) {
-        UITableViewCell *cell = [[UITableViewCell alloc] init];
+        NSString *kCellId = NSStringFromClass(UIDeviceCell.class);
+        UIDeviceCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+        
+        if (cell == nil) {
+            cell = [[UIDeviceCell alloc] initWithIdentifier:kCellId];
+        }
         LinphoneParticipantDevice *device = (LinphoneParticipantDevice *)bctbx_list_nth_data(_devices, (int)[indexPath row]);
-        cell.textLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_device_get_address(device))];
-        cell.selectionStyle =UITableViewCellSelectionStyleNone;
+        cell.device = device;
+        cell.isOneToOne = TRUE;
+        [cell update];
 
         return cell;
     }
@@ -121,6 +124,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if (cell == nil) {
         cell = [[UIDevicesDetails alloc] initWithIdentifier:kCellId];
     }
+    
     DevicesMenuEntry *entry = [_devicesMenuEntries objectAtIndex:indexPath.row];
         
     [ContactDisplay setDisplayNameLabel:cell.addressLabel forAddress:linphone_participant_get_address(entry->participant)];

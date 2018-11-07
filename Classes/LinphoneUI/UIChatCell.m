@@ -82,7 +82,7 @@
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	}
     // TODO update security image when security level changed
-    [_securityImage setImage:[ChatConversationView getSecurityImageForChatRoom:chatRoom]];
+    [_securityImage setImage:[FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(chatRoom)]];
 
 	_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_chat_room_get_last_update_time(chatRoom) withFormat:LinphoneDateChatList];
 
