@@ -10,6 +10,35 @@
 #import "PhoneMainView.h"
 
 @implementation UIConfirmationDialog
++ (UIConfirmationDialog *)initDialog:(NSString *)cancel
+                           confirmMessage:(NSString *)confirm
+                            onCancelClick:(UIConfirmationBlock)onCancel
+                      onConfirmationClick:(UIConfirmationBlock)onConfirm
+                             inController:(UIViewController *)controller {
+    UIConfirmationDialog *dialog =
+    [[UIConfirmationDialog alloc] initWithNibName:NSStringFromClass(self.class) bundle:NSBundle.mainBundle];
+    
+    dialog.view.frame = PhoneMainView.instance.mainViewController.view.frame;
+    [controller.view addSubview:dialog.view];
+    [controller addChildViewController:dialog];
+    
+    dialog->onCancelCb = onCancel;
+    dialog->onConfirmCb = onConfirm;
+    
+    if (cancel) {
+        [dialog.cancelButton setTitle:cancel forState:UIControlStateNormal];
+    }
+    if (confirm) {
+        [dialog.confirmationButton setTitle:confirm forState:UIControlStateNormal];
+    }
+    
+    dialog.confirmationButton.layer.borderColor =
+    [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
+    dialog.cancelButton.layer.borderColor =
+    [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
+    return dialog;
+}
+
 + (UIConfirmationDialog *)ShowWithMessage:(NSString *)message
 							cancelMessage:(NSString *)cancel
 						   confirmMessage:(NSString *)confirm
@@ -17,27 +46,8 @@
 					  onConfirmationClick:(UIConfirmationBlock)onConfirm
 							 inController:(UIViewController *)controller {
 	UIConfirmationDialog *dialog =
-		[[UIConfirmationDialog alloc] initWithNibName:NSStringFromClass(self.class) bundle:NSBundle.mainBundle];
-
-	dialog.view.frame = PhoneMainView.instance.mainViewController.view.frame;
-	[controller.view addSubview:dialog.view];
-	[controller addChildViewController:dialog];
-
-	dialog->onCancelCb = onCancel;
-	dialog->onConfirmCb = onConfirm;
-
-	[dialog.titleLabel setText:message];
-	if (cancel) {
-		[dialog.cancelButton setTitle:cancel forState:UIControlStateNormal];
-	}
-	if (confirm) {
-		[dialog.confirmationButton setTitle:confirm forState:UIControlStateNormal];
-	}
-
-	dialog.confirmationButton.layer.borderColor =
-		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
-	dialog.cancelButton.layer.borderColor =
-		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
+    [UIConfirmationDialog initDialog:cancel confirmMessage:confirm onCancelClick:onCancel onConfirmationClick:onConfirm inController:controller];
+    [dialog.titleLabel setText:message];
 	return dialog;
 }
 
@@ -52,6 +62,17 @@
 				   onCancelClick:onCancel
 			 onConfirmationClick:onConfirm
 					inController:PhoneMainView.instance.mainViewController];
+}
+
++ (UIConfirmationDialog *)ShowWithAttributedMessage:(NSMutableAttributedString *)attributedText
+                            cancelMessage:(NSString *)cancel
+                           confirmMessage:(NSString *)confirm
+                            onCancelClick:(UIConfirmationBlock)onCancel
+                      onConfirmationClick:(UIConfirmationBlock)onConfirm {
+    UIConfirmationDialog *dialog =
+    [UIConfirmationDialog initDialog:cancel confirmMessage:confirm onCancelClick:onCancel onConfirmationClick:onConfirm inController:PhoneMainView.instance.mainViewController];
+    dialog.titleLabel.attributedText = attributedText;
+    return dialog;
 }
 
 - (IBAction)onCancelClick:(id)sender {
