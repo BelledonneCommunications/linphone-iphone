@@ -59,6 +59,7 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 - (void)setEvent:(LinphoneEventLog *)event {
 	_event = event;
 	NSString *eventString;
+    UIColor *eventColor = [UIColor grayColor];
 	switch (linphone_event_log_get_type(event)) {
 		case LinphoneEventLogTypeConferenceSubjectChanged: {
 			NSString *subject = [NSString stringWithUTF8String:linphone_event_log_get_subject(event) ?: LINPHONE_DUMMY_SUBJECT];
@@ -93,6 +94,41 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 			eventString = [NSString stringWithFormat:NSLocalizedString(@"You have joined the group", nil)];
 			break;
 		}
+        case LinphoneEventLogTypeConferenceSecurityEvent: {
+            LinphoneSecurityEventType type = linphone_event_log_get_security_event_type(event);
+            NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_security_event_faulty_device_address(event)];
+            switch (type) {
+                case LinphoneSecurityEventTypeSecurityLevelDowngraded:
+                    if (!participant)
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Degradation of security level", nil)];
+                    else
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Degradation of security level from %@", nil),participant];
+                    eventColor = [UIColor grayColor];
+                    break;
+                case LinphoneSecurityEventTypeParticipantMaxDeviceCountExceeded:
+                    if (!participant)
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Multidevice detected", nil)];
+                    else
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Multidevice detected from %@", nil),participant];
+                    eventColor = [UIColor redColor];
+                    break;
+                case LinphoneSecurityEventTypeLimeIdentityKeyChanged:
+                case LinphoneSecurityEventTypeManInTheMiddleDetected:
+                    if (!participant)
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Security alert", nil)];
+                    else
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Security alert from %@", nil),participant];
+                    eventColor = [UIColor redColor];
+                    break;
+                    
+                case LinphoneSecurityEventTypeNone:
+                default:
+                    break;
+            }
+            
+            break;
+        }
+
 		default:
 			return;
 	}
