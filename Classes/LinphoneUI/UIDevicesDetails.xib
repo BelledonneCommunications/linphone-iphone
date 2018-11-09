@@ -16,6 +16,7 @@
                 <outlet property="avatarImage" destination="gUM-dT-1wZ" id="WPF-6b-5Hv"/>
                 <outlet property="devicesTable" destination="Bhw-SW-cbz" id="Fc6-BV-RrV"/>
                 <outlet property="dropMenuButton" destination="fqu-53-vFp" id="qwN-sh-50p"/>
+                <outlet property="securityButton" destination="exm-bi-aEL" id="Ht8-LX-ag7"/>
                 <outlet property="securityImage" destination="kEm-qC-OwR" id="SYs-Vr-JdZ"/>
             </connections>
         </placeholder>
@@ -48,6 +49,14 @@
                     <rect key="frame" x="336" y="24" width="18" height="10"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                     <state key="normal" image="chevron_list_close.png"/>
+                </button>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="exm-bi-aEL" userLabel="securityButton">
+                    <rect key="frame" x="336" y="17" width="18" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" image="security_1_indicator.png"/>
+                    <connections>
+                        <action selector="onSecurityCallClick:" destination="-1" eventType="touchUpInside" id="D1A-3d-K60"/>
+                    </connections>
                 </button>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Bhw-SW-cbz">
                     <rect key="frame" x="0.0" y="56" width="375" height="100"/>

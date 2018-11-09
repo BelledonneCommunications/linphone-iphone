@@ -24,7 +24,7 @@
 }
 
 - (void)update {
-    [_securityImage setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)]];
+    [_securityButton setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)] forState:UIControlStateNormal];
     
     _deviceLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_device_get_address(_device))];
     if (_isOneToOne) {
@@ -36,5 +36,12 @@
     self.selectionStyle =UITableViewCellSelectionStyleNone;
 }
 
+- (IBAction)onSecurityCallClick:(id)sender {
+    const LinphoneAddress *addr = linphone_participant_device_get_address(_device);
+    if (addr)
+        [LinphoneManager.instance doCall:addr];
+    else
+        LOGE(@"CallKit : No call address");
+}
 
 @end

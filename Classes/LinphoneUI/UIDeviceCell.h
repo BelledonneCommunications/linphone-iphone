@@ -10,10 +10,11 @@
 @interface UIDeviceCell : UITableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *deviceLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *securityImage;
+@property (weak, nonatomic) IBOutlet UIButton *securityButton;
 @property LinphoneParticipantDevice *device;
 @property BOOL isOneToOne;
 
+- (IBAction)onSecurityCallClick:(id)sender;
 - (id)initWithIdentifier:(NSString *)identifier;
 - (void)update;
 @end

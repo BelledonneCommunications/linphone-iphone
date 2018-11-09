@@ -11,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIConfirmationDialog">
             <connections>
+                <outlet property="authButton" destination="lWW-wB-FMR" id="C7W-JM-WFQ"/>
+                <outlet property="authView" destination="CCn-Oz-I0M" id="fSM-6k-paN"/>
                 <outlet property="cancelButton" destination="B1K-CB-3of" id="KKi-Xc-ldA"/>
                 <outlet property="confirmationButton" destination="SbQ-re-fGQ" id="yiv-a9-o8E"/>
                 <outlet property="securityImage" destination="bbo-g3-bGy" id="qZa-li-yrl"/>
@@ -36,7 +38,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Are you sure you want to delete all your selection?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="jLz-g1-cTe" userLabel="titleLabel">
-                            <rect key="frame" x="-10" y="54" width="336" height="226"/>
+                            <rect key="frame" x="-10" y="15" width="336" height="279"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="21"/>
                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -54,6 +56,28 @@
                                 <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="LvF-N2-56g"/>
                             </connections>
                         </button>
+                        <view contentMode="scaleToFill" id="CCn-Oz-I0M" userLabel="authView">
+                            <rect key="frame" x="61" y="273" width="240" height="27"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lWW-wB-FMR" userLabel="authButton">
+                                    <rect key="frame" x="26" y="2" width="17" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" image="checkbox_unchecked.png"/>
+                                    <state key="selected" image="checkbox_checked.png"/>
+                                    <connections>
+                                        <action selector="onAuthClick:" destination="-1" eventType="touchUpInside" id="9A4-ZX-cXA"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Do not ask again" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dQL-Sf-slc">
+                                    <rect key="frame" x="55" y="2" width="176" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                        </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="SbQ-re-fGQ" userLabel="confirmationButton" customClass="UIRoundBorderedButton">
                             <rect key="frame" x="169" y="308" width="143" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
@@ -75,6 +99,8 @@
         </view>
     </objects>
     <resources>
+        <image name="checkbox_checked.png" width="17" height="17"/>
+        <image name="checkbox_unchecked.png" width="17" height="17"/>
         <image name="color_C.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>
         <image name="color_H.png" width="2" height="2"/>

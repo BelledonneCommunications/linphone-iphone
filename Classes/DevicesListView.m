@@ -95,8 +95,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 {
     if (!_isOneToOne) {
        DevicesMenuEntry *entry = [_devicesMenuEntries objectAtIndex:indexPath.row];
-        return (entry->numberOfDevices + 1) * 56.0;
-        
+        return entry->numberOfDevices > 1 ? (entry->numberOfDevices + 1) * 56.0 : 56.0;
     }
     return 56.0;
 }
@@ -129,8 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         
     [ContactDisplay setDisplayNameLabel:cell.addressLabel forAddress:linphone_participant_get_address(entry->participant)];
     cell.devices = linphone_participant_get_devices(entry->participant);
-    UIImage *image = (entry->numberOfDevices != 0) ? [UIImage imageNamed:@"chevron_list_open"] : [UIImage imageNamed:@"chevron_list_close"];
-    [cell.dropMenuButton setImage:image forState:UIControlStateNormal];
+    [cell update:(entry->numberOfDevices != 0)];
 
     return cell;
 }

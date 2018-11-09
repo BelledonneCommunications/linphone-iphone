@@ -37,6 +37,7 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
 		scrollOnGrowingEnabled = TRUE;
 		_chatRoom = NULL;
 		_chatRoomCbs = NULL;
+        securityDialog = NULL;
 		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -572,10 +573,40 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEncryptedDevicesClick:(id)sender {
-    DevicesListView *view = VIEW(DevicesListView);
-    view.room = _chatRoom;
+    BOOL isOneToOne =  linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+    NSString *message = NSLocalizedString(@"Instant messages are end-to-end encrypted in secured conversations. It is possible to upgrade the security level of a conversation by authenticating participants. To do so, call the contact and follow the authentification process.",nil);
     
-    [PhoneMainView.instance popToView:view.compositeViewDescription];
+    if (isOneToOne) {
+        bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+        
+        LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+        const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
+        if (bctbx_list_size(linphone_participant_get_devices(firstParticipant)) == 1) {
+            if (securityDialog && securityDialog.notAskAgain) {
+                [LinphoneManager.instance doCall:addr];
+            } else {
+                securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCELL", nil) confirmMessage:NSLocalizedString(@"CALL", nil) onCancelClick:^() {
+                } onConfirmationClick:^() {
+                    [LinphoneManager.instance doCall:addr];
+                }];
+                securityDialog.authView.hidden = FALSE;
+            }
+            return;
+        }
+    }
+
+    if (securityDialog && securityDialog.notAskAgain) {
+        [self goToDeviceListView];
+    } else {
+        securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCELL", nil) confirmMessage:NSLocalizedString(@"OK", nil) onCancelClick:^() {
+        } onConfirmationClick:^() {
+            DevicesListView *view = VIEW(DevicesListView);
+            view.room = _chatRoom;
+            
+            [PhoneMainView.instance popToView:view.compositeViewDescription];
+        }];
+        securityDialog.authView.hidden = FALSE;
+    }
 }
 
 - (IBAction)onCallClick:(id)sender {
@@ -935,6 +966,12 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
+}
+
+- (void)goToDeviceListView {
+    DevicesListView *view = VIEW(DevicesListView);
+    view.room = _chatRoom;
+    [PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
 - (void)openFile:(NSString *) filePath

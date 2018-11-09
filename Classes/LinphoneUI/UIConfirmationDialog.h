@@ -35,8 +35,13 @@ typedef void (^UIConfirmationBlock)(void);
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *cancelButton;
 @property (weak, nonatomic) IBOutlet UIImageView *securityImage;
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *confirmationButton;
+@property (weak, nonatomic) IBOutlet UIView *authView;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UIButton *authButton;
+@property BOOL notAskAgain;
+
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onConfirmationClick:(id)sender;
+- (IBAction)onAuthClick:(id)sender;
 - (void)dismiss;
 @end

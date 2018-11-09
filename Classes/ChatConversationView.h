@@ -28,6 +28,7 @@
 #import "UIBackToCallButton.h"
 #import "Utils/HPGrowingTextView/HPGrowingTextView.h"
 #import "UIImageViewDeletable.h"
+#import "UIConfirmationDialog.h"
 
 #include "linphone/linphonecore.h"
 
@@ -37,6 +38,7 @@
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
+    UIConfirmationDialog *securityDialog;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;

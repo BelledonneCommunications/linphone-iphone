@@ -26,6 +26,24 @@
     return self;
 }
 
+- (void)update:(BOOL)listOpen {
+    if (bctbx_list_size(_devices) == 1) {
+        _securityButton.hidden = FALSE;
+        _dropMenuButton.hidden = TRUE;
+    } else {
+        UIImage *image = listOpen ? [UIImage imageNamed:@"chevron_list_open"] : [UIImage imageNamed:@"chevron_list_close"];
+        [_dropMenuButton setImage:image forState:UIControlStateNormal];
+    }
+}
+
+- (IBAction)onSecurityCallClick:(id)sender {
+    LinphoneParticipantDevice *device = (LinphoneParticipantDevice *)bctbx_list_nth_data(_devices, 0);
+    const LinphoneAddress *addr = linphone_participant_device_get_address(device);
+    if (addr)
+        [LinphoneManager.instance doCall:addr];
+    else
+        LOGE(@"CallKit : No call address");
+}
 
 #pragma mark - TableView
 
