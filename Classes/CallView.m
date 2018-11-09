@@ -48,8 +48,6 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		videoHidden = TRUE;
-        callRecording = FALSE;
-        _recordButtonOnView.hidden = TRUE;
         CGRect frame = _callPauseButton.frame;
         frame.origin.y = _recordButtonOnView.frame.origin.y;
         _callPauseButton.frame = frame;
@@ -142,6 +140,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillAppear:animated];
 	_waitView.hidden = TRUE;
 	LinphoneManager.instance.nextCallIsTransfer = NO;
+    
+    callRecording = FALSE;
+    _recordButtonOnView.hidden = TRUE;
 
 	// Update on show
 	[self hideRoutes:TRUE animated:FALSE];

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -73,14 +73,14 @@
             <connections>
                 <outlet property="view" destination="106" id="166"/>
             </connections>
-            <point key="canvasLocation" x="646" y="-13"/>
+            <point key="canvasLocation" x="1033.5999999999999" y="-11.694152923538232"/>
         </tableViewController>
         <tableViewController id="sif-q0-7oE" userLabel="conferenceCallsTableController" customClass="CallConferenceTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
                 <outlet property="view" destination="vgc-Mn-pga" id="1xm-46-qIt"/>
             </connections>
-            <point key="canvasLocation" x="126" y="-34"/>
+            <point key="canvasLocation" x="201.59999999999999" y="-30.584707646176913"/>
         </tableViewController>
         <view contentMode="scaleToFill" id="a4W-5M-X2Z" userLabel="iphone6View">
             <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
@@ -129,7 +129,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="667" height="333"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" misplaced="YES" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="110" y="158" width="443" height="28"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
@@ -154,7 +154,7 @@
                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
                                             </accessibility>
                                         </view>
-                                        <view tag="11" contentMode="scaleAspectFit" misplaced="YES" id="127" userLabel="preview">
+                                        <view tag="11" contentMode="scaleAspectFit" id="127" userLabel="preview">
                                             <rect key="frame" x="450" y="162" width="198" height="64"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -163,7 +163,7 @@
                                             <rect key="frame" x="313" y="169" width="37" height="37"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </activityIndicatorView>
-                                        <button opaque="NO" tag="13" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="160" userLabel="videoCameraSwitch" customClass="UICamSwitch">
+                                        <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="160" userLabel="videoCameraSwitch" customClass="UICamSwitch">
                                             <rect key="frame" x="23" y="140" width="52" height="52"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Switch camera"/>
@@ -181,11 +181,11 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <view contentMode="scaleToFill" misplaced="YES" id="Wj9-Fl-7Oq" userLabel="infoView">
+                                <view contentMode="scaleToFill" id="Wj9-Fl-7Oq" userLabel="infoView">
                                     <rect key="frame" x="0.0" y="90" width="667" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="Oy8-QO-Jwb" userLabel="durationLabel">
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="Oy8-QO-Jwb" userLabel="durationLabel">
                                             <rect key="frame" x="0.0" y="40" width="667" height="26"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -193,7 +193,7 @@
                                             <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="KPa-Rm-Qni" userLabel="nameLabel">
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.79999999999999982" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="KPa-Rm-Qni" userLabel="nameLabel">
                                             <rect key="frame" x="0.0" y="0.0" width="667" height="40"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -221,7 +221,7 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <button opaque="NO" tag="19" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="callPauseButton" customClass="UIPauseButton">
+                                <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="callPauseButton" customClass="UIPauseButton">
                                     <rect key="frame" x="592" y="420" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
@@ -232,13 +232,10 @@
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" id="5tg-I7-Avu" userLabel="recordButtonOnView">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" id="5tg-I7-Avu" userLabel="recordButtonOnView">
                                     <rect key="frame" x="23" y="420" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                     <state key="normal" image="recording.png"/>
-                                    <connections>
-                                        <action selector="onRecordClick:" destination="-1" eventType="touchUpInside" id="UKO-LU-9u4"/>
-                                    </connections>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -473,7 +470,7 @@
                                 </button>
                             </subviews>
                         </view>
-                        <view hidden="YES" tag="42" contentMode="scaleToFill" misplaced="YES" id="sHZ-53-Hta" userLabel="optionsView">
+                        <view hidden="YES" tag="42" contentMode="scaleToFill" id="sHZ-53-Hta" userLabel="optionsView">
                             <rect key="frame" x="502" y="-57" width="167" height="264"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
@@ -481,7 +478,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="167" height="264"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <button opaque="NO" tag="44" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="06a-kv-hpZ" userLabel="optionConferenceButton" customClass="UIIconButton">
+                                <button opaque="NO" tag="44" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="06a-kv-hpZ" userLabel="optionConferenceButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="167" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
@@ -494,7 +491,7 @@
                                         <action selector="onOptionsConferenceClick:" destination="-1" eventType="touchUpInside" id="bQP-ga-R2R"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="45" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="reb-7F-UDV" userLabel="optionsAddButton">
+                                <button opaque="NO" tag="45" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="reb-7F-UDV" userLabel="optionsAddButton">
                                     <rect key="frame" x="0.0" y="66" width="167" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add call"/>
@@ -511,7 +508,7 @@
                                         <action selector="onOptionsAddClick:" destination="-1" eventType="touchUpInside" id="diW-wF-VRO"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="46" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="S0k-bn-1bs" userLabel="optionsTransferButton">
+                                <button opaque="NO" tag="46" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="S0k-bn-1bs" userLabel="optionsTransferButton">
                                     <rect key="frame" x="0.0" y="132" width="167" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
@@ -528,7 +525,7 @@
                                         <action selector="onOptionsTransferClick:" destination="-1" eventType="touchUpInside" id="lJX-ud-MuS"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="44" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MAI-av-LMz" userLabel="recordButton" customClass="UIIconButton">
+                                <button opaque="NO" tag="44" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MAI-av-LMz" userLabel="recordButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="198" width="167" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
@@ -695,7 +692,7 @@
                                 </view>
                             </subviews>
                         </view>
-                        <view hidden="YES" tag="8" contentMode="scaleToFill" misplaced="YES" id="jSo-c5-Wtj" userLabel="waitView">
+                        <view hidden="YES" tag="8" contentMode="scaleToFill" id="jSo-c5-Wtj" userLabel="waitView">
                             <rect key="frame" x="0.0" y="-6" width="667" height="339"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -712,7 +709,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="-137.5" y="2.5"/>
+            <point key="canvasLocation" x="-220" y="2.2488755622188905"/>
         </view>
         <view contentMode="scaleToFill" id="heN-QM-XwE" userLabel="iphone6View">
             <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
@@ -786,7 +783,7 @@
                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
                                             </accessibility>
                                         </view>
-                                        <view tag="11" contentMode="scaleAspectFit" misplaced="YES" id="FcF-4P-SjT" userLabel="preview">
+                                        <view tag="11" contentMode="scaleAspectFit" id="FcF-4P-SjT" userLabel="preview">
                                             <rect key="frame" x="503" y="189" width="146" height="108"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -795,7 +792,7 @@
                                             <rect key="frame" x="311" y="169" width="37" height="37"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </activityIndicatorView>
-                                        <button opaque="NO" tag="13" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="7Mv-7u-XVs" userLabel="videoCameraSwitch" customClass="UICamSwitch">
+                                        <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="7Mv-7u-XVs" userLabel="videoCameraSwitch" customClass="UICamSwitch">
                                             <rect key="frame" x="80" y="122" width="52" height="52"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Switch camera"/>
@@ -813,11 +810,11 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <view contentMode="scaleToFill" misplaced="YES" id="tpP-l6-j02" userLabel="infoView">
+                                <view contentMode="scaleToFill" id="tpP-l6-j02" userLabel="infoView">
                                     <rect key="frame" x="0.0" y="0.0" width="667" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="2Zk-Vw-StV" userLabel="nameLabel">
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="2Zk-Vw-StV" userLabel="nameLabel">
                                             <rect key="frame" x="0.0" y="0.0" width="667" height="40"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -825,7 +822,7 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="4Jl-GT-mfD" userLabel="durationLabel">
+                                        <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000001192092896" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" id="4Jl-GT-mfD" userLabel="durationLabel">
                                             <rect key="frame" x="0.0" y="40" width="667" height="26"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -853,7 +850,7 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
-                                <button opaque="NO" tag="19" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="aOf-Ed-RL3" userLabel="callPauseButton" customClass="UIPauseButton">
+                                <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="aOf-Ed-RL3" userLabel="callPauseButton" customClass="UIPauseButton">
                                     <rect key="frame" x="524" y="199" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
@@ -864,13 +861,10 @@
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" id="LTj-Ya-DnB" userLabel="recordButtonOnView">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" id="LTj-Ya-DnB" userLabel="recordButtonOnView">
                                     <rect key="frame" x="80" y="199" width="50" height="50"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
                                     <state key="normal" image="recording.png"/>
-                                    <connections>
-                                        <action selector="onRecordClick:" destination="-1" eventType="touchUpInside" id="Ff8-sw-dY3"/>
-                                    </connections>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1105,15 +1099,15 @@
                                 </button>
                             </subviews>
                         </view>
-                        <view hidden="YES" tag="42" contentMode="scaleToFill" misplaced="YES" id="cQt-XN-qCW" userLabel="optionsView">
+                        <view hidden="YES" tag="42" contentMode="scaleToFill" id="cQt-XN-qCW" userLabel="optionsView">
                             <rect key="frame" x="582" y="6" width="85" height="264"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="43" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_F.png" id="kOK-5V-ayw" userLabel="backgroundColor">
+                                <imageView userInteractionEnabled="NO" tag="43" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="kOK-5V-ayw" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="1" width="85" height="263"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <button opaque="NO" tag="44" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="WO0-b2-8Wc" userLabel="optionConferenceButton" customClass="UIIconButton">
+                                <button opaque="NO" tag="44" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="WO0-b2-8Wc" userLabel="optionConferenceButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="85" height="70"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
@@ -1126,7 +1120,7 @@
                                         <action selector="onOptionsConferenceClick:" destination="-1" eventType="touchUpInside" id="nul-i1-fbM"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="45" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="SQU-l1-LKp" userLabel="optionsAddButton">
+                                <button opaque="NO" tag="45" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="SQU-l1-LKp" userLabel="optionsAddButton">
                                     <rect key="frame" x="0.0" y="66" width="85" height="70"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add call"/>
@@ -1143,7 +1137,7 @@
                                         <action selector="onOptionsAddClick:" destination="-1" eventType="touchUpInside" id="Ifr-Vx-Qf5"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="46" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="JmM-FS-reF" userLabel="optionsTransferButton">
+                                <button opaque="NO" tag="46" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="JmM-FS-reF" userLabel="optionsTransferButton">
                                     <rect key="frame" x="0.0" y="132" width="85" height="57"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
@@ -1160,14 +1154,14 @@
                                         <action selector="onOptionsTransferClick:" destination="-1" eventType="touchUpInside" id="iEu-GP-YvO"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="44" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="GQK-F8-oLr" userLabel="recordButton" customClass="UIIconButton">
+                                <button opaque="NO" tag="44" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="GQK-F8-oLr" userLabel="recordButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="198" width="85" height="70"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
                                     <state key="normal" image="button:GQK-F8-oLr:image">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="60CF2F77-2A6B-4515-BBD5-3EE2BF573FB1"/>
+                                    <state key="disabled" image="4532863D-780D-4A46-809A-711B24350295"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onRecordClick:" destination="-1" eventType="touchUpInside" id="IFO-tT-oog"/>
@@ -1328,7 +1322,7 @@
                                 </view>
                             </subviews>
                         </view>
-                        <view hidden="YES" tag="8" contentMode="scaleToFill" misplaced="YES" id="rd7-Wg-beG" userLabel="waitView">
+                        <view hidden="YES" tag="8" contentMode="scaleToFill" id="rd7-Wg-beG" userLabel="waitView">
                             <rect key="frame" x="0.0" y="0.0" width="667" height="333"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -1345,11 +1339,11 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="217.5" y="771.5"/>
+            <point key="canvasLocation" x="348" y="694.00299850074964"/>
         </view>
     </objects>
     <resources>
-        <image name="60CF2F77-2A6B-4515-BBD5-3EE2BF573FB1" width="33" height="33">
+        <image name="4532863D-780D-4A46-809A-711B24350295" width="33" height="33">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGVVZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QEgcI
 ExQZHh8jJCsuMTtDR0tPUlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdz
