@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *securityButton;
 @property (weak, nonatomic) IBOutlet UITableView *devicesTable;
 @property bctbx_list_t *devices;
+@property LinphoneParticipant *participant;
 
 - (IBAction)onSecurityCallClick:(id)sender;
 - (id)initWithIdentifier:(NSString *)identifier;

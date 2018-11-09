@@ -229,6 +229,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableController setChatRoom:_chatRoom];
 
 	_chatView.hidden = NO;
+    [_encryptedButton setImage:[FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(_chatRoom)] forState:UIControlStateNormal];
 	[self update];
     [self shareFile];
 }

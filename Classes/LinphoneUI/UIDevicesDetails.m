@@ -27,13 +27,17 @@
 }
 
 - (void)update:(BOOL)listOpen {
+    _devices = linphone_participant_get_devices(_participant);
+    UIImage *image = [FastAddressBook imageForSecurityLevel:linphone_participant_get_security_level(_participant)];
     if (bctbx_list_size(_devices) == 1) {
+        [_securityButton setImage:image forState:UIControlStateNormal];
         _securityButton.hidden = FALSE;
         _dropMenuButton.hidden = TRUE;
     } else {
         UIImage *image = listOpen ? [UIImage imageNamed:@"chevron_list_open"] : [UIImage imageNamed:@"chevron_list_close"];
         [_dropMenuButton setImage:image forState:UIControlStateNormal];
     }
+    [_securityImage setImage:image];
 }
 
 - (IBAction)onSecurityCallClick:(id)sender {

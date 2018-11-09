@@ -127,7 +127,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     DevicesMenuEntry *entry = [_devicesMenuEntries objectAtIndex:indexPath.row];
         
     [ContactDisplay setDisplayNameLabel:cell.addressLabel forAddress:linphone_participant_get_address(entry->participant)];
-    cell.devices = linphone_participant_get_devices(entry->participant);
+    cell.participant = entry->participant;
     [cell update:(entry->numberOfDevices != 0)];
 
     return cell;
