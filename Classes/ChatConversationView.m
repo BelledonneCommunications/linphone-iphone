@@ -575,19 +575,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onEncryptedDevicesClick:(id)sender {
     BOOL isOneToOne =  linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
     NSString *message = NSLocalizedString(@"Instant messages are end-to-end encrypted in secured conversations. It is possible to upgrade the security level of a conversation by authenticating participants. To do so, call the contact and follow the authentification process.",nil);
-    
+    BOOL notAskAgain = [LinphoneManager.instance lpConfigBoolForKey:@"confirmation_dialog_before_sas_call_not_ask_again"];
     if (isOneToOne) {
         bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
         
         LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
         const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
         if (bctbx_list_size(linphone_participant_get_devices(firstParticipant)) == 1) {
-            if (securityDialog && securityDialog.notAskAgain) {
-                [LinphoneManager.instance doCall:addr];
+            if (notAskAgain) {
+                [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
             } else {
                 securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCELL", nil) confirmMessage:NSLocalizedString(@"CALL", nil) onCancelClick:^() {
                 } onConfirmationClick:^() {
-                    [LinphoneManager.instance doCall:addr];
+                    [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
                 }];
                 securityDialog.authView.hidden = FALSE;
             }
@@ -595,15 +595,12 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
     }
 
-    if (securityDialog && securityDialog.notAskAgain) {
+    if (notAskAgain) {
         [self goToDeviceListView];
     } else {
         securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCELL", nil) confirmMessage:NSLocalizedString(@"OK", nil) onCancelClick:^() {
         } onConfirmationClick:^() {
-            DevicesListView *view = VIEW(DevicesListView);
-            view.room = _chatRoom;
-            
-            [PhoneMainView.instance popToView:view.compositeViewDescription];
+            [self goToDeviceListView];
         }];
         securityDialog.authView.hidden = FALSE;
     }

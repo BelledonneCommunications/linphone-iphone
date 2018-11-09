@@ -24,7 +24,6 @@
     
     dialog->onCancelCb = onCancel;
     dialog->onConfirmCb = onConfirm;
-    dialog.notAskAgain = FALSE;
     
     if (cancel) {
         [dialog.cancelButton setTitle:cancel forState:UIControlStateNormal];
@@ -93,9 +92,10 @@
 }
 
 - (IBAction)onAuthClick:(id)sender {
-    _notAskAgain = !_notAskAgain;
-    UIImage *image = _notAskAgain ? [UIImage imageNamed:@"checkbox_checked.png"] : [UIImage imageNamed:@"checkbox_unchecked.png"];
+    BOOL notAskAgain = ![LinphoneManager.instance lpConfigBoolForKey:@"confirmation_dialog_before_sas_call_not_ask_again"];
+    UIImage *image = notAskAgain ? [UIImage imageNamed:@"checkbox_checked.png"] : [UIImage imageNamed:@"checkbox_unchecked.png"];
     [_authButton setImage:image forState:UIControlStateNormal];
+    [LinphoneManager.instance lpConfigSetBool:notAskAgain forKey:@"confirmation_dialog_before_sas_call_not_ask_again"];
 }
 
 - (void)dismiss {

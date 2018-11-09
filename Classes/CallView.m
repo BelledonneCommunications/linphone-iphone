@@ -232,6 +232,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// reseting speaker button because no more call
 		_speakerButton.selected = FALSE;
 	}
+    
+    NSString *address = [LinphoneManager.instance lpConfigStringForKey:@"sas_dialog_denied"];
+    if (address) {
+        UIConfirmationDialog *securityDialog = [UIConfirmationDialog ShowWithMessage:NSLocalizedString(@"Trust has been denied. Make a call to start the authentication process again.", nil)
+         cancelMessage:NSLocalizedString(@"CANCELL", nil)
+         confirmMessage:NSLocalizedString(@"CALL", nil)
+         onCancelClick:^() {
+         }
+         onConfirmationClick:^() {
+             LinphoneAddress *addr = linphone_address_new(address.UTF8String);
+             [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
+             linphone_address_unref(addr);
+         } ];
+        [securityDialog.securityImage setImage:[UIImage imageNamed:@"security_alert_indicator.png"]];
+        securityDialog.securityImage.hidden = FALSE;
+        [LinphoneManager.instance lpConfigSetString:nil forKey:@"sas_dialog_denied"];
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {

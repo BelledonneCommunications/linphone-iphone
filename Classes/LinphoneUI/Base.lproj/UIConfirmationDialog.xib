@@ -56,7 +56,7 @@
                                 <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="LvF-N2-56g"/>
                             </connections>
                         </button>
-                        <view contentMode="scaleToFill" id="CCn-Oz-I0M" userLabel="authView">
+                        <view hidden="YES" contentMode="scaleToFill" id="CCn-Oz-I0M" userLabel="authView">
                             <rect key="frame" x="61" y="273" width="240" height="27"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>

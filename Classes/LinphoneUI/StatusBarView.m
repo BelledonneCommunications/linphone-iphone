@@ -330,7 +330,7 @@
 					myCode = [code substringFromIndex:2];
 				}
 				NSString *message =
-					[NSString stringWithFormat:NSLocalizedString(@"Confirmation security\n\n"
+					[NSString stringWithFormat:NSLocalizedString(@"\nConfirmation security\n\n"
                                                                  @"Say: %@\n"
                                                                  @"Confirm that your interlocutor\n"
 																 @"says: %@",
@@ -381,12 +381,14 @@
 								  linphone_call_set_authentication_token_verified(call, NO);
 							  }
 							  weakSelf->securityDialog = nil;
+                              [LinphoneManager.instance lpConfigSetString:[NSString stringWithUTF8String:linphone_call_get_remote_address_as_string(call)] forKey:@"sas_dialog_denied"];
 							}
 							onConfirmationClick:^() {
 							  if (linphone_core_get_current_call(LC) == call) {
 								  linphone_call_set_authentication_token_verified(call, YES);
 							  }
 							  weakSelf->securityDialog = nil;
+                                [LinphoneManager.instance lpConfigSetString:nil forKey:@"sas_dialog_denied"];
 							} ];
                         
                         securityDialog.securityImage.hidden = FALSE;

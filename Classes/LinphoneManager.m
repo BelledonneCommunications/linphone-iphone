@@ -2717,54 +2717,60 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (BOOL)doCall:(const LinphoneAddress *)iaddr {
-	LinphoneAddress *addr = linphone_address_clone(iaddr);
-	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
+    return [self doCallWithSas:iaddr isSas:false];
+}
 
-	// Finally we can make the call
-	LinphoneCallParams *lcallParams = linphone_core_create_call_params(theLinphoneCore, NULL);
-	if ([self lpConfigBoolForKey:@"edge_opt_preference"] && (self.network == network_2g)) {
-		LOGI(@"Enabling low bandwidth mode");
-		linphone_call_params_enable_low_bandwidth(lcallParams, YES);
-	}
-
-	if (displayName != nil) {
-		linphone_address_set_display_name(addr, displayName.UTF8String);
-	}
-	if ([LinphoneManager.instance lpConfigBoolForKey:@"override_domain_with_default_one"]) {
-		linphone_address_set_domain(
-			addr, [[LinphoneManager.instance lpConfigStringForKey:@"domain" inSection:@"assistant"] UTF8String]);
-	}
-
-	LinphoneCall *call;
-	if (LinphoneManager.instance.nextCallIsTransfer) {
-		char *caddr = linphone_address_as_string(addr);
-		call = linphone_core_get_current_call(theLinphoneCore);
-		linphone_call_transfer(call, caddr);
-		LinphoneManager.instance.nextCallIsTransfer = NO;
-		ms_free(caddr);
-	} else {
+- (BOOL)doCallWithSas:(const LinphoneAddress *)iaddr isSas:(BOOL)isSas {
+    LinphoneAddress *addr = linphone_address_clone(iaddr);
+    NSString *displayName = [FastAddressBook displayNameForAddress:addr];
+    
+    // Finally we can make the call
+    LinphoneCallParams *lcallParams = linphone_core_create_call_params(theLinphoneCore, NULL);
+    if ([self lpConfigBoolForKey:@"edge_opt_preference"] && (self.network == network_2g)) {
+        LOGI(@"Enabling low bandwidth mode");
+        linphone_call_params_enable_low_bandwidth(lcallParams, YES);
+    }
+    
+    if (displayName != nil) {
+        linphone_address_set_display_name(addr, displayName.UTF8String);
+    }
+    if ([LinphoneManager.instance lpConfigBoolForKey:@"override_domain_with_default_one"]) {
+        linphone_address_set_domain(
+                                    addr, [[LinphoneManager.instance lpConfigStringForKey:@"domain" inSection:@"assistant"] UTF8String]);
+    }
+    
+    LinphoneCall *call;
+    if (LinphoneManager.instance.nextCallIsTransfer) {
+        char *caddr = linphone_address_as_string(addr);
+        call = linphone_core_get_current_call(theLinphoneCore);
+        linphone_call_transfer(call, caddr);
+        LinphoneManager.instance.nextCallIsTransfer = NO;
+        ms_free(caddr);
+    } else {
         //We set the record file name here because we can't do it after the call is started.
         NSString *writablePath = [LinphoneUtils recordingFilePathFromCall:addr];
         LOGD(@"record file path: %@\n", writablePath);
         linphone_call_params_set_record_file(lcallParams, [writablePath cStringUsingEncoding:NSUTF8StringEncoding]);
-		call = linphone_core_invite_address_with_params(theLinphoneCore, addr, lcallParams);
-		if (call) {
-			// The LinphoneCallAppData object should be set on call creation with callback
-			// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
-			// We are NOT responsible for creating the AppData.
-			LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-			if (data == nil) {
-				LOGE(@"New call instanciated but app data was not set. Expect it to crash.");
-				/* will be used later to notify user if video was not activated because of the linphone core*/
-			} else {
-				data->videoRequested = linphone_call_params_video_enabled(lcallParams);
-			}
-		}
-	}
-	linphone_address_destroy(addr);
-	linphone_call_params_destroy(lcallParams);
-
-	return TRUE;
+        if (isSas)
+            linphone_call_params_set_media_encryption(lcallParams, LinphoneMediaEncryptionZRTP);
+        call = linphone_core_invite_address_with_params(theLinphoneCore, addr, lcallParams);
+        if (call) {
+            // The LinphoneCallAppData object should be set on call creation with callback
+            // - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
+            // We are NOT responsible for creating the AppData.
+            LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+            if (data == nil) {
+                LOGE(@"New call instanciated but app data was not set. Expect it to crash.");
+                /* will be used later to notify user if video was not activated because of the linphone core*/
+            } else {
+                data->videoRequested = linphone_call_params_video_enabled(lcallParams);
+            }
+        }
+    }
+    linphone_address_destroy(addr);
+    linphone_call_params_destroy(lcallParams);
+    
+    return TRUE;
 }
 
 #pragma mark - Property Functions
