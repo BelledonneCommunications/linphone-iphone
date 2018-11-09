@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,6 @@
                 <outlet property="editTextfield" destination="dTn-Hc-bGM" id="bkN-xg-S9D"/>
                 <outlet property="editView" destination="rAa-qu-PDc" id="cGz-D2-GiI"/>
                 <outlet property="inviteButton" destination="lgb-5W-T0c" id="iOl-Fl-AXH"/>
-                <outlet property="inviteLabel" destination="WUB-zQ-6Im" id="p42-Hd-EUA"/>
                 <outlet property="linphoneImage" destination="ZaI-29-AOK" id="dY1-vO-spk"/>
             </connections>
         </placeholder>
@@ -86,30 +85,25 @@
                                 <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="tec-tH-uij"/>
                             </connections>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="frB-ep-LWi" userLabel="addressLabel">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="frB-ep-LWi" userLabel="addressLabel">
                             <rect key="frame" x="26" y="0.0" width="323" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" image="linphone_user.png" id="ZaI-29-AOK" userLabel="linphoneImage">
-                            <rect key="frame" x="342" y="51" width="25" height="25"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Invite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="WUB-zQ-6Im" userLabel="inviteLabel">
-                            <rect key="frame" x="264" y="14" width="39" height="20"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="linphone_user.png" id="ZaI-29-AOK" userLabel="linphoneImage">
+                            <rect key="frame" x="329" y="18" width="17" height="17"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                            <color key="textColor" red="1" green="0.36911615672857145" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
-                            <rect key="frame" x="309" y="14" width="47" height="20"/>
+                        </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
+                            <rect key="frame" x="314" y="14" width="47" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Invite"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <state key="normal" image="invite_linphone.png"/>
+                            <state key="normal" title="Invite">
+                                <color key="titleColor" red="1" green="0.36738281249999999" blue="0.0" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                            </state>
                             <connections>
                                 <action selector="onSMSInviteClick:" destination="-1" eventType="touchUpInside" id="E8o-h2-mml"/>
                             </connections>
@@ -120,7 +114,7 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="338.5" y="43"/>
+            <point key="canvasLocation" x="541.60000000000002" y="38.680659670164921"/>
         </view>
     </objects>
     <resources>
@@ -132,7 +126,6 @@
         <image name="chat_start_body_over.png" width="51" height="51"/>
         <image name="delete_field_default.png" width="27" height="27"/>
         <image name="delete_field_over.png" width="27" height="27"/>
-        <image name="invite_linphone.png" width="69" height="30"/>
         <image name="linphone_user.png" width="26" height="26"/>
     </resources>
 </document>
