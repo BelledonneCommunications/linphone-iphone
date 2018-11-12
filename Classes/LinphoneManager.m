@@ -793,6 +793,16 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
                 CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
                 [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
 																			  completion:^(NSError *err){}];
+				
+				LOGI(@"CallKit - clearing CK as call ended on uuid %@",uuid);
+				[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:uuid connectedAtDate:[NSDate date]];
+				[self.providerDelegate.uuids removeObjectForKey:callId2];
+				[self.providerDelegate.calls removeObjectForKey:uuid];
+				[self.providerDelegate.provider reportCallWithUUID:uuid
+													   endedAtDate:[NSDate date]
+															reason:(state == LinphoneCallError ? CXCallEndedReasonFailed : CXCallEndedReasonRemoteEnded)];
+				
+				
 			} else { // Can happen when Call-ID changes (Replaces header)
 				if (linphone_core_get_calls_nb(LC) ==0) { // Need to clear all CK calls
 					for (NSUUID *myUuid in self.providerDelegate.calls) {
