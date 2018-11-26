@@ -173,20 +173,14 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
             [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
             NSString *key =  @"localfile" ;
             NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
-        
+            ChatConversationView *view = VIEW(ChatConversationView);
             [LinphoneManager setValueInMessageAppData:@"saving..." forKey:key inMessage:message];
            
             //write file to path
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
-                //NSString *filePath = [LinphoneManager documentFile:name];
-                [[NSFileManager defaultManager] createFileAtPath:filePath
-                                                    contents:thiz.data
-                                                  attributes:nil];
-        
+                [view writeFileInICloud:thiz.data fileURL:[view getICloudFileUrl:name]];
                 [LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
-                [LinphoneManager setValueInMessageAppData:filePath forKey:@"cachedfile" inMessage:message];
-                     
+                
                 [NSNotificationCenter.defaultCenter
                  postNotificationName:kLinphoneFileTransferRecvUpdate
                  object:thiz
@@ -300,6 +294,10 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {
+    // we will write local files into ours folder of icloud
+    ChatConversationView *view = VIEW(ChatConversationView);
+    [view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]];
+    
     [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
 }
 

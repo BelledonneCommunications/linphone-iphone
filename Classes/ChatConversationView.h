@@ -85,8 +85,11 @@
 - (IBAction)onEditionChangeClick:(id)sender;
 - (IBAction)onEncryptedDevicesClick:(id)sender;
 - (void)update;
-- (void)openFile:(NSString *) filePath;
+- (void)openFileWithURL:(NSURL *)url;
 - (void)clearMessageView;
+
 - (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view inChat:(BOOL)inChat;
+- (NSURL *)getICloudFileUrl:(NSString *)name;
+- (void)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 
 @end

@@ -262,36 +262,6 @@
 	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 }
 
-- (void)getIcloudFiles {
-    _documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data"]
-                                                                             inMode:UIDocumentPickerModeImport];
-    _documentPicker.delegate = self;
- 
-    _documentPicker.modalPresentationStyle = UIModalPresentationOverCurrentContext ;
-    ChatConversationView *view = VIEW(ChatConversationView);
-    [view presentViewController:_documentPicker animated:YES completion:nil];
- }
- 
- - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-     NSFileCoordinator *fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
-     [fileCoordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingWithoutChanges error:nil byAccessor:^(NSURL * _Nonnull newURL) {
-         
-         NSString *fileName = [newURL lastPathComponent];
-         NSData *data = [NSData dataWithContentsOfURL:newURL];
-         NSString *option = [LinphoneManager getMessageAppDataForKey:@"icloudFileOption" inMessage:self.message];
-         
-         if ([option isEqualToString:@"onResend"])
-             [_chatRoomDelegate startFileUpload:data withName:fileName];
-         else if ([option isEqualToString:@"onFileClick"]) {
-             ChatConversationView *view = VIEW(ChatConversationView);
-             NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
-             [[NSFileManager defaultManager] createFileAtPath:filePath contents:data attributes:nil];
-             [view openFile:filePath];
-     }
-   }];
-}
-
-
 #pragma mark - Action Functions
 
 - (void)onDelete {
@@ -379,11 +349,9 @@
             }];
 
         } else if (localFile) {
-            [LinphoneManager setValueInMessageAppData:@"onResend" forKey:@"icloudFileOption" inMessage:_message];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
-                           ^(void) {
-                               [self getIcloudFiles];
-                           });
+            ChatConversationView *view = VIEW(ChatConversationView);
+            NSData *data = [NSData dataWithContentsOfURL:[view getICloudFileUrl:localFile]];
+            [_chatRoomDelegate startFileUpload:data withName:localFile];
         }
 	} else {
         [self onDelete];

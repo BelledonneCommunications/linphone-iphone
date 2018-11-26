@@ -997,17 +997,59 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
     [PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
-- (void)openFile:(NSString *) filePath
+- (void)openFileWithURL:(NSURL *)url
 {
     // Open the controller.
-    _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
+    _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
     _documentInteractionController.delegate = self;
     
     BOOL canOpen =  [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
     //NO app can open the file
     if (canOpen == NO) {
-        [[[UIAlertView alloc] initWithTitle:@"Info" message:@"There is no app found to open it" delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil] show];
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"There is no app to open it.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
         
+    }
+}
+
+- (NSURL *)getICloudFileUrl:(NSString *)name {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *icloudPath = [[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"];
+    
+    if (icloudPath) {
+        if (![fileManager fileExistsAtPath:icloudPath.path isDirectory:nil]) {
+            LOGI(@"Create directory");
+            [fileManager createDirectoryAtURL:icloudPath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        
+        return [icloudPath URLByAppendingPathComponent:name];
+    }
+    
+    return nil;
+}
+
+- (void)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"]) {
+        //notify : set configuration to use icloud
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"ICloud Drive is unavailable.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
+        return;
+    }
+    
+    if ([fileManager isUbiquitousItemAtURL:fileURL]) {
+        // if it exists, replace the file
+        [data writeToURL:fileURL atomically:TRUE];
+    } else {
+        // get the url of localfile
+        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileURL.lastPathComponent];
+        NSURL *localURL = nil;
+        if ([fileManager createFileAtPath:filePath contents:data attributes:nil]) {
+            localURL = [NSURL fileURLWithPath:filePath];
+        }
+        
+        NSError *error;
+        if (![[NSFileManager defaultManager] setUbiquitous:YES itemAtURL:localURL destinationURL:fileURL error:&error]) {
+            LOGE(@"ICloud file error : %@", error);
+        }
     }
 }
 

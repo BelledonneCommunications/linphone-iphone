@@ -51,7 +51,6 @@
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
-- (void)getIcloudFiles;
 
 - (void)onDelete;
 - (void)onResend;

@@ -271,18 +271,8 @@
 
 - (IBAction)onFileClick:(id)sender {
     ChatConversationView *view = VIEW(ChatConversationView);
-    NSString *cachedFile = [LinphoneManager getMessageAppDataForKey:@"cachedfile" inMessage:self.message];
-    if (cachedFile) {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        if ([fileManager fileExistsAtPath:cachedFile]) {
-            [view openFile:cachedFile];
-        } else {
-            [self fileErrorBlock];
-        }        
-    } else {
-        [LinphoneManager setValueInMessageAppData:@"onFileClick" forKey:@"icloudFileOption" inMessage:self.message];
-        [super getIcloudFiles];
-    }
+    NSString *name = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+    [view openFileWithURL:[view getICloudFileUrl:name]];
 }
 
 
