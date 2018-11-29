@@ -58,7 +58,7 @@
             return [UIImage imageNamed:@"security_2_indicator.png.png"];
             
         default:
-            return [UIImage imageNamed:@"security_toogle_icon_grey.png"];
+            return nil;
     }
 }
 
