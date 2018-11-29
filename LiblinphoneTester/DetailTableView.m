@@ -215,8 +215,9 @@ static NSString *const kAllTestsName = @"Run All tests";
 			  LOGI(@"Test Passed!");
 			  test.state = TestStatePassed;
 		  }
-		  [self.tableView scrollToRowAtIndexPath:index atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+		  
 		  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+              [self.tableView scrollToRowAtIndexPath:index atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
 			[self updateItem:paths withAnimation:TRUE];
 		  });
 	  }
