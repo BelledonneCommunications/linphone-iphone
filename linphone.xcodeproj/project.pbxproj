@@ -123,9 +123,7 @@
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
 		61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		61AEBEA321906AFC00F35E7F /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
-		61AEBEAA21906B0700F35E7F /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
-		61AEBEAB21906B0700F35E7F /* mediastreamer2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		61AEBEA321906AFC00F35E7F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEBC2191990A00F35E7F /* DevicesListView.m */; };
 		61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEBE2191991F00F35E7F /* DevicesListView.xib */; };
 		61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */; };
@@ -157,12 +155,10 @@
 		63058A3F1B4E823000EFAE36 /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */; };
 		63058A4F1B4E835200EFAE36 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630589FD1B4E816A00EFAE36 /* libKIF.a */; };
 		63058ACF1B4E922500EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
-		63058AD01B4E922500EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
 		63058AD11B4E922500EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
 		63058AD41B4E922500EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
 		63058AD51B4E922500EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
 		63058ADA1B4E937300EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
-		63058ADB1B4E937300EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
 		63058ADC1B4E937300EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
 		63058ADF1B4E937300EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
 		63058AE01B4E937300EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
@@ -698,12 +694,7 @@
 		8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
 		8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D981E40E0CC00728EF3 /* lime_ko.png */; };
 		8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */; };
-		8C3EA9FB1EB8CEE600B732B6 /* bctoolbox-tester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; };
-		8C3EA9FC1EB8CEE600B732B6 /* bctoolbox-tester.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA1A1EB8D9C300B732B6 /* linphonetester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; };
-		8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA1C1EB8D9DB00B732B6 /* linphonetester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; };
-		8C3EAA1D1EB8DBD000B732B6 /* linphonetester.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C56289F20236C25007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8C92ABE81FA773190006FB5D /* UIChatNotifiedEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */; };
@@ -969,28 +960,6 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8CDC89111EAF89B7006B5652 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				8C3EAA1D1EB8DBD000B732B6 /* linphonetester.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8CDC89151EAF8CE2006B5652 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */,
-				8C3EA9FC1EB8CEE600B732B6 /* bctoolbox-tester.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1194,12 +1163,11 @@
 		63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+DTRuntime.m"; sourceTree = "<group>"; };
 		63058A401B4E82C400EFAE36 /* LinphoneTesterTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LinphoneTesterTests-Info.plist"; sourceTree = "<group>"; };
 		63058A411B4E82C400EFAE36 /* LinphoneTesterTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LinphoneTesterTests-Prefix.pch"; sourceTree = "<group>"; };
-		63058AC81B4E922500EFAE36 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = ../submodules/linphone/tester/certificates; sourceTree = "<group>"; };
-		63058AC91B4E922500EFAE36 /* flexisip */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flexisip; path = ../submodules/linphone/tester/flexisip; sourceTree = "<group>"; };
-		63058ACA1B4E922500EFAE36 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../submodules/linphone/tester/images; sourceTree = "<group>"; };
-		63058ACD1B4E922500EFAE36 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = ../submodules/linphone/tester/rcfiles; sourceTree = "<group>"; };
-		63058ACE1B4E922500EFAE36 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../submodules/linphone/tester/sounds; sourceTree = "<group>"; };
-		63058AE11B4E93A100EFAE36 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
+		63058AC81B4E922500EFAE36 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = "../Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/certificates"; sourceTree = "<group>"; };
+		63058ACA1B4E922500EFAE36 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = "../Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/images"; sourceTree = "<group>"; };
+		63058ACD1B4E922500EFAE36 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = "../Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/rcfiles"; sourceTree = "<group>"; };
+		63058ACE1B4E922500EFAE36 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = "../Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/sounds"; sourceTree = "<group>"; };
+		63058AE11B4E93A100EFAE36 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = "Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/tester_hosts"; sourceTree = SOURCE_ROOT; };
 		63058AE41B4E952E00EFAE36 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = "../liblinphone-sdk/apple-darwin/share"; sourceTree = "<group>"; };
 		6306440B1BECB08500134C72 /* FirstLoginView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginView.h; sourceTree = "<group>"; };
 		6306440C1BECB08500134C72 /* FirstLoginView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstLoginView.m; sourceTree = "<group>"; };
@@ -1668,7 +1636,7 @@
 		6352A5721BE0D4B800594C1C /* CallSideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallSideMenuView.h; sourceTree = "<group>"; };
 		6352A5731BE0D4B800594C1C /* CallSideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallSideMenuView.m; sourceTree = "<group>"; };
 		6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallSideMenuView.xib; sourceTree = "<group>"; };
-		635598811C96AFFA006ED99A /* vcards */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vcards; path = ../submodules/linphone/tester/vcards; sourceTree = "<group>"; };
+		635598811C96AFFA006ED99A /* vcards */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vcards; path = "../Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/vcards"; sourceTree = "<group>"; };
 		635775231B6673EC00C8B704 /* HistoryDetailsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableView.h; sourceTree = "<group>"; };
 		635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableView.m; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
@@ -1791,7 +1759,7 @@
 		8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lime_ko@2x.png"; sourceTree = "<group>"; };
 		8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphonetester.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphonetester.framework"; sourceTree = "<group>"; };
 		8C435FC320BD41C6004CCA25 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8C56289120236AA6007A8ECC /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = submodules/linphone/tester/db; sourceTree = SOURCE_ROOT; };
+		8C56289120236AA6007A8ECC /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = "Pods/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester/db"; sourceTree = SOURCE_ROOT; };
 		8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "bctoolbox-tester.framework"; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework"; sourceTree = "<group>"; };
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
@@ -2106,7 +2074,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61AEBEA321906AFC00F35E7F /* mediastreamer2.framework in Frameworks */,
+				61AEBEA321906AFC00F35E7F /* (null) in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
@@ -2199,14 +2167,12 @@
 				F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */,
 				F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */,
 				F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */,
-				8C3EA9FB1EB8CEE600B732B6 /* bctoolbox-tester.framework in Frameworks */,
 				F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */,
 				F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */,
 				F0BB8C35193624C800974404 /* libresolv.9.dylib in Frameworks */,
 				F0BB8C331936247C00974404 /* libsqlite3.dylib in Frameworks */,
 				F0BB8C301936246600974404 /* AudioToolbox.framework in Frameworks */,
 				F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */,
-				8C3EAA1A1EB8D9C300B732B6 /* linphonetester.framework in Frameworks */,
 				F0BB8BD81936208100974404 /* UIKit.framework in Frameworks */,
 				F0BB8BD61936208100974404 /* Foundation.framework in Frameworks */,
 				64092B369D63DBEAA8C824CE /* Pods_liblinphoneTester.framework in Frameworks */,
@@ -2535,18 +2501,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				61F1996E20C6B1D5006B069A /* AVKit.framework */,
-				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
-				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
-				249660941FD6A359001D55AA /* Photos.framework */,
-				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
-				8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */,
-				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,
-				8C2595DE1DEDCC8E007A6424 /* CallKit.framework */,
-				8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */,
-				8CA2004B1D8158440095F859 /* PushKit.framework */,
-				570742661D5A63DB004B9C84 /* StoreKit.framework */,
-				63CE583F1C85EBF400304800 /* VideoToolbox.framework */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
 				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,
@@ -2555,9 +2509,6 @@
 				224567C1107B968500F10948 /* AVFoundation.framework */,
 				61F1996E20C6B1D5006B069A /* AVKit.framework */,
 				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,
-				8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */,
-				8C435F8B20BBF862004CCA25 /* belcard.framework */,
-				8C435FA520BC34DA004CCA25 /* belr.framework */,
 				8C2595DE1DEDCC8E007A6424 /* CallKit.framework */,
 				228697C311AC29B800E9E0CA /* CFNetwork.framework */,
 				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
@@ -2585,23 +2536,12 @@
 				152F22351B15E889008C0621 /* libxml2.dylib */,
 				63EEE4091BBA9B110087D3AF /* libxml2.tbd */,
 				F05BAA611A5D594E00411815 /* libz.dylib */,
-				8C5BCEC81EB3859200A9AAEF /* linphone.framework */,
 				8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */,
 				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
-				8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */,
-				8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */,
-				8C601FD220B462B0004FF95C /* mediastreamer2.framework */,
 				D37DC7171594AF3400B2A5EB /* MessageUI.framework */,
 				226EF06B15FA256B005865C7 /* MobileCoreServices.framework */,
-				8C3EA9E01EB892D600B732B6 /* msamr.framework */,
-				8C3EA9E11EB892D600B732B6 /* mscodec2.framework */,
-				8C3EA9E21EB892D600B732B6 /* msopenh264.framework */,
-				8C5BCECB1EB3859200A9AAEF /* mssilk.framework */,
-				8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */,
-				8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */,
 				5EF0C33820C806A5005081B0 /* NotificationCenter.framework */,
 				70E542F213E147E3002BA2C0 /* OpenGLES.framework */,
-				8C5BCECD1EB3859200A9AAEF /* ortp.framework */,
 				249660941FD6A359001D55AA /* Photos.framework */,
 				8CA2004B1D8158440095F859 /* PushKit.framework */,
 				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
@@ -2756,7 +2696,6 @@
 				63058AE41B4E952E00EFAE36 /* share */,
 				63058AE11B4E93A100EFAE36 /* tester_hosts */,
 				63058AC81B4E922500EFAE36 /* certificates */,
-				63058AC91B4E922500EFAE36 /* flexisip */,
 				63058ACA1B4E922500EFAE36 /* images */,
 				63058ACD1B4E922500EFAE36 /* rcfiles */,
 				63058ACE1B4E922500EFAE36 /* sounds */,
@@ -3542,6 +3481,7 @@
 				8CB438A61EE6A65D0006F944 /* ShellScript */,
 				5EF0C35020C806A5005081B0 /* Embed App Extensions */,
 				4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */,
+				0E70C23C2B84BABCF0D5BF2E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -3652,11 +3592,11 @@
 			buildConfigurationList = F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "liblinphoneTester" */;
 			buildPhases = (
 				9B9A5E3BD753D3A8A6E82117 /* [CP] Check Pods Manifest.lock */,
-				8CDC89151EAF8CE2006B5652 /* CopyFiles */,
 				F0BB8BD11936208100974404 /* Sources */,
 				F0BB8BD21936208100974404 /* Frameworks */,
 				F0BB8BD31936208100974404 /* Resources */,
-				8CDC89111EAF89B7006B5652 /* Embed Frameworks */,
+				A68C4E88E4EC059C04D389FE /* [CP] Embed Pods Frameworks */,
+				45CB2A589D4FC8AE7145784A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4491,7 +4431,6 @@
 				63D8038D1C96E74100336B6F /* vcards in Resources */,
 				63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */,
 				63058ACF1B4E922500EFAE36 /* certificates in Resources */,
-				63058AD01B4E922500EFAE36 /* flexisip in Resources */,
 				63058AD11B4E922500EFAE36 /* images in Resources */,
 				63058AD41B4E922500EFAE36 /* rcfiles in Resources */,
 				63058AD51B4E922500EFAE36 /* sounds in Resources */,
@@ -4507,7 +4446,6 @@
 				635598821C96AFFA006ED99A /* vcards in Resources */,
 				63058ADA1B4E937300EFAE36 /* certificates in Resources */,
 				63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */,
-				63058ADB1B4E937300EFAE36 /* flexisip in Resources */,
 				63058ADC1B4E937300EFAE36 /* images in Resources */,
 				63058ADF1B4E937300EFAE36 /* rcfiles in Resources */,
 				63058AE01B4E937300EFAE36 /* sounds in Resources */,
@@ -4534,6 +4472,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0E70C23C2B84BABCF0D5BF2E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-resources.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		20EEEF6D60A7B77C2EFF85DB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4570,6 +4526,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		45CB2A589D4FC8AE7145784A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4577,9 +4551,11 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
@@ -4593,9 +4569,11 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
@@ -4727,6 +4705,52 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A68C4E88E4EC059C04D389FE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mscodec2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msopenh264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mssilk.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F43E063274A630F02AB2AAEC /* [CP] Check Pods Manifest.lock */ = {
