@@ -31,31 +31,22 @@
 	[super awakeFromNib];
 }
 
-- (void)setupLogging {
-	[Log enableLogs:ORTP_DEBUG];
-	linphone_core_enable_log_collection(YES);
-}
-
-void tester_logs_handler(int level, const char *fmt, va_list args) {
-	linphone_iphone_log_handler("Tester", level, fmt, args);
-}
-
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 	self.detailViewController =
 		(DetailTableView *)[[self.splitViewController.viewControllers lastObject] topViewController];
 
-	//[self setupLogging];
+	liblinphone_tester_init(NULL);
+    [Log enableLogs:ORTP_DEBUG];
 	liblinphone_tester_keep_accounts(TRUE);
 
 	bundlePath = [[NSBundle mainBundle] bundlePath];
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	writablePath = [paths objectAtIndex:0];
-	liblinphone_tester_init(NULL);
+	
 	// bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
 	// liblinphone_tester_add_suites();
-	linphone_core_set_log_level_mask((OrtpLogLevel)(ORTP_MESSAGE | ORTP_WARNING | ORTP_ERROR | ORTP_FATAL));
 
 	bc_tester_set_resource_dir_prefix([bundlePath UTF8String]);
 	bc_tester_set_writable_dir_prefix([writablePath UTF8String]);
@@ -63,16 +54,7 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Writable path: %@", writablePath);
 
-#if TARGET_OS_SIMULATOR
-	char *xmlFile = bc_tester_file("LibLinphoneIOS.xml");
-	char *args[] = {"--xml-file", xmlFile};
-	bc_tester_parse_args(2, args, 0);
-
-	char *logFile = bc_tester_file("LibLinphoneIOS.txt");
-	liblinphone_tester_set_log_file(logFile);
-#endif
-
-	liblinphonetester_ipv6 = true;
+	//liblinphonetester_ipv6 = true;
 
 	int count = bc_tester_nb_suites();
 	_objects = [[NSMutableArray alloc] initWithCapacity:count + 1];
