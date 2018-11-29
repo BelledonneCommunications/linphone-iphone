@@ -12,11 +12,11 @@
 #import "NSObject+DTRuntime.h"
 #import "Utils.h"
 #import "Log.h"
-
-@interface LinphoneTester_Tests : XCTestCase
+extern bool_t liblinphonetester_ipv6;
+@interface LinphoneTesterBase : XCTestCase
 @end
 
-@implementation LinphoneTester_Tests
+@implementation LinphoneTesterBase
 
 + (NSString *)safetyTestString:(NSString *)testString {
 	NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
@@ -26,41 +26,324 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 }
 
 + (void)initialize {
-	// turn off ALL logs because xcodebuild has problems with it
-	// linphone_core_enable_logs_with_cb(dummy_logger);
-	bc_tester_start(NULL);
-	bc_tester_uninit();
-	/*for (int i = 0; i < bc_tester_nb_suites(); i++) {
-		const char *suite = bc_tester_suite_name(i);
-		LOGE(@"suite = %s", suite);
-		int test_count = bc_tester_nb_tests(suite);
-		for (int k = 0; k < test_count; k++) {
-			const char *test = bc_tester_test_name(suite, k);
-			LOGE(@"\ttest = %s", test);
-			if (suite) {
-				NSString *sSuite = [NSString stringWithUTF8String:suite];
-				if (test) {
-					NSString *sTest = [NSString stringWithUTF8String:test];
-
-					// prepend "test_" so that it gets found by introspection
-					NSString *safesTest = [self safetyTestString:sTest];
-					NSString *safesSuite = [self safetyTestString:sSuite];
-					NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
-
-					[LinphoneTester_Tests addInstanceMethodWithSelectorName:selectorName
-																	  block:^(LinphoneTester_Tests *myself) {
-																		[myself testForSuite:sSuite andTest:sTest];
-																	  }];
-				}
-			}
-		}
-	}*/
 }
 
-- (void)testForSuite:(NSString *)suite andTest:(NSString *)test {
++ (void)testForSuite:(NSString *)sSuite {
+    LOGI(@"Launching tests from suite %@", sSuite);
+    // currently, ipv6 is not supported
+    liblinphonetester_ipv6=FALSE;
+    const char *suite = sSuite.UTF8String;
+    int test_count = bc_tester_nb_tests(suite);
+    for (int k = 0; k < test_count; k++) {
+        const char *test = bc_tester_test_name(suite, k);
+        if (test) {
+            NSString *sTest = [NSString stringWithUTF8String:test];
+            
+            // prepend "test_" so that it gets found by introspection
+            NSString *safesTest = [LinphoneTesterBase safetyTestString:sTest];
+            NSString *safesSuite = [LinphoneTesterBase safetyTestString:sSuite];
+            NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
+                                                                  
+            [LinphoneTesterBase addInstanceMethodWithSelectorName:selectorName
+                                    block:^(LinphoneTesterBase *myself) {
+                                    [myself testForSuiteTest:sSuite andTest:sTest];
+                                    }];
+          }
+    }
+}
+
+- (void)testForSuiteTest:(NSString *)suite andTest:(NSString *)test {
 	LOGI(@"Launching test %@ from suite %@", test, suite);
 	XCTAssertFalse(bc_tester_run_tests(suite.UTF8String, test.UTF8String, NULL), @"Suite '%@' / Test '%@' failed",
 				   suite, test);
 }
 
+@end
+
+@interface SetupTests : LinphoneTesterBase
+@end
+
+@implementation SetupTests
++ (void)initialize {
+    [self testForSuite:@"Setup"];
+}
+@end
+
+@interface TunnelTests : LinphoneTesterBase
+@end
+
+@implementation TunnelTests
++ (void)initialize {
+    [self testForSuite:@"Tunnel"];
+}
+@end
+
+@interface OfferAnswerTests : LinphoneTesterBase
+@end
+
+@implementation OfferAnswerTests
++ (void)initialize {
+    [self testForSuite:@"Offer-answer"];
+}
+@end
+
+@interface PresenceTests : LinphoneTesterBase
+@end
+
+@implementation PresenceTests
++ (void)initialize {
+    [self testForSuite:@"Presence"];
+}
+@end
+
+@interface AccountCreatorTests : LinphoneTesterBase
+@end
+
+@implementation AccountCreatorTests
++ (void)initialize {
+    [self testForSuite:@"Account creator"];
+}
+@end
+
+@interface ConferenceEventTests : LinphoneTesterBase
+@end
+
+@implementation ConferenceEventTests
++ (void)initialize {
+    [self testForSuite:@"Conference event"];
+}
+@end
+
+@interface LogCollectionTests : LinphoneTesterBase
+@end
+
+@implementation LogCollectionTests
++ (void)initialize {
+    [self testForSuite:@"LogCollection"];
+}
+@end
+
+@interface PlayerTests : LinphoneTesterBase
+@end
+
+@implementation PlayerTests
++ (void)initialize {
+    [self testForSuite:@"Player"];
+}
+@end
+
+@interface DTMFTests : LinphoneTesterBase
+@end
+
+@implementation DTMFTests
++ (void)initialize {
+    [self testForSuite:@"DTMF"];
+}
+@end
+
+/*@interface CpimTests : LinphoneTesterBase
+@end
+
+@implementation CpimTests
++ (void)initialize {
+    [self testForSuite:@"Cpim"];
+}
+@end*/
+
+@interface MultipartTests : LinphoneTesterBase
+@end
+
+@implementation MultipartTests
++ (void)initialize {
+    [self testForSuite:@"Multipart"];
+}
+@end
+
+@interface ClonableObjectTests : LinphoneTesterBase
+@end
+
+@implementation ClonableObjectTests
++ (void)initialize {
+    [self testForSuite:@"ClonableObject"];
+}
+@end
+
+@interface MainDbTests : LinphoneTesterBase
+@end
+
+@implementation MainDbTests
++ (void)initialize {
+    [self testForSuite:@"MainDb"];
+}
+@end
+
+@interface PropertyContainerTests : LinphoneTesterBase
+@end
+
+@implementation PropertyContainerTests
++ (void)initialize {
+    [self testForSuite:@"PropertyContainer"];
+}
+@end
+
+@interface ProxyConfigTests : LinphoneTesterBase
+@end
+
+@implementation ProxyConfigTests
++ (void)initialize {
+    [self testForSuite:@"Proxy config"];
+}
+@end
+
+@interface VCardTests : LinphoneTesterBase
+@end
+
+@implementation VCardTests
++ (void)initialize {
+    [self testForSuite:@"VCard"];
+}
+@end
+
+@interface VideoCallTests : LinphoneTesterBase
+@end
+
+@implementation VideoCallTests
++ (void)initialize {
+    [self testForSuite:@"Video Call"];
+}
+@end
+
+@interface AudioBypassTests : LinphoneTesterBase
+@end
+
+@implementation AudioBypassTests
++ (void)initialize {
+    [self testForSuite:@"Audio Bypass"];
+}
+@end
+
+@interface ContentsTests : LinphoneTesterBase
+@end
+
+@implementation ContentsTests
++ (void)initialize {
+    [self testForSuite:@"Contents"];
+}
+@end
+
+@interface VideoTests : LinphoneTesterBase
+@end
+
+@implementation VideoTests
++ (void)initialize {
+    [self testForSuite:@"Video"];
+}
+@end
+
+@interface MulticastCallTests : LinphoneTesterBase
+@end
+
+@implementation MulticastCallTests
++ (void)initialize {
+    [self testForSuite:@"Multicast Call"];
+}
+@end
+
+@interface StunTests : LinphoneTesterBase
+@end
+
+@implementation StunTests
++ (void)initialize {
+    [self testForSuite:@"Stun"];
+}
+@end
+
+@interface EventTests : LinphoneTesterBase
+@end
+
+@implementation EventTests
++ (void)initialize {
+    [self testForSuite:@"Event"];
+}
+@end
+
+@interface MessageTests : LinphoneTesterBase
+@end
+
+@implementation MessageTests
++ (void)initialize {
+    [self testForSuite:@"Message"];
+}
+@end
+
+@interface RemoteProvisioningTests : LinphoneTesterBase
+@end
+
+@implementation RemoteProvisioningTests
++ (void)initialize {
+    [self testForSuite:@"RemoteProvisioning"];
+}
+@end
+
+@interface QualityReportingTests : LinphoneTesterBase
+@end
+
+@implementation QualityReportingTests
++ (void)initialize {
+    [self testForSuite:@"QualityReporting"];
+}
+@end
+
+@interface RegisterTests : LinphoneTesterBase
+@end
+
+@implementation RegisterTests
++ (void)initialize {
+    [self testForSuite:@"Register"];
+}
+@end
+
+@interface GroupChatTests : LinphoneTesterBase
+@end
+
+@implementation GroupChatTests
++ (void)initialize {
+    [self testForSuite:@"Group Chat"];
+}
+@end
+
+@interface FlexisipTests : LinphoneTesterBase
+@end
+
+@implementation FlexisipTests
++ (void)initialize {
+    [self testForSuite:@"Flexisip"];
+}
+@end
+
+@interface MultiCallTests : LinphoneTesterBase
+@end
+
+@implementation MultiCallTests
++ (void)initialize {
+    [self testForSuite:@"Multi call"];
+}
+@end
+
+@interface SingleCallTests : LinphoneTesterBase
+@end
+
+@implementation SingleCallTests
++ (void)initialize {
+    [self testForSuite:@"Single Call"];
+}
+@end
+
+@interface PresenceUsingServerTests : LinphoneTesterBase
+@end
+
+@implementation PresenceUsingServerTests
++ (void)initialize {
+    [self testForSuite:@"Presence using server"];
+}
 @end
