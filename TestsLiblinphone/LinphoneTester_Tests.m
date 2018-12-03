@@ -33,6 +33,7 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
     // currently, ipv6 is not supported
     liblinphonetester_ipv6=FALSE;
     const char *suite = sSuite.UTF8String;
+    bc_tester_register_suite_by_name(suite);
     int test_count = bc_tester_nb_tests(suite);
     for (int k = 0; k < test_count; k++) {
         const char *test = bc_tester_test_name(suite, k);
