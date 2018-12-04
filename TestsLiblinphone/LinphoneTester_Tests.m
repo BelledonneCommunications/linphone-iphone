@@ -45,7 +45,7 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
             NSString *safesSuite = [LinphoneTesterBase safetyTestString:sSuite];
             NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
                                                                   
-            [LinphoneTesterBase addInstanceMethodWithSelectorName:selectorName
+            [self addInstanceMethodWithSelectorName:selectorName
                                     block:^(LinphoneTesterBase *myself) {
                                     [myself testForSuiteTest:sSuite andTest:sTest];
                                     }];
