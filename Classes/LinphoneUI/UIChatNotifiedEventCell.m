@@ -112,7 +112,7 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
                         eventString = [NSString stringWithFormat:NSLocalizedString(@"Multidevice detected from %@", nil),participant];
                     eventColor = [UIColor redColor];
                     break;
-                case LinphoneSecurityEventTypeLimeIdentityKeyChanged:
+                case LinphoneSecurityEventTypeEncryptionIdentityKeyChanged:
                 case LinphoneSecurityEventTypeManInTheMiddleDetected:
                     if (!participant)
                         eventString = [NSString stringWithFormat:NSLocalizedString(@"Security alert", nil)];
