@@ -137,7 +137,8 @@
 
 - (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
+    // TODO one button for chatroom encrypted,another button for chatroom unencrypted
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
 	linphone_address_destroy(addr);
 }
 

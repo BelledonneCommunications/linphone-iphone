@@ -112,8 +112,8 @@
 - (BOOL)removeInhibitedEvent:(id)event;
 
 - (void)updateApplicationBadgeNumber;
-- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView;
-- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView;
+- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted;
+- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted;
 - (void)goToChatRoom:(LinphoneChatRoom *)cr;
 + (PhoneMainView*) instance;
 

@@ -149,7 +149,7 @@
 		bctbx_list_t *addresses = NULL;
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
 		addresses = bctbx_list_append(addresses, addr);
-		[PhoneMainView.instance createChatRoomWithSubject:NULL addresses:addresses andWaitView:NULL];
+        [PhoneMainView.instance createChatRoomWithSubject:NULL addresses:addresses andWaitView:NULL isEncrypted:_isEncrypted];
 		linphone_address_unref(addr);
 		return;
 	}

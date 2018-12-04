@@ -32,6 +32,7 @@
 
 @property(nonatomic) Boolean isForEditing;
 @property(nonatomic) Boolean isGroupChat;
+@property(nonatomic) Boolean isEncrypted;
 
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onNextClick:(id)sender;

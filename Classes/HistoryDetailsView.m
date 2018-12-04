@@ -195,7 +195,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onChatClick:(id)event {
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
+    // TODO one button for chatroom encrypted,another button for chatroom unencrypted
+    [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
 }
 
 @end

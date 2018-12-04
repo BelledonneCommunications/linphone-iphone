@@ -21,6 +21,7 @@
 
 @property(nonatomic) Boolean isForEditing;
 @property(nonatomic) Boolean isGroupChat;
+@property(nonatomic) Boolean isEncrypted;
 - (void) loadData;
 
 @end

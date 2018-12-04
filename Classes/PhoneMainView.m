@@ -859,7 +859,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 #pragma mark - Chat room Functions
 
-- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView {
+- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
 	if (!remoteAddress) {
 		[self changeCurrentView:ChatsListView.compositeViewDescription];
 		return;
@@ -869,7 +869,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, remoteAddress);
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new((void*)remoteAddress);
-		[self createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView];
+		[self createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
 		bctbx_list_free(addresses);
 		return;
 	}
@@ -877,7 +877,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[self goToChatRoom:room];
 }
 
-- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView {
+- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
 	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
 		|| ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] && bctbx_list_size(addresses) == 1)) {
 		// If there's no factory uri, create a basic chat room
@@ -902,7 +902,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	_waitView = waitView;
 	_waitView.hidden = NO;
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT, bctbx_list_size(addresses) == 1);
+    // always use group chatroom
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room_2(LC, subject ?: LINPHONE_DUMMY_SUBJECT, false, isEncrypted);
 	if (!room) {
 		_waitView.hidden = YES;
 		return;

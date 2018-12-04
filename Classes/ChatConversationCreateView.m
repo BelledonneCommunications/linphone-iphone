@@ -50,6 +50,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
 	_isForEditing = FALSE;
+    _isEncrypted = TRUE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -86,6 +87,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView reloadData];
 	_tableController.isForEditing = _isForEditing;
     _tableController.isGroupChat = _isGroupChat;
+    _tableController.isEncrypted = _isEncrypted;
 	[self changeView:ContactsLinphone];
 }
 
@@ -94,7 +96,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)createChatRoom {
 	NSString *addr = _tableController.contactsGroup[0];
 	LinphoneAddress *remoteAddress = linphone_address_new(addr.UTF8String);
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:remoteAddress waitView:_waitView];
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:remoteAddress waitView:_waitView isEncrypted:_isEncrypted];
 	linphone_address_unref(remoteAddress);
 }
 
@@ -117,20 +119,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.contacts = _tableController.contactsGroup;
 	view.create = !_isForEditing;
+    view.encrypted = _isEncrypted;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onChiffreClick:(id)sender {
     CGRect frame = _chiffreButton.frame;
+    _isEncrypted = !_isEncrypted;
+    _tableController.isEncrypted = _isEncrypted;
     // TODO show encrypted contacts
-    if (frame.origin.x > 10) {
+    if (_isEncrypted) {
         // encrypted
-        frame.origin.x = 2;
-        [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
-    } else {
-        // no encrypted
         frame.origin.x = 20;
         [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_green.png"]];
+    } else {
+        // no encrypted
+        frame.origin.x = 2;
+        [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
     }
     _chiffreButton.frame = frame;
 }

@@ -142,7 +142,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		addresses = bctbx_list_append(addresses, (void *)linphoneAddress);
 	}
-	[PhoneMainView.instance createChatRoomWithSubject:_nameLabel.text.UTF8String addresses:addresses andWaitView:_waitView];
+	[PhoneMainView.instance createChatRoomWithSubject:_nameLabel.text.UTF8String addresses:addresses andWaitView:_waitView isEncrypted:_encrypted];
 	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
 }
 
