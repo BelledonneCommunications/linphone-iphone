@@ -272,7 +272,6 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
                                                      linphone_iphone_file_transfer_send);
 
     // internal url is saved in the appdata for display and later save
-    LOGE(@"nnnn %@    %@",key, keyData);
     [LinphoneManager setValueInMessageAppData:keyData forKey:key inMessage:_message];
     [LinphoneManager setValueInMessageAppData:qualityData forKey:@"uploadQuality" inMessage:_message];
     
