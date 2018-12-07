@@ -229,7 +229,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableController setChatRoom:_chatRoom];
 
 	_chatView.hidden = NO;
-    [_encryptedButton setImage:[FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(_chatRoom)] forState:UIControlStateNormal];
+    UIImage *image = [FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(_chatRoom)];
+    [_encryptedButton setImage:image forState:UIControlStateNormal];
+    _encryptedButton.hidden = image ? FALSE : TRUE;
 	[self update];
     [self shareFile];
 }
