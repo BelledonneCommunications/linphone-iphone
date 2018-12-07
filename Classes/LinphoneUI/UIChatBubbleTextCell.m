@@ -333,7 +333,8 @@
                                    [_chatRoomDelegate startImageUpload:img assetId:localImage withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
                                });
             } else {
-                PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+                PHFetchResult<PHAsset *> *assets = [LinphoneManager getPHAssets:localImage];
+                
                 if (![assets firstObject])
                     return;
                 PHAsset *asset = [assets firstObject];
@@ -505,7 +506,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
             }
             PHFetchResult<PHAsset *> *assets;
             if(localImage)
-                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+                assets = [LinphoneManager getPHAssets:localImage];
             else
                 assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
             if (![assets firstObject]) {

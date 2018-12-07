@@ -2844,6 +2844,16 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 #pragma mark - Misc Functions
++ (PHFetchResult *)getPHAssets:(NSString *)key {
+    PHFetchResult<PHAsset *> *assets;
+    if ([key hasPrefix:@"assets-library"]) {
+        // compability with previous linphone version
+        assets = [PHAsset fetchAssetsWithALAssetURLs:@[[NSURL URLWithString:key]] options:nil];
+    } else {
+        assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:key] options:nil];
+    }
+    return assets;
+}
 
 + (NSString *)bundleFile:(NSString *)file {
 	return [[NSBundle mainBundle] pathForResource:[file stringByDeletingPathExtension] ofType:[file pathExtension]];

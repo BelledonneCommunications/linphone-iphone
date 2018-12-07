@@ -215,7 +215,7 @@
 
 - (void)loadFirstImage:(NSString *)key type:(PHAssetMediaType)type {
     [_messageImageView startLoading];
-    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:key] options:nil];
+    PHFetchResult<PHAsset *> *assets = [LinphoneManager getPHAssets:key];
     UIImage *img = nil;
     
     img = [chatTableView.imagesInChatroom objectForKey:key];

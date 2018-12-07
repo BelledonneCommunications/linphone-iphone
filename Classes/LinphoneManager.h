@@ -157,6 +157,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)configureVbrCodecs;
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
++ (PHFetchResult *)getPHAssets:(NSString *)key;
 + (NSString*)bundleFile:(NSString*)file;
 + (NSString*)documentFile:(NSString*)file;
 + (NSString*)cacheDirectory;
