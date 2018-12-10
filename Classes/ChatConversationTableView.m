@@ -166,6 +166,8 @@
 	[self reloadData];
 }
 
+static const int MAX_AGGLOMERATED_TIME=300;
+
 - (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
     LinphoneEventLog *previousEvent = nil;
     NSInteger indexOfPreviousEvent = indexPath.row - 1;
@@ -181,6 +183,10 @@
 
     LinphoneChatMessage *previousChat = linphone_event_log_get_chat_message(previousEvent);
     if (!linphone_address_equal(linphone_chat_message_get_from_address(previousChat), linphone_chat_message_get_from_address(chat))) {
+        return TRUE;
+    }
+    // the maximum interval between 2 agglomerated chats at 5mn
+    if ((linphone_chat_message_get_time(chat)-linphone_chat_message_get_time(previousChat)) > MAX_AGGLOMERATED_TIME) {
         return TRUE;
     }
         
