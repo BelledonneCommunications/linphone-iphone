@@ -257,6 +257,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if (dict) {
         //file shared from photo lib
         NSString *fileName = dict[@"url"];
+        [_messageField setText:dict[@"message"]];
         NSString *key = [[fileName componentsSeparatedByString:@"."] firstObject];
         NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
         if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"]) {
@@ -271,11 +272,13 @@ static UICompositeViewDescription *compositeDescription = nil;
         [defaults removeObjectForKey:@"photoData"];
     } else if (dictFile) {
         NSString *fileName = dictFile[@"url"];
+        [_messageField setText:dictFile[@"message"]];
         [self confirmShare:dictFile[@"nsData"] url:nil fileName:fileName assetId:nil];
         
         [defaults removeObjectForKey:@"icloudData"];
     } else if (dictUrl) {
         NSString *url = dictUrl[@"url"];
+        [_messageField setText:dictUrl[@"message"]];
         [self confirmShare:nil url:url fileName:nil assetId:nil];
         
         [defaults removeObjectForKey:@"url"];
@@ -377,6 +380,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [sheet addButtonWithTitle:@"send to this friend"
                                 block:^() {
+                                    if (![[self.messageField text] isEqualToString:@""]) {
+                                        [self sendMessageInMessageField];
+                                    }
                                     if (url)
                                         [self sendMessage:url withExterlBodyUrl:nil withInternalURL:nil];
                                     else if (fileName)
@@ -463,6 +469,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 			participants = participants->next;
 		}
 	}
+}
+
+- (void)sendMessageInMessageField {
+    if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil]) {
+        scrollOnGrowingEnabled = FALSE;
+        [_messageField setText:@""];
+        scrollOnGrowingEnabled = TRUE;
+        [self onMessageChange:nil];
+    }
 }
 
 #pragma mark - UITextFieldDelegate Functions
@@ -555,12 +570,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [self clearMessageView];
         return;
     }
-	if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil]) {
-		scrollOnGrowingEnabled = FALSE;
-		[_messageField setText:@""];
-		scrollOnGrowingEnabled = TRUE;
-		[self onMessageChange:nil];
-	}
+    [self sendMessageInMessageField];
 }
 
 - (IBAction)onListTap:(id)sender {

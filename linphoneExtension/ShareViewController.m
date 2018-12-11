@@ -75,16 +75,19 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
                 if([imgPath containsString:@"var/mobile/Media/PhotoData"]) {
                     // We get the corresponding PHAsset identifier so we can display the image in the app without having to duplicate it.
                     NSDictionary *dict = @{@"nsData" : nsData,
-                                           @"url" : filename};
+                                           @"url" : filename,
+                                           @"message" : self.contentText};
                     [defaults setObject:dict forKey:@"photoData"];
                 } else if ([imgPath containsString:@"var/mobile/Library/Mobile Documents/com~apple~CloudDocs"] || [[url scheme] isEqualToString:@"file"]) {
                     // shared files from icloud drive
                     NSDictionary *dict = @{@"nsData" : nsData,
-                                           @"url" : filename};
+                                           @"url" : filename,
+                                           @"message" : self.contentText};
                     [defaults setObject:dict forKey:@"icloudData"];
                 } else  {
                     //Others
-                    NSDictionary *dict = @{@"url" : [url absoluteString]};
+                    NSDictionary *dict = @{@"url" : [url absoluteString],
+                                           @"message" : self.contentText};
                     [defaults setObject:dict forKey:@"url"];
                 }
             } else {
