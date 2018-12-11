@@ -506,7 +506,13 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
 		[keys addObject:@"video_preferred_fps_preference"];
 		[keys addObject:@"download_bandwidth_preference"];
-	}
+    } else if ([@"auto_download_mode" compare:notif.object] == NSOrderedSame) {
+        NSString *download_mode = [notif.userInfo objectForKey:@"auto_download_mode"];
+        removeFromHiddenKeys = [download_mode isEqualToString:@"Customize"];
+        if (removeFromHiddenKeys)
+            [LinphoneManager.instance lpConfigSetInt:10000000 forKey:@"auto_download_incoming_files_max_size"];
+        [keys addObject:@"auto_download_incoming_files_max_size"];
+    }
 
 	for (NSString *key in keys) {
 		if (removeFromHiddenKeys)
@@ -701,6 +707,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
 		[hiddenKeys addObject:@"repeat_call_notification_preference"];
 	}
+
+    if (![[lm lpConfigStringForKey:@"auto_download_mode"] isEqualToString:@"Customize"]) {
+        [hiddenKeys addObject:@"auto_download_incoming_files_max_size"];
+    }
 
 	return hiddenKeys;
 }

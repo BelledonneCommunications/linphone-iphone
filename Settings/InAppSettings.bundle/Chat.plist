@@ -5,16 +5,32 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
+			<key>DefaultValue</key>
+			<string>Never</string>
+			<key>Key</key>
+			<string>auto_download_mode</string>
 			<key>Title</key>
-			<string>Auto Download</string>
+			<string>Auto download incoming files policy</string>
+			<key>Titles</key>
+			<array>
+				<string>Never</string>
+				<string>Always</string>
+				<string>If lighter than given size (see below setting)</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>Never</string>
+				<string>Always</string>
+				<string>Customize</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Key</key>
 			<string>auto_download_incoming_files_max_size</string>
 			<key>Title</key>
-			<string>Files max size</string>
+			<string>Max size in bytes</string>
 			<key>DefaultValue</key>
 			<integer>-1</integer>
 			<key>Type</key>
