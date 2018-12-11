@@ -39,6 +39,7 @@
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
     UIConfirmationDialog *securityDialog;
+    UIRefreshControl *refreshControl;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;

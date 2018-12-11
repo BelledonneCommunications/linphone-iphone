@@ -62,11 +62,17 @@
 		? linphone_chat_room_get_history_message_events(_chatRoom, 0)
 		: linphone_chat_room_get_history_events(_chatRoom, 0);
     bctbx_list_t *head = chatRoomEvents;
-	eventList = [[NSMutableArray alloc] initWithCapacity:bctbx_list_size(chatRoomEvents)];
+    size_t listSize = bctbx_list_size(chatRoomEvents);
+	totalEventList = [[NSMutableArray alloc] initWithCapacity:listSize];
+    eventList = [[NSMutableArray alloc] initWithCapacity:MIN(listSize, BASIC_EVENT_LIST)];
 	while (chatRoomEvents) {
-		LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
-		[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+        LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
+        [totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+        if (listSize <= BASIC_EVENT_LIST) {            
+            [eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+        }
 		chatRoomEvents = chatRoomEvents->next;
+        listSize -= 1;
 	}
     bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
 
@@ -79,6 +85,22 @@
 			//TODO : eventList = bctbx_list_append(eventList, linphone_chat_message_ref(ftd.event));
 		}
 	}
+}
+
+- (void)refreshData {
+    if (totalEventList.count <= eventList.count) {
+        _currentIndex = 0;
+        return;
+    }
+    
+    NSUInteger num = MIN(totalEventList.count-eventList.count, BASIC_EVENT_LIST);
+    _currentIndex = num - 1;
+    while (num) {
+        NSInteger index = totalEventList.count - eventList.count - 1;
+        [eventList insertObject:[totalEventList objectAtIndex:index] atIndex:0];
+        index -= 1;
+        num -= 1;
+    }
 }
 
 - (void)reloadData {
@@ -167,6 +189,7 @@
 }
 
 static const int MAX_AGGLOMERATED_TIME=300;
+static const int BASIC_EVENT_LIST=20;
 
 - (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
     LinphoneEventLog *previousEvent = nil;

@@ -95,7 +95,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_backButton.hidden = YES;
 		_backButton.alpha = 0;
 	}
-
+    
+    refreshControl = [[UIRefreshControl alloc]init];
+    [refreshControl addTarget:self action:@selector(refreshData) forControlEvents:UIControlEventValueChanged];
+    _tableController.refreshControl = refreshControl;
+    
 	_messageField.minNumberOfLines = 1;
 	_messageField.maxNumberOfLines = IPAD ? 10 : 3;
 	_messageField.delegate = self;
@@ -105,6 +109,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableController setChatRoomDelegate:self];
     [_imagesCollectionView registerClass:[UIImageViewDeletable class] forCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class])];
     [_imagesCollectionView setDataSource:self];
+}
+
+- (void)refreshData {
+    [_tableController refreshData];
+    [refreshControl endRefreshing];
+    [_tableController loadData];
+    [_tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_tableController.currentIndex inSection:0]
+                          atScrollPosition:UITableViewScrollPositionTop
+                                  animated:false];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
