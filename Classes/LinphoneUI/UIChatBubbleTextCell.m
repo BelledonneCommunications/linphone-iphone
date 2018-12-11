@@ -444,7 +444,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 static const CGFloat CELL_MIN_HEIGHT = 65.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
-static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
+static const CGFloat CELL_MESSAGE_X_MARGIN = 68 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
