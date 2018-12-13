@@ -565,6 +565,10 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			[self displayAudioCall:animated];
 		}
 	}
+    // camera is diabled duiring conference, it must be activated after leaving conference.
+    if (!shouldDisableVideo && !linphone_core_is_in_conference(LC)) {
+        linphone_call_enable_camera(call, TRUE);
+    }
     [self updateInfoView];
 
 	if (state != LinphoneCallPausedByRemote) {
