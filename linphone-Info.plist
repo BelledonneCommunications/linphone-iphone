@@ -98,12 +98,12 @@
 	<string>Share photos with your friends and customize avatars</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.org.linphone.obiane</key>
+		<key>iCloud.org.linphone.phone</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
 			<key>NSUbiquitousContainerName</key>
-			<string>Obiane</string>
+			<string>Linphone</string>
 			<key>NSUbiquitousContainerSupportedFolderLevels</key>
 			<string>Any</string>
 		</dict>
