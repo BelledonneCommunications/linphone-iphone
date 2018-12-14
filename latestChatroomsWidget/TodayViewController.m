@@ -15,7 +15,7 @@
 @implementation TodayViewController
 
 - (void)loadData {    
-    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
+    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: [NSString stringWithFormat:@"group.%@",[[NSBundle mainBundle] bundleIdentifier]]];
     [_imgs removeAllObjects];
     [_addresses removeAllObjects];
     [_localAddress removeAllObjects];

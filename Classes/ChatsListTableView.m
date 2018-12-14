@@ -124,7 +124,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 + (void) saveDataToUserDefaults {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.widget"];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:[NSString stringWithFormat:@"group.%@.latestChatroomsWidget",[[NSBundle mainBundle] bundleIdentifier]]];
     MSList *sorted = nil;
     const MSList *unsorted = linphone_core_get_chat_rooms(LC);
     const MSList *iter = unsorted;

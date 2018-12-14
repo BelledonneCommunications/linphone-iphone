@@ -5929,7 +5929,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5970,7 +5970,7 @@
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6013,7 +6013,7 @@
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6056,7 +6056,7 @@
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6268,7 +6268,7 @@
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6310,7 +6310,7 @@
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6353,7 +6353,7 @@
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6396,7 +6396,7 @@
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

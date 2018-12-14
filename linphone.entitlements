@@ -20,8 +20,9 @@
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.belledonne-communications.linphone.widget</string>
-		<string>group.belledonne-communications.linphone</string>
+		<string>group.org.linphone.phone.linphoneExtension</string>
+		<string>group.org.linphone.phone.latestCallsWidget</string>
+		<string>group.org.linphone.phone.latestChatroomsWidget</string>
 	</array>
 </dict>
 </plist>

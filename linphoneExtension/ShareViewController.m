@@ -10,7 +10,7 @@
 @interface ShareViewController ()
 
 @end
-static NSString* groupName = @"group.belledonne-communications.linphone";
+
 @implementation ShareViewController
 
 - (BOOL)isContentValid {
@@ -19,6 +19,7 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
 }
 
 - (void)didSelectPost {
+    NSString* groupName = [NSString stringWithFormat:@"group.%@",[[NSBundle mainBundle] bundleIdentifier]];
     // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
     BOOL support = TRUE;
     // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.

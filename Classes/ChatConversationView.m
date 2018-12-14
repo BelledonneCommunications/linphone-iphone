@@ -27,7 +27,6 @@
 #import "DevicesListView.h"
 
 @implementation ChatConversationView
-static NSString* groupName = @"group.belledonne-communications.linphone";
 
 #pragma mark - Lifecycle Functions
 
@@ -250,6 +249,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)shareFile {
+    NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
     NSDictionary *dict = [defaults valueForKey:@"photoData"];
     NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
