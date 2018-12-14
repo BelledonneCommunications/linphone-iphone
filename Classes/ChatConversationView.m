@@ -611,7 +611,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             if (notAskAgain) {
                 [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
             } else {
-                securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCELL", nil) confirmMessage:NSLocalizedString(@"CALL", nil) onCancelClick:^() {
+                securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCEL", nil) confirmMessage:NSLocalizedString(@"CALL", nil) onCancelClick:^() {
                 } onConfirmationClick:^() {
                     [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
                 }];
@@ -624,7 +624,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     if (notAskAgain) {
         [self goToDeviceListView];
     } else {
-        securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCELL", nil) confirmMessage:NSLocalizedString(@"OK", nil) onCancelClick:^() {
+        securityDialog = [UIConfirmationDialog ShowWithMessage:message cancelMessage:NSLocalizedString(@"CANCEL", nil) confirmMessage:NSLocalizedString(@"OK", nil) onCancelClick:^() {
         } onConfirmationClick:^() {
             [self goToDeviceListView];
         }];

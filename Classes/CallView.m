@@ -237,7 +237,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *address = [LinphoneManager.instance lpConfigStringForKey:@"sas_dialog_denied"];
     if (address) {
         UIConfirmationDialog *securityDialog = [UIConfirmationDialog ShowWithMessage:NSLocalizedString(@"Trust has been denied. Make a call to start the authentication process again.", nil)
-         cancelMessage:NSLocalizedString(@"CANCELL", nil)
+         cancelMessage:NSLocalizedString(@"CANCEL", nil)
          confirmMessage:NSLocalizedString(@"CALL", nil)
          onCancelClick:^() {
          }
