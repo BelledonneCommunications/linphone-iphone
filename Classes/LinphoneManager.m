@@ -2067,8 +2067,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 	[self migrationAllPost];
 
-	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
-	linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
+	/* Use the rootca from framework, which is already set*/
+	//linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
 	linphone_core_set_user_certificates_path(theLinphoneCore, [LinphoneManager cacheDirectory].UTF8String);
 
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded
