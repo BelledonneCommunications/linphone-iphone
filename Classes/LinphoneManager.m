@@ -758,8 +758,17 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 																		   withCompletionHandler:^(NSError *_Nullable error)
 					 															{if (error) LOGD(@"Error while adding notification request : %@", error.description);}];
 				}
-                linphone_core_set_network_reachable(LC, FALSE);
-                LinphoneManager.instance.connectivity = none;
+                LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
+                BOOL pushNotifEnabled = false;
+                // handle proxy config if any
+                if (proxyCfg) {
+                    const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
+                    pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
+                }
+                if (![LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
+                    linphone_core_set_network_reachable(LC, FALSE);
+                    LinphoneManager.instance.connectivity = none;
+                }
 			}
             LinphoneCallLog *callLog2 = linphone_call_get_call_log(call);
             const char *call_id2 = linphone_call_log_get_call_id(callLog2);
@@ -2365,6 +2374,31 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}
 
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"]) {
+            // Keep this!! Socket VoIP is deprecated after 9.0, but sometimes it's the only way to keep the phone background and receive the call. For example, when there is only local area network.
+            if (!pushNotifEnabled) {
+                // register keepalive
+                if ([[UIApplication sharedApplication]
+                     setKeepAliveTimeout:600 /*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
+                     handler:^{
+                         LOGW(@"keepalive handler");
+                         mLastKeepAliveDate = [NSDate date];
+                         if (theLinphoneCore == nil) {
+                             LOGW(@"It seems that Linphone BG mode was deactivated, just skipping");
+                             return;
+                         }
+                         [_iapManager check];
+                         if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+                             // For registration register
+                             [self refreshRegisters];
+                         }
+                         linphone_core_iterate(theLinphoneCore);
+                     }]) {
+                         
+                         LOGI(@"keepalive handler succesfully registered");
+                     } else {
+                         LOGI(@"keepalive handler cannot be registered");
+                     }
+            }
 			shouldEnterBgMode = TRUE;
 		}
 	}
