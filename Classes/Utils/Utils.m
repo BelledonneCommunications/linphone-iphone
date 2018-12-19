@@ -73,23 +73,6 @@
     return assetDict;
 }
 
-/*+ (NSMutableDictionary <NSString *, PHAsset *> *)videoAssetsDictionary {
-    NSMutableDictionary <NSString *, PHAsset *> *assetDict = [NSMutableDictionary dictionary];
-    
-    PHFetchOptions *options = [[PHFetchOptions alloc] init];
-    [options setIncludeHiddenAssets:YES];
-    [options setIncludeAllBurstAssets:YES];
-    
-    PHFetchResult *fetchRes = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:options];
-    
-    for (PHAsset *asset in fetchRes) {
-        NSString *key = [asset valueForKey:@"filename"];
-        [assetDict setObject:asset forKey:[[key componentsSeparatedByString:@"."] firstObject]];
-    }
-    
-    return assetDict;
-}*/
-
 + (NSString *)timeToString:(time_t)time withFormat:(LinphoneDateFormat)format {
 	NSString *formatstr;
 	NSDate *todayDate = [[NSDate alloc] init];

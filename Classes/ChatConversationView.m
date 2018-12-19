@@ -261,8 +261,14 @@ static UICompositeViewDescription *compositeDescription = nil;
         NSString *key = [[fileName componentsSeparatedByString:@"."] firstObject];
         NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
         if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"]) {
-            UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
-            [self chooseImageQuality:image assetId:[[assetDict objectForKey:key] localIdentifier]];
+            PHAsset *phasset = [assetDict objectForKey:key];
+            if (!phasset) {
+                // for the images not really in the photo album
+                [self confirmShare:dict[@"nsData"] url:nil fileName:fileName assetId:nil];
+            } else {
+                UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+                [self chooseImageQuality:image assetId:[phasset localIdentifier]];
+            }
         } else if ([fileName hasSuffix:@"MOV"]) {
             [self confirmShare:dict[@"nsData"] url:nil fileName:nil assetId:[[assetDict objectForKey:key] localIdentifier]];
         } else {

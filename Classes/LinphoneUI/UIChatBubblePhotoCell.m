@@ -107,6 +107,7 @@
         _messageImageView.hidden = YES;
         _imageGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
+        _fileView.hidden = YES;
         [self layoutSubviews];
     });
 }
@@ -189,9 +190,16 @@
                 }
             }
              else if (localFile) {
-                NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
-                _fileName.text = text;
-                [self loadFileAsset];
+                 if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"]) {
+                     ChatConversationView *view = VIEW(ChatConversationView);
+                     NSData *data = [NSData dataWithContentsOfURL:[view getICloudFileUrl:localFile]];
+                     UIImage *image = [[UIImage alloc] initWithData:data];
+                     [self loadImageAsset:nil image:image];
+                 } else {
+                     NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
+                     _fileName.text = text;
+                     [self loadFileAsset];
+                 }
             }
 
             // we are uploading the image
@@ -303,6 +311,19 @@
 			ImageView *view = VIEW(ImageView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
             PHAsset *asset = [_messageImageView asset];
+            if (!asset) {
+                 NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+                if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"]) {
+                    ChatConversationView *chatView = VIEW(ChatConversationView);
+                    NSData *data = [NSData dataWithContentsOfURL:[chatView getICloudFileUrl:localFile]];
+                    UIImage *image = [[UIImage alloc] initWithData:data];
+                    if (image)
+                        [view setImage:image];
+                    else
+                        LOGE(@"Can't read image");
+                }
+                return;
+            }
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
             options.synchronous = TRUE;
             [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options

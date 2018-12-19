@@ -456,18 +456,29 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
         
+        CGSize textSize = CGSizeMake(0, 0);
+        if (![messageText isEqualToString:@"🗻"]) {
+            textSize = [self computeBoundingBox:messageText
+                                           size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                           font:messageFont];
+            size.height += textSize.height;
+        }
+        
         if(localFile) {
-            CGSize fileSize = CGSizeMake(230, 50);
-            size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
-        } else {
-            CGSize textSize = CGSizeMake(0, 0);
-            if (![messageText isEqualToString:@"🗻"]) {
-                textSize = [self computeBoundingBox:messageText
-                                                size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-                                                font:messageFont];
+            if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"]) {
+                ChatConversationView *view = VIEW(ChatConversationView);
+                NSData *data = [NSData dataWithContentsOfURL:[view getICloudFileUrl:localFile]];
+                UIImage *image = [[UIImage alloc] initWithData:data];
+                size = [self getMediaMessageSizefromOriginalSize:image.size withWidth:width];
+                
+                // add size for message text
                 size.height += textSize.height;
+                size.width = MAX(textSize.width, size.width);
+            } else {
+                CGSize fileSize = CGSizeMake(230, 50);
+                size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
             }
-            
+        } else {
             if (!localImage && !localVideo) {
                 //We are loading the image
                 return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);

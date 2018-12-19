@@ -42,7 +42,9 @@
                 [self loadItem:provider typeIdentifier:@"com.adobe.pdf" defaults:defaults];
             } else if ([provider hasItemConformingToTypeIdentifier:@"public.png"]) {
                 [self loadItem:provider typeIdentifier:@"public.png" defaults:defaults];
-            } else{
+            } else if ([provider hasItemConformingToTypeIdentifier:@"public.image"]) {
+                [self loadItem:provider typeIdentifier:@"public.image" defaults:defaults];
+            }else{
                 NSLog(@"Unkown itemprovider = %@", provider);
                 support = false;
             }
@@ -96,22 +98,35 @@
                 [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
             }
             
-            UIResponder *responder = self;
-            while (responder != nil) {
-                if ([responder respondsToSelector:@selector(openURL:)]) {
-                    [responder performSelector:@selector(openURL:)
-                                    withObject:[NSURL URLWithString:@"message-linphone://" ]];
-                    [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
-                    break;
-                }
-                responder = [responder nextResponder];
-            }
-            [defaults synchronize];
+            [self respondUrl:defaults];
+        } else if ([(NSObject*)item isKindOfClass:[UIImage class]]) {
+            UIImage *image = (UIImage*)item;
+            NSDictionary *dict = @{@"nsData" : UIImagePNGRepresentation(image),
+                                   @"url" : [NSString stringWithFormat:@"IMAGE_%f.PNG", [[NSDate date] timeIntervalSince1970]],
+                                   @"message" : self.contentText};
+            [defaults setObject:dict forKey:@"photoData"];
+            
+            [self respondUrl:defaults];
         } else {
             //share text
             NSLog(@"Unsupported provider = %@", provider);
+            [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
         }
     }];
+}
+
+- (void)respondUrl:(NSUserDefaults *)defaults {
+    UIResponder *responder = self;
+    while (responder != nil) {
+        if ([responder respondsToSelector:@selector(openURL:)]) {
+            [responder performSelector:@selector(openURL:)
+                            withObject:[NSURL URLWithString:@"message-linphone://" ]];
+            [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+            break;
+        }
+        responder = [responder nextResponder];
+    }
+    [defaults synchronize];
 }
 
 @end
