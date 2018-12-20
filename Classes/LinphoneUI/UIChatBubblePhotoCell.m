@@ -112,13 +112,15 @@
     });
 }
 
+static const CGFloat CELL_IMAGE_X_MARGIN = 100;
+
 - (void) loadAsset:(PHAsset *) asset {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.synchronous = TRUE;
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
                                             resultHandler:^(UIImage *image, NSDictionary * info) {
                                                 if (image) {
-                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - 100];
+                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
                                                     UIImage *newImage = [UIImage UIImageResize:image toSize:imageSize];
                                                     [chatTableView.imagesInChatroom setObject:newImage forKey:[asset localIdentifier]];
                                                     [self loadImageAsset:asset image:newImage];
@@ -418,7 +420,7 @@
     // Resizing Image view
     if (_finalImage.image) {
         CGRect imgFrame = self.finalAssetView.frame;            
-        imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:super.bubbleView.frame.size.width - 85];
+        imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
         imgFrame.origin.x = (self.innerView.frame.size.width - imgFrame.size.width-17)/2;
         self.finalAssetView.frame = imgFrame;
     }

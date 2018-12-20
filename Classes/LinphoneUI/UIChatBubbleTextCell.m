@@ -413,7 +413,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 static const CGFloat CELL_MIN_HEIGHT = 65.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 68 + 10.0f;
-static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
+static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
     return [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
@@ -434,7 +435,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		messageFont = cell.messageText.font;
 	}
-	width -= 120; /*checkbox  + avatar image + imdmLabel*/
+    width -= CELL_IMAGE_X_MARGIN;
 	CGSize size;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
     
@@ -493,7 +494,6 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
             } else {
                 PHAsset *asset = [assets firstObject];
                 CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
-                originalImageSize.width = originalImageSize.width;
                 size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
                     
                 // add size for message text
@@ -556,16 +556,18 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44; // 44;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
     CGSize mediaSize = CGSizeMake(0, 0);
     int availableWidth = width;
-    /*if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        availableWidth = availableWidth /3;
-    }*/
     int newHeight = originalSize.height;
     float originalAspectRatio = originalSize.width / originalSize.height;
     // We resize in width and crop in height
     if (originalSize.width > availableWidth) {
         newHeight = availableWidth / originalAspectRatio;
     }
-    mediaSize.height = MIN(newHeight, availableWidth);
+    
+    if (newHeight > availableWidth) {
+        newHeight = availableWidth;
+        availableWidth = newHeight * originalAspectRatio;
+    }
+    mediaSize.height = newHeight;
     mediaSize.width = MIN(availableWidth, originalSize.width);
     return mediaSize;
 }
