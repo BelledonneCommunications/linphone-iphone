@@ -35,6 +35,10 @@
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(onGlobalStateChanged:)
+                                               name:kLinphoneGlobalStateUpdate
+                                             object:nil];
 	[_backToCallButton update];
 	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
@@ -43,7 +47,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMessageReceived object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	self.view = NULL;
 }
 
@@ -55,6 +59,16 @@
 
 - (void)callUpdateEvent:(NSNotification *)notif {
 	[_backToCallButton update];
+}
+
+- (void)onGlobalStateChanged:(NSNotification *)notif {
+    LinphoneGlobalState state = (LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue];
+    if (state == LinphoneGlobalStartup) {
+        _waitView.hidden = NO;
+    } else if (state == LinphoneGlobalOn) {
+        [_tableController loadData];
+        _waitView.hidden = YES;
+    }
 }
 
 #pragma mark - UICompositeViewDelegate Functions
