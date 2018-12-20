@@ -90,6 +90,6 @@
 
 - (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view inChat:(BOOL)inChat;
 - (NSURL *)getICloudFileUrl:(NSString *)name;
-- (void)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
+- (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 
 @end

@@ -1033,17 +1033,17 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
     return nil;
 }
 
-- (void)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL {
+- (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"]) {
         //notify : set configuration to use icloud
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"ICloud Drive is unavailable.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
-        return;
+        return FALSE;
     }
     
     if ([fileManager isUbiquitousItemAtURL:fileURL]) {
         // if it exists, replace the file
-        [data writeToURL:fileURL atomically:TRUE];
+        return [data writeToURL:fileURL atomically:TRUE];
     } else {
         // get the url of localfile
         NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileURL.lastPathComponent];
@@ -1053,9 +1053,7 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
         }
         
         NSError *error;
-        if (![[NSFileManager defaultManager] setUbiquitous:YES itemAtURL:localURL destinationURL:fileURL error:&error]) {
-            LOGE(@"ICloud file error : %@", error);
-        }
+        return [[NSFileManager defaultManager] setUbiquitous:YES itemAtURL:localURL destinationURL:fileURL error:&error];
     }
 }
 

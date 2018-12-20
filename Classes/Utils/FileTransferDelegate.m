@@ -178,17 +178,17 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
            
             //write file to path
             dispatch_async(dispatch_get_main_queue(), ^{
-                [view writeFileInICloud:thiz.data fileURL:[view getICloudFileUrl:name]];
-                [LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
-                
-                [NSNotificationCenter.defaultCenter
-                 postNotificationName:kLinphoneFileTransferRecvUpdate
-                 object:thiz
-                 userInfo:@{
-                            @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to trigger
-                            @"progress" : @(1.f),    // FileTransferDone here
-                            }];
-            
+                if([view writeFileInICloud:thiz.data fileURL:[view getICloudFileUrl:name]]) {
+                    [LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
+                    
+                    [NSNotificationCenter.defaultCenter
+                     postNotificationName:kLinphoneFileTransferRecvUpdate
+                     object:thiz
+                     userInfo:@{
+                                @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to trigger
+                                @"progress" : @(1.f),    // FileTransferDone here
+                                }];
+                }
                 [thiz stopAndDestroy];
             });
         }
@@ -296,9 +296,8 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {
     // we will write local files into ours folder of icloud
     ChatConversationView *view = VIEW(ChatConversationView);
-    [view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]];
-    
-    [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
+    if ([view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]])
+        [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
 }
 
 
