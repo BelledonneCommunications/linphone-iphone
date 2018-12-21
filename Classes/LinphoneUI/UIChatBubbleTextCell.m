@@ -422,7 +422,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText{
     
     // avoid calculating the size each time
-    NSString *chatSize = [LinphoneManager getMessageAppDataForKey:@"chatSize" inMessage:chat];
+    NSString *chatSize = [LinphoneManager getMessageAppDataForKey:@"newChatSize" inMessage:chat];
     if (chatSize && !imdnText)
         return CGSizeFromString(chatSize);
     
@@ -504,7 +504,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
     size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
     
-    [LinphoneManager setValueInMessageAppData:NSStringFromCGSize(size) forKey:@"chatSize" inMessage:chat];
+    [LinphoneManager setValueInMessageAppData:NSStringFromCGSize(size) forKey:@"newChatSize" inMessage:chat];
     return size;
 }
 
@@ -554,6 +554,10 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
     CGSize mediaSize = CGSizeMake(0, 0);
     int availableWidth = width;
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+        availableWidth = availableWidth /1.7;
+    }
+    
     int newHeight = originalSize.height;
     float originalAspectRatio = originalSize.width / originalSize.height;
     // We resize in width and crop in height
