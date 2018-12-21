@@ -192,7 +192,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                 }
             }
              else if (localFile) {
-                 if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"]) {
+                 if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                      NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                      UIImage *image = [[UIImage alloc] initWithData:data];
                      [self loadImageAsset:nil image:image];
@@ -314,7 +314,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
             PHAsset *asset = [_messageImageView asset];
             if (!asset) {
                  NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-                if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"]) {
+                if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                     NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                     UIImage *image = [[UIImage alloc] initWithData:data];
                     if (image)

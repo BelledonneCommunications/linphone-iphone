@@ -465,7 +465,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         }
         
         if(localFile) {
-            if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"]) {
+            if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                 NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                 UIImage *image = [[UIImage alloc] initWithData:data];
                 size = [self getMediaMessageSizefromOriginalSize:image.size withWidth:width];
