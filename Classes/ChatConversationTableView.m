@@ -316,6 +316,9 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	linphone_event_log_delete_from_database(event);
 	[eventList removeObjectAtIndex:indexPath.row];
+    NSInteger index = indexPath.row + _currentIndex;
+    if (index < totalEventList.count)
+        [totalEventList removeObject:[NSNumber numberWithInteger:index]];
 
 	[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 					 withRowAnimation:UITableViewRowAnimationBottom];
@@ -360,6 +363,9 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 		LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 		linphone_event_log_delete_from_database(event);
 		[eventList removeObjectAtIndex:indexPath.row];
+        NSInteger index = indexPath.row + _currentIndex;
+        if (index < totalEventList.count)
+            [totalEventList removeObject:[NSNumber numberWithInteger:index]];
 	}];
 }
 
