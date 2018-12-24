@@ -74,6 +74,41 @@
                                 </imageView>
                             </subviews>
                         </view>
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GmN-7v-uuO" userLabel="imageSubView">
+                            <rect key="frame" x="31" y="50" width="299" height="87"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="USm-wC-GvG" userLabel="transferProgress">
+                                    <rect key="frame" x="10" y="51" width="277" height="4"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                </progressView>
+                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N75-gL-R6t" userLabel="downloadButton" customClass="UIRoundBorderedButton">
+                                    <rect key="frame" x="87" y="58" width="113" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Download"/>
+                                    <state key="normal" title="DOWNLOAD" backgroundImage="color_G.png">
+                                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="onDownloadClick:" destination="-1" eventType="touchUpInside" id="8BO-9E-iOX"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
+                                    <rect key="frame" x="87" y="58" width="113" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                    <state key="normal" title="CANCEL" backgroundImage="color_I.png">
+                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="color_M.png"/>
+                                    <connections>
+                                        <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="D9y-vf-I4Y"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
                         <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" preservesSuperviewLayoutMargins="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VYJ-RC-Jmg" userLabel="finalAssetView">
                             <rect key="frame" x="7" y="10" width="351" height="252"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -132,41 +167,6 @@
                                     <state key="normal" title="Open"/>
                                     <connections>
                                         <action selector="onFileClick:" destination="-1" eventType="touchUpInside" id="JRN-AA-UEJ"/>
-                                    </connections>
-                                </button>
-                            </subviews>
-                        </view>
-                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GmN-7v-uuO" userLabel="imageSubView">
-                            <rect key="frame" x="31" y="50" width="299" height="87"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="USm-wC-GvG" userLabel="transferProgress">
-                                    <rect key="frame" x="10" y="51" width="277" height="4"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                </progressView>
-                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N75-gL-R6t" userLabel="downloadButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="87" y="58" width="113" height="20"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Download"/>
-                                    <state key="normal" title="DOWNLOAD" backgroundImage="color_G.png">
-                                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="onDownloadClick:" destination="-1" eventType="touchUpInside" id="8BO-9E-iOX"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="87" y="58" width="113" height="20"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                    <state key="normal" title="CANCEL" backgroundImage="color_I.png">
-                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </state>
-                                    <state key="highlighted" backgroundImage="color_M.png"/>
-                                    <connections>
-                                        <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="D9y-vf-I4Y"/>
                                     </connections>
                                 </button>
                             </subviews>

@@ -105,7 +105,7 @@
         [_messageImageView setAsset:asset];
         [_messageImageView stopLoading];
         _messageImageView.hidden = YES;
-        _imageGestureRecognizer.enabled = YES;
+        //_imageGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
         _fileView.hidden = YES;
         [self layoutSubviews];
@@ -183,6 +183,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                 // we did not load the image yet, so start doing so
                 if (_messageImageView.image == nil) {
                     [self loadFirstImage:localImage type:PHAssetMediaTypeImage];
+                    _imageGestureRecognizer.enabled = YES;
                 }
             }
             else if (localVideo) {
@@ -196,6 +197,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                      NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                      UIImage *image = [[UIImage alloc] initWithData:data];
                      [self loadImageAsset:nil image:image];
+                     _imageGestureRecognizer.enabled = YES;
                  } else {
                      NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
                      _fileName.text = text;
