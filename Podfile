@@ -23,7 +23,7 @@ target 'liblinphoneTester' do
   use_frameworks!
 
   # Pods for liblinphoneTester
-  pod 'linphone-sdk', '~> 4.1-69-gecb3acc'
+  pod 'linphone-sdk', '~> 4.1-151-g01a5d2a'
 
   target 'liblinphoneTesterTests' do
     inherit! :search_paths
@@ -37,7 +37,7 @@ target 'linphone' do
   use_frameworks!
 
   # Pods for linphone
-  pod 'linphone-sdk', '~> 4.1-69-gecb3acc'
+  pod 'linphone-sdk', '~> 4.1-151-g01a5d2a'
 
   target 'linphoneTests' do
     inherit! :search_paths
