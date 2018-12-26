@@ -421,9 +421,10 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText{
     
-    // avoid calculating the size each time
+    // Avoid calculating the size each time, it takes too much time. Update the size of the chat cell once the version of the application has been modified.
     NSString *chatSize = [LinphoneManager getMessageAppDataForKey:@"newChatSize" inMessage:chat];
-    if (chatSize && !imdnText)
+    NSString *version = [NSString stringWithFormat:@"%@-%@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    if (chatSize && !imdnText && [version isEqualToString:[LinphoneManager getMessageAppDataForKey:@"appVersion" inMessage:chat]])
         return CGSizeFromString(chatSize);
     
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
@@ -510,6 +511,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
     
     [LinphoneManager setValueInMessageAppData:NSStringFromCGSize(size) forKey:@"newChatSize" inMessage:chat];
+    [LinphoneManager setValueInMessageAppData:version forKey:@"appVersion" inMessage:chat];
     return size;
 }
 

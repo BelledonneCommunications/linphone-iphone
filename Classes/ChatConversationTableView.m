@@ -105,7 +105,9 @@
 
 - (void)reloadData {
 	[self updateData];
+    preLoad = TRUE;
 	[self.tableView reloadData];
+    preLoad = FALSE;
 	[self scrollToLastUnread:false];
 }
 
@@ -295,6 +297,9 @@ static const int BASIC_EVENT_LIST=20;
 static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    // pre-download data
+    if (preLoad)
+        return 0;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
         LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
