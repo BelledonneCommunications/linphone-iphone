@@ -465,11 +465,16 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         }
         
         if(localFile) {
+            UIImage *image = nil;
             if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                 NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-                UIImage *image = [[UIImage alloc] initWithData:data];
+                image = [[UIImage alloc] initWithData:data];
+            } else if ([localFile hasSuffix:@"MOV"] || [localFile hasSuffix:@"mov"]) {
+                image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+            }
+
+            if (image) {
                 size = [self getMediaMessageSizefromOriginalSize:image.size withWidth:width];
-                
                 // add size for message text
                 size.height += textSize.height;
                 size.width = MAX(textSize.width, size.width);
@@ -526,6 +531,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     messageSize.width = MAX(MAX(messageSize.width, MIN(CELL_MESSAGE_X_MARGIN, width)), CELL_MIN_WIDTH);
 
 	return messageSize;
+}
+
++ (UIImage *)getImageFromVideoUrl:(NSURL *)url {
+    AVURLAsset* asset = [AVURLAsset URLAssetWithURL:url options:nil];
+    AVAssetImageGenerator* generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
+    generator.appliesPreferredTrackTransform = YES;
+    return [UIImage imageWithCGImage:[generator copyCGImageAtTime:CMTimeMake(0, 1) actualTime:nil error:nil]];
 }
 
 - (void)layoutSubviews {

@@ -198,6 +198,10 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                      UIImage *image = [[UIImage alloc] initWithData:data];
                      [self loadImageAsset:nil image:image];
                      _imageGestureRecognizer.enabled = YES;
+                 } else if ([localFile hasSuffix:@"MOV"] || [localFile hasSuffix:@"mov"]) {
+                     UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+                     [self loadImageAsset:nil image:image];
+                     _imageGestureRecognizer.enabled = YES;
                  } else {
                      NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
                      _fileName.text = text;
@@ -215,7 +219,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
             } else {
                 _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
                 fullScreenImage = YES;
-                _playButton.hidden = localVideo ? NO : YES;
+                _playButton.hidden = localVideo ? NO : ([localFile hasSuffix:@"MOV"] || [localFile hasSuffix:@"mov"]) ? NO : YES;
                 _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
                 // Should fix cell not resizing after doanloading image.
                 [self layoutSubviews];
@@ -251,6 +255,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     });
 }
 
+- (void)playVideoByPlayer:(AVPlayer *)player {
+    AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
+    [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+    controller.player = player;
+    [player play];
+}
+
 - (IBAction)onDownloadClick:(id)event {
 	[_ftd cancel];
 	_ftd = [[FileTransferDelegate alloc] init];
@@ -264,17 +275,19 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 
 - (IBAction)onPlayClick:(id)sender {
     PHAsset *asset = [_messageImageView asset];
+    if (!asset) {
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+        AVPlayer *player = [AVPlayer playerWithURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+        [self playVideoByPlayer:player];
+        return;
+    }
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
    // options.synchronous = TRUE;
     [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
         if(playerItem) {
             AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
-            AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
-            [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
-            controller.player = player;
-            [player play];
-        }
-        else {
+            [self playVideoByPlayer:player];
+        } else {
             [self fileErrorBlock];
         }
     }];

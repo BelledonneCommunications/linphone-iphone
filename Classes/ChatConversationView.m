@@ -260,18 +260,15 @@ static UICompositeViewDescription *compositeDescription = nil;
         [_messageField setText:dict[@"message"]];
         NSString *key = [[fileName componentsSeparatedByString:@"."] firstObject];
         NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
-  
-        if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"] || [fileName hasSuffix:@"jpg"] || [fileName hasSuffix:@"png"]) {
-            PHAsset *phasset = [assetDict objectForKey:key];
-            if (!phasset) {
-                // for the images not really in the photo album
-                [self confirmShare:dict[@"nsData"] url:nil fileName:fileName assetId:nil];
-            } else {
-                UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
-                [self chooseImageQuality:image assetId:[phasset localIdentifier]];
-            }
+        PHAsset *phasset = [assetDict objectForKey:key];
+        if (!phasset) {
+            // for the images or videos not really in the photo album
+            [self confirmShare:dict[@"nsData"] url:nil fileName:fileName assetId:nil];
+        } else if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"] || [fileName hasSuffix:@"jpg"] || [fileName hasSuffix:@"png"]) {
+            UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+            [self chooseImageQuality:image assetId:[phasset localIdentifier]];
         } else if ([fileName hasSuffix:@"MOV"] || [fileName hasSuffix:@"mov"]) {
-            [self confirmShare:dict[@"nsData"] url:nil fileName:nil assetId:[[assetDict objectForKey:key] localIdentifier]];
+            [self confirmShare:dict[@"nsData"] url:nil fileName:nil assetId:[phasset localIdentifier]];
         } else {
             LOGE(@"Unable to parse file %@",fileName);
         }
