@@ -111,9 +111,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void) deviceOrientationDidChange:(NSNotification*) notif {
-	if (IPAD) {
-		[self update];
-	}
+    [self update];
 }
 
 #pragma mark -
@@ -147,12 +145,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr withAddressLabel:_addressLabel];
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
     Contact *contact = [FastAddressBook getContactWithAddress:addr];
+    const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
     _linphoneImage.hidden =
-    ! ((contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen) || [FastAddressBook contactHasValidSipDomain:contact]);
+    ! ((model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen) || [FastAddressBook contactHasValidSipDomain:contact]);
+    [self shouldHideEncryptedChatView:model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	ms_free(addrURI);
 
 	[_tableView loadDataForAddress:(callLog ? linphone_call_log_get_remote_address(callLog) : NULL)];
+}
+
+- (void)shouldHideEncryptedChatView:(BOOL)hasLime {
+    _encryptedChatView.hidden = !hasLime;
+    CGRect newFrame = _optionsView.frame;
+    if (!hasLime) {
+        newFrame.origin.x = _encryptedChatView.frame.size.width * 2/3;
+        
+    } else {
+        newFrame.origin.x = 0;
+    }
+    _optionsView.frame = newFrame;
 }
 
 #pragma mark - Action Functions
@@ -195,7 +207,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onChatClick:(id)event {
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-    // TODO one button for chatroom encrypted,another button for chatroom unencrypted
+    [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
+}
+
+- (IBAction)onEncryptedChatClick:(id)sender {
+    const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
     [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
 }
 

@@ -40,11 +40,14 @@
 @property(weak, nonatomic) IBOutlet UILabel *emptyLabel;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 @property (weak, nonatomic) IBOutlet UIRoundedImageView *linphoneImage;
+@property (weak, nonatomic) IBOutlet UIView *optionsView;
+@property (weak, nonatomic) IBOutlet UIView *encryptedChatView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onCallClick:(id)event;
 - (IBAction)onChatClick:(id)event;
+- (IBAction)onEncryptedChatClick:(id)sender;
 - (void)setCallLogId:(NSString *)acallLogId;
 
 @end
