@@ -61,20 +61,33 @@
 
 	_linphoneImage.hidden = TRUE;
 	if (contact) {
+        const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String) : NULL;
+        
 		self.linphoneImage.hidden =
-			!((contact.friend &&
-			   linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(
-				   contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) ||
+			!((model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen) ||
 			  (!linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC),
 													  _addressLabel.text.UTF8String) &&
 			   [FastAddressBook isSipURIValid:_addressLabel.text]));
         ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
         self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
+        [self shouldHideEncryptedChatView:model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
 	}
 
 	if (addr) {
 		linphone_address_destroy(addr);
 	}
+}
+
+- (void)shouldHideEncryptedChatView:(BOOL)hasLime {
+    _encryptedChatView.hidden = !hasLime;
+    CGRect newFrame = _optionsView.frame;
+    if (!hasLime) {
+        newFrame.origin.x = _addressLabel.frame.origin.x + _callButton.frame.size.width * 2/3;
+        
+    } else {
+        newFrame.origin.x = _addressLabel.frame.origin.x;
+    }
+    _optionsView.frame = newFrame;
 }
 
 - (void)shouldHideLinphoneImageOfAddress {
@@ -137,9 +150,14 @@
 
 - (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
-    // TODO one button for chatroom encrypted,another button for chatroom unencrypted
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
 	linphone_address_destroy(addr);
+}
+
+- (IBAction)onEncrptedChatClick:(id)sender {
+    LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
+    [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
+    linphone_address_destroy(addr);
 }
 
 - (IBAction)onDeleteClick:(id)sender {

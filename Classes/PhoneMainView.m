@@ -866,7 +866,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 
 	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
-	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, remoteAddress);
+	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room_2(LC, local, remoteAddress, isEncrypted);
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new((void*)remoteAddress);
 		[self createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];

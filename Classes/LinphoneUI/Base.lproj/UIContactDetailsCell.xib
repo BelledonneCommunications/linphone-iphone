@@ -18,8 +18,10 @@
                 <outlet property="deleteButton" destination="C2f-aP-xjR" id="sxr-th-6rq"/>
                 <outlet property="editTextfield" destination="dTn-Hc-bGM" id="bkN-xg-S9D"/>
                 <outlet property="editView" destination="rAa-qu-PDc" id="cGz-D2-GiI"/>
+                <outlet property="encryptedChatView" destination="ERg-IK-XJX" id="Aam-pm-R6d"/>
                 <outlet property="inviteButton" destination="lgb-5W-T0c" id="iOl-Fl-AXH"/>
                 <outlet property="linphoneImage" destination="ZaI-29-AOK" id="dY1-vO-spk"/>
+                <outlet property="optionsView" destination="Ffn-KZ-0pX" id="spM-xw-9ri"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -59,32 +61,6 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ZbV-2Z-b4y" userLabel="callButton" customClass="UIIconButton">
-                            <rect key="frame" x="135" y="40" width="44" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Call"/>
-                            <state key="normal" image="call_start_body_default.png">
-                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </state>
-                            <state key="disabled" image="call_start_body_disabled.png"/>
-                            <state key="highlighted" image="call_start_body_over.png"/>
-                            <connections>
-                                <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="nVk-zG-i8I"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FDT-HY-OQZ" userLabel="chatButton" customClass="UIIconButton">
-                            <rect key="frame" x="195" y="40" width="44" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Chat"/>
-                            <state key="normal" image="chat_start_body_default.png">
-                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </state>
-                            <state key="disabled" image="chat_start_body_disabled.png"/>
-                            <state key="highlighted" image="chat_start_body_over.png"/>
-                            <connections>
-                                <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="tec-tH-uij"/>
-                            </connections>
-                        </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="frB-ep-LWi" userLabel="addressLabel">
                             <rect key="frame" x="26" y="0.0" width="323" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -108,6 +84,61 @@
                                 <action selector="onSMSInviteClick:" destination="-1" eventType="touchUpInside" id="E8o-h2-mml"/>
                             </connections>
                         </button>
+                        <view contentMode="scaleToFill" id="Ffn-KZ-0pX" userLabel="optionsView">
+                            <rect key="frame" x="26" y="40" width="323" height="44"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ZbV-2Z-b4y" userLabel="callButton" customClass="UIIconButton">
+                                    <rect key="frame" x="79" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Call"/>
+                                    <state key="normal" image="call_start_body_default.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="disabled" image="call_start_body_disabled.png"/>
+                                    <state key="highlighted" image="call_start_body_over.png"/>
+                                    <connections>
+                                        <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="nVk-zG-i8I"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FDT-HY-OQZ" userLabel="chatButton" customClass="UIIconButton">
+                                    <rect key="frame" x="139" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Chat"/>
+                                    <state key="normal" image="chat_start_body_default.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="disabled" image="chat_start_body_disabled.png"/>
+                                    <state key="highlighted" image="chat_start_body_over.png"/>
+                                    <connections>
+                                        <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="tec-tH-uij"/>
+                                    </connections>
+                                </button>
+                                <view contentMode="scaleToFill" id="ERg-IK-XJX" userLabel="encryptedChatView">
+                                    <rect key="frame" x="199" y="0.0" width="44" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Red-NG-DKu" userLabel="encryptedChatButton" customClass="UIIconButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Chat"/>
+                                            <state key="normal" image="chat_start_body_default.png">
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </state>
+                                            <state key="disabled" image="chat_start_body_disabled.png"/>
+                                            <state key="highlighted" image="chat_start_body_over.png"/>
+                                            <connections>
+                                                <action selector="onEncrptedChatClick:" destination="-1" eventType="touchUpInside" id="5IN-7c-QWf"/>
+                                            </connections>
+                                        </button>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="security_toogle_icon_green.png" id="Vk5-LN-LHu" userLabel="securityImage">
+                                            <rect key="frame" x="30" y="0.0" width="18" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                    </subviews>
+                                </view>
+                            </subviews>
+                        </view>
                     </subviews>
                 </view>
             </subviews>
@@ -127,5 +158,6 @@
         <image name="delete_field_default.png" width="27" height="27"/>
         <image name="delete_field_over.png" width="27" height="27"/>
         <image name="linphone_user.png" width="26" height="26"/>
+        <image name="security_toogle_icon_green.png" width="21" height="24"/>
     </resources>
 </document>
