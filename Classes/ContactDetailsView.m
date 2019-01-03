@@ -247,6 +247,8 @@
 		}
 		_cancelButton.hidden = TRUE;
 	}
+    
+    [self recomputeTableViewSize:_editButton.hidden];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -360,21 +362,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_nameLabel.hidden = editing;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 
-	if ([self viewIsCurrentlyPortrait]) {
-		CGRect frame = _tableController.tableView.frame;
-		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
-		if (!editing) {
-			frame.origin.y += _nameLabel.frame.size.height;
-		}
-
-		frame.size.height = _tableController.tableView.contentSize.height;
-		_tableController.tableView.frame = frame;
-		[self recomputeContentViewSize];
-	}
+    [self recomputeTableViewSize:editing];
 
 	if (animated) {
 		[UIView commitAnimations];
 	}
+}
+
+- (void)recomputeTableViewSize:(BOOL)editing {
+    CGRect frame = _tableController.tableView.frame;
+    frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
+    if ([self viewIsCurrentlyPortrait] && !editing) {
+        frame.origin.y += _nameLabel.frame.size.height;
+    }
+    
+    frame.size.height = _tableController.tableView.contentSize.height;
+    _tableController.tableView.frame = frame;
+    [self recomputeContentViewSize];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
