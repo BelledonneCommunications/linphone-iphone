@@ -14,6 +14,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *selectedImage;
 @property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
 @property (weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property (weak, nonatomic) IBOutlet UIImageView *securityImage;
+@property (weak, nonatomic) IBOutlet UIView *greyView;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 

@@ -94,7 +94,15 @@
 
 		char *uri = linphone_address_as_string_uri_only(addr);
 		NSString *address = [NSString stringWithUTF8String:uri];
-		ms_free(uri);
+        ms_free(uri);
+        
+        Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
+        const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
+        if (_isGroupChat && !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityGroupChat))) {
+            results = results->next;
+            continue;
+        }
+        
 		[_addresses addObject:address];
 		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
 
@@ -127,13 +135,16 @@
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
 	NSString *phoneOrAddr = [_phoneOrAddr objectAtIndex:indexPath.row];
 	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
+    const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
-		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
+		|| (model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen);
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
 	if (!addr)
 		return cell;
 	
 	cell.linphoneImage.hidden = !linphoneContact;
+    cell.securityImage.hidden = !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh));
+    cell.userInteractionEnabled = cell.greyView.hidden = _isEncrypted ? !cell.securityImage.hidden : TRUE;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
@@ -143,13 +154,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-
+    if (!cell.userInteractionEnabled)
+        return;
+    
 	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC)) || !_isGroupChat) {
 		// Create directly a basic chat room if there's no factory uri
-		bctbx_list_t *addresses = NULL;
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
-		addresses = bctbx_list_append(addresses, addr);
-        [PhoneMainView.instance createChatRoomWithSubject:NULL addresses:addresses andWaitView:NULL isEncrypted:_isEncrypted];
+        [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:_isEncrypted];
 		linphone_address_unref(addr);
 		return;
 	}

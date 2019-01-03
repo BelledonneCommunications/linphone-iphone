@@ -49,8 +49,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
-	_isForEditing = FALSE;
-    _isEncrypted = TRUE;
+	_isForEditing = FALSE; 
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -67,6 +66,14 @@ static UICompositeViewDescription *compositeDescription = nil;
         frame.origin.x = self.view.frame.size.width * 0.192;
     }
     _chiffreOptionView.frame = frame;
+    _isEncrypted = FALSE;
+    CGRect buttonFrame = _chiffreButton.frame;
+    _tableController.isEncrypted = _isEncrypted;
+
+    // no encrypted by default
+    buttonFrame.origin.x = 2;
+    [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
+    _chiffreButton.frame = buttonFrame;
 
 	_waitView.hidden = YES;
 	_backButton.hidden = IPAD;
@@ -127,7 +134,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     CGRect frame = _chiffreButton.frame;
     _isEncrypted = !_isEncrypted;
     _tableController.isEncrypted = _isEncrypted;
-    // TODO show encrypted contacts
     if (_isEncrypted) {
         // encrypted
         frame.origin.x = 20;
@@ -138,6 +144,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
     }
     _chiffreButton.frame = frame;
+    [_tableController.tableView reloadData];
 }
 
 - (void)dismissKeyboards {

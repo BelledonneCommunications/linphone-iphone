@@ -125,12 +125,12 @@
                                             <rect key="frame" x="56" y="24" width="36" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="security_toogle_background_green.png" translatesAutoresizingMaskIntoConstraints="NO" id="jIQ-qM-GVG" userLabel="chiffreImage">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="security_toogle_background_grey.png" translatesAutoresizingMaskIntoConstraints="NO" id="jIQ-qM-GVG" userLabel="chiffreImage">
                                                     <rect key="frame" x="0.0" y="0.0" width="36" height="18"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uUN-bl-g4c" userLabel="chiffreButton">
-                                                    <rect key="frame" x="20" y="2" width="14" height="14"/>
+                                                    <rect key="frame" x="0.0" y="2" width="14" height="14"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="security_toogle_button.png"/>
                                                     <connections>
@@ -237,7 +237,7 @@
         <image name="contacts_sip_selected.png" width="39" height="39"/>
         <image name="next_default.png" width="24" height="22"/>
         <image name="next_disabled.png" width="24" height="22"/>
-        <image name="security_toogle_background_green.png" width="52" height="27"/>
+        <image name="security_toogle_background_grey.png" width="52" height="27"/>
         <image name="security_toogle_button.png" width="21" height="21"/>
         <image name="security_toogle_icon_green.png" width="21" height="24"/>
         <image name="security_toogle_icon_grey.png" width="21" height="24"/>
