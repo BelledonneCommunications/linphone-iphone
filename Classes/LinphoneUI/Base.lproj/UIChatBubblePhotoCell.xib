@@ -74,6 +74,20 @@
                                 </imageView>
                             </subviews>
                         </view>
+                        <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" preservesSuperviewLayoutMargins="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VYJ-RC-Jmg" userLabel="finalAssetView">
+                            <rect key="frame" x="7" y="10" width="351" height="252"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gzv-K4-5OL" userLabel="finalImage">
+                                    <rect key="frame" x="0.0" y="0.0" width="351" height="262"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <gestureRecognizers/>
+                                </imageView>
+                            </subviews>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="lKJ-ra-dwR"/>
+                            </connections>
+                        </view>
                         <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GmN-7v-uuO" userLabel="imageSubView">
                             <rect key="frame" x="31" y="50" width="299" height="87"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -109,33 +123,19 @@
                                 </button>
                             </subviews>
                         </view>
-                        <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" preservesSuperviewLayoutMargins="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VYJ-RC-Jmg" userLabel="finalAssetView">
-                            <rect key="frame" x="7" y="10" width="351" height="252"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gzv-K4-5OL" userLabel="finalImage">
-                                    <rect key="frame" x="0.0" y="0.0" width="351" height="262"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <gestureRecognizers/>
-                                </imageView>
-                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cvc-tl-Pcf" userLabel="playButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="125" y="93" width="50" height="25"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                    <state key="normal" title="PLAY" backgroundImage="color_I.png">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </state>
-                                    <state key="highlighted" backgroundImage="color_M.png"/>
-                                    <connections>
-                                        <action selector="onPlayClick:" destination="-1" eventType="touchUpInside" id="B4y-PJ-4tO"/>
-                                    </connections>
-                                </button>
-                            </subviews>
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cvc-tl-Pcf" userLabel="playButton" customClass="UIRoundBorderedButton">
+                            <rect key="frame" x="158" y="106" width="50" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Cancel"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <state key="normal" title="PLAY" backgroundImage="color_I.png">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                            <state key="highlighted" backgroundImage="color_M.png"/>
                             <connections>
-                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="lKJ-ra-dwR"/>
+                                <action selector="onPlayClick:" destination="-1" eventType="touchUpInside" id="B4y-PJ-4tO"/>
                             </connections>
-                        </view>
+                        </button>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." translatesAutoresizingMaskIntoConstraints="NO" id="cx9-0K-P9L" userLabel="messageText" customClass="UITextViewNoDefine">
                             <rect key="frame" x="0.0" y="262" width="365" height="35"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
