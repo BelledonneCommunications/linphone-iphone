@@ -16,6 +16,7 @@
 
 @property(nonatomic, strong) NSMutableArray *addresses;
 @property(nonatomic, strong) NSMutableArray *phoneOrAddr;
+@property(nonatomic, strong) NSMutableArray *addressesCached;
 @end
 
 @implementation ChatConversationCreateTableView
@@ -40,6 +41,7 @@
 
 	_addresses = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
 	_phoneOrAddr = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
+    _addressesCached = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
@@ -66,6 +68,7 @@
 - (void)reloadDataWithFilter:(NSString *)filter {
 	[_addresses removeAllObjects];
 	[_phoneOrAddr removeAllObjects];
+    [_addressesCached removeAllObjects];
 
 	if (!_magicSearch)
 		return;
@@ -96,15 +99,9 @@
 		NSString *address = [NSString stringWithUTF8String:uri];
         ms_free(uri);
         
-        Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
-        const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
-        if (_isGroupChat && !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityGroupChat))) {
-            results = results->next;
-            continue;
-        }
-        
 		[_addresses addObject:address];
 		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
+        [_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
 
 		results = results->next;
 	}
@@ -144,7 +141,10 @@
 	
 	cell.linphoneImage.hidden = !linphoneContact;
     cell.securityImage.hidden = !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh));
-    cell.userInteractionEnabled = cell.greyView.hidden = _isEncrypted ? !cell.securityImage.hidden : TRUE;
+    int capabilities = [[_addressesCached objectAtIndex:indexPath.row] intValue];
+    BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;
+    BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
+    cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
