@@ -990,6 +990,8 @@ void on_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view configureForRoom:false];
 	[view.tableController scrollToBottom:true];
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 }
 
 void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
