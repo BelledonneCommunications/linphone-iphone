@@ -77,6 +77,7 @@ NSString *const kLinphoneCallEncryptionChanged = @"LinphoneCallEncryptionChanged
 NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
+NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 

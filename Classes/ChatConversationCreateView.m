@@ -54,7 +54,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+    [self viewUpdateEvent:nil];
+    
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(viewUpdateEvent:)
+                                                   name:kLinphoneChatCreateViewChange
+                                                 object:nil];
+}
 
+- (void)viewUpdateEvent:(NSNotification *)notif {
     CGRect frame = _chiffreOptionView.frame;
     if (_isGroupChat) {
         _nextButton.hidden = FALSE;
@@ -95,7 +104,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableController.isForEditing = _isForEditing;
     _tableController.isGroupChat = _isGroupChat;
     _tableController.isEncrypted = _isEncrypted;
-	[self changeView:ContactsLinphone];
+    [self changeView:ContactsLinphone];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - Chat room functions
