@@ -299,7 +299,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // pre-download data
     if (preLoad)
-        return 0;
+        return 60;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
         LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);

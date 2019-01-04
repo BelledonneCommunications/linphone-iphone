@@ -444,7 +444,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                                    size:CGSizeMake(width - 4, CGFLOAT_MAX)
                                    font:messageFont];
         size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
-        size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN + 40, CELL_MIN_HEIGHT);
+        size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN + 50, CELL_MIN_HEIGHT);
         return size;
     }
 
