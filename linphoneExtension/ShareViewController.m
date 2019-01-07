@@ -87,17 +87,13 @@
                                            @"url" : filename,
                                            @"message" : self.contentText};
                     [defaults setObject:dict forKey:@"icloudData"];
-                } else  {
-                    //Others
-                    NSDictionary *dict = @{@"url" : [url absoluteString],
-                                           @"message" : self.contentText};
-                    [defaults setObject:dict forKey:@"url"];
                 }
             } else {
-                NSLog(@"NSExtensionItem Error, provider = %@", provider);
-                [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+                //Others
+                NSDictionary *dict = @{@"url" : [url absoluteString],
+                                       @"message" : self.contentText};
+                [defaults setObject:dict forKey:@"url"];
             }
-            
             [self respondUrl:defaults];
         } else if ([(NSObject*)item isKindOfClass:[UIImage class]]) {
             UIImage *image = (UIImage*)item;
