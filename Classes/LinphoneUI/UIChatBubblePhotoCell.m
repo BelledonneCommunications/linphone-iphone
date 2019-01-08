@@ -165,6 +165,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 	BOOL fullScreenImage = NO;
 	assert(is_external || localImage || localVideo || localFile);
+    NSString *type = [NSString stringWithUTF8String:linphone_chat_message_get_content_type(self.message)];
     
     if (!(localImage || localVideo || localFile)) {
         _playButton.hidden = YES;
@@ -193,13 +194,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                 }
             }
              else if (localFile) {
-                 if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
-                     NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-                     UIImage *image = [[UIImage alloc] initWithData:data];
+                 if ([type isEqualToString:@"video/"]) {
+                     UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                      [self loadImageAsset:nil image:image];
                      _imageGestureRecognizer.enabled = YES;
-                 } else if ([localFile hasSuffix:@"MOV"] || [localFile hasSuffix:@"mov"]) {
-                     UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+                 } else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+                     NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+                     UIImage *image = [[UIImage alloc] initWithData:data];
                      [self loadImageAsset:nil image:image];
                      _imageGestureRecognizer.enabled = YES;
                  } else {
@@ -219,7 +220,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
             } else {
                 _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
                 fullScreenImage = YES;
-                _playButton.hidden = localVideo ? NO : ([localFile hasSuffix:@"MOV"] || [localFile hasSuffix:@"mov"]) ? NO : YES;
+                _playButton.hidden = ![type isEqualToString:@"video/"];
                 _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
                 // Should fix cell not resizing after doanloading image.
                 [self layoutSubviews];

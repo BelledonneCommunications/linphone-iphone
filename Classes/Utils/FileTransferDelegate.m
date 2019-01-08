@@ -296,8 +296,16 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {
     // we will write local files into ours folder of icloud
     ChatConversationView *view = VIEW(ChatConversationView);
-    if ([view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]])
-        [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
+    NSURL *url = [view getICloudFileUrl:name];
+    if ([view writeFileInICloud:data fileURL:url]) {
+        AVAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
+        if ([[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0) {
+            // if it's a video
+            [self uploadData:data forChatRoom:chatRoom type:@"video" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
+        } else {
+            [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
+        }
+    }
 }
 
 

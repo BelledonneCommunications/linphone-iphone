@@ -467,11 +467,12 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         
         if(localFile) {
             UIImage *image = nil;
-            if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+            NSString *type = [NSString stringWithUTF8String:linphone_chat_message_get_content_type(chat)];
+            if ([type isEqualToString:@"video/"]) {
+                image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+            } else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                 NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                 image = [[UIImage alloc] initWithData:data];
-            } else if ([localFile hasSuffix:@"MOV"] || [localFile hasSuffix:@"mov"]) {
-                image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
             }
 
             if (image) {
