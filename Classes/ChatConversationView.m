@@ -1029,8 +1029,15 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSURL *)getICloudFileUrl:(NSString *)name {
+    if (@available(iOS 11.0, *)) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsPath = [paths objectAtIndex:0];
+        NSURL *url = [NSURL fileURLWithPath:documentsPath];
+        return [url URLByAppendingPathComponent:name];
+    }
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *icloudPath = [[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"];
+    NSURL *icloudPath = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent:@"Documents"];
     
     if (icloudPath) {
         if (![fileManager fileExistsAtPath:icloudPath.path isDirectory:nil]) {
