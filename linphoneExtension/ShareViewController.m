@@ -62,12 +62,6 @@
 - (void)loadItem:(NSItemProvider *)provider typeIdentifier:(NSString *)typeIdentifier defaults:(NSUserDefaults *)defaults
 {
     [provider loadItemForTypeIdentifier:typeIdentifier options:nil completionHandler:^(id<NSSecureCoding>  _Nullable item, NSError * _Null_unspecified error) {
-        /*if([(NSObject*)item isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *dico = (NSDictionary *)item;
-            if (dico) {
-                return;
-            }
-        }*/
         if([(NSObject*)item isKindOfClass:[NSURL class]]) {
             NSURL *url = (NSURL *)item;
             NSData *nsData = [NSData dataWithContentsOfURL:url];
@@ -87,6 +81,10 @@
                                            @"url" : filename,
                                            @"message" : self.contentText};
                     [defaults setObject:dict forKey:@"icloudData"];
+                } else {
+                    NSDictionary *dict = @{@"url" : [url absoluteString],
+                                           @"message" : self.contentText};
+                    [defaults setObject:dict forKey:@"url"];
                 }
             } else {
                 //Others
@@ -94,6 +92,7 @@
                                        @"message" : self.contentText};
                 [defaults setObject:dict forKey:@"url"];
             }
+
             [self respondUrl:defaults];
         } else if ([(NSObject*)item isKindOfClass:[UIImage class]]) {
             UIImage *image = (UIImage*)item;
