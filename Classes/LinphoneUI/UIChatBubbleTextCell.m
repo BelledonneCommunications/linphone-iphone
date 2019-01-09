@@ -559,7 +559,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
     CGSize mediaSize = CGSizeMake(0, 0);
     int availableWidth = width;
-    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) || IPAD) {
         availableWidth = availableWidth /1.7;
     }
     
