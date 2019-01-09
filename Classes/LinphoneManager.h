@@ -160,7 +160,8 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
 + (PHFetchResult *)getPHAssets:(NSString *)key;
 + (NSString*)bundleFile:(NSString*)file;
-+ (NSString*)documentFile:(NSString*)file;
++ (NSString *)documentFile:(NSString *)file;
++ (NSString*)dataFile:(NSString*)file;
 + (NSString*)cacheDirectory;
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;

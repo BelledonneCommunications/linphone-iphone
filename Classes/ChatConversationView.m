@@ -1030,10 +1030,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 - (NSURL *)getICloudFileUrl:(NSString *)name {
     if (@available(iOS 11.0, *)) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsPath = [paths objectAtIndex:0];
-        NSURL *url = [NSURL fileURLWithPath:documentsPath];
-        return [url URLByAppendingPathComponent:name];
+        return [NSURL fileURLWithPath:[LinphoneManager documentFile:name]];
     }
     
     NSFileManager *fileManager = [NSFileManager defaultManager];

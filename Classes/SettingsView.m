@@ -997,11 +997,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory"]) {
 		// retrieve linphone rc
 		[attachments
-			addObject:@[ [LinphoneManager documentFile:@"linphonerc"], @"text/plain", @"linphone-configuration.rc" ]];
+			addObject:@[ [LinphoneManager dataFile:@"linphonerc"], @"text/plain", @"linphone-configuration.rc" ]];
 
 		// retrieve historydb
 		[attachments addObject:@[
-			[LinphoneManager documentFile:@"linphone_chats.db"],
+			[LinphoneManager dataFile:@"linphone_chats.db"],
 			@"application/x-sqlite3",
 			@"linphone-chats-history.db"
 		]];

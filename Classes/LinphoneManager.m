@@ -342,6 +342,29 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		[self lpConfigSetBool:YES forKey:@"migration_xmlrpc"];
 	}
 	[self lpConfigSetBool:NO forKey:@"store_friends" inSection:@"misc"]; //so far, storing friends in files is not needed. may change in the future.
+    
+    // migration of important file, move these files to app library.
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"linphonerc"] destination:[LinphoneManager dataFile:@"linphonerc"] override:TRUE]) {
+        [NSFileManager.defaultManager
+         removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
+         error:nil];
+    }
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"linphone_chats.db"] destination:[LinphoneManager dataFile:@"linphone_chats.db"] override:TRUE]) {
+        [NSFileManager.defaultManager
+         removeItemAtPath:[LinphoneManager documentFile:@"linphone_chats.db"]
+         error:nil];
+    }
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"zrtp_secrets"] destination:[LinphoneManager dataFile:@"zrtp_secrets"] override:TRUE]) {
+        [NSFileManager.defaultManager
+         removeItemAtPath:[LinphoneManager documentFile:@"zrtp_secrets"]
+         error:nil];
+    }
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"zrtp_secrets.bkp"] destination:[LinphoneManager dataFile:@"zrtp_secrets.bkp"] override:TRUE]) {
+        [NSFileManager.defaultManager
+         removeItemAtPath:[LinphoneManager documentFile:@"zrtp_secrets.bkp"]
+         error:nil];
+    }
+    
 }
 
 static int check_should_migrate_images(void *data, int argc, char **argv, char **cnames) {
@@ -1814,8 +1837,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	linphone_core_enable_keep_alive(theLinphoneCore, true);
 
 	// get default config from bundle
-	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
-	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
+	NSString *zrtpSecretsFileName = [LinphoneManager dataFile:@"zrtp_secrets"];
+	NSString *chatDBFileName = [LinphoneManager dataFile:kLinphoneInternalChatDBFilename];
 
 	NSString *device = [[NSMutableString alloc]
 		initWithString:[NSString
@@ -2483,8 +2506,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	// rename .linphonerc to linphonerc to ease debugging: when downloading
 	// containers from MacOSX, Finder do not display hidden files leading
 	// to useless painful operations to display the .linphonerc file
-	NSString *src = [LinphoneManager documentFile:@".linphonerc"];
-	NSString *dst = [LinphoneManager documentFile:@"linphonerc"];
+	NSString *src = [LinphoneManager dataFile:@".linphonerc"];
+	NSString *dst = [LinphoneManager dataFile:@"linphonerc"];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSError *fileError = nil;
 	if ([fileManager fileExistsAtPath:src]) {
@@ -2505,7 +2528,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (IPAD && [[NSFileManager defaultManager] fileExistsAtPath:srcIpad]) {
 		src = srcIpad;
 	}
-	NSString *dst = [LinphoneManager documentFile:@"linphonerc"];
+	NSString *dst = [LinphoneManager dataFile:@"linphonerc"];
 	[LinphoneManager copyFile:src destination:dst override:FALSE];
 }
 
@@ -2515,7 +2538,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (IPAD && [[NSFileManager defaultManager] fileExistsAtPath:factoryIpad]) {
 		factory = factoryIpad;
 	}
-	NSString *confiFileName = [LinphoneManager documentFile:@"linphonerc"];
+	NSString *confiFileName = [LinphoneManager dataFile:@"linphonerc"];
 	_configDb = lp_config_new_with_factory([confiFileName UTF8String], [factory UTF8String]);
 }
 #pragma mark - Audio route Functions
@@ -2861,9 +2884,28 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)documentFile:(NSString *)file {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsPath = [paths objectAtIndex:0];
-	return [documentsPath stringByAppendingPathComponent:file];
+     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+     NSString *documentsPath = [paths objectAtIndex:0];
+     return [documentsPath stringByAppendingPathComponent:file];
+}
+
++ (NSString *)dataFile:(NSString *)file {
+    // TODO : migrate with function dataFile of submodule
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString *writablePath = [paths objectAtIndex:0];
+    NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+        NSError *error;
+        LOGI(@"Data path %@ does not exist, creating it.",fullPath);
+        if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
+                                       withIntermediateDirectories:YES
+                                                        attributes:nil
+                                                             error:&error]) {
+            LOGE(@"Create data path directory error: %@",error.description);
+        }
+    }
+    
+    return [fullPath stringByAppendingPathComponent:file];
 }
 
 + (NSString *)cacheDirectory {
