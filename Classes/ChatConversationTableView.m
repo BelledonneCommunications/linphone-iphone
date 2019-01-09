@@ -191,7 +191,7 @@
 }
 
 static const int MAX_AGGLOMERATED_TIME=300;
-static const int BASIC_EVENT_LIST=20;
+static const int BASIC_EVENT_LIST=15;
 
 - (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
     LinphoneEventLog *previousEvent = nil;
