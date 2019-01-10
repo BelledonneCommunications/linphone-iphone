@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.org.linphone.phone.latestChatroomsWidget</string>
+		<string>group.belledonne-communications.linphone.widget</string>
 	</array>
 </dict>
 </plist>

@@ -124,7 +124,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 + (void) saveDataToUserDefaults {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:[NSString stringWithFormat:@"group.%@.latestChatroomsWidget",[[NSBundle mainBundle] bundleIdentifier]]];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.widget"];
     MSList *sorted = nil;
     const MSList *unsorted = linphone_core_get_chat_rooms(LC);
     const MSList *iter = unsorted;
@@ -152,19 +152,23 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
                  forKey:@"peer"];
         [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(local_address)]
                  forKey:@"local"];
-        if (linphone_chat_room_get_conference_address(cr)) {
+        LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(cr);
+        if (!(capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
             if (!linphone_chat_room_get_subject(cr)) {
                 sorted = sorted->next;
                 continue;
             }
             display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
         } else {
-            if (!linphone_address_get_username(peer_address)) {
+            bctbx_list_t *participants = linphone_chat_room_get_participants(cr);
+            LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+            const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(cr);
+            if (!linphone_address_get_username(addr)) {
                 sorted = sorted->next;
                 continue;
             }
-            display = [NSString stringWithUTF8String:linphone_address_get_display_name(peer_address)?:linphone_address_get_username(peer_address)];
-            if ([FastAddressBook imageForAddress:peer_address])
+            display = [NSString stringWithUTF8String:linphone_address_get_display_name(addr)?:linphone_address_get_username(addr)];
+            if ([FastAddressBook imageForAddress:addr])
                 [dict setObject:UIImageJPEGRepresentation([UIImage resizeImage:[FastAddressBook imageForAddress:peer_address]
                                                                   withMaxWidth:200
                                                                   andMaxHeight:200],

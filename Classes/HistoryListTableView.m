@@ -169,7 +169,7 @@
 
 + (void) saveDataToUserDefaults {
     const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
-    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: [NSString stringWithFormat:@"group.%@.latestCallsWidget",[[NSBundle mainBundle] bundleIdentifier]]];
+    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
     NSMutableArray *logsShare = [NSMutableArray array];
     NSMutableDictionary *tmpStoreDict = [NSMutableDictionary dictionary];
     NSMutableArray *addedContacts = [NSMutableArray array];

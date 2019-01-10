@@ -337,7 +337,7 @@
     completionHandler([self handleShortcut:shortcutItem]);
 }
 
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options{
 	NSString *scheme = [[url scheme] lowercaseString];
 	if ([scheme isEqualToString:@"linphone-config"] || [scheme isEqualToString:@"linphone-config"]) {
 		NSString *encodedURL =
