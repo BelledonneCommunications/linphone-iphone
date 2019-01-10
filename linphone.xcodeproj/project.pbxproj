@@ -86,6 +86,7 @@
 		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
 		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
 		5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */; };
 		61586B81217A16EE0038AC45 /* menu_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B7A217A16EE0038AC45 /* menu_about.png */; };
 		61586B83217A16FD0038AC45 /* menu_about@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B82217A16FD0038AC45 /* menu_about@2x.png */; };
 		61586B85217A17070038AC45 /* menu_assistant.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B84217A17070038AC45 /* menu_assistant.png */; };
@@ -1073,6 +1074,7 @@
 		5EEE8FA320C80C23006E4176 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5EEE8FB320C81334006E4176 /* latestCallsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestCallsWidget.entitlements; sourceTree = "<group>"; };
 		5EF0C33820C806A5005081B0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
+		614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		61586B7A217A16EE0038AC45 /* menu_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_about.png; sourceTree = "<group>"; };
 		61586B82217A16FD0038AC45 /* menu_about@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_about@2x.png"; sourceTree = "<group>"; };
 		61586B84217A17070038AC45 /* menu_assistant.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_assistant.png; sourceTree = "<group>"; };
@@ -2469,6 +2471,7 @@
 			isa = PBXGroup;
 			children = (
 				8C23BCB71D82AAC3005F19BB /* linphone.entitlements */,
+				614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				61AE364C20C00B370089D9D3 /* linphoneExtension */,
 				5EEE8F9C20C80C23006E4176 /* latestCallsWidget */,
@@ -3481,7 +3484,7 @@
 				8CB438A61EE6A65D0006F944 /* ShellScript */,
 				5EF0C35020C806A5005081B0 /* Embed App Extensions */,
 				4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */,
-				0E70C23C2B84BABCF0D5BF2E /* [CP] Copy Pods Resources */,
+				A73A24C4B99B11012FDAA7CF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -3596,7 +3599,7 @@
 				F0BB8BD21936208100974404 /* Frameworks */,
 				F0BB8BD31936208100974404 /* Resources */,
 				A68C4E88E4EC059C04D389FE /* [CP] Embed Pods Frameworks */,
-				45CB2A589D4FC8AE7145784A /* [CP] Copy Pods Resources */,
+				61C84B4200D58AABECCE326E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4298,6 +4301,7 @@
 				633FEE3F1D3CD5590014B822 /* contacts_all_disabled@2x.png in Resources */,
 				633FEF3B1D3CD55A0014B822 /* security_ko@2x.png in Resources */,
 				633FEE4A1D3CD5590014B822 /* delete_disabled.png in Resources */,
+				614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */,
 				633FEF151D3CD55A0014B822 /* pause_small_default@2x.png in Resources */,
 				633FEEF91D3CD55A0014B822 /* numpad_star_over~ipad@2x.png in Resources */,
 				633FEDCB1D3CD5590014B822 /* call_outgoing@2x.png in Resources */,
@@ -4472,24 +4476,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0E70C23C2B84BABCF0D5BF2E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-resources.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		20EEEF6D60A7B77C2EFF85DB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4526,24 +4512,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		45CB2A589D4FC8AE7145784A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4551,10 +4519,12 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
@@ -4566,13 +4536,16 @@
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
@@ -4584,6 +4557,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4624,6 +4598,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		61C84B4200D58AABECCE326E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
@@ -4714,10 +4710,12 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
@@ -4729,13 +4727,16 @@
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
@@ -4747,10 +4748,33 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A73A24C4B99B11012FDAA7CF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-resources.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-linphone/Pods-linphone-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F43E063274A630F02AB2AAEC /* [CP] Check Pods Manifest.lock */ = {
@@ -5586,8 +5610,9 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -5598,6 +5623,7 @@
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -5682,8 +5708,9 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -5694,6 +5721,7 @@
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -5778,8 +5806,9 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -5790,6 +5819,7 @@
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -5874,8 +5904,9 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -5886,6 +5917,7 @@
 					"-DCHECK_VERSION_UPDATE=FALSE",
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -6647,6 +6679,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6692,6 +6725,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6737,6 +6771,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6782,6 +6817,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6833,6 +6869,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6884,6 +6921,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6935,6 +6973,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6986,6 +7025,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

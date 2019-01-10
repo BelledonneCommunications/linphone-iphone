@@ -1,6 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '9.0'
 source "git@gitlab.linphone.org:BC/public/podspec.git"
+source "https://github.com/CocoaPods/Specs.git"
 
 target 'latestCallsWidget' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
@@ -24,7 +25,8 @@ target 'liblinphoneTester' do
 
   # Pods for liblinphoneTester
   pod 'linphone-sdk', '~> 4.1-152-g7a39770'
-
+  pod 'Firebase/Core'
+  
   target 'liblinphoneTesterTests' do
     inherit! :search_paths
     # Pods for testing
@@ -38,6 +40,7 @@ target 'linphone' do
 
   # Pods for linphone
   pod 'linphone-sdk', '~> 4.1-152-g7a39770'
+  pod 'Firebase/Core'
 
   target 'linphoneTests' do
     inherit! :search_paths
