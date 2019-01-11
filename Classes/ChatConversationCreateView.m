@@ -133,11 +133,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onNextClick:(id)sender {
-	if (_tableController.contactsGroup.count == 1 && !_isForEditing) {
-		[self createChatRoom];
-		return;
-	}
-
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.contacts = _tableController.contactsGroup;
 	view.create = !_isForEditing;

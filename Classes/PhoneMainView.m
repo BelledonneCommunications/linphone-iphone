@@ -912,8 +912,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
 	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
 	linphone_chat_room_add_callbacks(room, cbs);
-
-	linphone_chat_room_add_participants(room, addresses);
+    
+    if (bctbx_list_size(addresses) == 1) {
+        //avoid creating ont-to-one chatroom
+        linphone_chat_room_add_participant(room, addresses->data);
+    } else {
+        linphone_chat_room_add_participants(room, addresses);
+    }
 }
 
 - (void)goToChatRoom:(LinphoneChatRoom *)cr {
