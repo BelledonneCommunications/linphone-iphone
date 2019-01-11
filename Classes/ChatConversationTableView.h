@@ -39,7 +39,6 @@
   @private
 	NSMutableArray *eventList;
     NSMutableArray *totalEventList;
-    BOOL preLoad;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;

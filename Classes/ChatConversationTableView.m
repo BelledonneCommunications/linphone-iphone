@@ -45,11 +45,12 @@
 #pragma mark -
 
 - (void)clearEventList {
-    for (NSValue *value in eventList) {
+    for (NSValue *value in totalEventList) {
         LinphoneEventLog *event = value.pointerValue;
         linphone_event_log_unref(event);
     }
     [eventList removeAllObjects];
+    [totalEventList removeAllObjects];
 }
 
 - (void)updateData {
@@ -105,14 +106,13 @@
 
 - (void)reloadData {
 	[self updateData];
-    preLoad = TRUE;
 	[self.tableView reloadData];
-    preLoad = FALSE;
 	[self scrollToLastUnread:false];
 }
 
 - (void)addEventEntry:(LinphoneEventLog *)event {
 	[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+    [totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
 	int pos = (int)eventList.count - 1;
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
 	[self.tableView beginUpdates];
@@ -297,9 +297,6 @@ static const int BASIC_EVENT_LIST=15;
 static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    // pre-download data
-    if (preLoad)
-        return 60;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
         LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);

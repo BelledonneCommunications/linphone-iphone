@@ -237,6 +237,11 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 			linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(thiz.message), NULL);
 			thiz.message = NULL;
 			[thiz stopAndDestroy];
+            //workaround fix : avoid chatconversationtableview scrolling
+            [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneFileTransferSendUpdate
+                                                              object:thiz
+                                                            userInfo:@{@"state" : @(LinphoneChatMessageStateDelivered),
+                                                                       }];
 		}
 		return buffer;
 	} else {
