@@ -84,9 +84,6 @@
                                     <gestureRecognizers/>
                                 </imageView>
                             </subviews>
-                            <connections>
-                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="lKJ-ra-dwR"/>
-                            </connections>
                         </view>
                         <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GmN-7v-uuO" userLabel="imageSubView">
                             <rect key="frame" x="31" y="50" width="299" height="87"/>
@@ -174,6 +171,7 @@
                     </subviews>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
+                        <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="FIv-pl-I8J"/>
                     </connections>
                 </view>
             </subviews>
