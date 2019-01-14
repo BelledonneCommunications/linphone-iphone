@@ -1056,7 +1056,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         return FALSE;
     }
     
-    if ([fileManager isUbiquitousItemAtURL:fileURL]) {
+    if ([fileManager fileExistsAtPath:[fileURL path]]) {
         // if it exists, replace the file
         return [data writeToURL:fileURL atomically:TRUE];
     } else {
@@ -1068,7 +1068,12 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         }
         
         NSError *error;
-        return [[NSFileManager defaultManager] setUbiquitous:YES itemAtURL:localURL destinationURL:fileURL error:&error];
+        if ([[NSFileManager defaultManager] setUbiquitous:YES itemAtURL:localURL destinationURL:fileURL error:&error]) {
+            return TRUE;
+        } else {
+            LOGE(@"Cannot write file in Icloud file [%@]",[error localizedDescription]);
+            return FALSE;
+        }
     }
 }
 

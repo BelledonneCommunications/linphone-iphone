@@ -440,8 +440,9 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN + 50, CELL_MIN_HEIGHT);
         return size;
     }
-
-    if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
+    
+    LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
+    if (url == nil && fileContent == NULL) {
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
@@ -460,8 +461,8 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         
         if(localFile) {
             UIImage *image = nil;
-            NSString *type = [NSString stringWithUTF8String:linphone_chat_message_get_content_type(chat)];
-            if ([type isEqualToString:@"video/"]) {
+            NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
+            if ([type isEqualToString:@"video"]) {
                 image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
             } else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                 NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];

@@ -165,7 +165,9 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 	BOOL fullScreenImage = NO;
 	assert(is_external || localImage || localVideo || localFile);
-    NSString *type = [NSString stringWithUTF8String:linphone_chat_message_get_content_type(self.message)];
+    
+    LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(self.message);
+    NSString *type = fileContent ? [NSString stringWithUTF8String:linphone_content_get_type(fileContent)] : nil;
     
     if (!(localImage || localVideo || localFile)) {
         _playButton.hidden = YES;
@@ -194,7 +196,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                 }
             }
              else if (localFile) {
-                 if ([type isEqualToString:@"video/"]) {
+                 if ([type isEqualToString:@"video"]) {
                      UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                      [self loadImageAsset:nil image:image];
                      _imageGestureRecognizer.enabled = YES;
@@ -220,7 +222,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
             } else {
                 _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
                 fullScreenImage = YES;
-                _playButton.hidden = ![type isEqualToString:@"video/"];
+                _playButton.hidden = ![type isEqualToString:@"video"];
                 _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
                 // Should fix cell not resizing after doanloading image.
                 [self layoutSubviews];
