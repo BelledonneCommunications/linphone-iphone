@@ -869,7 +869,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room_2(LC, local, remoteAddress, isEncrypted);
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new((void*)remoteAddress);
-		[self createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
+		[self createOneToOneChatRoom:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
 		bctbx_list_free(addresses);
 		return;
 	}
@@ -877,41 +877,18 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[self goToChatRoom:room];
 }
 
+- (void)createOneToOneChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
+    LinphoneChatRoom *room = [self createChatRoom:subject addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
+    if (!room)
+        return;
+
+    linphone_chat_room_add_participants(room, addresses);
+}
+
 - (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
-	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
-		|| ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] && bctbx_list_size(addresses) == 1)) {
-		// If there's no factory uri, create a basic chat room
-		if (bctbx_list_size(addresses) != 1) {
-			// Display Error: unsuported group chat
-			UIAlertController *errView =
-			[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Conversation creation error", nil)
-												message:NSLocalizedString(@"Group conversation is not supported.", nil)
-										 preferredStyle:UIAlertControllerStyleAlert];
-
-			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction *action) {}];
-			[errView addAction:defaultAction];
-			[self presentViewController:errView animated:YES completion:nil];
-			return;
-		}
-		LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
-		[self goToChatRoom:basicRoom];
-		return;
-	}
-
-	_waitView = waitView;
-	_waitView.hidden = NO;
-    // always use group chatroom
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room_2(LC, subject ?: LINPHONE_DUMMY_SUBJECT, false, isEncrypted);
-	if (!room) {
-		_waitView.hidden = YES;
-		return;
-	}
-
-	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
-	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
-	linphone_chat_room_add_callbacks(room, cbs);
+    LinphoneChatRoom *room = [self createChatRoom:subject addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
+    if (!room)
+        return;
     
     if (bctbx_list_size(addresses) == 1) {
         //avoid creating ont-to-one chatroom
@@ -919,6 +896,45 @@ static RootViewManager *rootViewManagerInstance = nil;
     } else {
         linphone_chat_room_add_participants(room, addresses);
     }
+}
+
+- (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
+    if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
+        || ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] && bctbx_list_size(addresses) == 1)) {
+        // If there's no factory uri, create a basic chat room
+        if (bctbx_list_size(addresses) != 1) {
+            // Display Error: unsuported group chat
+            UIAlertController *errView =
+            [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Conversation creation error", nil)
+                                                message:NSLocalizedString(@"Group conversation is not supported.", nil)
+                                         preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction *action) {}];
+            [errView addAction:defaultAction];
+            [self presentViewController:errView animated:YES completion:nil];
+            return nil;
+        }
+        LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
+        [self goToChatRoom:basicRoom];
+        return nil;
+    }
+    
+    _waitView = waitView;
+    _waitView.hidden = NO;
+    // always use group chatroom
+    LinphoneChatRoom *room = linphone_core_create_client_group_chat_room_2(LC, subject ?: LINPHONE_DUMMY_SUBJECT, false, isEncrypted);
+    if (!room) {
+        _waitView.hidden = YES;
+        return nil;
+    }
+    
+    LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
+    linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
+    linphone_chat_room_add_callbacks(room, cbs);
+    
+    return room;
 }
 
 - (void)goToChatRoom:(LinphoneChatRoom *)cr {

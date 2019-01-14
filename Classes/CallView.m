@@ -758,7 +758,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	const LinphoneCall *currentCall = linphone_core_get_current_call(LC);
 	const LinphoneAddress *addr = currentCall ? linphone_call_get_remote_address(currentCall) : NULL;
     // TODO encrpted or unencrpted
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
 }
 
 - (IBAction)onRecordClick:(id)sender {
