@@ -85,6 +85,21 @@
 	}
         PhoneMainView.instance.currentName = _contact.displayName;
         _nameLabel.text = PhoneMainView.instance.currentName;
+
+    // fix no sipaddresses in contact.friend
+    const MSList *sips = linphone_friend_get_addresses(_contact.friend);
+    while (sips) {
+        linphone_friend_remove_address(_contact.friend, sips->data);
+        sips = sips->next;
+    }
+    
+    for (NSString *sipAddr in _contact.sipAddresses) {
+        LinphoneAddress *addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
+        if (addr) {
+            linphone_friend_add_address(_contact.friend, addr);
+            linphone_address_destroy(addr);
+        }
+    }
         [LinphoneManager.instance.fastAddressBook saveContact:_contact];
 }
 
