@@ -26,6 +26,34 @@
 #import "UIChatBubbleTextCell.h"
 #import "DevicesListView.h"
 
+@implementation PreviewItem
+- (instancetype)initPreviewURL:(NSURL *)docURL
+                     WithTitle:(NSString *)title {
+    self = [super init];
+    if (self) {
+        _previewItemURL = [docURL copy];
+        _previewItemTitle = [title copy];
+    }
+    return self;
+}
+@end
+
+@implementation FileDataSource
+- (instancetype)initWithPreviewItem:(PreviewItem *)item {
+    self = [super init];
+    if (self) {
+        _item = item;
+    }
+    return self;
+}
+- (NSInteger)numberOfPreviewItemsInPreviewController:(QLPreviewController *)controller {
+    return 1;
+}
+- (id<QLPreviewItem>)previewController:(QLPreviewController *)controller previewItemAtIndex:(NSInteger)index {
+    return self.item;
+}
+@end
+
 @implementation ChatConversationView
 
 #pragma mark - Lifecycle Functions
@@ -1016,16 +1044,24 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 - (void)openFileWithURL:(NSURL *)url
 {
-    // Open the controller.
-    _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
-    _documentInteractionController.delegate = self;
+    //create the Quicklook controller.
+    QLPreviewController *qlController = [[QLPreviewController alloc] init];
     
-    BOOL canOpen =  [_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:self.view animated:YES];
-    //NO app can open the file
-    if (canOpen == NO) {
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"There is no app to open it.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
-        
-    }
+    PreviewItem *item = [[PreviewItem alloc] initPreviewURL:url WithTitle:[url lastPathComponent]];
+    self.FileDataSource = [[FileDataSource alloc] initWithPreviewItem:item];
+    
+    qlController.dataSource = self.FileDataSource;
+    qlController.delegate = self;
+    
+    //present the document.
+    [self presentViewController:qlController animated:YES completion:nil];
+}
+
+
+- (void)previewControllerDidDismiss:(QLPreviewController *)controller
+{
+    // QuickLook: When done button is pushed
+    [PhoneMainView.instance fullScreen:NO];
 }
 
 - (NSURL *)getICloudFileUrl:(NSString *)name {
