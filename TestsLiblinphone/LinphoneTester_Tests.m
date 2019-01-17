@@ -43,7 +43,7 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
             // prepend "test_" so that it gets found by introspection
             NSString *safesTest = [LinphoneTesterBase safetyTestString:sTest];
             NSString *safesSuite = [LinphoneTesterBase safetyTestString:sSuite];
-            NSString *selectorName = [NSString stringWithFormat:@"test_%@__%@", safesSuite, safesTest];
+            NSString *selectorName = [NSString stringWithFormat:@"test%d_%@__%@", k, safesSuite, safesTest];
                                                                   
             [self addInstanceMethodWithSelectorName:selectorName
                                     block:^(LinphoneTesterBase *myself) {
