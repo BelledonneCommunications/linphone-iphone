@@ -208,6 +208,7 @@
 	}
 
 	NSString *normSip = [sip hasPrefix:@" "] ? [sip substringFromIndex:1] : sip;
+    normSip = [normSip hasPrefix:@"sip:"] ? [normSip substringFromIndex:4] : normSip;
 	CNInstantMessageAddress *cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"];
 	CNLabeledValue *sipAddress = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
 	NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
