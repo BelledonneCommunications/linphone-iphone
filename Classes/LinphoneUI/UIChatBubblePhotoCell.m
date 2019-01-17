@@ -121,9 +121,8 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                                             resultHandler:^(UIImage *image, NSDictionary * info) {
                                                 if (image) {
                                                     imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
-                                                    UIImage *newImage = [UIImage UIImageResize:image toSize:imageSize];
-                                                    [chatTableView.imagesInChatroom setObject:newImage forKey:[asset localIdentifier]];
-                                                    [self loadImageAsset:asset image:newImage];
+                                                    [chatTableView.imagesInChatroom setObject:image forKey:[asset localIdentifier]];
+                                                    [self loadImageAsset:asset image:image];
                                                 }
                                                 else {
                                                     LOGE(@"Can't read image");
