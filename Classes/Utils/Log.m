@@ -20,11 +20,13 @@
 #import "Log.h"
 #import <asl.h>
 #import <os/log.h>
+#import <Crashlytics/Crashlytics.h>
 
 @implementation Log
 
 #define FILE_SIZE 17
 #define DOMAIN_SIZE 3
+#define USE_CRASHLYTICS TRUE
 
 + (NSString *)cacheDirectory {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
@@ -114,11 +116,20 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 		for (int i = 0; i < myWords.count; i++) {
 			NSString *tab = i > 0 ? @"\t" : @"";
 			if (((NSString *)myWords[i]).length > 0) {
-				NSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
+                if (USE_CRASHLYTICS) {
+                    CLSNSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
+                } else {
+                    NSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
+                }
+
 			}
 		}
 	} else {
-		NSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+        if (USE_CRASHLYTICS) {
+            CLSNSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+        } else {
+            NSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+        }
 	}
 }
 
