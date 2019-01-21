@@ -15,7 +15,7 @@
 			<array>
 				<string>Never</string>
 				<string>Always</string>
-				<string>If lighter than given size (see below setting)</string>
+				<string>If lighter than max size</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -30,7 +30,7 @@
 			<key>Key</key>
 			<string>auto_download_incoming_files_max_size</string>
 			<key>Title</key>
-			<string>Max size in bytes</string>
+			<string>Max size (in bytes)</string>
 			<key>DefaultValue</key>
 			<integer>-1</integer>
 			<key>Type</key>

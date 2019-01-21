@@ -100,24 +100,30 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
             switch (type) {
                 case LinphoneSecurityEventTypeSecurityLevelDowngraded:
                     if (!participant)
-                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Degradation of security level", nil)];
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Security level decreased", nil)];
                     else
-                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Degradation of security level from %@", nil),participant];
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Security level decreased because of %@", nil),participant];
                     eventColor = [UIColor grayColor];
                     break;
                 case LinphoneSecurityEventTypeParticipantMaxDeviceCountExceeded:
                     if (!participant)
-                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Multidevice detected", nil)];
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Max participant count exceeded", nil)];
                     else
-                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Multidevice detected from %@", nil),participant];
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Max participant count exceeded by %@", nil),participant];
                     eventColor = [UIColor redColor];
                     break;
                 case LinphoneSecurityEventTypeEncryptionIdentityKeyChanged:
+                    if (!participant)
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"LIME identity key changed", nil)];
+                    else
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"LIME identity key changed for %@", nil),participant];
+                    eventColor = [UIColor redColor];
+                    break;
                 case LinphoneSecurityEventTypeManInTheMiddleDetected:
                     if (!participant)
-                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Security alert", nil)];
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Man-in-the-middle attack detected", nil)];
                     else
-                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Security alert from %@", nil),participant];
+                        eventString = [NSString stringWithFormat:NSLocalizedString(@"Man-in-the-middle attack detected for %@", nil),participant];
                     eventColor = [UIColor redColor];
                     break;
                     
