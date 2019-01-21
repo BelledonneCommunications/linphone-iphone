@@ -22,6 +22,7 @@ extern bool_t liblinphonetester_ipv6;
 	NSCharacterSet *charactersToRemove = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
 	return [[testString componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@"_"];
 }
+
 void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 }
 
@@ -29,7 +30,7 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 }
 
 + (void)testForSuite:(NSString *)sSuite {
-    LOGI(@"Launching tests from suite %@", sSuite);
+    LOGI(@"[message] Launching tests from suite %@", sSuite);
     // currently, ipv6 is not supported
     liblinphonetester_ipv6=FALSE;
     const char *suite = sSuite.UTF8String;
@@ -43,7 +44,16 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
             // prepend "test_" so that it gets found by introspection
             NSString *safesTest = [LinphoneTesterBase safetyTestString:sTest];
             NSString *safesSuite = [LinphoneTesterBase safetyTestString:sSuite];
-            NSString *selectorName = [NSString stringWithFormat:@"test%d_%@__%@", k, safesSuite, safesTest];
+            // ordering tests
+            NSString *safesIndex = nil;
+            if (k < 10) {
+                safesIndex = [NSString stringWithFormat:@"00%d",k];
+            } else if (k <100) {
+                safesIndex = [NSString stringWithFormat:@"0%d",k];
+            } else if (k <1000) {
+                safesIndex = [NSString stringWithFormat:@"%d",k];
+            }
+            NSString *selectorName = [NSString stringWithFormat:@"test%@_%@__%@", safesIndex, safesSuite, safesTest];
                                                                   
             [self addInstanceMethodWithSelectorName:selectorName
                                     block:^(LinphoneTesterBase *myself) {
@@ -54,7 +64,7 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 }
 
 - (void)testForSuiteTest:(NSString *)suite andTest:(NSString *)test {
-	LOGI(@"Launching test %@ from suite %@", test, suite);
+	LOGI(@"[message] Launching test %@ from suite %@", test, suite);
 	XCTAssertFalse(bc_tester_run_tests(suite.UTF8String, test.UTF8String, NULL), @"Suite '%@' / Test '%@' failed",
 				   suite, test);
 }
