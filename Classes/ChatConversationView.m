@@ -1086,7 +1086,12 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 - (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"]) {
+    BOOL useMyDevice = FALSE;
+    if (@available(iOS 11.0, *)) {
+        useMyDevice = TRUE;
+    }
+    
+    if (!useMyDevice && ![[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"]) {
         //notify : set configuration to use icloud
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"ICloud Drive is unavailable.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
         return FALSE;
