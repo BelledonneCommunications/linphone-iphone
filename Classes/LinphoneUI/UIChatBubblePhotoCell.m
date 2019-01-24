@@ -105,7 +105,6 @@
         [_messageImageView setAsset:asset];
         [_messageImageView stopLoading];
         _messageImageView.hidden = YES;
-        //_imageGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
         _fileView.hidden = YES;
         [self layoutSubviews];
@@ -198,7 +197,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                  if ([type isEqualToString:@"video"]) {
                      UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                      [self loadImageAsset:nil image:image];
-                     _imageGestureRecognizer.enabled = YES;
+                     _imageGestureRecognizer.enabled = NO;
                  } else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
                      NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
                      UIImage *image = [[UIImage alloc] initWithData:data];
