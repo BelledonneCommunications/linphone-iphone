@@ -91,7 +91,10 @@
 - (void)setPendingCall:(LinphoneCall *)pendingCall {
 	if (pendingCall) {
 		_pendingCall = pendingCall;
+        if (_pendingCall)
+            linphone_call_ref(_pendingCall);
 	} else if (_pendingCall) {
+        linphone_call_unref(_pendingCall);
 		_pendingCall = NULL;
 	}
 }
@@ -109,7 +112,7 @@
 		return;
 
 	self.callKitCalls++;
-	_pendingCall = call;
+    [self setPendingCall:call];
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
