@@ -112,7 +112,7 @@
 		return;
 
 	self.callKitCalls++;
-    [self setPendingCall:call];
+    self.pendingCall = call;
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
@@ -129,6 +129,7 @@
 		call = [LinphoneManager.instance callByCallId:callID];
 	}
 	if (call != NULL) {
+        self.callKitCalls++;
 		self.pendingCall = call;
 	}
 }
@@ -243,7 +244,7 @@
 		}
 	}
 
-	self.pendingCall = NULL;
+    [self setPendingCall:NULL];
 	if (_pendingAddr)
 		linphone_address_unref(_pendingAddr);
 	_pendingAddr = NULL;
@@ -251,9 +252,8 @@
 }
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(nonnull AVAudioSession *)audioSession {
-	LOGD(@"CallKit: Audio session deactivated");
-
-	self.pendingCall = NULL;
+	LOGD(@"CallKit : Audio session deactivated");
+    [self setPendingCall:NULL];
 	if (_pendingAddr)
 		linphone_address_unref(_pendingAddr);
 	_pendingAddr = NULL;

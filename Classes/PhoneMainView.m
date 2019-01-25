@@ -422,11 +422,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 			} else {
 				linphone_call_resume((LinphoneCall *)calls->data);
 				while (calls) {
-					if (linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallIncomingReceived ||
-						linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallIncomingEarlyMedia) {
-						[self displayIncomingCall:(LinphoneCall *)calls->data];
-						break;
-					}
+                    if (calls->next) {
+                        [self changeCurrentView:CallView.compositeViewDescription];
+                        break;
+                    }
 					calls = calls->next;
 				}
 				if (calls == NULL) {
