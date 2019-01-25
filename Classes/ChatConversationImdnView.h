@@ -34,6 +34,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)onBackClick:(id)sender;
+- (void)updateImdnList;
 
 @end
 

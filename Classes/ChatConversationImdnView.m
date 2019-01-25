@@ -54,12 +54,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 
-	_displayedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDisplayed);
-	_receivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDeliveredToUser);
-	_notReceivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDelivered);
-	_errorList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateNotDelivered);
+    [self updateImdnList];
+}
 
-	[_tableView reloadData];
+- (void)updateImdnList {
+    if (_msg) {
+        _displayedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDisplayed);
+        _receivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDeliveredToUser);
+        _notReceivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDelivered);
+        _errorList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateNotDelivered);
+    
+        [_tableView reloadData];
+    }
 }
 
 - (void)fitContent {

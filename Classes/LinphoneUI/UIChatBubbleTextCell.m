@@ -88,6 +88,7 @@
 	linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
+    linphone_chat_message_cbs_set_participant_imdn_state_changed(cbs, participant_imdn_status);
 	linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
 }
 
@@ -367,6 +368,11 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
 	ChatConversationView *view = VIEW(ChatConversationView);
 	[view.tableController updateEventEntry:event];
+}
+
+static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
+    ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
+    [imdnView updateImdnList];
 }
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
