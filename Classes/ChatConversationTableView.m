@@ -325,6 +325,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 					 withRowAnimation:UITableViewRowAnimationBottom];
 	[tableView endUpdates];
+    [self loadData];
 }
 
 - (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView
