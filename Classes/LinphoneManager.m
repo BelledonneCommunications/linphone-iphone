@@ -1441,8 +1441,7 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 
 void linphone_iphone_chatroom_state_changed(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatRoomState state) {
     if (state == LinphoneChatRoomStateCreated) {
-        // this will cause lost of unread notification of TabBarView
-        //[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
+        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
     }
 }
 
