@@ -329,7 +329,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 		
 		[errView addAction:defaultAction];
 		[self presentViewController:errView animated:YES completion:nil];
-	}
+    } else if (state == LinphoneRegistrationOk && [currentView equal:ChatsListView.compositeViewDescription]) {
+        // update avatarImages
+        //ChatsListView *view = VIEW(ChatsListView);
+        //[view.tableController loadData];
+    }
 }
 
 - (void)onGlobalStateChanged:(NSNotification *)notif {

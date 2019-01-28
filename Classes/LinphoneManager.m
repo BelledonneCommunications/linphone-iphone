@@ -917,7 +917,7 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 - (void)onConfiguringStatusChanged:(LinphoneConfiguringState)status withMessage:(const char *)message {
 	LOGI(@"onConfiguringStatusChanged: %s %@", linphone_configuring_state_to_string(status),
 		 message ? [NSString stringWithFormat:@"(message: %s)", message] : @"");
-
+    
 	NSDictionary *dict = [NSDictionary
 		dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:status], @"state",
 									 [NSString stringWithUTF8String:message ? message : ""], @"message", nil];
@@ -1837,7 +1837,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);
-	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
+	//linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 	linphone_core_set_call_logs_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
 	[self setupNetworkReachabilityCallback];
