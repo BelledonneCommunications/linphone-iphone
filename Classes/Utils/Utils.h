@@ -33,6 +33,7 @@
 + (NSString *)deviceModelIdentifier;
 
 + (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)addr;
++ (UIAlertController *)networkErrorView;
 
 typedef enum {
 	LinphoneDateHistoryList,
