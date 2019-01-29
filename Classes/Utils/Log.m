@@ -26,7 +26,11 @@
 
 #define FILE_SIZE 17
 #define DOMAIN_SIZE 3
+#ifdef USE_FIREBASE
 #define USE_CRASHLYTICS TRUE
+#else
+#define USE_CRASHLYTICS FALSE
+#endif
 
 + (NSString *)cacheDirectory {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
