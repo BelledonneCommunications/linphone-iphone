@@ -26,7 +26,8 @@
 - (void)update {
     [_securityButton setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)] forState:UIControlStateNormal];
     
-    _deviceLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_device_get_address(_device))];
+    _deviceLabel.text = [NSString stringWithUTF8String:linphone_participant_device_get_name(_device) ? :
+                         linphone_address_as_string_uri_only(linphone_participant_device_get_address(_device))];
     if (_isOneToOne) {
         CGRect frame =_deviceLabel.frame;
         frame.origin.x = 30;
