@@ -65,7 +65,7 @@ video_jitt_comp=60
 video_rtp_port=9200-9299
 
 [sip]
-auto_net_state_mon=0
+auto_net_state_mon=1
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 guess_hostname=1
 inc_timeout=45
