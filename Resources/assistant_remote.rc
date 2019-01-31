@@ -16,6 +16,7 @@
 
 	<section name="sip">
 		<entry name="use_rls_presence" overwrite="true"></entry>
+        <entry name="auto_net_state_mon" overwrite="true">1</entry>
 	</section>
 
 	<section name="assistant">
