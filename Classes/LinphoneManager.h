@@ -68,12 +68,6 @@ typedef enum _NetworkType {
     network_wifi
 } NetworkType;
 
-typedef enum _Connectivity {
-	wifi,
-	wwan,
-    none
-} Connectivity;
-
 extern const int kLinphoneAudioVbrCodecDefaultBitrate;
 
 /* Application specific call context */
@@ -81,11 +75,6 @@ typedef struct _CallContext {
     LinphoneCall* call;
     bool_t cameraIsEnabled;
 } CallContext;
-
-struct NetworkReachabilityContext {
-    bool_t testWifi, testWWan;
-    void (*networkStateChanged) (Connectivity newConnectivity);
-};
 
 @interface LinphoneCallAppData :NSObject {
     @public
@@ -107,8 +96,8 @@ typedef struct _LinphoneManagerSounds {
 
 @private
 	NSTimer* mIterateTimer;
-    NSMutableArray*  pushCallIDs;
-	Connectivity connectivity;
+        NSMutableArray*  pushCallIDs;
+
 	UIBackgroundTaskIdentifier pausedCallBgTask;
 	UIBackgroundTaskIdentifier incallBgTask;
 	UIBackgroundTaskIdentifier pushBgTaskRefer;
@@ -148,8 +137,6 @@ typedef struct _LinphoneManagerSounds {
 - (void)alertLIME:(LinphoneChatRoom *)room;
 - (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId;
 + (BOOL)langageDirectionIsRTL;
-+ (void)kickOffNetworkConnection;
-- (void)setupNetworkReachabilityCallback;
 
 - (void)refreshRegisters;
 
@@ -220,7 +207,6 @@ typedef struct _LinphoneManagerSounds {
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;
-@property Connectivity connectivity;
 @property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;

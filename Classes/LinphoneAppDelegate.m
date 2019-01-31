@@ -431,7 +431,7 @@
 	NSString *sipInstance = [aps objectForKey:@"uuid"];
 	if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
 		LOGE(@"Notification [%p] was intended for another device, ignoring it.", userInfo);
-        LOGD(@"My sip instance is: [%@], push was intended for: [%@].", uuid, sipInstance);
+		LOGD(@"My sip instance is: [%@], push was intended for: [%@].", uuid, sipInstance);
 		return;
 	}
 
@@ -443,8 +443,6 @@
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
 	if (!linphone_core_is_network_reachable(LC)) {
 		LOGI(@"Notification [%p] network is down, restarting it.", userInfo);
-		LinphoneManager.instance.connectivity = none; // Force connectivity to be discovered again
-		[LinphoneManager.instance setupNetworkReachabilityCallback];
 	}
 
 	if ([callId isEqualToString:@""]) {
@@ -543,7 +541,6 @@
 - (void)processPush:(NSDictionary *)userInfo {
 	LOGI(@"[PushKit] Notification [%p] received with pay load : %@", userInfo, userInfo.description);
 	[self configureUINotification];
-	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:userInfo];
 }

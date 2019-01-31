@@ -502,15 +502,11 @@
 
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
-		BOOL isWifiOnly = [self boolForKey:@"wifi_only_preference"];
 		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
 
 		const char *route = NULL;
-
-		if (isWifiOnly && LinphoneManager.instance.connectivity == wwan)
-			expire = 0;
 
 		if ((!proxyAddress || [proxyAddress length] < 1) && domain) {
 			proxyAddress = domain;
@@ -810,8 +806,6 @@
 
 		BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
 		[lm lpConfigSetInt:wifiOnly forKey:@"wifi_only_preference"];
-		if ([self valueChangedForKey:@"wifi_only_preference"])
-			[LinphoneManager.instance setupNetworkReachabilityCallback];
 
 		LinphoneNatPolicy *LNP = linphone_core_get_nat_policy(LC);
 		
