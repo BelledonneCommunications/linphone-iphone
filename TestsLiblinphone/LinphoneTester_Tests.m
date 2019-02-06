@@ -31,8 +31,6 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
 
 + (void)testForSuite:(NSString *)sSuite {
     LOGI(@"[message] Launching tests from suite %@", sSuite);
-    // currently, ipv6 is not supported
-    liblinphonetester_ipv6=FALSE;
     const char *suite = sSuite.UTF8String;
     bc_tester_register_suite_by_name(suite);
     int test_count = bc_tester_nb_tests(suite);
@@ -358,3 +356,22 @@ void dummy_logger(const char *domain, OrtpLogLevel lev, const char *fmt, va_list
     [self testForSuite:@"Presence using server"];
 }
 @end
+
+@interface CallRecoveryTests : LinphoneTesterBase
+@end
+
+@implementation CallRecoveryTests
++ (void)initialize {
+    [self testForSuite:@"Call recovery"];
+}
+@end
+
+@interface CallWithICETests : LinphoneTesterBase
+@end
+
+@implementation CallWithICETests
++ (void)initialize {
+    [self testForSuite:@"Call with ICE"];
+}
+@end
+
