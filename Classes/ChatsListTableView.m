@@ -162,7 +162,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         } else {
             bctbx_list_t *participants = linphone_chat_room_get_participants(cr);
             LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
-            const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(cr);
+            const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : peer_address;
             if (!linphone_address_get_username(addr)) {
                 sorted = sorted->next;
                 continue;
@@ -184,8 +184,8 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         if (addresses.count >= 4) //send no more data than needed
             break;
         sorted = sorted->next;
-    }
-    
+	}
+	
     [defaults setObject:addresses forKey:@"chatrooms"];
 }
 
