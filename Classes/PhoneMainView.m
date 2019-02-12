@@ -409,7 +409,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 		case LinphoneCallError: {
 			[self displayCallError:call message:message];
-			break;
 		}
 		case LinphoneCallEnd: {
 			const MSList *calls = linphone_core_get_calls(LC);
@@ -421,6 +420,22 @@ static RootViewManager *rootViewManagerInstance = nil;
 				}
 			} else {
 				linphone_call_resume((LinphoneCall *)calls->data);
+				while (calls) {
+					if (
+						linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallIncomingReceived ||
+						linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallIncomingEarlyMedia
+					) {
+						[self displayIncomingCall:(LinphoneCall *)calls->data];
+						break;
+					} else if (linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallOutgoingRinging) {
+						[self changeCurrentView:CallOutgoingView.compositeViewDescription];
+						break;
+					}
+					calls = calls->next;
+				}
+				if (!calls) {
+					[self changeCurrentView:CallView.compositeViewDescription];
+				}
 			}
 			break;
 		}
