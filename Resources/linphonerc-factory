@@ -60,7 +60,7 @@ display_filter_auto_rotate=0
 
 [lime]
 lime_v2=1
-x3dh_server_url=http://sip-staging.linphone.org:8083/flexisip-account-manager/x3dh-25519.php
+x3dh_server_url=http://lime.linphone.org:8083/flexisip-account-manager/x3dh-25519.php
 lime_update_threshold=86400
 max_nb_device_per_participant=255
 allow_message_in_unsafe_chatroom=1
