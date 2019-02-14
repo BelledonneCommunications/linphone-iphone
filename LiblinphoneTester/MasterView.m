@@ -41,7 +41,7 @@
     [Log enableLogs:ORTP_DEBUG];
 	liblinphone_tester_keep_accounts(TRUE);
 
-	bundlePath = [[NSBundle mainBundle] bundlePath];
+	bundlePath = [NSString stringWithFormat:@"%@/liblinphone_tester/", [[NSBundle mainBundle] bundlePath]];
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	writablePath = [paths objectAtIndex:0];
 	
