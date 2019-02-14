@@ -131,7 +131,7 @@
 
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
 	NSString *phoneOrAddr = [_phoneOrAddr objectAtIndex:indexPath.row];
-	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
+	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:key]];
     const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen);
@@ -140,8 +140,9 @@
 		return cell;
 	
 	cell.linphoneImage.hidden = !linphoneContact;
-    cell.securityImage.hidden = !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh));
+    
     int capabilities = [[_addressesCached objectAtIndex:indexPath.row] intValue];
+    cell.securityImage.hidden = capabilities < 2;
     BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;
     BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
     cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
