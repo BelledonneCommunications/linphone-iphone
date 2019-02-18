@@ -77,7 +77,7 @@
 	}
     bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
 
-	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
+	/*for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =
 			linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message));
 		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(_chatRoom);
@@ -85,7 +85,7 @@
 			LOGI(@"Appending transient upload message %p", ftd.message);
 			//TODO : eventList = bctbx_list_append(eventList, linphone_chat_message_ref(ftd.event));
 		}
-	}
+	}*/
 }
 
 - (void)refreshData {

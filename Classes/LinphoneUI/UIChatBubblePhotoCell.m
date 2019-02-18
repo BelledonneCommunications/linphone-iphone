@@ -223,7 +223,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                 _playButton.hidden = ![type isEqualToString:@"video"];
                 _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
                 // Should fix cell not resizing after doanloading image.
-                [self layoutSubviews];
+                //[self layoutSubviews];
             }
         }
     }
