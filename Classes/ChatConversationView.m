@@ -486,8 +486,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateParticipantLabel {
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+    CGRect frame = _addressLabel.frame;
 	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
 		_particpantsLabel.hidden = TRUE;
+        frame.origin.y = (_topBar.frame.size.height - _addressLabel.frame.size.height)/2;
 	} else {
 		_particpantsLabel.hidden = FALSE;
 		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
@@ -501,7 +503,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 									  [FastAddressBook displayNameForAddress:linphone_participant_get_address(participant)]];
 			participants = participants->next;
 		}
+        frame.origin.y = 0;
 	}
+    _addressLabel.frame = frame;
 }
 
 - (void)sendMessageInMessageField {
