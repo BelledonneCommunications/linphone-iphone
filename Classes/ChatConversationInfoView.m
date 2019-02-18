@@ -159,6 +159,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+		linphone_address_clean(addr);//keep only username@domain
 		if (addedPartipants)
 			addedPartipants = bctbx_list_append(addedPartipants, addr);
 		else
