@@ -299,8 +299,7 @@
             ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
             UIImage *img = [tableView.imagesInChatroom objectForKey:localImage];
             if (img) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
-                               ^(void) {
+				dispatch_async(dispatch_get_main_queue(), ^ {
                                    [_chatRoomDelegate startImageUpload:img assetId:localImage withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
                                });
             } else {
