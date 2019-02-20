@@ -161,7 +161,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
     NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
     NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-	BOOL fullScreenImage = NO;
 	assert(is_external || localImage || localVideo || localFile);
     
     LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(self.message);
@@ -177,55 +176,54 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         // file is being saved on device - just wait for it
         if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
             _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
-            fullScreenImage = YES;
-        } else if(!assetIsLoaded) {
-            assetIsLoaded = TRUE;
-            if (localImage) {
-                // we did not load the image yet, so start doing so
-                if (_messageImageView.image == nil) {
-                    [self loadFirstImage:localImage type:PHAssetMediaTypeImage];
-                    _imageGestureRecognizer.enabled = YES;
-                }
-            }
-            else if (localVideo) {
-                if (_messageImageView.image == nil) {
-                    [self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
-                    _imageGestureRecognizer.enabled = NO;
-                }
-            }
-             else if (localFile) {
-                 if ([type isEqualToString:@"video"]) {
-                     UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-                     [self loadImageAsset:nil image:image];
-                     _imageGestureRecognizer.enabled = NO;
-                 } else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
-                     NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-                     UIImage *image = [[UIImage alloc] initWithData:data];
-                     [self loadImageAsset:nil image:image];
-                     _imageGestureRecognizer.enabled = YES;
-                 } else {
-                     NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
-                     _fileName.text = text;
-                     [self loadFileAsset];
-                 }
-            }
-
-            // we are uploading the image
-            if (_ftd.message != nil) {
-                _cancelButton.hidden = NO;
-                _fileTransferProgress.hidden = NO;
-                _downloadButton.hidden = YES;
-                _playButton.hidden = YES;
-                _fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
-            } else {
-                _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
-                fullScreenImage = YES;
-                _playButton.hidden = ![type isEqualToString:@"video"];
-                _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
-                // Should fix cell not resizing after doanloading image.
-                //[self layoutSubviews];
-            }
-        }
+		} else {
+			if(!assetIsLoaded) {
+				assetIsLoaded = TRUE;
+				if (localImage) {
+					// we did not load the image yet, so start doing so
+					if (_messageImageView.image == nil) {
+						[self loadFirstImage:localImage type:PHAssetMediaTypeImage];
+						_imageGestureRecognizer.enabled = YES;
+					}
+				}
+				else if (localVideo) {
+					if (_messageImageView.image == nil) {
+						[self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
+						_imageGestureRecognizer.enabled = NO;
+					}
+				}
+				else if (localFile) {
+					if ([type isEqualToString:@"video"]) {
+						UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+						[self loadImageAsset:nil image:image];
+						_imageGestureRecognizer.enabled = NO;
+					} else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+						NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+						UIImage *image = [[UIImage alloc] initWithData:data];
+						[self loadImageAsset:nil image:image];
+						_imageGestureRecognizer.enabled = YES;
+					} else {
+						NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
+						_fileName.text = text;
+						[self loadFileAsset];
+					}
+				}
+			}
+		}
+		// we are uploading the image
+		if (_ftd.message != nil) {
+			_cancelButton.hidden = NO;
+			_fileTransferProgress.hidden = NO;
+			_downloadButton.hidden = YES;
+			_playButton.hidden = YES;
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
+		} else {
+			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
+			_playButton.hidden = ![type isEqualToString:@"video"];
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
+			// Should fix cell not resizing after doanloading image.
+			//[self layoutSubviews];
+		}
     }
 }
 
@@ -306,6 +304,9 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	[self disconnectFromFileDelegate];
 	_fileTransferProgress.progress = 0;
 	[tmp cancel];
+	if (!linphone_core_is_network_reachable(LC)) {
+		[self update];
+	}
 }
 
 - (void)onResendClick:(id)event {
