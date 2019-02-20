@@ -455,7 +455,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     }
     
     self.messageText.frame = textFrame;
-    LOGD([NSString stringWithFormat:@"Text of the photoCell: %@, size of the text of the photoCell: %@", [self.messageText text], NSStringFromCGSize(textFrame.size)]);
 }
 
 @end
