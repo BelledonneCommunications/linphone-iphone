@@ -316,7 +316,7 @@
                 [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
                                                         resultHandler:^(UIImage *image, NSDictionary * info) {
                                                             if (image) {
-                                                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+                                                                dispatch_async(dispatch_get_main_queue(),
                                                                                ^(void) {
                                                                                    [_chatRoomDelegate startImageUpload:img assetId:localImage withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
                                                                                });
@@ -342,7 +342,7 @@
                     
                 NSURL *url = urlAsset.URL;
                 NSData *data = [NSData dataWithContentsOfURL:url];
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+                dispatch_async(dispatch_get_main_queue(),
                                 ^(void) {
                                     [_chatRoomDelegate startFileUpload:data assetId:localVideo];
                                 });
