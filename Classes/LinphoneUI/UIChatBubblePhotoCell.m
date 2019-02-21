@@ -236,7 +236,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     PHAsset *asset = [assets firstObject];
     if (!asset)
         [self loadPlaceholder];
-    else if (asset.mediaType == type)
+    else if (asset.mediaType != type)
         img = nil;
     if (img)
         [self loadImageAsset:asset image:img];
