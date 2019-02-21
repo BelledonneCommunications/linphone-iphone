@@ -163,9 +163,10 @@
         _avatarImage.hidden = !_isFirst;
     }
 	
-
+	// Not use [UIImage imageNamed], it takes too much time
+	NSString *imageName = outgoing ? @"color_A.png" : @"color_D.png";
     _backgroundColorImage.image =
-		[UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
+		[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",[[NSBundle mainBundle] bundlePath],imageName]];
     
     // set maskedCorners
     if (@available(iOS 11.0, *)) {
@@ -375,20 +376,21 @@ static void participant_imdn_status(LinphoneChatMessage* msg, const LinphonePart
 }
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
+	NSString *imageName = nil;
 	if (state == LinphoneChatMessageStateDeliveredToUser) {
-		[_imdmIcon setImage:[UIImage imageNamed:@"chat_delivered"]];
+		imageName = @"chat_delivered.png";
 		//[_imdmLabel setText:NSLocalizedString(@"Delivered", nil)];
 		//[_imdmLabel setTextColor:[UIColor grayColor]];
 		[_imdmIcon setHidden:FALSE];
 		//[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateDisplayed) {
-		[_imdmIcon setImage:[UIImage imageNamed:@"chat_read"]];
+		imageName = @"chat_read";
 		//[_imdmLabel setText:NSLocalizedString(@"Read", nil)];
 		//[_imdmLabel setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
 		[_imdmIcon setHidden:FALSE];
 		//[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
-		[_imdmIcon setImage:[UIImage imageNamed:@"chat_error"]];
+		imageName = @"chat_error";
 		//[_imdmLabel setText:NSLocalizedString(@"Resend", nil)];
 		//[_imdmLabel setTextColor:[UIColor redColor]];
 		[_imdmIcon setHidden:FALSE];
@@ -397,6 +399,7 @@ static void participant_imdn_status(LinphoneChatMessage* msg, const LinphonePart
 		[_imdmIcon setHidden:TRUE];
 		//[_imdmLabel setHidden:TRUE];
 	}
+	[_imdmIcon setImage:[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",[[NSBundle mainBundle] bundlePath],imageName]]];
 }
 
 #pragma mark - Bubble size computing
