@@ -1822,13 +1822,12 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 	NSString *device = [[NSMutableString alloc]
 		initWithString:[NSString
-						   stringWithFormat:@"%@_%@_iOS%@",
-											[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-											[LinphoneUtils deviceModelIdentifier],
-											UIDevice.currentDevice.systemVersion]];
-	device = [device stringByReplacingOccurrencesOfString:@"," withString:@"."];
-	device = [device stringByReplacingOccurrencesOfString:@" " withString:@"."];
-	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
+						stringWithFormat:@"%@iOS/%@ (%@) LinphoneSDK",
+						[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+						[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+						[LinphoneUtils deviceModelIdentifier]]];
+
+	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, "4.1-221-g241bbf9 (master)"); // TODO : update Linphone_sdk_version automatically
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" inSection:@"sip" withDefault:@"SIP"];
 
