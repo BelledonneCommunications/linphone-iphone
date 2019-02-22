@@ -652,6 +652,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 } onConfirmationClick:^() {
                     [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
                 }];
+				[_messageField resignFirstResponder];
                 securityDialog.authView.hidden = FALSE;
             }
             return;
@@ -665,6 +666,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         } onConfirmationClick:^() {
             [self goToDeviceListView];
         }];
+		[_messageField resignFirstResponder];
         securityDialog.authView.hidden = FALSE;
     }
 }
