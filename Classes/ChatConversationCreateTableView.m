@@ -140,9 +140,8 @@
 		return cell;
 	
 	cell.linphoneImage.hidden = !linphoneContact;
-    
+    cell.securityImage.hidden = !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh));
     int capabilities = [[_addressesCached objectAtIndex:indexPath.row] intValue];
-    cell.securityImage.hidden = capabilities < 2;
     BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;
     BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
     cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
