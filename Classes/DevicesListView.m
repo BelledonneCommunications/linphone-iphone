@@ -69,7 +69,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         _addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room) ?: LINPHONE_DUMMY_SUBJECT];
     }
     
-    _addressLabel.text = [NSString stringWithFormat:@"%@'s devices", _addressLabel.text];
+    _addressLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@'s devices", nil), _addressLabel.text];
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_tableView reloadData];
 }
