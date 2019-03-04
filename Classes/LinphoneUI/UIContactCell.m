@@ -63,8 +63,8 @@
 
 - (void)onPresenceChanged:(NSNotification *)k {
 	LinphoneFriend *f = [[k.userInfo valueForKey:@"friend"] pointerValue];
-	// only consider event if it's about us
-	if (_contact && _nameLabel.text == PhoneMainView.instance.currentName) {
+	// only consider event if it's about us when not in ContactsListView
+	if (_contact && (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || _nameLabel.text == PhoneMainView.instance.currentName)) {
 		if (!_contact.friend || f != _contact.friend) {
 			return;
 		}
