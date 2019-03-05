@@ -1114,6 +1114,7 @@
 		61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_close@2x.png"; sourceTree = "<group>"; };
 		61AEBEC92191E49200F35E7F /* chevron_list_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_open.png; sourceTree = "<group>"; };
 		61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_open@2x.png"; sourceTree = "<group>"; };
+		61BD122D222EA29300563181 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
 		61CCC3D721933B380060EDEA /* UIDeviceCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDeviceCell.h; sourceTree = "<group>"; };
 		61CCC3DE21933B580060EDEA /* UIDeviceCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDeviceCell.m; sourceTree = "<group>"; };
 		61CCC3E021933B660060EDEA /* UIDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDeviceCell.xib; sourceTree = "<group>"; };
@@ -1770,7 +1771,6 @@
 		8CBD7BAA20B6B82A00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationImdnTableViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAD20B6B82F00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCreateCollectionViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAF20B6B86800E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
-		8CBD7BB020B6B86800E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
 		8CBD7BB120B6B86900E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		8CBD7BB220B6B86A00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
 		8CBD7BB320B6B86B00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
@@ -5353,7 +5353,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63EC8D3A1D7438660066547B /* Base */,
-				8CBD7BB020B6B86800E5DCC0 /* fr */,
+				61BD122D222EA29300563181 /* fr */,
 			);
 			name = AssistantLinkView.xib;
 			sourceTree = "<group>";
