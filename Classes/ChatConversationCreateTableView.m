@@ -161,7 +161,12 @@
 		// Create directly a basic chat room if there's no factory uri
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
         [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:_isEncrypted];
-		linphone_address_unref(addr);
+		if (!addr) {
+			LOGE(@"Chat room could not be created on server, because null address.");
+			[ChatConversationInfoView displayCreationError];
+		} else {
+			linphone_address_unref(addr);
+		}
 		return;
 	}
 
