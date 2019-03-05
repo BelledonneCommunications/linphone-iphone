@@ -141,6 +141,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)refreshData {
     [_tableController refreshData];
     [refreshControl endRefreshing];
+	if (_tableController.totalNumberOfItems == 0)
+		return;
     [_tableController loadData];
     [_tableController.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:_tableController.currentIndex inSection:0]
                           atScrollPosition:UITableViewScrollPositionTop
