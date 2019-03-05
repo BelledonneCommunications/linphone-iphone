@@ -1050,6 +1050,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 		}
 	}
+	
+	// enable linphoneLoginButton if error
+	[_linphoneLoginButton setBackgroundColor:[UIColor clearColor]];
+	_linphoneLoginButton.enabled = YES;
 }
 
 - (void) isAccountActivated:(const char *)resp {
@@ -1309,8 +1313,13 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onLinphoneLoginClick:(id)sender {
-	ONCLICKBUTTON(sender, 100, {
-        _waitView.hidden = NO;
+	// disable button after first click
+	_linphoneLoginButton.enabled = NO;
+	[_linphoneLoginButton setBackgroundColor:[UIColor lightGrayColor]];
+	_waitView.hidden = NO;
+
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (100 * NSEC_PER_MSEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text = @"";
 		_activationTitle.text = @"USE LINPHONE ACCOUNT";
 		if ((linphone_account_creator_get_phone_number(account_creator) != NULL) &&
@@ -1324,7 +1333,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			// if not, propose it to the user
 			linphone_account_creator_is_account_exist(account_creator);
 		}
-    });
+	});
 }
 
 - (IBAction)onLoginClick:(id)sender {
