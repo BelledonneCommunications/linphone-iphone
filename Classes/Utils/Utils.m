@@ -488,7 +488,7 @@
 	if (addr && cfg) {
 		const char *username = linphone_proxy_config_get_dial_escape_plus(cfg) ? normvalue : value.UTF8String;
 		if (linphone_proxy_config_is_phone_number(cfg, username))
-			linphone_address_set_username(addr, username);
+			linphone_address_set_username(addr, linphone_proxy_config_normalize_phone_number(cfg, username));
 	 }
 	return addr;
 }

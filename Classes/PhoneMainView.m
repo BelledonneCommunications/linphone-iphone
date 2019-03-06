@@ -919,7 +919,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
     if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
-        || ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] && bctbx_list_size(addresses) == 1)) {
+        || ((bctbx_list_size(addresses) == 1) && ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] || !isEncrypted))) {
         // If there's no factory uri, create a basic chat room
         if (bctbx_list_size(addresses) != 1) {
             // Display Error: unsuported group chat

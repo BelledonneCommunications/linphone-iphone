@@ -158,7 +158,6 @@
         return;
     
 	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC)) || !_isGroupChat) {
-		// Create directly a basic chat room if there's no factory uri
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
         [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:_isEncrypted];
 		if (!addr) {
