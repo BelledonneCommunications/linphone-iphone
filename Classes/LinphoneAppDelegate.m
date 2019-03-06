@@ -92,11 +92,6 @@
 		}
                 [instance.fastAddressBook fetchContactsInBackGroundThread];
                 instance.fastAddressBook.needToUpdate = FALSE;
-                const MSList *lists = linphone_core_get_friends_lists(LC);
-                while (lists) {
-                  linphone_friend_list_update_subscriptions(lists->data);
-                  lists = lists->next;
-                }
         }
 
         LinphoneCall *call = linphone_core_get_current_call(LC);

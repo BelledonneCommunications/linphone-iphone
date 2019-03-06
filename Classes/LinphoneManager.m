@@ -2352,11 +2352,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[self iterate];
 	}
 
+	/*linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
 		linphone_friend_list_enable_subscriptions(lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 		lists = lists->next;
-	}
+	}*/
 }
 
 - (BOOL)enterBackgroundMode {

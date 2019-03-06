@@ -926,11 +926,7 @@
 		}
 
 		[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
-		const MSList *lists = linphone_core_get_friends_lists(LC);
-		while (lists) {
-			linphone_friend_list_enable_subscriptions(lists->data, [self integerForKey:@"use_rls_presence"]);
-			lists = lists->next;
-		}
+		linphone_core_enable_friend_list_subscription(LC, [self integerForKey:@"use_rls_presence"]);
 
 		BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
 		[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];
