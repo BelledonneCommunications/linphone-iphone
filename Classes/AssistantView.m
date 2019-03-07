@@ -1010,6 +1010,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		defaultAction.accessibilityLabel = @"PopUpResp";
 		[self presentViewController:errView animated:YES completion:nil];
 	}
+	
+	// enable linphoneLoginButton if error
+	[_linphoneLoginButton setBackgroundColor:[UIColor clearColor]];
+	_linphoneLoginButton.enabled = YES;
 }
 
 - (void)isAccountUsed:(LinphoneAccountCreatorStatus)status withResp:(const char *)resp {
@@ -1050,10 +1054,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 		}
 	}
-	
-	// enable linphoneLoginButton if error
-	[_linphoneLoginButton setBackgroundColor:[UIColor clearColor]];
-	_linphoneLoginButton.enabled = YES;
 }
 
 - (void) isAccountActivated:(const char *)resp {
