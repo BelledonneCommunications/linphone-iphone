@@ -61,7 +61,7 @@ Build the linphone-iphone :
 - pod install
 It will download the linphone library from our gitlab repository so you don't have to build anything yourelf.
 
-Then open linphone.xcworkspace file (instead of linphone.xcodeproj) to install the app.
+Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
 
 # Testing the application
 
@@ -83,11 +83,10 @@ See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Co
 
 -Follow the instructions in the linphone-sdk/README file to build the SDK.
 
--Edit in the Podfile, change the way to pod linphone-sdk. 
- * For example, replace "pod 'linphone-sdk', '~> 4.1-221-g241bbf9'" by "pod 'linphone-sdk', :path => "<path to linphone-sdk-ios>"".
-
 -Rebuild the project:
- * pod install
+ * env ENV[PODFILE_PATH]=<path to linphone-sdk-ios> pod install
+ 
+-Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
 
 # Quick UI reference
 
