@@ -88,6 +88,22 @@ See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Co
  
 -Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
 
+# Use crashlythics
+
+We've integrated the crashlythics into liphone-iphone, which can automatically send us a crash report. It is disabled by default.
+To activate it :
+
+-Download GoogleService-Info.plist from :
+ https://console.firebase.google.com/project/linphone-iphone/settings/general/ios:org.linphone.phone
+ You may not have access to this website because it is restricted to certain developers.
+
+-Replace GoogleService-Info.plist for this project with the file you downloaded.
+
+-Rebuild the project:
+* USE_CRASHLYTHICS=true pod install
+
+-Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
+
 # Quick UI reference
 
 - The app is contained in a window, which resides in the MainStoryboard file.

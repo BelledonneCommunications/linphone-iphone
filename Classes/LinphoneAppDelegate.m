@@ -30,7 +30,10 @@
 
 #include "LinphoneManager.h"
 #include "linphone/linphonecore.h"
+
+#ifdef USE_CRASHLYTHICSS
 #include "FIRApp.h"
+#endif
 
 @implementation LinphoneAppDelegate
 
@@ -234,7 +237,7 @@
 #pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-#ifdef USE_FIREBASE
+#ifdef USE_CRASHLYTHICSS
     NSString *pathForFile=[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"GoogleService-Info.plist"];
     if ([[NSFileManager defaultManager] fileExistsAtPath:pathForFile]){
         // If GoogleService-Info.plist doesn't exist, not call this function avoiding a crash.

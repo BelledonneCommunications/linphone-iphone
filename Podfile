@@ -10,10 +10,13 @@ def basic_pods
 		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 	
-	pod 'Firebase/Core'
-	pod 'Fabric', '~> 1.9.0'
-	pod 'Crashlytics', '~> 3.12.0'
-	pod 'Firebase/Performance'
+	if not ENV['USE_CRASHLYTHICS'].nil?
+		# activate crashlythics
+		pod 'Firebase/Core'
+		pod 'Fabric', '~> 1.9.0'
+		pod 'Crashlytics', '~> 3.12.0'
+		pod 'Firebase/Performance'
+	end
 end
 
 target 'latestCallsWidget' do
@@ -74,4 +77,21 @@ target 'richNotifications' do
 
   # Pods for richNotifications
 
+end
+
+post_install do |installer|
+	app_project = Xcodeproj::Project.open(Dir.glob("*.xcodeproj")[0])
+	app_project.native_targets.each do |target|
+		if target.name == 'linphone'
+			target.build_configurations.each do |config|
+				if ENV['USE_CRASHLYTHICS'].nil?
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
+				else
+					# activate crashlythics
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTHICSS=1'
+				end
+				app_project.save
+			end
+		end
+	end
 end
