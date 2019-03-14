@@ -84,7 +84,7 @@ See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Co
 -Follow the instructions in the linphone-sdk/README file to build the SDK.
 
 -Rebuild the project:
- * env ENV[PODFILE_PATH]=<path to linphone-sdk-ios> pod install
+ * PODFILE_PATH=<path to linphone-sdk-ios> pod install
  
 -Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
 
