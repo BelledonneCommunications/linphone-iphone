@@ -48,20 +48,23 @@ Report a bug :
 
 ## What's new
 
-Now the default way of building linphone-iphone is to use CocoaPods. 
+Now the default way of building linphone-iphone is to use CocoaPods to retrieve the linphone-sdk frameworks.
 Compared to previous versions, this project no longer uses submodules developper has to build in order to get a working app.
-However, if you wish to use a locally compiled SDK see below how to proceed.
+However, if you wish to use a locally compiled SDK, read paragraph "Using a local linphone SDK" below to know how to proceed.
 
 ## Building the app
 
-If you don't have CocoaPods, you can download it using :
-- sudo gem install cocoapods
+If you don't have CocoaPods already, you can download and install it using :
+```
+	sudo gem install cocoapods
+```
 
-Build the linphone-iphone :
-- pod install
-It will download the linphone library from our gitlab repository so you don't have to build anything yourelf.
-
-Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
+- Install the app's dependencies with cocoapods first:
+```
+	pod install
+```
+  It will download the linphone-sdk from our gitlab repository so you don't have to build anything yourself.
+- Then open `linphone.xcworkspace` file (**NOT linphone.xcodeproj**) with XCode to build and run the app.
 
 # Testing the application
 
@@ -74,35 +77,37 @@ See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Co
 
 * Video capture will not work in simulator (not implemented in it).
 
-# Debugging the SDK
 
-## Building a local SDK
+# Using a local linphone SDK
 
--Clone the linphone-sdk repository from out gitlab:
-  * git clone https://gitlab.linphone.org/BC/public/linphone-sdk.git --recursive
+- Clone the linphone-sdk repository from out gitlab:
+```
+   git clone https://gitlab.linphone.org/BC/public/linphone-sdk.git --recursive
+```
 
--Follow the instructions in the linphone-sdk/README file to build the SDK.
+- Follow the instructions in the linphone-sdk/README file to build the SDK.
 
--Rebuild the project:
- * PODFILE_PATH=<path to linphone-sdk-ios> pod install
- 
--Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
+- Rebuild the project:
+```
+   PODFILE_PATH=<path to linphone-sdk-ios> pod install
+```
+  where <path to linphone-sdk-ios> is your build directory of the linphone-sdk project, containing the `linphone-sdk.podspec` file and a `linphone-sdk` ouptut directory comprising built frameworks and resources.
 
-# Use crashlythics
+- Then open linphone.xcworkspace with Xcode to build and run the app.
 
-We've integrated the crashlythics into liphone-iphone, which can automatically send us a crash report. It is disabled by default.
-To activate it :
+# Enabling crashlythics
 
--Download GoogleService-Info.plist from :
- https://console.firebase.google.com/project/linphone-iphone/settings/general/ios:org.linphone.phone
- You may not have access to this website because it is restricted to certain developers.
+We've integrated Crashlythics into liphone-iphone, which can automatically send crash reports. It is disabled by default.
+To activate it:
 
--Replace GoogleService-Info.plist for this project with the file you downloaded.
+- Replace the GoogleService-Info.plist for this project with yours (specific to your crashlytics account).
 
--Rebuild the project:
-* USE_CRASHLYTHICS=true pod install
-
--Then open linphone.xcworkspace (instead of linphone.xcodeproj) to install the app.
+- Rebuild the project:
+```
+    USE_CRASHLYTHICS=true pod install
+```
+`
+- Then open `linphone.xcworkspace` with Xcode to build and run the app.
 
 # Quick UI reference
 

@@ -59,6 +59,17 @@
 		LOGE(@"Unable to change audio session because: %@", err.localizedDescription);
 		err = nil;
 	}
+	[audioSession setMode:AVAudioSessionModeVoiceChat error:&err];
+	if (err) {
+		LOGE(@"Unable to change audio mode because : %@", err.localizedDescription);
+		err = nil;
+	}
+	double sampleRate = 48000.0;
+	[audioSession setPreferredSampleRate:sampleRate error:&err];
+	if (err) {
+		LOGE(@"Unable to change preferred sample rate because : %@", err.localizedDescription);
+		err = nil;
+	}
 }
 
 - (void)reportIncomingCall:(LinphoneCall *) call withUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video; {
