@@ -35,8 +35,8 @@
 #ifdef DEBUG
 @interface UIDevice (debug)
 
-- (void)_setBatteryLevel:(float)level;
-- (void)_setBatteryState:(int)state;
+- (void)setBatteryLevel:(float)level;
+- (void)setBatteryState:(int)state;
 
 @end
 #endif
@@ -759,8 +759,8 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[PhoneMainView.instance.mainViewController
 			clearCache:[NSArray arrayWithObject:[PhoneMainView.instance currentView]]];
 	} else if ([key isEqual:@"battery_alert_button"]) {
-		[[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
-		[[UIDevice currentDevice] _setBatteryLevel:0.01f];
+		[[UIDevice currentDevice] setBatteryState:UIDeviceBatteryStateUnplugged];
+		[[UIDevice currentDevice] setBatteryLevel:0.01f];
 		[NSNotificationCenter.defaultCenter postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
 	} else if ([key isEqual:@"flush_images_button"]) {
 		const MSList *rooms = linphone_core_get_chat_rooms(LC);
