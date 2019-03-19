@@ -189,7 +189,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	char *lAddress = linphone_address_as_string_uri_only(addr);
 	if (lAddress != NULL) {
-		[ContactSelection setAddAddress:[NSString stringWithUTF8String:lAddress]];
+		NSString *normSip = [NSString stringWithUTF8String:lAddress];
+		normSip = [normSip hasPrefix:@"sip:"] ? [normSip substringFromIndex:4] : normSip;
+		[ContactSelection setAddAddress:normSip];
 		[ContactSelection setSelectionMode:ContactSelectionModeEdit];
 
 		[ContactSelection setSipFilter:nil];
