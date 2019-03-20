@@ -888,7 +888,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room_2(LC, local, remoteAddress, isEncrypted);
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new((void*)remoteAddress);
-		[self createOneToOneChatRoom:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
+		[self createChatRoom:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted isGroup:FALSE];
 		bctbx_list_free(addresses);
 		return;
 	}
@@ -896,28 +896,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[self goToChatRoom:room];
 }
 
-- (void)createOneToOneChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
-    LinphoneChatRoom *room = [self createChatRoom:subject addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
-    if (!room)
-        return;
-
-    linphone_chat_room_add_participants(room, addresses);
-}
-
-- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
-    LinphoneChatRoom *room = [self createChatRoom:subject addresses:addresses andWaitView:waitView isEncrypted:isEncrypted];
-    if (!room)
-        return;
-    
-    if (bctbx_list_size(addresses) == 1) {
-        //avoid creating ont-to-one chatroom
-        linphone_chat_room_add_participant(room, addresses->data);
-    } else {
-        linphone_chat_room_add_participants(room, addresses);
-    }
-}
-
-- (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
+- (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup{
     if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
         || ((bctbx_list_size(addresses) == 1) && ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] || !isEncrypted))) {
         // If there's no factory uri, create a basic chat room
@@ -935,7 +914,7 @@ static RootViewManager *rootViewManagerInstance = nil;
             [self presentViewController:errView animated:YES completion:nil];
             return nil;
         }
-        LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
+		LinphoneChatRoom *basicRoom = linphone_core_create_chat_room_5(LC, addresses->data);
         [self goToChatRoom:basicRoom];
         return nil;
     }
@@ -943,7 +922,12 @@ static RootViewManager *rootViewManagerInstance = nil;
     _waitView = waitView;
     _waitView.hidden = NO;
     // always use group chatroom
-    LinphoneChatRoom *room = linphone_core_create_client_group_chat_room_2(LC, subject ?: LINPHONE_DUMMY_SUBJECT, false, isEncrypted);
+	LinphoneChatRoomParams *param = linphone_core_create_default_chat_room_params(LC);
+	linphone_chat_room_params_enable_group(param, isGroup);
+	linphone_chat_room_params_enable_encryption(param, isEncrypted);
+	
+	LinphoneChatRoom *room = linphone_core_create_chat_room_2(LC, param, subject ?: LINPHONE_DUMMY_SUBJECT, addresses);
+	
     if (!room) {
         _waitView.hidden = YES;
         return nil;
