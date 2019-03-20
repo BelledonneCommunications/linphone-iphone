@@ -15,6 +15,7 @@ voiceproc_preference=1
 repeat_call_notification=1
 display_phone_only=0
 auto_download_incoming_files_max_size=0
+lime_migration_done=0
 
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application

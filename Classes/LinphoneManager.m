@@ -331,6 +331,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 - (void)migrationAllPost {
 	[self migrationLinphoneSettings];
 	[self migratePushNotificationPerAccount];
+	[self migrateLimeSettings];
 }
 
 - (void)migrationAllPre {
@@ -472,6 +473,20 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 			[self configurePushTokenForProxyConfig:proxies->data];
 			proxies = proxies->next;
 		}
+	}
+}
+
+- (void)migrateLimeSettings {
+	if ([self lpConfigBoolForKey:@"lime_migration_done"] == FALSE) {
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		while (proxies) {
+			if (!strcmp(linphone_proxy_config_get_domain((LinphoneProxyConfig *)proxies->data),"sip.linphone.org")) {
+				linphone_core_set_lime_x3dh_server_url(LC, "https://lime.linphone.org/lime-server/lime-server.php");
+				break;
+			}
+			proxies = proxies->next;
+		}
+		[self lpConfigSetBool:TRUE forKey:@"lime_migration_done"];
 	}
 }
 

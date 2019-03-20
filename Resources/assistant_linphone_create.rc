@@ -36,4 +36,7 @@
 		<entry name="username_min_length" overwrite="true">1</entry>
 		<entry name="username_regex" overwrite="true">^[a-z0-9+_.\-]*$</entry>
 	</section>
+	<section name="lime">
+		<entry name="lime_server_url" overwrite="true">https://lime.linphone.org/lime-server/lime-server.php</entry>
+	</section>
 </config>

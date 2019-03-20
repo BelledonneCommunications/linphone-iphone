@@ -58,11 +58,3 @@ ringer_dev_id=AQ: Audio Queue Device
 [video]
 display_filter_auto_rotate=0
 
-[lime]
-lime_v2=1
-lime_server_url=https://lime.linphone.org/lime-server/lime-server.php
-lime_update_threshold=86400
-#lime_update_threshold=30
-max_nb_device_per_participant=255
-allow_message_in_unsafe_chatroom=1
-unsafe_if_sas_refused=0
