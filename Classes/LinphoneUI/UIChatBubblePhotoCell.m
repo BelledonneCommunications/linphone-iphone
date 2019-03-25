@@ -387,7 +387,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 - (void)onFileTransferSendUpdate:(NSNotification *)notif {
 	LinphoneChatMessageState state = [[[notif userInfo] objectForKey:@"state"] intValue];
 
-	if (state == LinphoneChatMessageStateInProgress) {
+	if (state == LinphoneChatMessageStateInProgress || state == LinphoneChatMessageStateFileTransferInProgress) {
 		float progress = [[[notif userInfo] objectForKey:@"progress"] floatValue];
 		// When uploading a file, the self.message file is first uploaded to the server,
 		// so we are in progress state. Then state goes to filetransfertdone. Then,
@@ -403,7 +403,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 }
 - (void)onFileTransferRecvUpdate:(NSNotification *)notif {
 	LinphoneChatMessageState state = [[[notif userInfo] objectForKey:@"state"] intValue];
-	if (state == LinphoneChatMessageStateInProgress) {
+	if (state == LinphoneChatMessageStateInProgress || state == LinphoneChatMessageStateFileTransferInProgress) {
 		float progress = [[[notif userInfo] objectForKey:@"progress"] floatValue];
 		_fileTransferProgress.progress = MAX(_fileTransferProgress.progress, progress);
 		_fileTransferProgress.hidden = _cancelButton.hidden = (_fileTransferProgress.progress == 1.f);
