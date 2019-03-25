@@ -1840,7 +1840,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 						stringWithFormat:@"%@iOS/%@ (%@) LinphoneSDK",
 						[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
 						[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
-						[LinphoneUtils deviceModelIdentifier]]];
+						[[UIDevice currentDevice] name]]];
 
 	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, "4.1-221-g241bbf9 (master)"); // TODO : update Linphone_sdk_version automatically
 
