@@ -85,10 +85,18 @@ post_install do |installer|
 		if target.name == 'linphone'
 			target.build_configurations.each do |config|
 				if ENV['USE_CRASHLYTHICS'].nil?
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
+					if config.name == "Debug" then
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
+					else
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited)'
+					end
 				else
 					# activate crashlythics
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTHICSS=1'
+					if config.name == "Debug" then
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTHICSS=1'
+						else
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTHICSS=1'
+					end
 				end
 				app_project.save
 			end
