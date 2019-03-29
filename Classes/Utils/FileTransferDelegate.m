@@ -45,27 +45,13 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		LOGI(@"Transfer of %s (%d bytes): download finished", linphone_content_get_name(content), size);
 		assert([thiz.data length] == linphone_content_get_file_size(content));
         NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
-        
+        ChatConversationView *view = VIEW(ChatConversationView);
         void (^block)(void)= ^ {
             if ([fileType isEqualToString:@"image"]) {
                 // we're finished, save the image and update the message
                 UIImage *image = [UIImage imageWithData:thiz.data];
                 if (!image) {
-                    UIAlertController *errView = [UIAlertController
-                                                  alertControllerWithTitle:NSLocalizedString(@"File download error", nil)
-                                                  message:NSLocalizedString(@"Error while downloading the file.\n"
-                                                                            @"The file is probably encrypted.\n"
-                                                                            @"Please retry to download this file after activating LIME.",
-                                                                            nil)
-                                                  preferredStyle:UIAlertControllerStyleAlert];
-                    
-                    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-                                                                            style:UIAlertActionStyleDefault
-                                                                          handler:^(UIAlertAction *action){
-                                                                          }];
-                    
-                    [errView addAction:defaultAction];
-                    [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+					[view showFileDownloadError];
                     [thiz stopAndDestroy];
                     return;
                 }
@@ -191,7 +177,6 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
             [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
             NSString *key =  @"localfile" ;
             NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
-            ChatConversationView *view = VIEW(ChatConversationView);
             [LinphoneManager setValueInMessageAppData:@"saving..." forKey:key inMessage:message];
            
             //write file to path

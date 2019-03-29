@@ -103,7 +103,8 @@
 - (void)openFileWithURL:(NSURL *)url;
 - (void)clearMessageView;
 
-- (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view inChat:(BOOL)inChat;
+- (void)showFileDownloadError;
+- (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view;
 - (NSURL *)getICloudFileUrl:(NSString *)name;
 - (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 
