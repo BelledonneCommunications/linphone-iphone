@@ -1153,7 +1153,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
     
     if (hasFile) {
         ChatConversationView *view = VIEW(ChatConversationView);
-        [view autoDownload:msg view:nil inChat:FALSE];
+        [view autoDownload:msg view:nil];
     }
 
 	// Post event
