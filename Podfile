@@ -32,8 +32,8 @@ target 'latestChatroomsWidget' do
   use_frameworks!
 
   # Pods for latestChatroomsWidget
-
 end
+
 
 target 'liblinphoneTester' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
@@ -55,6 +55,7 @@ target 'linphone' do
 
   # Pods for linphone
   basic_pods
+	pod 'SVProgressHUD'
 
   target 'linphoneTests' do
     inherit! :search_paths

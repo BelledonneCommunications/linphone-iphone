@@ -25,6 +25,8 @@
 #import "FileTransferDelegate.h"
 #import "UIChatBubbleTextCell.h"
 #import "DevicesListView.h"
+#import "SVProgressHUD.h"
+
 
 @implementation PreviewItem
 - (instancetype)initPreviewURL:(NSURL *)docURL
@@ -189,6 +191,8 @@ static UICompositeViewDescription *compositeDescription = nil;
                          }
                          completion:nil];
     }
+	[self configureForRoom:self.editing];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -281,6 +285,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)shareFile {
     NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
     NSDictionary *dict = [defaults valueForKey:@"photoData"];
     NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
@@ -391,6 +396,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)chooseImageQuality:(UIImage *)image assetId:(NSString *)phAssetId {
+	[SVProgressHUD show];
+	NSMutableDictionary *optionsBlock = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary *optionsText = [[NSMutableDictionary alloc] init];
 	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 	  for (NSString *key in [imageQualities allKeys]) {
@@ -398,13 +406,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  NSData *data = UIImageJPEGRepresentation(image, [quality floatValue]);
 		  NSNumber *size = [NSNumber numberWithInteger:[data length]];
 		  NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
-		  [sheet addButtonWithTitle:text
-							  block:^() {
-                                  [self saveAndSend:image assetId:phAssetId withQuality:[quality floatValue]];
-							  }];
+		  [optionsBlock setObject:^() {
+			  [self saveAndSend:image assetId:phAssetId withQuality:[quality floatValue]];
+		  } forKey:key];
+		  [optionsText setObject:text forKey:key];
 	  }
-	  [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
 	  dispatch_async(dispatch_get_main_queue(), ^{
+		  for (NSString *key in [imageQualities allKeys]) {
+			  [sheet addButtonWithTitle:[optionsText objectForKey:key] block:[optionsBlock objectForKey:key]];
+		  }
+		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[SVProgressHUD dismiss];
 		[sheet showInView:PhoneMainView.instance.view];
 	  });
 	});
@@ -694,7 +706,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onPictureClick:(id)event {
 	[_messageField resignFirstResponder];
-	[ImagePickerView SelectImageFromDevice:self atPosition:_pictureButton inView:self.view];
+	[ImagePickerView SelectImageFromDevice:self atPosition:_pictureButton inView:self.view withDocumentMenuDelegate:self];
+
 }
 
 - (IBAction)onInfoClick:(id)sender {
@@ -773,6 +786,83 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
     [self chooseImageQuality:image assetId:phAssetId];
+}
+
+
+- (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info {
+	NSURL * mediaURL = [info objectForKey:UIImagePickerControllerMediaURL];
+	[SVProgressHUD show];
+	AVAsset *video = [AVAsset assetWithURL:mediaURL];
+	AVAssetExportSession *exportSession = [AVAssetExportSession exportSessionWithAsset:video presetName:AVAssetExportPresetMediumQuality];
+	exportSession.shouldOptimizeForNetworkUse = YES;
+	exportSession.outputFileType = AVFileTypeMPEG4;
+	
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+	
+	NSString *localname = [[[mediaURL absoluteString] md5] stringByAppendingString:@".mp4"];
+	NSURL *compressedVideoUrl=[[NSURL fileURLWithPath:documentsDirectory] URLByAppendingPathComponent:localname];
+	exportSession.outputURL = compressedVideoUrl;
+	[exportSession exportAsynchronouslyWithCompletionHandler:^{
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[SVProgressHUD dismiss];
+			[self startFileUpload:[NSData dataWithContentsOfURL:compressedVideoUrl] withName:localname];
+		});
+	}];
+	
+	if (![info valueForKey:UIImagePickerControllerReferenceURL]) {
+			[self writeVideoToGallery:mediaURL];
+		}
+}
+
+
+-(void) writeVideoToGallery:(NSURL *)url {
+	NSString *localIdentifier;
+	PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+	for (PHAssetCollection *assetCollection in assetCollections) {
+		if([[assetCollection localizedTitle] isEqualToString:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"]]  ){
+			localIdentifier = assetCollection.localIdentifier;
+			break;
+		}
+	}
+	if(localIdentifier ){
+		PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[localIdentifier] options:nil];
+		PHAssetCollection *assetCollection = fetchResult.firstObject;
+		
+		[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+			PHAssetChangeRequest *assetChangeRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:url];
+			
+			PHAssetCollectionChangeRequest *assetCollectionChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+			[assetCollectionChangeRequest addAssets:@[[assetChangeRequest placeholderForCreatedAsset]]];
+		} completionHandler:^(BOOL success, NSError *error) {
+			if (!success) {
+				NSLog(@"Error creating asset: %@", error);
+			}
+		}];
+	}else{
+		__block PHObjectPlaceholder *albumPlaceholder;
+		[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+			PHAssetCollectionChangeRequest *changeRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"]];
+			albumPlaceholder = changeRequest.placeholderForCreatedAssetCollection;
+		} completionHandler:^(BOOL success, NSError *error) {
+			if (success) {
+				PHFetchResult *fetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumPlaceholder.localIdentifier] options:nil];
+				PHAssetCollection *assetCollection = fetchResult.firstObject;
+				
+				[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+					PHAssetChangeRequest *assetChangeRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:url];
+					PHAssetCollectionChangeRequest *assetCollectionChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+					[assetCollectionChangeRequest addAssets:@[[assetChangeRequest placeholderForCreatedAsset]]];
+				} completionHandler:^(BOOL success, NSError *error) {
+					if (!success) {
+						NSLog(@"Error creating asset: %@", error);
+					}
+				}];
+			} else {
+				NSLog(@"Error creating album: %@", error);
+			}
+		}];
+	}
 }
 
 - (void)tableViewIsScrolling {
@@ -1336,6 +1426,20 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	}
 }
 
+-(void) documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker {
+	documentPicker.delegate = self;
+	[PhoneMainView.instance presentViewController:documentPicker animated:YES completion:nil];
+}
+
+-(void) documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
+	[url startAccessingSecurityScopedResource];
+	NSFileCoordinator *co =[[NSFileCoordinator alloc] init];
+	NSError *error = nil;
+	[co coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL * _Nonnull newURL) {
+		[self startFileUpload:[NSData dataWithContentsOfURL:newURL] withName:[newURL lastPathComponent]];
+	}];
+	[url stopAccessingSecurityScopedResource];
+}
 
 
 @end

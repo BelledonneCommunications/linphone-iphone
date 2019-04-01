@@ -526,7 +526,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAvatarClick:(id)sender {
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 	if (_tableController.isEditing) {
-		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
+		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view withDocumentMenuDelegate:nil];
 	}
 }
 
@@ -586,5 +586,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
 }
 
+- (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info {
+	return;
+}
 
 @end

@@ -18,8 +18,10 @@
     return YES;
 }
 
+
 - (void)didSelectPost {
     NSString* groupName = [NSString stringWithFormat:@"group.%@",[[NSBundle mainBundle] bundleIdentifier]];
+	NSLog(@"[SHARE EXTENSTION] using group name inside EXTENSION %@",groupName);
     // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
     BOOL support = TRUE;
     // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.
@@ -28,26 +30,17 @@
             NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
             // TODO: Use [provider registeredTypeIdentifiersWithFileOptions:0]; to get all type identifiers of the provider instead of this if/else if structure
             support = TRUE;
-            if ([provider hasItemConformingToTypeIdentifier:@"public.jpeg"]) {
-                [self loadItem:provider typeIdentifier:@"public.jpeg" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"com.compuserve.gif"]) {
-                [self loadItem:provider typeIdentifier:@"com.compuserve.gif" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"public.url"]) {
-                [self loadItem:provider typeIdentifier:@"public.url" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"public.movie"]) {
-                [self loadItem:provider typeIdentifier:@"public.movie" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"com.apple.mapkit.map-item"]) {
-                [self loadItem:provider typeIdentifier:@"com.apple.mapkit.map-item" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"com.adobe.pdf"]) {
-                [self loadItem:provider typeIdentifier:@"com.adobe.pdf" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"public.png"]) {
-                [self loadItem:provider typeIdentifier:@"public.png" defaults:defaults];
-            } else if ([provider hasItemConformingToTypeIdentifier:@"public.image"]) {
-                [self loadItem:provider typeIdentifier:@"public.image" defaults:defaults];
-            }else{
-                NSLog(@"Unkown itemprovider = %@", provider);
-                support = false;
-            }
+			bool found = false;
+			for (NSString *ti in SUPPORTED_EXTENTIONS) {
+				if ([provider hasItemConformingToTypeIdentifier:ti]) {
+					found=true;
+					[self loadItem:provider typeIdentifier:ti defaults:defaults];
+				}
+			}
+			if (!found){
+				NSLog(@"Unkown itemprovider = %@", provider);
+				support = false;
+			}
         }
     }
     if (!support)

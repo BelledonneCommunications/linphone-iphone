@@ -22,7 +22,7 @@
 @protocol ImagePickerDelegate <NSObject>
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSString *)phAssetId;
-
+- (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info;
 @end
 
 @interface ImagePickerView : UIViewController <UICompositeViewDelegate, UINavigationControllerDelegate,
@@ -38,7 +38,8 @@
 @property(nonatomic, readonly) UIPopoverController *popoverController;
 
 + (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
-				   atPosition:(UIView *)ipadPopoverPosition
-					   inView:(UIView *)view;
+				   atPosition:(UIView *)ipadPopoverView
+					   inView:(UIView *)ipadView
+	 withDocumentMenuDelegate:(id<UIDocumentMenuDelegate>)documentMenuDelegate;
 
 @end

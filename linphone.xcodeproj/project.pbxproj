@@ -4498,6 +4498,7 @@
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -4517,6 +4518,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
