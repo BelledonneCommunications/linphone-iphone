@@ -707,6 +707,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
 		[hiddenKeys addObject:@"repeat_call_notification_preference"];
 	}
+	
+	if (![lm lpConfigBoolForKey:@"accept_early_media" inSection:@"app"]) {
+		[hiddenKeys addObject:@"pref_accept_early_media_preference"];
+	}
 
     if (![[lm lpConfigStringForKey:@"auto_download_mode"] isEqualToString:@"Customize"]) {
         [hiddenKeys addObject:@"auto_download_incoming_files_max_size"];

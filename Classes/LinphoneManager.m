@@ -622,18 +622,22 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 			if (call && (linphone_core_get_calls_nb(LC) < 2)) {
+				if ([LinphoneManager.instance lpConfigBoolForKey:@"pref_accept_early_media"]) {
+					[PhoneMainView.instance displayIncomingCall:call];
+				} else {
 #if !TARGET_IPHONE_SIMULATOR
-				NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-				NSUUID *uuid = [NSUUID UUID];
-				[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
-				[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
-				BOOL video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
-							  linphone_video_activation_policy_get_automatically_accept(linphone_core_get_video_activation_policy(LC)) &&
-							  linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
-				[LinphoneManager.instance.providerDelegate reportIncomingCall:call withUUID:uuid handle:address video:video];
+					NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
+					NSUUID *uuid = [NSUUID UUID];
+					[LinphoneManager.instance.providerDelegate.calls setObject:callId forKey:uuid];
+					[LinphoneManager.instance.providerDelegate.uuids setObject:uuid forKey:callId];
+					BOOL video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
+								  linphone_video_activation_policy_get_automatically_accept(linphone_core_get_video_activation_policy(LC)) &&
+								  linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
+					[LinphoneManager.instance.providerDelegate reportIncomingCall:call withUUID:uuid handle:address video:video];
 #else
-				[PhoneMainView.instance displayIncomingCall:call];
+					[PhoneMainView.instance displayIncomingCall:call];
 #endif
+				}
 			} else if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 				// Create a UNNotification
 				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];

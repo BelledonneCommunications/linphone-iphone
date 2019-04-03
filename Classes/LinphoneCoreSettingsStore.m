@@ -330,6 +330,8 @@
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"pref_accept_early_media"]
+			   forKey:@"pref_accept_early_media_preference"];
 	}
 
 	// chat section
@@ -767,6 +769,7 @@
 		linphone_core_set_in_call_timeout(LC, [self integerForKey:@"in_call_timeout_preference"]);
 		[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
 		[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"] forKey:@"repeat_call_notification"];
+		[lm lpConfigSetBool:[self boolForKey:@"pref_accept_early_media_preference"] forKey:@"pref_accept_early_media"];
 
 		// chat section
 		int val = [self integerForKey:@"use_lime_preference"];
