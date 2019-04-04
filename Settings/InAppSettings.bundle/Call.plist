@@ -90,7 +90,7 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<true/>
+			<false/>
 			<key>Key</key>
 			<string>pref_accept_early_media_preference</string>
 			<key>Title</key>

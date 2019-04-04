@@ -622,7 +622,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 			if (call && (linphone_core_get_calls_nb(LC) < 2)) {
-				if ([LinphoneManager.instance lpConfigBoolForKey:@"pref_accept_early_media"]) {
+				if ([LinphoneManager.instance lpConfigBoolForKey:@"accept_early_media" inSection:@"app"] && [LinphoneManager.instance lpConfigBoolForKey:@"pref_accept_early_media"]) {
 					[PhoneMainView.instance displayIncomingCall:call];
 				} else {
 #if !TARGET_IPHONE_SIMULATOR
