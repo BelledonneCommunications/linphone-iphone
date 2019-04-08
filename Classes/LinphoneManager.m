@@ -1846,7 +1846,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 						[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
 						[[UIDevice currentDevice] name]]];
 
-	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, "4.1-221-g241bbf9 (master)"); // TODO : update Linphone_sdk_version automatically
+	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_SDK_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" inSection:@"sip" withDefault:@"SIP"];
 

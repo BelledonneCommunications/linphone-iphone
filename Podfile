@@ -81,6 +81,15 @@ target 'richNotifications' do
 end
 
 post_install do |installer|
+	# Get the version of linphone-sdk
+	installer.pod_targets.each do |target|
+		if target.pod_name == 'linphone-sdk'
+			target.specs.each do |spec|
+				$linphone_sdk_version = spec.version
+			end
+		end
+	end
+			
 	app_project = Xcodeproj::Project.open(Dir.glob("*.xcodeproj")[0])
 	app_project.native_targets.each do |target|
 		if target.name == 'linphone'
@@ -99,6 +108,9 @@ post_install do |installer|
 						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTHICSS=1'
 					end
 				end
+
+				config.build_settings['OTHER_CFLAGS'] = '$(inherited) -DBCTBX_LOG_DOMAIN=\"ios\" -DCHECK_VERSION_UPDATE=FALSE -DENABLE_QRCODE=TRUE -DENABLE_SMS_INVITE=TRUE',"-DLINPHONE_SDK_VERSION=\\\"#{$linphone_sdk_version}\\\""
+				
 				app_project.save
 			end
 		end
