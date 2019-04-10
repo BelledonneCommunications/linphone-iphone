@@ -2300,30 +2300,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
 		pushBgTaskCall = 0;
 		pushBgTaskCall = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-		  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-			  LOGW(@"Incomming call with call-id [%@] couldn't be received", callId);
-			  UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-			  content.title = NSLocalizedString(@"Missed call", nil);
-			  content.body = NSLocalizedString(@"You have missed a call.", nil);
-			  content.categoryIdentifier = @"push_call";
-
-			  UNNotificationRequest *req =
-				  [UNNotificationRequest requestWithIdentifier:@"push_call" content:content trigger:NULL];
-			  [[UNUserNotificationCenter currentNotificationCenter]
-				  addNotificationRequest:req
-				   withCompletionHandler:^(NSError *_Nullable error) {
-					 // Enable or disable features based on authorization.
-					 if (error) {
-						 LOGD(@"Error while adding notification request :");
-						 LOGD(error.description);
-					 }
-				   }];
-		  }
-		  for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
-			  [LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
-		  }
-		  [[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
-		  pushBgTaskCall = 0;
+			//does not make sens to notify user as we have no information on this missed called
+			for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
+				[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
+			}
+			[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
+			pushBgTaskCall = 0;
 		}];
 		LOGI(@"Call long running task started for call-id [%@], remaining [%@] because a push has been received",
 			 callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);

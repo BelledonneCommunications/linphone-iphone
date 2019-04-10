@@ -441,7 +441,7 @@
 	}
 
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
-	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId])
 		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 
 	// if we receive a push notification, it is probably because our TCP background socket was no more working.
