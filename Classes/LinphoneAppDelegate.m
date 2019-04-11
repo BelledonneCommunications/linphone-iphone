@@ -643,9 +643,13 @@
 		  	linphone_call_set_authentication_token_verified(call, NO);
   	} else if ([response.actionIdentifier isEqual:@"Call"]) {
 	  	return;
-  	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
+  	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier or com.apple.UNNotificationDismissActionIdentifier
 	  	if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-		  	[PhoneMainView.instance displayIncomingCall:call];
+			if ([response.actionIdentifier isEqualToString:@"com.apple.UNNotificationDismissActionIdentifier"])
+				// clear notification
+				linphone_call_decline(call, LinphoneReasonDeclined);
+			else
+		  		[PhoneMainView.instance displayIncomingCall:call];
 	  	} else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
 		  	NSString *peer_address = [response.notification.request.content.userInfo objectForKey:@"peer_addr"];
 		  	NSString *local_address = [response.notification.request.content.userInfo objectForKey:@"local_addr"];
