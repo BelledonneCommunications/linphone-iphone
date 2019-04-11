@@ -78,7 +78,17 @@
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
 		const char *phoneNumber = NULL;
-		if (!addr) {
+		
+		Contact *contact = nil;
+		char *uri = nil;
+		NSString *address = nil;
+		if (addr) {
+			uri = linphone_address_as_string_uri_only(addr);
+			address = [NSString stringWithUTF8String:uri];
+			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
+		}
+		
+		if (!addr || !contact) {
 			phoneNumber = linphone_search_result_get_phone_number(result);
 			if (!phoneNumber) {
 				results = results->next;
@@ -88,6 +98,8 @@
 			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 			const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
 			addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
+			uri = linphone_address_as_string_uri_only(addr);
+			address = [NSString stringWithUTF8String:uri];
 		}
 
 		if (!addr) {
@@ -95,8 +107,6 @@
 			continue;
 		}
 
-		char *uri = linphone_address_as_string_uri_only(addr);
-		NSString *address = [NSString stringWithUTF8String:uri];
         ms_free(uri);
         
 		[_addresses addObject:address];
