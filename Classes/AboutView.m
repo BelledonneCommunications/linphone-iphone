@@ -51,7 +51,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_nameLabel.text = name;
     NSString *curVersion = [NSString stringWithFormat:@"version %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
 	_appVersionLabel.text = [NSString stringWithFormat:@"%@ iOS %@", name, curVersion];
-	_libVersionLabel.text = [NSString stringWithFormat:@"%@ Core %s", name, linphone_core_get_version()];
+	_libVersionLabel.text = [NSString stringWithFormat:@"%@ SDK %s", name, LINPHONE_SDK_VERSION];
 	UITapGestureRecognizer *tapGestureRecognizer =
 		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLicenceTap)];
 	tapGestureRecognizer.numberOfTapsRequired = 1;
@@ -75,7 +75,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onPolicyTap {
-	NSString *url = @"http://www.linphone.org/privacy-policy.html";
+	NSString *url = @"https://www.linphone.org/terms-and-privacy";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
