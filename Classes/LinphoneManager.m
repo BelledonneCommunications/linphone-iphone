@@ -1061,7 +1061,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		NSString *username = [NSString stringWithUTF8String:usernameC];
 		NSString *domain = [NSString stringWithUTF8String:domainC];
 		alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Authentification needed", nil)
-														message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
+														message:[NSString stringWithFormat:NSLocalizedString(@"Connection failed because authentication is "
 																											 @"missing or invalid for %@@%@.\nYou can "
 																											 @"provide password again, or check your "
 																											 @"account configuration in the settings.", nil), username, realm]

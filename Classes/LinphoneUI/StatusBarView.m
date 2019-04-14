@@ -204,17 +204,17 @@
 
 		switch (state) {
 			case LinphoneRegistrationOk:
-				message = NSLocalizedString(@"Registered", nil);
+				message = NSLocalizedString(@"Connected", nil);
 				break;
 			case LinphoneRegistrationNone:
 			case LinphoneRegistrationCleared:
-				message = NSLocalizedString(@"Not registered", nil);
+				message = NSLocalizedString(@"Not connected", nil);
 				break;
 			case LinphoneRegistrationFailed:
-				message = NSLocalizedString(@"Registration failed", nil);
+				message = NSLocalizedString(@"Connection failed", nil);
 				break;
 			case LinphoneRegistrationProgress:
-				message = NSLocalizedString(@"Registration in progress", nil);
+				message = NSLocalizedString(@"Connection in progress", nil);
 				break;
 			default:
 				break;

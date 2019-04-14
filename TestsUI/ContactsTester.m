@@ -84,7 +84,7 @@
 	NSString *phone = @"+5 15 #0664;447*46";
 	[self createContact:contactName lastName:@"dummy" phoneNumber:phone SIPAddress:nil];
 	[tester tapViewWithAccessibilityLabel:[@"Call " stringByAppendingString:phone]];
-	[tester waitForViewWithAccessibilityLabel:[phone stringByAppendingString:@" is not registered."]];
+	[tester waitForViewWithAccessibilityLabel:[phone stringByAppendingString:@" is not connected."]];
 	[tester tapViewWithAccessibilityLabel:@"Cancel"];
 }
 

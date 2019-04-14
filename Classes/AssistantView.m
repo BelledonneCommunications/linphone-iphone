@@ -849,7 +849,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		case LinphoneRegistrationFailed: {
 			_waitView.hidden = true;
-			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
 																			 message:message
 																	  preferredStyle:UIAlertControllerStyleAlert];
 			
@@ -923,7 +923,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)showErrorPopup:(const char *)error {
 	const char *err = error ? error : "";
 	if (strcmp(err, "ERROR_BAD_CREDENTIALS") == 0) {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
 																		 message:[AssistantView StringForXMLRPCError:err]
 																  preferredStyle:UIAlertControllerStyleAlert];
 		

@@ -154,7 +154,7 @@
 	self.voipRegistry.delegate = self;
 
 	// Initiate registration.
-	LOGI(@"[PushKit] Registering for push notifications");
+	LOGI(@"[PushKit] Connecting for push notifications");
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
 	[self configureUINotification];
@@ -164,7 +164,7 @@
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		return;
 
-	LOGI(@"Registering for UNNotifications");
+	LOGI(@"Connecting for UNNotifications");
 	// Call category
 	UNNotificationAction *act_ans =
 	[UNNotificationAction actionWithIdentifier:@"Answer"

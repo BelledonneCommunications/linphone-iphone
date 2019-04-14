@@ -319,7 +319,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneRegistrationState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneRegistrationFailed && ![currentView equal:AssistantView.compositeViewDescription] &&
 		[UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
 																		 message:[notif.userInfo objectForKey:@"message"]
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
@@ -761,7 +761,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	switch (linphone_call_get_reason(call)) {
 		case LinphoneReasonNotFound:
-			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is not registered.", nil), lUserName];
+			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is not connected.", nil), lUserName];
 			break;
 		case LinphoneReasonBusy:
 			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is busy.", nil), lUserName];
