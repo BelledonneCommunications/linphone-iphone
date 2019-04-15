@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -137,10 +137,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit_list_default.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="disabled" image="delete_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="29" eventType="touchUpInside" id="2Q7-xM-Shx"/>
@@ -387,10 +387,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit_list_default.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="disabled" image="delete_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="29" eventType="touchUpInside" id="4ei-sX-oIk"/>
@@ -578,30 +578,28 @@
         </tapGestureRecognizer>
     </objects>
     <resources>
-        <image name="back_default.png" width="24" height="22"/>
-        <image name="back_disabled.png" width="24" height="22"/>
-        <image name="call_alt_start_default.png" width="29" height="29"/>
-        <image name="call_alt_start_disabled.png" width="29" height="29"/>
-        <image name="call_back_default.png" width="38" height="27"/>
-        <image name="call_back_disabled.png" width="38" height="27"/>
-        <image name="cancel_edit_default.png" width="29" height="29"/>
-        <image name="cancel_edit_disabled.png" width="29" height="29"/>
-        <image name="chat_attachment_default.png" width="41" height="41"/>
-        <image name="chat_attachment_disabled.png" width="41" height="41"/>
-        <image name="chat_attachment_over.png" width="41" height="41"/>
+        <image name="back_default.png" width="38.400001525878906" height="35.200000762939453"/>
+        <image name="back_disabled.png" width="38.400001525878906" height="35.200000762939453"/>
+        <image name="call_alt_start_default.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="call_alt_start_disabled.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="call_back_default.png" width="61.599998474121094" height="44"/>
+        <image name="call_back_disabled.png" width="61.599998474121094" height="44"/>
+        <image name="cancel_edit_default.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="cancel_edit_disabled.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="chat_attachment_default.png" width="65.599998474121094" height="65.599998474121094"/>
+        <image name="chat_attachment_disabled.png" width="65.599998474121094" height="65.599998474121094"/>
+        <image name="chat_attachment_over.png" width="65.599998474121094" height="65.599998474121094"/>
         <image name="chat_group_informations.png" width="38" height="38"/>
-        <image name="chat_send_default.png" width="41" height="41"/>
-        <image name="chat_send_disabled.png" width="41" height="41"/>
-        <image name="chat_send_over.png" width="41" height="41"/>
+        <image name="chat_send_default.png" width="65.599998474121094" height="65.599998474121094"/>
+        <image name="chat_send_disabled.png" width="65.599998474121094" height="65.599998474121094"/>
+        <image name="chat_send_over.png" width="65.599998474121094" height="65.599998474121094"/>
         <image name="color_E.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>
-        <image name="delete_default.png" width="21" height="28"/>
-        <image name="delete_disabled.png" width="21" height="28"/>
-        <image name="deselect_all.png" width="27" height="27"/>
-        <image name="edit_list_default.png" width="30" height="28"/>
-        <image name="edit_list_disabled.png" width="30" height="28"/>
-        <image name="security_1_indicator.png" width="27" height="32"/>
-        <image name="select_all_default.png" width="27" height="27"/>
-        <image name="select_all_disabled.png" width="27" height="27"/>
+        <image name="delete_default.png" width="34.400001525878906" height="44.799999237060547"/>
+        <image name="delete_disabled.png" width="34.400001525878906" height="44.799999237060547"/>
+        <image name="deselect_all.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="security_1_indicator.png" width="27.5" height="32.5"/>
+        <image name="select_all_default.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="select_all_disabled.png" width="43.200000762939453" height="43.200000762939453"/>
     </resources>
 </document>
