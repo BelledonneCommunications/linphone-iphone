@@ -272,7 +272,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 }
 
 - (IBAction)onDialerClick:(id)sender {
-	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onPhoneNumberDisclosureClick:(id)sender {

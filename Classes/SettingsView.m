@@ -736,7 +736,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 }
 
 - (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
-	_backButton.hidden = (sender.file == nil || [sender.file isEqualToString:@"Root"]);
+	isRoot = (sender.file == nil || [sender.file isEqualToString:@"Root"]);
 	_titleLabel.text = sender.title;
 
 	// going to account: fill account specific info
@@ -1093,6 +1093,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 }
 
 - (IBAction)onBackClick:(id)sender {
-	[_settingsController.navigationController popViewControllerAnimated:YES];
+	if  (isRoot) {
+		[_settingsController.navigationController popViewControllerAnimated:NO];
+		[PhoneMainView.instance popCurrentView];
+	} else {
+		[_settingsController.navigationController popViewControllerAnimated:YES];
+	}
 }
 @end

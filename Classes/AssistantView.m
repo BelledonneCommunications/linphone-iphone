@@ -446,7 +446,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
-	_backButton.hidden = (view == _welcomeView);
 
 	if (view == _welcomeView) {
 		BOOL show_logo = [LinphoneManager.instance lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
@@ -1576,15 +1575,19 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			UIView *view = [historyViews lastObject];
 			[historyViews removeLastObject];
 			[self changeView:view back:TRUE animation:TRUE];
+		} else if (currentView == _welcomeView) {
+			[PhoneMainView.instance popCurrentView];
 		} else {
 			[self changeView:_welcomeView back:TRUE animation:TRUE];
 		}
+	} else {
+		[self onDialerClick:nil];
 	}
 }
 
 - (IBAction)onDialerClick:(id)sender {
-	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
-}
+		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+	}
 
 - (IBAction)onLinkTap:(id)sender {
 	NSString *url = @"http://linphone.org/free-sip-service.html&action=recover";

@@ -85,7 +85,6 @@
 - (void)fillDefaultValues;
 
 - (IBAction)onBackClick:(id)sender;
-- (IBAction)onDialerClick:(id)sender;
 
 - (IBAction)onGotoCreateAccountClick:(id)sender;
 - (IBAction)onGotoLinphoneLoginClick:(id)sender;
