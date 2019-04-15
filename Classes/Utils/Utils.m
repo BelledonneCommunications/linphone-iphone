@@ -641,17 +641,23 @@
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr withAddressLabel:(UILabel*)addressLabel{
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
+	NSString *tmpAddress = nil;
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
-		addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+		tmpAddress = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
 		addressLabel.hidden = FALSE;
 	} else {
 		label.text = [FastAddressBook displayNameForAddress:addr];
 		if([LinphoneManager.instance lpConfigBoolForKey:@"display_phone_only" inSection:@"app"])
 			addressLabel.hidden = TRUE;
 		else
-			addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+			tmpAddress = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
 	}
+	NSRange range = [tmpAddress rangeOfString:@";"];
+	if (range.location != NSNotFound) {
+		tmpAddress = [tmpAddress substringToIndex:range.location];
+	}
+	addressLabel.text = tmpAddress;
 }
 
 
