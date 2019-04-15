@@ -100,8 +100,10 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		LinphoneChatRoom *chat_room = iter->data;
 		// hide empty one-to-one chat room
 		LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chat_room);
-		if (linphone_chat_room_get_history_size(chat_room) > 0 || !(capabilities & LinphoneChatRoomCapabilitiesOneToOne))
+		ChatConversationView *view = VIEW(ChatConversationView);
+		if (linphone_chat_room_get_history_size(chat_room) > 0 || !(capabilities & LinphoneChatRoomCapabilitiesOneToOne) || (IPAD && view.chatRoom == chat_room)) {
 			sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
+		}
 		iter = iter->next;
 	}
 	return sorted;
