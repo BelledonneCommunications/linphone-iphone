@@ -668,6 +668,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                 }];
 				[_messageField resignFirstResponder];
                 securityDialog.authView.hidden = FALSE;
+				[securityDialog setSpecialColor];
             }
             return;
         }
@@ -682,6 +683,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         }];
 		[_messageField resignFirstResponder];
         securityDialog.authView.hidden = FALSE;
+		[securityDialog setSpecialColor];
     }
 }
 

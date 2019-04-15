@@ -248,6 +248,7 @@ static UICompositeViewDescription *compositeDescription = nil;
          } ];
         [securityDialog.securityImage setImage:[UIImage imageNamed:@"security_alert_indicator.png"]];
         securityDialog.securityImage.hidden = FALSE;
+		[securityDialog setSpecialColor];
         [LinphoneManager.instance lpConfigSetString:nil forKey:@"sas_dialog_denied"];
     }
 }

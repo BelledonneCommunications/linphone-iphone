@@ -75,6 +75,17 @@
     return dialog;
 }
 
+- (void)setSpecialColor {
+	[_confirmationButton setBackgroundImage:[UIImage imageNamed:@"color_L.png"] forState:UIControlStateNormal];
+	[_cancelButton setBackgroundImage:[UIImage imageNamed:@"color_I.png"] forState:UIControlStateNormal];
+	[_cancelButton setTitleColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_H.png"]] forState:UIControlStateNormal];
+	
+	_confirmationButton.layer.borderColor =
+	[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_L.png"]] CGColor];
+	_cancelButton.layer.borderColor =
+	[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
+}
+
 - (IBAction)onCancelClick:(id)sender {
 	[self.view removeFromSuperview];
 	[self removeFromParentViewController];

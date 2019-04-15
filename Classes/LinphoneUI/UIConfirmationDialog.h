@@ -39,6 +39,7 @@ typedef void (^UIConfirmationBlock)(void);
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIButton *authButton;
 
+- (void)setSpecialColor;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onConfirmationClick:(id)sender;
 - (IBAction)onAuthClick:(id)sender;

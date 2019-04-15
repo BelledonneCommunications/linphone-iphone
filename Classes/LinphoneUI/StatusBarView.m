@@ -392,6 +392,7 @@
 							} ];
                         
                         securityDialog.securityImage.hidden = FALSE;
+						[securityDialog setSpecialColor];
 					}
 				}
 			}

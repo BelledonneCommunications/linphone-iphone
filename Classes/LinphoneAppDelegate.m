@@ -712,7 +712,7 @@
 		  	NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n"
 																			 @"Say : %@\n"
 																			 @"Your correspondant should say : %@", nil), myCode, correspondantCode];
-			[UIConfirmationDialog ShowWithMessage:message
+			UIConfirmationDialog *securityDialog = [UIConfirmationDialog ShowWithMessage:message
 									cancelMessage:NSLocalizedString(@"DENY", nil)
 								   confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 									onCancelClick:^() {
@@ -723,6 +723,7 @@
 								  if (linphone_core_get_current_call(LC) == call)
 									  linphone_call_set_authentication_token_verified(call, YES);
 							  }];
+			[securityDialog setSpecialColor];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
 			return;
         } else { // Missed call
