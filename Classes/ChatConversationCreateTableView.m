@@ -88,7 +88,7 @@
 			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
 		}
 		
-		if (!addr || !contact) {
+		if (!addr || (!contact && linphone_search_result_get_friend(result))) {
 			phoneNumber = linphone_search_result_get_phone_number(result);
 			if (!phoneNumber) {
 				results = results->next;
