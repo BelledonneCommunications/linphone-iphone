@@ -10,44 +10,41 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
-## [Unreleased] 
+    
+## [4.1.0] - 2019-xx-xx
 
 ### Added
-- Auto-layout of images in chat messages
-- Selection of multiple images to send in a chat message
-- Sending text with image
-- Latest Calls widget
-- Latest Chatrooms widget
-- Homescreen quick action : New message
-- Rich message notifications with Linphone UI
-- Support of H265 video format based on Apple's VideoToolbox framework.
-- Share all types of files
-- Call recording
-- Send SMS to invite your friends in using Linphone
-- Get remote provisioning URL from QR code scan
-- Option to automatically download incoming files, either always, never or depending on their sizes. This adds the feature of having images received by file transfer in notifications
-- Crashlythics : send crash report automatically
-- Enable open files with preview controller
-- Devices list of chatroom with Linphone UI
+- End-to-end encryption for instant messaging, for both one-to-one and group conversations.
+- Video H.265 codec support, based on iOS VideoToolbox framework.
+- Enhanced call and IM notifications, so that it is possible to answer, decline, reply or mark as read directly from them.
+- Setting to request attachments to be automatically downloaded, unconditionnally or based on their size.
+- Possibility to send multiple attachments (images, documents) in a same message.
+- Possibility to open all kinds of documents received in a conversation.
+- Possibility to share an image through Linphone from an external application (ex: photo app)
+- Button to invite contacts to use Linphone by sending them a SMS.
+- Possibility to record calls (audio only), and replay them from the "Recordings" menu.
+- Remote provisioning from a QR code providing the http(s) url of a provisioning server.
+- Optional Crashlythics support.
 
 ### Changed
-- Use of Photokit instead of Asset Library for image handling
-- Use of binary SDK hosted in gitlab repository by CocoaPods instead of having to build it manually.
-- New end to end LIME encryption for instant messaging, both for single chat rooms and group ones
-- Improved UI
-- Use Xcode test navigator for tests
-- Move important files to Application Library from Documents
-- Updated translations
+- Compilation procedure is simplified: a binary SDK containing dependencies (liblinphone) is retrieved automatically from a CocoaPods repository.
+  Full compilation remains absolutely supported. Please check local README.md for more details.
+- Updated translations, mainly French and English.
+- Use of Photokit instead of Asset Library for image handling.
+- Auto-layout of images in chat messages.
+- Use Xcode test navigator for tests.
+- Move important files from `Documents` folder to `Application Library`. 
 
 ### Fixed
-- Fix Bluetooth management
-- Fix crash when calls
-- Fix nowebcam when leaving conference
+- Issues around Bluetooth devices management.
+- Loss of audio after accepting a second call while already in a call.
+- Crashes when during calls.
+- Nowebcam when leaving conference.
 
 ### Removed
-- Static build of iOS linphone SDK
-- All submodules
-- Somme resources files as it is now included in linphone SDK
+- Static build of iOS linphone SDK.
+- All git submodules previously containing dependencies.
+- Some resource files now provided by linphone-sdk.
 
 ## [4.0.1] - 2018-06-26
 
