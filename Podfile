@@ -109,7 +109,12 @@ post_install do |installer|
 					end
 				end
 
-				config.build_settings['OTHER_CFLAGS'] = '$(inherited) -DBCTBX_LOG_DOMAIN=\"ios\" -DCHECK_VERSION_UPDATE=FALSE -DENABLE_QRCODE=TRUE -DENABLE_SMS_INVITE=TRUE',"-DLINPHONE_SDK_VERSION=\\\"#{$linphone_sdk_version}\\\""
+				config.build_settings['OTHER_CFLAGS'] = '-DBCTBX_LOG_DOMAIN=\"ios\"',
+																								'-DCHECK_VERSION_UPDATE=FALSE',
+																								'-DENABLE_QRCODE=TRUE',
+																								'-DENABLE_SMS_INVITE=TRUE',
+																								'$(inherited)',
+																								"-DLINPHONE_SDK_VERSION=\\\"#{$linphone_sdk_version}\\\""
 				
 				app_project.save
 			end
