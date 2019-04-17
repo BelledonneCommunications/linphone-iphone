@@ -69,7 +69,6 @@
 		5E31290120D7A37E00CF3AAE /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5E31290520D7A37E00CF3AAE /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31290420D7A37E00CF3AAE /* TodayViewController.m */; };
 		5E31290820D7A37E00CF3AAE /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E31290620D7A37E00CF3AAE /* MainInterface.storyboard */; };
-		5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5E31291320D7AAA100CF3AAE /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE61D3CD5570014B822 /* avatar.png */; };
 		5E31291A20D7AAAD00CF3AAE /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
 		5E32944520E4C29000BBA896 /* chat_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AC1E8266CC0037A187 /* chat_delivered.png */; };
@@ -81,11 +80,9 @@
 		5E58962620DCE5700030868C /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
 		5E58962A20DCE5700030868C /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E58962920DCE5700030868C /* NotificationViewController.m */; };
 		5E58962D20DCE5700030868C /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E58962B20DCE5700030868C /* MainInterface.storyboard */; };
-		5E58963120DCE5710030868C /* richNotifications.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E58962320DCE5700030868C /* richNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
 		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
-		5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */; };
 		61586B81217A16EE0038AC45 /* menu_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B7A217A16EE0038AC45 /* menu_about.png */; };
 		61586B83217A16FD0038AC45 /* menu_about@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B82217A16FD0038AC45 /* menu_about@2x.png */; };
@@ -125,7 +122,7 @@
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
 		61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		61AEBEA321906AFC00F35E7F /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		61AEBEA321906AFC00F35E7F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEBC2191990A00F35E7F /* DevicesListView.m */; };
 		61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEBE2191991F00F35E7F /* DevicesListView.xib */; };
 		61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */; };
@@ -665,7 +662,7 @@
 		63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A311C4FECD000D332AE /* LaunchScreen.xib */; };
 		63E27A521C50EDB000D332AE /* hold.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A511C50EB2700D332AE /* hold.mkv */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
-		63E802DB1C625AEF000D5509 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		63E802DB1C625AEF000D5509 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		63EC8D391D7438660066547B /* AssistantLinkView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63EC8D3B1D7438660066547B /* AssistantLinkView.xib */; };
 		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
 		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
@@ -831,27 +828,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5E3128FF20D7A37E00CF3AAE;
-			remoteInfo = latestChatroomsWidget;
-		};
-		5E58962F20DCE5710030868C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5E58962220DCE5700030868C;
-			remoteInfo = richNotifications;
-		};
-		5EEE8FA420C80C23006E4176 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5EEE8F9920C80C23006E4176;
-			remoteInfo = latestCallsWidget;
-		};
 		61AE365420C00B370089D9D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -932,9 +908,6 @@
 			dstSubfolderSpec = 13;
 			files = (
 				61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */,
-				5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */,
-				5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */,
-				5E58963120DCE5710030868C /* richNotifications.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2058,7 +2031,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */,
-				61AEBEA321906AFC00F35E7F /* BuildFile in Frameworks */,
+				61AEBEA321906AFC00F35E7F /* (null) in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
@@ -2449,7 +2422,7 @@
 			path = LinphoneUI;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA = {
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
 				8C23BCB71D82AAC3005F19BB /* linphone.entitlements */,
@@ -3466,9 +3439,6 @@
 			);
 			dependencies = (
 				61AE365520C00B370089D9D3 /* PBXTargetDependency */,
-				5EEE8FA520C80C23006E4176 /* PBXTargetDependency */,
-				5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */,
-				5E58963020DCE5710030868C /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -3707,7 +3677,7 @@
 				zh_CN,
 				fr,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -3822,7 +3792,7 @@
 				633FEED41D3CD55A0014B822 /* numpad_7_default@2x.png in Resources */,
 				633FEEE01D3CD55A0014B822 /* numpad_8_over~ipad@2x.png in Resources */,
 				633FEDDC1D3CD5590014B822 /* call_start_body_disabled~ipad.png in Resources */,
-				63E802DB1C625AEF000D5509 /* BuildFile in Resources */,
+				63E802DB1C625AEF000D5509 /* (null) in Resources */,
 				633FEE2E1D3CD5590014B822 /* color_F.png in Resources */,
 				633FEDC51D3CD5590014B822 /* call_hangup_disabled@2x.png in Resources */,
 				633FEEDF1D3CD55A0014B822 /* numpad_8_over~ipad.png in Resources */,
@@ -4980,21 +4950,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */;
-			targetProxy = 5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */;
-		};
-		5E58963020DCE5710030868C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5E58962220DCE5700030868C /* richNotifications */;
-			targetProxy = 5E58962F20DCE5710030868C /* PBXContainerItemProxy */;
-		};
-		5EEE8FA520C80C23006E4176 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5EEE8F9920C80C23006E4176 /* latestCallsWidget */;
-			targetProxy = 5EEE8FA420C80C23006E4176 /* PBXContainerItemProxy */;
-		};
 		61AE365520C00B370089D9D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 61AE364A20C00B370089D9D3 /* linphoneExtension */;
