@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RecordingsListView">
+            <connections>
+                <outlet property="backButton" destination="rAc-tI-AVp" id="CVb-Cy-yWP"/>
+                <outlet property="deleteButton" destination="zDs-pW-vyA" id="mye-fK-RaT"/>
+                <outlet property="tableController" destination="1pR-qo-CIP" id="FD0-NI-8ox"/>
+                <outlet property="topBar" destination="See-Aw-LPP" id="daF-pK-NHy"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="See-Aw-LPP" userLabel="topBar">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="color_F.png" translatesAutoresizingMaskIntoConstraints="NO" id="7wu-Ow-YYU" userLabel="backgroundColor">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                        </imageView>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CqG-tB-maQ" userLabel="cancelButton" customClass="UIIconButton">
+                            <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                            <state key="normal" image="cancel_edit_default.png">
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="disabled" image="cancel_edit_disabled.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onCancelClick:" destination="1pR-qo-CIP" eventType="touchUpInside" id="qcZ-s6-jgK"/>
+                                <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="vly-0H-4W2"/>
+                            </connections>
+                        </button>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zDs-pW-vyA" userLabel="deleteButton" customClass="UIIconButton">
+                            <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="delete_default.png">
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="disabled" image="delete_disabled.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="8LI-ry-dTU"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CWx-9g-0JG" userLabel="editButton" customClass="UIIconButton">
+                            <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Edit"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="delete_default.png">
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="disabled" image="delete_disabled.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onEditClick:" destination="1pR-qo-CIP" eventType="touchUpInside" id="0LH-n9-p0c"/>
+                                <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="IeY-Yd-XP2"/>
+                            </connections>
+                        </button>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="16S-9G-2cb" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                            <rect key="frame" x="225" y="0.0" width="75" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Select all"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="deselect_all.png">
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="disabled" image="select_all_disabled.png"/>
+                            <state key="selected" image="select_all_default.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onSelectionToggle:" destination="1pR-qo-CIP" eventType="touchUpInside" id="Hfi-f6-qfI"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" tag="4" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rAc-tI-AVp" userLabel="backButton" customClass="UIIconButton">
+                            <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Back"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="back_default.png">
+                                <color key="titleColor" red="0.28619974850000002" green="0.3214434981" blue="0.3598001301" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </state>
+                            <state key="disabled" image="back_disabled.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onBackPressed:" destination="-1" eventType="touchUpInside" id="Quz-zf-q3K"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3b0-Nd-4r0">
+                    <rect key="frame" x="0.0" y="74" width="375" height="593"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <connections>
+                        <outlet property="dataSource" destination="1pR-qo-CIP" id="z2V-Yd-AwQ"/>
+                        <outlet property="delegate" destination="1pR-qo-CIP" id="eJQ-AV-7ts"/>
+                    </connections>
+                </tableView>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No recording found" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zXd-Ic-rwm" userLabel="emptyTableLabel">
+                    <rect key="frame" x="0.0" y="74" width="375" height="593"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <point key="canvasLocation" x="25.5" y="51.5"/>
+        </view>
+        <tableViewController id="1pR-qo-CIP" customClass="RecordingsListTableView">
+            <connections>
+                <outlet property="cancelButton" destination="CqG-tB-maQ" id="C90-0S-5WL"/>
+                <outlet property="deleteButton" destination="zDs-pW-vyA" id="mgV-PB-law"/>
+                <outlet property="editButton" destination="CWx-9g-0JG" id="hAA-6f-kX8"/>
+                <outlet property="emptyView" destination="zXd-Ic-rwm" id="D4k-nO-LKW"/>
+                <outlet property="toggleSelectionButton" destination="16S-9G-2cb" id="6pj-Yn-hy1"/>
+                <outlet property="view" destination="3b0-Nd-4r0" id="ng8-q5-bwm"/>
+            </connections>
+            <point key="canvasLocation" x="478" y="52"/>
+        </tableViewController>
+    </objects>
+    <resources>
+        <image name="back_default.png" width="38.400001525878906" height="35.200000762939453"/>
+        <image name="back_disabled.png" width="38.400001525878906" height="35.200000762939453"/>
+        <image name="cancel_edit_default.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="cancel_edit_disabled.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="color_E.png" width="2" height="2"/>
+        <image name="color_F.png" width="2" height="2"/>
+        <image name="delete_default.png" width="34.400001525878906" height="44.799999237060547"/>
+        <image name="delete_disabled.png" width="34.400001525878906" height="44.799999237060547"/>
+        <image name="deselect_all.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="select_all_default.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="select_all_disabled.png" width="43.200000762939453" height="43.200000762939453"/>
+    </resources>
+</document>

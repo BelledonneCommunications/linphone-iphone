@@ -41,6 +41,7 @@
 
 	_linkAccountView.hidden = _activateSMSView.userInteractionEnabled = NO;
 	_activateSMSView.hidden = _linkAccountView.userInteractionEnabled = YES;
+	[self fitScrollContentSize];
 
 	if (!account_creator) {
 		account_creator = linphone_account_creator_new(
@@ -101,6 +102,19 @@
 	}
 	account_creator = NULL;
 	[super viewDidDisappear:animated];
+}
+
+- (void)fitScrollContentSize {
+	// make view scrollable only if next button is too away
+	CGRect viewframe = _linkAccountView.frame;
+	if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+		viewframe.size.height += 60;
+	}
+	[_linkAccountView  setContentSize:viewframe.size];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[self fitScrollContentSize];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -258,7 +272,7 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 }
 
 - (IBAction)onDialerClick:(id)sender {
-	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onPhoneNumberDisclosureClick:(id)sender {
@@ -278,6 +292,10 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 														  handler:^(UIAlertAction * action) {}];
 	[errView addAction:defaultAction];
 	[self presentViewController:errView animated:YES completion:nil];
+}
+
+- (IBAction)onMaybeLater:(id)sender {
+	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
 #pragma mark - select country delegate

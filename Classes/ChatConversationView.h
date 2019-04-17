@@ -18,6 +18,8 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <QuickLook/QLPreviewItem.h>
+#import <QuickLook/QLPreviewController.h>
 
 #import "UIToggleButton.h"
 #import "UICompositeView.h"
@@ -28,20 +30,36 @@
 #import "UIBackToCallButton.h"
 #import "Utils/HPGrowingTextView/HPGrowingTextView.h"
 #import "UIImageViewDeletable.h"
+#import "UIConfirmationDialog.h"
 
 #include "linphone/linphonecore.h"
 
+//Quicklook Preview Item
+@interface PreviewItem : NSObject <QLPreviewItem>
+@property(readonly, nonatomic) NSURL    *previewItemURL;
+@property(readonly, nonatomic) NSString *previewItemTitle;
+@end
+
+//QuickLook Datasource for rending PDF docs
+@interface FileDataSource : NSObject <QLPreviewControllerDataSource>
+@property (strong, nonatomic) PreviewItem *item;
+@end
+
 @interface ChatConversationView
 	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
-                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate, UICollectionViewDataSource> {
+                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UIDocumentMenuDelegate,UIDocumentPickerDelegate> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
+    UIConfirmationDialog *securityDialog;
+    UIRefreshControl *refreshControl;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
 @property(nonatomic) Boolean markAsRead;
+
+@property (strong, nonatomic) FileDataSource *FileDataSource;
 
 @property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;
@@ -60,12 +78,13 @@
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
-@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
+//@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property NSMutableArray <UIImage *> *imagesArray;
 @property NSMutableArray <NSString *> *assetIdsArray;
 @property NSMutableArray <NSNumber *> *qualitySettingsArray;
 @property (weak, nonatomic) IBOutlet UICollectionView *imagesCollectionView;
 @property (weak, nonatomic) IBOutlet UIView *imagesView;
+@property (weak, nonatomic) IBOutlet UIButton *encryptedButton;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 
@@ -79,8 +98,14 @@
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
+- (IBAction)onEncryptedDevicesClick:(id)sender;
 - (void)update;
-- (void)openFile:(NSString *) filePath;
+- (void)openFileWithURL:(NSURL *)url;
 - (void)clearMessageView;
+
+- (void)showFileDownloadError;
+- (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view;
+- (NSURL *)getICloudFileUrl:(NSString *)name;
+- (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 
 @end

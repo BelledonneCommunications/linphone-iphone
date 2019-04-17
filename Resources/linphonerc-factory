@@ -23,6 +23,8 @@ send_logs_include_linphonerc_and_chathistory=0
 publish_presence=0
 backgroundmode_preference=0
 
+accept_early_media=0
+
 [assistant]
 password_length=-1
 username_length=-1
@@ -37,7 +39,7 @@ sip_random_port=0
 #whether SIP passwords must be encrypted in configuration storage file
 store_ha1_passwd=0
 deliver_imdn=1
-linphone_specs=groupchat
+linphone_specs=groupchat,lime
 #to avoid app to not detect broken sockets when in long running task.
 tcp_tls_keepalive=30000
 
@@ -47,6 +49,7 @@ history_max_size=-1
 enable_basic_to_client_group_chat_room_migration=0
 aggregate_imdn=1
 version_check_url_root=https://linphone.org/releases
+prefer_basic_chat_room=0
 
 [sound]
 dtmf_player_amp=0.007
@@ -57,3 +60,4 @@ ringer_dev_id=AQ: Audio Queue Device
 
 [video]
 display_filter_auto_rotate=0
+

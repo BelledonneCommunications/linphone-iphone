@@ -330,12 +330,17 @@
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"pref_accept_early_media"]
+			   forKey:@"pref_accept_early_media_preference"];
 	}
 
 	// chat section
 	{
 		[self setInteger:linphone_core_lime_enabled(LC) forKey:@"use_lime_preference"];
 		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
+        int maxSize = linphone_core_get_max_size_for_auto_download_incoming_files(LC);
+        [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Nerver" : @"Customize") forKey:@"auto_download_mode"];
+        [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];        
 	}
 
 	// network section
@@ -764,6 +769,7 @@
 		linphone_core_set_in_call_timeout(LC, [self integerForKey:@"in_call_timeout_preference"]);
 		[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
 		[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"] forKey:@"repeat_call_notification"];
+		[lm lpConfigSetBool:[self boolForKey:@"pref_accept_early_media_preference"] forKey:@"pref_accept_early_media"];
 
 		// chat section
 		int val = [self integerForKey:@"use_lime_preference"];
@@ -784,6 +790,17 @@
 			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		}
 		linphone_core_set_file_transfer_server(LC, [self stringForKey:@"file_transfer_server_url_preference"].UTF8String);
+        int maxSize;
+        NSString *downloadMode = [self stringForKey:@"auto_download_mode"];
+        if ([downloadMode isEqualToString:@"Never"]) {
+            maxSize = -1;
+        } else if ([downloadMode isEqualToString:@"Always"]) {
+            maxSize = 0;
+        } else {
+            maxSize = [[self stringForKey:@"auto_download_incoming_files_max_size"] intValue];
+        }
+        linphone_core_set_max_size_for_auto_download_incoming_files(LC, maxSize);
+        [lm lpConfigSetString:[self stringForKey:@"auto_download_mode"] forKey:@"auto_download_mode"];
 
 		// network section
 		BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
@@ -912,11 +929,7 @@
 		}
 
 		[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
-		const MSList *lists = linphone_core_get_friends_lists(LC);
-		while (lists) {
-			linphone_friend_list_enable_subscriptions(lists->data, [self integerForKey:@"use_rls_presence"]);
-			lists = lists->next;
-		}
+		linphone_core_enable_friend_list_subscription(LC, [self integerForKey:@"use_rls_presence"]);
 
 		BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
 		[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];

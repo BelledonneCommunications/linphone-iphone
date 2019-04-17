@@ -473,7 +473,7 @@
 									LOGE(@"Failed with error %@", response);
 									NSString *errorMsg;
 									if ([response isEqualToString:@"ERROR_ACCOUNT_ALREADY_EXISTS"]) {
-										errorMsg = NSLocalizedString(@"This account is already registered.", nil);
+										errorMsg = NSLocalizedString(@"This account is already connected.", nil);
 									} else if ([response isEqualToString:@"ERROR_UID_ALREADY_IN_USE"]) {
 										errorMsg = NSLocalizedString(@"You already own an account.", nil);
 									} else if ([response isEqualToString:@"ERROR_ACCOUNT_DOESNT_EXIST"]) {

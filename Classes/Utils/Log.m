@@ -21,6 +21,10 @@
 #import <asl.h>
 #import <os/log.h>
 
+#ifdef USE_CRASHLYTHICSS
+#import <Crashlytics/Crashlytics.h>
+#endif
+
 @implementation Log
 
 #define FILE_SIZE 17
@@ -114,11 +118,20 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 		for (int i = 0; i < myWords.count; i++) {
 			NSString *tab = i > 0 ? @"\t" : @"";
 			if (((NSString *)myWords[i]).length > 0) {
+#ifdef USE_CRASHLYTHICSS
+				CLSNSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
+#else
 				NSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
+#endif
+
 			}
 		}
 	} else {
+#ifdef USE_CRASHLYTHICSS
+		CLSNSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+#else
 		NSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+#endif
 	}
 }
 

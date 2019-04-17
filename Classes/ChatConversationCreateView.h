@@ -25,11 +25,18 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *linphoneButton;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
+@property (weak, nonatomic) IBOutlet UIView *chiffreOptionView;
+@property (weak, nonatomic) IBOutlet UIView *switchView;
+@property (weak, nonatomic) IBOutlet UIImageView *chiffreImage;
+@property (weak, nonatomic) IBOutlet UIButton *chiffreButton;
 
 @property(nonatomic) Boolean isForEditing;
+@property(nonatomic) Boolean isGroupChat;
+@property(nonatomic) Boolean isEncrypted;
 
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onNextClick:(id)sender;
+- (IBAction)onChiffreClick:(id)sender;
 
 @end
 

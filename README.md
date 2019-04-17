@@ -24,12 +24,10 @@ If you want to dig through Linphone code or report a bug, please read `CONTRIBUT
 ## How to be a beta tester ?
 
 Enter the Beta :
- - Download TestFlight from the App Store and log in it with your apple-id
- - Send an email to linphone-iphone@belledonne-communications.com, with object : [Beta test - Request], where you precise your apple-id you logged in TestFlight with
- - You will receive an invitation code to the beta in the following days via your email associated to your apple-id
- - Enter the invitation code received into TestFlight
- - Download Linphone from TestFlight
- - And voilà ! TestFlight will send you a notification every time a new beta test is available.
+- Download TestFlight from the App Store and log in it with your apple-id
+-Tap the public link on your iOS device. The public link : https://testflight.apple.com/join/LUlmZWjH
+-Touch View in TestFlight or Start Testing. You can also touch Accept, Install, or Update for Linphone app.
+-And voilà ! You can update your beta version with the same public link when a new one is available
 
 Send a crash report :
  - It is done automatically by TestFlight
@@ -46,108 +44,70 @@ Report a bug :
  - Change the object to [Beta test - Bug report]
  - Send the mail
 
-# Building and customizing the SDK
-
-Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
-
- Steps to customize the liblinphone SDK options are:
-
- 1. Install [HomeBrew, a package manager for OS X](http://brew.sh) (MacPorts is supported but deprecated).
- 2. Install Linphone dependencies: open iTerm.app in the current directory and list dependencies to install using:
- `./prepare.py`
- 3. Reorder your path so that brew tools are used instead of Apple's ones which are obsolete:
- `export PATH=/usr/local/bin:$PATH`
- 4. Build SDK (see below for options and explanations):
- `./prepare.py -c && ./prepare.py && make`
-
- For instance to generate the liblinphone multi-arch SDK in GPL mode, simply invoke:
-
-        ./prepare.py [options] && make
-
-**The resulting SDK is located in `liblinphone-sdk/` root directory.**
-
-## Incorporating our SDK in your project
-
-After the SDK has been built, add all the `.framework` files located in `liblinphone-sdk/apple-darwin/Frameworks` to your XCode project Embedded Frameworks and linked binaries.
-Make sure that your project FRAMEWORK_SEARCH_PATHS contains "$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks"
-Make sure that your project LD_RUNPATH_SEARCH_PATHS contains "$(inherited) @executable_path/Frameworks";
-Add a Run Script step to your build steps, put it after your step to embed frameworks, set it to use our `deploy.sh` script located in the `Tools` folder of linphone-iphone root directory.
-
-## Licensing: GPL third parties versus non GPL third parties
-
-This SDK can be generated in 2 flavors:
-
-* GPL third parties enabled means that liblinphone includes GPL third parties like FFmpeg. If you choose this flavor, your final application **must comply with GPL in any case**. This is the default mode.
-
-* NO GPL third parties means that Linphone will only use non GPL code except for `liblinphone`, `mediastreamer2`, `oRTP` and `belle-sip`. If you choose this flavor, your final application is **still subject to GPL except if you have a [commercial license for the mentioned libraries](http://www.belledonne-communications.com/products.html)**.
- To generate the liblinphone multi arch SDK without GPL third parties, invoke:
-
-        ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO -DENABLE_FFMPEG=NO [other options] && make
-
-## Customizing features
-
-You can enable non-free codecs by using `-DENABLE_NON_FREE_CODECS=ON` and `-DENABLE_<codec>=ON`. To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
-
-        ./prepare.py --list-features
-
-You can for instance enable X264 using:
-
-        ./prepare.py -DENABLE_NON_FREE_CODECS=ON -DENABLE_X264=ON [other options]
-
-## Built architectures
-
-4 architectures currently exists on iOS:
-
-- 64 bits ARM64 for iPhone 5s, iPad Air, iPad mini 2, iPhone 6, iPhone 6 Plus, iPad Air 2, iPad mini 3.
-- 32 bits ARMv7 for older devices.
-- 64 bits x86_64 for simulator for all ARM64 devices.
-- 32 bits i386 for simulator for all ARMv7 older devices.
-
- Note: We are not compiling for the 32 bits i386 simulator by default because Xcode default device (iPhone 6) runs in 64 bits. If you want to enable it, you should invoke `prepare.py` with `i386` argument: `./prepare.py i386 [other options]`.
-
-## Upgrading your iOS SDK
-
-Simply re-invoking `make` should update your SDK. If compilation fails, you may need to rebuilding everything by invoking:
-
-        ./prepare.py -c && ./prepare.py [options] && make
-
 # Building the application
 
-After the SDK is built, just open the Linphone Xcode project with Xcode, and press `Run`.
+## What's new
 
-## Note regarding third party components subject to license
+Now the default way of building linphone-iphone is to use CocoaPods to retrieve the linphone-sdk frameworks.
+Compared to previous versions, this project no longer uses submodules developper has to build in order to get a working app.
+However, if you wish to use a locally compiled SDK, read paragraph "Using a local linphone SDK" below to know how to proceed.
 
- The liblinphone SDK is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and H264 codecs.
- Linphone controls the embedding of these codecs by generating dummy libraries when there are not available. You can enable them using `prepare.py`
- script (see `-DENABLE_NON_FREE_CODECS=OFF` option). Before embedding these 4 codecs in the final application, **make sure to have the right to do so**.
+## Building the app
+
+If you don't have CocoaPods already, you can download and install it using :
+```
+	sudo gem install cocoapods
+```
+
+- Install the app's dependencies with cocoapods first:
+```
+	pod install
+```
+  It will download the linphone-sdk from our gitlab repository so you don't have to build anything yourself.
+- Then open `linphone.xcworkspace` file (**NOT linphone.xcodeproj**) with XCode to build and run the app.
 
 # Testing the application
 
-We are using the KIF framework to test the UI of Linphone. It is used as a submodule (instead of CocoaPods) for ease.
+We are using the Xcode test navigator to test the UI of Linphone.
 
-Simply press `⌘U` and the default simulator / device will launch and try to pass all the tests.
-
+Change the Scheme to LinphoneTester. Press the test navigator button and all the tests will show.
+See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html
 
 # Limitations and known bugs
 
 * Video capture will not work in simulator (not implemented in it).
 
-# Debugging the SDK
 
-Sometime it can be useful to step into liblinphone SDK functions. To allow Xcode to enable breakpoint within liblinphone, SDK must be built with debug symbols by using option `--debug`:
+# Using a local linphone SDK
 
-        ./prepare.py --debug [other options] && make
+- Clone the linphone-sdk repository from out gitlab:
+```
+   git clone https://gitlab.linphone.org/BC/public/linphone-sdk.git --recursive
+```
 
-## Debugging mediastreamer2
+- Follow the instructions in the linphone-sdk/README file to build the SDK.
 
-For iOS specific media development like audio video capture/playback it may be interesting to use `mediastream` test tool.
-You can build it using the following:
+- Rebuild the project:
+```
+   PODFILE_PATH=<path to linphone-sdk-ios> pod install
+```
+  where <path to linphone-sdk-ios> is your build directory of the linphone-sdk project, containing the `linphone-sdk.podspec` file and a `linphone-sdk` ouptut directory comprising built frameworks and resources.
 
-        ./prepare.py -G Xcode -g && make
-        # then open the project for a given architecture (here x86_64, to run on simulator):
-        open WORK/ios-x86_64/Build/linphone_builder/EP_linphone_builder.xcodeproj
+- Then open linphone.xcworkspace with Xcode to build and run the app.
 
-Then you can select mediastream target and launch it on device. You can configure scheme to pass custom parameters.
+# Enabling crashlythics
+
+We've integrated Crashlythics into liphone-iphone, which can automatically send crash reports. It is disabled by default.
+To activate it:
+
+- Replace the GoogleService-Info.plist for this project with yours (specific to your crashlytics account).
+
+- Rebuild the project:
+```
+    USE_CRASHLYTHICS=true pod install
+```
+`
+- Then open `linphone.xcworkspace` with Xcode to build and run the app.
 
 # Quick UI reference
 

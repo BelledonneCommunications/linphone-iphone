@@ -49,11 +49,41 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
-	_isForEditing = FALSE;
+	_isForEditing = FALSE; 
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+    [self viewUpdateEvent:nil];
+    
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(viewUpdateEvent:)
+                                                   name:kLinphoneChatCreateViewChange
+                                                 object:nil];
+}
+
+- (void)viewUpdateEvent:(NSNotification *)notif {
+    CGRect frame = _chiffreOptionView.frame;
+    if (_isGroupChat) {
+        _nextButton.hidden = FALSE;
+        _switchView.hidden = TRUE;
+        frame.origin.x = (self.view.frame.size.width -  _chiffreOptionView.frame.size.width)/2;
+    } else {
+        _nextButton.hidden = TRUE;
+        _switchView.hidden = FALSE;
+        frame.origin.x = self.view.frame.size.width * 0.192;
+    }
+    _chiffreOptionView.frame = frame;
+    _isEncrypted = FALSE;
+    CGRect buttonFrame = _chiffreButton.frame;
+    _tableController.isEncrypted = _isEncrypted;
+
+    // no encrypted by default
+    buttonFrame.origin.x = 2;
+    [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
+    _chiffreButton.frame = buttonFrame;
+
 	_waitView.hidden = YES;
 	_backButton.hidden = IPAD;
 	if(_tableController.contactsGroup.count == 0) {
@@ -72,7 +102,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[_collectionView reloadData];
 	_tableController.isForEditing = _isForEditing;
-	[self changeView:ContactsLinphone];
+    _tableController.isGroupChat = _isGroupChat;
+    _tableController.isEncrypted = _isEncrypted;
+    [self changeView:ContactsLinphone];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - Chat room functions
@@ -80,7 +118,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)createChatRoom {
 	NSString *addr = _tableController.contactsGroup[0];
 	LinphoneAddress *remoteAddress = linphone_address_new(addr.UTF8String);
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:remoteAddress waitView:_waitView];
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:remoteAddress waitView:_waitView isEncrypted:_isEncrypted];
 	linphone_address_unref(remoteAddress);
 }
 
@@ -95,15 +133,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onNextClick:(id)sender {
-	if (_tableController.contactsGroup.count == 1 && !_isForEditing) {
-		[self createChatRoom];
-		return;
-	}
-
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.contacts = _tableController.contactsGroup;
 	view.create = !_isForEditing;
+    view.encrypted = _isEncrypted;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (IBAction)onChiffreClick:(id)sender {
+    CGRect frame = _chiffreButton.frame;
+    _isEncrypted = !_isEncrypted;
+    _tableController.isEncrypted = _isEncrypted;
+    if (_isEncrypted) {
+        // encrypted
+        frame.origin.x = 20;
+        [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_green.png"]];
+    } else {
+        // no encrypted
+        frame.origin.x = 2;
+        [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
+    }
+    _chiffreButton.frame = frame;
+    [_tableController.tableView reloadData];
 }
 
 - (void)dismissKeyboards {

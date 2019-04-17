@@ -38,9 +38,11 @@
 @interface ChatConversationTableView : UICheckBoxTableView {
   @private
 	NSMutableArray *eventList;
+    NSMutableArray *totalEventList;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
+@property(nonatomic) NSInteger currentIndex;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property NSMutableDictionary<NSString *, UIImage *> *imagesInChatroom;
 
@@ -48,5 +50,6 @@
 - (void)scrollToBottom:(BOOL)animated;
 - (void)scrollToLastUnread:(BOOL)animated;
 - (void)updateEventEntry:(LinphoneEventLog *)event;
+- (void)refreshData;
 
 @end

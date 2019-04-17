@@ -61,18 +61,33 @@
 
 	_linphoneImage.hidden = TRUE;
 	if (contact) {
+        const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String) : NULL;
+        
 		self.linphoneImage.hidden =
-			!((contact.friend &&
-			   linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(
-				   contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) ||
+			!((model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen) ||
 			  (!linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC),
 													  _addressLabel.text.UTF8String) &&
 			   [FastAddressBook isSipURIValid:_addressLabel.text]));
+        ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
+        self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
+        [self shouldHideEncryptedChatView:model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
 	}
 
 	if (addr) {
 		linphone_address_destroy(addr);
 	}
+}
+
+- (void)shouldHideEncryptedChatView:(BOOL)hasLime {
+    _encryptedChatView.hidden = !hasLime;
+    CGRect newFrame = _optionsView.frame;
+    if (!hasLime) {
+        newFrame.origin.x = _addressLabel.frame.origin.x + _callButton.frame.size.width * 2/3;
+        
+    } else {
+        newFrame.origin.x = _addressLabel.frame.origin.x;
+    }
+    _optionsView.frame = newFrame;
 }
 
 - (void)shouldHideLinphoneImageOfAddress {
@@ -135,8 +150,14 @@
 
 - (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
 	linphone_address_destroy(addr);
+}
+
+- (IBAction)onEncrptedChatClick:(id)sender {
+    LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
+    [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
+    linphone_address_destroy(addr);
 }
 
 - (IBAction)onDeleteClick:(id)sender {
@@ -145,6 +166,19 @@
 	[tableView.dataSource tableView:tableView
 				 commitEditingStyle:UITableViewCellEditingStyleDelete
 				  forRowAtIndexPath:indexPath];
+}
+
+#pragma mark - SMS invite
+
+- (IBAction)onSMSInviteClick:(id)sender {
+    MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init];
+    if([MFMessageComposeViewController canSendText]) {
+        controller.body = NSLocalizedString(@"Hello! Join me on Linphone! You can download it for free at: https://www.linphone.org/download",nil);
+        controller.recipients = [NSArray arrayWithObjects:[self.addressLabel text], nil];
+        
+        controller.messageComposeDelegate = PhoneMainView.instance;
+        [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+    }
 }
 
 @end

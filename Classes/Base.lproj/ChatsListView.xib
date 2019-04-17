@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatsListView">
             <connections>
                 <outlet property="addButton" destination="Z5G-IF-PBY" id="Tzw-rz-Bwe"/>
+                <outlet property="addGroupChatButton" destination="glf-ni-nqe" id="0hy-5m-7C7"/>
                 <outlet property="backToCallButton" destination="Fac-hy-za4" id="8I3-TM-oJ7"/>
                 <outlet property="tableController" destination="4" id="18"/>
                 <outlet property="view" destination="5" id="14"/>
@@ -44,10 +45,25 @@
                                     <state key="normal" image="chat_add_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="chat_add_disabled.png"/>
+                                    <state key="disabled" image="chat_add_default.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onAddClick:" destination="-1" eventType="touchUpInside" id="g4q-By-6nW"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="glf-ni-nqe" userLabel="addGroupButton">
+                                    <rect key="frame" x="75" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="New discussion"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="chat_add_group.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="disabled" image="chat_add_group.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onAddGroupChatClick:" destination="-1" eventType="touchUpInside" id="tem-mm-w62"/>
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KhE-c3-2Zj" userLabel="cancelButton" customClass="UIIconButton">
@@ -66,7 +82,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Fac-hy-za4" userLabel="backToCallButton" customClass="UIBackToCallButton">
-                                    <rect key="frame" x="75" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="150" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <state key="normal" image="call_back_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -113,10 +129,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit_list_default.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="disabled" image="delete_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="4" eventType="touchUpInside" id="COv-sY-0TU"/>
@@ -145,7 +161,7 @@
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view hidden="YES" tag="8" contentMode="scaleToFill" misplaced="YES" id="cpj-Jc-imm" userLabel="waitView">
+                        <view hidden="YES" tag="8" contentMode="scaleToFill" id="cpj-Jc-imm" userLabel="waitView">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="559"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
@@ -161,7 +177,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="32.5" y="103.5"/>
+            <point key="canvasLocation" x="52" y="93.103448275862078"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="4" userLabel="tableController" customClass="ChatsListTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -177,20 +193,18 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="call_back_default.png" width="38" height="27"/>
-        <image name="call_back_disabled.png" width="38" height="27"/>
-        <image name="cancel_edit_default.png" width="29" height="29"/>
-        <image name="cancel_edit_disabled.png" width="29" height="29"/>
-        <image name="chat_add_default.png" width="33" height="29"/>
-        <image name="chat_add_disabled.png" width="33" height="29"/>
+        <image name="call_back_default.png" width="61.599998474121094" height="44"/>
+        <image name="call_back_disabled.png" width="61.599998474121094" height="44"/>
+        <image name="cancel_edit_default.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="cancel_edit_disabled.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="chat_add_default.png" width="50.400001525878906" height="44.799999237060547"/>
+        <image name="chat_add_group.png" width="64" height="42.400001525878906"/>
         <image name="color_E.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>
-        <image name="delete_default.png" width="21" height="28"/>
-        <image name="delete_disabled.png" width="21" height="28"/>
-        <image name="deselect_all.png" width="27" height="27"/>
-        <image name="edit_list_default.png" width="30" height="28"/>
-        <image name="edit_list_disabled.png" width="30" height="28"/>
-        <image name="select_all_default.png" width="27" height="27"/>
-        <image name="select_all_disabled.png" width="27" height="27"/>
+        <image name="delete_default.png" width="34.400001525878906" height="44.799999237060547"/>
+        <image name="delete_disabled.png" width="34.400001525878906" height="44.799999237060547"/>
+        <image name="deselect_all.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="select_all_default.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="select_all_disabled.png" width="43.200000762939453" height="43.200000762939453"/>
     </resources>
 </document>

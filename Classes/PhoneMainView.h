@@ -18,6 +18,7 @@
  */
 
 #import <MediaPlayer/MediaPlayer.h>
+#import <MessageUI/MessageUI.h>
 
 /* These imports are here so that we can import PhoneMainView.h without bothering to import all the rest of the view headers */
 #import "StatusBarView.h"
@@ -44,6 +45,7 @@
 #import "HistoryDetailsView.h"
 #import "HistoryListView.h"
 #import "ImageView.h"
+#import "RecordingsListView.h"
 #import "SettingsView.h"
 #import "SideMenuView.h"
 #import "UIConfirmationDialog.h"
@@ -74,7 +76,7 @@
 
 @end
 
-@interface PhoneMainView : UIViewController<IncomingCallViewDelegate> {
+@interface PhoneMainView : UIViewController<IncomingCallViewDelegate, MFMessageComposeViewControllerDelegate> {
     @private
     NSMutableArray *inhibitedEvents;
 }
@@ -104,13 +106,14 @@
 - (void)startUp;
 - (void)displayIncomingCall:(LinphoneCall*) call;
 - (void)setVolumeHidden:(BOOL)hidden;
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result;
 
 - (void)addInhibitedEvent:(id)event;
 - (BOOL)removeInhibitedEvent:(id)event;
 
 - (void)updateApplicationBadgeNumber;
-- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView;
-- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView;
+- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted;
+- (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup;
 - (void)goToChatRoom:(LinphoneChatRoom *)cr;
 + (PhoneMainView*) instance;
 

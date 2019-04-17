@@ -14,6 +14,10 @@
 #import "UIRoundBorderedButton.h"
 
 @interface ChatConversationImdnView : UIViewController <UICompositeViewDelegate, UITableViewDelegate, UITableViewDataSource>
+{
+  @private
+    NSString *messageText;
+}
 
 @property(nonatomic) LinphoneChatMessage *msg;
 @property(nonatomic) bctbx_list_t *displayedList;
@@ -30,6 +34,7 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)onBackClick:(id)sender;
+- (void)updateImdnList;
 
 @end
 

@@ -24,7 +24,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0.2</string>
+	<string>4.1</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -77,7 +77,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>6</string>
+	<string>27</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
@@ -96,6 +96,18 @@
 	<string>Add tranfered files to your library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.org.linphone.phone</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>Linphone</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>Any</string>
+		</dict>
+	</dict>
 	<key>NSVoIPUsageDescription</key>
 	<string>Make audio/video calls</string>
 	<key>UIApplicationExitsOnSuspend</key>
@@ -111,8 +123,6 @@
 			<string>linphone.phone.action.newMessage</string>
 		</dict>
 	</array>
-	<key>UIApplicationShortcutWidget</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER).widget.latestChatrooms</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -147,6 +157,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

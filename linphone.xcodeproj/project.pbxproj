@@ -7,11 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1523F17A2174B096009E32C0 /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C601FD220B462B0004FF95C /* mediastreamer2.framework */; };
-		1523F1812174B0BA009E32C0 /* mediastreamer2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
-		15F12E682174AB4B00B7DE49 /* mediastreamer2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		15F12E692174AB9000B7DE49 /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */; };
 		15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -62,6 +58,7 @@
 		340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 340751E6150F38FD00B89C47 /* UIVideoButton.m */; };
 		34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */; };
 		344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 344ABDEF14850AE9007420B6 /* libc++.1.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		3C4CCF18D4DA173FC144654A /* Pods_linphoneExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBE8FB918176C388C01CFF7 /* Pods_linphoneExtension.framework */; };
 		570742581D5A0691004B9C84 /* ShopView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570742561D5A0691004B9C84 /* ShopView.xib */; };
 		570742611D5A09B8004B9C84 /* ShopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5707425F1D5A09B8004B9C84 /* ShopView.m */; };
 		570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 570742661D5A63DB004B9C84 /* StoreKit.framework */; };
@@ -71,7 +68,6 @@
 		5E31290120D7A37E00CF3AAE /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5E31290520D7A37E00CF3AAE /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31290420D7A37E00CF3AAE /* TodayViewController.m */; };
 		5E31290820D7A37E00CF3AAE /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E31290620D7A37E00CF3AAE /* MainInterface.storyboard */; };
-		5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5E31291320D7AAA100CF3AAE /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE61D3CD5570014B822 /* avatar.png */; };
 		5E31291A20D7AAAD00CF3AAE /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
 		5E32944520E4C29000BBA896 /* chat_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AC1E8266CC0037A187 /* chat_delivered.png */; };
@@ -83,14 +79,59 @@
 		5E58962620DCE5700030868C /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
 		5E58962A20DCE5700030868C /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E58962920DCE5700030868C /* NotificationViewController.m */; };
 		5E58962D20DCE5700030868C /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E58962B20DCE5700030868C /* MainInterface.storyboard */; };
-		5E58963120DCE5710030868C /* richNotifications.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E58962320DCE5700030868C /* richNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
 		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
-		5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */; };
+		61586B81217A16EE0038AC45 /* menu_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B7A217A16EE0038AC45 /* menu_about.png */; };
+		61586B83217A16FD0038AC45 /* menu_about@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B82217A16FD0038AC45 /* menu_about@2x.png */; };
+		61586B85217A17070038AC45 /* menu_assistant.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B84217A17070038AC45 /* menu_assistant.png */; };
+		61586B87217A17160038AC45 /* menu_assistant@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B86217A17150038AC45 /* menu_assistant@2x.png */; };
+		61586B89217A17220038AC45 /* menu_link_account.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B88217A17220038AC45 /* menu_link_account.png */; };
+		61586B8B217A17320038AC45 /* menu_link_account@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B8A217A17320038AC45 /* menu_link_account@2x.png */; };
+		61586B8D217A173F0038AC45 /* menu_options.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B8C217A173F0038AC45 /* menu_options.png */; };
+		61586B8F217A174F0038AC45 /* menu_options@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B8E217A174F0038AC45 /* menu_options@2x.png */; };
+		61586B91217A175D0038AC45 /* menu_recordings.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B90217A175C0038AC45 /* menu_recordings.png */; };
+		61586B93217A17700038AC45 /* menu_recordings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B92217A176F0038AC45 /* menu_recordings@2x.png */; };
+		615A280F217F1FD50060F920 /* chat_add_group.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2808217F1FD40060F920 /* chat_add_group.png */; };
+		615A2811217F1FDE0060F920 /* chat_add_group@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2810217F1FDE0060F920 /* chat_add_group@2x.png */; };
+		615A2813217F24D40060F920 /* security_1_indicator.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2812217F24D40060F920 /* security_1_indicator.png */; };
+		615A2815217F24E00060F920 /* security_1_indicator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2814217F24E00060F920 /* security_1_indicator@2x.png */; };
+		615A2817217F280C0060F920 /* chat_list_indicator.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2816217F280C0060F920 /* chat_list_indicator.png */; };
+		615A2819217F28160060F920 /* chat_list_indicator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2818217F28160060F920 /* chat_list_indicator@2x.png */; };
+		615A281B217F6F9C0060F920 /* security_2_indicator.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A281A217F6F9B0060F920 /* security_2_indicator.png */; };
+		615A281D217F6FA80060F920 /* security_2_indicator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A281C217F6FA80060F920 /* security_2_indicator@2x.png */; };
+		615A281F217F6FB40060F920 /* security_alert_indicator.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A281E217F6FB30060F920 /* security_alert_indicator.png */; };
+		615A2821217F6FBF0060F920 /* security_alert_indicator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2820217F6FBF0060F920 /* security_alert_indicator@2x.png */; };
+		615A282421805B260060F920 /* security_toogle_icon_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A282321805B250060F920 /* security_toogle_icon_green.png */; };
+		615A282621805B320060F920 /* security_toogle_icon_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A282521805B320060F920 /* security_toogle_icon_green@2x.png */; };
+		615A282821805B400060F920 /* security_toogle_icon_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A282721805B400060F920 /* security_toogle_icon_grey.png */; };
+		615A282A21805B4C0060F920 /* security_toogle_icon_grey@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A282921805B4C0060F920 /* security_toogle_icon_grey@2x.png */; };
+		615A2830218071E80060F920 /* security_toogle_background_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A282F218071E80060F920 /* security_toogle_background_green.png */; };
+		615A2832218071F30060F920 /* security_toogle_background_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2831218071F30060F920 /* security_toogle_background_green@2x.png */; };
+		615A2834218071FF0060F920 /* security_toogle_background_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A2833218071FF0060F920 /* security_toogle_background_grey.png */; };
+		615A28362180720D0060F920 /* security_toogle_background_grey@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28352180720D0060F920 /* security_toogle_background_grey@2x.png */; };
+		615A283A2180788E0060F920 /* security_toogle_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28392180788E0060F920 /* security_toogle_button.png */; };
+		615A283C2180789C0060F920 /* security_toogle_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A283B2180789C0060F920 /* security_toogle_button@2x.png */; };
+		615A283E2180A2560060F920 /* invite_linphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A283D2180A2550060F920 /* invite_linphone.png */; };
+		615A28402180A2620060F920 /* invite_linphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A283F2180A2620060F920 /* invite_linphone@2x.png */; };
+		615A28422180C0870060F920 /* recording.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28412180C0820060F920 /* recording.png */; };
+		615A28442180C0900060F920 /* recording@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28432180C08F0060F920 /* recording@2x.png */; };
+		6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */; };
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
 		61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		61AEBEA321906AFC00F35E7F /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEBC2191990A00F35E7F /* DevicesListView.m */; };
+		61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEBE2191991F00F35E7F /* DevicesListView.xib */; };
+		61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */; };
+		61AEBEC42191D7D900F35E7F /* UIDevicesDetails.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */; };
+		61AEBEC62191E47500F35E7F /* chevron_list_close.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC52191E47500F35E7F /* chevron_list_close.png */; };
+		61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */; };
+		61AEBECA2191E49300F35E7F /* chevron_list_open.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC92191E49200F35E7F /* chevron_list_open.png */; };
+		61AEBECC2191E4A300F35E7F /* chevron_list_open@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */; };
+		61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 61CCC3DE21933B580060EDEA /* UIDeviceCell.m */; };
+		61CCC3E121933B660060EDEA /* UIDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61CCC3E021933B660060EDEA /* UIDeviceCell.xib */; };
 		61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
@@ -111,18 +152,6 @@
 		63058A3E1B4E822F00EFAE36 /* LinphoneTester_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A381B4E822F00EFAE36 /* LinphoneTester_Tests.m */; };
 		63058A3F1B4E823000EFAE36 /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */; };
 		63058A4F1B4E835200EFAE36 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630589FD1B4E816A00EFAE36 /* libKIF.a */; };
-		63058ACF1B4E922500EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
-		63058AD01B4E922500EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
-		63058AD11B4E922500EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
-		63058AD41B4E922500EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
-		63058AD51B4E922500EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
-		63058ADA1B4E937300EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
-		63058ADB1B4E937300EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
-		63058ADC1B4E937300EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
-		63058ADF1B4E937300EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
-		63058AE01B4E937300EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
-		63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
-		63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6306440C1BECB08500134C72 /* FirstLoginView.m */; };
 		6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
@@ -572,7 +601,6 @@
 		635173F91BA082A40095EB0A /* UIChatBubblePhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 635173F81BA082A40095EB0A /* UIChatBubblePhotoCell.m */; };
 		6352A5751BE0D4B800594C1C /* CallSideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6352A5731BE0D4B800594C1C /* CallSideMenuView.m */; };
 		6352A5761BE0D4B800594C1C /* CallSideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */; };
-		635598821C96AFFA006ED99A /* vcards in Resources */ = {isa = PBXBuildFile; fileRef = 635598811C96AFFA006ED99A /* vcards */; };
 		635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */; };
 		636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutView.xib */; };
 		636316D41A1DEC650009B839 /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsView.xib */; };
@@ -629,20 +657,21 @@
 		63CE58451C85EC1000304800 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CE583F1C85EBF400304800 /* VideoToolbox.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
-		63D8038D1C96E74100336B6F /* vcards in Resources */ = {isa = PBXBuildFile; fileRef = 635598811C96AFFA006ED99A /* vcards */; };
 		63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */; };
 		63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A311C4FECD000D332AE /* LaunchScreen.xib */; };
 		63E27A521C50EDB000D332AE /* hold.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A511C50EB2700D332AE /* hold.mkv */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
-		63E802DB1C625AEF000D5509 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		63E802DB1C625AEF000D5509 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		63EC8D391D7438660066547B /* AssistantLinkView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63EC8D3B1D7438660066547B /* AssistantLinkView.xib */; };
 		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
 		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
 		63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */; };
 		63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
+		64092B369D63DBEAA8C824CE /* Pods_liblinphoneTester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CBD6E980619195CB7EE32AC /* Pods_liblinphoneTester.framework */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		7F568BF9C9BFDA3A0311DF18 /* Pods_linphoneTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F325590DD6CD7F6CC8F60C03 /* Pods_linphoneTests.framework */; };
 		8C1B67061E671826001EA2FE /* AudioHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1B67051E671826001EA2FE /* AudioHelper.m */; };
 		8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */; };
 		8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2595DE1DEDCC8E007A6424 /* CallKit.framework */; };
@@ -650,59 +679,7 @@
 		8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
 		8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D981E40E0CC00728EF3 /* lime_ko.png */; };
 		8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */; };
-		8C3EA9E31EB892D600B732B6 /* msamr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E01EB892D600B732B6 /* msamr.framework */; };
-		8C3EA9E41EB892D600B732B6 /* msamr.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E01EB892D600B732B6 /* msamr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EA9E51EB892D600B732B6 /* mscodec2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E11EB892D600B732B6 /* mscodec2.framework */; };
-		8C3EA9E61EB892D600B732B6 /* mscodec2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E11EB892D600B732B6 /* mscodec2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EA9E71EB892D600B732B6 /* msopenh264.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E21EB892D600B732B6 /* msopenh264.framework */; };
-		8C3EA9E81EB892D600B732B6 /* msopenh264.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E21EB892D600B732B6 /* msopenh264.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EA9F01EB8A78C00B732B6 /* msx264.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */; };
-		8C3EA9F11EB8A78C00B732B6 /* msx264.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EA9FB1EB8CEE600B732B6 /* bctoolbox-tester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; };
-		8C3EA9FC1EB8CEE600B732B6 /* bctoolbox-tester.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EA9FD1EB8CEE700B732B6 /* msx264.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */; };
-		8C3EA9FE1EB8CEE700B732B6 /* msx264.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EA9FF1EB8CEE700B732B6 /* msamr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E01EB892D600B732B6 /* msamr.framework */; };
-		8C3EAA001EB8CEE700B732B6 /* msamr.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EA9E01EB892D600B732B6 /* msamr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA011EB8CEE700B732B6 /* mscodec2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E11EB892D600B732B6 /* mscodec2.framework */; };
-		8C3EAA021EB8CEE700B732B6 /* mscodec2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EA9E11EB892D600B732B6 /* mscodec2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA031EB8CEE700B732B6 /* msopenh264.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E21EB892D600B732B6 /* msopenh264.framework */; };
-		8C3EAA041EB8CEE700B732B6 /* msopenh264.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EA9E21EB892D600B732B6 /* msopenh264.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA051EB8CEE700B732B6 /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
-		8C3EAA061EB8CEE700B732B6 /* bctoolbox.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA071EB8CEE700B732B6 /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
-		8C3EAA081EB8CEE700B732B6 /* linphone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA0D1EB8CEE700B732B6 /* mssilk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; };
-		8C3EAA0E1EB8CEE700B732B6 /* mssilk.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA0F1EB8CEE700B732B6 /* mswebrtc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */; };
-		8C3EAA101EB8CEE700B732B6 /* mswebrtc.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA111EB8CEE700B732B6 /* ortp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECD1EB3859200A9AAEF /* ortp.framework */; };
-		8C3EAA121EB8CEE700B732B6 /* ortp.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECD1EB3859200A9AAEF /* ortp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA1A1EB8D9C300B732B6 /* linphonetester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; };
-		8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA1C1EB8D9DB00B732B6 /* linphonetester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; };
-		8C3EAA1D1EB8DBD000B732B6 /* linphonetester.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C435F9420BBF863004CCA25 /* belcard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; };
-		8C435F9620BBF867004CCA25 /* belcard.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C435F9720BBF874004CCA25 /* belcard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; };
-		8C435F9820BBF874004CCA25 /* belcard.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C435FB320BC3685004CCA25 /* belr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; };
-		8C435FB420BC3685004CCA25 /* belr.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C435FB520BC368D004CCA25 /* belr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; };
-		8C435FB620BC368D004CCA25 /* belr.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C56289F20236C25007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
-		8C5BCED01EB3859200A9AAEF /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
-		8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCED21EB3859200A9AAEF /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
-		8C5BCED31EB3859200A9AAEF /* linphone.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCED81EB3859300A9AAEF /* mssilk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; };
-		8C5BCED91EB3859300A9AAEF /* mssilk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCEDA1EB3859300A9AAEF /* mswebrtc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */; };
-		8C5BCEDB1EB3859300A9AAEF /* mswebrtc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCEDC1EB3859300A9AAEF /* ortp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECD1EB3859200A9AAEF /* ortp.framework */; };
-		8C5BCEDD1EB3859300A9AAEF /* ortp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECD1EB3859200A9AAEF /* ortp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C5BCEDF1EB385B100A9AAEF /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
-		8C5BCEE01EB385B100A9AAEF /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		8C92ABE81FA773190006FB5D /* UIChatNotifiedEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */; };
 		8C92ABF31FA773E50006FB5D /* UIChatNotifiedEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */; };
@@ -737,9 +714,22 @@
 		8CF25D961F9F336100BEA0C1 /* check_unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D941F9F336100BEA0C1 /* check_unselected.png */; };
 		8CF25D9D1F9F76BD00BEA0C1 /* chat_group_informations.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */; };
 		8CF25D9E1F9F76BD00BEA0C1 /* chat_group_informations@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */; };
+		A634ABAFCB39B6AAE4CA991D /* Pods_linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */; };
+		C5D3371994961EDAE2311A1E /* Pods_liblinphoneTesterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D252FEC7DD06DD5695A320A1 /* Pods_liblinphoneTesterTests.framework */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
 		CF15F21F20E4F9A3008B1DE6 /* UIImageViewDeletable.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */; };
+		CF1DE92D210A0F5D00A0A97E /* UILinphoneAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */; };
+		CF1DE92E210A0F5D00A0A97E /* UILinphoneAudioPlayer.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */; };
+		CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602D5210867E800749F76 /* RecordingsListView.m */; };
+		CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602D6210867E800749F76 /* RecordingsListView.xib */; };
+		CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E021086EB200749F76 /* RecordingsListTableView.m */; };
+		CF7602E72108759A00749F76 /* UIRecordingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E52108759A00749F76 /* UIRecordingCell.m */; };
+		CF7602E82108759A00749F76 /* UIRecordingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602E62108759A00749F76 /* UIRecordingCell.xib */; };
+		CF7602F5210898CC00749F76 /* rec_off_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CF7602EB210898C100749F76 /* rec_off_default@2x.png */; };
+		CF7602F6210898CC00749F76 /* rec_on_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CF7602F2210898C400749F76 /* rec_on_default@2x.png */; };
+		CF7602F7210898CC00749F76 /* rec_off_default.png in Resources */ = {isa = PBXBuildFile; fileRef = CF7602F3210898C600749F76 /* rec_off_default.png */; };
+		CF7602F8210898CC00749F76 /* rec_on_default.png in Resources */ = {isa = PBXBuildFile; fileRef = CF7602F4210898C800749F76 /* rec_on_default.png */; };
 		CFBD7A2A20E504AE007C5286 /* delete_img.png in Resources */ = {isa = PBXBuildFile; fileRef = CFBD7A2320E504AD007C5286 /* delete_img.png */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
@@ -835,27 +825,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5E3128FF20D7A37E00CF3AAE;
-			remoteInfo = latestChatroomsWidget;
-		};
-		5E58962F20DCE5710030868C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5E58962220DCE5700030868C;
-			remoteInfo = richNotifications;
-		};
-		5EEE8FA420C80C23006E4176 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5EEE8F9920C80C23006E4176;
-			remoteInfo = latestCallsWidget;
-		};
 		61AE365420C00B370089D9D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -936,9 +905,6 @@
 			dstSubfolderSpec = 13;
 			files = (
 				61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */,
-				5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */,
-				5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */,
-				5E58963120DCE5710030868C /* richNotifications.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -949,61 +915,15 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				15F12E682174AB4B00B7DE49 /* mediastreamer2.framework in Embed Frameworks */,
-				8C435FB620BC368D004CCA25 /* belr.framework in Embed Frameworks */,
-				8C5BCED31EB3859200A9AAEF /* linphone.framework in Embed Frameworks */,
-				8C5BCEDB1EB3859300A9AAEF /* mswebrtc.framework in Embed Frameworks */,
-				8C3EA9F11EB8A78C00B732B6 /* msx264.framework in Embed Frameworks */,
-				8C3EA9E61EB892D600B732B6 /* mscodec2.framework in Embed Frameworks */,
-				8C435F9620BBF867004CCA25 /* belcard.framework in Embed Frameworks */,
-				8C5BCED91EB3859300A9AAEF /* mssilk.framework in Embed Frameworks */,
-				8C3EA9E41EB892D600B732B6 /* msamr.framework in Embed Frameworks */,
-				8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */,
-				8C3EA9E81EB892D600B732B6 /* msopenh264.framework in Embed Frameworks */,
-				8C5BCEDD1EB3859300A9AAEF /* ortp.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8CDC89111EAF89B7006B5652 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				8C3EAA1D1EB8DBD000B732B6 /* linphonetester.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8CDC89151EAF8CE2006B5652 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				1523F1812174B0BA009E32C0 /* mediastreamer2.framework in CopyFiles */,
-				8C435F9820BBF874004CCA25 /* belcard.framework in CopyFiles */,
-				8C3EAA0E1EB8CEE700B732B6 /* mssilk.framework in CopyFiles */,
-				8C3EAA081EB8CEE700B732B6 /* linphone.framework in CopyFiles */,
-				8C435FB420BC3685004CCA25 /* belr.framework in CopyFiles */,
-				8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */,
-				8C3EA9FE1EB8CEE700B732B6 /* msx264.framework in CopyFiles */,
-				8C3EA9FC1EB8CEE600B732B6 /* bctoolbox-tester.framework in CopyFiles */,
-				8C3EAA021EB8CEE700B732B6 /* mscodec2.framework in CopyFiles */,
-				8C3EAA101EB8CEE700B732B6 /* mswebrtc.framework in CopyFiles */,
-				8C3EAA041EB8CEE700B732B6 /* msopenh264.framework in CopyFiles */,
-				8C3EAA001EB8CEE700B732B6 /* msamr.framework in CopyFiles */,
-				8C3EAA061EB8CEE700B732B6 /* bctoolbox.framework in CopyFiles */,
-				8C3EAA121EB8CEE700B732B6 /* ortp.framework in CopyFiles */,
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		046DEFE77AD0675DA9932C4C /* Pods-liblinphoneTesterTests.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTesterTests.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTesterTests/Pods-liblinphoneTesterTests.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		152F22351B15E889008C0621 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
-		15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneAppDelegate.m; sourceTree = "<group>"; };
@@ -1047,6 +967,8 @@
 		244523AD1E8266CC0037A187 /* chat_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_error.png; sourceTree = "<group>"; };
 		244523AE1E8266CC0037A187 /* chat_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_read.png; sourceTree = "<group>"; };
 		244523BC1E8D3A6C0037A187 /* chat_unsecure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_unsecure.png; sourceTree = "<group>"; };
+		24585CBE78DA4F005C7F9D71 /* Pods-liblinphoneTester.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTester.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester.distribution.xcconfig"; sourceTree = "<group>"; };
+		248C326F4AD75E654C1CB37A /* Pods-liblinphoneTesterTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTesterTests.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTesterTests/Pods-liblinphoneTesterTests.distribution.xcconfig"; sourceTree = "<group>"; };
 		249660941FD6A359001D55AA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		24A3459D1D95797700881A5C /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		24A345A51D95798A00881A5C /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
@@ -1064,6 +986,7 @@
 		24BFAA9C209B062F004F47A7 /* contacts_sip_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "contacts_sip_selected@2x.png"; sourceTree = "<group>"; };
 		24BFAA9D209B0630004F47A7 /* linphone_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "linphone_logo@2x.png"; sourceTree = "<group>"; };
 		24E1C7B91F9A235500D3F981 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		283F127CA480E2E2CF0DE9C2 /* Pods-linphoneExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneExtension/Pods-linphoneExtension.release.xcconfig"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
@@ -1074,6 +997,8 @@
 		34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoZoomHandler.m; path = LinphoneUI/VideoZoomHandler.m; sourceTree = "<group>"; };
 		344ABDEF14850AE9007420B6 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		344ABDF014850AE9007420B6 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
+		38A3AE51B9E09ABF29222E5F /* Pods-liblinphoneTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTester.release.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester.release.xcconfig"; sourceTree = "<group>"; };
+		38DF35D11A7C0F45E990C83A /* Pods-linphone.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphone.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-linphone/Pods-linphone.distribution.xcconfig"; sourceTree = "<group>"; };
 		570742571D5A0691004B9C84 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ShopView.xib; sourceTree = "<group>"; };
 		5707425F1D5A09B8004B9C84 /* ShopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopView.m; sourceTree = "<group>"; };
 		570742601D5A09B8004B9C84 /* ShopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopView.h; sourceTree = "<group>"; };
@@ -1100,13 +1025,64 @@
 		5EEE8FA320C80C23006E4176 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5EEE8FB320C81334006E4176 /* latestCallsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestCallsWidget.entitlements; sourceTree = "<group>"; };
 		5EF0C33820C806A5005081B0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
+		614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		61586B7A217A16EE0038AC45 /* menu_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_about.png; sourceTree = "<group>"; };
+		61586B82217A16FD0038AC45 /* menu_about@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_about@2x.png"; sourceTree = "<group>"; };
+		61586B84217A17070038AC45 /* menu_assistant.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_assistant.png; sourceTree = "<group>"; };
+		61586B86217A17150038AC45 /* menu_assistant@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_assistant@2x.png"; sourceTree = "<group>"; };
+		61586B88217A17220038AC45 /* menu_link_account.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_link_account.png; sourceTree = "<group>"; };
+		61586B8A217A17320038AC45 /* menu_link_account@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_link_account@2x.png"; sourceTree = "<group>"; };
+		61586B8C217A173F0038AC45 /* menu_options.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_options.png; sourceTree = "<group>"; };
+		61586B8E217A174F0038AC45 /* menu_options@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_options@2x.png"; sourceTree = "<group>"; };
+		61586B90217A175C0038AC45 /* menu_recordings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_recordings.png; sourceTree = "<group>"; };
+		61586B92217A176F0038AC45 /* menu_recordings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_recordings@2x.png"; sourceTree = "<group>"; };
+		615A2808217F1FD40060F920 /* chat_add_group.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_add_group.png; sourceTree = "<group>"; };
+		615A2810217F1FDE0060F920 /* chat_add_group@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_add_group@2x.png"; sourceTree = "<group>"; };
+		615A2812217F24D40060F920 /* security_1_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_1_indicator.png; sourceTree = "<group>"; };
+		615A2814217F24E00060F920 /* security_1_indicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_1_indicator@2x.png"; sourceTree = "<group>"; };
+		615A2816217F280C0060F920 /* chat_list_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_list_indicator.png; sourceTree = "<group>"; };
+		615A2818217F28160060F920 /* chat_list_indicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_list_indicator@2x.png"; sourceTree = "<group>"; };
+		615A281A217F6F9B0060F920 /* security_2_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_2_indicator.png; sourceTree = "<group>"; };
+		615A281C217F6FA80060F920 /* security_2_indicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_2_indicator@2x.png"; sourceTree = "<group>"; };
+		615A281E217F6FB30060F920 /* security_alert_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_alert_indicator.png; sourceTree = "<group>"; };
+		615A2820217F6FBF0060F920 /* security_alert_indicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_alert_indicator@2x.png"; sourceTree = "<group>"; };
+		615A282321805B250060F920 /* security_toogle_icon_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toogle_icon_green.png; sourceTree = "<group>"; };
+		615A282521805B320060F920 /* security_toogle_icon_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_toogle_icon_green@2x.png"; sourceTree = "<group>"; };
+		615A282721805B400060F920 /* security_toogle_icon_grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toogle_icon_grey.png; sourceTree = "<group>"; };
+		615A282921805B4C0060F920 /* security_toogle_icon_grey@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_toogle_icon_grey@2x.png"; sourceTree = "<group>"; };
+		615A282F218071E80060F920 /* security_toogle_background_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toogle_background_green.png; sourceTree = "<group>"; };
+		615A2831218071F30060F920 /* security_toogle_background_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_toogle_background_green@2x.png"; sourceTree = "<group>"; };
+		615A2833218071FF0060F920 /* security_toogle_background_grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toogle_background_grey.png; sourceTree = "<group>"; };
+		615A28352180720D0060F920 /* security_toogle_background_grey@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_toogle_background_grey@2x.png"; sourceTree = "<group>"; };
+		615A28392180788E0060F920 /* security_toogle_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toogle_button.png; sourceTree = "<group>"; };
+		615A283B2180789C0060F920 /* security_toogle_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "security_toogle_button@2x.png"; sourceTree = "<group>"; };
+		615A283D2180A2550060F920 /* invite_linphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = invite_linphone.png; sourceTree = "<group>"; };
+		615A283F2180A2620060F920 /* invite_linphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "invite_linphone@2x.png"; sourceTree = "<group>"; };
+		615A28412180C0820060F920 /* recording.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording.png; sourceTree = "<group>"; };
+		615A28432180C08F0060F920 /* recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "recording@2x.png"; sourceTree = "<group>"; };
+		6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		61AE364B20C00B370089D9D3 /* linphoneExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = linphoneExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		61AE364D20C00B370089D9D3 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		61AE364E20C00B370089D9D3 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		61AE365120C00B370089D9D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		61AE365320C00B370089D9D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61AE366320C00C810089D9D3 /* linphoneExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphoneExtension.entitlements; sourceTree = "<group>"; };
+		61AEBEB5219198EF00F35E7F /* DevicesListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DevicesListView.h; sourceTree = "<group>"; };
+		61AEBEBC2191990A00F35E7F /* DevicesListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevicesListView.m; sourceTree = "<group>"; };
+		61AEBEBE2191991F00F35E7F /* DevicesListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DevicesListView.xib; sourceTree = "<group>"; };
+		61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDevicesDetails.h; sourceTree = "<group>"; };
+		61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDevicesDetails.m; sourceTree = "<group>"; };
+		61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDevicesDetails.xib; sourceTree = "<group>"; };
+		61AEBEC52191E47500F35E7F /* chevron_list_close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_close.png; sourceTree = "<group>"; };
+		61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_close@2x.png"; sourceTree = "<group>"; };
+		61AEBEC92191E49200F35E7F /* chevron_list_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_open.png; sourceTree = "<group>"; };
+		61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_open@2x.png"; sourceTree = "<group>"; };
+		61BD122D222EA29300563181 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
+		61CCC3D721933B380060EDEA /* UIDeviceCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDeviceCell.h; sourceTree = "<group>"; };
+		61CCC3DE21933B580060EDEA /* UIDeviceCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDeviceCell.m; sourceTree = "<group>"; };
+		61CCC3E021933B660060EDEA /* UIDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDeviceCell.xib; sourceTree = "<group>"; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		620DFD020AC0182319853127 /* Pods-linphoneExtension.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneExtension.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneExtension/Pods-linphoneExtension.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
 		630589E01B4E810900EFAE36 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
@@ -1142,13 +1118,6 @@
 		63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+DTRuntime.m"; sourceTree = "<group>"; };
 		63058A401B4E82C400EFAE36 /* LinphoneTesterTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LinphoneTesterTests-Info.plist"; sourceTree = "<group>"; };
 		63058A411B4E82C400EFAE36 /* LinphoneTesterTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LinphoneTesterTests-Prefix.pch"; sourceTree = "<group>"; };
-		63058AC81B4E922500EFAE36 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = ../submodules/linphone/tester/certificates; sourceTree = "<group>"; };
-		63058AC91B4E922500EFAE36 /* flexisip */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flexisip; path = ../submodules/linphone/tester/flexisip; sourceTree = "<group>"; };
-		63058ACA1B4E922500EFAE36 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../submodules/linphone/tester/images; sourceTree = "<group>"; };
-		63058ACD1B4E922500EFAE36 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = ../submodules/linphone/tester/rcfiles; sourceTree = "<group>"; };
-		63058ACE1B4E922500EFAE36 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../submodules/linphone/tester/sounds; sourceTree = "<group>"; };
-		63058AE11B4E93A100EFAE36 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
-		63058AE41B4E952E00EFAE36 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = "../liblinphone-sdk/apple-darwin/share"; sourceTree = "<group>"; };
 		6306440B1BECB08500134C72 /* FirstLoginView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginView.h; sourceTree = "<group>"; };
 		6306440C1BECB08500134C72 /* FirstLoginView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstLoginView.m; sourceTree = "<group>"; };
 		6308F9C31BF0DD6600D1234B /* XMLRPCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLRPCHelper.h; path = Utils/XMLRPCHelper.h; sourceTree = "<group>"; };
@@ -1616,7 +1585,6 @@
 		6352A5721BE0D4B800594C1C /* CallSideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallSideMenuView.h; sourceTree = "<group>"; };
 		6352A5731BE0D4B800594C1C /* CallSideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallSideMenuView.m; sourceTree = "<group>"; };
 		6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallSideMenuView.xib; sourceTree = "<group>"; };
-		635598811C96AFFA006ED99A /* vcards */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vcards; path = ../submodules/linphone/tester/vcards; sourceTree = "<group>"; };
 		635775231B6673EC00C8B704 /* HistoryDetailsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableView.h; sourceTree = "<group>"; };
 		635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableView.m; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
@@ -1713,8 +1681,17 @@
 		63F1DF521BCE986A00EDED90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallConferenceCell.xib; sourceTree = "<group>"; };
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
+		65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		68D9EC27FCECD5DE2E19CD3C /* Pods-liblinphoneTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester.debug.xcconfig"; sourceTree = "<group>"; };
+		6E1BC45342F5201DABD7FE55 /* Pods_latestCallsWidget.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_latestCallsWidget.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		7513CBF7F2BA0A9F99977C2B /* Pods_richNotifications.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_richNotifications.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		78C7025E626D12D2F04EAC87 /* Pods-linphoneExtension.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneExtension.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneExtension/Pods-linphoneExtension.distribution.xcconfig"; sourceTree = "<group>"; };
+		799BA1104845EB01ACE764D8 /* Pods-linphone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphone.debug.xcconfig"; path = "Pods/Target Support Files/Pods-linphone/Pods-linphone.debug.xcconfig"; sourceTree = "<group>"; };
+		7D8CCFE176C634813E3A2593 /* Pods-liblinphoneTesterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTesterTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTesterTests/Pods-liblinphoneTesterTests.debug.xcconfig"; sourceTree = "<group>"; };
+		85FB19B6A8124D942C8471F1 /* Pods-linphoneTests.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneTests.distribution.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneTests/Pods-linphoneTests.distribution.xcconfig"; sourceTree = "<group>"; };
+		8B488C393394746F9D630789 /* Pods_latestChatroomsWidget.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_latestChatroomsWidget.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoci_sqlite3.a; path = "liblinphone-sdk/apple-darwin/lib/libsoci_sqlite3.a"; sourceTree = "<group>"; };
 		8C1B67051E671826001EA2FE /* AudioHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioHelper.m; sourceTree = "<group>"; };
 		8C1B67081E6718BC001EA2FE /* AudioHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioHelper.h; path = Utils/AudioHelper.h; sourceTree = "<group>"; };
@@ -1726,25 +1703,11 @@
 		8C2A81941F87B8000012A66B /* chat_group_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_avatar.png; sourceTree = "<group>"; };
 		8C300D981E40E0CC00728EF3 /* lime_ko.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lime_ko.png; sourceTree = "<group>"; };
 		8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lime_ko@2x.png"; sourceTree = "<group>"; };
-		8C3EA9E01EB892D600B732B6 /* msamr.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msamr.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msamr.framework"; sourceTree = "<group>"; };
-		8C3EA9E11EB892D600B732B6 /* mscodec2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mscodec2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mscodec2.framework"; sourceTree = "<group>"; };
-		8C3EA9E21EB892D600B732B6 /* msopenh264.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msopenh264.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msopenh264.framework"; sourceTree = "<group>"; };
-		8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msx264.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msx264.framework"; sourceTree = "<group>"; };
 		8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphonetester.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphonetester.framework"; sourceTree = "<group>"; };
-		8C435F8B20BBF862004CCA25 /* belcard.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = belcard.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/belcard.framework"; sourceTree = "<group>"; };
-		8C435FA520BC34DA004CCA25 /* belr.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = belr.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/belr.framework"; sourceTree = "<group>"; };
 		8C435FC320BD41C6004CCA25 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8C56289120236AA6007A8ECC /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = submodules/linphone/tester/db; sourceTree = SOURCE_ROOT; };
 		8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "bctoolbox-tester.framework"; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework"; sourceTree = "<group>"; };
-		8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = bctoolbox.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox.framework"; sourceTree = "<group>"; };
-		8C5BCEC81EB3859200A9AAEF /* linphone.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphone.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphone.framework"; sourceTree = "<group>"; };
-		8C5BCECB1EB3859200A9AAEF /* mssilk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mssilk.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mssilk.framework"; sourceTree = "<group>"; };
-		8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mswebrtc.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mswebrtc.framework"; sourceTree = "<group>"; };
-		8C5BCECD1EB3859200A9AAEF /* ortp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ortp.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/ortp.framework"; sourceTree = "<group>"; };
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
-		8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
-		8C601FD220B462B0004FF95C /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatNotifiedEventCell.xib; sourceTree = "<group>"; };
 		8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatNotifiedEventCell.h; sourceTree = "<group>"; };
@@ -1769,7 +1732,6 @@
 		8CBD7BAA20B6B82A00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationImdnTableViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAD20B6B82F00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCreateCollectionViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAF20B6B86800E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
-		8CBD7BB020B6B86800E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
 		8CBD7BB120B6B86900E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		8CBD7BB220B6B86A00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
 		8CBD7BB320B6B86B00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
@@ -1835,13 +1797,34 @@
 		8CF25D941F9F336100BEA0C1 /* check_unselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = check_unselected.png; sourceTree = "<group>"; };
 		8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_informations.png; sourceTree = "<group>"; };
 		8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_group_informations@2x.png"; sourceTree = "<group>"; };
+		9CBD6E980619195CB7EE32AC /* Pods_liblinphoneTester.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_liblinphoneTester.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ABB887316C42EE876A3051A9 /* Pods-linphoneTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneTests/Pods-linphoneTests.debug.xcconfig"; sourceTree = "<group>"; };
+		BE06BDE664323B2A53469696 /* Pods-liblinphoneTesterTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTesterTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTesterTests/Pods-liblinphoneTesterTests.release.xcconfig"; sourceTree = "<group>"; };
+		BEBE8FB918176C388C01CFF7 /* Pods_linphoneExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_linphoneExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsView.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
+		CE119C214B6B8B2740622BBD /* Pods-linphoneTests.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneTests.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneTests/Pods-linphoneTests.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIImageViewDeletable.h; sourceTree = "<group>"; };
 		CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageViewDeletable.m; sourceTree = "<group>"; };
 		CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIImageViewDeletable.xib; sourceTree = "<group>"; };
+		CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphoneAudioPlayer.m; sourceTree = "<group>"; };
+		CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UILinphoneAudioPlayer.xib; sourceTree = "<group>"; };
+		CF1DE92C210A0F5C00A0A97E /* UILinphoneAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneAudioPlayer.h; sourceTree = "<group>"; };
+		CF7602D4210867E800749F76 /* RecordingsListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListView.h; sourceTree = "<group>"; };
+		CF7602D5210867E800749F76 /* RecordingsListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListView.m; sourceTree = "<group>"; };
+		CF7602D6210867E800749F76 /* RecordingsListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingsListView.xib; sourceTree = "<group>"; };
+		CF7602DF21086EB100749F76 /* RecordingsListTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListTableView.h; sourceTree = "<group>"; };
+		CF7602E021086EB200749F76 /* RecordingsListTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListTableView.m; sourceTree = "<group>"; };
+		CF7602E42108759A00749F76 /* UIRecordingCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIRecordingCell.h; sourceTree = "<group>"; };
+		CF7602E52108759A00749F76 /* UIRecordingCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIRecordingCell.m; sourceTree = "<group>"; };
+		CF7602E62108759A00749F76 /* UIRecordingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIRecordingCell.xib; sourceTree = "<group>"; };
+		CF7602EB210898C100749F76 /* rec_off_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rec_off_default@2x.png"; sourceTree = "<group>"; };
+		CF7602F2210898C400749F76 /* rec_on_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rec_on_default@2x.png"; sourceTree = "<group>"; };
+		CF7602F3210898C600749F76 /* rec_off_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rec_off_default.png; sourceTree = "<group>"; };
+		CF7602F4210898C800749F76 /* rec_on_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rec_on_default.png; sourceTree = "<group>"; };
 		CFBD7A2320E504AD007C5286 /* delete_img.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = delete_img.png; sourceTree = "<group>"; };
+		D252FEC7DD06DD5695A320A1 /* Pods_liblinphoneTesterTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_liblinphoneTesterTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D306459C1611EC2900BB571E /* UILoadingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILoadingImageView.h; sourceTree = "<group>"; };
 		D306459D1611EC2900BB571E /* UILoadingImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILoadingImageView.m; sourceTree = "<group>"; };
 		D3128FDE15AABC7E00A2147A /* ContactDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsView.h; sourceTree = "<group>"; };
@@ -1955,6 +1938,7 @@
 		D3F83EEA1582021700336684 /* CallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallView.m; sourceTree = "<group>"; };
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
+		E5074CFA3AAD5A8B72956DDE /* Pods-linphoneExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneExtension/Pods-linphoneExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
@@ -2019,6 +2003,11 @@
 		F0BB8C4A193631B300974404 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		F0F952001A6AEB1000254160 /* linphoneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = linphoneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
+		F325590DD6CD7F6CC8F60C03 /* Pods_linphoneTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_linphoneTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6373F9231918DECD2B3004D /* Pods-linphoneTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneTests/Pods-linphoneTests.release.xcconfig"; sourceTree = "<group>"; };
+		FD22CA9E3EFBFEFFF1B80BA2 /* Pods-liblinphoneTester.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTester.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
+		FE7D89A821FDC1BCA9BB9F8F /* Pods-linphone.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphone.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-linphone/Pods-linphone.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
+		FEAFB5AD0E3AA409BBD1136E /* Pods-linphone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphone.release.xcconfig"; path = "Pods/Target Support Files/Pods-linphone/Pods-linphone.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2026,18 +2015,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15F12E692174AB9000B7DE49 /* mediastreamer2.framework in Frameworks */,
+				6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */,
+				61AEBEA321906AFC00F35E7F /* BuildFile in Frameworks */,
+				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
 				24E1C7C01F9A235600D3F981 /* Contacts.framework in Frameworks */,
 				8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */,
-				8C5BCED81EB3859300A9AAEF /* mssilk.framework in Frameworks */,
-				8C3EA9E31EB892D600B732B6 /* msamr.framework in Frameworks */,
-				8C3EA9E51EB892D600B732B6 /* mscodec2.framework in Frameworks */,
 				8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */,
-				8C3EA9E71EB892D600B732B6 /* msopenh264.framework in Frameworks */,
 				8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */,
-				8C5BCEDA1EB3859300A9AAEF /* mswebrtc.framework in Frameworks */,
 				340751971506459A00B89C47 /* CoreTelephony.framework in Frameworks */,
 				63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */,
 				63CE58401C85EBF400304800 /* VideoToolbox.framework in Frameworks */,
@@ -2045,30 +2031,24 @@
 				152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */,
 				570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */,
 				22405EEE1600B4E400B92522 /* AssetsLibrary.framework in Frameworks */,
-				8C435FB520BC368D004CCA25 /* belr.framework in Frameworks */,
 				2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */,
 				224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */,
 				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
 				2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */,
-				8C5BCED21EB3859200A9AAEF /* linphone.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				F0B89C2218DC89E30050B60E /* MediaPlayer.framework in Frameworks */,
-				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				226EF06C15FA256B005865C7 /* MobileCoreServices.framework in Frameworks */,
-				8C3EA9F01EB8A78C00B732B6 /* msx264.framework in Frameworks */,
 				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
 				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
 				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
-				8C435F9420BBF863004CCA25 /* belcard.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */,
 				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
-				8C5BCEDC1EB3859300A9AAEF /* ortp.framework in Frameworks */,
 				22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */,
-				8C5BCED01EB3859200A9AAEF /* bctoolbox.framework in Frameworks */,
+				A634ABAFCB39B6AAE4CA991D /* Pods_linphone.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2101,6 +2081,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C4CCF18D4DA173FC144654A /* Pods_linphoneExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2112,6 +2093,7 @@
 				8C3EAA1C1EB8D9DB00B732B6 /* linphonetester.framework in Frameworks */,
 				F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */,
 				F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */,
+				C5D3371994961EDAE2311A1E /* Pods_liblinphoneTesterTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2119,33 +2101,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1523F17A2174B096009E32C0 /* mediastreamer2.framework in Frameworks */,
-				8C3EA9FD1EB8CEE700B732B6 /* msx264.framework in Frameworks */,
 				63CE58451C85EC1000304800 /* VideoToolbox.framework in Frameworks */,
 				15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */,
 				F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */,
-				8C3EAA0D1EB8CEE700B732B6 /* mssilk.framework in Frameworks */,
-				8C3EA9FF1EB8CEE700B732B6 /* msamr.framework in Frameworks */,
-				8C3EAA011EB8CEE700B732B6 /* mscodec2.framework in Frameworks */,
-				8C3EAA071EB8CEE700B732B6 /* linphone.framework in Frameworks */,
-				8C3EAA111EB8CEE700B732B6 /* ortp.framework in Frameworks */,
 				F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */,
 				F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */,
-				8C435F9720BBF874004CCA25 /* belcard.framework in Frameworks */,
-				8C3EA9FB1EB8CEE600B732B6 /* bctoolbox-tester.framework in Frameworks */,
 				F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */,
-				8C3EAA051EB8CEE700B732B6 /* bctoolbox.framework in Frameworks */,
 				F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */,
-				8C3EAA0F1EB8CEE700B732B6 /* mswebrtc.framework in Frameworks */,
 				F0BB8C35193624C800974404 /* libresolv.9.dylib in Frameworks */,
-				8C435FB320BC3685004CCA25 /* belr.framework in Frameworks */,
 				F0BB8C331936247C00974404 /* libsqlite3.dylib in Frameworks */,
 				F0BB8C301936246600974404 /* AudioToolbox.framework in Frameworks */,
 				F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */,
-				8C3EAA1A1EB8D9C300B732B6 /* linphonetester.framework in Frameworks */,
 				F0BB8BD81936208100974404 /* UIKit.framework in Frameworks */,
-				8C3EAA031EB8CEE700B732B6 /* msopenh264.framework in Frameworks */,
 				F0BB8BD61936208100974404 /* Foundation.framework in Frameworks */,
+				64092B369D63DBEAA8C824CE /* Pods_liblinphoneTester.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2153,10 +2122,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C5BCEDF1EB385B100A9AAEF /* bctoolbox.framework in Frameworks */,
-				8C5BCEE01EB385B100A9AAEF /* linphone.framework in Frameworks */,
 				63058A4F1B4E835200EFAE36 /* libKIF.a in Frameworks */,
 				F0FF66AC1ACAEF4F008A4486 /* IOKit.framework in Frameworks */,
+				7F568BF9C9BFDA3A0311DF18 /* Pods_linphoneTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2193,12 +2161,6 @@
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
 				638F1A861C2167C2004B8E02 /* CallView~ipad.xib */,
-				8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */,
-				8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */,
-				8CBD7BA220B6B7FD00E5DCC0 /* ChatConversationInfoView.xib */,
-				8CD99A3D2090BA24008A7CDA /* ChatConversationImdnView.h */,
-				8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */,
-				8CBD7BA520B6B80D00E5DCC0 /* ChatConversationImdnView.xib */,
 				8C9C5E0B1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.h */,
 				8C9C5E0C1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m */,
 				6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */,
@@ -2206,6 +2168,12 @@
 				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
 				6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */,
 				63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */,
+				8CD99A3D2090BA24008A7CDA /* ChatConversationImdnView.h */,
+				8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */,
+				8CBD7BA520B6B80D00E5DCC0 /* ChatConversationImdnView.xib */,
+				8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */,
+				8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */,
+				8CBD7BA220B6B7FD00E5DCC0 /* ChatConversationInfoView.xib */,
 				D32B6E2715A5BC430033019F /* ChatConversationTableView.h */,
 				D32B6E2815A5BC430033019F /* ChatConversationTableView.m */,
 				D3F795D315A582800077328B /* ChatConversationView.h */,
@@ -2226,9 +2194,12 @@
 				D35497FB15875372000081D8 /* ContactsListView.h */,
 				D35497FC15875372000081D8 /* ContactsListView.m */,
 				D38187C015FE342800C3EDCA /* ContactsListView.xib */,
+				631098501D4660630041F2B3 /* CountryListView.xib */,
 				631098471D4660580041F2B3 /* CountryListView.h */,
 				631098481D4660580041F2B3 /* CountryListView.m */,
-				631098501D4660630041F2B3 /* CountryListView.xib */,
+				61AEBEB5219198EF00F35E7F /* DevicesListView.h */,
+				61AEBEBC2191990A00F35E7F /* DevicesListView.m */,
+				61AEBEBE2191991F00F35E7F /* DevicesListView.xib */,
 				22F2508B107141E100AC9B3F /* DialerView.h */,
 				22F2508C107141E100AC9B3F /* DialerView.m */,
 				D38187C415FE345B00C3EDCA /* DialerView.xib */,
@@ -2256,8 +2227,6 @@
 				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
-				8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */,
-				8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */,
 				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
 				D37DC6C01594AE1800B2A5EB /* LinphoneCoreSettingsStore.m */,
 				D3EA53FB159850E80037DC6B /* LinphoneManager.h */,
@@ -2267,6 +2236,13 @@
 				D3F83F8C158229C500336684 /* PhoneMainView.h */,
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
 				639E9CB31C0DB88200019A75 /* PhoneMainView.xib */,
+				8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */,
+				8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */,
+				CF7602DF21086EB100749F76 /* RecordingsListTableView.h */,
+				CF7602E021086EB200749F76 /* RecordingsListTableView.m */,
+				CF7602D4210867E800749F76 /* RecordingsListView.h */,
+				CF7602D5210867E800749F76 /* RecordingsListView.m */,
+				CF7602D6210867E800749F76 /* RecordingsListView.xib */,
 				D35E759C159460B50066B1C1 /* SettingsView.h */,
 				D35E759D159460B50066B1C1 /* SettingsView.m */,
 				636316D61A1DEC650009B839 /* SettingsView.xib */,
@@ -2312,9 +2288,6 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
-				CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */,
-				CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */,
-				CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */,
 				63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */,
 				63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */,
 				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
@@ -2343,27 +2316,24 @@
 				D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleTextCell.h */,
 				D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */,
 				639E9CA51C0DB7EA00019A75 /* UIChatBubbleTextCell.xib */,
-				8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */,
-				8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */,
-				8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */,
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
-				8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */,
-				8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */,
-				8CBD7BA820B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib */,
 				8CD99A402090CE25008A7CDA /* UIChatConversationImdnTableViewCell.h */,
 				8CD99A412090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m */,
 				8CBD7BAB20B6B82A00E5DCC0 /* UIChatConversationImdnTableViewCell.xib */,
-				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
-				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
-				8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */,
+				8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */,
+				8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */,
+				8CBD7BA820B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib */,
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
 				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
 				639E9CA81C0DB7F200019A75 /* UIChatCreateCell.xib */,
-				8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */,
-				8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */,
-				8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */,
+				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
+				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
+				8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */,
+				8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */,
+				8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */,
+				8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */,
 				639E9C7E1C0DB13D00019A75 /* UICheckBoxTableView.h */,
 				639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */,
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
@@ -2376,14 +2346,17 @@
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
 				F088488D19FF8C41007FFCF3 /* UIContactCell.xib */,
-				24A345A71D95799900881A5C /* UIShopTableCell.h */,
-				24A345A51D95798A00881A5C /* UIShopTableCell.m */,
-				24A3459D1D95797700881A5C /* UIShopTableCell.xib */,
 				D3C6526515AC1A8F0092A874 /* UIContactDetailsCell.h */,
 				D3C6526615AC1A8F0092A874 /* UIContactDetailsCell.m */,
 				639E9CAE1C0DB80300019A75 /* UIContactDetailsCell.xib */,
 				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
 				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
+				61CCC3D721933B380060EDEA /* UIDeviceCell.h */,
+				61CCC3DE21933B580060EDEA /* UIDeviceCell.m */,
+				61CCC3E021933B660060EDEA /* UIDeviceCell.xib */,
+				61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */,
+				61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */,
+				61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */,
 				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
 				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
 				D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */,
@@ -2391,18 +2364,30 @@
 				639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */,
 				636BC9951B5F921B00C754CE /* UIIconButton.h */,
 				636BC9961B5F921B00C754CE /* UIIconButton.m */,
+				CF15F21B20E4F9A3008B1DE6 /* UIImageViewDeletable.h */,
+				CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */,
+				CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */,
 				634610041B61330300548952 /* UILabel+Boldify.h */,
 				634610051B61330300548952 /* UILabel+Boldify.m */,
+				CF1DE92C210A0F5C00A0A97E /* UILinphoneAudioPlayer.h */,
+				CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */,
+				CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */,
 				D306459C1611EC2900BB571E /* UILoadingImageView.h */,
 				D306459D1611EC2900BB571E /* UILoadingImageView.m */,
 				2214EBF112F86360002A5394 /* UIMutedMicroButton.h */,
 				2214EBF212F86360002A5394 /* UIMutedMicroButton.m */,
 				D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */,
 				D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */,
+				CF7602E42108759A00749F76 /* UIRecordingCell.h */,
+				CF7602E52108759A00749F76 /* UIRecordingCell.m */,
+				CF7602E62108759A00749F76 /* UIRecordingCell.xib */,
 				6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */,
 				6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */,
 				63FB30331A680E73008CA393 /* UIRoundedImageView.h */,
 				63FB30341A680E73008CA393 /* UIRoundedImageView.m */,
+				8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */,
+				8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */,
+				24A345A71D95799900881A5C /* UIShopTableCell.h */,
 				22968A5D12F875C600588287 /* UISpeakerButton.h */,
 				22968A5E12F875C600588287 /* UISpeakerButton.m */,
 				630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */,
@@ -2413,15 +2398,17 @@
 				D32648431588F6FB00930C67 /* UIToggleButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
+				24A345A51D95798A00881A5C /* UIShopTableCell.m */,
+				24A3459D1D95797700881A5C /* UIShopTableCell.xib */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+		29B97314FDCFA39411CA2CEA = {
 			isa = PBXGroup;
 			children = (
-				15F12E672174AB4B00B7DE49 /* mediastreamer2.framework */,
 				8C23BCB71D82AAC3005F19BB /* linphone.entitlements */,
+				614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				61AE364C20C00B370089D9D3 /* linphoneExtension */,
 				5EEE8F9C20C80C23006E4176 /* latestCallsWidget */,
@@ -2437,6 +2424,7 @@
 				D398D3031594B0FB00FD553C /* Settings */,
 				63058A301B4E822F00EFAE36 /* TestsLiblinphoneTester */,
 				630589DD1B4E810900EFAE36 /* TestsLinphone */,
+				561D0FD932DE3595BE512375 /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2453,37 +2441,18 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				61F1996E20C6B1D5006B069A /* AVKit.framework */,
-				8C435FA520BC34DA004CCA25 /* belr.framework */,
-				8C435F8B20BBF862004CCA25 /* belcard.framework */,
-				8C601FD220B462B0004FF95C /* mediastreamer2.framework */,
-				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
-				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
-				249660941FD6A359001D55AA /* Photos.framework */,
-				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
-				8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */,
-				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,
-				8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */,
-				8C3EA9E01EB892D600B732B6 /* msamr.framework */,
-				8C3EA9E11EB892D600B732B6 /* mscodec2.framework */,
-				8C3EA9E21EB892D600B732B6 /* msopenh264.framework */,
-				8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */,
-				8C5BCEC81EB3859200A9AAEF /* linphone.framework */,
-				8C5BCECB1EB3859200A9AAEF /* mssilk.framework */,
-				8C5BCECC1EB3859200A9AAEF /* mswebrtc.framework */,
-				8C5BCECD1EB3859200A9AAEF /* ortp.framework */,
-				8C2595DE1DEDCC8E007A6424 /* CallKit.framework */,
-				8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */,
-				8CA2004B1D8158440095F859 /* PushKit.framework */,
-				570742661D5A63DB004B9C84 /* StoreKit.framework */,
-				63CE583F1C85EBF400304800 /* VideoToolbox.framework */,
+				6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
 				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,
 				2274402E106F335E006EC466 /* AudioToolbox.framework */,
 				F0BB8C311936246600974404 /* AudioUnit.framework */,
 				224567C1107B968500F10948 /* AVFoundation.framework */,
+				61F1996E20C6B1D5006B069A /* AVKit.framework */,
+				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,
+				8C2595DE1DEDCC8E007A6424 /* CallKit.framework */,
 				228697C311AC29B800E9E0CA /* CFNetwork.framework */,
+				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
 				22744019106F31BD006EC466 /* CoreAudio.framework */,
 				22744056106F9BC9006EC466 /* CoreFoundation.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
@@ -2499,6 +2468,8 @@
 				63EEE40D1BBA9B250087D3AF /* libiconv.tbd */,
 				F0BB8C34193624C800974404 /* libresolv.9.dylib */,
 				22D1B68012A3E0BE001AE361 /* libresolv.dylib */,
+				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
+				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
 				D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */,
 				63EEE40B1BBA9B1B0087D3AF /* libsqlite3.tbd */,
 				344ABDF014850AE9007420B6 /* libstdc++.6.dylib */,
@@ -2506,19 +2477,60 @@
 				152F22351B15E889008C0621 /* libxml2.dylib */,
 				63EEE4091BBA9B110087D3AF /* libxml2.tbd */,
 				F05BAA611A5D594E00411815 /* libz.dylib */,
+				8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */,
 				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
 				D37DC7171594AF3400B2A5EB /* MessageUI.framework */,
 				226EF06B15FA256B005865C7 /* MobileCoreServices.framework */,
+				5EF0C33820C806A5005081B0 /* NotificationCenter.framework */,
 				70E542F213E147E3002BA2C0 /* OpenGLES.framework */,
+				249660941FD6A359001D55AA /* Photos.framework */,
+				8CA2004B1D8158440095F859 /* PushKit.framework */,
 				70E542F413E147EB002BA2C0 /* QuartzCore.framework */,
 				22744043106F33FC006EC466 /* Security.framework */,
 				F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */,
+				570742661D5A63DB004B9C84 /* StoreKit.framework */,
 				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				5EF0C33820C806A5005081B0 /* NotificationCenter.framework */,
+				8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */,
 				5E58962520DCE5700030868C /* UserNotificationsUI.framework */,
+				63CE583F1C85EBF400304800 /* VideoToolbox.framework */,
+				6E1BC45342F5201DABD7FE55 /* Pods_latestCallsWidget.framework */,
+				8B488C393394746F9D630789 /* Pods_latestChatroomsWidget.framework */,
+				9CBD6E980619195CB7EE32AC /* Pods_liblinphoneTester.framework */,
+				D252FEC7DD06DD5695A320A1 /* Pods_liblinphoneTesterTests.framework */,
+				65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */,
+				BEBE8FB918176C388C01CFF7 /* Pods_linphoneExtension.framework */,
+				F325590DD6CD7F6CC8F60C03 /* Pods_linphoneTests.framework */,
+				7513CBF7F2BA0A9F99977C2B /* Pods_richNotifications.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		561D0FD932DE3595BE512375 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				68D9EC27FCECD5DE2E19CD3C /* Pods-liblinphoneTester.debug.xcconfig */,
+				38A3AE51B9E09ABF29222E5F /* Pods-liblinphoneTester.release.xcconfig */,
+				24585CBE78DA4F005C7F9D71 /* Pods-liblinphoneTester.distribution.xcconfig */,
+				FD22CA9E3EFBFEFFF1B80BA2 /* Pods-liblinphoneTester.distributionadhoc.xcconfig */,
+				7D8CCFE176C634813E3A2593 /* Pods-liblinphoneTesterTests.debug.xcconfig */,
+				BE06BDE664323B2A53469696 /* Pods-liblinphoneTesterTests.release.xcconfig */,
+				248C326F4AD75E654C1CB37A /* Pods-liblinphoneTesterTests.distribution.xcconfig */,
+				046DEFE77AD0675DA9932C4C /* Pods-liblinphoneTesterTests.distributionadhoc.xcconfig */,
+				799BA1104845EB01ACE764D8 /* Pods-linphone.debug.xcconfig */,
+				FEAFB5AD0E3AA409BBD1136E /* Pods-linphone.release.xcconfig */,
+				38DF35D11A7C0F45E990C83A /* Pods-linphone.distribution.xcconfig */,
+				FE7D89A821FDC1BCA9BB9F8F /* Pods-linphone.distributionadhoc.xcconfig */,
+				E5074CFA3AAD5A8B72956DDE /* Pods-linphoneExtension.debug.xcconfig */,
+				283F127CA480E2E2CF0DE9C2 /* Pods-linphoneExtension.release.xcconfig */,
+				78C7025E626D12D2F04EAC87 /* Pods-linphoneExtension.distribution.xcconfig */,
+				620DFD020AC0182319853127 /* Pods-linphoneExtension.distributionadhoc.xcconfig */,
+				ABB887316C42EE876A3051A9 /* Pods-linphoneTests.debug.xcconfig */,
+				F6373F9231918DECD2B3004D /* Pods-linphoneTests.release.xcconfig */,
+				85FB19B6A8124D942C8471F1 /* Pods-linphoneTests.distribution.xcconfig */,
+				CE119C214B6B8B2740622BBD /* Pods-linphoneTests.distributionadhoc.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		5E31290220D7A37E00CF3AAE /* latestChatroomsWidget */ = {
@@ -2608,15 +2620,6 @@
 		63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
-				8C56289120236AA6007A8ECC /* db */,
-				635598811C96AFFA006ED99A /* vcards */,
-				63058AE41B4E952E00EFAE36 /* share */,
-				63058AE11B4E93A100EFAE36 /* tester_hosts */,
-				63058AC81B4E922500EFAE36 /* certificates */,
-				63058AC91B4E922500EFAE36 /* flexisip */,
-				63058ACA1B4E922500EFAE36 /* images */,
-				63058ACD1B4E922500EFAE36 /* rcfiles */,
-				63058ACE1B4E922500EFAE36 /* sounds */,
 				63058A0D1B4E821E00EFAE36 /* AppDelegate.h */,
 				63058A0E1B4E821E00EFAE36 /* AppDelegate.m */,
 				63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */,
@@ -2670,41 +2673,7 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
-				CFBD7A2320E504AD007C5286 /* delete_img.png */,
-				24BFAA9B209B062F004F47A7 /* callkit_logo.png */,
-				24BFAA99209B062E004F47A7 /* contacts_sip_default.png */,
-				24BFAA94209B062C004F47A7 /* contacts_sip_default@2x.png */,
-				24BFAA97209B062E004F47A7 /* contacts_sip_selected.png */,
-				24BFAA9C209B062F004F47A7 /* contacts_sip_selected@2x.png */,
-				24BFAA8C209B062B004F47A7 /* dialer_background.png */,
-				24BFAA98209B062E004F47A7 /* linphone_logo.png */,
-				24BFAA9D209B0630004F47A7 /* linphone_logo@2x.png */,
-				24BFAA93209B062C004F47A7 /* linphone_user.png */,
-				24BFAA95209B062D004F47A7 /* linphone_user@2x.png */,
-				24BFAA9A209B062F004F47A7 /* linphone_user~ipad.png */,
-				24BFAA96209B062D004F47A7 /* linphone_user~ipad@2x.png */,
-				8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */,
-				8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */,
-				8CF25D941F9F336100BEA0C1 /* check_unselected.png */,
-				8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */,
-				8CA70AD31F9E285B00A3D2EB /* chat_group_add.png */,
-				8CA70AD21F9E285B00A3D2EB /* chat_group_add@2x.png */,
-				8C2A81941F87B8000012A66B /* chat_group_avatar.png */,
-				8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */,
-				8CB2B8F61F86229B0015CEE2 /* chat_secure.png */,
-				8CB2B8F71F86229C0015CEE2 /* next_disabled.png */,
-				8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */,
-				8CDC61961F84D9270087CF7F /* check_selected@2x.png */,
-				8CDC618C1F84D89B0087CF7F /* check_selected.png */,
-				8CE24F551F8268840077AC0A /* conference_delete.png */,
-				8CE24F561F8268840077AC0A /* conference_delete@2x.png */,
-				8CE24F491F8234A20077AC0A /* next_default.png */,
-				8CE24F4A1F8234A30077AC0A /* next_default@2x.png */,
-				8C300D981E40E0CC00728EF3 /* lime_ko.png */,
-				8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */,
-				8CD99A1B20908C27008A7CDA /* callkit_logo@2x.png */,
 				633FEBE21D3CD5570014B822 /* add_field_default.png */,
-				244523BC1E8D3A6C0037A187 /* chat_unsecure.png */,
 				633FEBE31D3CD5570014B822 /* add_field_default@2x.png */,
 				633FEBE41D3CD5570014B822 /* add_field_over.png */,
 				633FEBE51D3CD5570014B822 /* add_field_over@2x.png */,
@@ -2757,9 +2726,6 @@
 				633FEC141D3CD5570014B822 /* call_quality_indicator_1.png */,
 				633FEC151D3CD5570014B822 /* call_quality_indicator_1@2x.png */,
 				633FEC161D3CD5570014B822 /* call_quality_indicator_2.png */,
-				244523AC1E8266CC0037A187 /* chat_delivered.png */,
-				244523AD1E8266CC0037A187 /* chat_error.png */,
-				244523AE1E8266CC0037A187 /* chat_read.png */,
 				633FEC171D3CD5570014B822 /* call_quality_indicator_2@2x.png */,
 				633FEC181D3CD5570014B822 /* call_quality_indicator_3.png */,
 				633FEC191D3CD5570014B822 /* call_quality_indicator_3@2x.png */,
@@ -2797,6 +2763,8 @@
 				633FEC391D3CD5570014B822 /* call_video_start_default@2x.png */,
 				633FEC3A1D3CD5570014B822 /* call_video_start_disabled.png */,
 				633FEC3B1D3CD5570014B822 /* call_video_start_disabled@2x.png */,
+				24BFAA9B209B062F004F47A7 /* callkit_logo.png */,
+				8CD99A1B20908C27008A7CDA /* callkit_logo@2x.png */,
 				633FEC3C1D3CD5570014B822 /* camera_default.png */,
 				633FEC3D1D3CD5570014B822 /* camera_default@2x.png */,
 				633FEC3E1D3CD5570014B822 /* camera_disabled.png */,
@@ -2817,16 +2785,30 @@
 				633FEC4D1D3CD5570014B822 /* chat_add_default@2x.png */,
 				633FEC4E1D3CD5570014B822 /* chat_add_disabled.png */,
 				633FEC4F1D3CD5570014B822 /* chat_add_disabled@2x.png */,
+				615A2808217F1FD40060F920 /* chat_add_group.png */,
+				615A2810217F1FDE0060F920 /* chat_add_group@2x.png */,
 				633FEC501D3CD5570014B822 /* chat_attachment_default.png */,
 				633FEC511D3CD5570014B822 /* chat_attachment_default@2x.png */,
 				633FEC521D3CD5570014B822 /* chat_attachment_disabled.png */,
 				633FEC531D3CD5570014B822 /* chat_attachment_disabled@2x.png */,
 				633FEC541D3CD5570014B822 /* chat_attachment_over.png */,
 				633FEC551D3CD5570014B822 /* chat_attachment_over@2x.png */,
+				244523AC1E8266CC0037A187 /* chat_delivered.png */,
+				244523AD1E8266CC0037A187 /* chat_error.png */,
+				8CA70AD31F9E285B00A3D2EB /* chat_group_add.png */,
+				8CA70AD21F9E285B00A3D2EB /* chat_group_add@2x.png */,
+				8C2A81941F87B8000012A66B /* chat_group_avatar.png */,
+				8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */,
+				8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */,
+				8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */,
+				615A2816217F280C0060F920 /* chat_list_indicator.png */,
+				615A2818217F28160060F920 /* chat_list_indicator@2x.png */,
 				633FEC561D3CD5570014B822 /* chat_list_indicator~ipad.png */,
 				633FEC571D3CD5570014B822 /* chat_list_indicator~ipad@2x.png */,
 				633FEC581D3CD5570014B822 /* chat_message_not_delivered.png */,
 				633FEC591D3CD5570014B822 /* chat_message_not_delivered@2x.png */,
+				244523AE1E8266CC0037A187 /* chat_read.png */,
+				8CB2B8F61F86229B0015CEE2 /* chat_secure.png */,
 				633FEC5A1D3CD5570014B822 /* chat_send_default.png */,
 				633FEC5B1D3CD5570014B822 /* chat_send_default@2x.png */,
 				633FEC5C1D3CD5570014B822 /* chat_send_disabled.png */,
@@ -2845,10 +2827,19 @@
 				633FEC691D3CD5570014B822 /* chat_start_body_over@2x.png */,
 				633FEC6A1D3CD5570014B822 /* chat_start_body_over~ipad.png */,
 				633FEC6B1D3CD5570014B822 /* chat_start_body_over~ipad@2x.png */,
+				244523BC1E8D3A6C0037A187 /* chat_unsecure.png */,
+				8CDC618C1F84D89B0087CF7F /* check_selected.png */,
+				8CDC61961F84D9270087CF7F /* check_selected@2x.png */,
+				8CF25D941F9F336100BEA0C1 /* check_unselected.png */,
+				8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */,
 				633FEC6C1D3CD5570014B822 /* checkbox_checked.png */,
 				633FEC6D1D3CD5570014B822 /* checkbox_checked@2x.png */,
 				633FEC6E1D3CD5570014B822 /* checkbox_unchecked.png */,
 				633FEC6F1D3CD5570014B822 /* checkbox_unchecked@2x.png */,
+				61AEBEC52191E47500F35E7F /* chevron_list_close.png */,
+				61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */,
+				61AEBEC92191E49200F35E7F /* chevron_list_open.png */,
+				61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */,
 				633FEC701D3CD5570014B822 /* color_A.png */,
 				633FEC711D3CD5570014B822 /* color_C.png */,
 				633FEC721D3CD5570014B822 /* color_D.png */,
@@ -2859,6 +2850,8 @@
 				633FEC771D3CD5570014B822 /* color_I.png */,
 				633FEC781D3CD5570014B822 /* color_L.png */,
 				633FEC791D3CD5570014B822 /* color_M.png */,
+				8CE24F551F8268840077AC0A /* conference_delete.png */,
+				8CE24F561F8268840077AC0A /* conference_delete@2x.png */,
 				633FEC7A1D3CD5570014B822 /* conference_exit_default.png */,
 				633FEC7B1D3CD5570014B822 /* conference_exit_default@2x.png */,
 				633FEC7C1D3CD5570014B822 /* conference_exit_over.png */,
@@ -2873,6 +2866,10 @@
 				633FEC851D3CD5570014B822 /* contacts_all_disabled@2x.png */,
 				633FEC861D3CD5570014B822 /* contacts_all_selected.png */,
 				633FEC871D3CD5570014B822 /* contacts_all_selected@2x.png */,
+				24BFAA99209B062E004F47A7 /* contacts_sip_default.png */,
+				24BFAA94209B062C004F47A7 /* contacts_sip_default@2x.png */,
+				24BFAA97209B062E004F47A7 /* contacts_sip_selected.png */,
+				24BFAA9C209B062F004F47A7 /* contacts_sip_selected@2x.png */,
 				633FEC8E1D3CD5570014B822 /* delete_default.png */,
 				633FEC8F1D3CD5570014B822 /* delete_default@2x.png */,
 				633FEC901D3CD5570014B822 /* delete_disabled.png */,
@@ -2881,6 +2878,7 @@
 				633FEC931D3CD5570014B822 /* delete_field_default@2x.png */,
 				633FEC941D3CD5570014B822 /* delete_field_over.png */,
 				633FEC951D3CD5570014B822 /* delete_field_over@2x.png */,
+				CFBD7A2320E504AD007C5286 /* delete_img.png */,
 				633FEC961D3CD5570014B822 /* deselect_all.png */,
 				633FEC971D3CD5570014B822 /* deselect_all@2x.png */,
 				633FEC981D3CD5570014B822 /* dialer_alt_back.png */,
@@ -2889,6 +2887,7 @@
 				633FEC9B1D3CD5570014B822 /* dialer_back_default@2x.png */,
 				633FEC9C1D3CD5570014B822 /* dialer_back_disabled.png */,
 				633FEC9D1D3CD5570014B822 /* dialer_back_disabled@2x.png */,
+				24BFAA8C209B062B004F47A7 /* dialer_background.png */,
 				633FECA01D3CD5570014B822 /* edit_default.png */,
 				633FECA11D3CD5570014B822 /* edit_default@2x.png */,
 				633FECA21D3CD5570014B822 /* edit_disabled.png */,
@@ -2898,8 +2897,8 @@
 				633FECA61D3CD5570014B822 /* edit_list_disabled.png */,
 				633FECA71D3CD5570014B822 /* edit_list_disabled@2x.png */,
 				633FECA81D3CD5570014B822 /* footer_chat_default.png */,
-				633FECAA1D3CD5570014B822 /* footer_chat_disabled.png */,
 				633FECA91D3CD5570014B822 /* footer_chat_default@2x.png */,
+				633FECAA1D3CD5570014B822 /* footer_chat_disabled.png */,
 				633FECAB1D3CD5570014B822 /* footer_chat_disabled@2x.png */,
 				633FECAC1D3CD5570014B822 /* footer_contacts_default.png */,
 				633FECAD1D3CD5570014B822 /* footer_contacts_default@2x.png */,
@@ -2927,6 +2926,8 @@
 				633FECC31D3CD5570014B822 /* history_missed_disabled@2x.png */,
 				633FECC41D3CD5570014B822 /* history_missed_selected.png */,
 				633FECC51D3CD5570014B822 /* history_missed_selected@2x.png */,
+				615A283D2180A2550060F920 /* invite_linphone.png */,
+				615A283F2180A2620060F920 /* invite_linphone@2x.png */,
 				633FECC61D3CD5570014B822 /* led_connected.png */,
 				633FECC71D3CD5570014B822 /* led_connected@2x.png */,
 				633FECC81D3CD5570014B822 /* led_disconnected.png */,
@@ -2935,18 +2936,40 @@
 				633FECCB1D3CD5570014B822 /* led_error@2x.png */,
 				633FECCC1D3CD5570014B822 /* led_inprogress.png */,
 				633FECCD1D3CD5570014B822 /* led_inprogress@2x.png */,
+				8C300D981E40E0CC00728EF3 /* lime_ko.png */,
+				8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */,
+				24BFAA98209B062E004F47A7 /* linphone_logo.png */,
+				24BFAA9D209B0630004F47A7 /* linphone_logo@2x.png */,
+				24BFAA93209B062C004F47A7 /* linphone_user.png */,
+				24BFAA95209B062D004F47A7 /* linphone_user@2x.png */,
+				24BFAA9A209B062F004F47A7 /* linphone_user~ipad.png */,
+				24BFAA96209B062D004F47A7 /* linphone_user~ipad@2x.png */,
 				633FECD41D3CD5580014B822 /* list_details_default.png */,
 				633FECD51D3CD5580014B822 /* list_details_default@2x.png */,
 				633FECD61D3CD5580014B822 /* list_details_over.png */,
 				633FECD71D3CD5580014B822 /* list_details_over@2x.png */,
 				633FECD81D3CD5580014B822 /* menu.png */,
 				633FECD91D3CD5580014B822 /* menu@2x.png */,
+				61586B7A217A16EE0038AC45 /* menu_about.png */,
+				61586B82217A16FD0038AC45 /* menu_about@2x.png */,
+				61586B84217A17070038AC45 /* menu_assistant.png */,
+				61586B86217A17150038AC45 /* menu_assistant@2x.png */,
+				61586B88217A17220038AC45 /* menu_link_account.png */,
+				61586B8A217A17320038AC45 /* menu_link_account@2x.png */,
+				61586B8C217A173F0038AC45 /* menu_options.png */,
+				61586B8E217A174F0038AC45 /* menu_options@2x.png */,
+				61586B90217A175C0038AC45 /* menu_recordings.png */,
+				61586B92217A176F0038AC45 /* menu_recordings@2x.png */,
 				633FECDA1D3CD5580014B822 /* micro_default.png */,
 				633FECDB1D3CD5580014B822 /* micro_default@2x.png */,
 				633FECDC1D3CD5580014B822 /* micro_disabled.png */,
 				633FECDD1D3CD5580014B822 /* micro_disabled@2x.png */,
 				633FECDE1D3CD5580014B822 /* micro_selected.png */,
 				633FECDF1D3CD5580014B822 /* micro_selected@2x.png */,
+				8CE24F491F8234A20077AC0A /* next_default.png */,
+				8CE24F4A1F8234A30077AC0A /* next_default@2x.png */,
+				8CB2B8F71F86229C0015CEE2 /* next_disabled.png */,
+				8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */,
 				633FECE01D3CD5580014B822 /* nowebcamCIF.jpg */,
 				633FECE11D3CD5580014B822 /* numpad_0_default.png */,
 				633FECE21D3CD5580014B822 /* numpad_0_default@2x.png */,
@@ -3083,6 +3106,12 @@
 				633FED651D3CD5590014B822 /* presence_online@2x.png */,
 				633FED661D3CD5590014B822 /* presence_unregistered.png */,
 				633FED671D3CD5590014B822 /* presence_unregistered@2x.png */,
+				CF7602F3210898C600749F76 /* rec_off_default.png */,
+				CF7602EB210898C100749F76 /* rec_off_default@2x.png */,
+				CF7602F4210898C800749F76 /* rec_on_default.png */,
+				CF7602F2210898C400749F76 /* rec_on_default@2x.png */,
+				615A28412180C0820060F920 /* recording.png */,
+				615A28432180C08F0060F920 /* recording@2x.png */,
 				633FED681D3CD5590014B822 /* route_bluetooth_default.png */,
 				633FED691D3CD5590014B822 /* route_bluetooth_default@2x.png */,
 				633FED6A1D3CD5590014B822 /* route_bluetooth_disabled.png */,
@@ -3107,24 +3136,40 @@
 				633FED7D1D3CD5590014B822 /* routes_disabled@2x.png */,
 				633FED7E1D3CD5590014B822 /* routes_selected.png */,
 				633FED7F1D3CD5590014B822 /* routes_selected@2x.png */,
+				615A2812217F24D40060F920 /* security_1_indicator.png */,
+				615A2814217F24E00060F920 /* security_1_indicator@2x.png */,
+				615A281A217F6F9B0060F920 /* security_2_indicator.png */,
+				615A281C217F6FA80060F920 /* security_2_indicator@2x.png */,
+				615A281E217F6FB30060F920 /* security_alert_indicator.png */,
+				615A2820217F6FBF0060F920 /* security_alert_indicator@2x.png */,
 				633FED801D3CD5590014B822 /* security_ko.png */,
 				633FED811D3CD5590014B822 /* security_ko@2x.png */,
 				633FED821D3CD5590014B822 /* security_ok.png */,
 				633FED831D3CD5590014B822 /* security_ok@2x.png */,
 				633FED841D3CD5590014B822 /* security_pending.png */,
 				633FED851D3CD5590014B822 /* security_pending@2x.png */,
+				615A282F218071E80060F920 /* security_toogle_background_green.png */,
+				615A2831218071F30060F920 /* security_toogle_background_green@2x.png */,
+				615A2833218071FF0060F920 /* security_toogle_background_grey.png */,
+				615A28352180720D0060F920 /* security_toogle_background_grey@2x.png */,
+				615A28392180788E0060F920 /* security_toogle_button.png */,
+				615A283B2180789C0060F920 /* security_toogle_button@2x.png */,
+				615A282321805B250060F920 /* security_toogle_icon_green.png */,
+				615A282521805B320060F920 /* security_toogle_icon_green@2x.png */,
+				615A282721805B400060F920 /* security_toogle_icon_grey.png */,
+				615A282921805B4C0060F920 /* security_toogle_icon_grey@2x.png */,
 				633FED861D3CD5590014B822 /* select_all_default.png */,
 				633FED871D3CD5590014B822 /* select_all_default@2x.png */,
 				633FED881D3CD5590014B822 /* select_all_disabled.png */,
 				633FED891D3CD5590014B822 /* select_all_disabled@2x.png */,
-				8CD99A362090A824008A7CDA /* splashscreen.png */,
-				8CD99A352090A823008A7CDA /* splashscreen@2x.png */,
 				633FED8A1D3CD5590014B822 /* speaker_default.png */,
 				633FED8B1D3CD5590014B822 /* speaker_default@2x.png */,
 				633FED8C1D3CD5590014B822 /* speaker_disabled.png */,
 				633FED8D1D3CD5590014B822 /* speaker_disabled@2x.png */,
 				633FED8E1D3CD5590014B822 /* speaker_selected.png */,
 				633FED8F1D3CD5590014B822 /* speaker_selected@2x.png */,
+				8CD99A362090A824008A7CDA /* splashscreen.png */,
+				8CD99A352090A823008A7CDA /* splashscreen@2x.png */,
 				633FED941D3CD5590014B822 /* valid_default.png */,
 				633FED951D3CD5590014B822 /* valid_default@2x.png */,
 				633FED961D3CD5590014B822 /* valid_disabled.png */,
@@ -3348,7 +3393,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "linphone" */;
 			buildPhases = (
-				639002451D4106CA00BEFC78 /* ShellScript */,
+				20EEEF6D60A7B77C2EFF85DB /* [CP] Check Pods Manifest.lock */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				63DCC71D1A07B08E00916627 /* Run Script */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -3356,14 +3401,14 @@
 				8CDC89061EAF89A8006B5652 /* Embed Frameworks */,
 				8CB438A61EE6A65D0006F944 /* ShellScript */,
 				5EF0C35020C806A5005081B0 /* Embed App Extensions */,
+				4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */,
+				A73A24C4B99B11012FDAA7CF /* [CP] Copy Pods Resources */,
+				614D0A1821E77F5300C43EDF /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				61AE365520C00B370089D9D3 /* PBXTargetDependency */,
-				5EEE8FA520C80C23006E4176 /* PBXTargetDependency */,
-				5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */,
-				5E58963020DCE5710030868C /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -3425,6 +3470,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 61AE366120C00B370089D9D3 /* Build configuration list for PBXNativeTarget "linphoneExtension" */;
 			buildPhases = (
+				F43E063274A630F02AB2AAEC /* [CP] Check Pods Manifest.lock */,
 				61AE364720C00B370089D9D3 /* Sources */,
 				61AE364820C00B370089D9D3 /* Frameworks */,
 				61AE364920C00B370089D9D3 /* Resources */,
@@ -3442,6 +3488,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTesterTests" */;
 			buildPhases = (
+				5599CB1883357B4D67CCC202 /* [CP] Check Pods Manifest.lock */,
 				F08F118019C09C6A007D70C2 /* Sources */,
 				F08F118119C09C6A007D70C2 /* Frameworks */,
 				F08F118219C09C6A007D70C2 /* Resources */,
@@ -3460,11 +3507,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "liblinphoneTester" */;
 			buildPhases = (
-				8CDC89151EAF8CE2006B5652 /* CopyFiles */,
+				9B9A5E3BD753D3A8A6E82117 /* [CP] Check Pods Manifest.lock */,
 				F0BB8BD11936208100974404 /* Sources */,
 				F0BB8BD21936208100974404 /* Frameworks */,
 				F0BB8BD31936208100974404 /* Resources */,
-				8CDC89111EAF89B7006B5652 /* Embed Frameworks */,
+				A68C4E88E4EC059C04D389FE /* [CP] Embed Pods Frameworks */,
+				61C84B4200D58AABECCE326E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -3479,6 +3527,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphoneTests" */;
 			buildPhases = (
+				7FF8A712621CDB927700B916 /* [CP] Check Pods Manifest.lock */,
 				F0F951FC1A6AEB1000254160 /* Sources */,
 				F0F951FD1A6AEB1000254160 /* Frameworks */,
 				F0F951FE1A6AEB1000254160 /* Resources */,
@@ -3519,7 +3568,7 @@
 								enabled = 1;
 							};
 							com.apple.iCloud = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -3595,7 +3644,8 @@
 				zh_CN,
 				fr,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			mainGroup = 29B97314FDCFA39411CA2CEA;
+			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -3674,6 +3724,7 @@
 				636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */,
 				8CBD7BA620B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib in Resources */,
 				244523AF1E8266CC0037A187 /* chat_delivered.png in Resources */,
+				CF7602F8210898CC00749F76 /* rec_on_default.png in Resources */,
 				633FEF481D3CD55A0014B822 /* speaker_selected.png in Resources */,
 				633FEED91D3CD55A0014B822 /* numpad_7~ipad.png in Resources */,
 				633FEE2B1D3CD5590014B822 /* color_C.png in Resources */,
@@ -3695,6 +3746,7 @@
 				633FEDC61D3CD5590014B822 /* call_incoming.png in Resources */,
 				633FEF2D1D3CD55A0014B822 /* route_earpiece_selected@2x.png in Resources */,
 				638F1A621C2021B2004B8E02 /* DialerView~ipad.xib in Resources */,
+				615A2817217F280C0060F920 /* chat_list_indicator.png in Resources */,
 				633FEEFF1D3CD55A0014B822 /* options_add_call_disabled@2x.png in Resources */,
 				633FEF091D3CD55A0014B822 /* options_start_conference_disabled@2x.png in Resources */,
 				633FEE051D3CD5590014B822 /* cancel_edit_disabled@2x.png in Resources */,
@@ -3707,7 +3759,7 @@
 				633FEED41D3CD55A0014B822 /* numpad_7_default@2x.png in Resources */,
 				633FEEE01D3CD55A0014B822 /* numpad_8_over~ipad@2x.png in Resources */,
 				633FEDDC1D3CD5590014B822 /* call_start_body_disabled~ipad.png in Resources */,
-				63E802DB1C625AEF000D5509 /* (null) in Resources */,
+				63E802DB1C625AEF000D5509 /* BuildFile in Resources */,
 				633FEE2E1D3CD5590014B822 /* color_F.png in Resources */,
 				633FEDC51D3CD5590014B822 /* call_hangup_disabled@2x.png in Resources */,
 				633FEEDF1D3CD55A0014B822 /* numpad_8_over~ipad.png in Resources */,
@@ -3720,6 +3772,7 @@
 				633FEF0B1D3CD55A0014B822 /* options_transfer_call_default@2x.png in Resources */,
 				633FEDE81D3CD5590014B822 /* call_status_missed~ipad.png in Resources */,
 				63AADBFF1B6A0FF200AA16FD /* assistant_external_sip.rc in Resources */,
+				61CCC3E121933B660060EDEA /* UIDeviceCell.xib in Resources */,
 				633FEE9E1D3CD55A0014B822 /* numpad_0_over@2x.png in Resources */,
 				634610121B6140A500548952 /* CallOutgoingView.xib in Resources */,
 				8CE24F581F8268850077AC0A /* conference_delete@2x.png in Resources */,
@@ -3757,6 +3810,7 @@
 				633FEF191D3CD55A0014B822 /* pause_small_over_selected@2x.png in Resources */,
 				633FEDA71D3CD5590014B822 /* back_disabled@2x.png in Resources */,
 				633FEDBD1D3CD5590014B822 /* call_audio_start_disabled@2x.png in Resources */,
+				615A2815217F24E00060F920 /* security_1_indicator@2x.png in Resources */,
 				633FEE981D3CD55A0014B822 /* micro_selected.png in Resources */,
 				633FEEB51D3CD55A0014B822 /* numpad_3_over.png in Resources */,
 				633FEE041D3CD5590014B822 /* cancel_edit_disabled.png in Resources */,
@@ -3777,6 +3831,7 @@
 				633FEE491D3CD5590014B822 /* delete_default@2x.png in Resources */,
 				633FEF291D3CD55A0014B822 /* route_earpiece_default@2x.png in Resources */,
 				633FEE271D3CD5590014B822 /* checkbox_checked@2x.png in Resources */,
+				61586B85217A17070038AC45 /* menu_assistant.png in Resources */,
 				633FEDCC1D3CD5590014B822 /* call_quality_indicator_0.png in Resources */,
 				633FEDEB1D3CD5590014B822 /* call_status_outgoing@2x.png in Resources */,
 				633FEDEE1D3CD5590014B822 /* call_transfer_default.png in Resources */,
@@ -3788,6 +3843,7 @@
 				633FEEB11D3CD55A0014B822 /* numpad_2~ipad.png in Resources */,
 				633FEE521D3CD5590014B822 /* dialer_alt_back.png in Resources */,
 				633FEE341D3CD5590014B822 /* conference_exit_default.png in Resources */,
+				615A283E2180A2560060F920 /* invite_linphone.png in Resources */,
 				633FEF281D3CD55A0014B822 /* route_earpiece_default.png in Resources */,
 				633FEE4F1D3CD5590014B822 /* delete_field_over@2x.png in Resources */,
 				633FEE531D3CD5590014B822 /* dialer_alt_back@2x.png in Resources */,
@@ -3804,6 +3860,8 @@
 				633FEDE91D3CD5590014B822 /* call_status_missed~ipad@2x.png in Resources */,
 				8CE24F4C1F8234A30077AC0A /* next_default@2x.png in Resources */,
 				244523B11E8266CC0037A187 /* chat_read.png in Resources */,
+				61AEBEC62191E47500F35E7F /* chevron_list_close.png in Resources */,
+				CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */,
 				639E9CAC1C0DB80300019A75 /* UIContactDetailsCell.xib in Resources */,
 				633FEE511D3CD5590014B822 /* deselect_all@2x.png in Resources */,
 				8CF25D951F9F336100BEA0C1 /* check_unselected@2x.png in Resources */,
@@ -3811,6 +3869,8 @@
 				633FEE381D3CD5590014B822 /* contact_add_default.png in Resources */,
 				633FEE6F1D3CD5590014B822 /* footer_history_default@2x.png in Resources */,
 				633FEF201D3CD55A0014B822 /* presence_unregistered.png in Resources */,
+				61586B8D217A173F0038AC45 /* menu_options.png in Resources */,
+				61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */,
 				633FEF341D3CD55A0014B822 /* routes_default.png in Resources */,
 				633FEE061D3CD5590014B822 /* chat_add_default.png in Resources */,
 				633FEDF21D3CD5590014B822 /* call_video_start_default.png in Resources */,
@@ -3825,6 +3885,7 @@
 				633FEE2D1D3CD5590014B822 /* color_E.png in Resources */,
 				633FEED01D3CD55A0014B822 /* numpad_6_over~ipad@2x.png in Resources */,
 				633FEEC81D3CD55A0014B822 /* numpad_5_over~ipad@2x.png in Resources */,
+				61586B91217A175D0038AC45 /* menu_recordings.png in Resources */,
 				633FEF1B1D3CD55A0014B822 /* presence_away@2x.png in Resources */,
 				633FEE281D3CD5590014B822 /* checkbox_unchecked.png in Resources */,
 				633FEE9D1D3CD55A0014B822 /* numpad_0_over.png in Resources */,
@@ -3840,9 +3901,11 @@
 				633FEE3B1D3CD5590014B822 /* contact_add_disabled@2x.png in Resources */,
 				633FEF011D3CD55A0014B822 /* options_default@2x.png in Resources */,
 				633FEEC01D3CD55A0014B822 /* numpad_4_over~ipad@2x.png in Resources */,
+				61586B8B217A17320038AC45 /* menu_link_account@2x.png in Resources */,
 				63CDC4661C3BDE370085F529 /* shortring.caf in Resources */,
 				633FEDD51D3CD5590014B822 /* call_quality_indicator_4@2x.png in Resources */,
 				633FEDE71D3CD5590014B822 /* call_status_missed@2x.png in Resources */,
+				615A2821217F6FBF0060F920 /* security_alert_indicator@2x.png in Resources */,
 				633FEE1E1D3CD5590014B822 /* chat_start_body_disabled.png in Resources */,
 				639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */,
 				633FEE841D3CD5590014B822 /* led_error.png in Resources */,
@@ -3862,6 +3925,7 @@
 				D38187B115FE340500C3EDCA /* ChatsListView.xib in Resources */,
 				633FEDA41D3CD5590014B822 /* back_default.png in Resources */,
 				633FEE2C1D3CD5590014B822 /* color_D.png in Resources */,
+				615A280F217F1FD50060F920 /* chat_add_group.png in Resources */,
 				633FEEC41D3CD55A0014B822 /* numpad_5_default@2x.png in Resources */,
 				633FEDAC1D3CD5590014B822 /* backspace_over.png in Resources */,
 				639E9C9D1C0DB7DF00019A75 /* UICallPausedCell.xib in Resources */,
@@ -3878,9 +3942,11 @@
 				633FEDFD1D3CD5590014B822 /* camera_switch_default@2x.png in Resources */,
 				633FEEC51D3CD55A0014B822 /* numpad_5_over.png in Resources */,
 				633FEE721D3CD5590014B822 /* history_all_default.png in Resources */,
+				615A283C2180789C0060F920 /* security_toogle_button@2x.png in Resources */,
 				633FEF0A1D3CD55A0014B822 /* options_transfer_call_default.png in Resources */,
 				633FEDA51D3CD5590014B822 /* back_default@2x.png in Resources */,
 				633FEF311D3CD55A0014B822 /* route_speaker_disabled@2x.png in Resources */,
+				61586B81217A16EE0038AC45 /* menu_about.png in Resources */,
 				633FEEE41D3CD55A0014B822 /* numpad_9_default@2x.png in Resources */,
 				8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */,
 				633FEDA31D3CD5590014B822 /* avatar~ipad@2x.png in Resources */,
@@ -3900,6 +3966,7 @@
 				633FEEA41D3CD55A0014B822 /* numpad_1_default@2x.png in Resources */,
 				63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */,
 				633FEED11D3CD55A0014B822 /* numpad_6~ipad.png in Resources */,
+				CF7602E82108759A00749F76 /* UIRecordingCell.xib in Resources */,
 				633FEED21D3CD55A0014B822 /* numpad_6~ipad@2x.png in Resources */,
 				633FEDCD1D3CD5590014B822 /* call_quality_indicator_0@2x.png in Resources */,
 				636316D41A1DEC650009B839 /* SettingsView.xib in Resources */,
@@ -3908,6 +3975,8 @@
 				633FEEAD1D3CD55A0014B822 /* numpad_2_over.png in Resources */,
 				633FEE801D3CD5590014B822 /* led_connected.png in Resources */,
 				633FEEF41D3CD55A0014B822 /* numpad_star_default.png in Resources */,
+				61586B93217A17700038AC45 /* menu_recordings@2x.png in Resources */,
+				615A2834218071FF0060F920 /* security_toogle_background_grey.png in Resources */,
 				633FEDDE1D3CD5590014B822 /* call_start_body_over.png in Resources */,
 				24BFAAA0209B0630004F47A7 /* contacts_sip_default@2x.png in Resources */,
 				8CF25D9D1F9F76BD00BEA0C1 /* chat_group_informations.png in Resources */,
@@ -3920,13 +3989,18 @@
 				633FEE031D3CD5590014B822 /* cancel_edit_default@2x.png in Resources */,
 				633FEDE01D3CD5590014B822 /* call_start_body_over~ipad.png in Resources */,
 				8CBD7BA920B6B82A00E5DCC0 /* UIChatConversationImdnTableViewCell.xib in Resources */,
+				615A28442180C0900060F920 /* recording@2x.png in Resources */,
+				615A2813217F24D40060F920 /* security_1_indicator.png in Resources */,
 				24BFAAA7209B0630004F47A7 /* callkit_logo.png in Resources */,
+				615A2811217F1FDE0060F920 /* chat_add_group@2x.png in Resources */,
 				D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */,
 				633FEE4D1D3CD5590014B822 /* delete_field_default@2x.png in Resources */,
+				615A28362180720D0060F920 /* security_toogle_background_grey@2x.png in Resources */,
 				639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */,
 				633FEE961D3CD55A0014B822 /* micro_disabled.png in Resources */,
 				63AADBF61B6A0FF200AA16FD /* linphonerc-factory in Resources */,
 				633FEE671D3CD5590014B822 /* footer_contacts_default@2x.png in Resources */,
+				615A2830218071E80060F920 /* security_toogle_background_green.png in Resources */,
 				63B8D68C1BCBE65600C12B09 /* ChatConversationCreateView.xib in Resources */,
 				D38187D915FE347700C3EDCA /* CallIncomingView.xib in Resources */,
 				63CDC45F1C3BDE370085F529 /* ringback.wav in Resources */,
@@ -3934,12 +4008,14 @@
 				633FEE251D3CD5590014B822 /* chat_start_body_over~ipad@2x.png in Resources */,
 				633FEDF91D3CD5590014B822 /* camera_disabled@2x.png in Resources */,
 				633FEE161D3CD5590014B822 /* chat_send_disabled.png in Resources */,
+				615A282421805B260060F920 /* security_toogle_icon_green.png in Resources */,
 				633FEE1A1D3CD5590014B822 /* chat_start_body_default.png in Resources */,
 				633FEF041D3CD55A0014B822 /* options_selected.png in Resources */,
 				633FEEE61D3CD55A0014B822 /* numpad_9_over@2x.png in Resources */,
 				63E27A521C50EDB000D332AE /* hold.mkv in Resources */,
 				633FEEDC1D3CD55A0014B822 /* numpad_8_default@2x.png in Resources */,
 				633FEDAE1D3CD5590014B822 /* call_add_default.png in Resources */,
+				61AEBEC42191D7D900F35E7F /* UIDevicesDetails.xib in Resources */,
 				633FEE1D1D3CD5590014B822 /* chat_start_body_default~ipad@2x.png in Resources */,
 				633FEEEB1D3CD55A0014B822 /* numpad_hash_default.png in Resources */,
 				633FEF221D3CD55A0014B822 /* route_bluetooth_default.png in Resources */,
@@ -3951,13 +4027,17 @@
 				633FEF271D3CD55A0014B822 /* route_bluetooth_selected@2x.png in Resources */,
 				633FEE111D3CD5590014B822 /* chat_list_indicator~ipad@2x.png in Resources */,
 				633FEEFC1D3CD55A0014B822 /* options_add_call_default.png in Resources */,
+				615A2819217F28160060F920 /* chat_list_indicator@2x.png in Resources */,
+				61AEBECC2191E4A300F35E7F /* chevron_list_open@2x.png in Resources */,
 				24BFAAA5209B0630004F47A7 /* contacts_sip_default.png in Resources */,
 				633FEF441D3CD55A0014B822 /* speaker_default.png in Resources */,
 				639CEB031A1DF4EB004DE38F /* UICompositeView.xib in Resources */,
 				633FEF3A1D3CD55A0014B822 /* security_ko.png in Resources */,
+				615A283A2180788E0060F920 /* security_toogle_button.png in Resources */,
 				633FEDA01D3CD5590014B822 /* avatar.png in Resources */,
 				633FEEBC1D3CD55A0014B822 /* numpad_4_default@2x.png in Resources */,
 				633FEEA91D3CD55A0014B822 /* numpad_1~ipad.png in Resources */,
+				615A28402180A2620060F920 /* invite_linphone@2x.png in Resources */,
 				633FEDF71D3CD5590014B822 /* camera_default@2x.png in Resources */,
 				633FEDB31D3CD5590014B822 /* call_alt_back_default@2x.png in Resources */,
 				633FEDCF1D3CD5590014B822 /* call_quality_indicator_1@2x.png in Resources */,
@@ -3967,11 +4047,14 @@
 				63AADBF81B6A0FF200AA16FD /* linphonerc~ipad in Resources */,
 				633FEE8F1D3CD55A0014B822 /* list_details_default@2x.png in Resources */,
 				633FEE5E1D3CD5590014B822 /* edit_list_default.png in Resources */,
+				615A282621805B320060F920 /* security_toogle_icon_green@2x.png in Resources */,
 				633FEDB11D3CD5590014B822 /* call_add_disabled@2x.png in Resources */,
+				CF7602F7210898CC00749F76 /* rec_off_default.png in Resources */,
 				633FEDB21D3CD5590014B822 /* call_alt_back_default.png in Resources */,
 				633FEE3D1D3CD5590014B822 /* contacts_all_default@2x.png in Resources */,
 				633FEF251D3CD55A0014B822 /* route_bluetooth_disabled@2x.png in Resources */,
 				633FEDD81D3CD5590014B822 /* call_start_body_default~ipad.png in Resources */,
+				61586B83217A16FD0038AC45 /* menu_about@2x.png in Resources */,
 				633FEED81D3CD55A0014B822 /* numpad_7_over~ipad@2x.png in Resources */,
 				633FEDD71D3CD5590014B822 /* call_start_body_default@2x.png in Resources */,
 				633FEE571D3CD5590014B822 /* dialer_back_disabled@2x.png in Resources */,
@@ -4000,7 +4083,9 @@
 				633FEDF01D3CD5590014B822 /* call_transfer_disabled.png in Resources */,
 				633FEE351D3CD5590014B822 /* conference_exit_default@2x.png in Resources */,
 				633FEECF1D3CD55A0014B822 /* numpad_6_over~ipad.png in Resources */,
+				61586B87217A17160038AC45 /* menu_assistant@2x.png in Resources */,
 				633FEE9A1D3CD55A0014B822 /* nowebcamCIF.jpg in Resources */,
+				61586B89217A17220038AC45 /* menu_link_account.png in Resources */,
 				633FEF351D3CD55A0014B822 /* routes_default@2x.png in Resources */,
 				633FEEDB1D3CD55A0014B822 /* numpad_8_default.png in Resources */,
 				633FEE5C1D3CD5590014B822 /* edit_disabled.png in Resources */,
@@ -4018,7 +4103,9 @@
 				633FEEA81D3CD55A0014B822 /* numpad_1_over~ipad@2x.png in Resources */,
 				D38187AD15FE340100C3EDCA /* ChatConversationView.xib in Resources */,
 				633FEE7C1D3CD5590014B822 /* history_missed_disabled.png in Resources */,
+				CF1DE92E210A0F5D00A0A97E /* UILinphoneAudioPlayer.xib in Resources */,
 				633FEDF11D3CD5590014B822 /* call_transfer_disabled@2x.png in Resources */,
+				615A282821805B400060F920 /* security_toogle_icon_grey.png in Resources */,
 				633FEDFF1D3CD5590014B822 /* camera_switch_disabled@2x.png in Resources */,
 				633FEDDF1D3CD5590014B822 /* call_start_body_over@2x.png in Resources */,
 				633FEEFA1D3CD55A0014B822 /* numpad_star~ipad.png in Resources */,
@@ -4029,6 +4116,7 @@
 				633FEE391D3CD5590014B822 /* contact_add_default@2x.png in Resources */,
 				633FEE741D3CD5590014B822 /* history_all_disabled.png in Resources */,
 				633FEE081D3CD5590014B822 /* chat_add_disabled.png in Resources */,
+				615A28422180C0870060F920 /* recording.png in Resources */,
 				633FEF1D1D3CD55A0014B822 /* presence_offline@2x.png in Resources */,
 				24A3459E1D95797700881A5C /* UIShopTableCell.xib in Resources */,
 				633FEE231D3CD5590014B822 /* chat_start_body_over@2x.png in Resources */,
@@ -4084,6 +4172,7 @@
 				633FEE851D3CD5590014B822 /* led_error@2x.png in Resources */,
 				633FEDBE1D3CD5590014B822 /* call_back_default.png in Resources */,
 				633FEF0F1D3CD55A0014B822 /* pause_big_default@2x.png in Resources */,
+				CF7602F6210898CC00749F76 /* rec_on_default@2x.png in Resources */,
 				633FEF081D3CD55A0014B822 /* options_start_conference_disabled.png in Resources */,
 				63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */,
 				633FEE301D3CD5590014B822 /* color_H.png in Resources */,
@@ -4093,10 +4182,12 @@
 				633FEE761D3CD5590014B822 /* history_all_selected.png in Resources */,
 				8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */,
 				633FEF321D3CD55A0014B822 /* route_speaker_selected.png in Resources */,
+				61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */,
 				633FEDF51D3CD5590014B822 /* call_video_start_disabled@2x.png in Resources */,
 				63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */,
 				633FEEDA1D3CD55A0014B822 /* numpad_7~ipad@2x.png in Resources */,
 				633FEE5D1D3CD5590014B822 /* edit_disabled@2x.png in Resources */,
+				615A2832218071F30060F920 /* security_toogle_background_green@2x.png in Resources */,
 				633FEEC11D3CD55A0014B822 /* numpad_4~ipad.png in Resources */,
 				633FEE6B1D3CD5590014B822 /* footer_dialer_default@2x.png in Resources */,
 				633FEE0E1D3CD5590014B822 /* chat_attachment_over.png in Resources */,
@@ -4123,11 +4214,13 @@
 				633FEE3F1D3CD5590014B822 /* contacts_all_disabled@2x.png in Resources */,
 				633FEF3B1D3CD55A0014B822 /* security_ko@2x.png in Resources */,
 				633FEE4A1D3CD5590014B822 /* delete_disabled.png in Resources */,
+				614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */,
 				633FEF151D3CD55A0014B822 /* pause_small_default@2x.png in Resources */,
 				633FEEF91D3CD55A0014B822 /* numpad_star_over~ipad@2x.png in Resources */,
 				633FEDCB1D3CD5590014B822 /* call_outgoing@2x.png in Resources */,
 				633FEF501D3CD55A0014B822 /* valid_disabled.png in Resources */,
 				633FEEB31D3CD55A0014B822 /* numpad_3_default.png in Resources */,
+				61AEBECA2191E49300F35E7F /* chevron_list_open.png in Resources */,
 				633FEE1C1D3CD5590014B822 /* chat_start_body_default~ipad.png in Resources */,
 				633FEE011D3CD5590014B822 /* camera_switch_over@2x.png in Resources */,
 				633FEEA01D3CD55A0014B822 /* numpad_0_over~ipad@2x.png in Resources */,
@@ -4144,6 +4237,7 @@
 				633FEECB1D3CD55A0014B822 /* numpad_6_default.png in Resources */,
 				633FEDC71D3CD5590014B822 /* call_incoming@2x.png in Resources */,
 				633FEDB81D3CD5590014B822 /* call_alt_start_disabled.png in Resources */,
+				615A281D217F6FA80060F920 /* security_2_indicator@2x.png in Resources */,
 				633FEF3C1D3CD55A0014B822 /* security_ok.png in Resources */,
 				633FEEAF1D3CD55A0014B822 /* numpad_2_over~ipad.png in Resources */,
 				633FEEB81D3CD55A0014B822 /* numpad_3_over~ipad@2x.png in Resources */,
@@ -4154,8 +4248,11 @@
 				639E9CA91C0DB7FB00019A75 /* UIConfirmationDialog.xib in Resources */,
 				633FEF111D3CD55A0014B822 /* pause_big_disabled@2x.png in Resources */,
 				633FEE321D3CD5590014B822 /* color_L.png in Resources */,
+				615A281F217F6FB40060F920 /* security_alert_indicator.png in Resources */,
+				CF7602F5210898CC00749F76 /* rec_off_default@2x.png in Resources */,
 				633FEDB41D3CD5590014B822 /* call_alt_back_disabled.png in Resources */,
 				633FEE631D3CD5590014B822 /* footer_chat_default@2x.png in Resources */,
+				615A281B217F6F9C0060F920 /* security_2_indicator.png in Resources */,
 				633FEE661D3CD5590014B822 /* footer_contacts_default.png in Resources */,
 				633FEDC11D3CD5590014B822 /* call_back_disabled@2x.png in Resources */,
 				633FEEEE1D3CD55A0014B822 /* numpad_hash_over@2x.png in Resources */,
@@ -4166,7 +4263,9 @@
 				633FEDF31D3CD5590014B822 /* call_video_start_default@2x.png in Resources */,
 				24BFAAA2209B0630004F47A7 /* linphone_user~ipad@2x.png in Resources */,
 				633FEDBA1D3CD5590014B822 /* call_audio_start_default.png in Resources */,
+				61586B8F217A174F0038AC45 /* menu_options@2x.png in Resources */,
 				633FEE131D3CD5590014B822 /* chat_message_not_delivered@2x.png in Resources */,
+				615A282A21805B4C0060F920 /* security_toogle_icon_grey@2x.png in Resources */,
 				63AADBF51B6A0FF200AA16FD /* linphonerc in Resources */,
 				633FEF0C1D3CD55A0014B822 /* options_transfer_call_disabled.png in Resources */,
 				633FEE911D3CD55A0014B822 /* list_details_over@2x.png in Resources */,
@@ -4246,13 +4345,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63D8038D1C96E74100336B6F /* vcards in Resources */,
-				63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */,
-				63058ACF1B4E922500EFAE36 /* certificates in Resources */,
-				63058AD01B4E922500EFAE36 /* flexisip in Resources */,
-				63058AD11B4E922500EFAE36 /* images in Resources */,
-				63058AD41B4E922500EFAE36 /* rcfiles in Resources */,
-				63058AD51B4E922500EFAE36 /* sounds in Resources */,
 				63058A3B1B4E822F00EFAE36 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4261,15 +4353,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C56289F20236C25007A8ECC /* db in Resources */,
-				635598821C96AFFA006ED99A /* vcards in Resources */,
-				63058ADA1B4E937300EFAE36 /* certificates in Resources */,
 				63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */,
-				63058ADB1B4E937300EFAE36 /* flexisip in Resources */,
-				63058ADC1B4E937300EFAE36 /* images in Resources */,
-				63058ADF1B4E937300EFAE36 /* rcfiles in Resources */,
-				63058AE01B4E937300EFAE36 /* sounds in Resources */,
-				63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */,
 				221234461D9E682100DEFA1F /* Images.xcassets in Resources */,
 				63058A2F1B4E821E00EFAE36 /* TesterImages.xcassets in Resources */,
 				63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */,
@@ -4292,18 +4376,126 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		639002451D4106CA00BEFC78 /* ShellScript */ = {
+		20EEEF6D60A7B77C2EFF85DB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-linphone-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mscodec2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msopenh264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mssilk.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5599CB1883357B4D67CCC202 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-liblinphoneTesterTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		614D0A1821E77F5300C43EDF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f \"$SRCROOT/liblinphone-sdk/apple-darwin/share/linphone/rootca.pem\" ]; then\necho '********************************************************************'\necho 'warning: Liblinphone SDK missing! Downloading it (latest release)...'\n#$SRCROOT/Tools/sdk_download.sh \"latest\"\necho 'Deactivated'\necho '********************************************************************'\nfi";
+			shellScript = "if USE_CRASHLYTHICS; then\n    ${PODS_ROOT}/Fabric/run\nfi\n";
+		};
+		61C84B4200D58AABECCE326E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4317,7 +4509,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = $SRCROOT/Tools/git_version.sh;
+			shellScript = "$SRCROOT/Tools/git_version.sh\n";
+		};
+		7FF8A712621CDB927700B916 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-linphoneTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 		8CB438A61EE6A65D0006F944 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4330,7 +4540,109 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = $SRCROOT/Tools/deploy.sh;
+			shellScript = "$SRCROOT/Tools/deploy.sh\n";
+		};
+		9B9A5E3BD753D3A8A6E82117 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-liblinphoneTester-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A68C4E88E4EC059C04D389FE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mscodec2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msopenh264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mssilk.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A73A24C4B99B11012FDAA7CF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-resources.sh",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F43E063274A630F02AB2AAEC /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-linphoneExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -4340,6 +4652,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */,
+				CF1DE92D210A0F5D00A0A97E /* UILinphoneAudioPlayer.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				8CD99A3C2090B9FA008A7CDA /* ChatConversationImdnView.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
@@ -4369,12 +4682,14 @@
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
 				8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */,
+				CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */,
 				63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */,
 				D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */,
 				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
 				6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
+				61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */,
 				D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */,
 				24A345A61D95798A00881A5C /* UIShopTableCell.m in Sources */,
 				8C1B67061E671826001EA2FE /* AudioHelper.m in Sources */,
@@ -4413,6 +4728,7 @@
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
+				61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */,
 				D32B6E2915A5BC440033019F /* ChatConversationTableView.m in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */,
 				63D11C531C3D501200E8FCEE /* Log.m in Sources */,
@@ -4430,8 +4746,10 @@
 				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
 				D3807FBF15C28940005BE9BC /* DCRoundSwitch.m in Sources */,
 				D3807FC115C28940005BE9BC /* DCRoundSwitchKnobLayer.m in Sources */,
+				61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */,
 				6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */,
 				D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */,
+				CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */,
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
 				633E41821D74259000320475 /* AssistantLinkView.m in Sources */,
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
@@ -4444,6 +4762,7 @@
 				D3807FF215C2894A005BE9BC /* IASKSettingsStoreFile.m in Sources */,
 				D3807FF415C2894A005BE9BC /* IASKSettingsStoreUserDefaults.m in Sources */,
 				639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */,
+				CF7602E72108759A00749F76 /* UIRecordingCell.m in Sources */,
 				D3807FF615C2894A005BE9BC /* IASKSpecifier.m in Sources */,
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
@@ -4536,21 +4855,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */;
-			targetProxy = 5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */;
-		};
-		5E58963020DCE5710030868C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5E58962220DCE5700030868C /* richNotifications */;
-			targetProxy = 5E58962F20DCE5710030868C /* PBXContainerItemProxy */;
-		};
-		5EEE8FA520C80C23006E4176 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5EEE8F9920C80C23006E4176 /* latestCallsWidget */;
-			targetProxy = 5EEE8FA420C80C23006E4176 /* PBXContainerItemProxy */;
-		};
 		61AE365520C00B370089D9D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 61AE364A20C00B370089D9D3 /* linphoneExtension */;
@@ -4891,7 +5195,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63EC8D3A1D7438660066547B /* Base */,
-				8CBD7BB020B6B86800E5DCC0 /* fr */,
+				61BD122D222EA29300563181 /* fr */,
 			);
 			name = AssistantLinkView.xib;
 			sourceTree = "<group>";
@@ -5112,6 +5416,7 @@
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 799BA1104845EB01ACE764D8 /* Pods-linphone.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -5125,44 +5430,41 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
+					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
+					"-DLINPHONE_SDK_VERSION=\\\"4.1-366-g1b22291\\\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5192,7 +5494,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
-				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_THUMB_SUPPORT = NO;
@@ -5218,6 +5519,7 @@
 		};
 		228B19A71302902F00F154D3 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FE7D89A821FDC1BCA9BB9F8F /* Pods-linphone.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -5231,43 +5533,38 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
+					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
+					"-DLINPHONE_SDK_VERSION=\\\"4.1-366-g1b22291\\\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5297,7 +5594,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_THUMB_SUPPORT = NO;
@@ -5323,6 +5619,7 @@
 		};
 		22F3D55613CC3C9100A0DA02 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FEAFB5AD0E3AA409BBD1136E /* Pods-linphone.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -5336,43 +5633,38 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
+					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
+					"-DLINPHONE_SDK_VERSION=\\\"4.1-366-g1b22291\\\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5402,7 +5694,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: jehan monnier";
-				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_THUMB_SUPPORT = NO;
@@ -5428,6 +5719,7 @@
 		};
 		22F51EE8107FA53D00F98953 /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 38DF35D11A7C0F45E990C83A /* Pods-linphone.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -5441,43 +5733,38 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
+					"$(SRCROOT)/Classes/Utils/NinePatch/",
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				ORDER_FILE = "";
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
-					"-DENABLE_QRCODE=FALSE",
+					"-DENABLE_QRCODE=TRUE",
+					"-DENABLE_SMS_INVITE=TRUE",
+					"$(inherited)",
+					"-DLINPHONE_SDK_VERSION=\\\"4.1-366-g1b22291\\\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5510,30 +5797,19 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -5562,19 +5838,14 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5609,19 +5880,14 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5656,19 +5922,14 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestChatroomsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5704,16 +5965,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = richNotifications/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.richNotifications;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5753,8 +6009,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = richNotifications/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.richNotifications;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5795,8 +6050,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = richNotifications/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.richNotifications;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5837,8 +6091,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = richNotifications/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.richNotifications;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5874,25 +6127,16 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5926,19 +6170,14 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5973,19 +6212,14 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6020,19 +6254,14 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = latestCallsWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.latestCallsWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6044,6 +6273,7 @@
 		};
 		61AE365720C00B370089D9D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E5074CFA3AAD5A8B72956DDE /* Pods-linphoneExtension.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6066,16 +6296,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6087,6 +6312,7 @@
 		};
 		61AE365820C00B370089D9D3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 283F127CA480E2E2CF0DE9C2 /* Pods-linphoneExtension.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6112,8 +6338,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6125,6 +6350,7 @@
 		};
 		61AE365920C00B370089D9D3 /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 78C7025E626D12D2F04EAC87 /* Pods-linphoneExtension.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6150,8 +6376,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6164,6 +6389,7 @@
 		};
 		61AE365A20C00B370089D9D3 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 620DFD020AC0182319853127 /* Pods-linphoneExtension.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -6189,8 +6415,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6222,7 +6447,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: jehan monnier (E8MYPN2NXL)";
-				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -6250,6 +6474,7 @@
 		};
 		F08F119419C09C6B007D70C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D8CCFE176C634813E3A2593 /* Pods-liblinphoneTesterTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6274,10 +6499,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "TestsLiblinphone/LinphoneTesterTests-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -6287,6 +6508,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6300,6 +6522,7 @@
 		};
 		F08F119519C09C6B007D70C2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE06BDE664323B2A53469696 /* Pods-liblinphoneTesterTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6331,6 +6554,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6344,6 +6568,7 @@
 		};
 		F08F119619C09C6B007D70C2 /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 248C326F4AD75E654C1CB37A /* Pods-liblinphoneTesterTests.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6375,6 +6600,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6388,6 +6614,7 @@
 		};
 		F08F119719C09C6B007D70C2 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 046DEFE77AD0675DA9932C4C /* Pods-liblinphoneTesterTests.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6419,6 +6646,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -6432,6 +6660,7 @@
 		};
 		F0BB8C061936208200974404 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 68D9EC27FCECD5DE2E19CD3C /* Pods-liblinphoneTester.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -6460,10 +6689,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LiblinphoneTester/LinphoneTester-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -6473,6 +6698,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6488,6 +6714,7 @@
 		};
 		F0BB8C071936208200974404 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 38A3AE51B9E09ABF29222E5F /* Pods-liblinphoneTester.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -6523,6 +6750,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6538,6 +6766,7 @@
 		};
 		F0BB8C081936208200974404 /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 24585CBE78DA4F005C7F9D71 /* Pods-liblinphoneTester.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -6573,6 +6802,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6588,6 +6818,7 @@
 		};
 		F0BB8C091936208200974404 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD22CA9E3EFBFEFFF1B80BA2 /* Pods-liblinphoneTester.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -6623,6 +6854,7 @@
 				HEADER_SEARCH_PATHS = (
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
+					"$(inherited)",
 				);
 				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -6638,6 +6870,7 @@
 		};
 		F0F952081A6AEB1000254160 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ABB887316C42EE876A3051A9 /* Pods-linphoneTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6660,10 +6893,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
@@ -6691,6 +6920,7 @@
 		};
 		F0F952091A6AEB1000254160 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F6373F9231918DECD2B3004D /* Pods-linphoneTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6738,6 +6968,7 @@
 		};
 		F0F9520A1A6AEB1000254160 /* Distribution */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 85FB19B6A8124D942C8471F1 /* Pods-linphoneTests.distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -6785,6 +7016,7 @@
 		};
 		F0F9520B1A6AEB1000254160 /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CE119C214B6B8B2740622BBD /* Pods-linphoneTests.distributionadhoc.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";

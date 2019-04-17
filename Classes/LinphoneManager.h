@@ -57,6 +57,7 @@ extern NSString *const kLinphoneCallEncryptionChanged;
 extern NSString *const kLinphoneFileTransferSendUpdate;
 extern NSString *const kLinphoneFileTransferRecvUpdate;
 extern NSString *const kLinphoneQRCodeFound;
+extern NSString *const kLinphoneChatCreateViewChange;
 
 typedef enum _NetworkType {
     network_none = 0,
@@ -157,14 +158,18 @@ typedef struct _LinphoneManagerSounds {
 - (void)configureVbrCodecs;
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override;
++ (PHFetchResult *)getPHAssets:(NSString *)key;
 + (NSString*)bundleFile:(NSString*)file;
-+ (NSString*)documentFile:(NSString*)file;
++ (NSString *)preferenceFile:(NSString *)file;
++ (NSString *)documentFile:(NSString *)file;
++ (NSString*)dataFile:(NSString*)file;
 + (NSString*)cacheDirectory;
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room;
 - (void)call:(const LinphoneAddress *)address;
 - (BOOL)doCall:(const LinphoneAddress *)iaddr;
+- (BOOL)doCallWithSas:(const LinphoneAddress *)iaddr isSas:(BOOL)isSas;
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;

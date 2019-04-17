@@ -90,7 +90,7 @@
 	if (!IPAD) {
 		[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 	}
-	[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
+	[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view withDocumentMenuDelegate:nil];
 }
 
 - (IBAction)onBackgroundClicked:(id)sender {
@@ -124,6 +124,10 @@
 	} else {
 		[PhoneMainView.instance.mainViewController hideSideMenu:NO];
 	}
+}
+
+- (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info {
+	return; // Avatar video not supported (yet ;) )
 }
 
 @end
