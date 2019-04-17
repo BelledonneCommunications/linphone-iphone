@@ -5,7 +5,7 @@ source "https://github.com/CocoaPods/Specs.git"
 
 def basic_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk', '~> 4.1-221-g241bbf9'
+		pod 'linphone-sdk', '~> 4.1-366-g1b22291'
 		else
 		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
@@ -18,22 +18,6 @@ def basic_pods
 		pod 'Firebase/Performance'
 	end
 end
-
-target 'latestCallsWidget' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for latestCallsWidget
-
-end
-
-target 'latestChatroomsWidget' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for latestChatroomsWidget
-end
-
 
 target 'liblinphoneTester' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
@@ -72,6 +56,23 @@ target 'linphoneExtension' do
 
 end
 
+=begin
+target 'latestCallsWidget' do
+	# Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+	use_frameworks!
+	
+	# Pods for latestCallsWidget
+	
+end
+
+target 'latestChatroomsWidget' do
+	# Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+	use_frameworks!
+	
+	# Pods for latestChatroomsWidget
+end
+
+
 target 'richNotifications' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   use_frameworks!
@@ -79,6 +80,7 @@ target 'richNotifications' do
   # Pods for richNotifications
 
 end
+=end
 
 post_install do |installer|
 	# Get the version of linphone-sdk
