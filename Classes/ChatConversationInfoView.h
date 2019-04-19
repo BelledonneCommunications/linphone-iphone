@@ -14,6 +14,7 @@
 
 @property(nonatomic) BOOL create;
 @property(nonatomic) BOOL imAdmin;
+@property(nonatomic) BOOL encrypted;
 @property(nonatomic, strong) NSMutableArray *contacts;
 @property(nonatomic, strong) NSMutableArray *admins;
 @property(nonatomic, strong) NSMutableArray *oldContacts;

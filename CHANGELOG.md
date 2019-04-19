@@ -10,23 +10,41 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
-## [Unreleased]
+    
+## [4.1.0] - 2019-xx-xx
 
 ### Added
-- Auto-layout of images in chat messages
-- Selection of multiple images to send in a chat message
-- Sending text with image
-- Latest Calls widget
-- Latest Chatrooms widget
-- Homescreen quick action : New message
-- Rich message notifications with Linphone UI
-- Support of H265 video format based on Apple's VideoToolbox framework.
+- End-to-end encryption for instant messaging, for both one-to-one and group conversations.
+- Video H.265 codec support, based on iOS VideoToolbox framework.
+- Enhanced call and IM notifications, so that it is possible to answer, decline, reply or mark as read directly from them.
+- Setting to request attachments to be automatically downloaded, unconditionnally or based on their size.
+- Possibility to send multiple attachments (images, documents) in a same message.
+- Possibility to open all kinds of documents received in a conversation.
+- Possibility to share an image through Linphone from an external application (ex: photo app)
+- Button to invite contacts to use Linphone by sending them a SMS.
+- Possibility to record calls (audio only), and replay them from the "Recordings" menu.
+- Remote provisioning from a QR code providing the http(s) url of a provisioning server.
+- Optional Crashlythics support.
 
 ### Changed
-- Use of Photokit instead of Asset Library for image handling
+- Compilation procedure is simplified: a binary SDK containing dependencies (liblinphone) is retrieved automatically from a CocoaPods repository.
+  Full compilation remains absolutely supported. Please check local README.md for more details.
+- Updated translations, mainly French and English.
+- Use of Photokit instead of Asset Library for image handling.
+- Auto-layout of images in chat messages.
+- Use Xcode test navigator for tests.
+- Move important files from `Documents` folder to `Application Library`. 
+
+### Fixed
+- Issues around Bluetooth devices management.
+- Loss of audio after accepting a second call while already in a call.
+- Crashes when during calls.
+- Nowebcam when leaving conference.
 
 ### Removed
-- Static build of iOS linphone SDK
+- Static build of iOS linphone SDK.
+- All git submodules previously containing dependencies.
+- Some resource files now provided by linphone-sdk.
 
 ## [4.0.2] - 2018-10-15
 

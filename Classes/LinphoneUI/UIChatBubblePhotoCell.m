@@ -105,11 +105,13 @@
         [_messageImageView setAsset:asset];
         [_messageImageView stopLoading];
         _messageImageView.hidden = YES;
-        _imageGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
+        _fileView.hidden = YES;
         [self layoutSubviews];
     });
 }
+
+static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 
 - (void) loadAsset:(PHAsset *) asset {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
@@ -117,10 +119,9 @@
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
                                             resultHandler:^(UIImage *image, NSDictionary * info) {
                                                 if (image) {
-                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - 40];
-                                                    UIImage *newImage = [UIImage UIImageResize:image toSize:imageSize];
-                                                    [chatTableView.imagesInChatroom setObject:newImage forKey:[asset localIdentifier]];
-                                                    [self loadImageAsset:asset image:newImage];
+                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
+                                                    [chatTableView.imagesInChatroom setObject:image forKey:[asset localIdentifier]];
+                                                    [self loadImageAsset:asset image:image];
                                                 }
                                                 else {
                                                     LOGE(@"Can't read image");
@@ -160,8 +161,10 @@
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
     NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
     NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-	BOOL fullScreenImage = NO;
 	assert(is_external || localImage || localVideo || localFile);
+    
+    LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(self.message);
+    NSString *type = fileContent ? [NSString stringWithUTF8String:linphone_content_get_type(fileContent)] : nil;
     
     if (!(localImage || localVideo || localFile)) {
         _playButton.hidden = YES;
@@ -173,56 +176,67 @@
         // file is being saved on device - just wait for it
         if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
             _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
-            fullScreenImage = YES;
-        } else if(!assetIsLoaded) {
-            assetIsLoaded = TRUE;
-            if (localImage) {
-                // we did not load the image yet, so start doing so
-                if (_messageImageView.image == nil) {
-                    [self loadFirstImage:localImage type:PHAssetMediaTypeImage];
-                }
-            }
-            else if (localVideo) {
-                if (_messageImageView.image == nil) {
-                    [self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
-                    _imageGestureRecognizer.enabled = NO;
-                }
-            }
-             else if (localFile) {
-                NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
-                _fileName.text = text;
-                [self loadFileAsset];
-            }
-
-            // we are uploading the image
-            if (_ftd.message != nil) {
-                _cancelButton.hidden = NO;
-                _fileTransferProgress.hidden = NO;
-                _downloadButton.hidden = YES;
-                _playButton.hidden = YES;
-                _fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
-            } else {
-                _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
-                fullScreenImage = YES;
-                _playButton.hidden = localVideo ? NO : YES;
-                _fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
-                // Should fix cell not resizing after doanloading image.
-                [self layoutSubviews];
-            }
-        }
+		} else {
+			if(!assetIsLoaded) {
+				assetIsLoaded = TRUE;
+				if (localImage) {
+					// we did not load the image yet, so start doing so
+					if (_messageImageView.image == nil) {
+						[self loadFirstImage:localImage type:PHAssetMediaTypeImage];
+						_imageGestureRecognizer.enabled = YES;
+					}
+				}
+				else if (localVideo) {
+					if (_messageImageView.image == nil) {
+						[self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
+						_imageGestureRecognizer.enabled = NO;
+					}
+				}
+				else if (localFile) {
+					if ([type isEqualToString:@"video"]) {
+						UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+						[self loadImageAsset:nil image:image];
+						_imageGestureRecognizer.enabled = NO;
+					} else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+						NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+						UIImage *image = [[UIImage alloc] initWithData:data];
+						[self loadImageAsset:nil image:image];
+						_imageGestureRecognizer.enabled = YES;
+					} else {
+						NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
+						_fileName.text = text;
+						[self loadFileAsset];
+					}
+				}
+			}
+		}
+		// we are uploading the image
+		if (_ftd.message != nil) {
+			_cancelButton.hidden = NO;
+			_fileTransferProgress.hidden = NO;
+			_downloadButton.hidden = YES;
+			_playButton.hidden = YES;
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
+		} else {
+			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
+			_playButton.hidden = ![type isEqualToString:@"video"];
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
+			// Should fix cell not resizing after doanloading image.
+			//[self layoutSubviews];
+		}
     }
 }
 
 - (void)loadFirstImage:(NSString *)key type:(PHAssetMediaType)type {
     [_messageImageView startLoading];
-    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:key] options:nil];
+    PHFetchResult<PHAsset *> *assets = [LinphoneManager getPHAssets:key];
     UIImage *img = nil;
     
     img = [chatTableView.imagesInChatroom objectForKey:key];
     PHAsset *asset = [assets firstObject];
     if (!asset)
         [self loadPlaceholder];
-    else if (asset.mediaType == type)
+    else if (asset.mediaType != type)
         img = nil;
     if (img)
         [self loadImageAsset:asset image:img];
@@ -240,6 +254,13 @@
     });
 }
 
+- (void)playVideoByPlayer:(AVPlayer *)player {
+    AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
+    [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+    controller.player = player;
+    [player play];
+}
+
 - (IBAction)onDownloadClick:(id)event {
 	[_ftd cancel];
 	_ftd = [[FileTransferDelegate alloc] init];
@@ -253,17 +274,19 @@
 
 - (IBAction)onPlayClick:(id)sender {
     PHAsset *asset = [_messageImageView asset];
+    if (!asset) {
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+        AVPlayer *player = [AVPlayer playerWithURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+        [self playVideoByPlayer:player];
+        return;
+    }
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
    // options.synchronous = TRUE;
     [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
         if(playerItem) {
             AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
-            AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
-            [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
-            controller.player = player;
-            [player play];
-        }
-        else {
+            [self playVideoByPlayer:player];
+        } else {
             [self fileErrorBlock];
         }
     }];
@@ -271,18 +294,8 @@
 
 - (IBAction)onFileClick:(id)sender {
     ChatConversationView *view = VIEW(ChatConversationView);
-    NSString *cachedFile = [LinphoneManager getMessageAppDataForKey:@"cachedfile" inMessage:self.message];
-    if (cachedFile) {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        if ([fileManager fileExistsAtPath:cachedFile]) {
-            [view openFile:cachedFile];
-        } else {
-            [self fileErrorBlock];
-        }        
-    } else {
-        [LinphoneManager setValueInMessageAppData:@"onFileClick" forKey:@"icloudFileOption" inMessage:self.message];
-        [super getIcloudFiles];
-    }
+    NSString *name = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+    [view openFileWithURL:[view getICloudFileUrl:name]];
 }
 
 
@@ -291,6 +304,9 @@
 	[self disconnectFromFileDelegate];
 	_fileTransferProgress.progress = 0;
 	[tmp cancel];
+	if (!linphone_core_is_network_reachable(LC)) {
+		[self update];
+	}
 }
 
 - (void)onResendClick:(id)event {
@@ -313,6 +329,18 @@
 			ImageView *view = VIEW(ImageView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
             PHAsset *asset = [_messageImageView asset];
+            if (!asset) {
+                 NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+                if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+                    NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+                    UIImage *image = [[UIImage alloc] initWithData:data];
+                    if (image)
+                        [view setImage:image];
+                    else
+                        LOGE(@"Can't read image");
+                }
+                return;
+            }
             PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
             options.synchronous = TRUE;
             [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
@@ -359,7 +387,7 @@
 - (void)onFileTransferSendUpdate:(NSNotification *)notif {
 	LinphoneChatMessageState state = [[[notif userInfo] objectForKey:@"state"] intValue];
 
-	if (state == LinphoneChatMessageStateInProgress) {
+	if (state == LinphoneChatMessageStateInProgress || state == LinphoneChatMessageStateFileTransferInProgress) {
 		float progress = [[[notif userInfo] objectForKey:@"progress"] floatValue];
 		// When uploading a file, the self.message file is first uploaded to the server,
 		// so we are in progress state. Then state goes to filetransfertdone. Then,
@@ -375,7 +403,7 @@
 }
 - (void)onFileTransferRecvUpdate:(NSNotification *)notif {
 	LinphoneChatMessageState state = [[[notif userInfo] objectForKey:@"state"] intValue];
-	if (state == LinphoneChatMessageStateInProgress) {
+	if (state == LinphoneChatMessageStateInProgress || state == LinphoneChatMessageStateFileTransferInProgress) {
 		float progress = [[[notif userInfo] objectForKey:@"progress"] floatValue];
 		_fileTransferProgress.progress = MAX(_fileTransferProgress.progress, progress);
 		_fileTransferProgress.hidden = _cancelButton.hidden = (_fileTransferProgress.progress == 1.f);
@@ -406,25 +434,28 @@
     
     // Resizing Image view
     if (_finalImage.image) {
-        CGRect imgFrame = self.finalAssetView.frame;
-        imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - 40];
-        imgFrame.origin.x = (bubbleFrame.size.width - imgFrame.size.width)/2;
+        CGRect imgFrame = self.finalAssetView.frame;            
+        imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
+        imgFrame.origin.x = (self.innerView.frame.size.width - imgFrame.size.width-17)/2;
         self.finalAssetView.frame = imgFrame;
-     
-        // Positioning text message
-        const char *utf8Text = linphone_chat_message_get_text_content(self.message);
-        
-        CGRect textFrame = self.messageText.frame;
-        textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
-        if (!utf8Text) {
-            textFrame.size.height = 0;
-        } else {
-            textFrame.size.height = bubbleFrame.size.height - textFrame.origin.x;
-        }
-        
-        self.messageText.frame = textFrame;
-        LOGD([NSString stringWithFormat:@"Text of the photoCell: %@, size of the text of the photoCell: %@", [self.messageText text], NSStringFromCGSize(textFrame.size)]);
     }
+
+    // Positioning text message
+    const char *utf8Text = linphone_chat_message_get_text_content(self.message);
+    
+    CGRect textFrame = self.messageText.frame;
+    if (_finalImage.image)
+        textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
+    else
+        // When image hasn't be download
+        textFrame.origin = CGPointMake(textFrame.origin.x, _imageSubView.frame.size.height + _imageSubView.frame.origin.y - 10);
+    if (!utf8Text) {
+        textFrame.size.height = 0;
+    } else {
+        textFrame.size.height = bubbleFrame.size.height - 90;//textFrame.origin.x;
+    }
+    
+    self.messageText.frame = textFrame;
 }
 
 @end

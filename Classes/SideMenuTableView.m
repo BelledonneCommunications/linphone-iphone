@@ -15,11 +15,13 @@
 #import "StatusBarView.h"
 #import "ShopView.h"
 #import "LinphoneManager.h"
+#import "RecordingsListView.h"
 
 @implementation SideMenuEntry
 
-- (id)initWithTitle:(NSString *)atitle tapBlock:(SideMenuEntryBlock)tapBlock {
+- (id)initWithTitle:(NSString *)atitle image:(UIImage *)image tapBlock:(SideMenuEntryBlock)tapBlock {
 	if ((self = [super init])) {
+        img = image;
 		title = atitle;
 		onTapBlock = tapBlock;
 	}
@@ -46,6 +48,7 @@
 
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Assistant", nil)
+                                                 image:[UIImage imageNamed:@"menu_assistant.png"]
 											  tapBlock:^() {
 												[PhoneMainView.instance
 													changeCurrentView:AssistantView.compositeViewDescription];
@@ -54,28 +57,40 @@
 	if (mustLink) {
 		[_sideMenuEntries
 			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Link my account", nil)
+                                                     image:[UIImage imageNamed:@"menu_link_account.png"]
 												  tapBlock:^() {
 													[PhoneMainView.instance
 														changeCurrentView:AssistantLinkView.compositeViewDescription];
 												  }]];
 	}
 
+    
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
+                                                 image:[UIImage imageNamed:@"menu_options.png"]
 											  tapBlock:^() {
 												[PhoneMainView.instance
 													changeCurrentView:SettingsView.compositeViewDescription];
 											  }]];
+    [_sideMenuEntries
+     addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Recordings", nil)
+                                              image:[UIImage imageNamed:@"menu_recordings.png"]
+                                           tapBlock:^() {
+                                               [PhoneMainView.instance
+                                                changeCurrentView:RecordingsListView.compositeViewDescription];
+                                           }]];
 	InAppProductsManager *iapm = LinphoneManager.instance.iapManager;
 	if (iapm.enabled){
 		[_sideMenuEntries
 			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Shop", nil)
+                                                     image:nil
 												  tapBlock:^() {
 													[PhoneMainView.instance
 														changeCurrentView:ShopView.compositeViewDescription];
 												  }]];
 	}
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
+                                                               image:[UIImage imageNamed:@"menu_about.png"]
 															tapBlock:^() {
 															  [PhoneMainView.instance
 																  changeCurrentView:AboutView.compositeViewDescription];
@@ -121,6 +136,7 @@
 		cell.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_G.png"]];
 	} else {
 		SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
+        cell.imageView.image = entry->img;
 		cell.textLabel.text = entry->title;
 	}
 	return cell;

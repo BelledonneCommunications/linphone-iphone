@@ -319,7 +319,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneRegistrationState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneRegistrationFailed && ![currentView equal:AssistantView.compositeViewDescription] &&
 		[UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
 																		 message:[notif.userInfo objectForKey:@"message"]
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
@@ -329,7 +329,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 		
 		[errView addAction:defaultAction];
 		[self presentViewController:errView animated:YES completion:nil];
-	}
+    } else if (state == LinphoneRegistrationOk && [currentView equal:ChatsListView.compositeViewDescription]) {
+        // update avatarImages
+        //ChatsListView *view = VIEW(ChatsListView);
+        //[view.tableController loadData];
+    }
 }
 
 - (void)onGlobalStateChanged:(NSNotification *)notif {
@@ -421,19 +425,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 			} else {
 				linphone_call_resume((LinphoneCall *)calls->data);
 				while (calls) {
-					if (
-						linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallIncomingReceived ||
-						linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallIncomingEarlyMedia
-					) {
-						[self displayIncomingCall:(LinphoneCall *)calls->data];
-						break;
-					} else if (linphone_call_get_state((LinphoneCall *)calls->data) == LinphoneCallOutgoingRinging) {
-						[self changeCurrentView:CallOutgoingView.compositeViewDescription];
-						break;
-					}
+                    if (calls->next) {
+                        [self changeCurrentView:CallView.compositeViewDescription];
+                        break;
+                    }
 					calls = calls->next;
 				}
-				if (!calls) {
+				if (calls == NULL) {
 					[self changeCurrentView:CallView.compositeViewDescription];
 				}
 			}
@@ -762,7 +760,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	switch (linphone_call_get_reason(call)) {
 		case LinphoneReasonNotFound:
-			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is not registered.", nil), lUserName];
+			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is not connected.", nil), lUserName];
 			break;
 		case LinphoneReasonBusy:
 			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is busy.", nil), lUserName];
@@ -874,17 +872,22 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 #pragma mark - Chat room Functions
 
-- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView {
+- (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted{
 	if (!remoteAddress) {
 		[self changeCurrentView:ChatsListView.compositeViewDescription];
 		return;
 	}
-
+    
+    if (!linphone_core_is_network_reachable(LC)) {
+        [PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView] animated:YES completion:nil];
+        return;
+    }
+    
 	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
-	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, remoteAddress);
+	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room_2(LC, local, remoteAddress, isEncrypted);
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new((void*)remoteAddress);
-		[self createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView];
+		[self createChatRoom:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted isGroup:FALSE];
 		bctbx_list_free(addresses);
 		return;
 	}
@@ -892,42 +895,48 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[self goToChatRoom:room];
 }
 
-- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView {
-	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
-		|| ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] && bctbx_list_size(addresses) == 1)) {
-		// If there's no factory uri, create a basic chat room
-		if (bctbx_list_size(addresses) != 1) {
-			// Display Error: unsuported group chat
-			UIAlertController *errView =
-			[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Conversation creation error", nil)
-												message:NSLocalizedString(@"Group conversation is not supported.", nil)
-										 preferredStyle:UIAlertControllerStyleAlert];
-
-			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction *action) {}];
-			[errView addAction:defaultAction];
-			[self presentViewController:errView animated:YES completion:nil];
-			return;
-		}
-		LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
-		[self goToChatRoom:basicRoom];
-		return;
-	}
-
-	_waitView = waitView;
-	_waitView.hidden = NO;
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT, bctbx_list_size(addresses) == 1);
-	if (!room) {
-		_waitView.hidden = YES;
-		return;
-	}
-
-	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
-	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
-	linphone_chat_room_add_callbacks(room, cbs);
-
-	linphone_chat_room_add_participants(room, addresses);
+- (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup{
+    if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
+        || ((bctbx_list_size(addresses) == 1) && !isGroup && ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] || !isEncrypted))) {
+        // If there's no factory uri, create a basic chat room
+        if (bctbx_list_size(addresses) != 1) {
+            // Display Error: unsuported group chat
+            UIAlertController *errView =
+            [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Conversation creation error", nil)
+                                                message:NSLocalizedString(@"Group conversation is not supported.", nil)
+                                         preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction *action) {}];
+            [errView addAction:defaultAction];
+            [self presentViewController:errView animated:YES completion:nil];
+            return nil;
+        }
+		LinphoneChatRoom *basicRoom = linphone_core_create_chat_room_5(LC, addresses->data);
+        [self goToChatRoom:basicRoom];
+        return nil;
+    }
+    
+    _waitView = waitView;
+    _waitView.hidden = NO;
+    // always use group chatroom
+	LinphoneChatRoomParams *param = linphone_core_create_default_chat_room_params(LC);
+	linphone_chat_room_params_enable_group(param, isGroup);
+	linphone_chat_room_params_enable_encryption(param, isEncrypted);
+	
+	LinphoneChatRoom *room = linphone_core_create_chat_room_2(LC, param, subject ?: LINPHONE_DUMMY_SUBJECT, addresses);
+	
+    if (!room) {
+        _waitView.hidden = YES;
+        return nil;
+    }
+    
+    LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
+    linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
+    linphone_chat_room_add_callbacks(room, cbs);
+    
+    return room;
 }
 
 - (void)goToChatRoom:(LinphoneChatRoom *)cr {
@@ -979,6 +988,12 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 		default:
 			break;
 	}
+}
+
+#pragma mark - SMS invite callback
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+    [controller dismissModalViewControllerAnimated:YES];
 }
 
 @end

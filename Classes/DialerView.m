@@ -321,9 +321,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 																  LOGW(@"Exception while destroying linphone core: %@", e);
 															  } @finally {
 																  if ([NSFileManager.defaultManager
-																	   isDeletableFileAtPath:[LinphoneManager documentFile:@"linphonerc"]] == YES) {
+																	   isDeletableFileAtPath:[LinphoneManager preferenceFile:@"linphonerc"]] == YES) {
 																	  [NSFileManager.defaultManager
-																	   removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
+																	   removeItemAtPath:[LinphoneManager preferenceFile:@"linphonerc"]
 																	   error:nil];
 																  }
 #ifdef DEBUG

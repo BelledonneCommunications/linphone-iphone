@@ -169,18 +169,18 @@
 }
 
 - (void)waitForRegistration {
-	// wait for account to be registered
+	// wait for account to be connected
 	int timeout = 15;
 	while (timeout &&
 		   ![tester tryFindingViewWithAccessibilityLabel:@"Registration state"
-												   value:@"Registered"
+												   value:@"Connected"
 												  traits:UIAccessibilityTraitButton
 												   error:nil]) {
 		[tester waitForTimeInterval:1];
 		timeout--;
 	}
 	[tester waitForViewWithAccessibilityLabel:@"Registration state"
-										value:@"Registered"
+										value:@"Connected"
 									   traits:UIAccessibilityTraitButton];
 }
 

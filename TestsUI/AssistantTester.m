@@ -98,7 +98,7 @@
 	[self setInvalidAccountSet:true];
 
 	UIView *alertViewText =
-		[tester waitForViewWithAccessibilityLabel:@"Registration failure" traits:UIAccessibilityTraitStaticText];
+		[tester waitForViewWithAccessibilityLabel:@"Connection failure" traits:UIAccessibilityTraitStaticText];
 	if (alertViewText) {
 		UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Bad credentials, check your account settings"
 															traits:UIAccessibilityTraitStaticText];

@@ -142,7 +142,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		addresses = bctbx_list_append(addresses, (void *)linphoneAddress);
 	}
-	[PhoneMainView.instance createChatRoomWithSubject:_nameLabel.text.UTF8String addresses:addresses andWaitView:_waitView];
+	[PhoneMainView.instance createChatRoom:_nameLabel.text.UTF8String addresses:addresses andWaitView:_waitView isEncrypted:_encrypted isGroup:TRUE];
 	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
 }
 
@@ -159,6 +159,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+		linphone_address_clean(addr);//keep only username@domain
 		if (addedPartipants)
 			addedPartipants = bctbx_list_append(addedPartipants, addr);
 		else
@@ -261,6 +262,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 	view.tableController.notFirstTime = TRUE;
 	view.isForEditing = !_create;
+    view.isGroupChat = TRUE;
 	view.tableController.contactsGroup = [_contacts mutableCopy];
 	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }

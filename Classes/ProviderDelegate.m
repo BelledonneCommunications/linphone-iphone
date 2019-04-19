@@ -59,6 +59,17 @@
 		LOGE(@"Unable to change audio session because: %@", err.localizedDescription);
 		err = nil;
 	}
+	[audioSession setMode:AVAudioSessionModeVoiceChat error:&err];
+	if (err) {
+		LOGE(@"Unable to change audio mode because : %@", err.localizedDescription);
+		err = nil;
+	}
+	double sampleRate = 48000.0;
+	[audioSession setPreferredSampleRate:sampleRate error:&err];
+	if (err) {
+		LOGE(@"Unable to change preferred sample rate because : %@", err.localizedDescription);
+		err = nil;
+	}
 }
 
 - (void)reportIncomingCall:(LinphoneCall *) call withUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video; {
@@ -91,7 +102,10 @@
 - (void)setPendingCall:(LinphoneCall *)pendingCall {
 	if (pendingCall) {
 		_pendingCall = pendingCall;
+        if (_pendingCall)
+            linphone_call_ref(_pendingCall);
 	} else if (_pendingCall) {
+        linphone_call_unref(_pendingCall);
 		_pendingCall = NULL;
 	}
 }
@@ -109,7 +123,7 @@
 		return;
 
 	self.callKitCalls++;
-	_pendingCall = call;
+    self.pendingCall = call;
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
@@ -126,6 +140,7 @@
 		call = [LinphoneManager.instance callByCallId:callID];
 	}
 	if (call != NULL) {
+        self.callKitCalls++;
 		self.pendingCall = call;
 	}
 }
@@ -240,7 +255,7 @@
 		}
 	}
 
-	self.pendingCall = NULL;
+    [self setPendingCall:NULL];
 	if (_pendingAddr)
 		linphone_address_unref(_pendingAddr);
 	_pendingAddr = NULL;
@@ -248,9 +263,8 @@
 }
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(nonnull AVAudioSession *)audioSession {
-	LOGD(@"CallKit: Audio session deactivated");
-
-	self.pendingCall = NULL;
+	LOGD(@"CallKit : Audio session deactivated");
+    [self setPendingCall:NULL];
 	if (_pendingAddr)
 		linphone_address_unref(_pendingAddr);
 	_pendingAddr = NULL;

@@ -43,6 +43,7 @@
 @property(nonatomic, strong) IBOutlet UIView *waitView;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property (weak, nonatomic) IBOutlet UIButton *infoLoginButton;
+@property (weak, nonatomic) IBOutlet UIRoundBorderedButton *linphoneLoginButton;
 
 @property(nonatomic, strong) IBOutlet UIView *welcomeView;
 @property(nonatomic, strong) IBOutlet UIView *createAccountView;
@@ -84,7 +85,6 @@
 - (void)fillDefaultValues;
 
 - (IBAction)onBackClick:(id)sender;
-- (IBAction)onDialerClick:(id)sender;
 
 - (IBAction)onGotoCreateAccountClick:(id)sender;
 - (IBAction)onGotoLinphoneLoginClick:(id)sender;

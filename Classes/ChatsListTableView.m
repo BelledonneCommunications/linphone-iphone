@@ -98,7 +98,12 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	while (iter) {
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
-		sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
+		// hide empty one-to-one chat room
+		LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chat_room);
+		ChatConversationView *view = VIEW(ChatConversationView);
+		if (linphone_chat_room_get_history_size(chat_room) > 0 || !(capabilities & LinphoneChatRoomCapabilitiesOneToOne) || (IPAD && view.chatRoom == chat_room)) {
+			sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
+		}
 		iter = iter->next;
 	}
 	return sorted;
@@ -152,19 +157,23 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
                  forKey:@"peer"];
         [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(local_address)]
                  forKey:@"local"];
-        if (linphone_chat_room_get_conference_address(cr)) {
+        LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(cr);
+        if (!(capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
             if (!linphone_chat_room_get_subject(cr)) {
                 sorted = sorted->next;
                 continue;
             }
             display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
         } else {
-            if (!linphone_address_get_username(peer_address)) {
+            bctbx_list_t *participants = linphone_chat_room_get_participants(cr);
+            LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+            const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : peer_address;
+            if (!linphone_address_get_username(addr)) {
                 sorted = sorted->next;
                 continue;
             }
-            display = [NSString stringWithUTF8String:linphone_address_get_display_name(peer_address)?:linphone_address_get_username(peer_address)];
-            if ([FastAddressBook imageForAddress:peer_address])
+            display = [NSString stringWithUTF8String:linphone_address_get_display_name(addr)?:linphone_address_get_username(addr)];
+            if ([FastAddressBook imageForAddress:addr])
                 [dict setObject:UIImageJPEGRepresentation([UIImage resizeImage:[FastAddressBook imageForAddress:peer_address]
                                                                   withMaxWidth:200
                                                                   andMaxHeight:200],
@@ -173,14 +182,15 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         }
         [dict setObject:display
                  forKey:@"display"];
-        [dict setObject:[NSNumber numberWithBool:!!linphone_chat_room_get_conference_address(cr)]
+        BOOL isGroupChat = linphone_chat_room_get_capabilities(cr) & LinphoneChatRoomCapabilitiesConference;
+        [dict setObject:[NSNumber numberWithBool:isGroupChat]
                  forKey:@"nbParticipants"];
         [addresses addObject:dict];
         if (addresses.count >= 4) //send no more data than needed
             break;
         sorted = sorted->next;
-    }
-    
+	}
+	
     [defaults setObject:addresses forKey:@"chatrooms"];
 }
 
@@ -213,6 +223,10 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    return 86.0;
 }
 
 #pragma mark - UITableViewDelegate Functions

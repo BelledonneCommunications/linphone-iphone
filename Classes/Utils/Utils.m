@@ -73,23 +73,6 @@
     return assetDict;
 }
 
-/*+ (NSMutableDictionary <NSString *, PHAsset *> *)videoAssetsDictionary {
-    NSMutableDictionary <NSString *, PHAsset *> *assetDict = [NSMutableDictionary dictionary];
-    
-    PHFetchOptions *options = [[PHFetchOptions alloc] init];
-    [options setIncludeHiddenAssets:YES];
-    [options setIncludeAllBurstAssets:YES];
-    
-    PHFetchResult *fetchRes = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:options];
-    
-    for (PHAsset *asset in fetchRes) {
-        NSString *key = [asset valueForKey:@"filename"];
-        [assetDict setObject:asset forKey:[[key componentsSeparatedByString:@"."] firstObject]];
-    }
-    
-    return assetDict;
-}*/
-
 + (NSString *)timeToString:(time_t)time withFormat:(LinphoneDateFormat)format {
 	NSString *formatstr;
 	NSDate *todayDate = [[NSDate alloc] init];
@@ -505,9 +488,64 @@
 	if (addr && cfg) {
 		const char *username = linphone_proxy_config_get_dial_escape_plus(cfg) ? normvalue : value.UTF8String;
 		if (linphone_proxy_config_is_phone_number(cfg, username))
-			linphone_address_set_username(addr, username);
+			linphone_address_set_username(addr, linphone_proxy_config_normalize_phone_number(cfg, username));
 	 }
 	return addr;
+}
+
++ (NSString *)recordingFilePathFromCall:(const LinphoneAddress *)iaddr {
+    NSString *filepath = @"recording_";
+    const char *address = linphone_address_get_username(iaddr);
+    filepath = [filepath stringByAppendingString:[NSString stringWithCString:address encoding:NSUTF8StringEncoding]];
+    NSDate * now = [NSDate date];
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"E-d-MMM-yyyy-HH-mm-ss"];
+    NSString *date = [dateFormat stringFromDate:now];
+    
+    filepath = [filepath stringByAppendingString:@"_"];
+    filepath = [filepath stringByAppendingString:date];
+    filepath = [filepath stringByAppendingString:@".mkv"];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *writablePath = [paths objectAtIndex:0];
+    writablePath = [writablePath stringByAppendingString:@"/"];
+    writablePath = [writablePath stringByAppendingString:filepath];
+    LOGD(@"file path is: %@\n", writablePath);
+    return writablePath;
+    //file name is recording_contact-name_dayName-day-monthName-year-hour-minutes-seconds
+    //The recording prefix is used to identify recordings in the cache directory.
+    //We will use name_dayName-day-monthName-year to separate recordings by days, then hour-minutes-seconds to order them in each day.
+}
+
++ (NSArray *)parseRecordingName:(NSString *)filename {
+    NSString *rec = @"recording_"; //key that helps find recordings
+    NSString *subName = [filename substringFromIndex:[filename rangeOfString:rec].location]; //We remove the parent folders if they exist in the filename
+    NSArray *splitString = [subName componentsSeparatedByString:@"_"];
+    //splitString: first element is the 'recording' prefix, last element is the date with the "E-d-MMM-yyyy-HH-mm-ss" format.
+    NSString *name = [[splitString subarrayWithRange:NSMakeRange(1, [splitString count] -2)] componentsJoinedByString:@""];
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    [format setDateFormat:@"E-d-MMM-yyyy-HH-mm-ss"];
+    NSString *dateWithMkv = [splitString objectAtIndex:[splitString count]-1]; //this will be in the form "E-d-MMM-yyyy-HH-mm-ss.mkv", we have to delete the extension
+    NSDate *date = [format dateFromString:[dateWithMkv substringToIndex:[dateWithMkv length] - 4]];
+    NSArray *res = [NSArray arrayWithObjects:name, date, nil];
+    return res;
+}
+
++ (UIAlertController *)networkErrorView {
+    UIAlertController *errView =
+    [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
+                                        message:NSLocalizedString(@"There is no network connection available, "
+                                                                  @"enable WIFI or WWAN prior to place a call",
+                                                                  nil)
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *action){
+                                                          }];
+    
+    [errView addAction:defaultAction];
+    return errView;
 }
 
 @end
@@ -527,6 +565,29 @@
 	floatSize = floatSize / 1024;
 
 	return ([NSString stringWithFormat:@"%1.1f GB", floatSize]);
+}
+
+@end
+
+@implementation UIImage (systemIcons)
+
++ (UIImage *)imageFromSystemBarButton:(UIBarButtonSystemItem)systemItem :(UIColor *) color {
+    // thanks to Renetik https://stackoverflow.com/a/49822488
+    UIToolbar *bar = UIToolbar.new;
+    UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:systemItem target:nil action:nil];
+    [bar setItems:@[buttonItem] animated:NO];
+    [bar snapshotViewAfterScreenUpdates:YES];
+    for (UIView *view in [(id) buttonItem view].subviews)
+        if ([view isKindOfClass:UIButton.class]) {
+            UIImage *image = [((UIButton *) view).imageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
+            //[color set];
+            [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+            image = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            return image;
+        }
+    return nil;
 }
 
 @end
@@ -580,17 +641,23 @@
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr withAddressLabel:(UILabel*)addressLabel{
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
+	NSString *tmpAddress = nil;
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
-		addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+		tmpAddress = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
 		addressLabel.hidden = FALSE;
 	} else {
 		label.text = [FastAddressBook displayNameForAddress:addr];
 		if([LinphoneManager.instance lpConfigBoolForKey:@"display_phone_only" inSection:@"app"])
 			addressLabel.hidden = TRUE;
 		else
-			addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+			tmpAddress = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
 	}
+	NSRange range = [tmpAddress rangeOfString:@";"];
+	if (range.location != NSNotFound) {
+		tmpAddress = [tmpAddress substringToIndex:range.location];
+	}
+	addressLabel.text = tmpAddress;
 }
 
 

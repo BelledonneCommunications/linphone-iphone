@@ -16,6 +16,7 @@
 
 @property(nonatomic, strong) NSMutableArray *addresses;
 @property(nonatomic, strong) NSMutableArray *phoneOrAddr;
+@property(nonatomic, strong) NSMutableArray *addressesCached;
 @end
 
 @implementation ChatConversationCreateTableView
@@ -40,6 +41,7 @@
 
 	_addresses = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
 	_phoneOrAddr = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
+    _addressesCached = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
@@ -66,6 +68,7 @@
 - (void)reloadDataWithFilter:(NSString *)filter {
 	[_addresses removeAllObjects];
 	[_phoneOrAddr removeAllObjects];
+    [_addressesCached removeAllObjects];
 
 	if (!_magicSearch)
 		return;
@@ -75,7 +78,17 @@
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
 		const char *phoneNumber = NULL;
-		if (!addr) {
+		
+		Contact *contact = nil;
+		char *uri = nil;
+		NSString *address = nil;
+		if (addr) {
+			uri = linphone_address_as_string_uri_only(addr);
+			address = [NSString stringWithUTF8String:uri];
+			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
+		}
+		
+		if (!addr || (!contact && linphone_search_result_get_friend(result))) {
 			phoneNumber = linphone_search_result_get_phone_number(result);
 			if (!phoneNumber) {
 				results = results->next;
@@ -85,6 +98,8 @@
 			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 			const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
 			addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
+			uri = linphone_address_as_string_uri_only(addr);
+			address = [NSString stringWithUTF8String:uri];
 		}
 
 		if (!addr) {
@@ -92,11 +107,11 @@
 			continue;
 		}
 
-		char *uri = linphone_address_as_string_uri_only(addr);
-		NSString *address = [NSString stringWithUTF8String:uri];
-		ms_free(uri);
+        ms_free(uri);
+        
 		[_addresses addObject:address];
 		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
+        [_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
 
 		results = results->next;
 	}
@@ -114,6 +129,10 @@
 	return _addresses.count;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    return 60.0;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UIChatCreateCell.class);
 	UIChatCreateCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
@@ -122,30 +141,41 @@
 
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
 	NSString *phoneOrAddr = [_phoneOrAddr objectAtIndex:indexPath.row];
-	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
+	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:key]];
+    const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
-		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
+		|| (model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen);
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
 	if (!addr)
 		return cell;
 	
 	cell.linphoneImage.hidden = !linphoneContact;
+    cell.securityImage.hidden = !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh));
+    int capabilities = [[_addressesCached objectAtIndex:indexPath.row] intValue];
+    BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;
+    BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
+    cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
+    [cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-
-	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))) {
-		// Create directly a basic chat room if there's no factory uri
-		bctbx_list_t *addresses = NULL;
+    if (!cell.userInteractionEnabled)
+        return;
+    
+	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC)) || !_isGroupChat) {
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
-		addresses = bctbx_list_append(addresses, addr);
-		[PhoneMainView.instance createChatRoomWithSubject:NULL addresses:addresses andWaitView:NULL];
-		linphone_address_unref(addr);
+        [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:_isEncrypted];
+		if (!addr) {
+			LOGE(@"Chat room could not be created on server, because null address.");
+			[ChatConversationInfoView displayCreationError];
+		} else {
+			linphone_address_unref(addr);
+		}
 		return;
 	}
 

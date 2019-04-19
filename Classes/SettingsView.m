@@ -35,8 +35,8 @@
 #ifdef DEBUG
 @interface UIDevice (debug)
 
-- (void)_setBatteryLevel:(float)level;
-- (void)_setBatteryState:(int)state;
+- (void)setBatteryLevel:(float)level;
+- (void)setBatteryState:(int)state;
 
 @end
 #endif
@@ -506,7 +506,13 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
 		[keys addObject:@"video_preferred_fps_preference"];
 		[keys addObject:@"download_bandwidth_preference"];
-	}
+    } else if ([@"auto_download_mode" compare:notif.object] == NSOrderedSame) {
+        NSString *download_mode = [notif.userInfo objectForKey:@"auto_download_mode"];
+        removeFromHiddenKeys = [download_mode isEqualToString:@"Customize"];
+        if (removeFromHiddenKeys)
+            [LinphoneManager.instance lpConfigSetInt:10000000 forKey:@"auto_download_incoming_files_max_size"];
+        [keys addObject:@"auto_download_incoming_files_max_size"];
+    }
 
 	for (NSString *key in keys) {
 		if (removeFromHiddenKeys)
@@ -701,6 +707,14 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
 		[hiddenKeys addObject:@"repeat_call_notification_preference"];
 	}
+	
+	if (![lm lpConfigBoolForKey:@"accept_early_media" inSection:@"app"]) {
+		[hiddenKeys addObject:@"pref_accept_early_media_preference"];
+	}
+
+    if (![[lm lpConfigStringForKey:@"auto_download_mode"] isEqualToString:@"Customize"]) {
+        [hiddenKeys addObject:@"auto_download_incoming_files_max_size"];
+    }
 
 	return hiddenKeys;
 }
@@ -722,7 +736,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 }
 
 - (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
-	_backButton.hidden = (sender.file == nil || [sender.file isEqualToString:@"Root"]);
+	isRoot = (sender.file == nil || [sender.file isEqualToString:@"Root"]);
 	_titleLabel.text = sender.title;
 
 	// going to account: fill account specific info
@@ -749,8 +763,8 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[PhoneMainView.instance.mainViewController
 			clearCache:[NSArray arrayWithObject:[PhoneMainView.instance currentView]]];
 	} else if ([key isEqual:@"battery_alert_button"]) {
-		[[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
-		[[UIDevice currentDevice] _setBatteryLevel:0.01f];
+		[[UIDevice currentDevice] setBatteryState:UIDeviceBatteryStateUnplugged];
+		[[UIDevice currentDevice] setBatteryLevel:0.01f];
 		[NSNotificationCenter.defaultCenter postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
 	} else if ([key isEqual:@"flush_images_button"]) {
 		const MSList *rooms = linphone_core_get_chat_rooms(LC);
@@ -987,11 +1001,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory"]) {
 		// retrieve linphone rc
 		[attachments
-			addObject:@[ [LinphoneManager documentFile:@"linphonerc"], @"text/plain", @"linphone-configuration.rc" ]];
+			addObject:@[ [LinphoneManager preferenceFile:@"linphonerc"], @"text/plain", @"linphone-configuration.rc" ]];
 
 		// retrieve historydb
 		[attachments addObject:@[
-			[LinphoneManager documentFile:@"linphone_chats.db"],
+			[LinphoneManager dataFile:@"linphone_chats.db"],
 			@"application/x-sqlite3",
 			@"linphone-chats-history.db"
 		]];
@@ -1079,6 +1093,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 }
 
 - (IBAction)onBackClick:(id)sender {
-	[_settingsController.navigationController popViewControllerAnimated:YES];
+	if  (isRoot) {
+		[_settingsController.navigationController popViewControllerAnimated:NO];
+		[PhoneMainView.instance popCurrentView];
+	} else {
+		[_settingsController.navigationController popViewControllerAnimated:YES];
+	}
 }
 @end

@@ -48,6 +48,20 @@
 	return [FastAddressBook imageForContact:[FastAddressBook getContactWithAddress:addr]];
 }
 
++ (UIImage *)imageForSecurityLevel:(LinphoneChatRoomSecurityLevel)level {
+    switch (level) {
+        case LinphoneChatRoomSecurityLevelUnsafe:
+            return [UIImage imageNamed:@"security_alert_indicator.png"];
+        case LinphoneChatRoomSecurityLevelEncrypted:
+            return [UIImage imageNamed:@"security_1_indicator.png.png"];
+        case LinphoneChatRoomSecurityLevelSafe:
+            return [UIImage imageNamed:@"security_2_indicator.png.png"];
+            
+        default:
+            return nil;
+    }
+}
+
 + (Contact *)getContact:(NSString *)address {
 	if (LinphoneManager.instance.fastAddressBook != nil) {
 		@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {

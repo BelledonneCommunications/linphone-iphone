@@ -66,6 +66,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	if (_earlyMedia && [LinphoneManager.instance lpConfigBoolForKey:@"pref_accept_early_media"] && linphone_core_get_calls_nb(LC) < 2) {
+		_earlyMediaView.hidden = NO;
+		linphone_core_set_native_video_window_id(LC, (__bridge void *)(_earlyMediaView));
+	}
 	if (_call) {
 		[self update];
 	}
@@ -105,9 +109,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 #pragma mark - Property Functions
+static void hideSpinner(LinphoneCall *call, void *user_data) {
+	CallIncomingView *thiz = (__bridge CallIncomingView *)user_data;
+	thiz.earlyMedia = TRUE;
+	thiz.earlyMediaView.hidden = NO;
+	linphone_core_set_native_video_window_id(LC, (__bridge void *)(thiz.earlyMediaView));
+}
 
 - (void)setCall:(LinphoneCall *)call {
 	_call = call;
+	_earlyMedia = FALSE;
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"pref_accept_early_media"] && linphone_core_get_calls_nb(LC) < 2) {
+		linphone_call_accept_early_media(_call);
+		// linphone_call_params_get_used_video_codec return 0 if no video stream enabled
+		if (linphone_call_params_get_used_video_codec(linphone_call_get_current_params(_call))) {
+			linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, (__bridge void *)(self));
+		}
+	} else {
+		_earlyMediaView.hidden = YES;
+	}
+	
 	[self update];
 	[self callUpdate:_call state:linphone_call_get_state(call)];
 }

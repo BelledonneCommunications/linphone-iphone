@@ -30,24 +30,28 @@
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColorImage;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, weak) IBOutlet UILabel *contactDateLabel;
-@property(weak, nonatomic) IBOutlet UIActivityIndicatorView *statusInProgressSpinner;
+//@property(weak, nonatomic) IBOutlet UIActivityIndicatorView *statusInProgressSpinner;
 @property(nonatomic, weak) IBOutlet UITextViewNoDefine *messageText;
-@property(weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
+//@property(weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property(strong, nonatomic) IBOutlet UIView *bubbleView;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *resendRecognizer;
-@property(weak, nonatomic) IBOutlet UIImageView *LIMEKO;
+//@property(weak, nonatomic) IBOutlet UIImageView *LIMEKO;
 @property(weak, nonatomic) IBOutlet UIImageView *imdmIcon;
-@property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
-
+//@property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
 @property (nonatomic, strong) UIDocumentPickerViewController *documentPicker;
+@property (weak, nonatomic) IBOutlet UIView *innerView;
+
+@property(nonatomic) Boolean isFirst;
+@property(nonatomic) Boolean isLast;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
++ (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
++ (UIImage *)getImageFromVideoUrl:(NSURL *)url;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
-- (void)getIcloudFiles;
 
 - (void)onDelete;
 - (void)onResend;

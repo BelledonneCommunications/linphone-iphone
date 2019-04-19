@@ -173,7 +173,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
-	linphone_config_load_from_xml_file(linphone_core_get_config(LC),
+	linphone_core_load_config_from_xml(LC,
 									   [LinphoneManager bundleFile:rcFilename].UTF8String);
 	[self changeView:nextView back:FALSE animation:TRUE];
 }
@@ -446,7 +446,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
-	_backButton.hidden = (view == _welcomeView);
 
 	if (view == _welcomeView) {
 		BOOL show_logo = [LinphoneManager.instance lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
@@ -849,7 +848,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		case LinphoneRegistrationFailed: {
 			_waitView.hidden = true;
-			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
 																			 message:message
 																	  preferredStyle:UIAlertControllerStyleAlert];
 			
@@ -923,7 +922,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)showErrorPopup:(const char *)error {
 	const char *err = error ? error : "";
 	if (strcmp(err, "ERROR_BAD_CREDENTIALS") == 0) {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Registration failure", nil)
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
 																		 message:[AssistantView StringForXMLRPCError:err]
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
@@ -1010,6 +1009,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		defaultAction.accessibilityLabel = @"PopUpResp";
 		[self presentViewController:errView animated:YES completion:nil];
 	}
+	
+	// enable linphoneLoginButton if error
+	[_linphoneLoginButton setBackgroundColor:[UIColor clearColor]];
+	_linphoneLoginButton.enabled = YES;
 }
 
 - (void)isAccountUsed:(LinphoneAccountCreatorStatus)status withResp:(const char *)resp {
@@ -1309,8 +1312,13 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onLinphoneLoginClick:(id)sender {
-	ONCLICKBUTTON(sender, 100, {
-        _waitView.hidden = NO;
+	// disable button after first click
+	_linphoneLoginButton.enabled = NO;
+	[_linphoneLoginButton setBackgroundColor:[UIColor lightGrayColor]];
+	_waitView.hidden = NO;
+
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (100 * NSEC_PER_MSEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class]).text = @"";
 		_activationTitle.text = @"USE LINPHONE ACCOUNT";
 		if ((linphone_account_creator_get_phone_number(account_creator) != NULL) &&
@@ -1324,7 +1332,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			// if not, propose it to the user
 			linphone_account_creator_is_account_exist(account_creator);
 		}
-    });
+	});
 }
 
 - (IBAction)onLoginClick:(id)sender {
@@ -1567,15 +1575,19 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			UIView *view = [historyViews lastObject];
 			[historyViews removeLastObject];
 			[self changeView:view back:TRUE animation:TRUE];
+		} else if (currentView == _welcomeView) {
+			[PhoneMainView.instance popCurrentView];
 		} else {
 			[self changeView:_welcomeView back:TRUE animation:TRUE];
 		}
+	} else {
+		[self onDialerClick:nil];
 	}
 }
 
 - (IBAction)onDialerClick:(id)sender {
-	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
-}
+		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
+	}
 
 - (IBAction)onLinkTap:(id)sender {
 	NSString *url = @"http://linphone.org/free-sip-service.html&action=recover";

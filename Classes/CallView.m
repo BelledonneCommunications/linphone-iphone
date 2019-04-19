@@ -48,6 +48,9 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		videoHidden = TRUE;
+        CGRect frame = _callPauseButton.frame;
+        frame.origin.y = _recordButtonOnView.frame.origin.y;
+        _callPauseButton.frame = frame;
 	}
 	return self;
 }
@@ -137,6 +140,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillAppear:animated];
 	_waitView.hidden = TRUE;
 	LinphoneManager.instance.nextCallIsTransfer = NO;
+    
+    callRecording = FALSE;
+    _recordButtonOnView.hidden = TRUE;
 
 	// Update on show
 	[self hideRoutes:TRUE animated:FALSE];
@@ -227,6 +233,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// reseting speaker button because no more call
 		_speakerButton.selected = FALSE;
 	}
+    
+    NSString *address = [LinphoneManager.instance lpConfigStringForKey:@"sas_dialog_denied"];
+    if (address) {
+        UIConfirmationDialog *securityDialog = [UIConfirmationDialog ShowWithMessage:NSLocalizedString(@"Trust has been denied. Make a call to start the authentication process again.", nil)
+         cancelMessage:NSLocalizedString(@"CANCEL", nil)
+         confirmMessage:NSLocalizedString(@"CALL", nil)
+         onCancelClick:^() {
+         }
+         onConfirmationClick:^() {
+             LinphoneAddress *addr = linphone_address_new(address.UTF8String);
+             [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
+             linphone_address_unref(addr);
+         } ];
+        [securityDialog.securityImage setImage:[UIImage imageNamed:@"security_alert_indicator.png"]];
+        securityDialog.securityImage.hidden = FALSE;
+		[securityDialog setSpecialColor];
+        [LinphoneManager.instance lpConfigSetString:nil forKey:@"sas_dialog_denied"];
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -234,9 +258,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
 	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
+    [_recordButtonOnView setHidden:!callRecording];
+    [self updateInfoView];
 }
 
 #pragma mark - UI modification
+
+- (void)updateInfoView {
+    CGRect infoFrame = _infoView.frame;
+    CGRect frame = _callPauseButton.frame;
+    if (videoHidden) {
+        infoFrame.origin.y = (_avatarImage.frame.origin.y-66)/2;
+        frame.origin.y = _recordButtonOnView.frame.origin.y;
+    } else {
+        infoFrame.origin.y = 0;
+        frame.origin.y = _videoCameraSwitch.frame.origin.y+_videoGroup.frame.origin.y;
+    }
+    _infoView.frame = infoFrame;
+    _callPauseButton.frame = frame;
+}
 
 - (void)hideSpinnerIndicator:(LinphoneCall *)call {
 	_videoWaitingForFirstImage.hidden = TRUE;
@@ -526,6 +566,11 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			[self displayAudioCall:animated];
 		}
 	}
+    // camera is diabled duiring conference, it must be activated after leaving conference.
+    if (!shouldDisableVideo && !linphone_core_is_in_conference(LC)) {
+        linphone_call_enable_camera(call, TRUE);
+    }
+    [self updateInfoView];
 
 	if (state != LinphoneCallPausedByRemote) {
 		_pausedByRemoteView.hidden = YES;
@@ -713,7 +758,41 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 - (IBAction)onChatClick:(id)sender {
 	const LinphoneCall *currentCall = linphone_core_get_current_call(LC);
 	const LinphoneAddress *addr = currentCall ? linphone_call_get_remote_address(currentCall) : NULL;
-	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
+    // TODO encrpted or unencrpted
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
+}
+
+- (IBAction)onRecordClick:(id)sender {
+    if (![_optionsView isHidden])
+        [self hideOptions:TRUE animated:ANIMATED];
+    if (callRecording) {
+        LOGD(@"Recording Stops");
+        [_recordButton setImage:[UIImage imageNamed:@"rec_on_default.png"] forState:UIControlStateNormal];
+        [_recordButtonOnView setHidden:TRUE];
+        
+        LinphoneCall *call = linphone_core_get_current_call(LC);
+        linphone_call_stop_recording(call);
+        
+        callRecording = FALSE;
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *writablePath = [paths objectAtIndex:0];
+        writablePath = [writablePath stringByAppendingString:@"/"];
+        NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
+        if (directoryContent) {
+            return;
+        }
+    } else {
+        LOGD(@"Recording Starts");
+        
+        [_recordButton setImage:[UIImage imageNamed:@"rec_off_default.png"] forState:UIControlStateNormal];
+        [_recordButtonOnView setHidden:FALSE];
+        
+        LinphoneCall *call = linphone_core_get_current_call(LC);
+        linphone_call_start_recording(call);
+        
+        callRecording = TRUE;
+    }
 }
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {

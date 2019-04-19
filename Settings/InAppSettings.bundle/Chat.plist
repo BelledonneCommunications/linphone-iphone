@@ -6,6 +6,42 @@
 	<array>
 		<dict>
 			<key>DefaultValue</key>
+			<string>Never</string>
+			<key>Key</key>
+			<string>auto_download_mode</string>
+			<key>Title</key>
+			<string>Auto download incoming files policy</string>
+			<key>Titles</key>
+			<array>
+				<string>Never</string>
+				<string>Always</string>
+				<string>If lighter than max size</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>Never</string>
+				<string>Always</string>
+				<string>Customize</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>auto_download_incoming_files_max_size</string>
+			<key>Title</key>
+			<string>Max size (in bytes)</string>
+			<key>DefaultValue</key>
+			<integer>-1</integer>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>KeyboardType</key>
+			<string>NumbersAndPunctuation</string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<string>0</string>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>

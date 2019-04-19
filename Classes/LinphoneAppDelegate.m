@@ -31,6 +31,10 @@
 #include "LinphoneManager.h"
 #include "linphone/linphonecore.h"
 
+#ifdef USE_CRASHLYTHICSS
+#include "FIRApp.h"
+#endif
+
 @implementation LinphoneAppDelegate
 
 @synthesize configURL;
@@ -91,11 +95,6 @@
 		}
                 [instance.fastAddressBook fetchContactsInBackGroundThread];
                 instance.fastAddressBook.needToUpdate = FALSE;
-                const MSList *lists = linphone_core_get_friends_lists(LC);
-                while (lists) {
-                  linphone_friend_list_update_subscriptions(lists->data);
-                  lists = lists->next;
-                }
         }
 
         LinphoneCall *call = linphone_core_get_current_call(LC);
@@ -155,7 +154,7 @@
 	self.voipRegistry.delegate = self;
 
 	// Initiate registration.
-	LOGI(@"[PushKit] Registering for push notifications");
+	LOGI(@"[PushKit] Connecting for push notifications");
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
 	[self configureUINotification];
@@ -165,7 +164,7 @@
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		return;
 
-	LOGI(@"Registering for UNNotifications");
+	LOGI(@"Connecting for UNNotifications");
 	// Call category
 	UNNotificationAction *act_ans =
 	[UNNotificationAction actionWithIdentifier:@"Answer"
@@ -238,6 +237,14 @@
 #pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+#ifdef USE_CRASHLYTHICSS
+    NSString *pathForFile=[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"GoogleService-Info.plist"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:pathForFile]){
+        // If GoogleService-Info.plist doesn't exist, not call this function avoiding a crash.
+        [FIRApp configure];
+    }
+#endif
+    
     UIApplication *app = [UIApplication sharedApplication];
 	UIApplicationState state = app.applicationState;
 
@@ -335,7 +342,7 @@
     completionHandler([self handleShortcut:shortcutItem]);
 }
 
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options{
 	NSString *scheme = [[url scheme] lowercaseString];
 	if ([scheme isEqualToString:@"linphone-config"] || [scheme isEqualToString:@"linphone-config"]) {
 		NSString *encodedURL =
@@ -434,7 +441,7 @@
 	}
 
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
-	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId])
 		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 
 	// if we receive a push notification, it is probably because our TCP background socket was no more working.
@@ -636,9 +643,13 @@
 		  	linphone_call_set_authentication_token_verified(call, NO);
   	} else if ([response.actionIdentifier isEqual:@"Call"]) {
 	  	return;
-  	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier
+  	} else { // in this case the value is : com.apple.UNNotificationDefaultActionIdentifier or com.apple.UNNotificationDismissActionIdentifier
 	  	if ([response.notification.request.content.categoryIdentifier isEqual:@"call_cat"]) {
-		  	[PhoneMainView.instance displayIncomingCall:call];
+			if ([response.actionIdentifier isEqualToString:@"com.apple.UNNotificationDismissActionIdentifier"])
+				// clear notification
+				linphone_call_decline(call, LinphoneReasonDeclined);
+			else
+		  		[PhoneMainView.instance displayIncomingCall:call];
 	  	} else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
 		  	NSString *peer_address = [response.notification.request.content.userInfo objectForKey:@"peer_addr"];
 		  	NSString *local_address = [response.notification.request.content.userInfo objectForKey:@"local_addr"];
@@ -701,7 +712,7 @@
 		  	NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n"
 																			 @"Say : %@\n"
 																			 @"Your correspondant should say : %@", nil), myCode, correspondantCode];
-			[UIConfirmationDialog ShowWithMessage:message
+			UIConfirmationDialog *securityDialog = [UIConfirmationDialog ShowWithMessage:message
 									cancelMessage:NSLocalizedString(@"DENY", nil)
 								   confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 									onCancelClick:^() {
@@ -712,6 +723,7 @@
 								  if (linphone_core_get_current_call(LC) == call)
 									  linphone_call_set_authentication_token_verified(call, YES);
 							  }];
+			[securityDialog setSpecialColor];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
 			return;
         } else { // Missed call

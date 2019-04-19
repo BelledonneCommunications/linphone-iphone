@@ -43,7 +43,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMessageReceived object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	self.view = NULL;
 }
 
@@ -80,12 +80,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 
+- (void)newChatCreate:(BOOL)isGroup {
+    ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+    view.isForEditing = false;
+    view.isGroupChat = isGroup;
+    view.tableController.notFirstTime = FALSE;
+    [view.tableController.contactsGroup removeAllObjects];
+    [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (IBAction)onAddGroupChatClick:(id)event {
+    [self newChatCreate:TRUE];
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+}
+
 - (IBAction)onAddClick:(id)event {
-	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
-	view.isForEditing = false;
-	view.tableController.notFirstTime = FALSE;
-	[view.tableController.contactsGroup removeAllObjects];
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[self newChatCreate:FALSE];
+    if (IPAD)
+        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {

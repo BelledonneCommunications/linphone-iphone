@@ -85,6 +85,21 @@
 	}
         PhoneMainView.instance.currentName = _contact.displayName;
         _nameLabel.text = PhoneMainView.instance.currentName;
+
+    // fix no sipaddresses in contact.friend
+    const MSList *sips = linphone_friend_get_addresses(_contact.friend);
+    while (sips) {
+        linphone_friend_remove_address(_contact.friend, sips->data);
+        sips = sips->next;
+    }
+    
+    for (NSString *sipAddr in _contact.sipAddresses) {
+        LinphoneAddress *addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
+        if (addr) {
+            linphone_friend_add_address(_contact.friend, addr);
+            linphone_address_destroy(addr);
+        }
+    }
         [LinphoneManager.instance.fastAddressBook saveContact:_contact];
 }
 
@@ -247,6 +262,8 @@
 		}
 		_cancelButton.hidden = TRUE;
 	}
+    
+    [self recomputeTableViewSize:_editButton.hidden];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -360,21 +377,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_nameLabel.hidden = editing;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 
-	if ([self viewIsCurrentlyPortrait]) {
-		CGRect frame = _tableController.tableView.frame;
-		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
-		if (!editing) {
-			frame.origin.y += _nameLabel.frame.size.height;
-		}
-
-		frame.size.height = _tableController.tableView.contentSize.height;
-		_tableController.tableView.frame = frame;
-		[self recomputeContentViewSize];
-	}
+    [self recomputeTableViewSize:editing];
 
 	if (animated) {
 		[UIView commitAnimations];
 	}
+}
+
+- (void)recomputeTableViewSize:(BOOL)editing {
+    CGRect frame = _tableController.tableView.frame;
+    frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
+    if ([self viewIsCurrentlyPortrait] && !editing) {
+        frame.origin.y += _nameLabel.frame.size.height;
+    }
+    
+    frame.size.height = _tableController.tableView.contentSize.height;
+    _tableController.tableView.frame = frame;
+    [self recomputeContentViewSize];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -507,7 +526,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAvatarClick:(id)sender {
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 	if (_tableController.isEditing) {
-		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
+		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view withDocumentMenuDelegate:nil];
 	}
 }
 
@@ -567,5 +586,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
 }
 
+- (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info {
+	return;
+}
 
 @end

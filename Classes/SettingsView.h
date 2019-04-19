@@ -27,6 +27,7 @@
 	: UIViewController <IASKSettingsDelegate, UICompositeViewDelegate, MFMailComposeViewControllerDelegate> {
   @private
 	LinphoneCoreSettingsStore *settingsStore;
+		BOOL isRoot;
 }
 
 @property(nonatomic, strong) IBOutlet UINavigationController *navigationController;
