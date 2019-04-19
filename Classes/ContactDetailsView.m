@@ -73,9 +73,17 @@
 
 - (void)removeContact {
 	inhibUpdate = TRUE;
-        [[LinphoneManager.instance fastAddressBook] deleteContact:_contact];
-        inhibUpdate = FALSE;
-        [PhoneMainView.instance popCurrentView];
+	[[LinphoneManager.instance fastAddressBook] deleteContact:_contact];
+	inhibUpdate = FALSE;
+
+	if (IPAD) {
+		ContactsListView *view = VIEW(ContactsListView);
+		if (![view .tableController selectFirstRow]) {
+			[self setContact:nil];
+		}
+	}
+
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)saveData {

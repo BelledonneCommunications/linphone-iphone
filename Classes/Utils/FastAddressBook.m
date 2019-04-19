@@ -357,8 +357,6 @@
 	if(mCNContact != nil){
 		[saveRequest deleteContact:mCNContact];
 		@try {
-			BOOL success = [store executeSaveRequest:saveRequest error:nil];
-			NSLog(@"Success %d", success);
 			[self removeFriend:contact ];
 			[LinphoneManager.instance setContactsUpdated:TRUE];
 			if([contact.sipAddresses count] > 0){
@@ -371,6 +369,8 @@
 					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:phone] ?: phone)];
 				}
 			}
+			BOOL success = [store executeSaveRequest:saveRequest error:nil];
+			NSLog(@"Success %d", success);
 		} @catch (NSException *exception) {
 			NSLog(@"description = %@", [exception description]);
 			return FALSE;
@@ -439,9 +439,9 @@
 	}
   NSError *saveError;
   @try {
-	  NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:&saveError]);
 	  [self updateFriend:contact];
 	  [LinphoneManager.instance setContactsUpdated:TRUE];
+	  NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:&saveError]);
   } @catch (NSException *exception) {
 	  NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@", [exception description]);
 	  return FALSE;
