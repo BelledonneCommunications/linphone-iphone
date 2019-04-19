@@ -1590,7 +1590,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	}
 
 - (IBAction)onLinkTap:(id)sender {
-	NSString *url = @"http://linphone.org/free-sip-service.html&action=recover";
+	NSString *url = @"https://linphone.org/freesip/recover";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
