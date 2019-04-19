@@ -43,6 +43,7 @@ target 'linphone' do
 
   target 'linphoneTests' do
     inherit! :search_paths
+		pod 'KIF', :configurations => ['Debug']
     # Pods for testing
   end
 

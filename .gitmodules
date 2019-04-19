@@ -1,4 +1,0 @@
-[submodule "Classes/KIF"]
-	path = Classes/KIF
-	url = https://github.com/kif-framework/KIF
-	ignore = dirty
