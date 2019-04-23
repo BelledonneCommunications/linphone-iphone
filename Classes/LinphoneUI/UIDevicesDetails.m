@@ -33,6 +33,10 @@
         [_securityButton setImage:image forState:UIControlStateNormal];
         _securityButton.hidden = FALSE;
         _dropMenuButton.hidden = TRUE;
+		UITapGestureRecognizer *particpantsBarTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+																							action:@selector(onSecurityCallClick:)];
+		particpantsBarTap.delegate = self;
+		[self addGestureRecognizer:particpantsBarTap];
     } else {
         UIImage *image = listOpen ? [UIImage imageNamed:@"chevron_list_open"] : [UIImage imageNamed:@"chevron_list_close"];
         [_dropMenuButton setImage:image forState:UIControlStateNormal];

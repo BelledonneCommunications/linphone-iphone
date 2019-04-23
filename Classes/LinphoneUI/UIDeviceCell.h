@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIDeviceCell : UITableViewCell
+@interface UIDeviceCell : UITableViewCell <UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *deviceLabel;
 @property (weak, nonatomic) IBOutlet UIButton *securityButton;

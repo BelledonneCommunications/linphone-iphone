@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIDevicesDetails : UITableViewCell <UITableViewDelegate, UITableViewDataSource>
+@interface UIDevicesDetails : UITableViewCell <UITableViewDelegate, UITableViewDataSource, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *dropMenuButton;
 @property (weak, nonatomic) IBOutlet UILabel *addressLabel;

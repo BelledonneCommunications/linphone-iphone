@@ -35,6 +35,10 @@
     }
     
     self.selectionStyle =UITableViewCellSelectionStyleNone;
+	UITapGestureRecognizer *particpantsBarTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+																						action:@selector(onSecurityCallClick:)];
+	particpantsBarTap.delegate = self;
+	[self addGestureRecognizer:particpantsBarTap];
 }
 
 - (IBAction)onSecurityCallClick:(id)sender {
