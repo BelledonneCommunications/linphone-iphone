@@ -61,6 +61,8 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                selector:@selector(viewUpdateEvent:)
                                                    name:kLinphoneChatCreateViewChange
                                                  object:nil];
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	_chiffreOptionView.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
 }
 
 - (void)viewUpdateEvent:(NSNotification *)notif {

@@ -184,12 +184,8 @@
 				  NSLog(@"error fetching contacts %@",
 						contactError);
 				} else {
-					
-					dispatch_async(dispatch_get_main_queue(), ^{
-						Contact *newContact = [[Contact alloc] initWithCNContact:contact];
-						[self registerAddrsFor:newContact];
-					});
-					
+					Contact *newContact = [[Contact alloc] initWithCNContact:contact];
+					[self registerAddrsFor:newContact];
 				}
 			}];
 		}

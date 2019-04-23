@@ -70,7 +70,8 @@
 			   [FastAddressBook isSipURIValid:_addressLabel.text]));
         ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
         self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
-        [self shouldHideEncryptedChatView:model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+		[self shouldHideEncryptedChatView:cfg && linphone_proxy_config_get_conference_factory_uri(cfg) && model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
 	}
 
 	if (addr) {

@@ -419,6 +419,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
 	} else
 		[self displayAssistantConfigurationError];
+	
+	[LinphoneManager.instance migrationPerAccount];
 }
 
 - (void)displayAssistantConfigurationError {

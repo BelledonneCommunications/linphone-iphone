@@ -148,7 +148,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
     _linphoneImage.hidden =
     ! ((model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen) || [FastAddressBook contactHasValidSipDomain:contact]);
-    [self shouldHideEncryptedChatView:model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	[self shouldHideEncryptedChatView:cfg && linphone_proxy_config_get_conference_factory_uri(cfg) && model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	ms_free(addrURI);
 

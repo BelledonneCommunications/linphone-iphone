@@ -214,6 +214,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)checkNewVersion;
 
 - (void)loadAvatar;
+- (void)migrationPerAccount;
 
 @property ProviderDelegate *providerDelegate;
 

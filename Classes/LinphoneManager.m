@@ -330,8 +330,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 - (void)migrationAllPost {
 	[self migrationLinphoneSettings];
-	[self migratePushNotificationPerAccount];
-	[self migrateLimeSettings];
+	[self migrationPerAccount];
 }
 
 - (void)migrationAllPre {
@@ -441,12 +440,28 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		linphone_core_set_file_transfer_server(LC, newURL);
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	}
+	
+	if ([self lpConfigBoolForKey:@"lime_migration_done"] == FALSE) {
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		while (proxies) {
+			if (!strcmp(linphone_proxy_config_get_domain((LinphoneProxyConfig *)proxies->data),"sip.linphone.org")) {
+				linphone_core_set_lime_x3dh_server_url(LC, "https://lime.linphone.org/lime-server/lime-server.php");
+				break;
+			}
+			proxies = proxies->next;
+		}
+		[self lpConfigSetBool:TRUE forKey:@"lime_migration_done"];
+	}
+}
+
+- (void)migrationPerAccount {
 	const bctbx_list_t * proxies = linphone_core_get_proxy_config_list(LC);
 	NSString *appDomain  = [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 																inSection:@"app"
 															  withDefault:@"sip.linphone.org"];
 	while (proxies) {
 		LinphoneProxyConfig *config = proxies->data;
+		// can not create group chat without conference factory
 		if (!linphone_proxy_config_get_conference_factory_uri(config)) {
 			if (strcmp(appDomain.UTF8String, linphone_proxy_config_get_domain(config)) == 0) {
 				linphone_proxy_config_set_conference_factory_uri(config, "sip:conference-factory@sip.linphone.org");
@@ -454,15 +469,7 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		}
 		proxies = proxies->next;
 	}
-}
-
-static void migrateWizardToAssistant(const char *entry, void *user_data) {
-	LinphoneManager *thiz = (__bridge LinphoneManager *)(user_data);
-	NSString *key = [NSString stringWithUTF8String:entry];
-	[thiz lpConfigSetString:[thiz lpConfigStringForKey:key inSection:@"wizard"] forKey:key inSection:@"assistant"];
-}
-
-- (void)migratePushNotificationPerAccount {
+	
 	NSString *s = [self lpConfigStringForKey:@"pushnotification_preference"];
 	if (s && s.boolValue) {
 		LOGI(@"Migrating push notification per account, enabling for ALL");
@@ -476,18 +483,10 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 	}
 }
 
-- (void)migrateLimeSettings {
-	if ([self lpConfigBoolForKey:@"lime_migration_done"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-		while (proxies) {
-			if (!strcmp(linphone_proxy_config_get_domain((LinphoneProxyConfig *)proxies->data),"sip.linphone.org")) {
-				linphone_core_set_lime_x3dh_server_url(LC, "https://lime.linphone.org/lime-server/lime-server.php");
-				break;
-			}
-			proxies = proxies->next;
-		}
-		[self lpConfigSetBool:TRUE forKey:@"lime_migration_done"];
-	}
+static void migrateWizardToAssistant(const char *entry, void *user_data) {
+	LinphoneManager *thiz = (__bridge LinphoneManager *)(user_data);
+	NSString *key = [NSString stringWithUTF8String:entry];
+	[thiz lpConfigSetString:[thiz lpConfigStringForKey:key inSection:@"wizard"] forKey:key inSection:@"assistant"];
 }
 
 #pragma mark - Linphone Core Functions
@@ -2372,12 +2371,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[self iterate];
 	}
 
-	/*linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
-	const MSList *lists = linphone_core_get_friends_lists(LC);
-	while (lists) {
-		linphone_friend_list_enable_subscriptions(lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
-		lists = lists->next;
-	}*/
+	linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 }
 
 - (BOOL)enterBackgroundMode {

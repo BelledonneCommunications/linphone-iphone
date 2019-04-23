@@ -38,6 +38,8 @@
 	[_backToCallButton update];
 	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	_addGroupChatButton.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
