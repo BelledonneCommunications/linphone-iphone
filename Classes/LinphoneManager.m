@@ -2394,7 +2394,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			}
 		}
 
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] && !pushNotifEnabled) {
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"voip_mode_preference"] && [LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] && !pushNotifEnabled) {
             // Keep this!! Socket VoIP is deprecated after 9.0, but sometimes it's the only way to keep the phone background and receive the call. For example, when there is only local area network.
             // register keepalive
             if ([[UIApplication sharedApplication]
