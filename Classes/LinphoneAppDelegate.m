@@ -238,11 +238,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 #ifdef USE_CRASHLYTHICSS
-    NSString *pathForFile=[[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"GoogleService-Info.plist"];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:pathForFile]){
-        // If GoogleService-Info.plist doesn't exist, not call this function avoiding a crash.
-        [FIRApp configure];
-    }
+	[FIRApp configure];
 #endif
     
     UIApplication *app = [UIApplication sharedApplication];
