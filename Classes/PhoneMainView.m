@@ -423,8 +423,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[self popCurrentView];
 				}
 			} else {
-				// not resume call automatically
-				//linphone_call_resume((LinphoneCall *)calls->data);
+				linphone_call_resume((LinphoneCall *)calls->data);
 				while (calls) {
                     if (calls->next) {
                         [self changeCurrentView:CallView.compositeViewDescription];
