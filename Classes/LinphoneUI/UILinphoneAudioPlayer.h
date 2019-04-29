@@ -17,6 +17,7 @@
 + (id)audioPlayerWithFilePath:(NSString *)filePath;
 - (void)close;
 - (BOOL)isOpened;
+- (BOOL)isCreated;
 - (void)open;
 - (void)pause;
 - (void)setFile:(NSString *)fileName;

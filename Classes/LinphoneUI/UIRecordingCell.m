@@ -96,12 +96,12 @@ static UILinphoneAudioPlayer *player;
     if (!selected) {
         return;
     }
-    if (!player)
-        player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[self recording]];
-    else
-        [player setFile:[self recording]];
-    if ([player isOpened])
-        [player close];
+	if (player && [player isCreated]) {
+		[player close];
+	}
+
+	player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[self recording]];
+
     [player.view removeFromSuperview];
     [self addSubview:player.view];
     [self bringSubviewToFront:player.view];

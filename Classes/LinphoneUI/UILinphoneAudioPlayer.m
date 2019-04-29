@@ -44,6 +44,7 @@
 
 - (void)close {
     if (player) {
+		linphone_player_close(player);
         linphone_player_unref(player);
         player = NULL;
     }
@@ -58,6 +59,10 @@
         [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
     [_stopButton setTitle:@"" forState:UIControlStateNormal];
     [_stopButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemRefresh:[UIColor blackColor]] forState:UIControlStateNormal];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[self close];
 }
 
 - (void)open {
@@ -76,8 +81,12 @@
     return player && linphone_player_get_state(player) != LinphonePlayerClosed;
 }
 
+- (BOOL)isCreated {
+	return player;
+}
+
 - (void)setFile:(NSString *)fileName {
-    linphone_player_close(player);
+    if (player) linphone_player_close(player);
     file = fileName;
 }
 
