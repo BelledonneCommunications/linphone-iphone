@@ -423,17 +423,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 					[self popCurrentView];
 				}
 			} else {
-				linphone_call_resume((LinphoneCall *)calls->data);
-				while (calls) {
-                    if (calls->next) {
-                        [self changeCurrentView:CallView.compositeViewDescription];
-                        break;
-                    }
-					calls = calls->next;
-				}
-				if (calls == NULL) {
-					[self changeCurrentView:CallView.compositeViewDescription];
-				}
+				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
 		}
