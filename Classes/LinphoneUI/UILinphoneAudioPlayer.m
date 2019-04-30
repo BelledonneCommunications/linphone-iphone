@@ -34,6 +34,7 @@
         linphone_player_cbs_set_eof_reached(cbs, on_eof_reached);
         file = filePath;
         eofReached = NO;
+		_refreshTimer = nil;
     }
     return self;
 }
@@ -44,6 +45,8 @@
 
 - (void)close {
     if (player) {
+		[_refreshTimer invalidate];
+		_refreshTimer = nil;
 		linphone_player_close(player);
         linphone_player_unref(player);
         player = NULL;
@@ -70,6 +73,7 @@
     duration = linphone_player_get_duration(player);
     [self updateTimeLabel:0];
     _timeProgress.progress = 0;
+	
     eofReached = NO;
     [_playButton setTitle:@"" forState:UIControlStateNormal];
     [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
@@ -136,22 +140,15 @@ void on_eof_reached(LinphonePlayer *pl) {
     _timeLabel.text = [NSString stringWithFormat:@"%@ / %@", [self.class timeToString:currentTime], [self.class timeToString:duration]];
 }
 
+- (void)displayProgress{
+	int pos = linphone_player_get_current_position(player);
+	_timeProgress.progress = (float)pos / (float)duration;
+	[self updateTimeLabel:pos];
+}
+
 - (void)update {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        while (player && linphone_player_get_state(player) == LinphonePlayerPlaying) {
-            int start = linphone_player_get_current_position(player);
-            while (player && start + 100 < duration && start + 100 > linphone_player_get_current_position(player)) {
-                [NSThread sleepForTimeInterval:0.01];
-                if (!player || linphone_player_get_state(player) == LinphonePlayerPaused)
-                    break;
-            }
-            start = player ? linphone_player_get_current_position(player) : start;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _timeProgress.progress = (float)start / (float)duration;
-                [self updateTimeLabel:start];
-            });
-        }
-    });
+	if (!_refreshTimer)
+		_refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(displayProgress) userInfo:nil repeats:YES];
 }
 
 - (void)pause {
