@@ -82,7 +82,7 @@
 }
 
 - (BOOL)isCreated {
-	return player;
+	return player!=nil;
 }
 
 - (void)setFile:(NSString *)fileName {
