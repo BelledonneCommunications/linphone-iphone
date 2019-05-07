@@ -902,4 +902,18 @@
 	} else return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+
+#pragma mark - Intents
+
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void(^)(NSArray<id<UIUserActivityRestoring>> * __nullable restorableObjects))restorationHandler {
+	if ([userActivity.activityType isEqualToString:@"INSendMessageIntent"]) {
+		NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:[NSString stringWithFormat:@"group.%@.intentExtension",[[NSBundle mainBundle] bundleIdentifier]]];
+		[defaults setObject:@"custom" forKey:@"rejectionmessage"];
+		[defaults synchronize];
+	}
+	return true;
+}
+
+
 @end

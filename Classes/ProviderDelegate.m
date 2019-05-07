@@ -12,6 +12,8 @@
 #include "linphone/linphonecore.h"
 #import <AVFoundation/AVAudioSession.h>
 #import <Foundation/Foundation.h>
+#import "SVProgressHUD.h"
+
 
 @implementation ProviderDelegate
 
@@ -160,13 +162,47 @@
 		NSUUID *uuid = action.callUUID;
 		NSString *callID = [self.calls objectForKey:uuid];
 		if (callID) {
-            LOGD(@"CallKit: Ending the call with call-id: [%@] and UUID: [%@]", callID, uuid);
-			LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
-			if (call) {
-				linphone_call_terminate((LinphoneCall *)call);
-			}
-			[self.uuids removeObjectForKey:callID];
-			[self.calls removeObjectForKey:uuid];
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+				LOGD(@"CallKit: Ending the call with call-id: [%@] and UUID: [%@]", callID, uuid);
+				LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
+				if (call) {
+					NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:[NSString stringWithFormat:@"group.%@.intentExtension",[[NSBundle mainBundle] bundleIdentifier]]];
+					NSString *rejectionMessage = [defaults objectForKey:@"rejectionmessage"];
+					if (rejectionMessage) {
+						[defaults removeObjectForKey:@"rejectionmessage"];
+						[defaults synchronize];
+						if ([rejectionMessage isEqualToString:@"custom"]) {
+							NSString *displayName = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
+							UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:[NSString stringWithFormat:NSLocalizedString(@"Decline incoming call from %@ with message:",nil),displayName] preferredStyle:UIAlertControllerStyleAlert];
+							[alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+								textField.placeholder =NSLocalizedString(@"Message",nil);
+								textField.secureTextEntry = NO;
+							}];
+							[alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Decline",nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+								UITextField *tf = alert.textFields.firstObject;
+								if (tf.text && tf.text.length > 0)
+									[self declineCall:call withRejectionMessage:tf.text];
+								else
+									linphone_call_terminate((LinphoneCall *)call);
+							}]];
+							[[NSNotificationCenter defaultCenter] addObserverForName:kLinphoneCallUpdate object:nil queue:nil usingBlock:^(NSNotification *notif){
+																			  dispatch_async(dispatch_get_main_queue(), ^ {
+																				  LinphoneCall *acall = [[notif.userInfo objectForKey:@"call"] pointerValue];
+																				  LinphoneCallState astate = [[notif.userInfo objectForKey:@"state"] intValue];
+																				  if (acall == call && astate != LinphoneCallStateIncomingReceived) {
+																					  [alert dismissViewControllerAnimated:NO completion:nil];
+																				  }
+																			  });
+																		  }];
+							[PhoneMainView.instance presentViewController:alert animated:YES completion:nil];
+						} else
+							[self declineCall:call withRejectionMessage:rejectionMessage];
+					} else
+						linphone_call_terminate((LinphoneCall *)call);
+				}
+				[self.uuids removeObjectForKey:callID];
+				[self.calls removeObjectForKey:uuid];
+			});
 		}
 	}
 }
@@ -283,6 +319,68 @@
 
 - (void)callObserver:(CXCallObserver *)callObserver callChanged:(CXCall *)call {
 	LOGD(@"CallKit: Call changed");
+}
+
+#pragma mark - CallKit decline with message
+
+static NSString *pendingRejectionMessage;
+
+void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	[SVProgressHUD dismiss];
+	switch (newState) {
+		case LinphoneChatRoomStateCreated: {
+			LOGI(@"Chat room [%p] created on server.", cr);
+			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
+			LinphoneChatMessage *m = linphone_chat_room_create_message(cr, pendingRejectionMessage.UTF8String);
+			linphone_chat_room_send_chat_message(cr, m);
+			break;
+		}
+		default:
+			break;
+	}
+}
+
+-(void) displayError:(NSString *)message {
+	UIAlertController *errView =
+	[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil)
+										message:NSLocalizedString(message, nil)
+								 preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction *action) {}];
+	[errView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+}
+
+-(void) declineCall:(LinphoneCall *)_call withRejectionMessage:(NSString *)rejectionMessage {
+	const LinphoneAddress *addr = linphone_call_get_remote_address(_call);
+	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
+	LinphoneChatRoom *chatRoom = linphone_core_find_one_to_one_chat_room_2(LC, local, addr,true);
+	if (!chatRoom) {
+		bctbx_list_t *addresses = bctbx_list_new((void*)addr);
+		LinphoneChatRoomParams *param = linphone_core_create_default_chat_room_params(LC);
+		linphone_chat_room_params_enable_group(param, NO);
+		linphone_chat_room_params_enable_encryption(param, YES);
+		chatRoom = linphone_core_create_chat_room_2(LC, param, LINPHONE_DUMMY_SUBJECT, addresses);
+		if (!chatRoom) {
+			[SVProgressHUD dismiss];
+			LOGI(@"Failed sending rejection message as unable to create chat room : RM = %@ ",rejectionMessage);
+			[self displayError:@"An error occured sending message."];
+			linphone_call_terminate((LinphoneCall *)_call);
+			return;
+		}
+		[SVProgressHUD show];
+		pendingRejectionMessage = rejectionMessage;
+		LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
+		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
+		linphone_chat_room_add_callbacks(chatRoom, cbs);
+		bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
+	} else {
+		LinphoneChatMessage *m = linphone_chat_room_create_message(chatRoom, rejectionMessage.UTF8String);
+		linphone_chat_room_send_chat_message(chatRoom, m);
+		linphone_call_terminate((LinphoneCall *)_call);
+	}
 }
 
 @end
