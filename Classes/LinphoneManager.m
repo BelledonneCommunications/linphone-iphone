@@ -2520,22 +2520,22 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (void)migrateImportantFiles {
-    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"linphonerc"] destination:[LinphoneManager preferenceFile:@"linphonerc"] override:TRUE])
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"linphonerc"] destination:[LinphoneManager preferenceFile:@"linphonerc"] override:TRUE ignore:TRUE])
         [NSFileManager.defaultManager
          removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
          error:nil];
     
-    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"linphone_chats.db"] destination:[LinphoneManager dataFile:@"linphone_chats.db"] override:TRUE])
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"linphone_chats.db"] destination:[LinphoneManager dataFile:@"linphone_chats.db"] override:TRUE ignore:TRUE])
         [NSFileManager.defaultManager
          removeItemAtPath:[LinphoneManager documentFile:@"linphone_chats.db"]
          error:nil];
     
-    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"zrtp_secrets"] destination:[LinphoneManager dataFile:@"zrtp_secrets"] override:TRUE])
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"zrtp_secrets"] destination:[LinphoneManager dataFile:@"zrtp_secrets"] override:TRUE ignore:TRUE])
         [NSFileManager.defaultManager
          removeItemAtPath:[LinphoneManager documentFile:@"zrtp_secrets"]
          error:nil];
     
-    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"zrtp_secrets.bkp"] destination:[LinphoneManager dataFile:@"zrtp_secrets.bkp"] override:TRUE])
+    if ([LinphoneManager copyFile:[LinphoneManager documentFile:@"zrtp_secrets.bkp"] destination:[LinphoneManager dataFile:@"zrtp_secrets.bkp"] override:TRUE ignore:TRUE])
         [NSFileManager.defaultManager
          removeItemAtPath:[LinphoneManager documentFile:@"zrtp_secrets.bkp"]
          error:nil];
@@ -2568,7 +2568,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		src = srcIpad;
 	}
 	NSString *dst = [LinphoneManager preferenceFile:@"linphonerc"];
-	[LinphoneManager copyFile:src destination:dst override:FALSE];
+	[LinphoneManager copyFile:src destination:dst override:FALSE ignore:FALSE];
 }
 
 - (void)overrideDefaultSettings {
@@ -2985,11 +2985,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	return count;
 }
 
-+ (BOOL)copyFile:(NSString *)src destination:(NSString *)dst override:(BOOL)override {
++ (BOOL)copyFile:(NSString *)src destination:(NSString *)dst override:(BOOL)override ignore:(BOOL)ignore {
 	NSFileManager *fileManager = NSFileManager.defaultManager;
 	NSError *error = nil;
 	if ([fileManager fileExistsAtPath:src] == NO) {
-		LOGE(@"Can't find \"%@\": %@", src, [error localizedDescription]);
+		if (!ignore)
+			LOGE(@"Can't find \"%@\": %@", src, [error localizedDescription]);
 		return FALSE;
 	}
 	if ([fileManager fileExistsAtPath:dst] == YES) {
