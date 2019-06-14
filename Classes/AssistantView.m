@@ -1347,6 +1347,11 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
 		LinphoneAddress *addr = linphone_address_new(NULL);
 		LinphoneAddress *tmpAddr = linphone_address_new([NSString stringWithFormat:@"sip:%@",domain].UTF8String);
+		if (tmpAddr == nil) {
+			[self displayAssistantConfigurationError];
+			return;
+		}
+		
 		linphone_address_set_username(addr, username.UTF8String);
 		linphone_address_set_port(addr, linphone_address_get_port(tmpAddr));
 		linphone_address_set_domain(addr, linphone_address_get_domain(tmpAddr));
