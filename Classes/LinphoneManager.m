@@ -1144,7 +1144,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	ms_free(peer_address);
 
 	const LinphoneAddress *localAddress = linphone_chat_room_get_local_address(room);
-	char *local_address = linphone_address_as_string_uri_only(localAddress);
+	char *local_address = localAddress? linphone_address_as_string_uri_only(localAddress) : "";
 	NSString *local_uri = [NSString stringWithUTF8String:local_address];
 	ms_free(local_address);
 

@@ -96,10 +96,12 @@
 			}
 			
 			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-			const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
-			addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
-			uri = linphone_address_as_string_uri_only(addr);
-			address = [NSString stringWithUTF8String:uri];
+			if (cfg) {
+				const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
+				addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
+				uri = linphone_address_as_string_uri_only(addr);
+				address = [NSString stringWithUTF8String:uri];
+			}
 		}
 
 		if (!addr) {
@@ -166,8 +168,9 @@
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     if (!cell.userInteractionEnabled)
         return;
-    
-	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC)) || !_isGroupChat) {
+	
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	if (!(cfg && linphone_proxy_config_get_conference_factory_uri(cfg)) || !_isGroupChat) {
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
         [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:_isEncrypted];
 		if (!addr) {

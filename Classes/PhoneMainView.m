@@ -873,8 +873,16 @@ static RootViewManager *rootViewManagerInstance = nil;
         return;
     }
     
-	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
+	LinphoneAddress *local;
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	if (cfg) {
+		local = linphone_address_clone(linphone_proxy_config_get_contact(cfg));
+	} else {
+		local = linphone_core_create_primary_contact_parsed(LC);
+	}
 	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room_2(LC, local, remoteAddress, isEncrypted);
+	linphone_address_unref(local);
+	
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new((void*)remoteAddress);
 		[self createChatRoom:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:waitView isEncrypted:isEncrypted isGroup:FALSE];
@@ -886,7 +894,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup{
-    if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+    if (!(cfg && linphone_proxy_config_get_conference_factory_uri(cfg))
         || ((bctbx_list_size(addresses) == 1) && !isGroup && ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] || !isEncrypted))) {
         // If there's no factory uri, create a basic chat room
         if (bctbx_list_size(addresses) != 1) {

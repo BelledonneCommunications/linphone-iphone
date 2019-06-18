@@ -155,7 +155,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         NSString *display;
         [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(peer_address)]
                  forKey:@"peer"];
-        [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(local_address)]
+        [dict setObject:local_address?[NSString stringWithUTF8String:linphone_address_as_string_uri_only(local_address)]:@""
                  forKey:@"local"];
         LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(cr);
         if (!(capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {

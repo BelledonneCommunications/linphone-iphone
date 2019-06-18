@@ -85,10 +85,16 @@
 			while (numbers) {
 				NSString *phone = [NSString stringWithUTF8String:numbers->data];
 				LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-				const char *normvalue = linphone_proxy_config_normalize_phone_number(cfg, phone.UTF8String);
-				LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, normvalue);
-				const char *phone_addr = linphone_address_as_string_uri_only(addr);
-				contact = [FastAddressBook getContact:[NSString stringWithUTF8String:phone_addr]];
+				
+				if (cfg) {
+					const char *normvalue = linphone_proxy_config_normalize_phone_number(cfg, phone.UTF8String);
+					LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, normvalue);
+					const char *phone_addr = linphone_address_as_string_uri_only(addr);
+					contact = [FastAddressBook getContact:[NSString stringWithUTF8String:phone_addr]];
+				} else {
+					contact = [FastAddressBook getContact:phone];
+				}
+				
 				if (contact) {
 					break;
 				}
@@ -226,9 +232,11 @@
 	Contact* mContact = contact;
 	if (!_addressBookMap)
 		return;
+	
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(LC);
 
 	for (NSString *phone in mContact.phones) {
-		char *normalizedPhone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
+		char *normalizedPhone = cfg? linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String) : nil;
 		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
 		if (phone != NULL)
 			[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
