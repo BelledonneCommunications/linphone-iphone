@@ -496,7 +496,7 @@
 + (NSString *)recordingFilePathFromCall:(const LinphoneAddress *)iaddr {
     NSString *filepath = @"recording_";
     const char *address = linphone_address_get_username(iaddr);
-    filepath = [filepath stringByAppendingString:[NSString stringWithCString:address encoding:NSUTF8StringEncoding]];
+    filepath = [filepath stringByAppendingString:address? [NSString stringWithCString:address encoding:NSUTF8StringEncoding] : @"unknown"];
     NSDate * now = [NSDate date];
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"E-d-MMM-yyyy-HH-mm-ss"];

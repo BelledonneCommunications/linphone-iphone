@@ -192,7 +192,7 @@
         
         [dict setObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)]
                  forKey:@"id"];
-        [dict setObject:[NSString stringWithUTF8String:linphone_address_get_display_name(address)?:linphone_address_get_username(address)]
+        [dict setObject:[NSString stringWithUTF8String:linphone_address_get_display_name(address)?:(linphone_address_get_username(address)?:"unknown")]
                  forKey:@"display"];
         UIImage *avatar = [FastAddressBook imageForAddress:address];
         if (avatar) {

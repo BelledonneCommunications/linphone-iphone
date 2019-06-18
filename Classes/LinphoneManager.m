@@ -1075,7 +1075,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 			return;
 		}
 
-		NSString *realm = [NSString stringWithUTF8String:realmC];
+		NSString *realm = [NSString stringWithUTF8String:realmC?:domainC];
 		NSString *username = [NSString stringWithUTF8String:usernameC];
 		NSString *domain = [NSString stringWithUTF8String:domainC];
 		alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Authentification needed", nil)
