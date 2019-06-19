@@ -330,6 +330,7 @@
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
+		[self setBool:linphone_core_is_media_encryption_mandatory(LC) forKey:@"media_encrption_mandatory_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"pref_accept_early_media"]
 			   forKey:@"pref_accept_early_media_preference"];
 	}
@@ -770,6 +771,7 @@
 		[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
 		[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"] forKey:@"repeat_call_notification"];
 		[lm lpConfigSetBool:[self boolForKey:@"pref_accept_early_media_preference"] forKey:@"pref_accept_early_media"];
+		linphone_core_set_media_encryption_mandatory(LC, [self boolForKey:@"media_encrption_mandatory_preference"]);
 
 		// chat section
 		int val = [self integerForKey:@"use_lime_preference"];
