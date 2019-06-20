@@ -168,6 +168,8 @@
 }
 
 + (void) saveDataToUserDefaults {
+	// As extensions is disabled by default, this function takes too much CPU.
+#if 0
     const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
     NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
     NSMutableArray *logsShare = [NSMutableArray array];
@@ -223,6 +225,7 @@
     }
     
     [mySharedDefaults setObject:logsShare forKey:@"logs"];
+#endif
 }
 
 - (void)computeSections {

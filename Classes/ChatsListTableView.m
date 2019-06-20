@@ -129,6 +129,8 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 + (void) saveDataToUserDefaults {
+	// As extensions is disabled by default, this function takes too much CPU.
+#if 0
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.widget"];
     MSList *sorted = nil;
     const MSList *unsorted = linphone_core_get_chat_rooms(LC);
@@ -192,6 +194,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	}
 	
     [defaults setObject:addresses forKey:@"chatrooms"];
+#endif
 }
 
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
