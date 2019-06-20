@@ -624,6 +624,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)updateStatusBar:(UICompositeViewDescription *)to_view {
+	// Not used any more. It seems that there is no problem with new devices.
 #pragma deploymate push "ignored-api-availability"
 	if (UIDevice.currentDevice.systemVersion.doubleValue >= 7.) {
 		// In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
@@ -688,7 +689,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
-		[vc updateStatusBar:view];
 		[vc.mainViewController changeView:view];
 		vc->currentView = view;
 	}

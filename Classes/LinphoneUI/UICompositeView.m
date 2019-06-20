@@ -149,6 +149,11 @@
 	 the device screen size at load */
 	[self updateViewsFramesAccordingToLaunchOrientation];
 	[super viewDidLoad];
+	NSArray * arr =[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:nil options:nil];
+	LaunchScreen * customView = [arr firstObject];
+	customView.frame = self.view.frame;
+	customView.tag = 100;
+	[self.view addSubview:customView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -682,6 +687,8 @@
 		[_sideMenuViewController viewDidDisappear:YES];
 	}
 	// Dealloc old view description
+	UIView *viewToRemove = [self.view viewWithTag:100];
+	[viewToRemove removeFromSuperview];
 }
 
 - (void)changeView:(UICompositeViewDescription *)description {

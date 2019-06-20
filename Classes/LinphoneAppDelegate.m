@@ -80,10 +80,10 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	
-	if (startedInBackground) {
-		startedInBackground = FALSE;
+	if (!startedInBackground) {
+		startedInBackground = TRUE;
+		// initialize UI
 		[PhoneMainView.instance startUp];
-		[PhoneMainView.instance updateStatusBar:nil];
 	}
 	LinphoneManager *instance = LinphoneManager.instance;
 	[instance becomeActive];
@@ -264,6 +264,7 @@
 			NSLog(@"Linphone launch doing nothing because start_at_boot or background_mode are not activated.", NULL);
 			return YES;
 		}
+		startedInBackground = true;
 	}
 	bgStartId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
 	  LOGW(@"Background task for application launching expired.");
@@ -275,8 +276,6 @@
 	// initialize UI
 	[self.window makeKeyAndVisible];
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
-	[PhoneMainView.instance startUp];
-	[PhoneMainView.instance updateStatusBar:nil];
 
 	if (bgStartId != UIBackgroundTaskInvalid)
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
