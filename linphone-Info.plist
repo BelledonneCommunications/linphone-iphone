@@ -110,8 +110,6 @@
 	</dict>
 	<key>NSVoIPUsageDescription</key>
 	<string>Make audio/video calls</string>
-	<key>UIApplicationExitsOnSuspend</key>
-	<false/>
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
