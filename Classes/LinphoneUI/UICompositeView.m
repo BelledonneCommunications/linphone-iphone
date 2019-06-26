@@ -152,7 +152,7 @@
 	NSArray * arr =[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:nil options:nil];
 	LaunchScreen * customView = [arr firstObject];
 	customView.frame = self.view.frame;
-	customView.tag = 100;
+	customView.tag = 999;
 	[self.view addSubview:customView];
 }
 
@@ -687,7 +687,7 @@
 		[_sideMenuViewController viewDidDisappear:YES];
 	}
 	// Dealloc old view description
-	UIView *viewToRemove = [self.view viewWithTag:100];
+	UIView *viewToRemove = [self.view viewWithTag:999];
 	[viewToRemove removeFromSuperview];
 }
 
