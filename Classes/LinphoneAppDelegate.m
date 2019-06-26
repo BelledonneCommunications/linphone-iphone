@@ -80,7 +80,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	
-	if (!startedInBackground) {
+	if (!startedInBackground || PhoneMainView.instance.currentView == nil) {
 		startedInBackground = TRUE;
 		// initialize UI
 		[PhoneMainView.instance startUp];
