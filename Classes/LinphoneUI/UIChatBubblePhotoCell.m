@@ -212,8 +212,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 		}
 		// we are uploading the image
 		if (_ftd.message != nil) {
-			_cancelButton.hidden = NO;
-			_fileTransferProgress.hidden = NO;
+			_cancelButton.hidden = _fileTransferProgress.hidden = super.notDelivered ? YES : NO;
 			_downloadButton.hidden = YES;
 			_playButton.hidden = YES;
 			_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;

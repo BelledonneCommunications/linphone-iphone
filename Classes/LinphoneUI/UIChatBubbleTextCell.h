@@ -44,6 +44,7 @@
 
 @property(nonatomic) Boolean isFirst;
 @property(nonatomic) Boolean isLast;
+@property(nonatomic) Boolean notDelivered;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText;

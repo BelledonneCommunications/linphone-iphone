@@ -49,7 +49,7 @@
 	UITapGestureRecognizer *resendRecognizer =
 	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
 	resendRecognizer.numberOfTapsRequired = 1;
-	[_imdmIcon addGestureRecognizer:resendRecognizer];
+	[_bubbleView addGestureRecognizer:resendRecognizer];
 	_imdmIcon.userInteractionEnabled = YES;
 	UITapGestureRecognizer *resendRecognizer2 =
 	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
@@ -126,8 +126,6 @@
 		LOGW(@"Cannot update message room cell: null message");
 		return;
 	}
-
-	//_statusInProgressSpinner.accessibilityLabel = @"Delivery in progress";
 
 	if (_messageText && ![LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message]) {
 		[_messageText setHidden:FALSE];
@@ -212,18 +210,7 @@
     CGRect frame = _innerView.frame;
     frame.origin.y = _isFirst ? 20 : 0;
     _innerView.frame = frame;
-    
-    
-	//_contactDateLabel.textColor = [UIColor colorWithPatternImage:_backgroundColorImage.image];
-
-	/*if (outgoing && state == LinphoneChatMessageStateInProgress) {
-		[_statusInProgressSpinner startAnimating];
-	} else if (!outgoing && state == LinphoneChatMessageStateFileTransferError) {
-		[_statusInProgressSpinner stopAnimating];
-	} else {
-		[_statusInProgressSpinner stopAnimating];
-	}*/
-
+	
 	[_messageText setAccessibilityLabel:outgoing ? @"Outgoing message" : @"Incoming message"];
 	if (outgoing &&
 		(state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed ||
@@ -231,13 +218,6 @@
 		[self displayImdmStatus:state];
 	} else
 		[self displayImdmStatus:LinphoneChatMessageStateInProgress];
-
-	/*if (!outgoing && !linphone_chat_message_is_secured(_message) &&
-		linphone_core_lime_enabled(LC) == LinphoneLimeMandatory) {
-		_LIMEKO.hidden = FALSE;
-	} else {
-		_LIMEKO.hidden = TRUE;
-	}*/
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -377,27 +357,19 @@ static void participant_imdn_status(LinphoneChatMessage* msg, const LinphonePart
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
 	NSString *imageName = nil;
+	_notDelivered = FALSE;
 	if (state == LinphoneChatMessageStateDeliveredToUser) {
 		imageName = @"chat_delivered.png";
-		//[_imdmLabel setText:NSLocalizedString(@"Delivered", nil)];
-		//[_imdmLabel setTextColor:[UIColor grayColor]];
 		[_imdmIcon setHidden:FALSE];
-		//[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateDisplayed) {
 		imageName = @"chat_read";
-		//[_imdmLabel setText:NSLocalizedString(@"Read", nil)];
-		//[_imdmLabel setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
 		[_imdmIcon setHidden:FALSE];
-		//[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
 		imageName = @"chat_error";
-		//[_imdmLabel setText:NSLocalizedString(@"Resend", nil)];
-		//[_imdmLabel setTextColor:[UIColor redColor]];
 		[_imdmIcon setHidden:FALSE];
-		//[_imdmLabel setHidden:FALSE];
+		_notDelivered = TRUE;
 	} else {
 		[_imdmIcon setHidden:TRUE];
-		//[_imdmLabel setHidden:TRUE];
 	}
 	[_imdmIcon setImage:[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",[[NSBundle mainBundle] bundlePath],imageName]]];
 }
