@@ -49,7 +49,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidLoad];
 	NSString *name = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
 	_nameLabel.text = name;
-    NSString *curVersion = [NSString stringWithFormat:@"version %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+	NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+    NSString *curVersion = [NSString stringWithFormat:@"version %@(%@)",[infoDict objectForKey:@"CFBundleShortVersionString"], [infoDict objectForKey:@"CFBundleVersion"]];
 	_appVersionLabel.text = [NSString stringWithFormat:@"%@ iOS %@", name, curVersion];
 	_libVersionLabel.text = [NSString stringWithFormat:@"%@ SDK %s", name, LINPHONE_SDK_VERSION];
 	UITapGestureRecognizer *tapGestureRecognizer =
