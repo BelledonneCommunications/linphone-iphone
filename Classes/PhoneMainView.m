@@ -499,11 +499,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 	if (oldLinphoneOrientation != newRotation) {
 		linphone_core_set_device_rotation(LC, newRotation);
-		LinphoneCall *call = linphone_core_get_current_call(LC);
-		if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-			// Orientation has changed, must call update call
-			linphone_core_update_call(LC, call, NULL);
-		}
 	}
 }
 - (void)startUp {
