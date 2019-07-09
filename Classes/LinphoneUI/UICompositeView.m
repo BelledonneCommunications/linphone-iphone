@@ -393,7 +393,7 @@
 }
 
 #define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0)
+#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height >= 812.0)
 #define IPHONE_STATUSBAR_HEIGHT (IS_IPHONE_X ? 35 : 20)
 
 - (void)update:(UICompositeViewDescription *)description
