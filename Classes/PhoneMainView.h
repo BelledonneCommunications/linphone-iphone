@@ -119,6 +119,7 @@
 + (PhoneMainView*) instance;
 
 - (BOOL)isIphoneXDevice;
++ (int)iphoneStatusBarHeight;
 
 @end
 
