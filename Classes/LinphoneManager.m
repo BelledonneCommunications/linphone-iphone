@@ -776,16 +776,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					 withCompletionHandler:^(NSError *_Nullable error)
 					 {if (error) LOGD(@"Error while adding notification request : %@", error.description);}];
 				}
-				LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
-				BOOL pushNotifEnabled = false;
-				// handle proxy config if any
-				if (proxyCfg) {
-					const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
-					pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
-				}
-				if (![LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
-					linphone_core_set_network_reachable(LC, FALSE);
-				}
 			}
 			LinphoneCallLog *callLog2 = linphone_call_get_call_log(call);
 			const char *call_id2 = linphone_call_log_get_call_id(callLog2);
@@ -1933,10 +1923,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
 	// reload friends
-        [self.fastAddressBook fetchContactsInBackGroundThread];
-
-        // reset network state to trigger a new network connectivity assessment
-        linphone_core_set_network_reachable(theLinphoneCore, FALSE);
+	[self.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 static int comp_call_id(const LinphoneCall *call, const char *callid) {
@@ -2204,8 +2191,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
 		if (pushNotifEnabled) {
 			LOGI(@"Keeping lc core to handle push");
-			// Destroy voip socket if any and reset connectivity mode
-			linphone_core_set_network_reachable(theLinphoneCore, FALSE);
 			return YES;
 		}
 		return NO;
