@@ -36,6 +36,7 @@ download_bw=0
 upload_bw=0
 
 [sip]
+auto_net_state_mon=1
 sip_random_port=0
 #whether SIP passwords must be encrypted in configuration storage file
 store_ha1_passwd=0
