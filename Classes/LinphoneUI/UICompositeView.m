@@ -571,10 +571,10 @@
 	}
 
 	// Compute frame for each elements
-	CGRect viewFrame = self.view.frame;	
+	CGRect viewFrame = self.view.frame;
 
 	// 1. status bar - fixed size on top
-	CGRect statusBarFrame = CGRectMake(0, 0, self.statusBarView.bounds.size.width, [StatusBarView getNavigationBarHeight]) ;
+	CGRect statusBarFrame = CGRectMake(self.statusBarView.bounds.origin.x, self.statusBarView.bounds.origin.y, self.statusBarView.bounds.size.width, [StatusBarView getNavigationBarHeight]) ;
     int origin = statusBarFrame.origin.y;
 	if (self.statusBarViewController != nil && currentViewDescription.statusBarEnabled) {
 		statusBarFrame.origin.y = 0;
