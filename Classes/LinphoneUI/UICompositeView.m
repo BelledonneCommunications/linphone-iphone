@@ -571,14 +571,13 @@
 	}
 
 	// Compute frame for each elements
-	CGRect viewFrame = self.view.frame;
-	int origin = currentViewDescription.fullscreen ? 0 : IPHONE_STATUSBAR_HEIGHT;
-	
+	CGRect viewFrame = self.view.frame;	
 
 	// 1. status bar - fixed size on top
-	CGRect statusBarFrame = self.statusBarView.frame;
+	CGRect statusBarFrame = CGRectMake(0, 0, self.statusBarView.bounds.size.width, [StatusBarView getNavigationBarHeight]) ;
+    int origin = statusBarFrame.origin.y;
 	if (self.statusBarViewController != nil && currentViewDescription.statusBarEnabled) {
-		statusBarFrame.origin.y = origin;
+		statusBarFrame.origin.y = 0;
 		// move origin below status bar
 		origin += statusBarFrame.size.height;
 	} else {

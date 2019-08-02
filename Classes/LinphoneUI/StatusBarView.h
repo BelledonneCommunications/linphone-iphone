@@ -37,5 +37,6 @@
 - (IBAction)onSecurityClick:(id)sender;
 - (IBAction)onSideMenuClick:(id)sender;
 - (IBAction)onRegistrationStateClick:(id)sender;
++ (CGFloat)getNavigationBarHeight;
 + (UIImage *)imageForState:(LinphoneRegistrationState)state;
 @end
