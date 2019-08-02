@@ -167,6 +167,15 @@
 
 #pragma mark -
 
++ (CGFloat)getNavigationBarHeight {
+    if (@available(iOS 11.0, *)) {
+        UIEdgeInsets safeAreaInset = UIApplication.sharedApplication.keyWindow.safeAreaInsets;
+        return safeAreaInset.top + 44;
+    } else {
+        return 20 + 44;
+    }
+}
+
 + (UIImage *)imageForState:(LinphoneRegistrationState)state {
 	switch (state) {
 		case LinphoneRegistrationFailed:
