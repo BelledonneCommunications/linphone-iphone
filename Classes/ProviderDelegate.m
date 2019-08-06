@@ -45,6 +45,8 @@
 	[config setSupportedHandleTypes:handleTypes];
 	[config setMaximumCallGroups:2];
 	[config setMaximumCallsPerCallGroup:1];
+	//not show app's calls in tel's history
+	//config.includesCallsInRecents = NO;
 	self.provider = [[CXProvider alloc] initWithConfiguration:config];
 	[self.provider setDelegate:self queue:dispatch_get_main_queue()];
 }
