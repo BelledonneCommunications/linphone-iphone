@@ -11,6 +11,7 @@
 @public
     LinphoneParticipant *participant;
     NSInteger numberOfDevices;
+	BOOL myself;
 };
 @end
 
@@ -22,7 +23,6 @@
 @property(nonatomic) LinphoneChatRoom *room;
 @property bctbx_list_t *devices;
 @property NSMutableArray *devicesMenuEntries;
-@property BOOL isOneToOne;
 
 - (IBAction)onBackClick:(id)sender;
 
