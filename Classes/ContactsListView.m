@@ -205,7 +205,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected contacts?", nil)];
+	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected contacts?\nThey will also be deleted from your phone's address book.", nil)];
 	[LinphoneManager.instance setContactsUpdated:TRUE];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil

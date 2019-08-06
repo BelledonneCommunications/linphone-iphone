@@ -518,7 +518,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg = NSLocalizedString(@"Do you want to delete selected contact?", nil);
+	NSString *msg = NSLocalizedString(@"Do you want to delete selected contact?\nIt will also be deleted from your phone's address book.", nil);
 	[UIConfirmationDialog ShowWithMessage:msg
 							cancelMessage:nil
 						   confirmMessage:nil

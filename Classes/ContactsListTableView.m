@@ -404,27 +404,35 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[NSNotificationCenter.defaultCenter removeObserver:self];
-		[tableView beginUpdates];
+		
+		NSString *msg = NSLocalizedString(@"Do you want to delete selected contact?\nIt will also be deleted from your phone's address book.", nil);
+		[UIConfirmationDialog ShowWithMessage:msg
+					cancelMessage:nil
+					confirmMessage:nil
+					onCancelClick:nil
+					onConfirmationClick:^() {
+						[tableView beginUpdates];
 
-		NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
-		NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
-		Contact *contact = subAr[indexPath.row];
-		[subAr removeObjectAtIndex:indexPath.row];
-		if (subAr.count == 0) {
-			[addressBookMap removeObjectForKey:firstChar];
-			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
-					 withRowAnimation:UITableViewRowAnimationFade];
-		}
-		UIContactCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-		[cell setContact:NULL];
-		[[LinphoneManager.instance fastAddressBook] deleteContact:contact];
-		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-		[tableView endUpdates];
+						NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
+						NSMutableArray *subAr = [addressBookMap objectForKey:firstChar];
+						Contact *contact = subAr[indexPath.row];
+						[subAr removeObjectAtIndex:indexPath.row];
+						if (subAr.count == 0) {
+							[addressBookMap removeObjectForKey:firstChar];
+							[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
+							withRowAnimation:UITableViewRowAnimationFade];
+						}
+						UIContactCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+						[cell setContact:NULL];
+						[[LinphoneManager.instance fastAddressBook] deleteContact:contact];
+						[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+						[tableView endUpdates];
 
-		[NSNotificationCenter.defaultCenter	addObserver:self selector:@selector(onAddressBookUpdate:)
-                           name:kLinphoneAddressBookUpdate
-                         object:nil];
-	   	[self loadData];
+						[NSNotificationCenter.defaultCenter	addObserver:self selector:@selector(onAddressBookUpdate:)
+											name:kLinphoneAddressBookUpdate
+											object:nil];
+						[self loadData];
+					}];
 	}
 }
 
