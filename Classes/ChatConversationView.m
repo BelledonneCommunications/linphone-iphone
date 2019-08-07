@@ -1396,13 +1396,15 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		} else {
 			NSString *key =  @"localfile";
 			//write file to path
-			if([view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]]) {
+			if([self writeFileInICloud:data fileURL:[self getICloudFileUrl:name]]) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
 				//[LinphoneManager setValueInMessageAppData:filePath forKey:@"cachedfile" inMessage:message];
 				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 				[view.tableController scrollToLastUnread:TRUE];
-			});}
+			});} else {
+				LOGE(@"[Auto download error] can not save the file %@", name);
+			}
 		}
 	}
 }
