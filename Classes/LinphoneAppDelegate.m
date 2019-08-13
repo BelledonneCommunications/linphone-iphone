@@ -427,6 +427,12 @@
 		LOGE(@"Notification [%p] has no loc_key, it's impossible to process it.", userInfo);
 		return;
 	}
+	
+	// Tell the core to make sure that we are registered.
+	// It will initiate socket connections, which seems to be required.
+	// Indeed it is observed that if no network action is done in the notification handler, then
+	// iOS kills us.
+	linphone_core_ensure_registered(LC);
 
 	NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
 	NSString *sipInstance = [aps objectForKey:@"uuid"];
@@ -439,12 +445,6 @@
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId])
 		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
-
-	// if we receive a push notification, it is probably because our TCP background socket was no more working.
-	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
-	if (!linphone_core_is_network_reachable(LC)) {
-		LOGI(@"Notification [%p] network is down, restarting it.", userInfo);
-	}
 
 	if ([callId isEqualToString:@""]) {
 		// Present apn pusher notifications for info
@@ -540,7 +540,7 @@
 }
 
 - (void)processPush:(NSDictionary *)userInfo {
-	LOGI(@"[PushKit] Notification [%p] received with pay load : %@", userInfo, userInfo.description);
+	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
 	[self configureUINotification];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:userInfo];
