@@ -98,6 +98,11 @@
 			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 			if (cfg) {
 				const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
+				if (!normalizedPhoneNumber) {
+					// get invalid phone number, continue
+					results = results->next;
+					continue;
+				}
 				addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
 				uri = linphone_address_as_string_uri_only(addr);
 				address = [NSString stringWithUTF8String:uri];
