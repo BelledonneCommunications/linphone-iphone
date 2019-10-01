@@ -13,7 +13,6 @@
 @property (weak, nonatomic) IBOutlet UIView *videoPreview;
 @property (weak, nonatomic) IBOutlet UILabel *uri;
 @property (weak, nonatomic) IBOutlet UILabel *state;
-
-+(void) dumpConfig:(LinphoneCore *)lc;
+@property (weak, nonatomic) IBOutlet UIView *mediaPlayPauseButton;
 
 @end

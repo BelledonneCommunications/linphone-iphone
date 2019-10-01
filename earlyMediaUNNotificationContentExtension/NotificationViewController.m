@@ -17,15 +17,22 @@
 
 @implementation NotificationViewController
 
+@synthesize mediaPlayPauseButtonType;
+@synthesize mediaPlayPauseButtonFrame;
+@synthesize mediaPlayPauseButtonTintColor;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
 }
 
-+(void) dumpConfig:(LinphoneCore *)lc {
-	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:SHARED_GROUP_NAME];
-	[defaults setObject:[NSString stringWithUTF8String:linphone_config_dump(linphone_core_get_config(lc))] forKey:@"core_config"];
-	[defaults synchronize];
+static LinphoneCore *c;
+
+static void setEarlyMediaVideoWindow(LinphoneCall *call, void *user_data) {
+	NotificationViewController *thiz = (__bridge NotificationViewController *)user_data;
+	thiz.videoPreview.backgroundColor = [UIColor greenColor];
+	[thiz.extensionContext mediaPlayingStarted];
+	linphone_core_set_native_video_window_id(c, (__bridge void *)(thiz.videoPreview));
 }
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state,
@@ -33,15 +40,22 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, Lin
 	NSLog(@"Call State changed :  %s %s %d",linphone_call_get_remote_address_as_string(call),message,state);
 	NotificationViewController *thiz = (__bridge NotificationViewController *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc));
 	if (state == LinphoneCallStateIncomingReceived) {
-		linphone_core_enable_video_display(lc,true);
-		linphone_core_set_native_video_window_id(lc, (__bridge void *)(thiz.videoPreview));
 		linphone_call_accept_early_media(call);
+		if (linphone_call_params_get_used_video_payload_type(linphone_call_get_current_params(call))) {
+			linphone_call_set_next_video_frame_decoded_callback(call, setEarlyMediaVideoWindow, (__bridge void *)(thiz));
+		}
+	}
+	if (state == LinphoneCallStateReleased) {
+		thiz.videoPreview.backgroundColor = [UIColor orangeColor];
 	}
 	thiz.uri.text = [NSString stringWithUTF8String:linphone_call_get_remote_address_as_string(call)];
 	thiz.state.text = [NSString stringWithFormat:@"%s %d",message,state];
 }
 
 - (void)didReceiveNotification:(UNNotification *)notification {
+	mediaPlayPauseButtonType = UNNotificationContentExtensionMediaPlayPauseButtonTypeOverlay;
+	mediaPlayPauseButtonFrame = _mediaPlayPauseButton.frame;
+	mediaPlayPauseButtonTintColor = [UIColor greenColor];
 	
 	// Read config from shared defaults
 	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:SHARED_GROUP_NAME];
@@ -50,7 +64,7 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, Lin
 	LinphoneFactory *factory = linphone_factory_get();
 	LinphoneConfig *sharedConfig = linphone_factory_create_config_from_string(factory, [defaults stringForKey:@"core_config"].UTF8String);
 	linphone_config_set_string(sharedConfig,"sip","root_ca",[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Frameworks/linphone.framework/rootca.pem"].UTF8String);
-	LinphoneCore *c = linphone_factory_create_core_with_config_3(factory, sharedConfig, NULL);
+	c = linphone_factory_create_core_with_config_3(factory, sharedConfig, NULL);
 	linphone_core_disable_chat(c,LinphoneReasonNone);
 	linphone_core_set_network_reachable(c, true);
 	linphone_logging_service_set_log_level(linphone_logging_service_get(), LinphoneLogLevelDebug);
@@ -65,7 +79,13 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, Lin
 	[NSTimer scheduledTimerWithTimeInterval:0.02 repeats:YES block:^(NSTimer * _Nonnull timer) {
 		linphone_core_iterate(c);
 	}];
-	
+}
+
+- (void)mediaPlay {
+	self.videoPreview.hidden =NO;
+}
+- (void)mediaPause {
+	self.videoPreview.hidden =YES;
 }
 
 @end

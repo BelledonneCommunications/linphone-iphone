@@ -716,6 +716,8 @@
 		A634ABAFCB39B6AAE4CA991D /* Pods_linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */; };
 		B309A0CED99AA6763591977F /* Pods_earlyMediaUNNotificationContentExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 304F70ECF9C4FB8539F9847F /* Pods_earlyMediaUNNotificationContentExtension.framework */; };
 		C5D3371994961EDAE2311A1E /* Pods_liblinphoneTesterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D252FEC7DD06DD5695A320A1 /* Pods_liblinphoneTesterTests.framework */; };
+		C60819492343742700FEFD30 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60819482343742700FEFD30 /* GLKit.framework */; };
+		C608194A2343778C00FEFD30 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
 		C61EA78A2341526200AF509B /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		C61EA78B2341526200AF509B /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
 		C61EA78F2341526200AF509B /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C61EA78E2341526200AF509B /* NotificationViewController.m */; };
@@ -1840,6 +1842,7 @@
 		B027D17AF1CF52D90426103C /* Pods-earlyMediaUNNotificationContentExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-earlyMediaUNNotificationContentExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-earlyMediaUNNotificationContentExtension/Pods-earlyMediaUNNotificationContentExtension.release.xcconfig"; sourceTree = "<group>"; };
 		BE06BDE664323B2A53469696 /* Pods-liblinphoneTesterTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTesterTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTesterTests/Pods-liblinphoneTesterTests.release.xcconfig"; sourceTree = "<group>"; };
 		BEBE8FB918176C388C01CFF7 /* Pods_linphoneExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_linphoneExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C60819482343742700FEFD30 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		C61EA7892341526200AF509B /* earlyMediaUNNotificationContentExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = earlyMediaUNNotificationContentExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C61EA78D2341526200AF509B /* NotificationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationViewController.h; sourceTree = "<group>"; };
 		C61EA78E2341526200AF509B /* NotificationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationViewController.m; sourceTree = "<group>"; };
@@ -2142,6 +2145,7 @@
 				C61EA78A2341526200AF509B /* UserNotifications.framework in Frameworks */,
 				C67C4E9723430B87003F3D75 /* AVKit.framework in Frameworks */,
 				C641F3292342FF8A008755D1 /* AVFoundation.framework in Frameworks */,
+				C608194A2343778C00FEFD30 /* SystemConfiguration.framework in Frameworks */,
 				C641F31F2342F911008755D1 /* VideoToolbox.framework in Frameworks */,
 				C641F32D2342FFF1008755D1 /* OpenGLES.framework in Frameworks */,
 				C67C4E9423430343003F3D75 /* CoreAudio.framework in Frameworks */,
@@ -2149,6 +2153,7 @@
 				C641F32A2342FFA2008755D1 /* Foundation.framework in Frameworks */,
 				C641F31E2342F90C008755D1 /* AudioToolbox.framework in Frameworks */,
 				C641F32C2342FFE9008755D1 /* QuartzCore.framework in Frameworks */,
+				C60819492343742700FEFD30 /* GLKit.framework in Frameworks */,
 				C67C4E952343034A003F3D75 /* CoreVideo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2511,6 +2516,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C60819482343742700FEFD30 /* GLKit.framework */,
 				6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
