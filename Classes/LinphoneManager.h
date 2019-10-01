@@ -203,6 +203,8 @@ typedef struct _LinphoneManagerSounds {
 - (void)loadAvatar;
 - (void)migrationPerAccount;
 
+-(void) dumpConfigForEarlyMediaExtension;
+
 @property ProviderDelegate *providerDelegate;
 
 @property (readonly) BOOL isTesting;

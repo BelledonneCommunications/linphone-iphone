@@ -49,6 +49,11 @@ target 'linphone' do
 
 end
 
+target 'earlyMediaUNNotificationContentExtension' do
+	use_frameworks!
+  basic_pods
+end
+
 target 'linphoneExtension' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   use_frameworks!

@@ -1684,7 +1684,15 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCoreUpdate
 	 object:LinphoneManager.instance
 	 userInfo:dict];
+	
+
+	
 }
+
+
+
+
+
 
 static BOOL libStarted = FALSE;
 
@@ -2121,9 +2129,18 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 }
 
+-(void) dumpConfigForEarlyMediaExtension {
+	// Dump config to shared defaults
+    NSString* groupName = @"group.org.linphone.phone.earlymediaExtension";
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+	[defaults setObject:[NSString stringWithUTF8String:linphone_config_dump(linphone_core_get_config(LC))] forKey:@"core_config"];
+	[defaults synchronize];
+}
+
 - (BOOL)enterBackgroundMode {
 	linphone_core_enter_background(LC);
-
+	[self dumpConfigForEarlyMediaExtension];
+	
 	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 	BOOL shouldEnterBgMode = FALSE;
 

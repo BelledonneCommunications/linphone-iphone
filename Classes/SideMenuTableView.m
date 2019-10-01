@@ -16,6 +16,8 @@
 #import "ShopView.h"
 #import "LinphoneManager.h"
 #import "RecordingsListView.h"
+#import <UserNotifications/UserNotifications.h>
+
 
 @implementation SideMenuEntry
 
@@ -96,6 +98,38 @@
 																  changeCurrentView:AboutView.compositeViewDescription];
 
 															}]];
+	
+	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:@"Create Notif with a Linphone Core"
+	   image:nil
+	tapBlock:^() {
+		[LinphoneManager.instance dumpConfigForEarlyMediaExtension];
+	  	linphone_core_set_network_reachable(LC, false);
+	  	[self displayEarlyMediaPush];
+	}]];
+	
+	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:@"Make app core reachable again"
+	   image:nil
+	tapBlock:^() {
+		linphone_core_set_network_reachable(LC, true);
+	}]];
+}
+
+
+-(void) displayEarlyMediaPush {
+	UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+	content.title = [NSString localizedUserNotificationStringForKey:@"Notif with Linphone Core inside" arguments:nil];
+	content.body = [NSString localizedUserNotificationStringForKey:@"Expand it to start its core (config is cloned from the app) and display early media if available ... "
+				arguments:nil];
+	content.sound = [UNNotificationSound defaultSound];
+	content.categoryIdentifier = @"earlyMediaUNNotificationContentExtensionCategoryId";
+	 
+	UNTimeIntervalNotificationTrigger* trigger = [UNTimeIntervalNotificationTrigger
+				triggerWithTimeInterval:0.25 repeats:NO];
+	UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"EarlyMediaVideo"
+				content:content trigger:trigger];
+	 
+	UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+	[center addNotificationRequest:request withCompletionHandler:nil];
 }
 
 #pragma mark - Table View Controller
