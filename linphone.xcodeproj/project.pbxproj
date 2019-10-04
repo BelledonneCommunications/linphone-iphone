@@ -121,7 +121,7 @@
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
 		61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		61AEBEA321906AFC00F35E7F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		61AEBEA321906AFC00F35E7F /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEBC2191990A00F35E7F /* DevicesListView.m */; };
 		61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEBE2191991F00F35E7F /* DevicesListView.xib */; };
 		61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */; };
@@ -660,7 +660,7 @@
 		63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A311C4FECD000D332AE /* LaunchScreen.xib */; };
 		63E27A521C50EDB000D332AE /* hold.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A511C50EB2700D332AE /* hold.mkv */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
-		63E802DB1C625AEF000D5509 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		63E802DB1C625AEF000D5509 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		63EC8D391D7438660066547B /* AssistantLinkView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63EC8D3B1D7438660066547B /* AssistantLinkView.xib */; };
 		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
 		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
@@ -2066,7 +2066,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */,
-				61AEBEA321906AFC00F35E7F /* (null) in Frameworks */,
+				61AEBEA321906AFC00F35E7F /* BuildFile in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
 				61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */,
 				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
@@ -2478,7 +2478,7 @@
 			path = LinphoneUI;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+		29B97314FDCFA39411CA2CEA = {
 			isa = PBXGroup;
 			children = (
 				8C23BCB71D82AAC3005F19BB /* linphone.entitlements */,
@@ -3505,7 +3505,6 @@
 				8CB438A61EE6A65D0006F944 /* ShellScript */,
 				5EF0C35020C806A5005081B0 /* Embed App Extensions */,
 				4D22DCAAC0231865D78AC1E6 /* [CP] Embed Pods Frameworks */,
-				A73A24C4B99B11012FDAA7CF /* [CP] Copy Pods Resources */,
 				614D0A1821E77F5300C43EDF /* ShellScript */,
 			);
 			buildRules = (
@@ -3596,7 +3595,6 @@
 				C61EA7852341526200AF509B /* Sources */,
 				C61EA7862341526200AF509B /* Frameworks */,
 				C61EA7872341526200AF509B /* Resources */,
-				19120CED28E6F6A5E7C80168 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -3635,7 +3633,6 @@
 				F0BB8BD21936208100974404 /* Frameworks */,
 				F0BB8BD31936208100974404 /* Resources */,
 				A68C4E88E4EC059C04D389FE /* [CP] Embed Pods Frameworks */,
-				61C84B4200D58AABECCE326E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -3773,7 +3770,7 @@
 				zh_CN,
 				fr,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			mainGroup = 29B97314FDCFA39411CA2CEA;
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -3889,7 +3886,7 @@
 				633FEED41D3CD55A0014B822 /* numpad_7_default@2x.png in Resources */,
 				633FEEE01D3CD55A0014B822 /* numpad_8_over~ipad@2x.png in Resources */,
 				633FEDDC1D3CD5590014B822 /* call_start_body_disabled~ipad.png in Resources */,
-				63E802DB1C625AEF000D5509 /* (null) in Resources */,
+				63E802DB1C625AEF000D5509 /* BuildFile in Resources */,
 				633FEE2E1D3CD5590014B822 /* color_F.png in Resources */,
 				633FEDC51D3CD5590014B822 /* call_hangup_disabled@2x.png in Resources */,
 				633FEEDF1D3CD55A0014B822 /* numpad_8_over~ipad.png in Resources */,
@@ -4514,28 +4511,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		19120CED28E6F6A5E7C80168 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-earlyMediaUNNotificationContentExtension/Pods-earlyMediaUNNotificationContentExtension-resources.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-earlyMediaUNNotificationContentExtension/Pods-earlyMediaUNNotificationContentExtension-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		20EEEF6D60A7B77C2EFF85DB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4583,13 +4558,13 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonesw.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
@@ -4603,13 +4578,13 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belle-sip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonesw.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
@@ -4660,28 +4635,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if USE_CRASHLYTHICS; then\n    ${PODS_ROOT}/Fabric/run\nfi\n";
-		};
-		61C84B4200D58AABECCE326E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4753,13 +4706,13 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonesw.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
 				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
@@ -4772,13 +4725,13 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belle-sip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonesw.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
@@ -4792,28 +4745,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A73A24C4B99B11012FDAA7CF /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-resources.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Resources/liblinphone_tester",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/liblinphone_tester",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F43E063274A630F02AB2AAEC /* [CP] Check Pods Manifest.lock */ = {

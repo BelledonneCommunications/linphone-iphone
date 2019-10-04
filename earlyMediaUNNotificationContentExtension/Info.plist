@@ -27,7 +27,7 @@
 			<key>UNNotificationExtensionCategory</key>
 			<string>earlyMediaUNNotificationContentExtensionCategoryId</string>
 			<key>UNNotificationExtensionDefaultContentHidden</key>
-			<true/>
+			<false/>
 			<key>UNNotificationExtensionInitialContentSizeRatio</key>
 			<integer>1</integer>
 		</dict>

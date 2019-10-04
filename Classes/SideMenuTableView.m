@@ -103,6 +103,8 @@
 	   image:nil
 	tapBlock:^() {
 		[LinphoneManager.instance dumpConfigForEarlyMediaExtension];
+		linphone_proxy_config_set_expires(linphone_core_get_default_proxy_config(LC), 0);
+		linphone_core_refresh_registers(LC);
 	  	linphone_core_set_network_reachable(LC, false);
 	  	[self displayEarlyMediaPush];
 	}]];
@@ -111,6 +113,8 @@
 	   image:nil
 	tapBlock:^() {
 		linphone_core_set_network_reachable(LC, true);
+		linphone_proxy_config_set_expires(linphone_core_get_default_proxy_config(LC), 3600);
+		linphone_core_refresh_registers(LC);
 	}]];
 }
 

@@ -121,10 +121,14 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	_earlyMedia = FALSE;
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"pref_accept_early_media"] && linphone_core_get_calls_nb(LC) < 2) {
 		linphone_call_accept_early_media(_call);
+		self.earlyMedia = TRUE;
+		self.earlyMediaView.hidden = NO;
+		linphone_core_set_native_video_window_id(LC, (__bridge void *)(self.earlyMediaView));
 		// linphone_call_params_get_used_video_codec return 0 if no video stream enabled
+		/*
 		if (linphone_call_params_get_used_video_codec(linphone_call_get_current_params(_call))) {
 			linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, (__bridge void *)(self));
-		}
+		}*/
 	} else {
 		_earlyMediaView.hidden = YES;
 	}

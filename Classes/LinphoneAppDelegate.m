@@ -433,6 +433,7 @@
 	// Indeed it is observed that if no network action is done in the notification handler, then
 	// iOS kills us.
 	linphone_core_ensure_registered(LC);
+	
 
 	NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
 	NSString *sipInstance = [aps objectForKey:@"uuid"];
@@ -531,6 +532,7 @@
 	LOGI(@"[PushKit] credentials updated with voip token: %@", credentials.token);
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[LinphoneManager.instance setPushNotificationToken:credentials.token];
+		linphone_core_set_network_reachable(LC, true);
 	});
 }
 
@@ -541,6 +543,7 @@
 
 - (void)processPush:(NSDictionary *)userInfo {
 	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
+	
 	[self configureUINotification];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:userInfo];
@@ -737,7 +740,7 @@
 - (void)application:(UIApplication *)application
 	handleActionWithIdentifier:(NSString *)identifier
 		  forLocalNotification:(UILocalNotification *)notification
-			 completionHandler:(void (^)())completionHandler {
+			 completionHandler:(void (^)(void))completionHandler {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
@@ -785,7 +788,7 @@
 	handleActionWithIdentifier:(NSString *)identifier
 		  forLocalNotification:(UILocalNotification *)notification
 			  withResponseInfo:(NSDictionary *)responseInfo
-			 completionHandler:(void (^)())completionHandler {
+			 completionHandler:(void (^)(void))completionHandler {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
