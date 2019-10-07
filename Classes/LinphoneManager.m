@@ -267,7 +267,11 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
 		[self overrideDefaultSettings];
-
+        
+        [self lpConfigSetString:[LinphoneManager dataFile:@"linphone.db"] forKey:@"uri" inSection:@"storage"];
+        [self lpConfigSetString:[LinphoneManager dataFile:@"x3dh.c25519.sqlite3"] forKey:@"x3dh_db_path" inSection:@"lime"];
+        
+        
 		// set default values for first boot
 		if ([self lpConfigStringForKey:@"debugenable_preference"] == nil) {
 #ifdef DEBUG
@@ -495,6 +499,13 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 			userInfo:nil]);
 	}
 	return theLinphoneCore;
+}
+
++ (BOOL)isLcInitialized {
+    if (theLinphoneCore == nil) {
+        return NO;
+    }
+    return YES;
 }
 
 #pragma mark Debug functions
@@ -2656,9 +2667,13 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)preferenceFile:(NSString *)file {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-	NSString *writablePath = [paths objectAtIndex:0];
-	NSString *fullPath = [writablePath stringByAppendingString:@"/Preferences/linphone/"];
+    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.org.linphone.phone.messagesNotification"];
+    NSURL *fullPathURL = [NSURL URLWithString:@"Library/Preferences/linphone/" relativeToURL:sharedContainerURL];
+    NSString *fullPath = [fullPathURL path];
+    
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+//    NSString *writablePath = [paths objectAtIndex:0];
+//    NSString *fullPath = [writablePath stringByAppendingString:@"/Preferences/linphone/"];
 	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
 		NSError *error;
 		LOGI(@"Preference path %@ does not exist, creating it.",fullPath);
@@ -2674,9 +2689,13 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)dataFile:(NSString *)file {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-	NSString *writablePath = [paths objectAtIndex:0];
-	NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
+    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.org.linphone.phone.messagesNotification"];
+    NSString* home = [[sharedContainerURL path] stringByAppendingPathComponent:@"/Library/Application Support/linphone/"];
+    NSString *fullPath = [home stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+//    NSString *writablePath = [paths objectAtIndex:0];
+//    NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
 	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
 		NSError *error;
 		LOGI(@"Data path %@ does not exist, creating it.",fullPath);
