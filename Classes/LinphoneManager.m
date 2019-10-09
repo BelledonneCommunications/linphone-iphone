@@ -1864,7 +1864,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	libmsamr_init(f);
 	libmsx264_init(f);
 	libmsopenh264_init(f);
-	libmswebrtc_init(f);
+	//libmswebrtc_init(f);
 	libmscodec2_init(f);
 
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);

@@ -28,22 +28,15 @@
 
 static LinphoneCore *c;
 
-static void setEarlyMediaVideoWindow(LinphoneCall *call, void *user_data) {
-	NotificationViewController *thiz = (__bridge NotificationViewController *)user_data;
-	thiz.videoPreview.backgroundColor = [UIColor greenColor];
-	[thiz.extensionContext mediaPlayingStarted];
-	linphone_core_set_native_video_window_id(c, (__bridge void *)(thiz.videoPreview));
-}
-
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state,
 				       const char *message) {
 	NSLog(@"Call State changed :  %s %s %d",linphone_call_get_remote_address_as_string(call),message,state);
 	NotificationViewController *thiz = (__bridge NotificationViewController *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc));
+	
 	if (state == LinphoneCallStateIncomingReceived) {
+		linphone_core_set_native_video_window_id(lc, (__bridge void *)(thiz.videoPreview));
 		linphone_call_accept_early_media(call);
-		thiz.videoPreview.backgroundColor = [UIColor greenColor];
 		[thiz.extensionContext mediaPlayingStarted];
-		linphone_core_set_native_video_window_id(c, (__bridge void *)(thiz.videoPreview));
 	}
 	if (state == LinphoneCallStateReleased) {
 		thiz.videoPreview.backgroundColor = [UIColor orangeColor];
@@ -65,19 +58,14 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, Lin
 	LinphoneConfig *sharedConfig = linphone_factory_create_config_from_string(factory, [defaults stringForKey:@"core_config"].UTF8String);
 	linphone_config_set_string(sharedConfig,"sip","root_ca",[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Frameworks/linphone.framework/rootca.pem"].UTF8String);
 	linphone_config_clean_entry(sharedConfig, "misc", "config-uri");
-	linphone_config_set_int(sharedConfig,"proxy_0","avpf",1);
 
-	
 	c = linphone_factory_create_core_with_config_3(factory, sharedConfig, NULL);
+	linphone_core_enable_video_capture(c,false);
 	linphone_core_disable_chat(c,LinphoneReasonNone);
 	linphone_core_set_network_reachable(c, true);
 	linphone_logging_service_set_log_level(linphone_logging_service_get(), LinphoneLogLevelDebug);
 	
-	LinphoneVideoPolicy policy;
-	policy.automatically_accept = true;
-	linphone_core_set_video_policy(c, &policy);
-	
-	
+	linphone_core_enable_mic(c, NO);
 	linphone_core_enable_video_display(c, true);
 	
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(factory);

@@ -106,6 +106,7 @@
 		linphone_proxy_config_set_expires(linphone_core_get_default_proxy_config(LC), 0);
 		linphone_core_refresh_registers(LC);
 	  	linphone_core_set_network_reachable(LC, false);
+		linphone_core_set_media_network_reachable(LC,false);
 	  	[self displayEarlyMediaPush];
 	}]];
 	

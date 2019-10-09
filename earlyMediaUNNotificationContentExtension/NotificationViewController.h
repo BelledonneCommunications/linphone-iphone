@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+
 #include "linphone/linphonecore.h"
 #define SHARED_GROUP_NAME @"group.org.linphone.phone.earlymediaExtension"
 

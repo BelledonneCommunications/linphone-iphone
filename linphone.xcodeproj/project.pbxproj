@@ -714,27 +714,27 @@
 		8CF25D9D1F9F76BD00BEA0C1 /* chat_group_informations.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */; };
 		8CF25D9E1F9F76BD00BEA0C1 /* chat_group_informations@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */; };
 		A634ABAFCB39B6AAE4CA991D /* Pods_linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */; };
-		B309A0CED99AA6763591977F /* Pods_earlyMediaUNNotificationContentExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 304F70ECF9C4FB8539F9847F /* Pods_earlyMediaUNNotificationContentExtension.framework */; };
 		C5D3371994961EDAE2311A1E /* Pods_liblinphoneTesterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D252FEC7DD06DD5695A320A1 /* Pods_liblinphoneTesterTests.framework */; };
-		C60819492343742700FEFD30 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60819482343742700FEFD30 /* GLKit.framework */; };
-		C608194A2343778C00FEFD30 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
-		C61EA78A2341526200AF509B /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
-		C61EA78B2341526200AF509B /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
 		C61EA78F2341526200AF509B /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C61EA78E2341526200AF509B /* NotificationViewController.m */; };
 		C61EA7922341526200AF509B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C61EA7902341526200AF509B /* MainInterface.storyboard */; };
 		C61EA7962341526200AF509B /* earlyMediaUNNotificationContentExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C61EA7892341526200AF509B /* earlyMediaUNNotificationContentExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		C641F31E2342F90C008755D1 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
-		C641F31F2342F911008755D1 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CE583F1C85EBF400304800 /* VideoToolbox.framework */; };
-		C641F3292342FF8A008755D1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
-		C641F32A2342FFA2008755D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		C641F32B2342FFCD008755D1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		C641F32C2342FFE9008755D1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
-		C641F32D2342FFF1008755D1 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
-		C67C4E9423430343003F3D75 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
-		C67C4E952343034A003F3D75 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
-		C67C4E962343036A003F3D75 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		C67C4E9723430B87003F3D75 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
 		C67C4E982343280A003F3D75 /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C61EA78E2341526200AF509B /* NotificationViewController.m */; };
+		C6E51A9F234CF5DA004B8A6A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
+		C6E51AA2234CF5DC004B8A6A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
+		C6E51AA4234CF5DF004B8A6A /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
+		C6E51AA6234CF5E0004B8A6A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
+		C6E51AA8234CF5E1004B8A6A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		C6E51AAA234CF5E3004B8A6A /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; };
+		C6E51AAC234CF5E6004B8A6A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		C6E51AAE234CF5E8004B8A6A /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60819482343742700FEFD30 /* GLKit.framework */; };
+		C6E51AB0234CF5E9004B8A6A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
+		C6E51AB2234CF5EB004B8A6A /* Pods_earlyMediaUNNotificationContentExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 304F70ECF9C4FB8539F9847F /* Pods_earlyMediaUNNotificationContentExtension.framework */; };
+		C6E51AB4234CF5ED004B8A6A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
+		C6E51AB6234CF5EE004B8A6A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
+		C6E51AB8234CF5F0004B8A6A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		C6E51ABA234CF5F1004B8A6A /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
+		C6E51ABC234CF5F2004B8A6A /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
+		C6E51ABE234CF5F4004B8A6A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CE583F1C85EBF400304800 /* VideoToolbox.framework */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
 		CF15F21F20E4F9A3008B1DE6 /* UIImageViewDeletable.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */; };
@@ -2139,22 +2139,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C67C4E962343036A003F3D75 /* CoreGraphics.framework in Frameworks */,
-				C61EA78B2341526200AF509B /* UserNotificationsUI.framework in Frameworks */,
-				C641F32B2342FFCD008755D1 /* UIKit.framework in Frameworks */,
-				C61EA78A2341526200AF509B /* UserNotifications.framework in Frameworks */,
-				C67C4E9723430B87003F3D75 /* AVKit.framework in Frameworks */,
-				C641F3292342FF8A008755D1 /* AVFoundation.framework in Frameworks */,
-				C608194A2343778C00FEFD30 /* SystemConfiguration.framework in Frameworks */,
-				C641F31F2342F911008755D1 /* VideoToolbox.framework in Frameworks */,
-				C641F32D2342FFF1008755D1 /* OpenGLES.framework in Frameworks */,
-				C67C4E9423430343003F3D75 /* CoreAudio.framework in Frameworks */,
-				B309A0CED99AA6763591977F /* Pods_earlyMediaUNNotificationContentExtension.framework in Frameworks */,
-				C641F32A2342FFA2008755D1 /* Foundation.framework in Frameworks */,
-				C641F31E2342F90C008755D1 /* AudioToolbox.framework in Frameworks */,
-				C641F32C2342FFE9008755D1 /* QuartzCore.framework in Frameworks */,
-				C60819492343742700FEFD30 /* GLKit.framework in Frameworks */,
-				C67C4E952343034A003F3D75 /* CoreVideo.framework in Frameworks */,
+				C6E51ABE234CF5F4004B8A6A /* VideoToolbox.framework in Frameworks */,
+				C6E51ABC234CF5F2004B8A6A /* UserNotificationsUI.framework in Frameworks */,
+				C6E51ABA234CF5F1004B8A6A /* UserNotifications.framework in Frameworks */,
+				C6E51AB4234CF5ED004B8A6A /* QuartzCore.framework in Frameworks */,
+				C6E51AB8234CF5F0004B8A6A /* UIKit.framework in Frameworks */,
+				C6E51AA2234CF5DC004B8A6A /* AVFoundation.framework in Frameworks */,
+				C6E51AB6234CF5EE004B8A6A /* SystemConfiguration.framework in Frameworks */,
+				C6E51AAE234CF5E8004B8A6A /* GLKit.framework in Frameworks */,
+				C6E51AB2234CF5EB004B8A6A /* Pods_earlyMediaUNNotificationContentExtension.framework in Frameworks */,
+				C6E51AAC234CF5E6004B8A6A /* Foundation.framework in Frameworks */,
+				C6E51AA4234CF5DF004B8A6A /* CoreAudio.framework in Frameworks */,
+				C6E51AA6234CF5E0004B8A6A /* AVKit.framework in Frameworks */,
+				C6E51AB0234CF5E9004B8A6A /* OpenGLES.framework in Frameworks */,
+				C6E51A9F234CF5DA004B8A6A /* AudioToolbox.framework in Frameworks */,
+				C6E51AA8234CF5E1004B8A6A /* CoreGraphics.framework in Frameworks */,
+				C6E51AAA234CF5E3004B8A6A /* CoreVideo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4534,15 +4534,11 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-linphoneTests/Pods-linphoneTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/KIF/KIF.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KIF.framework",
 			);
@@ -4558,22 +4554,20 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonesw.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/lime.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -4584,14 +4578,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonesw.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mscodec2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msopenh264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mssilk.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
@@ -4706,22 +4698,20 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester-frameworks.sh",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonesw.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
-				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/lime.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
+				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -4731,14 +4721,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonesw.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mscodec2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msopenh264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mssilk.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
 			);
