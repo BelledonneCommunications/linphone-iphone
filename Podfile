@@ -4,6 +4,7 @@ source "https://gitlab.linphone.org/BC/public/podspec.git"
 source "https://github.com/CocoaPods/Specs.git"
 
 def basic_pods
+  pod 'MMWormhole', '~> 2.0.0'
 	if ENV['PODFILE_PATH'].nil?
 		pod 'linphone-sdk', '4.2'
 		else

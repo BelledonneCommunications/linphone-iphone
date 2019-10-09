@@ -7,6 +7,8 @@
 
 import UserNotifications
 import linphonesw
+import MMWormhole
+
 
 var running: Bool = true
 var msgFrom: String?
@@ -14,6 +16,7 @@ var msgContent: String?
 var callId: String?
 var localUri: String?
 var peerUri: String?
+var wormhole: MMWormhole?
 
 class NotificationService: UNNotificationServiceExtension {
 
@@ -27,43 +30,101 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        FileManager.exploreSharedContainer()
+//        postDarwinNotification()
+//        registerForDarwinNotifications()
         
-        if let bestAttemptContent = bestAttemptContent, let appActive = FileManager.getAppStatus() {
-            
-            NSLog("[EXTENSION] app active: \(appActive)")
-            if (!appActive) {
-                startCore()
-
-                if let badge = updateBadge() as NSNumber? {
-                    bestAttemptContent.badge = badge
-                }
-
-                lc!.networkReachable = false
-                lc!.stop()
-            
-
-                bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
-                bestAttemptContent.title = "Message received [extension]"
-                if let msgFrom = msgFrom {
-                    bestAttemptContent.subtitle = msgFrom
-                }
-                if let msgContent = msgContent {
-                    bestAttemptContent.body = msgContent
-                }
+        initWormHole()
+//        receiveWormHoleMessage()
+        
+        let msg = wormhole!.message(withIdentifier: "message")
+        
+        if (msg != nil) {
+            wormhole!.clearMessageContents(forIdentifier: "message")
+            if let msg = msg as? UNMutableNotificationContent {
+                print(msg)
+                msg.categoryIdentifier = "bonjour"
                 
-                bestAttemptContent.categoryIdentifier = "msg_cat"
-                
-                bestAttemptContent.userInfo.updateValue(callId, forKey: "CallId")
-                bestAttemptContent.userInfo.updateValue(msgFrom, forKey: "from")
-                bestAttemptContent.userInfo.updateValue(peerUri, forKey: "peer_addr")
-                bestAttemptContent.userInfo.updateValue(localUri, forKey: "local_addr")
-            } else {
-                bestAttemptContent.categoryIdentifier = "app_active"
+                contentHandler(msg)
             }
-            
-            contentHandler(bestAttemptContent)
         }
+        
+//        ProcessInfo.processInfo.environment
+        
+        
+        
+//////        contentHandler(msg as! UNNotificationContent)
+//        if let bestAttemptContent = bestAttemptContent {
+////            bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
+////            bestAttemptContent.title = msg!.value(forUndefinedKey: "title") as! String
+//////            bestAttemptContent.subtitle = msg["subtitle"] as! String
+//////            bestAttemptContent.body = msg["body"] as! String
+//////            bestAttemptContent.categoryIdentifier = "bonjour"
+//////            let userInfo = msg["userInfo"] as! NSDictionary
+//////            bestAttemptContent.userInfo.updateValue(userInfo["CallId"], forKey: "CallId")
+//////            bestAttemptContent.userInfo.updateValue(userInfo["from"], forKey: "from")
+//////            bestAttemptContent.userInfo.updateValue(userInfo["peer_addr"], forKey: "peer_addr")
+//////            bestAttemptContent.userInfo.updateValue(userInfo["local_addr"], forKey: "local_addr")
+//////
+        contentHandler(request.content)
+//        }
+        
+        
+        
+        
+        
+//        if let bestAttemptContent = bestAttemptContent, let msg = msg as? UNNotificationContent {
+//            bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
+//            bestAttemptContent.title = msg.title
+//            bestAttemptContent.subtitle = msg.subtitle
+//            bestAttemptContent.body = msg.body
+//            bestAttemptContent.categoryIdentifier = "bonjour"
+//            bestAttemptContent.userInfo.updateValue(msg.userInfo["CallId"], forKey: "CallId")
+//            bestAttemptContent.userInfo.updateValue(msg.userInfo["from"], forKey: "from")
+//            bestAttemptContent.userInfo.updateValue(msg.userInfo["peer_addr"], forKey: "peer_addr")
+//            bestAttemptContent.userInfo.updateValue(msg.userInfo["local_addr"], forKey: "local_addr")
+//
+//            contentHandler(bestAttemptContent)
+//        }
+        
+        
+        
+//        FileManager.exploreSharedContainer()
+//
+//        if let bestAttemptContent = bestAttemptContent, let appActive = FileManager.getAppStatus() {
+//
+//            NSLog("[EXTENSION] app active: \(appActive)")
+//            if (!appActive) {
+//                startCore()
+//
+//                if let badge = updateBadge() as NSNumber? {
+//                    bestAttemptContent.badge = badge
+//                }
+//
+//                lc!.networkReachable = false
+//                lc!.stop()
+//
+//
+//                bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
+//                bestAttemptContent.title = "Message received [extension]"
+//                if let msgFrom = msgFrom {
+//                    bestAttemptContent.subtitle = msgFrom
+//                }
+//                if let msgContent = msgContent {
+//                    bestAttemptContent.body = msgContent
+//                }
+//
+//                bestAttemptContent.categoryIdentifier = "msg_cat"
+//
+//                bestAttemptContent.userInfo.updateValue(callId, forKey: "CallId")
+//                bestAttemptContent.userInfo.updateValue(msgFrom, forKey: "from")
+//                bestAttemptContent.userInfo.updateValue(peerUri, forKey: "peer_addr")
+//                bestAttemptContent.userInfo.updateValue(localUri, forKey: "local_addr")
+//            } else {
+//                bestAttemptContent.categoryIdentifier = "app_active"
+//            }
+//
+//            contentHandler(bestAttemptContent)
+//        }
     }
     
     override func serviceExtensionTimeWillExpire() {
@@ -71,11 +132,55 @@ class NotificationService: UNNotificationServiceExtension {
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[EXTENSION] TIME OUT")
-            lc!.stop()
+//            lc!.stop()
             // Modify the notification content here...
             bestAttemptContent.title = "\(bestAttemptContent.title) [time out]"
             contentHandler(bestAttemptContent)
         }
+    }
+    
+
+//    func postDarwinNotification() {
+//        let notification = CFNotificationCenterGetDarwinNotifyCenter()
+//        let notifName = "darwin_test" as CFString
+//        CFNotificationCenterPostNotification(notification, CFNotificationName(notifName), nil, nil, true);
+//    }
+//
+//
+//    func registerForDarwinNotifications() {
+//        let notification = CFNotificationCenterGetDarwinNotifyCenter()
+//        let notifName = "darwin_test2" as CFString
+//
+////        CFNotificationCenterAddObserver(notification, (__bridge const void *)(self), observerMethod, CFSTR("darwin_test"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+//
+//        CFNotificationCenterAddObserver(notification, Unmanaged.passRetained(self).toOpaque(), { (center, observer, name, object, userInfo) in
+//            print("[DARWIN] notif recue")
+//                    // send the equivalent internal notification
+//        //            NotificationCenter.default.post(name: NSNotification.Name.SomeInternalExtensionAction, object: nil)
+//        }, notifName, nil, .coalesce)
+//
+//    }
+//
+//    func observerMethod(center: CFNotificationCenter? ,observer: UnsafeMutableRawPointer?,name: CFNotificationName? , object: UnsafeRawPointer?, userInfo: CFDictionary?) {
+//        print("[DARWIN] notif recue")
+//
+////        CFNotificationCallback = (CFNotificationCenter?, UnsafeMutableRawPointer?, CFNotificationName?, UnsafeRawPointer?, CFDictionary?) -> Void
+//    }
+    
+    func initWormHole() {
+        wormhole = MMWormhole(applicationGroupIdentifier: "group.org.linphone.phone.messagesNotification", optionalDirectory: "wormhole")
+    }
+    
+    func receiveWormHoleMessage() {
+        let msg = wormhole!.message(withIdentifier: "messageIdentifier")
+        print(msg)
+//        id messageObject = [self.wormhole messageWithIdentifier:@"messageIdentifier"];
+        
+//        wormhole!.listenForMessage(withIdentifier: "messageIdentifier", listener: { (messageObject) -> Void in
+//            if let message = messageObject {
+//                print(message)
+//            }
+//        })
     }
     
     func startCore() {

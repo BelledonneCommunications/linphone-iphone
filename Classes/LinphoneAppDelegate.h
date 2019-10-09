@@ -25,6 +25,9 @@
 #import <UserNotifications/UserNotifications.h>
 #import <UserNotificationsUI/UserNotificationsUI.h>
 
+#import "MMWormhole.h"
+#import "MMWormholeSession.h"
+
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate, PKPushRegistryDelegate, UNUserNotificationCenterDelegate> {
     @private
 	UIBackgroundTaskIdentifier bgStartId;
@@ -41,6 +44,12 @@
 @property BOOL alreadyRegisteredForNotification;
 @property BOOL onlyPortrait;
 @property UIApplicationShortcutItem *shortcutItem;
+
+
+@property (nonatomic, strong) MMWormhole *wormhole;
+//@property (nonatomic, strong) MMWormhole *watchConnectivityWormhole;
+//@property (nonatomic, strong) MMWormholeSession *watchConnectivityListeningWormhole;
+
 
 @end
 

@@ -31,6 +31,9 @@
 #include "LinphoneManager.h"
 #include "linphone/linphonecore.h"
 
+#import "MMWormhole.h"
+#import "MMWormholeSession.h"
+
 #ifdef USE_CRASHLYTHICSS
 #include "FIRApp.h"
 #endif
@@ -91,6 +94,8 @@
     [LinphoneManager.instance startLinphoneCore];
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 
+    //    [self postDarwinNotification];
+    [self sendWormHoleMessage];
 }
 
 - (void)setAppStateInSharedContainer:(BOOL)state {
@@ -202,6 +207,33 @@
 	[self configureUINotification];
 }
 
+//- (void)registerForDarwinNotifications {
+//    CFNotificationCenterRef notification = CFNotificationCenterGetDarwinNotifyCenter ();
+//
+//    CFNotificationCenterAddObserver(notification, (__bridge const void *)(self), observerMethod, CFSTR("darwin_test"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+//
+//
+//
+//}
+//
+//void observerMethod(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
+//    LOGI(@"[DARWIN] notif recue");
+//}
+//
+//- (void)postDarwinNotification {
+//    CFNotificationCenterRef notification = CFNotificationCenterGetDarwinNotifyCenter ();
+//    CFNotificationCenterPostNotification(notification, CFSTR("darwin_test2"), NULL, NULL, YES);
+//}
+
+- (void)initWormHole {
+    self.wormhole = [[MMWormhole alloc] initWithApplicationGroupIdentifier:@"group.org.linphone.phone.messagesNotification"
+    optionalDirectory:@"wormhole"];
+}
+
+- (void)sendWormHoleMessage {
+    [self.wormhole passMessageObject:@"titleString" identifier:@"messageIdentifier"];
+}
+
 - (void)configureUINotification {
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		return;
@@ -294,6 +326,10 @@
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 	[self registerForNotifications]; // Register for notifications must be done ASAP to give a chance for first SIP register to be done with right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
+    
+//    [self registerForDarwinNotifications];
+    [self initWormHole];
+    
 	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 		self.del = [[ProviderDelegate alloc] init];
 		[LinphoneManager.instance setProviderDelegate:self.del];
@@ -615,6 +651,15 @@
 
     NSString *category = [[[notification request] content] categoryIdentifier];
     if (category && [category isEqualToString:@"app_active"]) {
+        return;
+    }
+    
+    if (category && [category isEqualToString:@"msg_cat"]) {
+        UNNotificationContent *content = [[notification request] content];
+        UNMutableNotificationContent *mutableContent = [content mutableCopy];
+//        [self.wormhole passMessageObject:@{@"title" : content.title}
+//                              identifier:@"message"];
+        [self.wormhole passMessageObject:mutableContent identifier:@"message"];
         return;
     }
     
