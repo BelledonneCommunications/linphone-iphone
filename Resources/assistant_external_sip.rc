@@ -21,6 +21,7 @@
 
 	<section name="assistant">
 		<entry name="domain" overwrite="true"></entry>
+		<entry name="algorithm" overwrite="true">SHA-256</entry>
 		<entry name="password_max_length" overwrite="true">-1</entry>
 		<entry name="password_min_length" overwrite="true">-1</entry>
 		<entry name="username_length" overwrite="true">-1</entry>

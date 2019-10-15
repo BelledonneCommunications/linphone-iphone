@@ -26,10 +26,6 @@ use_rls_presence=1
 
 accept_early_media=0
 
-[assistant]
-password_length=-1
-username_length=-1
-
 [net]
 force_ice_disablement=0
 download_bw=0
