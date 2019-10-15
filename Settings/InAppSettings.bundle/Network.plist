@@ -157,30 +157,6 @@
 			<false/>
 		</dict>
 		<dict>
-			<key>DefaultValue</key>
-			<string>None</string>
-			<key>Key</key>
-			<string>media_encryption_preference</string>
-			<key>Title</key>
-			<string>Media Encryption</string>
-			<key>Titles</key>
-			<array>
-				<string>None</string>
-				<string>SRTP</string>
-				<string>ZRTP</string>
-				<string>DTLS</string>
-			</array>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Values</key>
-			<array>
-				<string>None</string>
-				<string>SRTP</string>
-				<string>ZRTP</string>
-				<string>DTLS</string>
-			</array>
-		</dict>
-		<dict>
 			<key>Key</key>
 			<string>network_limit_group</string>
 			<key>Title</key>
