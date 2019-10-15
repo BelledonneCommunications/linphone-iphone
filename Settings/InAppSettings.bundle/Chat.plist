@@ -41,28 +41,6 @@
 			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
-			<key>DefaultValue</key>
-			<string>0</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Titles</key>
-			<array>
-				<string>Disabled</string>
-				<string>Preferred</string>
-				<string>Mandatory</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>2</integer>
-				<integer>1</integer>
-			</array>
-			<key>Title</key>
-			<string>Encrypt messages with LIME</string>
-			<key>Key</key>
-			<string>use_lime_preference</string>
-		</dict>
-		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>

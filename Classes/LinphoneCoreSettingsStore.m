@@ -337,7 +337,6 @@
 
 	// chat section
 	{
-		[self setInteger:linphone_core_lime_enabled(LC) forKey:@"use_lime_preference"];
 		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
         int maxSize = linphone_core_get_max_size_for_auto_download_incoming_files(LC);
         [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Nerver" : @"Customize") forKey:@"auto_download_mode"];
@@ -770,9 +769,7 @@
 		linphone_core_set_media_encryption_mandatory(LC, [self boolForKey:@"media_encrption_mandatory_preference"]);
 
 		// chat section
-		int val = [self integerForKey:@"use_lime_preference"];
-		linphone_core_enable_lime(LC, val);
-		if (val == LinphoneLimeMandatory && (linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP)) {
+		if (linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP) {
 			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
 			[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)

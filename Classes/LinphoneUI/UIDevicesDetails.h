@@ -31,5 +31,5 @@
 
 - (IBAction)onSecurityCallClick:(id)sender;
 - (id)initWithIdentifier:(NSString *)identifier;
-- (void)update:(BOOL)listOpen;
+- (void)update:(BOOL)listOpen isMyself:(BOOL)isMyself;
 @end

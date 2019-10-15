@@ -37,8 +37,23 @@
     return self;
 }
 
-- (void)update:(BOOL)listOpen {
-    _devices = linphone_participant_get_devices(_participant);
+- (void)update:(BOOL)listOpen isMyself:(BOOL)isMyself {
+	_devices = linphone_participant_get_devices(_participant);
+	if (isMyself) {
+		// remove my device
+		// TODO replaced by bctbx_list_remove_custom when server can remove device which has no app
+		bctbx_list_t *cur;
+		bctbx_list_t *elem = _devices;
+		while (elem != NULL) {
+			cur = elem;
+			elem = elem->next;
+			if ([[NSString stringWithUTF8String:linphone_participant_device_get_name(cur->data) ? :
+				  linphone_address_as_string_uri_only(linphone_participant_device_get_address(cur->data))] isEqualToString:[[UIDevice currentDevice] name]]) {
+				_devices = bctbx_list_remove(_devices, cur->data);
+				break;
+			}
+		}
+	}
     UIImage *image = [FastAddressBook imageForSecurityLevel:linphone_participant_get_security_level(_participant)];
     if (bctbx_list_size(_devices) == 1) {
         [_securityButton setImage:image forState:UIControlStateNormal];

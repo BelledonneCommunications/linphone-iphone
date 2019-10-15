@@ -74,8 +74,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 	
 	LinphoneParticipant *me = linphone_chat_room_get_me(_room);
-	[_devicesMenuEntries
-	 addObject:[[DevicesMenuEntry alloc] initWithTitle:me number:0 isMe:TRUE]];
+	// not show me if there is only one device
+	if (bctbx_list_size(linphone_participant_get_devices(me)) > 1)
+		[_devicesMenuEntries addObject:[[DevicesMenuEntry alloc] initWithTitle:me number:0 isMe:TRUE]];
 
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_tableView reloadData];
@@ -117,14 +118,20 @@ static UICompositeViewDescription *compositeDescription = nil;
         
 	entry->myself ? cell.addressLabel.text = NSLocalizedString(@"Me", nil) : [ContactDisplay setDisplayNameLabel:cell.addressLabel forAddress:linphone_participant_get_address(entry->participant)];
     cell.participant = entry->participant;
-    [cell update:(entry->numberOfDevices != 0)];
+    [cell update:(entry->numberOfDevices != 0) isMyself:entry->myself];
 
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	DevicesMenuEntry *entry = [_devicesMenuEntries objectAtIndex:indexPath.row];
-	NSInteger num = (entry->numberOfDevices != 0) ? 0: bctbx_list_size(linphone_participant_get_devices(entry->participant));
+	NSInteger num = 0;
+	if (entry->numberOfDevices == 0) {
+		num =  bctbx_list_size(linphone_participant_get_devices(entry->participant));
+		// not show current device
+		if (entry->myself)
+		num -= 1;
+	}
 	[_devicesMenuEntries replaceObjectAtIndex:indexPath.row withObject:[[DevicesMenuEntry alloc] initWithTitle:entry->participant number:num isMe:entry->myself]];
 	[_tableView reloadData];
 }
