@@ -102,7 +102,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     DevicesMenuEntry *entry = [_devicesMenuEntries objectAtIndex:indexPath.row];
-    return entry->numberOfDevices > 1 ? (entry->numberOfDevices + 1) * 56.0 : 56.0;
+	if (entry->myself)
+		return (entry->numberOfDevices + 1) * 56.0;
+	return entry->numberOfDevices > 1 ? (entry->numberOfDevices + 1) * 56.0 : 56.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
