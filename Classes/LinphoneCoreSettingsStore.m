@@ -768,22 +768,6 @@
 		[lm lpConfigSetBool:[self boolForKey:@"pref_accept_early_media_preference"] forKey:@"pref_accept_early_media"];
 		linphone_core_set_media_encryption_mandatory(LC, [self boolForKey:@"media_encrption_mandatory_preference"]);
 
-		// chat section
-		if (linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP) {
-			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
-			[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
-			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
-																			 message:NSLocalizedString(@"LIME requires ZRTP encryption.\n"
-																									   @"By activating LIME you automatically activate ZRTP media encryption.",
-																									   nil)
-																	  preferredStyle:UIAlertControllerStyleAlert];
-
-			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction *action){}];
-			[errView addAction:defaultAction];
-			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-		}
 		linphone_core_set_file_transfer_server(LC, [self stringForKey:@"file_transfer_server_url_preference"].UTF8String);
         int maxSize;
         NSString *downloadMode = [self stringForKey:@"auto_download_mode"];
