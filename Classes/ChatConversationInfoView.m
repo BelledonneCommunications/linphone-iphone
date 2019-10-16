@@ -271,12 +271,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddClick:(id)sender {
-	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
-	view.tableController.notFirstTime = TRUE;
-	view.isForEditing = !_create;
-    view.isGroupChat = TRUE;
-	view.tableController.contactsGroup = [_contacts mutableCopy];
-	[PhoneMainView.instance popToView:view.compositeViewDescription];
+	if (_create || _imAdmin) {
+		ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+		view.tableController.notFirstTime = TRUE;
+		view.isForEditing = !_create;
+		view.isGroupChat = TRUE;
+		view.tableController.contactsGroup = [_contacts mutableCopy];
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	}
 }
 
 #pragma mark - TableView
