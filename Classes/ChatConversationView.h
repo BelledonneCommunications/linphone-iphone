@@ -87,6 +87,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *encryptedButton;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
++ (void)autoDownload:(LinphoneChatMessage *)message;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
@@ -104,7 +105,6 @@
 - (void)clearMessageView;
 
 - (void)showFileDownloadError;
-- (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view;
 - (NSURL *)getICloudFileUrl:(NSString *)name;
 - (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 

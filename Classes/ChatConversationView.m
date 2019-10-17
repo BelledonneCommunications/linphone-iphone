@@ -1065,7 +1065,6 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 		return;
   
     if (hasFile) {
-        [view autoDownload:chat view:view];
         [view.tableController addEventEntry:(LinphoneEventLog *)event_log];
         return;
     }
@@ -1291,7 +1290,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 }
 
-- (void)autoDownload:(LinphoneChatMessage *)message view:(ChatConversationView *)view {
++ (void)autoDownload:(LinphoneChatMessage *)message {
+	ChatConversationView *view = VIEW(ChatConversationView);
     //TODO: migrate with  "linphone_iphone_file_transfer_recv"
     LinphoneContent *content = linphone_chat_message_get_file_transfer_information(message);
     NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
@@ -1308,7 +1308,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 				// we're finished, save the image and update the message
 				UIImage *image = [UIImage imageWithData:data];
 				if (!image) {
-					[self showFileDownloadError];
+					[view showFileDownloadError];
 					return;
 				}
 				__block PHObjectPlaceholder *placeHolder;
@@ -1396,7 +1396,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		} else {
 			NSString *key =  @"localfile";
 			//write file to path
-			if([self writeFileInICloud:data fileURL:[self getICloudFileUrl:name]]) {
+			if([view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]]) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
 				//[LinphoneManager setValueInMessageAppData:filePath forKey:@"cachedfile" inMessage:message];
