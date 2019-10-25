@@ -127,9 +127,6 @@ static UILinphoneAudioPlayer *player;
     [activityVC setCompletionWithItemsHandler:^(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
         //This is used to select the same row when we get back to the recordings view.
         NSString *file = player.file;
-        //This reloads the view, if don't it's empty for some reason. Idealy we'd want to do this before closing the view but it's functionnal.
-        [PhoneMainView.instance popCurrentView];
-        [PhoneMainView.instance changeCurrentView:RecordingsListView.compositeViewDescription];
         [[(RecordingsListView *)VIEW(RecordingsListView) tableController] setSelected:file];
     }];
     [PhoneMainView.instance presentViewController:activityVC animated:YES completion:nil];
