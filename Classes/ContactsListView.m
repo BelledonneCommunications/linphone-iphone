@@ -122,6 +122,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactSelection setNameOrEmailFilter:@""];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 
+	int y = _searchBar.frame.origin.y + _searchBar.frame.size.height;
+	[tableController.tableView setFrame:CGRectMake(tableController.tableView.frame.origin.x,
+												   y,
+												   tableController.tableView.frame.size.width,
+												   tableController.tableView.frame.size.height)];
+	[tableController.emptyView setFrame:CGRectMake(tableController.emptyView.frame.origin.x,
+												   y,
+												   tableController.emptyView.frame.size.width,
+												   tableController.emptyView.frame.size.height)];
+
 	if (tableController.isEditing) {
 		tableController.editing = NO;
 	}
