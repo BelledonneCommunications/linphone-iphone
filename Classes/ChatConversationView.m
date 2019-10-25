@@ -423,25 +423,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)confirmShare:(NSData *)data url:(NSString *)url fileName:(NSString *)fileName assetId:(NSString *)phAssetId {
-    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [sheet addButtonWithTitle:@"send to this friend"
-                                block:^() {
-                                    if (![[self.messageField text] isEqualToString:@""]) {
-                                        [self sendMessageInMessageField];
-                                    }
-                                    if (url)
-                                        [self sendMessage:url withExterlBodyUrl:nil withInternalURL:nil];
-                                    else if (fileName)
-                                        [self startFileUpload:data withName:fileName];
-                                    else
-                                        [self startFileUpload:data assetId:phAssetId];
-                                }];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
+    dispatch_async(dispatch_get_main_queue(), ^{
+		[sheet addButtonWithTitle:NSLocalizedString(@"Send to this friend", nil)
+							block:^() {
+								if (![[self.messageField text] isEqualToString:@""]) {
+									[self sendMessageInMessageField];
+								}
+								if (url)
+									[self sendMessage:url withExterlBodyUrl:nil withInternalURL:nil];
+								else if (fileName)
+									[self startFileUpload:data withName:fileName];
+								else
+									[self startFileUpload:data assetId:phAssetId];}];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [sheet showInView:PhoneMainView.instance.view];
-        });
+		[sheet showInView:PhoneMainView.instance.view];
     });
 }
 
