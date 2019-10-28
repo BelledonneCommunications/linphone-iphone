@@ -10,8 +10,27 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+
+## [Unreleased]
+
+### Added
+- Possiblity to enable Media Encryption Mandatory  in Settings.
+- Possiblity to not show app's calls in iphone's history
+- Using new AAudio & Camera2 frameworks for better performances (if available)
+
+### Changed
+- Improved performances to reduce startup time.
+- Added our own devices in LIME encrypted chatrooms' security view.
+- License changed from GPLv2 to GPLv3.
+- Switched from MD5 to SHA-256 as password protection algorithm.
+- Updated translations, mainly French and English.
+- Disable bitcode by Xcode.
+- Modify some views for iphone, XR and Xs.
+
+### Fixed
+- Automatically downloaded images are copied when shared in a chat room.
     
-## [4.1.0] - 2019-xx-xx
+## [4.1.0] - 2019-05-06
 
 ### Added
 - End-to-end encryption for instant messaging, for both one-to-one and group conversations.
