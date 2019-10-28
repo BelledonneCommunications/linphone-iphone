@@ -1171,13 +1171,14 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"ICloud Drive is unavailable.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
         return FALSE;
     }
-    
-    if ([fileManager fileExistsAtPath:[fileURL path]]) {
-        // if it exists, replace the file
+
+	NSString *fileName = fileURL.lastPathComponent;
+    if ([fileManager fileExistsAtPath:[fileURL path]] || [fileName hasPrefix:@"recording"]) {
+        // if it exists, replace the file. If it's a record file, copy the file
         return [data writeToURL:fileURL atomically:TRUE];
     } else {
         // get the url of localfile
-        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileURL.lastPathComponent];
+        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
         NSURL *localURL = nil;
         if ([fileManager createFileAtPath:filePath contents:data attributes:nil]) {
             localURL = [NSURL fileURLWithPath:filePath];
