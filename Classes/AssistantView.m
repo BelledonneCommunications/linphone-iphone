@@ -174,6 +174,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	linphone_core_load_config_from_xml(LC,
 									   [LinphoneManager bundleFile:rcFilename].UTF8String);
+	if (account_creator) {
+		// Below two settings are applied to account creator when it is built.
+		// Reloading Core config after won't change the account creator configuration,
+		// hence the manual reload
+		linphone_account_creator_set_domain(account_creator, [[LinphoneManager.instance lpConfigStringForKey:@"domain" inSection:@"assistant" withDefault:@""] UTF8String]);
+		linphone_account_creator_set_algorithm(account_creator, [[LinphoneManager.instance lpConfigStringForKey:@"algorithm" inSection:@"assistant" withDefault:@""] UTF8String]);
+	}
 	[self changeView:nextView back:FALSE animation:TRUE];
 }
 
