@@ -1,8 +1,20 @@
-[![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=master)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
 
-Linphone is a free VoIP and video softphone based on the SIP protocol.
+Linphone is an open source softphone for voice and video over IP calling and instant messaging. It is fully SIP-based, for all calling, presence and IM features.
+General description is available from linphone web site
 
-![Dialer screenshot](http://www.linphone.org/img/slideshow-phone.png)
+## License
+
+Copyright © Belledonne Communications
+
+Linphone is dual licensed, and is available either :
+under a GNU/GPLv3 license, for free (open source). Please make sure that you understand and agree with the terms of this license before using it (see LICENSE file for details).
+under a proprietary license, for a fee, to be used in closed source applications. Contact Belledonne Communications for any question about costs and services.
+
+## Documentation
+
+-   Supported features and RFCs : https://www.linphone.org/technical-corner/linphone/features
+-   Linphone public wiki : https://wiki.linphone.org/xwiki/wiki/public/view/Linphone/
+
 
 # How can I contribute?
 
@@ -106,7 +118,7 @@ To activate it:
 ```
     USE_CRASHLYTHICS=true pod install
 ```
-`
+
 - Then open `linphone.xcworkspace` with Xcode to build and run the app.
 
 # Quick UI reference
