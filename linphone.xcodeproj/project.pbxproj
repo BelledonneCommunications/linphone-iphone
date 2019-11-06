@@ -132,6 +132,7 @@
 		61AEBECC2191E4A300F35E7F /* chevron_list_open@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */; };
 		61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 61CCC3DE21933B580060EDEA /* UIDeviceCell.m */; };
 		61CCC3E121933B660060EDEA /* UIDeviceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61CCC3E021933B660060EDEA /* UIDeviceCell.xib */; };
+		61DD7E1F2372E88F001BDD01 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61DD7E1E2372E88F001BDD01 /* CoreLocation.framework */; };
 		61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
@@ -1081,6 +1082,7 @@
 		61CCC3D721933B380060EDEA /* UIDeviceCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDeviceCell.h; sourceTree = "<group>"; };
 		61CCC3DE21933B580060EDEA /* UIDeviceCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDeviceCell.m; sourceTree = "<group>"; };
 		61CCC3E021933B660060EDEA /* UIDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDeviceCell.xib; sourceTree = "<group>"; };
+		61DD7E1E2372E88F001BDD01 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		620DFD020AC0182319853127 /* Pods-linphoneExtension.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneExtension.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneExtension/Pods-linphoneExtension.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
@@ -2015,6 +2017,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61DD7E1F2372E88F001BDD01 /* CoreLocation.framework in Frameworks */,
 				6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */,
 				61AEBEA321906AFC00F35E7F /* (null) in Frameworks */,
 				D37DC7181594AF3400B2A5EB /* MessageUI.framework in Frameworks */,
@@ -2441,6 +2444,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				61DD7E1E2372E88F001BDD01 /* CoreLocation.framework */,
 				6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,

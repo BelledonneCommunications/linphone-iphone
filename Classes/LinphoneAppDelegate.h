@@ -24,11 +24,13 @@
 #import "ProviderDelegate.h"
 #import <UserNotifications/UserNotifications.h>
 #import <UserNotificationsUI/UserNotificationsUI.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate, PKPushRegistryDelegate, UNUserNotificationCenterDelegate> {
+@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate, PKPushRegistryDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate> {
     @private
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL startedInBackground;
+	CLLocationManager* locationManager;
 }
 
 - (void)registerForNotifications;

@@ -248,6 +248,24 @@
 	//init logs asap
 	[Log enableLogs:[[LinphoneManager instance] lpConfigIntForKey:@"debugenable_preference"]];
 	
+	//Starting with iOS 13, the CNCopyCurrentNetworkInfo API will no longer return valid Wi-Fi SSID and BSSID information.
+	//Use the CoreLocation API to request the user’s consent to access location information.
+	 if (@available(iOS 13.0, *)) {
+		CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+		switch(status) {
+			case kCLAuthorizationStatusNotDetermined:
+				locationManager = [[CLLocationManager alloc]init];
+				locationManager.delegate = self;
+				[locationManager requestWhenInUseAuthorization];
+				break;
+			case kCLAuthorizationStatusRestricted:
+			case kCLAuthorizationStatusDenied:
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning", nil) message:NSLocalizedString(@"Location Authorization is Denied or RestricTed.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil, nil] show];
+			default:
+				break;
+		}
+	}
+
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 	[self registerForNotifications]; // Register for notifications must be done ASAP to give a chance for first SIP register to be done with right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
