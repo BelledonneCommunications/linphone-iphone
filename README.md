@@ -1,14 +1,14 @@
 
 Linphone is an open source softphone for voice and video over IP calling and instant messaging. It is fully SIP-based, for all calling, presence and IM features.
-General description is available from linphone web site
+General description is available from [linphone web site](https://www.linphone.org/technical-corner/linphone)
 
 ## License
 
 Copyright © Belledonne Communications
 
 Linphone is dual licensed, and is available either :
-under a GNU/GPLv3 license, for free (open source). Please make sure that you understand and agree with the terms of this license before using it (see LICENSE file for details).
-under a proprietary license, for a fee, to be used in closed source applications. Contact Belledonne Communications for any question about costs and services.
+- under a [GNU/GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) license, for free (open source). Please make sure that you understand and agree with the terms of this license before using it (see LICENSE file for details).
+- under a proprietary license, for a fee, to be used in closed source applications. Contact [Belledonne Communications](https://www.linphone.org/contact) for any question about costs and services.
 
 ## Documentation
 
