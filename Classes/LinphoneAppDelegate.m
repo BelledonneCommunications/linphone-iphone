@@ -250,17 +250,16 @@
 	
 	//Starting with iOS 13, the CNCopyCurrentNetworkInfo API will no longer return valid Wi-Fi SSID and BSSID information.
 	//Use the CoreLocation API to request the user’s consent to access location information.
-	 if (@available(iOS 13.0, *)) {
+	if (@available(iOS 13.0, *)) {
 		CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
 		switch(status) {
+			case kCLAuthorizationStatusDenied:
+			case kCLAuthorizationStatusRestricted:
 			case kCLAuthorizationStatusNotDetermined:
 				locationManager = [[CLLocationManager alloc]init];
 				locationManager.delegate = self;
 				[locationManager requestWhenInUseAuthorization];
 				break;
-			case kCLAuthorizationStatusRestricted:
-			case kCLAuthorizationStatusDenied:
-				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Warning", nil) message:NSLocalizedString(@"Location Authorization is Denied or RestricTed.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil, nil] show];
 			default:
 				break;
 		}

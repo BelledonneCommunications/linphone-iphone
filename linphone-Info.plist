@@ -91,7 +91,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Make calls with your friends</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Your location will used to detect the change of wifi</string>
+	<string>Linphone will not use, store or communicate your location. The authorization allows us to detect Wifi connection changes</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Use microphone to make audio calls</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
