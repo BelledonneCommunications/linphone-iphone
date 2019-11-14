@@ -882,6 +882,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																								completion:nil];
 																			   return;
 																		   }
+																		   linphone_account_creator_set_algorithm(account_creator, "");
 																		   linphone_account_creator_set_username(account_creator, linphone_auth_info_get_username(ai));
 																		   if (linphone_auth_info_get_passwd(ai) && !(strcmp(linphone_auth_info_get_passwd(ai),"") == 0)) {
 																			   linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(ai));

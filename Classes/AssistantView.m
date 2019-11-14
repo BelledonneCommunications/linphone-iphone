@@ -169,6 +169,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 													 assistant_recover_phone_account);
 	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
 													   assistant_is_account_linked);
+	linphone_account_creator_cbs_set_login_linphone_account(linphone_account_creator_get_callbacks(account_creator), assistant_login_linphone_account);
 	
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
@@ -1138,6 +1139,18 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 	}
 }
 
+void assistant_login_linphone_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
+								const char *resp) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorStatusRequestOk) {
+		[thiz configureProxyConfig];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
+	} else {
+		[thiz showErrorPopup:resp];
+	}
+}
+
 void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
 									const char *resp) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
@@ -1292,8 +1305,12 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class])
 				.text.UTF8String);
 		if (linphone_account_creator_get_password(account_creator) == NULL &&
-				linphone_account_creator_get_ha1(account_creator) == NULL) {
+			linphone_account_creator_get_ha1(account_creator) == NULL) {
+			if ([_activationTitle.text isEqualToString:@"USE LINPHONE ACCOUNT"]) {
+				linphone_account_creator_login_linphone_account(account_creator);
+			} else {
 				linphone_account_creator_activate_account(account_creator);
+			}
 		} else {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
