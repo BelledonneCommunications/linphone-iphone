@@ -272,9 +272,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (NSString *)errorForLinphoneAccountCreatorPhoneNumberStatus:(LinphoneAccountCreatorPhoneNumberStatus)status {
 	switch (status) {
 		case LinphoneAccountCreatorPhoneNumberStatusTooShort: /**< Phone number too short */
-			return NSLocalizedString(@"Your country code is too short.", nil);
+			return NSLocalizedString(@"Your phone number is too short.", nil);
 		case LinphoneAccountCreatorPhoneNumberStatusTooLong: /**< Phone number too long */
-			return NSLocalizedString(@"Your country code is too long.", nil);
+			return NSLocalizedString(@"Your phone number is too long.", nil);
 			return nil; /* this is not an error, just user has to finish typing */
 		case LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode: /**< Country code invalid */
 			return NSLocalizedString(@"Your country code is invalid.", nil);
