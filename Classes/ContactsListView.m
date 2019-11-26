@@ -26,6 +26,7 @@ static NSString *sAddAddress = nil;
 static NSString *sSipFilter = nil;
 static BOOL sEnableEmailFilter = FALSE;
 static NSString *sNameOrEmailFilter;
+static BOOL addAddressFromOthers = FALSE;
 
 + (void)setSelectionMode:(ContactSelectionMode)selectionMode {
 	sSelectionMode = selectionMode;
@@ -37,6 +38,7 @@ static NSString *sNameOrEmailFilter;
 
 + (void)setAddAddress:(NSString *)address {
 	sAddAddress = address;
+	addAddressFromOthers = true;
 }
 
 + (NSString *)getAddAddress {
@@ -154,6 +156,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[errView addAction:defaultAction];
 		[self presentViewController:errView animated:YES completion:nil];
 		[PhoneMainView.instance popCurrentView];
+	}
+	
+	// show message toast when add contact from address
+	if ([ContactSelection getAddAddress] != nil && addAddressFromOthers) {
+		UIAlertController *infoView = [UIAlertController
+									   alertControllerWithTitle:NSLocalizedString(@"Info", nil)
+									   message:NSLocalizedString(@"Select a contact or create a new one.",nil)
+									   preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction *action){
+															  }];
+		
+		[infoView addAction:defaultAction];
+		addAddressFromOthers = FALSE;
+		[PhoneMainView.instance presentViewController:infoView animated:YES completion:nil];
 	}
 }
 
