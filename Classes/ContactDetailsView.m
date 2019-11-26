@@ -528,6 +528,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 							[self onCancelClick:sender];
 						}
 						[self removeContact];
+						[self dismissKeyboards];
 					  }];
 }
 
