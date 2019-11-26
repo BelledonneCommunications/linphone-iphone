@@ -45,7 +45,7 @@
 - (void)setAddress:(NSString *)address {
 	_addressLabel.text = _editTextfield.text = address;
 	char *normAddr = (char *)_addressLabel.text.UTF8String;
-	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(LC);
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 	if(_addressLabel.text && cfg && linphone_proxy_config_is_phone_number(cfg, _addressLabel.text.UTF8String)) {
 		normAddr = linphone_proxy_config_normalize_phone_number(cfg,
 																_addressLabel.text.UTF8String);
