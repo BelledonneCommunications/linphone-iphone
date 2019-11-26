@@ -258,12 +258,6 @@
 				(showEmails && section == ContactSections_Email)) {
 
 				[self removeEmptyEntry:self.tableView section:section animated:NO];
-				// the section is empty -> remove titles
-				if ([[self getSectionData:section] count] == 0) {
-					[self.tableView
-						  reloadSections:[NSIndexSet indexSetWithIndex:section]
-						withRowAnimation:animated ? UITableViewRowAnimationFade : UITableViewRowAnimationNone];
-				}
 			}
 		}
 		_editButton.enabled = YES;
