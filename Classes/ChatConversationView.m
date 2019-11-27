@@ -1017,6 +1017,9 @@ void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *
 		view.addressLabel.text = [NSString stringWithUTF8String:subject];
 		[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 		[view.tableController scrollToBottom:true];
+		if (IPAD) {
+			[VIEW(ChatsListView).tableController loadData];
+		}
 	}
 }
 
