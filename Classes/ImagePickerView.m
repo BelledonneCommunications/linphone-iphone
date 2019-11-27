@@ -396,7 +396,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 +(void) pickDocumentForDelegate:(id<UIDocumentMenuDelegate>)documentMenuDelegate {
 	UIDocumentMenuViewController *documentProviderMenu = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:SUPPORTED_EXTENTIONS inMode:UIDocumentPickerModeImport];
 	documentProviderMenu.delegate = documentMenuDelegate;
-	[PhoneMainView.instance presentViewController:documentProviderMenu animated:YES completion:nil];
+	if (IPAD) {
+		/* On iPad the activity view controller will be displayed as a popover using the new UIPopoverPresentationController, it requires that you specify an anchor point for the presentation of the popover using one of the three following properties: barButtonItem, sourceView, sourceRect */
+		ChatConversationView *chatView = VIEW(ChatConversationView);
+		documentProviderMenu.popoverPresentationController.sourceView = chatView.view;
+		CGRect frame = documentProviderMenu.popoverPresentationController.sourceRect;
+		CGRect topBarFrame = chatView.topBar.frame;
+		documentProviderMenu.popoverPresentationController.sourceRect = CGRectMake(topBarFrame.origin.x + topBarFrame.size.width/2, topBarFrame.origin.y + topBarFrame.size.height, frame.size.width, frame.size.height);
+	}
+	dispatch_async(dispatch_get_main_queue(), ^ {
+		[PhoneMainView.instance presentViewController:documentProviderMenu animated:YES completion:nil];
+	});
 }
 
 @end
