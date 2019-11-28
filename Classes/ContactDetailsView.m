@@ -437,9 +437,13 @@ static UICompositeViewDescription *compositeDescription = nil;
                     nbSipAd++;
                   }
                 }
-                while (_contact.phones.count > 0 &&
-                       _contact.phones[0] != NULL) {
-                  [_contact removePhoneNumberAtIndex:0];
+                while (_contact.phones.count > 0) {
+					if (_contact.phones[0] != NULL && ![_contact.phones[0] isEqualToString:@" "]) {
+						[_contact removePhoneNumberAtIndex:0];
+					} else {
+						// remove empty index
+						[_contact.phones removeObjectAtIndex:0];
+					}
                 }
                 NSInteger nbPhone = 0;
                 if (_tmpContact.phones != NULL) {
