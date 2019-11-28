@@ -119,8 +119,9 @@
 
 	if (!service || [service isEqualToString:@""])
 		return [FastAddressBook isSipURI:username];
-
-	if ([service isEqualToString:LinphoneManager.instance.contactSipField])
+	
+	// use caseInsensitiveCompare, because ios13 saves "SIP" by "Sip"
+	if ([service caseInsensitiveCompare:LinphoneManager.instance.contactSipField] == NSOrderedSame)
 		return TRUE;
 
 	return FALSE;
