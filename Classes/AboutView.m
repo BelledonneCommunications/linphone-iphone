@@ -83,7 +83,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onLicenceTap {
-	NSString *url = @"https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html";
+	NSString *url = @"https://www.gnu.org/licenses/gpl-3.0.html";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
