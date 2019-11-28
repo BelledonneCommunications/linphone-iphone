@@ -47,6 +47,8 @@
 				if ([provider hasItemConformingToTypeIdentifier:ti]) {
 					found=true;
 					[self loadItem:provider typeIdentifier:ti defaults:defaults];
+					// Send only one item
+					return;
 				}
 			}
 			if (!found){
