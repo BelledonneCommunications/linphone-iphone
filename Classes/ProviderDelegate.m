@@ -222,7 +222,7 @@
 		LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
 		linphone_call_pause((LinphoneCall *)call);
 	} else {
-		if (linphone_core_get_conference(LC)) {
+		if (linphone_core_get_conference(LC) && linphone_core_get_calls_nb(LC) > 1) {
 			linphone_core_enter_conference(LC);
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 		} else {
