@@ -1441,7 +1441,22 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         [_waitView setHidden:false];
-		[self resetLiblinphone:TRUE];
+		if (number_of_configs_before > 0) {
+			// TODO remove ME when it is fixed in SDK.
+			linphone_core_set_provisioning_uri(LC, NULL);
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
+																			 message:NSLocalizedString(@"Please remove other accounts before remote provisioning.", nil)
+																	  preferredStyle:UIAlertControllerStyleAlert];
+				
+			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction * action) {}];
+			
+			[errView addAction:defaultAction];
+			[self presentViewController:errView animated:YES completion:nil];
+		} else {
+			[self resetLiblinphone:TRUE];
+		}
     });
 }
 
