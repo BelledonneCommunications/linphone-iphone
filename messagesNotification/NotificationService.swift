@@ -8,12 +8,16 @@
 import UserNotifications
 import linphonesw
 
+struct SenderData: Codable {
+    var msgFrom: String?
+    var msgContent: String?
+    var callId: String?
+    var localUri: String?
+    var peerUri: String?
+}
+
+var senderData: SenderData?
 var running: Bool = true
-var msgFrom: String?
-var msgContent: String?
-var callId: String?
-var localUri: String?
-var peerUri: String?
 
 class NotificationService: UNNotificationServiceExtension {
 
@@ -27,12 +31,14 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
+        registerForAppNotifications()
         FileManager.exploreSharedContainer()
         
         if let bestAttemptContent = bestAttemptContent, let appActive = FileManager.getAppStatus() {
             
             NSLog("[EXTENSION] app active: \(appActive)")
             if (!appActive) {
+                FileManager.setExtensionStatus(extActive: true);
                 startCore()
 
                 if let badge = updateBadge() as NSNumber? {
@@ -41,27 +47,32 @@ class NotificationService: UNNotificationServiceExtension {
 
                 lc!.networkReachable = false
                 lc!.stop()
-            
 
                 bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
                 bestAttemptContent.title = "Message received [extension]"
-                if let msgFrom = msgFrom {
+                if let msgFrom = senderData?.msgFrom {
                     bestAttemptContent.subtitle = msgFrom
                 }
-                if let msgContent = msgContent {
+                if let msgContent = senderData?.msgContent {
                     bestAttemptContent.body = msgContent
                 }
 
                 bestAttemptContent.categoryIdentifier = "msg_cat"
                 
-                bestAttemptContent.userInfo.updateValue(callId, forKey: "CallId")
-                bestAttemptContent.userInfo.updateValue(msgFrom, forKey: "from")
-                bestAttemptContent.userInfo.updateValue(peerUri, forKey: "peer_addr")
-                bestAttemptContent.userInfo.updateValue(localUri, forKey: "local_addr")
+                bestAttemptContent.userInfo.updateValue(senderData?.callId, forKey: "CallId")
+                bestAttemptContent.userInfo.updateValue(senderData?.msgFrom, forKey: "from")
+                bestAttemptContent.userInfo.updateValue(senderData?.peerUri, forKey: "peer_addr")
+                bestAttemptContent.userInfo.updateValue(senderData?.localUri, forKey: "local_addr")
+                
+                
+
             } else {
                 bestAttemptContent.categoryIdentifier = "app_active"
+                bestAttemptContent.title = "Message received [time out]"
+                bestAttemptContent.body = "You have received a message."
             }
-
+            
+            FileManager.setExtensionStatus(extActive: false);
             contentHandler(bestAttemptContent)
         }
     }
@@ -69,13 +80,47 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+        if let lc = lc {
+            lc.stop()
+        }
+        FileManager.setExtensionStatus(extActive: false);
+        
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[EXTENSION] TIME OUT")
-            lc!.stop()
-            // Modify the notification content here...
-            bestAttemptContent.title = "\(bestAttemptContent.title) [time out]"
+            bestAttemptContent.categoryIdentifier = "app_active"
+            bestAttemptContent.title = "Message received [time out]"
+            bestAttemptContent.body = "You have received a message."
             contentHandler(bestAttemptContent)
         }
+    }
+
+    func appNotificationCallback() {
+        NSLog("[DARWIN] notif recue")
+        if let lc = lc {
+            lc.stop()
+        }
+        FileManager.setExtensionStatus(extActive: false);
+
+        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+            NSLog("[EXTENSION] STOPPED BY APP")
+            bestAttemptContent.categoryIdentifier = "app_active"
+            bestAttemptContent.title = "\(bestAttemptContent.title) [killed]"
+//            sleep(4)
+            contentHandler(bestAttemptContent)
+        }
+    }
+
+    func registerForAppNotifications() {
+        let notification = CFNotificationCenterGetDarwinNotifyCenter()
+        let notifName = "STOP_EXT" as CFString
+        let observer = UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque())
+        
+        CFNotificationCenterAddObserver(notification, observer, { (_, observer, _, _, _) -> Void in
+            if let observer = observer {
+                let mySelf = Unmanaged<NotificationService>.fromOpaque(observer).takeUnretainedValue()
+                mySelf.appNotificationCallback()
+            }
+        }, notifName, nil, .deliverImmediately)
     }
     
     func startCore() {
@@ -85,7 +130,6 @@ class NotificationService: UNNotificationServiceExtension {
         let logManager = LinphoneLoggingServiceManager()
         log.logLevel = LogLevel.Message
         log.addDelegate(delegate: logManager)
-      
         
         do {
 //            Instanciate a LinphoneCore object
@@ -98,10 +142,12 @@ class NotificationService: UNNotificationServiceExtension {
             lc!.refreshRegisters()
 //            register()
 //            NSLog("[EXTENSION] register launched")
-            
+            var i = 0
             while(running) {
                 lc!.iterate() /* first iterate initiates registration */
-                usleep(50000)
+                NSLog("[EXTENSION] \(i)")
+                i += 1;
+                usleep(100000)
             }
             
         } catch {
@@ -129,22 +175,34 @@ class LinphoneCoreManager: CoreDelegate {
     
     override func onMessageReceived(lc: Core, room: ChatRoom, message: ChatMessage) {
         NSLog("[EXTENSION] Core received msg \n")
-        msgFrom = message.fromAddress?.username
-        
-        if (message.isText) {
-            msgContent = message.textContent
-        } else {
-            msgContent = "🗻"
+        // content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
+
+//        LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event_log);
+//        if (!chat)
+//        return;
+
+        if (message.contentType == "application/im-iscomposing+xml") {
+            return
         }
-        NSLog("[EXTENSION] msg: \(msgContent) \n")
-
-        callId = message.getCustomHeader(headerName: "Call-Id")
-//        content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
         
-        peerUri = room.peerAddress?.asStringUriOnly()
-        localUri = room.localAddress?.asStringUriOnly()
+//        var msgContent: String
+//
+//        if (message.isText) {
+//            msgContent = message.textContent
+//        } else if (message.isFileTransfer) {
+//            msgContent = "🗻"
+//        } else {
+//            return
+//        }
+        let msgContent = message.isText ? message.textContent : "🗻"
+        let msgFrom = message.fromAddress?.username
+        let callId = message.getCustomHeader(headerName: "Call-Id")
+        let localUri = room.localAddress?.asStringUriOnly()
+        let peerUri = room.peerAddress?.asStringUriOnly()
+    
+        senderData = SenderData(msgFrom: msgFrom, msgContent: msgContent, callId: callId, localUri: localUri, peerUri: peerUri)
+        NSLog("[EXTENSION] msg: \(senderData?.msgContent) \n")
 
-        
         running = false
     }
     
@@ -208,5 +266,10 @@ extension FileManager {
     static func getAppStatus() -> Bool? {
         let defaults = UserDefaults(suiteName: "group.org.linphone.phone.messagesNotification")
         return defaults?.bool(forKey: "appActive")
+    }
+    
+    static func setExtensionStatus(extActive: Bool) {
+        let defaults = UserDefaults(suiteName: "group.org.linphone.phone.messagesNotification")
+        defaults?.set(extActive, forKey: "extActive")
     }
 }
