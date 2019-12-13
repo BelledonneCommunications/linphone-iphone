@@ -57,13 +57,22 @@ target 'linphoneExtension' do
 
 end
 
-target 'messagesNotification' do
+target 'msgNotificationService' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   use_frameworks!
 
   # Pods for messagesNotification
   basic_pods
 
+end
+
+target 'msgNotificationContent' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  use_frameworks!
+  
+  # Pods for messagesNotification
+  basic_pods
+  
 end
 
 =begin

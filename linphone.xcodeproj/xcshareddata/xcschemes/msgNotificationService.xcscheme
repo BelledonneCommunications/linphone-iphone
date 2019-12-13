@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "EA5F25D8232BD3E200475F2E"
-               BuildableName = "messagesNotification.appex"
-               BlueprintName = "messagesNotification"
+               BuildableName = "msgNotificationService.appex"
+               BlueprintName = "msgNotificationService"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

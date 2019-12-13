@@ -78,6 +78,8 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 
+NSString *const kLinphoneMsgNotificationGroupId = @"group.org.linphone.phone.msgNotification";
+
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
 extern void libmsamr_init(MSFactory *factory);
@@ -2667,7 +2669,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)preferenceFile:(NSString *)file {
-    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.org.linphone.phone.messagesNotification"];
+    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationGroupId];
     NSURL *fullPathURL = [NSURL URLWithString:@"Library/Preferences/linphone/" relativeToURL:sharedContainerURL];
     NSString *fullPath = [fullPathURL path];
     
@@ -2689,7 +2691,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)dataFile:(NSString *)file {
-    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.org.linphone.phone.messagesNotification"];
+    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationGroupId];
     NSString* home = [[sharedContainerURL path] stringByAppendingPathComponent:@"/Library/Application Support/linphone/"];
     NSString *fullPath = [home stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     

@@ -117,12 +117,12 @@
 }
 
 - (BOOL)getExtensionStateInSharedContainer {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.linphone.phone.messagesNotification"];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationGroupId];
     return [defaults boolForKey:@"extActive"];
 }
 
 - (void)setAppStateInSharedContainer:(BOOL)state {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.org.linphone.phone.messagesNotification"];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationGroupId];
     [defaults setBool:state forKey:@"appActive"];
 }
 
