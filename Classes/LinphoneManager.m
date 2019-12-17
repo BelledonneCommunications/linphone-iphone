@@ -1854,7 +1854,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_qrcode_found(cbs, linphone_iphone_qr_code_found);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 
-	theLinphoneCore = linphone_factory_create_core_with_config_3(factory, _configDb, NULL);
+	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationGroupId UTF8String], true);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 	linphone_core_start(theLinphoneCore);
 

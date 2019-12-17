@@ -60,8 +60,6 @@
 	[LinphoneManager.instance enterBackgroundMode];
     LinphoneCall *call = linphone_core_get_current_call(LC);
 
-    [self setAppStateInSharedContainer:false];
-
     if (!call) {
 
         // !!! Will be removed after push notification job finished
@@ -87,43 +85,8 @@
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    [self setAppStateInSharedContainer:true];
-    BOOL appExtensionActive = [self getExtensionStateInSharedContainer];
-    if (appExtensionActive) {
-        [self stopAppExtension];
-    }
     [LinphoneManager.instance startLinphoneCore];
-//    [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
-}
-
-//void onAppExtensionStopped(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-//    LOGI(@"[DARWIN] notif recue");
-////    [LinphoneManager.instance startLinphoneCore];
-//}
-
-- (void)stopAppExtension {
-    CFNotificationCenterRef notification = CFNotificationCenterGetDarwinNotifyCenter();
-//    CFNotificationCenterAddObserver(notification, (__bridge const void *)(self), onAppExtensionStopped, CFSTR("EXT_ACK"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterPostNotification(notification, CFSTR("STOP_EXT"), NULL, NULL, YES);
-    LOGI(@"[DARWIN] notif sent");
-    BOOL appExtensionActive = [self getExtensionStateInSharedContainer];
-    
-    while(appExtensionActive) {
-        LOGI(@"[DARWIN] wait");
-        sleep(1);
-        appExtensionActive = [self getExtensionStateInSharedContainer];
-    }
-    LOGI(@"[DARWIN] released");
-}
-
-- (BOOL)getExtensionStateInSharedContainer {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationGroupId];
-    return [defaults boolForKey:@"extActive"];
-}
-
-- (void)setAppStateInSharedContainer:(BOOL)state {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationGroupId];
-    [defaults setBool:state forKey:@"appActive"];
+    [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -336,10 +299,10 @@
 			return YES;
 		}
         
-        [self setAppStateInSharedContainer:false];
+//        [self setAppStateInSharedContainer:false];
 		startedInBackground = true;
     } else {
-        [self setAppStateInSharedContainer:true];
+//        [self setAppStateInSharedContainer:true];
     }
 	bgStartId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
 	  LOGW(@"Background task for application launching expired.");
@@ -657,7 +620,7 @@
 	LOGD(@"UN : response received");
 	LOGD(response.description);
     
-    [LinphoneManager.instance startLinphoneCore];
+//    [LinphoneManager.instance startLinphoneCore];
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
 	if (!callId)
