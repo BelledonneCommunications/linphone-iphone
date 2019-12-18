@@ -1701,7 +1701,7 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 
 static BOOL libStarted = FALSE;
 
-- (void)startLinphoneCore {
+- (void)launchLinphoneCore {
 
 	if (libStarted) {
 		LOGE(@"Liblinphone is already initialized!");
@@ -1808,6 +1808,17 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 			linphone_account_creator_is_account_linked(account_creator);
 		}
 	}
+}
+
+- (void)startLinphoneCore {
+    linphone_core_start([LinphoneManager getLc]);
+    mIterateTimer =
+    [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(iterate) userInfo:nil repeats:YES];
+}
+
+- (void)stopLinphoneCore {
+    linphone_core_stop([LinphoneManager getLc]);
+    [mIterateTimer invalidate];
 }
 
 - (void)createLinphoneCore {

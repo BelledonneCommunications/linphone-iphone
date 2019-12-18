@@ -126,8 +126,10 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)playMessageSound;
 - (void)resetLinphoneCore;
-- (void)startLinphoneCore;
+- (void)launchLinphoneCore;
 - (void)destroyLinphoneCore;
+- (void)startLinphoneCore;
+- (void)stopLinphoneCore;
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;

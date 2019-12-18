@@ -80,7 +80,7 @@
             }
         }
 
-        [LinphoneManager.instance destroyLinphoneCore];
+        [LinphoneManager.instance stopLinphoneCore];
     }
 }
 
@@ -309,7 +309,7 @@
 	  [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
-	[LinphoneManager.instance startLinphoneCore];
+	[LinphoneManager.instance launchLinphoneCore];
 	LinphoneManager.instance.iapManager.notificationCategory = @"expiry_notification";
 	// initialize UI
 	[self.window makeKeyAndVisible];
@@ -584,7 +584,7 @@
     if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
         return;
     }
-    [LinphoneManager.instance startLinphoneCore];
+    [LinphoneManager.instance launchLinphoneCore];
     
 	[self configureUINotification];
 	//to avoid IOS to suspend the app before being able to launch long running task
@@ -610,7 +610,7 @@
     }
     
     [self configureUINotification];
-    [LinphoneManager.instance startLinphoneCore];
+//    [LinphoneManager.instance launchLinphoneCore];
 	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
 
@@ -620,7 +620,7 @@
 	LOGD(@"UN : response received");
 	LOGD(response.description);
     
-//    [LinphoneManager.instance startLinphoneCore];
+//    [LinphoneManager.instance launchLinphoneCore];
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
 	if (!callId)
@@ -942,7 +942,7 @@
 											 object:nil];
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
-	[LinphoneManager.instance startLinphoneCore];
+	[LinphoneManager.instance launchLinphoneCore];
         [LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
 }
 
