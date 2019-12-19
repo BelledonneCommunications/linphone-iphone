@@ -31,16 +31,14 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         // Do any required interface initialization here.
         
         let replyAction = UNTextInputNotificationAction(identifier: "Reply",
-                         title: "Reply",
+                         title: NSLocalizedString("Reply", comment: ""),
                          options: [],
-                         textInputButtonTitle: "Send",
+                         textInputButtonTitle: NSLocalizedString("Send", comment: ""), // TODO PAUL : non traduit ?
                          textInputPlaceholder: "")
         
-        let seenAction = UNNotificationAction(identifier: "Seen", title: "Mark as seen", options: [])
+        let seenAction = UNNotificationAction(identifier: "Seen", title: NSLocalizedString("Mark as seen", comment: ""), options: [])
         let category = UNNotificationCategory(identifier: "msg_cat", actions: [replyAction, seenAction], intentIdentifiers: [], options: [.customDismissAction])
         UNUserNotificationCenter.current().setNotificationCategories([category])
-        
-
         
         isRegistered = false
         needToStop = false

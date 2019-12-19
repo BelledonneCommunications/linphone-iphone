@@ -10,15 +10,16 @@ import linphonesw
 
 var GROUP_ID = "group.org.linphone.phone.msgNotification"
 
-struct SenderData: Codable {
-    var msgFrom: String?
-    var msgContent: String?
+struct MsgData: Codable {
+    var from: String?
+    var body: String?
+    var subtitle: String?
     var callId: String?
-    var localUri: String?
-    var peerUri: String?
+    var localAddr: String?
+    var peerAddr: String?
 }
 
-var senderData: SenderData?
+var msgData: MsgData?
 var msgReceived: Bool = false
 
 class NotificationService: UNNotificationServiceExtension {
@@ -47,20 +48,20 @@ class NotificationService: UNNotificationServiceExtension {
                 lc!.stop()
 
                 bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
-                bestAttemptContent.title = "Message received [extension]"
-                if let msgFrom = senderData?.msgFrom {
-                    bestAttemptContent.subtitle = msgFrom
+                bestAttemptContent.title = NSLocalizedString("Message received", comment: "") + " [extension]"
+                if let subtitle = msgData?.subtitle {
+                    bestAttemptContent.subtitle = subtitle
                 }
-                if let msgContent = senderData?.msgContent {
-                    bestAttemptContent.body = msgContent
+                if let body = msgData?.body {
+                    bestAttemptContent.body = body
                 }
 
                 bestAttemptContent.categoryIdentifier = "msg_cat"
                 
-                bestAttemptContent.userInfo.updateValue(senderData?.callId as Any, forKey: "CallId")
-                bestAttemptContent.userInfo.updateValue(senderData?.msgFrom as Any, forKey: "from")
-                bestAttemptContent.userInfo.updateValue(senderData?.peerUri as Any, forKey: "peer_addr")
-                bestAttemptContent.userInfo.updateValue(senderData?.localUri as Any, forKey: "local_addr")
+                bestAttemptContent.userInfo.updateValue(msgData?.callId as Any, forKey: "CallId")
+                bestAttemptContent.userInfo.updateValue(msgData?.from as Any, forKey: "from")
+                bestAttemptContent.userInfo.updateValue(msgData?.peerAddr as Any, forKey: "peer_addr")
+                bestAttemptContent.userInfo.updateValue(msgData?.localAddr as Any, forKey: "local_addr")
 
                 contentHandler(bestAttemptContent)
             } catch {
@@ -77,8 +78,8 @@ class NotificationService: UNNotificationServiceExtension {
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[EXTENSION] TIME OUT")
             bestAttemptContent.categoryIdentifier = "app_active"
-            bestAttemptContent.title = "Message received [time out]"
-            bestAttemptContent.body = "You have received a message."
+            bestAttemptContent.title = NSLocalizedString("Message received", comment: "") + " [time out]"
+            bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")
             lc?.stop()
             contentHandler(bestAttemptContent)
         }
@@ -149,16 +150,32 @@ class NotificationService: UNNotificationServiceExtension {
                 return
             }
 
-            let msgContent = message.isText ? message.textContent : "🗻"
-            let msgFrom = message.fromAddress?.username
+            let content = message.isText ? message.textContent : "🗻"
+            let from = message.fromAddress?.username
             let callId = message.getCustomHeader(headerName: "Call-Id")
             let localUri = room.localAddress?.asStringUriOnly()
             let peerUri = room.peerAddress?.asStringUriOnly()
             
-            senderData = SenderData(msgFrom: msgFrom, msgContent: msgContent, callId: callId, localUri: localUri, peerUri: peerUri)
-            NSLog("[EXTENSION] msg: \(senderData?.msgContent) \n")
-            
-            msgReceived = true // TODO PAUL : mettre au début de la function
+            msgData = MsgData(from: from, body: "", subtitle: "", callId:callId, localAddr: localUri, peerAddr:peerUri)
+
+            if let showMsg = lc.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
+                if let subject = room.subject as String?, subject != "" {
+                    msgData?.subtitle = subject
+                    msgData?.body = from! + " : " + content
+                } else {
+                    msgData?.subtitle = from
+                    msgData?.body = content
+                }
+            } else {
+                if let subject = room.subject as String?, subject != "" {
+                    msgData?.body = subject + " : " + from!
+                } else {
+                    msgData?.body = from
+                }
+            }
+
+            NSLog("[EXTENSION] msg: \(content) \n")
+            msgReceived = true
         }
         
         override func onNotifyReceived(lc: Core, lev: Event, notifiedEvent: String, body: Content) {
