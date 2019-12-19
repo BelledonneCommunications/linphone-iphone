@@ -146,7 +146,7 @@ class NotificationService: UNNotificationServiceExtension {
             NSLog("[EXTENSION] Core received msg \(message.contentType) \n")
             // content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
 
-            if (message.contentType == "application/im-iscomposing+xml") {
+            if (message.contentType != "text/plain" && message.contentType != "image/jpeg") {
                 return
             }
 
