@@ -1190,6 +1190,10 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
 			return;
 	}
+    
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) { // TODO PAUL : fix for notif when call in bg
+        return;
+    }
 
 	// Create a new notification
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
