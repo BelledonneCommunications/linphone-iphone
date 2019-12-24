@@ -584,7 +584,7 @@
     if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
         return;
     }
-    [LinphoneManager.instance launchLinphoneCore];
+    [LinphoneManager.instance startLinphoneCore]; // TODO PAUL : a tester
     
 	[self configureUINotification];
 	//to avoid IOS to suspend the app before being able to launch long running task
@@ -610,7 +610,6 @@
     }
     
     [self configureUINotification];
-//    [LinphoneManager.instance launchLinphoneCore];
 	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
 
@@ -620,7 +619,7 @@
 	LOGD(@"UN : response received");
 	LOGD(response.description);
     
-//    [LinphoneManager.instance launchLinphoneCore];
+//    [LinphoneManager.instance startLinphoneCore]; // Clique sur la notif? Est ce que ->fg est appelé? 
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
 	if (!callId)
