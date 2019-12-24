@@ -18,14 +18,23 @@ var needToStop: Bool = false
 
 class NotificationViewController: UIViewController, UNNotificationContentExtension {
 
+    enum LinphoneCoreError: Error {
+        case timeout
+    }
+
     @IBOutlet var label: UILabel?
     var lc: Core?
-    
+    var config: Config!
+    var logDelegate: LinphoneLoggingServiceManager!
+    var msgDelegate: LinphoneChatMessageManager!
+    var coreDelegate: LinphoneCoreManager!
+
 //    override func viewWillDisappear(_ animated: Bool) {
 //        super.viewWillDisappear(animated)
 //        lc?.stop() // TODO PAUL : garder ca si il y a un call pour supprimer le core?
 //    }
-    
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any required interface initialization here.
@@ -39,19 +48,16 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         let seenAction = UNNotificationAction(identifier: "Seen", title: NSLocalizedString("Mark as seen", comment: ""), options: [])
         let category = UNNotificationCategory(identifier: "msg_cat", actions: [replyAction, seenAction], intentIdentifiers: [], options: [.customDismissAction])
         UNUserNotificationCenter.current().setNotificationCategories([category])
-        
+
         isRegistered = false
         needToStop = false
         isReplySent = false
-        
-        // TODO PAUL handle dismiss action : already done?
     }
-    
+
     func didReceive(_ notification: UNNotification) {
-//        self.label?.text = notification.request.content.body // title
-        self.label?.text = "test test test"
+        self.label?.text = "test test test" // TODO PAUL : a enlever
     }
-    
+
     func didReceive(_ response: UNNotificationResponse,
                     completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {
         let userInfo = response.notification.request.content.userInfo
@@ -67,110 +73,136 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         default:
             break
         }
-        
+        stopCore()
 //        completion(.dismiss) // TODO PAUL : ok mais dans le cas on ouvre la notif : .dissmisAndForward -> open app conv -> deja fait?
     }
-    
+
     func markAsSeenAction(_ userInfo: [AnyHashable : Any], completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {
         NSLog("[EXTENSION] markAsSeenAction")
         do {
             try startCore(completionHandler: completion)
-            
+
             let peerAddress = userInfo["peer_addr"] as! String
             let localAddress = userInfo["local_addr"] as! String
-            let peer = try! lc!.createAddress(address: peerAddress)
-            let local = try! lc!.createAddress(address: localAddress)
+            let peer = try lc!.createAddress(address: peerAddress)
+            let local = try lc!.createAddress(address: localAddress)
             let room = lc!.findChatRoom(peerAddr: peer, localAddr: local)
             if let room = room {
-    //            let roomDelegate = LinphoneChatRoomManager()
-    //            room.addDelegate(delegate: roomDelegate)
                 room.markAsRead()
             }
-            
+
 //            lc!.iterate() // TODO PAUL : needed?
         } catch {
             NSLog("[EXTENSION] error: \(error)")
             completion(.dismissAndForwardAction)
         }
-        lc!.networkReachable = false
-        lc!.stop()
+//        lc!.networkReachable = false
+//        lc!.stop()
     }
-    
+
     func replyAction(_ userInfo: [AnyHashable : Any], text replyText: String, completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {
         NSLog("[EXTENSION] replyAction")
         do {
             try startCore(completionHandler: completion)
-            
+
             let peerAddress = userInfo["peer_addr"] as! String
             let localAddress = userInfo["local_addr"] as! String
-            let peer = try! lc!.createAddress(address: peerAddress)
-            let local = try! lc!.createAddress(address: localAddress)
+            let peer = try lc!.createAddress(address: peerAddress)
+            let local = try lc!.createAddress(address: localAddress)
             let room = lc!.findChatRoom(peerAddr: peer, localAddr: local)
             if let room = room {
-                let msgDelegate = LinphoneChatMessageManager()
-                let chatMsg = try! room.createMessage(message: replyText)
+                msgDelegate = LinphoneChatMessageManager()
+                let chatMsg = try room.createMessage(message: replyText)
                 chatMsg.addDelegate(delegate: msgDelegate)
                 room.sendChatMessage(msg: chatMsg)
-                room.markAsRead()
+//                room.markAsRead()
             }
-            
-            var i = 0
-            while(!isReplySent && !needToStop) {
+
+            for i in 0...50 where !isReplySent && !needToStop {
                 lc!.iterate()
-                NSLog("[EXTENSION] \(i)")
-                i += 1;
+                NSLog("[EXTENSION] reply \(i)")
                 usleep(100000)
+            }
+
+            if (needToStop) {
+                NSLog("[EXTENSION] STOPPED BY APP")
+                throw LinphoneCoreError.timeout
             }
         } catch {
             NSLog("[EXTENSION] error: \(error)")
             completion(.dismissAndForwardAction)
         }
-        lc!.networkReachable = false
-        lc!.stop()
+//        lc!.networkReachable = false
+//        lc!.stop()
     }
-    
+
     func startCore(completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) throws {
-        let log = LoggingService.Instance /*enable liblinphone logs.*/
-        let logManager = LinphoneLoggingServiceManager()
-        log.logLevel = LogLevel.Message
-        log.addDelegate(delegate: logManager)
-    
-        lc = try! Factory.Instance.createSharedCore(configPath: FileManager.preferenceFile(file: "linphonerc").path, factoryConfigPath: "", systemContext: nil, appGroup: GROUP_ID, mainCore: false)
-        
-        let coreManager = LinphoneCoreManager(self)
-        lc!.addDelegate(delegate: coreManager)
-        
+        config = Config.newWithFactory(configFilename: FileManager.preferenceFile(file: "linphonerc").path, factoryConfigFilename: "")
+        setCoreLogger(config: config)
+        lc = try! Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroup: GROUP_ID, mainCore: false)
+
+        coreDelegate = LinphoneCoreManager(self)
+        lc!.addDelegate(delegate: coreDelegate)
+
         try lc!.start()
         completion(.dismiss)
-        
+
+//        sleep(2)
+
         NSLog("[EXTENSION] core started")
         lc!.refreshRegisters()
-        
-        var i = 0
-        while(!isRegistered && !needToStop) {
+
+        for i in 0...50 where !isRegistered && !needToStop {
             lc!.iterate()
-            NSLog("[EXTENSION] \(i)")
-            i += 1;
+            NSLog("[EXTENSION] register \(i)")
             usleep(100000)
+//            if i == 10 {needToStop = true}
+        }
+
+        if (needToStop) {
+            NSLog("[EXTENSION] STOPPED BY APP")
+            throw LinphoneCoreError.timeout
         }
     }
-    
+
+    func stopCore() {
+        if let lc = lc {
+            if let coreDelegate = coreDelegate {
+                lc.removeDelegate(delegate: coreDelegate)
+            }
+            lc.networkReachable = false
+            lc.stop()
+        }
+    }
+
+    func setCoreLogger(config: Config) {
+        let debugLevel = config.getInt(section: "app", key: "debugenable_preference", defaultValue: LogLevel.Debug.rawValue)
+        let debugEnabled = (debugLevel >= LogLevel.Debug.rawValue && debugLevel < LogLevel.Error.rawValue)
+
+        if (debugEnabled) {
+            let log = LoggingService.Instance /*enable liblinphone logs.*/
+            logDelegate = LinphoneLoggingServiceManager()
+            log.logLevel = LogLevel(rawValue: debugLevel)
+            log.addDelegate(delegate: logDelegate)
+        }
+    }
+
     class LinphoneCoreManager: CoreDelegate {
         unowned let parent: NotificationViewController
-        
+
         init(_ parent: NotificationViewController) {
             self.parent = parent
         }
-        
+
         override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
             NSLog("[EXTENSION] onGlobalStateChanged \(gstate) : \(message) \n")
             if (gstate == .Shutdown) {
-                //                parent.serviceExtensionTimeWillExpire() // TODO PAUL : dismiss a gérer pour renvoyer a l'appli (on aura déja fait dismis, pas evident
+//                parent.serviceExtensionTimeWillExpire() // TODO PAUL : dismiss a gérer pour renvoyer a l'appli (on aura déja fait dismis, pas evident
 //                completion(.dismissAndForwardAction)??
                 needToStop = true
             }
         }
-        
+
         override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String?) {
             NSLog("[EXTENSION] New registration state \(cstate) for user id \( String(describing: cfg.identityAddress?.asString()))\n")
             if (cstate == .Ok) {
@@ -178,18 +210,11 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
             }
         }
     }
-    
-//    class LinphoneChatRoomManager: ChatRoomDelegate {
-//        override func onImdnDelivered(cr: ChatRoom) {
-//            NSLog("[EXTENSION] onImdnDelivered \n")
-//            isImdnDelivered = true
-//        }
-//    }
 
     class LinphoneChatMessageManager: ChatMessageDelegate {
         override func onMsgStateChanged(msg: ChatMessage, state: ChatMessage.State) {
             NSLog("[EXTENSION] onMsgStateChanged: \(state)\n")
-            if (state == .InProgress) {
+            if (state == .Delivered) {
                 isReplySent = true
             }
         }
@@ -199,7 +224,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 class LinphoneLoggingServiceManager: LoggingServiceDelegate {
     override func onLogMessageWritten(logService: LoggingService, domain: String, lev: LogLevel, message: String) {
         let level: String
-        
+
         switch lev {
         case .Debug:
             level = "Debug"
@@ -216,7 +241,7 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
         default:
             level = "unknown"
         }
-        
+
         NSLog("[SDK] \(level): \(message)\n")
     }
 }
@@ -225,7 +250,7 @@ extension FileManager {
     static func sharedContainerURL() -> URL {
         return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: GROUP_ID)!
     }
-    
+
     static func exploreSharedContainer() {
         if let content = try? FileManager.default.contentsOfDirectory(atPath: FileManager.sharedContainerURL().path) {
             content.forEach { file in
@@ -233,12 +258,12 @@ extension FileManager {
             }
         }
     }
-    
+
     static func preferenceFile(file: String) -> URL {
         let fullPath = FileManager.sharedContainerURL().appendingPathComponent("Library/Preferences/linphone/")
         return fullPath.appendingPathComponent(file)
     }
-    
+
     static func dataFile(file: String) -> URL {
         let fullPath = FileManager.sharedContainerURL().appendingPathComponent("Library/Application Support/linphone/")
         return fullPath.appendingPathComponent(file)
