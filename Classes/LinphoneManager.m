@@ -263,8 +263,8 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_linphoneManagerAddressBookMap = [[OrderedDictionary alloc] init];
 		pushCallIDs = [[NSMutableArray alloc] init];
 		_isTesting = [LinphoneManager isRunningTests];
-		[self migrateImportantFiles];
-		[self renameDefaultSettings];
+		//[self migrateImportantFiles];
+		//[self renameDefaultSettings];
 		[self copyDefaultSettings];
 		[self overrideDefaultSettings];
 

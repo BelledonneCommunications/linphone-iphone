@@ -313,6 +313,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		UIAlertAction* remAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
 															style:UIAlertActionStyleDefault
 														  handler:^(UIAlertAction * action) {
+															  LOGW(@"Factory reset requested (but skipped)!!");
+															  return;
 															  linphone_core_clear_proxy_config([LinphoneManager getLc]);
 															  linphone_core_clear_all_auth_info([LinphoneManager getLc]);
 															  @try {
