@@ -75,7 +75,7 @@
 	}
 
 	if (addr) {
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 	}
 }
 
@@ -113,7 +113,7 @@
 	}
 	
 	if (addr) {
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 	}
 }
 
@@ -147,19 +147,19 @@
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
 	[LinphoneManager.instance call:addr];
 	if (addr)
-		linphone_address_destroy(addr);
+		linphone_address_unref(addr);
 }
 
 - (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
 	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 }
 
 - (IBAction)onEncrptedChatClick:(id)sender {
     LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
     [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
-    linphone_address_destroy(addr);
+    linphone_address_unref(addr);
 }
 
 - (IBAction)onDeleteClick:(id)sender {

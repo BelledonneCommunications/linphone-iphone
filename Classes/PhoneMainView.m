@@ -833,7 +833,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 													  linphone_core_create_call_params(LC,call);
 												  // stop video
 												  linphone_call_params_enable_video(params, FALSE);
-												  linphone_core_update_call(LC, call, params);
+												  linphone_call_update(call, params);
 												}];
 					[sheet showInView:self.view];
 					callData->batteryWarningShown = TRUE;

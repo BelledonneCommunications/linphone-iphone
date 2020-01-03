@@ -2437,9 +2437,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
-	linphone_chat_room_send_chat_message(room, msg);
+	linphone_chat_message_send(msg);
 
-	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room))
+	if (linphone_core_lime_x3dh_enabled(LC) && !linphone_chat_room_lime_available(room))
 		[LinphoneManager.instance alertLIME:room];
 
 	[ChatConversationView markAsRead:room];

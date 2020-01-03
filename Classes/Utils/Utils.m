@@ -476,7 +476,7 @@
     	if (contact) {
       		LinphoneAddress *contact_addr = linphone_address_new(contact);
       		if (contact_addr) {
-				linphone_address_destroy(addr);
+				linphone_address_unref(addr);
         		return contact_addr;
       		}
     	}

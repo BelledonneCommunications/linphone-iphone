@@ -89,7 +89,7 @@
 		LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:address];
 		[LinphoneManager.instance call:addr];
 		if (addr)
-			linphone_address_destroy(addr);
+			linphone_address_unref(addr);
 	}
 }
 

@@ -47,8 +47,8 @@ INIT_WITH_COMMON_CF {
 			TRUE; /* will be used later to notify user if video was not activated because of the linphone core*/
 		LinphoneCallParams *call_params = linphone_core_create_call_params(LC,call);
 		linphone_call_params_enable_video(call_params, TRUE);
-		linphone_core_update_call(LC, call, call_params);
-		linphone_call_params_destroy(call_params);
+		linphone_call_update(call, call_params);
+		linphone_call_params_unref(call_params);
 	} else {
 		LOGW(@"Cannot toggle video button, because no current call");
 	}
