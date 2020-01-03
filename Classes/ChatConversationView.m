@@ -489,9 +489,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
 	BOOL isOneToOneChat = _chatRoom && (linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne);
-	_infoButton.hidden = ((isOneToOneChat & LinphoneChatRoomCapabilitiesOneToOne)
-						|| !_backToCallButton.hidden
-						|| _tableController.tableView.isEditing);
+	_infoButton.hidden = (isOneToOneChat|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
 }
 
