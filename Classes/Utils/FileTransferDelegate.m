@@ -290,10 +290,6 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     
     LOGI(@"%p Uploading content from message %p", self, _message);
     linphone_chat_message_send(_message);
-    
-    if (linphone_core_lime_x3dh_enabled(LC) && !linphone_chat_room_lime_available(chatRoom)) {
-        [LinphoneManager.instance alertLIME:chatRoom];
-    }
 }
 
 - (void)upload:(UIImage *)image withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {

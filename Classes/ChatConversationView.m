@@ -380,10 +380,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// we must ref & unref message because in case of error, it will be destroy otherwise
 	linphone_chat_message_send(msg);
 
-	if (linphone_core_lime_x3dh_enabled(LC) && !linphone_chat_room_lime_available(_chatRoom)) {
-		[LinphoneManager.instance alertLIME:_chatRoom];
-	}
-
 	return TRUE;
 }
 
