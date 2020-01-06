@@ -21,6 +21,7 @@ struct MsgData: Codable {
 
 var msgData: MsgData?
 var msgReceived: Bool = false
+var log: LoggingService!
 
 class NotificationService: UNNotificationServiceExtension {
 
@@ -39,6 +40,7 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        NSLog("[msgNotificationService] start msgNotificationService extension")
 
         if let bestAttemptContent = bestAttemptContent {
             do {
@@ -68,7 +70,7 @@ class NotificationService: UNNotificationServiceExtension {
 
                 contentHandler(bestAttemptContent)
             } catch {
-                NSLog("[EXTENSION] failed to start shared core")
+                NSLog("[msgNotificationService] failed to start shared core")
                 serviceExtensionTimeWillExpire()
             }
         }
@@ -79,7 +81,7 @@ class NotificationService: UNNotificationServiceExtension {
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         stopCore()
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
-            NSLog("[EXTENSION] TIME OUT")
+            NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
             bestAttemptContent.categoryIdentifier = "app_active"
             bestAttemptContent.title = NSLocalizedString("Message received", comment: "") + " [time out]" // TODO PAUL : a enlever
             bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")          
@@ -99,12 +101,12 @@ class NotificationService: UNNotificationServiceExtension {
 
         try lc!.start()
 
-        NSLog("[EXTENSION] core started")
+        log.message(msg: "[msgNotificationService] core started")
         lc!.refreshRegisters()
 
         for i in 0...100 where !msgReceived {
             lc!.iterate()
-            NSLog("[EXTENSION] \(i)")
+            log.debug(msg: "[msgNotificationService] \(i)")
             usleep(100000)
         }
 
@@ -128,8 +130,9 @@ class NotificationService: UNNotificationServiceExtension {
         let debugEnabled = (debugLevel >= LogLevel.Debug.rawValue && debugLevel < LogLevel.Error.rawValue)
 
         if (debugEnabled) {
-            let log = LoggingService.Instance /*enable liblinphone logs.*/
+            log = LoggingService.Instance /*enable liblinphone logs.*/
             logDelegate = LinphoneLoggingServiceManager()
+            log.domain = "msgNotificationService"
             log.logLevel = LogLevel(rawValue: debugLevel)
             log.addDelegate(delegate: logDelegate)
         }
@@ -140,7 +143,7 @@ class NotificationService: UNNotificationServiceExtension {
         count += lc!.unreadChatMessageCount
         count += lc!.missedCallsCount
         count += lc!.callsNb
-        NSLog("[EXTENSION] badge: \(count)\n")
+        log.message(msg: "[msgNotificationService] badge: \(count)\n")
 
         return count
     }
@@ -154,18 +157,18 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
-            NSLog("[EXTENSION] onGlobalStateChanged \(gstate) : \(message) \n")
+            log.message(msg: "[msgNotificationService] onGlobalStateChanged \(gstate) : \(message) \n")
             if (gstate == .Shutdown) {
                 parent.serviceExtensionTimeWillExpire()
             }
         }
 
         override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String?) {
-            NSLog("[EXTENSION] New registration state \(cstate) for user id \( String(describing: cfg.identityAddress?.asString()))\n")
+            log.message(msg: "[msgNotificationService] New registration state \(cstate) for user id \( String(describing: cfg.identityAddress?.asString()))\n")
         }
 
         override func onMessageReceived(lc: Core, room: ChatRoom, message: ChatMessage) {
-            NSLog("[EXTENSION] Core received msg \(message.contentType) \n")
+            log.message(msg: "[msgNotificationService] Core received msg \(message.contentType) \n")
             // content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
 
             if (message.contentType != "text/plain" && message.contentType != "image/jpeg") {
@@ -196,7 +199,7 @@ class NotificationService: UNNotificationServiceExtension {
                 }
             }
 
-            NSLog("[EXTENSION] msg: \(content) \n")
+            log.message(msg: "[msgNotificationService] msg: \(content) \n")
             msgReceived = true
         }
     }
@@ -223,7 +226,7 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
             level = "unknown"
         }
 
-        NSLog("[SDK] \(level): \(message)\n")
+        NSLog("[\(level)] \(message)\n")
     }
 }
 

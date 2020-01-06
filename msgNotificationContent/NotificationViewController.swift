@@ -15,6 +15,7 @@ var GROUP_ID = "group.org.linphone.phone.msgNotification"
 var isRegistered: Bool = false
 var isReplySent: Bool = false
 var needToStop: Bool = false
+var log: LoggingService!
 
 class NotificationViewController: UIViewController, UNNotificationContentExtension {
 
@@ -38,6 +39,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any required interface initialization here.
+        NSLog("[msgNotificationContent] start msgNotificationContent extension")
         
         let replyAction = UNTextInputNotificationAction(identifier: "Reply",
                          title: NSLocalizedString("Reply", comment: ""),
@@ -78,7 +80,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     }
 
     func markAsSeenAction(_ userInfo: [AnyHashable : Any], completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {
-        NSLog("[EXTENSION] markAsSeenAction")
+        NSLog("[msgNotificationContent] markAsSeenAction")
         do {
             try startCore(completionHandler: completion)
 
@@ -93,7 +95,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
 //            lc!.iterate() // TODO PAUL : needed?
         } catch {
-            NSLog("[EXTENSION] error: \(error)")
+            log.error(msg: "[msgNotificationContent] error: \(error)")
             completion(.dismissAndForwardAction)
         }
 //        lc!.networkReachable = false
@@ -101,7 +103,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     }
 
     func replyAction(_ userInfo: [AnyHashable : Any], text replyText: String, completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {
-        NSLog("[EXTENSION] replyAction")
+        NSLog("[msgNotificationContent] replyAction")
         do {
             try startCore(completionHandler: completion)
 
@@ -120,16 +122,16 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
             for i in 0...50 where !isReplySent && !needToStop {
                 lc!.iterate()
-                NSLog("[EXTENSION] reply \(i)")
+                log.debug(msg: "[msgNotificationContent] reply \(i)")
                 usleep(100000)
             }
 
             if (needToStop) {
-                NSLog("[EXTENSION] STOPPED BY APP")
+                log.error(msg: "[msgNotificationContent] core stopped by app")
                 throw LinphoneCoreError.timeout
             }
         } catch {
-            NSLog("[EXTENSION] error: \(error)")
+            log.error(msg: "[msgNotificationContent] error: \(error)")
             completion(.dismissAndForwardAction)
         }
 //        lc!.networkReachable = false
@@ -149,18 +151,18 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
 //        sleep(2)
 
-        NSLog("[EXTENSION] core started")
+        sLog(logLevel: .Message, message: "[msgNotificationContent] core started")
         lc!.refreshRegisters()
 
         for i in 0...50 where !isRegistered && !needToStop {
             lc!.iterate()
-            NSLog("[EXTENSION] register \(i)")
+            sLog(logLevel: .Debug, message: "[msgNotificationContent] register \(i)")
             usleep(100000)
 //            if i == 10 {needToStop = true}
         }
 
         if (needToStop) {
-            NSLog("[EXTENSION] STOPPED BY APP")
+            log.error(msg: "[msgNotificationContent] core stopped by app")
             throw LinphoneCoreError.timeout
         }
     }
@@ -180,8 +182,9 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         let debugEnabled = (debugLevel >= LogLevel.Debug.rawValue && debugLevel < LogLevel.Error.rawValue)
 
         if (debugEnabled) {
-            let log = LoggingService.Instance /*enable liblinphone logs.*/
+            log = LoggingService.Instance /*enable liblinphone logs.*/
             logDelegate = LinphoneLoggingServiceManager()
+            log.domain = "msgNotificationContent"
             log.logLevel = LogLevel(rawValue: debugLevel)
             log.addDelegate(delegate: logDelegate)
         }
@@ -195,7 +198,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         }
 
         override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
-            NSLog("[EXTENSION] onGlobalStateChanged \(gstate) : \(message) \n")
+            log.message(msg: "[msgNotificationContent] onGlobalStateChanged \(gstate) : \(message) \n")
             if (gstate == .Shutdown) {
 //                parent.serviceExtensionTimeWillExpire() // TODO PAUL : dismiss a gérer pour renvoyer a l'appli (on aura déja fait dismis, pas evident
 //                completion(.dismissAndForwardAction)??
@@ -204,7 +207,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         }
 
         override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String?) {
-            NSLog("[EXTENSION] New registration state \(cstate) for user id \( String(describing: cfg.identityAddress?.asString()))\n")
+            log.message(msg: "[msgNotificationContent] New registration state \(cstate) for user id \( String(describing: cfg.identityAddress?.asString()))\n")
             if (cstate == .Ok) {
                 isRegistered = true
             }
@@ -213,7 +216,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
     class LinphoneChatMessageManager: ChatMessageDelegate {
         override func onMsgStateChanged(msg: ChatMessage, state: ChatMessage.State) {
-            NSLog("[EXTENSION] onMsgStateChanged: \(state)\n")
+            log.message(msg: "[msgNotificationContent] onMsgStateChanged: \(state)\n")
             if (state == .Delivered) {
                 isReplySent = true
             }
@@ -242,7 +245,7 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
             level = "unknown"
         }
 
-        NSLog("[SDK] \(level): \(message)\n")
+        NSLog("[\(level)] \(message)\n")
     }
 }
 
