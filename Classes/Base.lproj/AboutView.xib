@@ -258,7 +258,7 @@
                                 </imageView>
                             </subviews>
                         </view>
-                        <label opaque="NO" userInteractionEnabled="NO" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GNU General Public License V2 © 2010-2019 Belledonne Communications" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="7" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="vqn-sI-DiC" userLabel="licenseLabel">
+                        <label opaque="NO" userInteractionEnabled="NO" tag="14" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GNU General Public License V3 © 2010-2019 Belledonne Communications" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="7" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="vqn-sI-DiC" userLabel="licenseLabel">
                             <rect key="frame" x="0.0" y="226" width="520" height="35"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
