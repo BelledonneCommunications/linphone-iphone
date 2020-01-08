@@ -23,7 +23,6 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         case timeout
     }
 
-    @IBOutlet var label: UILabel?
     var lc: Core?
     var config: Config!
     var logDelegate: LinphoneLoggingServiceManager!
@@ -57,7 +56,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     }
 
     func didReceive(_ notification: UNNotification) {
-        self.label?.text = "test test test" // TODO PAUL : a enlever
+        self.title = "test test test" // TODO PAUL : a enlever
     }
 
     func didReceive(_ response: UNNotificationResponse,
