@@ -581,7 +581,7 @@
 	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
     
 //     prevent app to crash if pushKit received for msg
-    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
+    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) { // TODO PAUL: a supprimer, fix temporaire: le serveur n'enverra plus de pushkit pr les msg
         return;
     }
     [LinphoneManager.instance startLinphoneCore]; // TODO PAUL : a tester
@@ -618,12 +618,12 @@
              withCompletionHandler:(void (^)(void))completionHandler {
 	LOGD(@"UN : response received");
 	LOGD(response.description);
-    
-//    [LinphoneManager.instance startLinphoneCore]; // Clique sur la notif? Est ce que ->fg est appelé? 
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
 	if (!callId)
 		return;
+    
+    [LinphoneManager.instance startLinphoneCore]; // TODO PAUL: par précaution si willenterfg ne passe pas avant
 
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
 	if (call) {
@@ -777,10 +777,6 @@
 			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 		}
 	}
-//    if (app in bg) { // TODO PAUL
-//        [self setAppStateInSharedContainer:false];
-//         [LinphoneManager.instance destroyLinphoneCore];
-//    }
 }
 
 - (void)dismissVideoActionSheet:(NSTimer *)timer {

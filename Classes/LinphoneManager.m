@@ -1191,7 +1191,8 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 			return;
 	}
     
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) { // TODO PAUL : fix for notif when call in bg
+    // don't show msg notif when app in bg during a call : msgNotificationService extension will show a notif
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;
     }
 
