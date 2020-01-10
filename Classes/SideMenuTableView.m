@@ -116,7 +116,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
-	if (indexPath.section == 0) {
+    
+    // isLcInitialized called here because this is called when going in bg after LC destroy
+	if (indexPath.section == 0 && [LinphoneManager isLcInitialized]) {
 		// do not display default account here, it is already in header view
 		int idx =
 			linphone_core_get_default_proxy_config(LC)

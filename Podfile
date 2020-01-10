@@ -57,6 +57,24 @@ target 'linphoneExtension' do
 
 end
 
+target 'msgNotificationService' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for messagesNotification
+  basic_pods
+
+end
+
+target 'msgNotificationContent' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for messagesNotification
+  basic_pods
+
+end
+
 =begin
 target 'latestCallsWidget' do
 	# Uncomment the next line if you're using Swift or would like to use dynamic frameworks

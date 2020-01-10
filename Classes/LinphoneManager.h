@@ -59,6 +59,8 @@ extern NSString *const kLinphoneFileTransferRecvUpdate;
 extern NSString *const kLinphoneQRCodeFound;
 extern NSString *const kLinphoneChatCreateViewChange;
 
+extern NSString *const kLinphoneMsgNotificationGroupId;
+
 typedef enum _NetworkType {
     network_none = 0,
     network_2g,
@@ -113,6 +115,7 @@ typedef struct _LinphoneManagerSounds {
 + (void)instanceRelease;
 #endif
 + (LinphoneCore*) getLc;
++ (BOOL)isLcInitialized;
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
@@ -123,8 +126,10 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)playMessageSound;
 - (void)resetLinphoneCore;
-- (void)startLinphoneCore;
+- (void)launchLinphoneCore;
 - (void)destroyLinphoneCore;
+- (void)startLinphoneCore;
+- (void)stopLinphoneCore;
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;

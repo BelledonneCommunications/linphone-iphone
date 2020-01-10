@@ -78,6 +78,8 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 
+NSString *const kLinphoneMsgNotificationGroupId = @"group.org.linphone.phone.msgNotification";
+
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
 extern void libmsamr_init(MSFactory *factory);
@@ -267,7 +269,11 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
 		[self overrideDefaultSettings];
-
+        
+        [self lpConfigSetString:[LinphoneManager dataFile:@"linphone.db"] forKey:@"uri" inSection:@"storage"];
+        [self lpConfigSetString:[LinphoneManager dataFile:@"x3dh.c25519.sqlite3"] forKey:@"x3dh_db_path" inSection:@"lime"];
+        
+        
 		// set default values for first boot
 		if ([self lpConfigStringForKey:@"debugenable_preference"] == nil) {
 #ifdef DEBUG
@@ -495,6 +501,13 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 			userInfo:nil]);
 	}
 	return theLinphoneCore;
+}
+
++ (BOOL)isLcInitialized {
+    if (theLinphoneCore == nil) {
+        return NO;
+    }
+    return YES;
 }
 
 #pragma mark Debug functions
@@ -1177,6 +1190,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
 			return;
 	}
+    
+    // don't show msg notif when app in bg during a call : msgNotificationService extension will show a notif
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        return;
+    }
 
 	// Create a new notification
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
@@ -1688,7 +1706,7 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 
 static BOOL libStarted = FALSE;
 
-- (void)startLinphoneCore {
+- (void)launchLinphoneCore {
 
 	if (libStarted) {
 		LOGE(@"Liblinphone is already initialized!");
@@ -1797,6 +1815,17 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	}
 }
 
+- (void)startLinphoneCore {
+    linphone_core_start([LinphoneManager getLc]);
+    mIterateTimer =
+    [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(iterate) userInfo:nil repeats:YES];
+}
+
+- (void)stopLinphoneCore {
+    linphone_core_stop([LinphoneManager getLc]);
+    [mIterateTimer invalidate];
+}
+
 - (void)createLinphoneCore {
 	[self migrationAllPre];
 	if (theLinphoneCore != nil) {
@@ -1841,7 +1870,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_qrcode_found(cbs, linphone_iphone_qr_code_found);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 
-	theLinphoneCore = linphone_factory_create_core_with_config_3(factory, _configDb, NULL);
+	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationGroupId UTF8String], true);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 	linphone_core_start(theLinphoneCore);
 
@@ -2656,9 +2685,13 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)preferenceFile:(NSString *)file {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-	NSString *writablePath = [paths objectAtIndex:0];
-	NSString *fullPath = [writablePath stringByAppendingString:@"/Preferences/linphone/"];
+    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationGroupId];
+    NSURL *fullPathURL = [NSURL URLWithString:@"Library/Preferences/linphone/" relativeToURL:sharedContainerURL];
+    NSString *fullPath = [fullPathURL path];
+    
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+//    NSString *writablePath = [paths objectAtIndex:0];
+//    NSString *fullPath = [writablePath stringByAppendingString:@"/Preferences/linphone/"];
 	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
 		NSError *error;
 		LOGI(@"Preference path %@ does not exist, creating it.",fullPath);
@@ -2674,9 +2707,13 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)dataFile:(NSString *)file {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
-	NSString *writablePath = [paths objectAtIndex:0];
-	NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
+    NSURL *sharedContainerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationGroupId];
+    NSString* home = [[sharedContainerURL path] stringByAppendingPathComponent:@"/Library/Application Support/linphone/"];
+    NSString *fullPath = [home stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+//    NSString *writablePath = [paths objectAtIndex:0];
+//    NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
 	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
 		NSError *error;
 		LOGI(@"Data path %@ does not exist, creating it.",fullPath);
