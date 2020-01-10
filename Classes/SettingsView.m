@@ -269,8 +269,9 @@ INIT_WITH_COMMON_CF {
 @implementation UINavigationControllerEx
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController {
+//    [super initWithRootViewController:rootViewController];
 	[UINavigationControllerEx removeBackground:rootViewController.view];
-	return [self initWithRootViewController:rootViewController];
+	return [super initWithRootViewController:rootViewController];
 }
 
 + (void)removeBackground:(UIView *)view {
