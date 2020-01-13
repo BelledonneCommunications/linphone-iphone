@@ -1002,7 +1002,6 @@
 		570742571D5A0691004B9C84 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ShopView.xib; sourceTree = "<group>"; };
 		5707425F1D5A09B8004B9C84 /* ShopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopView.m; sourceTree = "<group>"; };
 		570742601D5A09B8004B9C84 /* ShopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopView.h; sourceTree = "<group>"; };
-		570742631D5A1860004B9C84 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
 		570742661D5A63DB004B9C84 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5E223A9720E244B400D06A36 /* NotificationTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationTableViewCell.h; sourceTree = "<group>"; };
 		5E223A9820E244B400D06A36 /* NotificationTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationTableViewCell.m; sourceTree = "<group>"; };
@@ -1078,11 +1077,15 @@
 		61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_close@2x.png"; sourceTree = "<group>"; };
 		61AEBEC92191E49200F35E7F /* chevron_list_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_open.png; sourceTree = "<group>"; };
 		61AEBECB2191E4A300F35E7F /* chevron_list_open@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_open@2x.png"; sourceTree = "<group>"; };
-		61BD122D222EA29300563181 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
 		61CCC3D721933B380060EDEA /* UIDeviceCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDeviceCell.h; sourceTree = "<group>"; };
 		61CCC3DE21933B580060EDEA /* UIDeviceCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDeviceCell.m; sourceTree = "<group>"; };
 		61CCC3E021933B660060EDEA /* UIDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDeviceCell.xib; sourceTree = "<group>"; };
 		61DD7E1E2372E88F001BDD01 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		61E8E46323C5E8EC00434E71 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutView.strings; sourceTree = "<group>"; };
+		61E8E46523C5E8F000434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
+		61E8E46723C5E9B400434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
+		61E8E46923C5EA2B00434E71 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
+		61E8E46B23C5EA2E00434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		620DFD020AC0182319853127 /* Pods-linphoneExtension.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linphoneExtension.distributionadhoc.xcconfig"; path = "Pods/Target Support Files/Pods-linphoneExtension/Pods-linphoneExtension.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
@@ -1733,7 +1736,6 @@
 		8CBD7BA720B6B82400E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationInfoTableViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAA20B6B82A00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationImdnTableViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAD20B6B82F00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCreateCollectionViewCell.xib; sourceTree = "<group>"; };
-		8CBD7BAF20B6B86800E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
 		8CBD7BB120B6B86900E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		8CBD7BB220B6B86A00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
 		8CBD7BB320B6B86B00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
@@ -1771,7 +1773,6 @@
 		8CBD7BD320B6B88900E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIHistoryCell.strings; sourceTree = "<group>"; };
 		8CBD7BD420B6B88A00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PhoneMainView.strings; sourceTree = "<group>"; };
 		8CBD7BD520B6B88C00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SettingsView.strings; sourceTree = "<group>"; };
-		8CBD7BD620B6B88D00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
 		8CBD7BD720B6B88E00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SideMenuView.strings; sourceTree = "<group>"; };
 		8CBD7BD820B6B88F00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/SideMenuView~ipad.strings"; sourceTree = "<group>"; };
 		8CBD7BD920B6B89000E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/StatusBarView.strings; sourceTree = "<group>"; };
@@ -1977,7 +1978,6 @@
 		F09548561883F61600E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/TabBarView.strings; sourceTree = "<group>"; };
 		F095485A1883F67B00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		F095485E1883F6EA00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
-		F0AF06F01A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutView.strings; sourceTree = "<group>"; };
 		F0AF06F11A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
 		F0AF06F21A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatsListView.strings; sourceTree = "<group>"; };
 		F0AF06F41A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ContactDetailsView.strings; sourceTree = "<group>"; };
@@ -4845,8 +4845,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				570742571D5A0691004B9C84 /* Base */,
-				570742631D5A1860004B9C84 /* en */,
-				8CBD7BD620B6B88D00E5DCC0 /* fr */,
+				61E8E46923C5EA2B00434E71 /* en */,
+				61E8E46B23C5EA2E00434E71 /* fr */,
 			);
 			name = ShopView.xib;
 			sourceTree = "<group>";
@@ -4966,8 +4966,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				636316D21A1DEBCB0009B839 /* Base */,
-				F0AF06F01A24BA760086C9C1 /* ar */,
-				8CBD7BAF20B6B86800E5DCC0 /* fr */,
+				61E8E46323C5E8EC00434E71 /* ar */,
+				61E8E46523C5E8F000434E71 /* fr */,
 			);
 			name = AboutView.xib;
 			sourceTree = "<group>";
@@ -5158,7 +5158,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				63EC8D3A1D7438660066547B /* Base */,
-				61BD122D222EA29300563181 /* fr */,
+				61E8E46723C5E9B400434E71 /* fr */,
 			);
 			name = AssistantLinkView.xib;
 			sourceTree = "<group>";
@@ -5423,7 +5423,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"4.3\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"4.3.1-pre.12+516dacf\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -5526,7 +5526,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"4.3\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"4.3.1-pre.12+516dacf\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -5629,7 +5629,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"4.3\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"4.3.1-pre.12+516dacf\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
@@ -5732,7 +5732,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"4.3\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"4.3.1-pre.12+516dacf\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = linphone;
