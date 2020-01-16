@@ -60,10 +60,7 @@
 - (IBAction)onSecurityCallClick:(id)sender {
     LinphoneParticipantDevice *device = (LinphoneParticipantDevice *)bctbx_list_nth_data(_devices, 0);
     const LinphoneAddress *addr = linphone_participant_device_get_address(device);
-    if (addr)
-        [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
-    else
-        LOGE(@"CallKit : No call address");
+	[CallManager.instance startCallWithAddr:(LinphoneAddress *)addr isSas:TRUE];
 }
 
 #pragma mark - TableView

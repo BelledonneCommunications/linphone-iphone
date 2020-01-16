@@ -93,20 +93,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
 	[LinphoneManager.instance setBluetoothEnabled:FALSE];
-	[LinphoneManager.instance setSpeakerEnabled:TRUE];
+	[CallManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (IBAction)onRoutesClick:(id)sender {
@@ -131,8 +131,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[_routesButton setOn];
 	}
 
-	_routesBluetoothButton.selected = LinphoneManager.instance.bluetoothEnabled;
-	_routesSpeakerButton.selected = LinphoneManager.instance.speakerEnabled;
+	_routesBluetoothButton.selected = CallManager.instance.bluetoothEnabled;
+	_routesSpeakerButton.selected = CallManager.instance.speakerEnabled;
 	_routesEarpieceButton.selected = !_routesBluetoothButton.selected && !_routesSpeakerButton.selected;
 
 	if (hidden != _routesView.hidden) {

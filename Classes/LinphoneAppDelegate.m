@@ -111,13 +111,6 @@
             instance->currentCallContextBeforeGoingBackground.call = 0;
           } else if (linphone_call_get_state(call) ==
                      LinphoneCallIncomingReceived) {
-            LinphoneCallAppData *data =
-                (__bridge LinphoneCallAppData *)linphone_call_get_user_data(
-                    call);
-            if (data && data->timer) {
-              [data->timer invalidate];
-              data->timer = nil;
-            }
             if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
               if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
                 linphone_call_accept(call);
@@ -125,7 +118,8 @@
               } else {
                 [PhoneMainView.instance displayIncomingCall:call];
               }
-            } else if (linphone_core_get_calls_nb(LC) > 1) {
+            } else {
+              // Click the call notification when callkit is disabled, show app view.
               [PhoneMainView.instance displayIncomingCall:call];
             }
 
@@ -268,10 +262,6 @@
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 	[self registerForNotifications]; // Register for notifications must be done ASAP to give a chance for first SIP register to be done with right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
-	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-		self.del = [[ProviderDelegate alloc] init];
-		[LinphoneManager.instance setProviderDelegate:self.del];
-	}
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -411,6 +401,17 @@
     return YES;
 }
 
+// used for callkit. Called when active video.
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
+{
+	if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
+		LOGI(@"CallKit: satrt video.");
+		CallView *view = VIEW(CallView);
+		[view.videoButton toggle];
+	}
+	return YES;
+}
+
 - (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
     NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
@@ -445,12 +446,6 @@
 		return;
 	}
 	
-	// Tell the core to make sure that we are registered.
-	// It will initiate socket connections, which seems to be required.
-	// Indeed it is observed that if no network action is done in the notification handler, then
-	// iOS kills us.
-	linphone_core_ensure_registered(LC);
-
 	NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
 	NSString *sipInstance = [aps objectForKey:@"uuid"];
 	if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
@@ -486,10 +481,20 @@
 			notification.alertTitle = @"APN Pusher";
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 		}
-	} else
+	} else {
 		[LinphoneManager.instance addPushCallId:callId];
+		if ([loc_key isEqualToString:@"IC_MSG"] && [CallManager callKitEnabled]) {
+			// callkit only for call not message.
+			[CallManager.instance displayIncomingCallWithCallId:callId];
+		}
+	}
 
     LOGI(@"Notification [%p] processed", userInfo);
+	// Tell the core to make sure that we are registered.
+	// It will initiate socket connections, which seems to be required.
+	// Indeed it is observed that if no network action is done in the notification handler, then
+	// iOS kills us.
+	linphone_core_ensure_registered(LC);
 }
 
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
@@ -588,14 +593,7 @@
 	if (!callId)
 		return;
 
-	LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
-	if (call) {
-		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-		if (data->timer) {
-			[data->timer invalidate];
-			data->timer = nil;
-		}
-	}
+	LinphoneCall *call = [CallManager.instance findCallWithCallId:callId];
 
 	if ([response.actionIdentifier isEqual:@"Answer"]) {
 		// use the standard handler
@@ -757,13 +755,6 @@
 			 completionHandler:(void (^)(void))completionHandler {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
-	if (call) {
-		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-		if (data->timer) {
-			[data->timer invalidate];
-			data->timer = nil;
-		}
-	}
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if (floor(NSFoundationVersionNumber) < NSFoundationVersionNumber_iOS_9_0) {
 		LOGI(@"%@", NSStringFromSelector(_cmd));
@@ -805,13 +796,6 @@
 			 completionHandler:(void (^)(void))completionHandler {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
-	if (call) {
-		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-		if (data->timer) {
-			[data->timer invalidate];
-			data->timer = nil;
-		}
-	}
 	if ([notification.category isEqualToString:@"incoming_call"]) {
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler

@@ -78,6 +78,10 @@
 	}
 }
 
++ (void)directLog:(OrtpLogLevel)level text:(NSString *)text {
+	bctbx_log(BCTBX_LOG_DOMAIN, level, "%s", text.cString);
+}
+
 #pragma mark - Logs Functions callbacks
 
 void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
