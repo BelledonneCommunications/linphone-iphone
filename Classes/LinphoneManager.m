@@ -1489,59 +1489,6 @@ void linphone_iphone_qr_code_found(LinphoneCore *lc, const char *result) {
 }
 
 #pragma mark - Message composition start
-- (void)alertLIME:(LinphoneChatRoom *)room {
-	NSString *title = NSLocalizedString(@"LIME warning", nil);
-	NSString *body =
-		NSLocalizedString(@"You are trying to send a message using LIME to a contact not verified by ZRTP.\n"
-				  @"Please call this contact and verify his ZRTP key before sending your messages.",
-				  nil);
-
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		UIAlertController *errView =
-			[UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
-
-		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-						style:UIAlertActionStyleDefault
-						handler:^(UIAlertAction *action){}];
-		[errView addAction:defaultAction];
-
-		UIAlertAction *callAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Call", nil)
-					     style:UIAlertActionStyleDefault
-					     handler:^(UIAlertAction *action) {
-				[self call:linphone_chat_room_get_peer_address(room)];
-			}];
-		[errView addAction:callAction];
-		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-	} else {
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-			UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-			content.title = title;
-			content.body = body;
-			content.categoryIdentifier = @"lime";
-
-			UNNotificationRequest *req = [UNNotificationRequest
-						      requestWithIdentifier:@"lime_request"
-						      content:content
-						      trigger:[UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO]];
-			[[UNUserNotificationCenter currentNotificationCenter]
-			 addNotificationRequest:req
-			 withCompletionHandler:^(NSError *_Nullable error) {
-					// Enable or disable features based on authorization.
-					if (error) {
-						LOGD(@"Error while adding notification request :");
-						LOGD(error.description);
-					}
-				}];
-		} else {
-			UILocalNotification *notification = [[UILocalNotification alloc] init];
-			notification.repeatInterval = 0;
-			notification.alertTitle = title;
-			notification.alertBody = body;
-			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-		}
-	}
-}
-
 - (void)onMessageComposeReceived:(LinphoneCore *)core forRoom:(LinphoneChatRoom *)room {
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneTextComposeEvent
 	 object:self
@@ -2437,10 +2384,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
-	linphone_chat_room_send_chat_message(room, msg);
-
-	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room))
-		[LinphoneManager.instance alertLIME:room];
+	linphone_chat_message_send(msg);
 
 	[ChatConversationView markAsRead:room];
 }

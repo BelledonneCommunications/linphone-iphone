@@ -378,11 +378,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	// we must ref & unref message because in case of error, it will be destroy otherwise
-	linphone_chat_room_send_chat_message(_chatRoom, msg);
-
-	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(_chatRoom)) {
-		[LinphoneManager.instance alertLIME:_chatRoom];
-	}
+	linphone_chat_message_send(msg);
 
 	return TRUE;
 }
@@ -488,10 +484,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	_infoButton.hidden = ((capabilities & LinphoneChatRoomCapabilitiesOneToOne)
-						|| !_backToCallButton.hidden
-						|| _tableController.tableView.isEditing);
+	BOOL isOneToOneChat = _chatRoom && (linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne);
+	_infoButton.hidden = (isOneToOneChat|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
 }
 

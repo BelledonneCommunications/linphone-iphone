@@ -52,7 +52,7 @@ INIT_WITH_COMMON_CF {
 		linphone_core_set_video_device(LC, newCamId);
 		LinphoneCall *call = linphone_core_get_current_call(LC);
 		if (call != NULL) {
-			linphone_core_update_call(LC, call, NULL);
+			linphone_call_update(call, NULL);
 		}
 	}
 }

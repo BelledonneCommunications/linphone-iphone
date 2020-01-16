@@ -289,11 +289,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     [LinphoneManager setValueInMessageAppData:qualityData forKey:@"uploadQuality" inMessage:_message];
     
     LOGI(@"%p Uploading content from message %p", self, _message);
-    linphone_chat_room_send_chat_message(chatRoom, _message);
-    
-    if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(chatRoom)) {
-        [LinphoneManager.instance alertLIME:chatRoom];
-    }
+    linphone_chat_message_send(_message);
 }
 
 - (void)upload:(UIImage *)image withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {

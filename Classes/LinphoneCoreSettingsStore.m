@@ -181,9 +181,9 @@
 				[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
 			}
 			const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
-			if (identity_addr) {
-				const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
-				LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
+			const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
+			LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
+			if (identity_addr && proxy_addr) {
 				int port = linphone_address_get_port(proxy_addr);
 
 				[self setCString:linphone_address_get_username(identity_addr)
@@ -212,7 +212,7 @@
 					default:
 						break;
 				}
-				linphone_address_destroy(proxy_addr);
+				linphone_address_unref(proxy_addr);
 				[self setCString:tname forKey:@"account_transport_preference"];
 			}
 
@@ -429,7 +429,7 @@
 		if (parsed != NULL) {
 			[self setCString:linphone_address_get_display_name(parsed) forKey:@"primary_displayname_preference"];
 			[self setCString:linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
-			linphone_address_destroy(parsed);
+			linphone_address_unref(parsed);
 		}
 	}
 
@@ -629,7 +629,7 @@
 											  linphone_proxy_config_get_domain(proxyCfg));
 			}
 
-			linphone_address_destroy(from);
+			linphone_address_unref(from);
 			linphone_core_add_auth_info(LC, info);
 			linphone_auth_info_destroy(info);
 			ms_free(realm);
