@@ -669,6 +669,7 @@
 		63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		64092B369D63DBEAA8C824CE /* Pods_liblinphoneTester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CBD6E980619195CB7EE32AC /* Pods_liblinphoneTester.framework */; };
+		67424E4E23D06E1400881CB6 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67424E4D23D06E1400881CB6 /* WebKit.framework */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		7F568BF9C9BFDA3A0311DF18 /* Pods_linphoneTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F325590DD6CD7F6CC8F60C03 /* Pods_linphoneTests.framework */; };
@@ -1687,6 +1688,7 @@
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
 		65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		67424E4D23D06E1400881CB6 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		68D9EC27FCECD5DE2E19CD3C /* Pods-liblinphoneTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-liblinphoneTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-liblinphoneTester/Pods-liblinphoneTester.debug.xcconfig"; sourceTree = "<group>"; };
 		6E1BC45342F5201DABD7FE55 /* Pods_latestCallsWidget.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_latestCallsWidget.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -2031,6 +2033,7 @@
 				63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */,
 				63CE58401C85EBF400304800 /* VideoToolbox.framework in Frameworks */,
 				6334DDFA1BBAC97C00631900 /* libsqlite3.dylib in Frameworks */,
+				67424E4E23D06E1400881CB6 /* WebKit.framework in Frameworks */,
 				152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */,
 				570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */,
 				22405EEE1600B4E400B92522 /* AssetsLibrary.framework in Frameworks */,
@@ -2444,6 +2447,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				67424E4D23D06E1400881CB6 /* WebKit.framework */,
 				61DD7E1E2372E88F001BDD01 /* CoreLocation.framework */,
 				6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
