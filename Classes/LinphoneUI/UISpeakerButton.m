@@ -47,16 +47,16 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOn {
-	[LinphoneManager.instance setSpeakerEnabled:TRUE];
+	[CallManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (void)onOff {
-	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance setSpeakerEnabled:FALSE];
 }
 
 - (bool)onUpdate {
-	self.enabled = [LinphoneManager.instance allowSpeaker];
-	return [LinphoneManager.instance speakerEnabled];
+	self.enabled = [CallManager.instance allowSpeaker];
+	return CallManager.instance.speakerEnabled;
 }
 
 @end

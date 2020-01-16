@@ -23,6 +23,7 @@ send_logs_include_linphonerc_and_chathistory=0
 publish_presence=0
 backgroundmode_preference=1
 use_rls_presence=1
+use_callkit=1
 
 accept_early_media=0
 

@@ -82,7 +82,7 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
+				CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
 				linphone_call_pause(call);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
@@ -99,7 +99,7 @@
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
 			if (currentCall != nil) {
-				LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
+				CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
 				linphone_call_pause(currentCall);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
@@ -120,18 +120,6 @@
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-				NSString *key = (NSString *)[LinphoneManager.instance.providerDelegate.uuids allKeys][0];
-				NSUUID *uuid = (NSUUID *)[LinphoneManager.instance.providerDelegate.uuids objectForKey:key];
-				if (!uuid) {
-					return;
-				}
-				CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
-				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-				[LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																			  completion:^(NSError *err){
-																			  }];
-			}
 			linphone_core_enter_conference(LC);
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];

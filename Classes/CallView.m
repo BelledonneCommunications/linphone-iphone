@@ -34,6 +34,8 @@
 
 #include "linphone/linphonecore.h"
 
+#import "linphoneapp-Swift.h"
+
 const NSInteger SECURE_BUTTON_TAG = 5;
 
 @implementation CallView {
@@ -139,7 +141,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	_waitView.hidden = TRUE;
-	LinphoneManager.instance.nextCallIsTransfer = NO;
+	CallManager.nextCallIsTransfer = FALSE;
     
     callRecording = FALSE;
     _recordButtonOnView.hidden = TRUE;
@@ -243,7 +245,7 @@ static UICompositeViewDescription *compositeDescription = nil;
          }
          onConfirmationClick:^() {
              LinphoneAddress *addr = linphone_address_new(address.UTF8String);
-             [LinphoneManager.instance doCallWithSas:addr isSas:TRUE];
+             [CallManager.instance startCallWithAddr:addr isSas:TRUE];
              linphone_address_unref(addr);
          } ];
         [securityDialog.securityImage setImage:[UIImage imageNamed:@"security_alert_indicator.png"]];
@@ -487,8 +489,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[_routesButton setOn];
 	}
 
-	_routesBluetoothButton.selected = LinphoneManager.instance.bluetoothEnabled;
-	_routesSpeakerButton.selected = LinphoneManager.instance.speakerEnabled;
+	_routesBluetoothButton.selected = CallManager.instance.bluetoothEnabled;
+	_routesSpeakerButton.selected = CallManager.instance.speakerEnabled;
 	_routesEarpieceButton.selected = !_routesBluetoothButton.selected && !_routesSpeakerButton.selected;
 
 	if (hidden != _routesView.hidden) {
@@ -581,13 +583,16 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		case LinphoneCallOutgoingInit:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
-			// check video
+			// check video, because video can be disabled because of the low bandwidth.
 			if (!linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 				const LinphoneCallParams *param = linphone_call_get_current_params(call);
-				const LinphoneCallAppData *callAppData =
-					(__bridge const LinphoneCallAppData *)(linphone_call_get_user_data(call));
-				if (state == LinphoneCallStreamsRunning && callAppData->videoRequested &&
-					linphone_call_params_low_bandwidth_enabled(param)) {
+				CallAppData *data = nil;
+				const char *callId = linphone_call_log_get_call_id(linphone_call_get_call_log(call));
+				if (callId) {
+					data = [CallManager.instance getAppDataWithCallId:[NSString stringWithUTF8String:callId]];
+				}
+
+				if (state == LinphoneCallStreamsRunning && data && data.videoRequested && linphone_call_params_low_bandwidth_enabled(param)) {
 					// too bad video was not enabled because low bandwidth
 					UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Low bandwidth", nil)
 																					 message:NSLocalizedString(@"Video cannot be activated because of low bandwidth "
@@ -601,7 +606,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 						
 					[errView addAction:defaultAction];
 					[self presentViewController:errView animated:YES completion:nil];
-					callAppData->videoRequested = FALSE; /*reset field*/
+					data.videoRequested = FALSE;
+					[CallManager.instance setAppDataWithCallId:[NSString stringWithUTF8String:callId] appData:data];
 				}
 			}
 			break;
@@ -797,20 +803,20 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance setSpeakerEnabled:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
 	[LinphoneManager.instance setBluetoothEnabled:FALSE];
-	[LinphoneManager.instance setSpeakerEnabled:TRUE];
+	[CallManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (IBAction)onRoutesClick:(id)sender {
@@ -833,7 +839,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[self hideOptions:TRUE animated:TRUE];
 	DialerView *view = VIEW(DialerView);
 	[view setAddress:@""];
-	LinphoneManager.instance.nextCallIsTransfer = YES;
+	CallManager.nextCallIsTransfer = TRUE;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
@@ -841,13 +847,13 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[self hideOptions:TRUE animated:TRUE];
 	DialerView *view = VIEW(DialerView);
 	[view setAddress:@""];
-	LinphoneManager.instance.nextCallIsTransfer = NO;
+	CallManager.nextCallIsTransfer = FALSE;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onOptionsConferenceClick:(id)sender {
 	[self hideOptions:TRUE animated:TRUE];
-	linphone_core_add_all_to_conference(LC);
+	[CallManager.instance groupCall];
 }
 
 #pragma mark - Animation

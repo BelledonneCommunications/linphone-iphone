@@ -21,10 +21,11 @@
 #import <PushKit/PushKit.h>
 
 #import "LinphoneCoreSettingsStore.h"
-#import "ProviderDelegate.h"
 #import <UserNotifications/UserNotifications.h>
 #import <UserNotificationsUI/UserNotificationsUI.h>
 #import <CoreLocation/CoreLocation.h>
+#import "linphoneapp-Swift.h"
+
 
 @interface LinphoneAppDelegate : NSObject <UIApplicationDelegate, PKPushRegistryDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate> {
     @private
@@ -39,7 +40,6 @@
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
 @property PKPushRegistry* voipRegistry;
-@property ProviderDelegate *del;
 @property BOOL alreadyRegisteredForNotification;
 @property BOOL onlyPortrait;
 @property UIApplicationShortcutItem *shortcutItem;

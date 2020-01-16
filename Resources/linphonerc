@@ -17,6 +17,7 @@ display_phone_only=0
 auto_download_incoming_files_max_size=0
 lime_migration_done=0
 use_rls_presence=1
+use_callkit=1
 
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application
