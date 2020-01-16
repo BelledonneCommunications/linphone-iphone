@@ -86,6 +86,7 @@
         NSArray *rawURLparts = [[newURL resourceSpecifier] componentsSeparatedByString:@"?"];
         if (rawURLparts.count > 2) {
             decisionHandler(WKNavigationActionPolicyCancel); // invalid URL
+            return;
         }
         
         MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
@@ -140,11 +141,13 @@
 
         [self presentModalViewController:mailViewController animated:YES];
         decisionHandler(WKNavigationActionPolicyCancel);
+        return;
     }
     
     // open inline if host is the same, otherwise, pass to the system
     if (![newURL host] || [[newURL host] isEqualToString:[self.url host]]) {
         decisionHandler(WKNavigationActionPolicyAllow);
+        return;
     }
     [[UIApplication sharedApplication] openURL:newURL];
     decisionHandler(WKNavigationActionPolicyCancel);
