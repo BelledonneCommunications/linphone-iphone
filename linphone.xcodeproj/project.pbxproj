@@ -82,6 +82,8 @@
 		5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
 		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
+		614C087823D1A35F00217F80 /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614C087723D1A35F00217F80 /* ProviderDelegate.swift */; };
+		614C087A23D1A37400217F80 /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614C087923D1A37400217F80 /* CallManager.swift */; };
 		614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */; };
 		61586B81217A16EE0038AC45 /* menu_about.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B7A217A16EE0038AC45 /* menu_about.png */; };
 		61586B83217A16FD0038AC45 /* menu_about@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61586B82217A16FD0038AC45 /* menu_about@2x.png */; };
@@ -673,7 +675,6 @@
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		7F568BF9C9BFDA3A0311DF18 /* Pods_linphoneTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F325590DD6CD7F6CC8F60C03 /* Pods_linphoneTests.framework */; };
 		8C1B67061E671826001EA2FE /* AudioHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1B67051E671826001EA2FE /* AudioHelper.m */; };
-		8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */; };
 		8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2595DE1DEDCC8E007A6424 /* CallKit.framework */; };
 		8C2A81951F87B8000012A66B /* chat_group_avatar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */; };
 		8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
@@ -1025,6 +1026,9 @@
 		5EEE8FB320C81334006E4176 /* latestCallsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestCallsWidget.entitlements; sourceTree = "<group>"; };
 		5EF0C33820C806A5005081B0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		6130C85B22BBB493009CC79C /* LaunchScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchScreen.h; sourceTree = "<group>"; };
+		614C087623D1A35E00217F80 /* linphone-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "linphone-Bridging-Header.h"; sourceTree = "<group>"; };
+		614C087723D1A35F00217F80 /* ProviderDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
+		614C087923D1A37400217F80 /* CallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
 		614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		61586B7A217A16EE0038AC45 /* menu_about.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_about.png; sourceTree = "<group>"; };
 		61586B82217A16FD0038AC45 /* menu_about@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu_about@2x.png"; sourceTree = "<group>"; };
@@ -1701,8 +1705,6 @@
 		8C1B67051E671826001EA2FE /* AudioHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioHelper.m; sourceTree = "<group>"; };
 		8C1B67081E6718BC001EA2FE /* AudioHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioHelper.h; path = Utils/AudioHelper.h; sourceTree = "<group>"; };
 		8C23BCB71D82AAC3005F19BB /* linphone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphone.entitlements; sourceTree = "<group>"; };
-		8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProviderDelegate.h; sourceTree = "<group>"; };
-		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
 		8C2595DE1DEDCC8E007A6424 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_group_avatar@2x.png"; sourceTree = "<group>"; };
 		8C2A81941F87B8000012A66B /* chat_group_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_avatar.png; sourceTree = "<group>"; };
@@ -2239,8 +2241,6 @@
 				D3F83F8C158229C500336684 /* PhoneMainView.h */,
 				D3F83F8D15822ABD00336684 /* PhoneMainView.m */,
 				639E9CB31C0DB88200019A75 /* PhoneMainView.xib */,
-				8C2595D51DEDC8E1007A6424 /* ProviderDelegate.h */,
-				8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */,
 				CF7602DF21086EB100749F76 /* RecordingsListTableView.h */,
 				CF7602E021086EB200749F76 /* RecordingsListTableView.m */,
 				CF7602D4210867E800749F76 /* RecordingsListView.h */,
@@ -2269,6 +2269,9 @@
 				D326483415887D4400930C67 /* Utils */,
 				34216F3E1547EBCD00EA9777 /* VideoZoomHandler.h */,
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
+				614C087723D1A35F00217F80 /* ProviderDelegate.swift */,
+				614C087923D1A37400217F80 /* CallManager.swift */,
+				614C087623D1A35E00217F80 /* linphone-Bridging-Header.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -3555,6 +3558,7 @@
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = Z2V957B3D6;
+						LastSwiftMigration = 1030;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -4619,6 +4623,7 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				8CD99A3C2090B9FA008A7CDA /* ChatConversationImdnView.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
+				614C087A23D1A37400217F80 /* CallManager.swift in Sources */,
 				CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */,
 				22F2508E107141E100AC9B3F /* DialerView.m in Sources */,
 				633756451B67D2B200E21BAD /* SideMenuView.m in Sources */,
@@ -4643,8 +4648,8 @@
 				63423C0A1C4501D000D9A050 /* Contact.m in Sources */,
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
+				614C087823D1A35F00217F80 /* ProviderDelegate.swift in Sources */,
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
-				8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */,
 				CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */,
 				63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */,
 				D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */,
@@ -5385,6 +5390,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
@@ -5414,7 +5420,8 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_CFLAGS = (
@@ -5426,11 +5433,15 @@
 					"-DLINPHONE_SDK_VERSION=\\\"4.3.1\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)app";
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5491,6 +5502,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
@@ -5517,7 +5529,8 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_CFLAGS = (
@@ -5529,11 +5542,14 @@
 					"-DLINPHONE_SDK_VERSION=\\\"4.3.1\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)app";
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5594,6 +5610,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
@@ -5620,7 +5637,8 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_CFLAGS = (
@@ -5632,11 +5650,14 @@
 					"-DLINPHONE_SDK_VERSION=\\\"4.3.1\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)app";
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -5697,6 +5718,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
@@ -5723,7 +5745,8 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "linphone-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				OTHER_CFLAGS = (
@@ -5735,11 +5758,14 @@
 					"-DLINPHONE_SDK_VERSION=\\\"4.3.1\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)app";
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
 					"-Werror=incomplete-implementation",
@@ -6851,6 +6877,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ABB887316C42EE876A3051A9 /* Pods-linphoneTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -6901,6 +6928,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F6373F9231918DECD2B3004D /* Pods-linphoneTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -6949,6 +6977,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 85FB19B6A8124D942C8471F1 /* Pods-linphoneTests.distribution.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -6997,6 +7026,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CE119C214B6B8B2740622BBD /* Pods-linphoneTests.distributionadhoc.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
