@@ -5,9 +5,9 @@ source "https://github.com/CocoaPods/Specs.git"
 
 def basic_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/basic-frameworks', '4.3'
+		pod 'linphone-sdk', '4.3'
 		else
-		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # loacl sdk
+		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 	
 	if not ENV['USE_CRASHLYTHICS'].nil?
