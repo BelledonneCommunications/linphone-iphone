@@ -55,12 +55,6 @@ target 'linphone' do
   basic_pods
 	pod 'SVProgressHUD'
 
-  target 'linphoneTests' do
-    inherit! :search_paths
-		pod 'KIF', :configurations => ['Debug']
-    # Pods for testing
-  end
-
 end
 
 target 'linphoneExtension' do
