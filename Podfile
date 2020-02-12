@@ -10,6 +10,20 @@ def basic_pods
 		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 	
+	crashlythics
+end
+
+def ext_pods
+	if ENV['PODFILE_PATH'].nil?
+		pod 'linphone-sdk/app-extension-swift', '4.4'
+		else
+		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
+	end
+	
+	crashlythics
+end
+
+def crashlythics
 	if not ENV['USE_CRASHLYTHICS'].nil?
 		# activate crashlythics
 		pod 'Firebase/Core'
