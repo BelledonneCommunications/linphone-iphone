@@ -66,8 +66,32 @@
     return @[];
 }
 
-- (void)loadItem:(NSItemProvider *)provider typeIdentifier:(NSString *)typeIdentifier defaults:(NSUserDefaults *)defaults
-{
+- (NSString *)cacheDirectory {
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *cachePath = [paths objectAtIndex:0];
+	BOOL isDir = NO;
+	NSError *error;
+	if (![[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
+		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath
+								  withIntermediateDirectories:NO
+												   attributes:nil
+														error:&error];
+	}
+	return cachePath;
+}
+
+-(void) nsDataWrite:(NSData *)data {
+	NSString* groupName = [NSString stringWithFormat:@"group.%@",[[NSBundle mainBundle] bundleIdentifier]];
+	NSError *error = nil;
+	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
+	NSString *fullCacheFilePathPath = [NSString stringWithFormat:@"%@/%@",path,@"nsData"];
+	[[NSFileManager defaultManager] removeItemAtURL:[NSURL fileURLWithPath:fullCacheFilePathPath] error:&error];
+	if (![data writeToFile:fullCacheFilePathPath atomically:YES]) {
+		NSLog(@"nsDataWrite error");
+	}
+}
+
+- (void)loadItem:(NSItemProvider *)provider typeIdentifier:(NSString *)typeIdentifier defaults:(NSUserDefaults *)defaults  {
     [provider loadItemForTypeIdentifier:typeIdentifier options:nil completionHandler:^(id<NSSecureCoding>  _Nullable item, NSError * _Null_unspecified error) {
         if([(NSObject*)item isKindOfClass:[NSURL class]]) {
             NSURL *url = (NSURL *)item;
@@ -78,15 +102,15 @@
                 NSString *filename = [imgPath lastPathComponent];
                 if([imgPath containsString:@"var/mobile/Media/PhotoData"]) {
                     // We get the corresponding PHAsset identifier so we can display the image in the app without having to duplicate it.
-                    NSDictionary *dict = @{@"nsData" : nsData,
-                                           @"url" : filename,
+                    NSDictionary *dict = @{@"url" : filename,
                                            @"message" : self.contentText};
+					[self nsDataWrite:nsData];
                     [defaults setObject:dict forKey:@"photoData"];
                 } else if ([imgPath containsString:@"var/mobile/Library/Mobile Documents/com~apple~CloudDocs"] || [[url scheme] isEqualToString:@"file"]) {
                     // shared files from icloud drive
-                    NSDictionary *dict = @{@"nsData" : nsData,
-                                           @"url" : filename,
+                    NSDictionary *dict = @{@"url" : filename,
                                            @"message" : self.contentText};
+					[self nsDataWrite:nsData];
                     [defaults setObject:dict forKey:@"icloudData"];
                 } else {
                     NSDictionary *dict = @{@"url" : [url absoluteString],
@@ -103,9 +127,9 @@
             [self respondUrl:defaults];
         } else if ([(NSObject*)item isKindOfClass:[UIImage class]]) {
             UIImage *image = (UIImage*)item;
-            NSDictionary *dict = @{@"nsData" : UIImagePNGRepresentation(image),
-                                   @"url" : [NSString stringWithFormat:@"IMAGE_%f.PNG", [[NSDate date] timeIntervalSince1970]],
+            NSDictionary *dict = @{@"url" : [NSString stringWithFormat:@"IMAGE_%f.PNG", [[NSDate date] timeIntervalSince1970]],
                                    @"message" : self.contentText};
+			[self nsDataWrite:UIImagePNGRepresentation(image)];
             [defaults setObject:dict forKey:@"photoData"];
             
             [self respondUrl:defaults];

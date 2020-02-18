@@ -297,6 +297,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+-(void) nsDataWrite:(NSData *)data {
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSError *error = nil;
+	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
+	NSString *fullCacheFilePathPath = [NSString stringWithFormat:@"%@/%@",path,@"nsData"];
+	[[NSFileManager defaultManager] removeItemAtURL:[NSURL fileURLWithPath:fullCacheFilePathPath] error:&error];
+	if (![data writeToFile:fullCacheFilePathPath atomically:YES]) {
+		NSLog(@"nsDataWrite error %@",error);
+	}
+}
+
+-(NSData *) nsDataRead {
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
+	NSString *fullCacheFilePathPath = [NSString stringWithFormat:@"%@/%@",path,@"nsData"];
+	return[NSData dataWithContentsOfFile:fullCacheFilePathPath];
+}
+
+
 - (void)shareFile {
     NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
 
@@ -313,12 +332,12 @@ static UICompositeViewDescription *compositeDescription = nil;
         PHAsset *phasset = [assetDict objectForKey:key];
         if (!phasset) {
             // for the images or videos not really in the photo album
-            [self confirmShare:dict[@"nsData"] url:nil fileName:fileName assetId:nil];
+            [self confirmShare:[self nsDataRead] url:nil fileName:fileName assetId:nil];
         } else if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"] || [fileName hasSuffix:@"jpg"] || [fileName hasSuffix:@"png"]) {
-            UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+            UIImage *image = [[UIImage alloc] initWithData:[self nsDataRead]];
             [self chooseImageQuality:image assetId:[phasset localIdentifier]];
         } else if ([fileName hasSuffix:@"MOV"] || [fileName hasSuffix:@"mov"]) {
-            [self confirmShare:dict[@"nsData"] url:nil fileName:nil assetId:[phasset localIdentifier]];
+            [self confirmShare:[self nsDataRead] url:nil fileName:nil assetId:[phasset localIdentifier]];
         } else {
             LOGE(@"Unable to parse file %@",fileName);
         }
@@ -327,7 +346,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     } else if (dictFile) {
         NSString *fileName = dictFile[@"url"];
         [_messageField setText:dictFile[@"message"]];
-        [self confirmShare:dictFile[@"nsData"] url:nil fileName:fileName assetId:nil];
+        [self confirmShare:[self nsDataRead] url:nil fileName:fileName assetId:nil];
         
         [defaults removeObjectForKey:@"icloudData"];
     } else if (dictUrl) {
