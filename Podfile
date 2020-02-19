@@ -5,9 +5,9 @@ source "https://github.com/CocoaPods/Specs.git"
 
 def basic_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk', '4.3'
+		pod 'linphone-sdk/basic-frameworks', '4.4'
 		else
-		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # loacl sdk
+		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 	
 	if not ENV['USE_CRASHLYTHICS'].nil?
@@ -16,6 +16,14 @@ def basic_pods
 		pod 'Fabric', '~> 1.9.0'
 		pod 'Crashlytics', '~> 3.12.0'
 		pod 'Firebase/Performance'
+	end
+end
+
+def ext_pods
+	if ENV['PODFILE_PATH'].nil?
+		pod 'linphone-sdk/app-extension-swift', '4.4'
+		else
+		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 end
 
@@ -39,6 +47,7 @@ target 'linphone' do
 
   # Pods for linphone
   basic_pods
+	ext_pods
 	pod 'SVProgressHUD'
 
 end
