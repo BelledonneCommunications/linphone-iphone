@@ -7,7 +7,7 @@ def basic_pods
 	if ENV['PODFILE_PATH'].nil?
 		pod 'linphone-sdk/basic-frameworks', '4.3.1'
 		else
-		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # loacl sdk
+		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 	
 	crashlythics
@@ -33,6 +33,14 @@ def crashlythics
 	end
 end
 
+def ext_pods
+	if ENV['PODFILE_PATH'].nil?
+		pod 'linphone-sdk/app-extension-swift', '4.4'
+		else
+		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
+	end
+end
+
 target 'liblinphoneTester' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   use_frameworks!
@@ -53,6 +61,7 @@ target 'linphone' do
 
   # Pods for linphone
   basic_pods
+	ext_pods
 	pod 'SVProgressHUD'
 
 end
