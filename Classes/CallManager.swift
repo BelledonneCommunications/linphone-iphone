@@ -188,9 +188,10 @@ enum NetworkType: Int {
 
 	func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String) {
 		let uuid = UUID()
+		let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
+
+		providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 		providerDelegate.uuids.updateValue(uuid, forKey: callId)
-		providerDelegate.calls.updateValue(callId, forKey: uuid)
-		providerDelegate.connecteds.updateValue(false, forKey: uuid)
 		providerDelegate.reportIncomingCall(call:call, uuid: uuid, handle: handle, hasVideo: hasVideo)
 	}
 
@@ -242,10 +243,10 @@ enum NetworkType: Int {
 			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
 			let transaction = CXTransaction(action: startCallAction)
 
-			providerDelegate.addrs.updateValue(sAddr, forKey: uuid)
-			providerDelegate.outgoingUuids.updateValue(uuid, forKey: sAddr.asStringUriOnly())
-			providerDelegate.isSas.updateValue(isSas, forKey: uuid)
-		
+			let callInfo = CallInfo.newOutgoingCallInfo(addr: sAddr, isSas: isSas)
+			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+			providerDelegate.uuids.updateValue(uuid, forKey: "")
+
 			requestTransaction(transaction, action: "startCall")
 		}else {
 			try? doCall(addr: sAddr, isSas: isSas)
@@ -455,7 +456,8 @@ class CoreManager: CoreDelegate {
 					if (uuid != nil) {
 						// Tha app is now registered, updated the call already existed.
 						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: address, hasVideo: video)
-						let connected = CallManager.instance().providerDelegate.connecteds[uuid!] ?? false
+						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+						let connected = callInfo?.connected ?? false
 						if (connected) {
 							// The call is already answered.
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
@@ -478,12 +480,13 @@ class CoreManager: CoreDelegate {
 				break
 			case .StreamsRunning:
 				if (CallManager.callKitEnabled()) {
-					let uuid = CallManager.instance().providerDelegate.outgoingUuids["\(addr!.asStringUriOnly())"]
+					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
 					if (uuid != nil) {
-						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId!)
-						CallManager.instance().providerDelegate.calls.updateValue(callId!, forKey: uuid!)
-						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
-						CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
+						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+						if (callInfo?.isOutgoing ?? false) {
+							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
+							CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
+						}
 					}
 				}
 
@@ -495,8 +498,14 @@ class CoreManager: CoreDelegate {
 				break
 			case .OutgoingRinging:
 				if (CallManager.callKitEnabled()) {
-					let uuid = CallManager.instance().providerDelegate.outgoingUuids["\(addr!.asStringUriOnly())"]
+					let uuid = CallManager.instance().providerDelegate.uuids[""]
 					if (uuid != nil) {
+						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+						callInfo!.callId = callId!
+						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+						CallManager.instance().providerDelegate.uuids.removeValue(forKey: "")
+						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId!)
+
 						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
 						CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
 					}
