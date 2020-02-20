@@ -24,17 +24,34 @@ import linphonesw
 import AVFoundation
 import os
 
+class CallInfo: NSObject {
+	var callId: String = ""
+	var connected = false
+	var toAddr: Address?
+	var isOutgoing = false
+	var sasEnabled = false
+	
+	static func newIncomingCallInfo(callId: String) -> CallInfo {
+		let callInfo = CallInfo()
+		callInfo.callId = callId
+		return callInfo
+	}
+	
+	static func newOutgoingCallInfo(addr: Address, isSas: Bool) -> CallInfo {
+		let callInfo = CallInfo()
+		callInfo.isOutgoing = true
+		callInfo.sasEnabled = isSas
+		callInfo.toAddr = addr
+		return callInfo
+	}
+}
+
 class ProviderDelegate: NSObject {
 	private let provider: CXProvider
 	private let callController: CXCallController
 
 	var uuids: [String : UUID] = [:]
-	var calls: [UUID : String] = [:]
-	var connecteds: [UUID : Bool] = [:]
-	var addrs: [UUID : Address] = [:]
-	var outgoingUuids: [String : UUID] = [:]
-	var isSas: [UUID : Bool] = [:]
-	
+	var callInfos: [UUID : CallInfo] = [:]
 
 	override init() {
 		provider = CXProvider(configuration: ProviderDelegate.providerConfiguration)
@@ -66,7 +83,7 @@ class ProviderDelegate: NSObject {
 		update.remoteHandle = CXHandle(type:.generic, value: handle)
 		update.hasVideo = hasVideo
 
-		let callId = CallManager.instance().providerDelegate.calls[uuid]
+		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
@@ -103,23 +120,16 @@ class ProviderDelegate: NSObject {
 extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
 		let uuid = action.callUUID
-		let callId = calls[uuid]
-		let addr = addrs[uuid]
+		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 
 		// remove call infos first, otherwise CXEndCallAction will be called more than onece
-		if (addr != nil) {
-			addrs.removeValue(forKey: uuid)
-			outgoingUuids.removeValue(forKey: addr!.asStringUriOnly())
-			isSas.removeValue(forKey: uuid)
-		}
-		let call = CallManager.instance().callByCallId(callId: callId)
 		if (callId != nil) {
 			uuids.removeValue(forKey: callId!)
 		}
-		calls.removeValue(forKey: uuid)
-		connecteds.removeValue(forKey: uuid)
+		callInfos.removeValue(forKey: uuid)
 
+		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call != nil) {
 			do {
 				try call!.terminate()
@@ -132,14 +142,16 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
 		let uuid = action.callUUID
-		let callId = calls[uuid]
+		let callInfo = callInfos[uuid]
+		let callId = callInfo?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
 		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call == nil) {
 			// The application is not yet registered, mark the call as connected. The audio session must be configured here.
 			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
-			CallManager.instance().providerDelegate.connecteds.updateValue(true, forKey: uuid)
+			callInfo?.connected = true
+			callInfos.updateValue(callInfo!, forKey: uuid)
 		} else {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		}
@@ -148,7 +160,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
 		let uuid = action.callUUID
-		let callId = calls[uuid]
+		let callId = callInfos[uuid]?.callId
 		let call = CallManager.instance().callByCallId(callId: callId)
 
 		if (call != nil && UIApplication.shared.applicationState != .active) {
@@ -170,13 +182,14 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
 		do {
 			let uuid = action.callUUID
-			let addr = addrs[uuid]
+			let callInfo = callInfos[uuid]
+			let addr = callInfo?.toAddr
 			if (addr == nil) {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: can not call a null address!")
 				action.fail()
 			}
 
-			try CallManager.instance().doCall(addr: addr!, isSas: CallManager.instance().providerDelegate.isSas[uuid] ?? false)
+			try CallManager.instance().doCall(addr: addr!, isSas: callInfo?.sasEnabled ?? false)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call started failed because \(error)")
 			action.fail()
@@ -196,7 +209,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
 		let uuid = action.callUUID
-		let callId = calls[uuid]
+		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call muted with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 
 		CallManager.instance().lc!.micEnabled = !CallManager.instance().lc!.micEnabled
@@ -205,7 +218,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
 		let uuid = action.callUUID
-		let callId = calls[uuid]
+		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call send dtmf with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 
 		let call = CallManager.instance().callByCallId(callId: callId)
@@ -222,7 +235,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
 		let uuid = action.uuid
-		let callId = calls[uuid]
+		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call time out with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		action.fulfill()
 	}
