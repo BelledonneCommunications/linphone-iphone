@@ -754,7 +754,7 @@
 - (void)application:(UIApplication *)application
 	handleActionWithIdentifier:(NSString *)identifier
 		  forLocalNotification:(UILocalNotification *)notification
-			 completionHandler:(void (^)())completionHandler {
+			 completionHandler:(void (^)(void))completionHandler {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
@@ -802,7 +802,7 @@
 	handleActionWithIdentifier:(NSString *)identifier
 		  forLocalNotification:(UILocalNotification *)notification
 			  withResponseInfo:(NSDictionary *)responseInfo
-			 completionHandler:(void (^)())completionHandler {
+			 completionHandler:(void (^)(void))completionHandler {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
