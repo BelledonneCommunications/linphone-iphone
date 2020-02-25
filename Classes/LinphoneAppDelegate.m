@@ -320,6 +320,25 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	LinphoneManager.instance.conf = TRUE;
 	linphone_core_terminate_all_calls(LC);
+
+	// !!! Will be removed after push notification job finished
+	// destroyLinphoneCore automatically unregister proxies but if we are using
+	// remote push notifications, we want to continue receiving them
+	if (LinphoneManager.instance.pushNotificationToken != nil) {
+		// trick me! setting network reachable to false will avoid sending unregister
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		BOOL pushNotifEnabled = NO;
+		while (proxies) {
+			const char *refkey = linphone_proxy_config_get_ref_key(proxies->data);
+			pushNotifEnabled = pushNotifEnabled || (refkey && strcmp(refkey, "push_notification") == 0);
+			proxies = proxies->next;
+		}
+		// but we only want to hack if at least one proxy config uses remote push..
+		if (pushNotifEnabled) {
+			linphone_core_set_network_reachable(LC, FALSE);
+		}
+	}
+
 	[LinphoneManager.instance destroyLinphoneCore];
 }
 
