@@ -132,7 +132,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         
 	entry->myself ? cell.addressLabel.text = NSLocalizedString(@"Me", nil) : [ContactDisplay setDisplayNameLabel:cell.addressLabel forAddress:linphone_participant_get_address(entry->participant)];
     cell.participant = entry->participant;
-    [cell update:(entry->numberOfDevices != 0) isMyself:entry->myself];
+    [cell update:(entry->numberOfDevices != 0)];
 
     return cell;
 }
