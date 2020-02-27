@@ -48,9 +48,7 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		videoHidden = TRUE;
-        CGRect frame = _callPauseButton.frame;
-        frame.origin.y = _recordButtonOnView.frame.origin.y;
-        _callPauseButton.frame = frame;
+		[self updateInfoView];
 	}
 	return self;
 }
@@ -266,16 +264,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateInfoView {
     CGRect infoFrame = _infoView.frame;
-    CGRect frame = _callPauseButton.frame;
+    CGRect pauseFrame = _callPauseButton.frame;
+	CGRect recordFrame = _recordButtonOnView.frame;
     if (videoHidden) {
         infoFrame.origin.y = (_avatarImage.frame.origin.y-66)/2;
-        frame.origin.y = _recordButtonOnView.frame.origin.y;
+		pauseFrame.origin.y = _avatarImage.frame.origin.y + _avatarImage.frame.size.height - pauseFrame.size.height;
     } else {
         infoFrame.origin.y = 0;
-        frame.origin.y = _videoCameraSwitch.frame.origin.y+_videoGroup.frame.origin.y;
+        pauseFrame.origin.y = _videoCameraSwitch.frame.origin.y+_videoGroup.frame.origin.y;
     }
+	recordFrame.origin.y = pauseFrame.origin.y;
     _infoView.frame = infoFrame;
-    _callPauseButton.frame = frame;
+    _callPauseButton.frame = pauseFrame;
+	_recordButtonOnView.frame = recordFrame;
 }
 
 - (void)hideSpinnerIndicator:(LinphoneCall *)call {
@@ -766,22 +767,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
     if (![_optionsView isHidden])
         [self hideOptions:TRUE animated:ANIMATED];
     if (callRecording) {
-        LOGD(@"Recording Stops");
-        [_recordButton setImage:[UIImage imageNamed:@"rec_on_default.png"] forState:UIControlStateNormal];
-        [_recordButtonOnView setHidden:TRUE];
-        
-        LinphoneCall *call = linphone_core_get_current_call(LC);
-        linphone_call_stop_recording(call);
-        
-        callRecording = FALSE;
-        
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        NSString *writablePath = [paths objectAtIndex:0];
-        writablePath = [writablePath stringByAppendingString:@"/"];
-        NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
-        if (directoryContent) {
-            return;
-        }
+		[self onRecordOnViewClick:nil];
     } else {
         LOGD(@"Recording Starts");
         
@@ -793,6 +779,25 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
         
         callRecording = TRUE;
     }
+}
+
+- (IBAction)onRecordOnViewClick:(id)sender {
+	LOGD(@"Recording Stops");
+	[_recordButton setImage:[UIImage imageNamed:@"rec_on_default.png"] forState:UIControlStateNormal];
+	[_recordButtonOnView setHidden:TRUE];
+	
+	LinphoneCall *call = linphone_core_get_current_call(LC);
+	linphone_call_stop_recording(call);
+	
+	callRecording = FALSE;
+	
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *writablePath = [paths objectAtIndex:0];
+	writablePath = [writablePath stringByAppendingString:@"/"];
+	NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:writablePath error:NULL];
+	if (directoryContent) {
+		return;
+	}
 }
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {

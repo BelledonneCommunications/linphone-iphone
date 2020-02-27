@@ -112,5 +112,6 @@
 - (IBAction)onNumpadClick:(id)sender;
 - (IBAction)onChatClick:(id)sender;
 - (IBAction)onRecordClick:(id)sender;
+- (IBAction)onRecordOnViewClick:(id)sender;
 
 @end
