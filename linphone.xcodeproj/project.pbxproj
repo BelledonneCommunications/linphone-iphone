@@ -82,6 +82,8 @@
 		5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
 		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
+		6134812D2406CECC00695B41 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6134812C2406CECC00695B41 /* ConfigManager.swift */; };
+		6134812F2407B35200695B41 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6134812E2407B35200695B41 /* AppManager.swift */; };
 		614C087823D1A35F00217F80 /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614C087723D1A35F00217F80 /* ProviderDelegate.swift */; };
 		614C087A23D1A37400217F80 /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614C087923D1A37400217F80 /* CallManager.swift */; };
 		614D09CE21E74D5400C43EDF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 614D09CD21E74D5400C43EDF /* GoogleService-Info.plist */; };
@@ -962,6 +964,8 @@
 		5EEE8FB320C81334006E4176 /* latestCallsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestCallsWidget.entitlements; sourceTree = "<group>"; };
 		5EF0C33820C806A5005081B0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		6130C85B22BBB493009CC79C /* LaunchScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchScreen.h; sourceTree = "<group>"; };
+		6134812C2406CECC00695B41 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
+		6134812E2407B35200695B41 /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		614C087623D1A35E00217F80 /* linphone-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "linphone-Bridging-Header.h"; sourceTree = "<group>"; };
 		614C087723D1A35F00217F80 /* ProviderDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
 		614C087923D1A37400217F80 /* CallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
@@ -2183,6 +2187,8 @@
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
 				614C087723D1A35F00217F80 /* ProviderDelegate.swift */,
 				614C087923D1A37400217F80 /* CallManager.swift */,
+				6134812C2406CECC00695B41 /* ConfigManager.swift */,
+				6134812E2407B35200695B41 /* AppManager.swift */,
 				614C087623D1A35E00217F80 /* linphone-Bridging-Header.h */,
 			);
 			path = Classes;
@@ -4404,6 +4410,7 @@
 				633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
+				6134812F2407B35200695B41 /* AppManager.swift in Sources */,
 				633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				6352A5751BE0D4B800594C1C /* CallSideMenuView.m in Sources */,
@@ -4413,6 +4420,7 @@
 				8C9C5E111F83BD97006987FA /* UIChatCreateCollectionViewCell.m in Sources */,
 				22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */,
 				63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */,
+				6134812D2406CECC00695B41 /* ConfigManager.swift in Sources */,
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
 				63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */,

@@ -1445,8 +1445,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	theLinphoneCore = linphone_factory_create_core_with_config_3(factory, _configDb, NULL);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 
-	// Add call changed callback by swift
-	[CallManager.instance configCallManagerWithCore:theLinphoneCore db:_configDb];
+	[CallManager.instance setCoreWithCore:theLinphoneCore];
+	[ConfigManager.instance setDbWithDb:_configDb];
 
 	linphone_core_start(theLinphoneCore);
 

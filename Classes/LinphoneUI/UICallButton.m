@@ -102,7 +102,7 @@
 		[self setImage:[UIImage imageNamed:@"call_audio_start_disabled.png"] forState:UIControlStateDisabled];
 	}
 
-	if (CallManager.nextCallIsTransfer) {
+	if (CallManager.instance.nextCallIsTransfer) {
 		[self setImage:[UIImage imageNamed:@"call_transfer_default.png"] forState:UIControlStateNormal];
 		[self setImage:[UIImage imageNamed:@"call_transfer_disabled.png"] forState:UIControlStateDisabled];
 	} else if (linphone_core_get_calls_nb(LC) > 0) {
