@@ -24,12 +24,14 @@ import linphonesw
 import AVFoundation
 import os
 
-class CallInfo: NSObject {
+@objc class CallInfo: NSObject {
 	var callId: String = ""
-	var connected = false
+	var accepted = false
 	var toAddr: Address?
 	var isOutgoing = false
 	var sasEnabled = false
+	var declined = false
+	
 	
 	static func newIncomingCallInfo(callId: String) -> CallInfo {
 		let callInfo = CallInfo()
@@ -48,17 +50,12 @@ class CallInfo: NSObject {
 
 class ProviderDelegate: NSObject {
 	private let provider: CXProvider
-	private let callController: CXCallController
-
 	var uuids: [String : UUID] = [:]
 	var callInfos: [UUID : CallInfo] = [:]
 
 	override init() {
 		provider = CXProvider(configuration: ProviderDelegate.providerConfiguration)
-		callController = CXCallController()
-
 		super.init()
-
 		provider.setDelegate(self, queue: nil)
 	}
 
@@ -83,16 +80,22 @@ class ProviderDelegate: NSObject {
 		update.remoteHandle = CXHandle(type:.generic, value: handle)
 		update.hasVideo = hasVideo
 
-		let callId = callInfos[uuid]?.callId
+		let callInfo = callInfos[uuid]
+		let callId = callInfo?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
+				if (call == nil) {
+					callInfo?.declined = true
+					self.callInfos.updateValue(callInfo!, forKey: uuid)
+					return
+				}
 				let code = (error as NSError?)?.code
 				if code == CXErrorCodeIncomingCallError.filteredByBlockList.rawValue || code == CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue {
 					try? call?.decline(reason: Reason.Busy)
-					} else {
+				} else {
 					try? call?.decline(reason: Reason.Unknown)
 				}
 			}
@@ -103,7 +106,6 @@ class ProviderDelegate: NSObject {
 		let update = CXCallUpdate()
 		update.remoteHandle = CXHandle(type:.generic, value:handle)
 		update.hasVideo = hasVideo
-
 		provider.reportCall(with:uuid, updated:update);
 	}
 
@@ -147,10 +149,10 @@ extension ProviderDelegate: CXProviderDelegate {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
 		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call == nil) {
-			// The application is not yet registered, mark the call as connected. The audio session must be configured here.
+		if (call == nil || call?.state != Call.State.IncomingReceived) {
+			// The application is not yet registered or the call is not yet received, mark the call as accepted. The audio session must be configured here.
 			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
-			callInfo?.connected = true
+			callInfo?.accepted = true
 			callInfos.updateValue(callInfo!, forKey: uuid)
 		} else {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
@@ -211,7 +213,6 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call muted with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-
 		CallManager.instance().lc!.micEnabled = !CallManager.instance().lc!.micEnabled
 		action.fulfill()
 	}
@@ -220,7 +221,6 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call send dtmf with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-
 		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call != nil) {
 			let digit = (action.digits.cString(using: String.Encoding.utf8)?[0])!
