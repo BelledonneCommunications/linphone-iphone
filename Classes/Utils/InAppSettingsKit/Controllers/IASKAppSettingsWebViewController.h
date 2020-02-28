@@ -16,15 +16,16 @@
 
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
+#import <WebKit/WebKit.h>
 
-@interface IASKAppSettingsWebViewController : UIViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate> {
-  UIWebView *webView;
+@interface IASKAppSettingsWebViewController : UIViewController <WKNavigationDelegate, MFMailComposeViewControllerDelegate> {
+  WKWebView *webView;
   NSURL *url;
 }
 
 - (id)initWithFile:(NSString*)htmlFileName key:(NSString*)key;
 
-@property(nonatomic, strong) UIWebView *webView;
+@property(nonatomic, strong) WKWebView *webView;
 @property(nonatomic, strong) NSURL *url;
 
 @end
