@@ -72,7 +72,7 @@ import AVFoundation
 		if (sCall.userData == nil) {
 			return nil
 		}
-		return Unmanaged<CallAppData>.fromOpaque(sCall.userData!).takeUnretainedValue()
+		return Unmanaged<CallAppData>.fromOpaque(sCall.userData!).takeRetainedValue()
 	}
 
 	@objc static func setAppData(call:OpaquePointer, appData: CallAppData) {
@@ -84,7 +84,15 @@ import AVFoundation
 		if (appData == nil) {
 			sCall.userData = nil
 		} else {
-			sCall.userData = UnsafeMutableRawPointer(Unmanaged.passUnretained(appData!).toOpaque())
+			sCall.userData = UnsafeMutableRawPointer(Unmanaged.passRetained(appData!).toOpaque())
+		}
+	}
+
+	static func releaseAppData(sCall:Call) {
+		let data = getAppData(sCall: sCall)
+		if (data != nil) {
+			Unmanaged.passRetained(data!).release()
+			sCall.userData = nil
 		}
 	}
 
@@ -331,7 +339,7 @@ class CoreManager: CoreDelegate {
 
 		if (call.userData == nil) {
 			let appData = CallAppData()
-			call.userData = UnsafeMutableRawPointer(Unmanaged.passUnretained(appData).toOpaque())
+			CallManager.setAppData(sCall: call, appData: appData)
 		}
 
 
@@ -438,7 +446,7 @@ class CoreManager: CoreDelegate {
 				}
 				break
 			case .Released:
-				CallManager.setAppData(sCall: call, appData: nil)
+				CallManager.releaseAppData(sCall: call)
 				break
 			default:
 				break
