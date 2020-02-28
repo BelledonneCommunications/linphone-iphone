@@ -776,8 +776,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-		CallAppData *data = [CallManager.instance getAppDataWithCallId:callId];
+		CallAppData *data = [CallManager getAppDataWithCall:call];
 		if (data != nil) {
 			if (state == UIDeviceBatteryStateUnplugged) {
 				if (level <= 0.2f && !data.batteryWarningShown) {
@@ -801,7 +800,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			if (level > 0.2f) {
 				data.batteryWarningShown = FALSE;
 			}
-			[CallManager.instance setAppDataWithCallId:callId appData:data];
+			[CallManager setAppDataWithCall:call appData:data];
 		}
 	}
 }
