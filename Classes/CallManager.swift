@@ -39,7 +39,6 @@ import AVFoundation
 	@objc var speakerEnabled : Bool = false
 	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
-	var callAppDatas: [String : CallAppData] = [:]
 
 
 	fileprivate override init() {
@@ -60,12 +59,29 @@ import AVFoundation
 		lc?.addDelegate(delegate: manager)
 	}
 
-	@objc func getAppData (callId : String) -> CallAppData? {
-		return CallManager.instance().callAppDatas["\(callId)"]
+	@objc static func getAppData (call: OpaquePointer) -> CallAppData? {
+		let sCall = Call.getSwiftObject(cObject: call)
+		return getAppData(sCall: sCall)
+	}
+	
+	static func getAppData (sCall:Call) -> CallAppData? {
+		if (sCall.userData == nil) {
+			return nil
+		}
+		return Unmanaged<CallAppData>.fromOpaque(sCall.userData!).takeUnretainedValue()
 	}
 
-	@objc func setAppData (callId: String, appData: CallAppData) {
-		CallManager.instance().callAppDatas.updateValue(appData, forKey: callId)
+	@objc static func setAppData (call:OpaquePointer, appData: CallAppData) {
+		let sCall = Call.getSwiftObject(cObject: call)
+		setAppData(sCall: sCall, appData: appData)
+	}
+	
+	static func setAppData (sCall:Call, appData:CallAppData?) {
+		if (appData == nil) {
+			sCall.userData = nil
+		} else {
+			sCall.userData = UnsafeMutableRawPointer(Unmanaged.passUnretained(appData!).toOpaque())
+		}
 	}
 
 	@objc func findCall(callId: String?) -> OpaquePointer? {
@@ -239,17 +255,16 @@ import AVFoundation
 			}
 			let call = CallManager.instance().lc!.inviteAddressWithParams(addr: addr, params: lcallParams)
 			if (call != nil) {
-				let callId = call!.callLog?.callId
 				// The LinphoneCallAppData object should be set on call creation with callback
 				// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
 				// We are NOT responsible for creating the AppData.
-				let data = CallManager.instance().getAppData(callId: callId ?? "")
+				let data = CallManager.getAppData(sCall: call!)
 				if (data == nil) {
 					Log.directLog(BCTBX_LOG_ERROR, text: "New call instanciated but app data was not set. Expect it to crash.")
 					/* will be used later to notify user if video was not activated because of the linphone core*/
 				} else {
 					data!.videoRequested = lcallParams.videoEnabled
-					CallManager.instance().setAppData(callId: callId!, appData: data!)
+					CallManager.setAppData(sCall: call!, appData: data)
 				}
 			}
 		}
@@ -313,9 +328,11 @@ class CoreManager: CoreDelegate {
 		// force-enable it on ICE re-invite if the user disabled it.
 		CoreManager.speaker_already_enabled = false
 
-		if (callId != nil && CallManager.instance().callAppDatas["\(callId!)"] == nil) {
-			CallManager.instance().callAppDatas.updateValue(CallAppData(), forKey: callId!)
+		if (call.userData == nil) {
+			let appData = CallAppData()
+			call.userData = UnsafeMutableRawPointer(Unmanaged.passUnretained(appData).toOpaque())
 		}
+
 
 		switch cstate {
 			case .IncomingReceived:
@@ -422,7 +439,7 @@ class CoreManager: CoreDelegate {
 				}
 				break
 			case .Released:
-				CallManager.instance().callAppDatas.removeValue(forKey: callId ?? "")
+				CallManager.setAppData(sCall: call, appData: nil)
 				break
 			default:
 				break

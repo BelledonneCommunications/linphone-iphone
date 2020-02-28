@@ -586,12 +586,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			// check video, because video can be disabled because of the low bandwidth.
 			if (!linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 				const LinphoneCallParams *param = linphone_call_get_current_params(call);
-				CallAppData *data = nil;
-				const char *callId = linphone_call_log_get_call_id(linphone_call_get_call_log(call));
-				if (callId) {
-					data = [CallManager.instance getAppDataWithCallId:[NSString stringWithUTF8String:callId]];
-				}
-
+				CallAppData *data = [CallManager getAppDataWithCall:call];
 				if (state == LinphoneCallStreamsRunning && data && data.videoRequested && linphone_call_params_low_bandwidth_enabled(param)) {
 					// too bad video was not enabled because low bandwidth
 					UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Low bandwidth", nil)
@@ -607,7 +602,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 					[errView addAction:defaultAction];
 					[self presentViewController:errView animated:YES completion:nil];
 					data.videoRequested = FALSE;
-					[CallManager.instance setAppDataWithCallId:[NSString stringWithUTF8String:callId] appData:data];
+					[CallManager setAppDataWithCall:call appData:data];
 				}
 			}
 			break;

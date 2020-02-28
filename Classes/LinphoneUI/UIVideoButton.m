@@ -42,10 +42,9 @@ INIT_WITH_COMMON_CF {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
-		NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(call))];
-		CallAppData *data = [CallManager.instance getAppDataWithCallId:callId];
+		CallAppData *data = [CallManager getAppDataWithCall:call];
 		data.videoRequested = TRUE;/* will be used later to notify user if video was not activated because of the linphone core*/
-		[CallManager.instance setAppDataWithCallId:callId appData:data];
+		[CallManager setAppDataWithCall:call appData:data];
 		LinphoneCallParams *call_params = linphone_core_create_call_params(LC,call);
 		linphone_call_params_enable_video(call_params, TRUE);
 		linphone_call_update(call, call_params);
