@@ -103,6 +103,7 @@
 - (void)update;
 - (void)openFileWithURL:(NSURL *)url;
 - (void)clearMessageView;
+- (void)configureMessageField;
 
 - (void)showFileDownloadError;
 - (NSURL *)getICloudFileUrl:(NSString *)name;

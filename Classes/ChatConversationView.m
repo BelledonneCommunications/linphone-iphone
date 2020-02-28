@@ -269,10 +269,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT];
 
 	[self updateParticipantLabel];
-
-	_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
-	_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
-	_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
+	[self configureMessageField];
 	[_tableController setChatRoom:_chatRoom];
 
 	_chatView.hidden = NO;
@@ -281,6 +278,22 @@ static UICompositeViewDescription *compositeDescription = nil;
     _encryptedButton.hidden = image ? FALSE : TRUE;
 	[self update];
     [self shareFile];
+}
+
+- (void)configureMessageField {
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
+		_messageField.editable = TRUE;
+		_pictureButton.enabled = TRUE;
+		_messageView.userInteractionEnabled = TRUE;
+		if (linphone_chat_room_has_been_left(_chatRoom)) {
+			linphone_chat_room_add_participant(_chatRoom, linphone_participant_get_address(linphone_chat_room_get_me(_chatRoom)));
+		}
+	} else {
+		_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
+		_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
+		_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
+	}
 }
 
 - (void)shareFile {
@@ -999,9 +1012,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 void on_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
-	view.messageField.editable = !linphone_chat_room_has_been_left(cr);
-	view.pictureButton.enabled = !linphone_chat_room_has_been_left(cr);
-	view.messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(cr);
+	[view configureMessageField];
 }
 
 void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
