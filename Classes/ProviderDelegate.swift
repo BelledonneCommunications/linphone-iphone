@@ -48,6 +48,9 @@ import os
 	}
 }
 
+/*
+* A delegate to support callkit.
+*/
 class ProviderDelegate: NSObject {
 	private let provider: CXProvider
 	var uuids: [String : UUID] = [:]

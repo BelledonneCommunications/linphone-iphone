@@ -29,6 +29,9 @@ enum NetworkType: Int {
 	case network_wifi = 5
 }
 
+/*
+* AppManager is a class that includes some useful functions.
+*/
 @objc class AppManager: NSObject {
 	static func network() -> NetworkType {
 		let info = CTTelephonyNetworkInfo()

@@ -29,11 +29,15 @@ import AVFoundation
 	@objc var videoRequested = false /*set when user has requested for video*/
 }
 
+/*
+* CallManager is a class that manages application calls and supports callkit.
+* There is only one CallManager by calling CallManager.instance().
+*/
 @objc class CallManager: NSObject {
 	static var theCallManager: CallManager?
-	let providerDelegate: ProviderDelegate!
-	let callController: CXCallController!
-	let manager: CoreManager!
+	let providerDelegate: ProviderDelegate! // to support callkit
+	let callController: CXCallController! // to support callkit
+	let manager: CoreManager! // callbacks of the linphonecore
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
 	@objc var speakerEnabled : Bool = false
@@ -59,24 +63,24 @@ import AVFoundation
 		lc?.addDelegate(delegate: manager)
 	}
 
-	@objc static func getAppData (call: OpaquePointer) -> CallAppData? {
+	@objc static func getAppData(call: OpaquePointer) -> CallAppData? {
 		let sCall = Call.getSwiftObject(cObject: call)
 		return getAppData(sCall: sCall)
 	}
 	
-	static func getAppData (sCall:Call) -> CallAppData? {
+	static func getAppData(sCall:Call) -> CallAppData? {
 		if (sCall.userData == nil) {
 			return nil
 		}
 		return Unmanaged<CallAppData>.fromOpaque(sCall.userData!).takeUnretainedValue()
 	}
 
-	@objc static func setAppData (call:OpaquePointer, appData: CallAppData) {
+	@objc static func setAppData(call:OpaquePointer, appData: CallAppData) {
 		let sCall = Call.getSwiftObject(cObject: call)
 		setAppData(sCall: sCall, appData: appData)
 	}
 	
-	static func setAppData (sCall:Call, appData:CallAppData?) {
+	static func setAppData(sCall:Call, appData:CallAppData?) {
 		if (appData == nil) {
 			sCall.userData = nil
 		} else {
@@ -291,18 +295,15 @@ import AVFoundation
 			requestTransaction(transcation, action: "groupCall")
 
 			// To simulate the real group call action
-			heldCall(uuid: currentUuid!, onHold: false)
+			let heldAction = CXSetHeldCallAction(call: currentUuid!, onHold: false)
+			let otherTransacation = CXTransaction(action: heldAction)
+			requestTransaction(otherTransacation, action: "heldCall")
 		} else {
 			try? lc?.addAllToConference()
 		}
 	}
 
-	func heldCall(uuid: UUID, onHold: Bool) {
-		let heldAction = CXSetHeldCallAction(call: uuid, onHold: onHold)
-		let otherTransacation = CXTransaction(action: heldAction)
-		requestTransaction(otherTransacation, action: "heldCall")
-	}
-
+	// To be removed.
 	static func configAudioSession(audioSession: AVAudioSession) {
 		do {
 			try audioSession.setCategory(AVAudioSession.Category.playAndRecord, mode: AVAudioSession.Mode.voiceChat, options: AVAudioSession.CategoryOptions(rawValue: AVAudioSession.CategoryOptions.allowBluetooth.rawValue | AVAudioSession.CategoryOptions.allowBluetoothA2DP.rawValue))
@@ -342,12 +343,10 @@ class CoreManager: CoreDelegate {
 						// Tha app is now registered, updated the call already existed.
 						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: address, hasVideo: video)
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						let accepted = callInfo?.accepted ?? false
-						let declined = callInfo?.declined ?? false
-						if (declined) {
+						if (callInfo?.declined ?? false) {
 							// The call is already declined.
 							try? call.decline(reason: Reason.Unknown)
-						} else if (accepted) {
+						} else if (callInfo?.accepted ?? false) {
 							// The call is already answered.
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
 						}
