@@ -88,14 +88,6 @@ import AVFoundation
 		}
 	}
 
-	static func releaseAppData(sCall:Call) {
-		let data = getAppData(sCall: sCall)
-		if (data != nil) {
-			Unmanaged.passRetained(data!).release()
-			sCall.userData = nil
-		}
-	}
-
 	@objc func findCall(callId: String?) -> OpaquePointer? {
 		let call = callByCallId(callId: callId)
 		return call?.getCobject
@@ -446,7 +438,7 @@ class CoreManager: CoreDelegate {
 				}
 				break
 			case .Released:
-				CallManager.releaseAppData(sCall: call)
+				call.userData = nil
 				break
 			default:
 				break
