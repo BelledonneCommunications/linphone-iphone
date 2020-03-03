@@ -759,7 +759,6 @@
 		D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FBC15C28940005BE9BC /* DCRoundSwitchOutlineLayer.m */; };
 		D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FBE15C28940005BE9BC /* DCRoundSwitchToggleLayer.m */; };
 		D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FCA15C2894A005BE9BC /* IASKAppSettingsViewController.m */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations -Wno-objc-designated-initializers"; }; };
-		D3807FEA15C2894A005BE9BC /* IASKAppSettingsWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FCC15C2894A005BE9BC /* IASKAppSettingsWebViewController.m */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FCE15C2894A005BE9BC /* IASKSpecifierValuesViewController.m */; };
 		D3807FEE15C2894A005BE9BC /* IASKSettingsReader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FD215C2894A005BE9BC /* IASKSettingsReader.m */; };
 		D3807FF015C2894A005BE9BC /* IASKSettingsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FD415C2894A005BE9BC /* IASKSettingsStore.m */; };
@@ -1818,8 +1817,6 @@
 		D3807FBE15C28940005BE9BC /* DCRoundSwitchToggleLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DCRoundSwitchToggleLayer.m; sourceTree = "<group>"; };
 		D3807FC915C2894A005BE9BC /* IASKAppSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsViewController.h; sourceTree = "<group>"; };
 		D3807FCA15C2894A005BE9BC /* IASKAppSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsViewController.m; sourceTree = "<group>"; };
-		D3807FCB15C2894A005BE9BC /* IASKAppSettingsWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKAppSettingsWebViewController.h; sourceTree = "<group>"; };
-		D3807FCC15C2894A005BE9BC /* IASKAppSettingsWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKAppSettingsWebViewController.m; sourceTree = "<group>"; };
 		D3807FCD15C2894A005BE9BC /* IASKSpecifierValuesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSpecifierValuesViewController.h; sourceTree = "<group>"; };
 		D3807FCE15C2894A005BE9BC /* IASKSpecifierValuesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSpecifierValuesViewController.m; sourceTree = "<group>"; };
 		D3807FCF15C2894A005BE9BC /* IASKViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKViewController.h; sourceTree = "<group>"; };
@@ -3222,8 +3219,6 @@
 			children = (
 				D3807FC915C2894A005BE9BC /* IASKAppSettingsViewController.h */,
 				D3807FCA15C2894A005BE9BC /* IASKAppSettingsViewController.m */,
-				D3807FCB15C2894A005BE9BC /* IASKAppSettingsWebViewController.h */,
-				D3807FCC15C2894A005BE9BC /* IASKAppSettingsWebViewController.m */,
 				D3807FCD15C2894A005BE9BC /* IASKSpecifierValuesViewController.h */,
 				D3807FCE15C2894A005BE9BC /* IASKSpecifierValuesViewController.m */,
 				D3807FCF15C2894A005BE9BC /* IASKViewController.h */,
@@ -4513,7 +4508,6 @@
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
 				633E41821D74259000320475 /* AssistantLinkView.m in Sources */,
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
-				D3807FEA15C2894A005BE9BC /* IASKAppSettingsWebViewController.m in Sources */,
 				D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */,
 				8CA70AE41F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m in Sources */,
 				D3807FEE15C2894A005BE9BC /* IASKSettingsReader.m in Sources */,

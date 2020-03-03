@@ -215,7 +215,6 @@
     if ( [view isKindOfClass:[UISlider class]] ||
          [view isKindOfClass:[UISwitch class]] ||
          [view isKindOfClass:[UITextField class]] ||
-         [view isKindOfClass:[UIWebView class]] ||
          [view isKindOfClass:[UITableView class]] ||
          [view isKindOfClass:[UIPickerView class]] ||
          [view isKindOfClass:[UIDatePicker class]] ||
