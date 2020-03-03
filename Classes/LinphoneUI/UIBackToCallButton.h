@@ -17,9 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import "UIIconButton.h"
+#import "UIInterfaceStyleButton.h"
 
-@interface UIBackToCallButton : UIIconButton
+@interface UIBackToCallButton : UIInterfaceStyleButton
 
 - (IBAction)onBackToCallClick:(id)sender;
 - (void)update;

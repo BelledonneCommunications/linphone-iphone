@@ -37,9 +37,8 @@ Video: down</string>
                     </connections>
                 </view>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="473.5" y="318.5"/>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <point key="canvasLocation" x="686.23188405797111" y="213.28125"/>
         </view>
         <tapGestureRecognizer id="EB5-NY-DqU">
             <connections>

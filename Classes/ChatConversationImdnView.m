@@ -191,7 +191,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[view addSubview:imageView];
 		[imageView setFrame:CGRectMake(label.frame.origin.x + label.frame.size.width + 5, 2, 19, 19)];
 	}
-	[view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_G.png"]]];
+
+	if (@available(iOS 13, *)) {
+		[view setBackgroundColor:[UIColor secondarySystemBackgroundColor]];
+	} else {
+		[view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_G.png"]]];
+	}
 	return view;
 }
 

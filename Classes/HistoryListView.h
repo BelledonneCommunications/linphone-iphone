@@ -22,6 +22,7 @@
 #import "UICompositeView.h"
 #import "HistoryListTableView.h"
 #import "UIToggleButton.h"
+#import "UIInterfaceStyleButton.h"
 
 @interface HistoryListView : UIViewController <UICompositeViewDelegate> {
 }
@@ -31,6 +32,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *allButton;
 @property(nonatomic, strong) IBOutlet UIButton *missedButton;
 @property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onMissedClick:(id)event;

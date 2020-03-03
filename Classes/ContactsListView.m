@@ -138,6 +138,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		tableController.editing = NO;
 	}
 	[self refreshButtons];
+	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

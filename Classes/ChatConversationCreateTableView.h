@@ -27,7 +27,7 @@
 
 @property(weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-@property (weak, nonatomic) IBOutlet UIIconButton *controllerNextButton;
+@property (weak, nonatomic) IBOutlet UIButton *controllerNextButton;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 
 @property(nonatomic) Boolean isForEditing;

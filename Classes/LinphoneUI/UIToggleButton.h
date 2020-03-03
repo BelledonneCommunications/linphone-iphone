@@ -27,7 +27,7 @@
 	- (bool)onUpdate;
 @end
 
-@interface UIToggleButton : UIIconButton <UIToggleButtonDelegate> {
+@interface UIToggleButton : UIButton <UIToggleButtonDelegate> {
 }
 
 - (bool)update;

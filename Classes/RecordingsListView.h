@@ -21,7 +21,7 @@
 
 #import "UICompositeView.h"
 #import "RecordingsListTableView.h"
-#import "UIIconButton.h"
+#import "UIInterfaceStyleButton.h"
 
 typedef enum _RecordingSelectionMode { RecordingSelectionModeNone, RecordingSelectionModeEdit } RecordingSelectionMode;
 
@@ -37,8 +37,9 @@ typedef enum _RecordingSelectionMode { RecordingSelectionModeNone, RecordingSele
 
 @property(strong, nonatomic) IBOutlet RecordingsListTableView *tableController;
 @property(strong, nonatomic) IBOutlet UIView *topBar;
-@property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
-@property (strong, nonatomic) IBOutlet UIIconButton *backButton;
+@property(weak, nonatomic) IBOutlet UIButton *deleteButton;
+@property (strong, nonatomic) IBOutlet UIButton *backButton;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;

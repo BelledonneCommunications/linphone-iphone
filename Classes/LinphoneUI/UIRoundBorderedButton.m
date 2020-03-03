@@ -71,4 +71,8 @@
 	return NO;
 }
 
+-(void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+	self.layer.borderColor = [self.titleLabel.textColor CGColor];
+}
+
 @end
