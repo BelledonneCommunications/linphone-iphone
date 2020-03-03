@@ -131,12 +131,16 @@
 		[_messageText setHidden:FALSE];
 		/* We need to use an attributed string here so that data detector don't mess
 		 * with the text style. See http://stackoverflow.com/a/20669356 */
+		UIColor *color = [UIColor darkGrayColor];
+		if (@available(iOS 13,*)) {
+			color = [UIColor secondaryLabelColor];
+		}
 
 		NSAttributedString *attr_text =
 			[[NSAttributedString alloc] initWithString:self.textMessage
 											attributes:@{
 												NSFontAttributeName : _messageText.font,
-												NSForegroundColorAttributeName : [UIColor darkGrayColor]
+												NSForegroundColorAttributeName : color
 											}];
 		_messageText.attributedText = attr_text;
 	}

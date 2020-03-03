@@ -21,7 +21,7 @@
 
 #import "UICompositeView.h"
 #import "ContactsListTableView.h"
-#import "UIIconButton.h"
+#import "UIInterfaceStyleButton.h"
 
 typedef enum _ContactSelectionMode { ContactSelectionModeNone, ContactSelectionModeEdit } ContactSelectionMode;
 
@@ -78,8 +78,8 @@ typedef enum _ContactSelectionMode { ContactSelectionModeNone, ContactSelectionM
 @property(nonatomic, strong) IBOutlet UIButton *linphoneButton;
 @property(nonatomic, strong) IBOutlet UIButton *addButton;
 @property(strong, nonatomic) IBOutlet UISearchBar *searchBar;
-@property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;

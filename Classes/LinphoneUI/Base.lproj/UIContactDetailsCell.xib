@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -29,19 +27,19 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="rAa-qu-PDc" userLabel="editView">
+                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rAa-qu-PDc" userLabel="editView">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" id="dTn-Hc-bGM" userLabel="editTextField">
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dTn-Hc-bGM" userLabel="editTextField">
                             <rect key="frame" x="8" y="7" width="327" height="30"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" red="0.88286077976226807" green="0.88283431529998779" blue="0.88284933567047119" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <rect key="contentStretch" x="1.3877787807814457e-17" y="0.0" width="1" height="1"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
                         </textField>
-                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="C2f-aP-xjR" userLabel="deleteButton" customClass="UIIconButton">
+                        <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C2f-aP-xjR" userLabel="deleteButton" customClass="UIIconButton">
                             <rect key="frame" x="335" y="7" width="40" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <inset key="contentEdgeInsets" minX="5" minY="0.0" maxX="5" maxY="0.0"/>
@@ -55,24 +53,24 @@
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                 </view>
-                <view contentMode="scaleToFill" id="SR2-3m-6t5" userLabel="defaultView">
+                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SR2-3m-6t5" userLabel="defaultView">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="frB-ep-LWi" userLabel="addressLabel">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="frB-ep-LWi" userLabel="addressLabel">
                             <rect key="frame" x="26" y="0.0" width="323" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="linphone_user.png" id="ZaI-29-AOK" userLabel="linphoneImage">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" image="linphone_user.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZaI-29-AOK" userLabel="linphoneImage">
                             <rect key="frame" x="329" y="18" width="17" height="17"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         </imageView>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="lgb-5W-T0c">
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lgb-5W-T0c">
                             <rect key="frame" x="314" y="14" width="47" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Invite"/>
@@ -84,11 +82,11 @@
                                 <action selector="onSMSInviteClick:" destination="-1" eventType="touchUpInside" id="E8o-h2-mml"/>
                             </connections>
                         </button>
-                        <view contentMode="scaleToFill" id="Ffn-KZ-0pX" userLabel="optionsView">
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ffn-KZ-0pX" userLabel="optionsView">
                             <rect key="frame" x="26" y="40" width="323" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ZbV-2Z-b4y" userLabel="callButton" customClass="UIIconButton">
+                                <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZbV-2Z-b4y" userLabel="callButton" customClass="UIIconButton">
                                     <rect key="frame" x="79" y="0.0" width="44" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Call"/>
@@ -101,7 +99,7 @@
                                         <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="nVk-zG-i8I"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FDT-HY-OQZ" userLabel="chatButton" customClass="UIIconButton">
+                                <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FDT-HY-OQZ" userLabel="chatButton" customClass="UIIconButton">
                                     <rect key="frame" x="139" y="0.0" width="44" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Chat"/>
@@ -114,11 +112,11 @@
                                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="tec-tH-uij"/>
                                     </connections>
                                 </button>
-                                <view contentMode="scaleToFill" id="ERg-IK-XJX" userLabel="encryptedChatView">
+                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ERg-IK-XJX" userLabel="encryptedChatView">
                                     <rect key="frame" x="199" y="0.0" width="44" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Red-NG-DKu" userLabel="encryptedChatButton" customClass="UIIconButton">
+                                        <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Red-NG-DKu" userLabel="encryptedChatButton" customClass="UIIconButton">
                                             <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Chat"/>
@@ -131,7 +129,7 @@
                                                 <action selector="onEncrptedChatClick:" destination="-1" eventType="touchUpInside" id="5IN-7c-QWf"/>
                                             </connections>
                                         </button>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="security_toogle_icon_green.png" id="Vk5-LN-LHu" userLabel="securityImage">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="security_toogle_icon_green.png" translatesAutoresizingMaskIntoConstraints="NO" id="Vk5-LN-LHu" userLabel="securityImage">
                                             <rect key="frame" x="30" y="0.0" width="18" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
@@ -140,6 +138,7 @@
                             </subviews>
                         </view>
                     </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -149,15 +148,15 @@
         </view>
     </objects>
     <resources>
-        <image name="call_start_body_default.png" width="51" height="51"/>
-        <image name="call_start_body_disabled.png" width="51" height="51"/>
-        <image name="call_start_body_over.png" width="51" height="51"/>
-        <image name="chat_start_body_default.png" width="51" height="51"/>
-        <image name="chat_start_body_disabled.png" width="51" height="51"/>
-        <image name="chat_start_body_over.png" width="51" height="51"/>
-        <image name="delete_field_default.png" width="27" height="27"/>
-        <image name="delete_field_over.png" width="27" height="27"/>
-        <image name="linphone_user.png" width="26" height="26"/>
-        <image name="security_toogle_icon_green.png" width="21" height="24"/>
+        <image name="call_start_body_default.png" width="82.400001525878906" height="82.400001525878906"/>
+        <image name="call_start_body_disabled.png" width="82.400001525878906" height="82.400001525878906"/>
+        <image name="call_start_body_over.png" width="82.400001525878906" height="82.400001525878906"/>
+        <image name="chat_start_body_default.png" width="82.400001525878906" height="82.400001525878906"/>
+        <image name="chat_start_body_disabled.png" width="82.400001525878906" height="82.400001525878906"/>
+        <image name="chat_start_body_over.png" width="82.400001525878906" height="82.400001525878906"/>
+        <image name="delete_field_default.png" width="44" height="44"/>
+        <image name="delete_field_over.png" width="44" height="44"/>
+        <image name="linphone_user.png" width="41.599998474121094" height="42.400001525878906"/>
+        <image name="security_toogle_icon_green.png" width="33.599998474121094" height="38.400001525878906"/>
     </resources>
 </document>

@@ -247,6 +247,7 @@
 				cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] shouldHideLinphoneImageOfAddress];
 		}
 	}
+	[_editButton setImage:[UIImage imageNamed:@"valid_default.png"] forState:UIControlStateSelected];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification*)notif {

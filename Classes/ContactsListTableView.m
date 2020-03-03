@@ -368,7 +368,11 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	CGRect frame = CGRectMake(0, 0, tableView.frame.size.width, tableView.sectionHeaderHeight);
 	UIView *tempView = [[UIView alloc] initWithFrame:frame];
-	tempView.backgroundColor = [UIColor whiteColor];
+	if (@available(iOS 13, *)) {
+		tempView.backgroundColor = [UIColor systemBackgroundColor];
+	} else {
+		tempView.backgroundColor = [UIColor whiteColor];
+	}
 
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:frame];
 	tempLabel.backgroundColor = [UIColor clearColor];

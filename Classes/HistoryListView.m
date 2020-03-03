@@ -61,6 +61,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_reset_missed_calls_count(LC);
 	// Fake event
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
+	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
 }
 
 - (void) viewWillDisappear:(BOOL)animated {

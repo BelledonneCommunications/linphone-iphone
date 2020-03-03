@@ -40,6 +40,7 @@
 	[self setEditing:NO];
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 	_addGroupChatButton.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
+	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
