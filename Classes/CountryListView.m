@@ -75,9 +75,22 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidLoad];
 
     _searchResults = [[NSArray alloc] init];
+	self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+	self.searchController.searchResultsUpdater = self;
+	self.searchController.searchBar.delegate = self;
+	self.searchController.obscuresBackgroundDuringPresentation = false;
+	[self.searchController.searchBar sizeToFit];
+	self.tableView.tableHeaderView = self.searchController.searchBar;
     [_tableView reloadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  if (self.searchController.active) {
+    self.searchController.active = NO;
+    [self.searchController.searchBar removeFromSuperview];
+  }
+}
 #pragma mark - UITableView Datasource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -85,13 +98,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.searchDisplayController.searchResultsTableView){
+    if (self.searchController.active){
         return _searchResults.count;
     }else{
         return [self.class getData].count;
     }
-
-
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -101,7 +112,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
     }
 
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
+    if (self.searchController.active) {
         cell.textLabel.text = [[_searchResults objectAtIndex:indexPath.row] valueForKey:@"name"];
         cell.detailTextLabel.text = [[_searchResults objectAtIndex:indexPath.row] valueForKey:@"code"];
     }else{
@@ -117,7 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	if ([_delegate respondsToSelector:@selector(didSelectCountry:)]) {
 		NSDictionary* dict = nil;
-		if (tableView == self.searchDisplayController.searchResultsTableView) {
+		if (self.searchController.active) {
 			dict = [_searchResults objectAtIndex:indexPath.row];
 		}else{
 			dict = [[self.class getData] objectAtIndex:indexPath.row];
@@ -126,6 +137,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self.delegate didSelectCountry:dict];
 	}
 	[PhoneMainView.instance popCurrentView];
+}
+
+#pragma mark - searchController delegate
+
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+	[self filterContentForSearchText:self.searchController.searchBar.text scope:@""];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self.tableView reloadData];
+	});
 }
 
 #pragma mark - Filtering
@@ -137,11 +157,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCancelClick:(id)sender {
 	[PhoneMainView.instance popCurrentView];
-}
-
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString{
-    [self filterContentForSearchText:searchString scope:[[self.searchDisplayController.searchBar scopeButtonTitles] objectAtIndex:[self.searchDisplayController.searchBar selectedScopeButtonIndex]]];
-        return YES;
 }
 
 + (NSDictionary *)countryWithIso:(NSString *)iso {
