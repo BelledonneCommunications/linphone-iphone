@@ -1564,6 +1564,7 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 		[pushCallIDs removeObjectAtIndex:0];
 
 	[pushCallIDs addObject:callid];
+	[CallManager.instance displayIncomingCallWithCallId:callid];
 }
 
 - (BOOL)popPushCallID:(NSString *)callId {

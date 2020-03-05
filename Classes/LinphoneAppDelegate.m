@@ -446,46 +446,47 @@
 		return;
 	}
 	
-	NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
-	NSString *sipInstance = [aps objectForKey:@"uuid"];
-	if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
-		LOGE(@"Notification [%p] was intended for another device, ignoring it.", userInfo);
-		LOGD(@"My sip instance is: [%@], push was intended for: [%@].", uuid, sipInstance);
-		return;
-	}
-
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
-	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId])
-		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
-
-	if ([callId isEqualToString:@""]) {
-		// Present apn pusher notifications for info
-		LOGD(@"Notification [%p] came from flexisip-pusher.", userInfo);
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-			UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-			content.title = @"APN Pusher";
-			content.body = @"Push notification received !";
-
-			UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-			[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-				// Enable or disable features based on authorization.
-				if (error) {
-					LOGD(@"Error while adding notification request :");
-					LOGD(error.description);
-				}
-			}];
-		} else {
-			UILocalNotification *notification = [[UILocalNotification alloc] init];
-			notification.repeatInterval = 0;
-			notification.alertBody = @"Push notification received !";
-			notification.alertTitle = @"APN Pusher";
-			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+	if (![callId isEqualToString:@""] && [loc_key isEqualToString:@"IC_MSG"] && [CallManager callKitEnabled]) {
+		// Report a new Incoming call without lantacy when the callkit is enabled.
+		if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId]) {
+			[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 		}
-	} else {
 		[LinphoneManager.instance addPushCallId:callId];
-		if ([loc_key isEqualToString:@"IC_MSG"] && [CallManager callKitEnabled]) {
-			// callkit only for call not message.
-			[CallManager.instance displayIncomingCallWithCallId:callId];
+	} else  {
+		NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
+		NSString *sipInstance = [aps objectForKey:@"uuid"];
+		if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
+			LOGE(@"Notification [%p] was intended for another device, ignoring it.", userInfo);
+			LOGD(@"My sip instance is: [%@], push was intended for: [%@].", uuid, sipInstance);
+			return;
+		}
+		if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId])
+			[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
+
+		if ([callId isEqualToString:@""]) {
+			// Present apn pusher notifications for info
+			LOGD(@"Notification [%p] came from flexisip-pusher.", userInfo);
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+				UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+				content.title = @"APN Pusher";
+				content.body = @"Push notification received !";
+
+				UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+				[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+					// Enable or disable features based on authorization.
+					if (error) {
+						LOGD(@"Error while adding notification request :");
+						LOGD(error.description);
+					}
+				}];
+			} else {
+				UILocalNotification *notification = [[UILocalNotification alloc] init];
+				notification.repeatInterval = 0;
+				notification.alertBody = @"Push notification received !";
+				notification.alertTitle = @"APN Pusher";
+				[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+			}
 		}
 	}
 
