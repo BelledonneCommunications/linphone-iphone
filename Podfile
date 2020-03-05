@@ -5,7 +5,7 @@ source "https://github.com/CocoaPods/Specs.git"
 
 def basic_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/basic-frameworks', '4.3.1'
+		pod 'linphone-sdk/basic-frameworks', '~> 4.4.0-alpha'
 		else
 		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
@@ -15,7 +15,7 @@ end
 
 def ext_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/app-extension-swift', '4.4'
+		pod 'linphone-sdk/app-extension-swift', '~> 4.4.0-alpha'
 		else
 		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
@@ -35,7 +35,7 @@ end
 
 def ext_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/app-extension-swift', '4.4'
+		pod 'linphone-sdk/app-extension-swift', '~> 4.4.0-alpha'
 		else
 		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
