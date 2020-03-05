@@ -123,7 +123,6 @@ typedef struct _LinphoneManagerSounds {
 - (void)configurePushTokenForProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)popPushCallID:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
-- (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
 - (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId;
 + (BOOL)langageDirectionIsRTL;
 

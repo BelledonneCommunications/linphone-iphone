@@ -1535,12 +1535,6 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 	return strcmp(linphone_call_log_get_call_id(linphone_call_get_call_log(call)), callid);
 }
 
-- (void)cancelLocalNotifTimerForCallId:(NSString *)callid {
-	// first, make sure this callid is not already involved in a call
-	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
-	bctbx_list_t *call = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callid UTF8String]);
-}
-
 - (void)acceptCallForCallId:(NSString *)callid {
 	// first, make sure this callid is not already involved in a call
 	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
