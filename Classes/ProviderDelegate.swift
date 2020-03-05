@@ -104,6 +104,15 @@ class ProviderDelegate: NSObject {
 			}
 		}
 	}
+	
+	func reportForkIncomingCall() {
+		let uuid = UUID()
+		let update = CXCallUpdate()
+		update.remoteHandle = CXHandle(type:.generic, value: "Unknow")
+
+		provider.reportNewIncomingCall(with: uuid, update: update, completion: {_ in})
+		provider.reportCall(with: uuid, endedAt: .init(), reason: .failed)
+	}
 
 	func updateCall(uuid: UUID, handle: String, hasVideo: Bool = false) {
 		let update = CXCallUpdate()

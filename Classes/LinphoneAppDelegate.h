@@ -36,6 +36,7 @@
 
 - (void)registerForNotifications;
 
+@property (atomic, strong) NSString *callIdTraitedInBackGround;
 @property (nonatomic, retain) UIAlertController *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;

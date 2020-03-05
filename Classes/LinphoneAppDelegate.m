@@ -46,6 +46,7 @@
 	self = [super init];
 	if (self != nil) {
 		startedInBackground = FALSE;
+		_callIdTraitedInBackGround = @"";
 	}
 	_alreadyRegisteredForNotification = false;
     _onlyPortrait = FALSE;
@@ -58,6 +59,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[LinphoneManager.instance enterBackgroundMode];
+	_callIdTraitedInBackGround = @"";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -427,33 +429,58 @@
 	}
 }
 
-- (void)processRemoteNotification:(NSDictionary *)userInfo {
-	if (linphone_core_get_calls(LC)) {
-		// if there are calls, obviously our TCP socket shall be working
-		LOGD(@"Notification [%p] has no need to be processed because there already is an active call.", userInfo);
-		return;
-	}
+-(void)displayfailedcall {
+	
+}
 
+- (void)processRemoteNotification:(NSDictionary *)userInfo {
+	// TODO: it works only for calls.
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
 	if (!aps) {
 		LOGE(@"Notification [%p] was empy, it's impossible to process it.", userInfo);
+		[CallManager.instance displayForkIncomingCall];
 		return;
 	}
 
 	NSString *loc_key = [aps objectForKey:@"loc-key"] ?: [[aps objectForKey:@"alert"] objectForKey:@"loc-key"];
 	if (!loc_key) {
 		LOGE(@"Notification [%p] has no loc_key, it's impossible to process it.", userInfo);
+		[CallManager.instance displayForkIncomingCall];
 		return;
 	}
-	
+
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
-	if (![callId isEqualToString:@""] && [loc_key isEqualToString:@"IC_MSG"] && [CallManager callKitEnabled]) {
-		// Report a new Incoming call without lantacy when the callkit is enabled.
-		if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId]) {
-			[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
+	if ([callId isEqualToString:@""]) {
+		[CallManager.instance displayForkIncomingCall];
+	}
+	if (![loc_key isEqualToString:@"IC_MSG"]) {
+		[CallManager.instance displayForkIncomingCall];
+	}
+
+	if([CallManager incomingCallMustBeDisplayed]) {
+		// Since ios13, a new Incoming call must be displayed when the callkit is enabled and app is in background.
+		// Otherwise it will cause a crash.
+		if ([_callIdTraitedInBackGround isEqualToString:callId]) {
+			LOGD(@"Notification has traited (Background).");
+		} else {
+			_callIdTraitedInBackGround = callId;
+			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId]) {
+				[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
+			}
+			[LinphoneManager.instance addPushCallId:callId];
+			[CallManager.instance displayIncomingCallWithCallId:callId];
 		}
-		[LinphoneManager.instance addPushCallId:callId];
-	} else  {
+	} else {
+		if (linphone_core_get_calls(LC)) {
+			// if there are calls, obviously our TCP socket shall be working
+			LOGD(@"Notification [%p] has no need to be processed because there already is an active call.", userInfo);
+			return;
+		}
+
+		if ([_callIdTraitedInBackGround isEqualToString:callId]) {
+			LOGD(@"Notification has traited (Foreground).");
+			return;
+		}
 		NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
 		NSString *sipInstance = [aps objectForKey:@"uuid"];
 		if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
@@ -487,6 +514,12 @@
 				notification.alertTitle = @"APN Pusher";
 				[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
 			}
+		} else if (![callId isEqualToString:@""] && [loc_key isEqualToString:@"IC_MSG"] && [CallManager callKitEnabled]) {
+			// Report a new Incoming call when app is in foreground.
+			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId]) {
+				[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
+			}
+			[LinphoneManager.instance addPushCallId:callId];
 		}
 	}
 

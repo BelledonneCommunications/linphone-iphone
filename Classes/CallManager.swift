@@ -113,6 +113,15 @@ import AVFoundation
 		return false
 	}
 
+	@objc static func incomingCallMustBeDisplayed() -> Bool {
+		if #available(iOS 13.0, *) {
+			if UIApplication.shared.applicationState == .background && CallManager.callKitEnabled() {
+				return true
+			}
+		}
+		return false
+	}
+
 	@objc func allowSpeaker() -> Bool {
 		if (UIDevice.current.userInterfaceIdiom == .pad) {
 			// For now, ipad support only speaker.
@@ -159,6 +168,15 @@ import AVFoundation
 	// From ios13, display the callkit view when the notification is received.
 	@objc func displayIncomingCall(callId: String) {
 		displayIncomingCall(call: nil, handle: "Calling", hasVideo: false, callId: callId)
+	}
+
+	// There is an error before display an incoming call. Attention, it's unnormal in this case!
+	@objc func displayForkIncomingCall() {
+		if CallManager.incomingCallMustBeDisplayed() {
+			// Display the call in any way, otherwise it will cause a crash.
+			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: please check the pushkit notification, there must be something wrong!")
+			providerDelegate.reportForkIncomingCall();
+		}
 	}
 
 	func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String) {
