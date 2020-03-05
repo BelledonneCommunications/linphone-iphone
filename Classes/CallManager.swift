@@ -72,7 +72,7 @@ import AVFoundation
 		if (sCall.userData == nil) {
 			return nil
 		}
-		return Unmanaged<CallAppData>.fromOpaque(sCall.userData!).takeRetainedValue()
+		return Unmanaged<CallAppData>.fromOpaque(sCall.userData!).takeUnretainedValue()
 	}
 
 	@objc static func setAppData(call:OpaquePointer, appData: CallAppData) {
