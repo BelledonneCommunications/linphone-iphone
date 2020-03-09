@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import <AVFoundation/AVAudioSession.h>
 #import <AddressBook/AddressBook.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <OpenGLES/EAGL.h>
@@ -50,7 +49,7 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		videoHidden = TRUE;
-		[self updateInfoView];
+		[self updateCallView];
 	}
 	return self;
 }
@@ -259,26 +258,39 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self previewTouchLift];
 	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
     [_recordButtonOnView setHidden:!callRecording];
-    [self updateInfoView];
+	[self updateCallView];
+	LinphoneCall *call = linphone_core_get_current_call(LC) ;
+	if (call && linphone_call_get_state(call) == LinphoneCallStatePausedByRemote) {
+		_pausedByRemoteView.hidden = NO;
+		[self updateInfoView:TRUE];
+	}
+	_conferenceView.hidden = !linphone_core_is_in_conference(LC);
 }
 
 #pragma mark - UI modification
 
-- (void)updateInfoView {
+- (void)updateInfoView:(BOOL)pausedByRemote {
     CGRect infoFrame = _infoView.frame;
+    if (pausedByRemote || !videoHidden) {
+		infoFrame.origin.y = 0;
+    } else {
+        infoFrame.origin.y = (_avatarImage.frame.origin.y-66)/2;
+    }
+    _infoView.frame = infoFrame;
+}
+
+- (void)updateCallView {
     CGRect pauseFrame = _callPauseButton.frame;
 	CGRect recordFrame = _recordButtonOnView.frame;
     if (videoHidden) {
-        infoFrame.origin.y = (_avatarImage.frame.origin.y-66)/2;
-		pauseFrame.origin.y = _avatarImage.frame.origin.y + _avatarImage.frame.size.height - pauseFrame.size.height;
+		pauseFrame.origin.y = _bottomBar.frame.origin.y - pauseFrame.size.height - 60;
     } else {
-        infoFrame.origin.y = 0;
         pauseFrame.origin.y = _videoCameraSwitch.frame.origin.y+_videoGroup.frame.origin.y;
     }
-	recordFrame.origin.y = pauseFrame.origin.y;
-    _infoView.frame = infoFrame;
+	recordFrame.origin.y = _bottomBar.frame.origin.y - pauseFrame.size.height - 60;
     _callPauseButton.frame = pauseFrame;
 	_recordButtonOnView.frame = recordFrame;
+	[self updateInfoView:FALSE];
 }
 
 - (void)hideSpinnerIndicator:(LinphoneCall *)call {
@@ -349,7 +361,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[UIView setAnimationDuration:0.35];
 		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _callPauseButton.alpha = _routesView.alpha =
 			_optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = (hidden ? 0 : 1);
-		_nameLabel.alpha = _durationLabel.alpha = (hidden ? 0 : .8f);
+		_infoView.alpha = (hidden ? 0 : .8f);
 
 		[self hideStatusBar:hidden];
 
@@ -573,7 +585,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
     if (!shouldDisableVideo && !linphone_core_is_in_conference(LC)) {
         linphone_call_enable_camera(call, TRUE);
     }
-    [self updateInfoView];
+    [self updateCallView];
 
 	if (state != LinphoneCallPausedByRemote) {
 		_pausedByRemoteView.hidden = YES;
@@ -633,6 +645,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			[self displayAudioCall:animated];
 			if (call == linphone_core_get_current_call(LC)) {
 				_pausedByRemoteView.hidden = NO;
+				[self updateInfoView:TRUE];
 			}
 			break;
 		case LinphoneCallEnd:

@@ -68,16 +68,23 @@
 	const MSList *calls = linphone_core_get_calls(LC);
 	int count = 0;
 	int conference_in_pause = 0;
+	int call_in_conference = 0;
 	while (calls) {
 		LinphoneCall *call = calls->data;
+		BOOL callInConference = linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 		if (linphone_call_get_state(call) == LinphoneCallPaused) {
 			count++;
 		}
-		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call)) &&
-			!linphone_core_is_in_conference(LC)) {
-			conference_in_pause = 1;
+		if(callInConference) {
+			call_in_conference++;
+			if (!linphone_core_is_in_conference(LC)) {
+				conference_in_pause = 1;
+			}
 		}
 		calls = calls->next;
+	}
+	if(call_in_conference == 1) {
+		conference_in_pause = 0;
 	}
 	return count + conference_in_pause;
 }

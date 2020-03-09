@@ -176,21 +176,39 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 		let call = CallManager.instance().callByCallId(callId: callId)
-
-		if (call != nil && UIApplication.shared.applicationState != .active) {
+		action.fulfill()
+		if (call == nil) {
+			return
+		}
+		if (UIApplication.shared.applicationState != .active) {
 			do {
-				if action.isOnHold {
-					Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call paused with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
+				if (CallManager.instance().lc?.isInConference ?? false && action.isOnHold) {
+					try CallManager.instance().lc?.leaveConference()
+					Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Leaving conference")
+					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+					return
+				}
+
+				let state = action.isOnHold ? "Paused" : "Resumed"
+				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Call  with call-id: [\(String(describing: callId))] and UUID: [\(uuid)] paused status changed to: [\(state)]")
+				if (action.isOnHold) {
+					if (call!.params?.localConferenceMode ?? false) {
+						return
+					}
+					CallManager.instance().speakerBeforePause = CallManager.instance().speakerEnabled
 					try call!.pause()
 				} else {
-					Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call resumed with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-					try call!.resume()
+					if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
+						try CallManager.instance().lc?.enterConference()
+						NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+					} else {
+						try call!.resume()
+					}
 				}
 			} catch {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call set held (paused or resumed) \(uuid) failed because \(error)")
 			}
 		}
-		action.fulfill()
 	}
 
 	func provider(_ provider: CXProvider, perform action: CXStartCallAction) {

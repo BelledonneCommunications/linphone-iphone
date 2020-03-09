@@ -46,7 +46,6 @@
 	self = [super init];
 	if (self != nil) {
 		startedInBackground = FALSE;
-		_callIdTraitedInBackGround = @"";
 	}
 	_alreadyRegisteredForNotification = false;
     _onlyPortrait = FALSE;
@@ -59,7 +58,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[LinphoneManager.instance enterBackgroundMode];
-	_callIdTraitedInBackGround = @"";
+	CallManager.instance.callHandled = @"";
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -460,10 +459,10 @@
 	if([CallManager incomingCallMustBeDisplayed]) {
 		// Since ios13, a new Incoming call must be displayed when the callkit is enabled and app is in background.
 		// Otherwise it will cause a crash.
-		if ([_callIdTraitedInBackGround isEqualToString:callId]) {
+		if ([CallManager.instance.callHandled isEqualToString:callId]) {
 			LOGD(@"Notification has traited (Background).");
 		} else {
-			_callIdTraitedInBackGround = callId;
+			CallManager.instance.callHandled = callId;
 			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [self addLongTaskIDforCallID:callId]) {
 				[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 			}
@@ -477,7 +476,7 @@
 			return;
 		}
 
-		if ([_callIdTraitedInBackGround isEqualToString:callId]) {
+		if ([CallManager.instance.callHandled isEqualToString:callId]) {
 			LOGD(@"Notification has traited (Foreground).");
 			return;
 		}

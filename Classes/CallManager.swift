@@ -43,6 +43,7 @@ import AVFoundation
 	@objc var speakerEnabled : Bool = false
 	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
+	@objc var callHandled: String = ""
 
 
 	fileprivate override init() {
@@ -81,6 +82,9 @@ import AVFoundation
 	}
 	
 	static func setAppData(sCall:Call, appData:CallAppData?) {
+		if (sCall.userData != nil) {
+			Unmanaged<CallAppData>.fromOpaque(sCall.userData!).release()
+		}
 		if (appData == nil) {
 			sCall.userData = nil
 		} else {
@@ -115,7 +119,7 @@ import AVFoundation
 
 	@objc static func incomingCallMustBeDisplayed() -> Bool {
 		if #available(iOS 13.0, *) {
-			if UIApplication.shared.applicationState == .background && CallManager.callKitEnabled() {
+			if UIApplication.shared.applicationState == .background && CallManager.callKitEnabled() && CallManager.instance().lc?.callsNb ?? 0 < 2 {
 				return true
 			}
 		}
@@ -167,7 +171,14 @@ import AVFoundation
 
 	// From ios13, display the callkit view when the notification is received.
 	@objc func displayIncomingCall(callId: String) {
-		displayIncomingCall(call: nil, handle: "Calling", hasVideo: false, callId: callId)
+		let call = CallManager.instance().lc?.currentCall
+		if (call != nil) {
+			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
+			let video = call?.params?.videoEnabled ?? false
+			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
+		} else {
+			displayIncomingCall(call: nil, handle: "Calling", hasVideo: false, callId: callId)
+		}
 	}
 
 	// There is an error before display an incoming call. Attention, it's unnormal in this case!
@@ -369,6 +380,10 @@ class CoreManager: CoreDelegate {
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
 						}
 					} else {
+						if (CallManager.incomingCallMustBeDisplayed()) {
+							// it must post an incoming call to the system after receiving a PushKit VoIP push callback.
+							break;
+						}
 						// Nothing happped before, display a new Incoming call.
 						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
@@ -463,7 +478,7 @@ class CoreManager: CoreDelegate {
 		}
 
 		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			if (video && CoreManager.speaker_already_enabled && CallManager.instance().bluetoothEnabled) {
+			if (video && !CoreManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
 				CallManager.instance().setSpeakerEnabled(enable: true)
 				CoreManager.speaker_already_enabled = true
 			}
