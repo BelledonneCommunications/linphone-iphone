@@ -25,11 +25,7 @@ end
 
 def crashlythics
 	if not ENV['USE_CRASHLYTHICS'].nil?
-		# activate crashlythics
-		pod 'Firebase/Core'
-		pod 'Fabric', '~> 1.9.0'
-		pod 'Crashlytics', '~> 3.12.0'
-		pod 'Firebase/Performance'
+		pod 'Firebase/Analytics'
 	end
 end
 
