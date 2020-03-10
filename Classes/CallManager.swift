@@ -332,6 +332,11 @@ import AVFoundation
 		}
 	}
 
+	@objc func removeAllCallInfos() {
+		providerDelegate.callInfos.removeAll()
+		providerDelegate.uuids.removeAll()
+	}
+
 	// To be removed.
 	static func configAudioSession(audioSession: AVAudioSession) {
 		do {
@@ -462,7 +467,11 @@ class CoreManager: CoreDelegate {
 
 				if (CallManager.callKitEnabled()) {
 					// end CallKit
-					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+					var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+					if uuid == nil {
+						// the call not yet connected
+						uuid = CallManager.instance().providerDelegate.uuids[""]
+					}
 					if (uuid != nil) {
 						let transaction = CXTransaction(action:
 							CXEndCallAction(call: uuid!))

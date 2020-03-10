@@ -311,6 +311,7 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	LinphoneManager.instance.conf = TRUE;
 	linphone_core_terminate_all_calls(LC);
+	[CallManager.instance removeAllCallInfos];
 
 	// !!! Will be removed after push notification job finished
 	// destroyLinphoneCore automatically unregister proxies but if we are using
