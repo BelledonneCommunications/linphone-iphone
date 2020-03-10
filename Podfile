@@ -29,14 +29,6 @@ def crashlythics
 	end
 end
 
-def ext_pods
-	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/app-extension-swift', '~> 4.4.0-alpha'
-		else
-		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
-	end
-end
-
 target 'liblinphoneTester' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   use_frameworks!
