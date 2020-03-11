@@ -5172,6 +5172,8 @@
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(inherited)",
 				);
+				IBC_MODULE = linphoneapp;
+				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -5194,6 +5196,7 @@
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "linphoneapp-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
@@ -5286,6 +5289,8 @@
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(inherited)",
 				);
+				IBC_MODULE = linphoneapp;
+				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -5308,6 +5313,7 @@
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "linphoneapp-Swift.h";
 				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
@@ -5400,6 +5406,8 @@
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(inherited)",
 				);
+				IBC_MODULE = linphoneapp;
+				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -5422,6 +5430,7 @@
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "linphoneapp-Swift.h";
 				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
@@ -5513,6 +5522,8 @@
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(inherited)",
 				);
+				IBC_MODULE = linphoneapp;
+				IBSC_MODULE = linphoneapp;
 				INFOPLIST_FILE = "linphone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -5535,6 +5546,7 @@
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "linphoneapp-Swift.h";
 				SWIFT_VERSION = 4.2;
 				WARNING_CFLAGS = (
 					"-Werror=objc-method-access",
