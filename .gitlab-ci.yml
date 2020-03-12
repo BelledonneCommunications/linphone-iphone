@@ -12,8 +12,8 @@ job-ios:
   script:
     - pod install --repo-update
     - pwd
-    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=NO
-    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=NO
+    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace
+    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates
 
 
   artifacts:
