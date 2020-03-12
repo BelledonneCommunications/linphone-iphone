@@ -1,8 +1,8 @@
 variables:
   archive_scheme: linphone
-  archive_path: linphone-iphone.xcarchive
-  export_path: linphone-iphone-adhoc-ipa
-  export_options_plist: linphone-iphone-adhoc.plist
+  archive_path: linphone.xcarchive
+  export_path: linphone-adhoc-ipa
+  export_options_plist: linphone-adhoc.plist
 
 job-ios:
 
