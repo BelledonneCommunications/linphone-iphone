@@ -29,20 +29,6 @@ def crashlythics
 	end
 end
 
-target 'liblinphoneTester' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for liblinphoneTester
-  basic_pods
-  
-  target 'liblinphoneTesterTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-end
-
 target 'linphone' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   use_frameworks!
@@ -61,32 +47,6 @@ target 'linphoneExtension' do
   # Pods for linphoneExtension
 
 end
-
-=begin
-target 'latestCallsWidget' do
-	# Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-	use_frameworks!
-	
-	# Pods for latestCallsWidget
-	
-end
-
-target 'latestChatroomsWidget' do
-	# Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-	use_frameworks!
-	
-	# Pods for latestChatroomsWidget
-end
-
-
-target 'richNotifications' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for richNotifications
-
-end
-=end
 
 post_install do |installer|
 	# Get the version of linphone-sdk
