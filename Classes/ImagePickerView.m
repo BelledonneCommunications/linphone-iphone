@@ -18,8 +18,6 @@
  */
 
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <AVFoundation/AVCaptureDevice.h>
-#import <AVFoundation/AVFoundation.h>
 #import "ImagePickerView.h"
 #import "PhoneMainView.h"
 #import "SVProgressHUD.h"

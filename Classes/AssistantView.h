@@ -21,7 +21,6 @@
 #import "UICompositeView.h"
 #import "TPKeyboardAvoidingScrollView.h"
 #import "PhoneMainView.h"
-#import <AVFoundation/AVFoundation.h>
 
 @interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
 

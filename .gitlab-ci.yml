@@ -1,0 +1,25 @@
+variables:
+  archive_scheme: linphone
+  archive_path: linphone.xcarchive
+  export_path: linphone-adhoc-ipa
+  export_options_plist: linphone-adhoc.plist
+
+job-ios:
+
+  stage: build
+  tags: [ "macosx-xcode11" ]
+
+  script:
+    - pod install --repo-update
+    - pwd
+    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=NO
+    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=NO
+
+
+  artifacts:
+    paths:
+      - $archive_path
+      - $export_path
+    when: always
+    expire_in: 1 week
+

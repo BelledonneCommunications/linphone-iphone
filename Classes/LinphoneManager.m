@@ -22,8 +22,6 @@
 #include <netdb.h>
 #include <sys/sysctl.h>
 
-#import <AVFoundation/AVAudioSession.h>
-#import <AVFoundation/AVCaptureDevice.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
@@ -43,7 +41,6 @@
 
 #import "LinphoneIOSVersion.h"
 
-#import <AVFoundation/AVAudioPlayer.h>
 #import "Utils.h"
 #import "PhoneMainView.h"
 #import "ChatsListView.h"
