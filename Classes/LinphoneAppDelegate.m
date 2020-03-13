@@ -59,6 +59,16 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[LinphoneManager.instance enterBackgroundMode];
 	CallManager.instance.callHandled = @"";
+    LinphoneCall *call = linphone_core_get_current_call(LC);
+
+    if (!call) {
+        [LinphoneManager.instance stopLinphoneCore];
+    }
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    [LinphoneManager.instance startLinphoneCore];
+    [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -151,6 +161,10 @@
 	// Initiate registration.
 	LOGI(@"[PushKit] Connecting for push notifications");
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+
+    // Register for remote notifications.
+    LOGI(@"[APNs] register for push notif");
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
 
 	[self configureUINotification];
 }
@@ -279,7 +293,7 @@
 	  [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
-	[LinphoneManager.instance startLinphoneCore];
+	[LinphoneManager.instance launchLinphoneCore];
 	LinphoneManager.instance.iapManager.notificationCategory = @"expiry_notification";
 	// initialize UI
 	[self.window makeKeyAndVisible];
@@ -312,25 +326,6 @@
 	LinphoneManager.instance.conf = TRUE;
 	linphone_core_terminate_all_calls(LC);
 	[CallManager.instance removeAllCallInfos];
-
-	// !!! Will be removed after push notification job finished
-	// destroyLinphoneCore automatically unregister proxies but if we are using
-	// remote push notifications, we want to continue receiving them
-	if (LinphoneManager.instance.pushNotificationToken != nil) {
-		// trick me! setting network reachable to false will avoid sending unregister
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-		BOOL pushNotifEnabled = NO;
-		while (proxies) {
-			const char *refkey = linphone_proxy_config_get_ref_key(proxies->data);
-			pushNotifEnabled = pushNotifEnabled || (refkey && strcmp(refkey, "push_notification") == 0);
-			proxies = proxies->next;
-		}
-		// but we only want to hack if at least one proxy config uses remote push..
-		if (pushNotifEnabled) {
-			linphone_core_set_network_reachable(LC, FALSE);
-		}
-	}
-
 	[LinphoneManager.instance destroyLinphoneCore];
 }
 
@@ -572,31 +567,38 @@
 
 - (void)application:(UIApplication *)application
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), deviceToken);
-	[LinphoneManager.instance setPushNotificationToken:deviceToken];
+	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), deviceToken);
+    [LinphoneManager.instance setRemoteNotificationToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
-	[LinphoneManager.instance setPushNotificationToken:nil];
+	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
+	[LinphoneManager.instance setRemoteNotificationToken:nil];
 }
 
 #pragma mark - PushKit Functions
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
 	LOGI(@"[PushKit] credentials updated with voip token: %@", credentials.token);
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[LinphoneManager.instance setPushNotificationToken:credentials.token];
+	dispatch_async(dispatch_get_main_queue(), ^{ // TODO PAUL : why?
+		[LinphoneManager.instance setPushKitToken:credentials.token];
 	});
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"[PushKit] Token invalidated");
-    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
+    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushKitToken:nil];});
 }
 
 - (void)processPush:(NSDictionary *)userInfo {
 	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
+
+//     prevent app to crash if pushKit received for msg
+    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) { // TODO PAUL: a supprimer, fix temporaire: le serveur n'enverra plus de pushkit pr les msg
+        return;
+    }
+    [LinphoneManager.instance startLinphoneCore];
+
 	[self configureUINotification];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:userInfo];
@@ -614,6 +616,12 @@
 #pragma mark - UNUserNotifications Framework
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+	// If an app extension launch a user notif while app is in fg, it is catch by the app
+    NSString *category = [[[notification request] content] categoryIdentifier];
+    if (category && [category isEqualToString:@"app_active"]) {
+        return;
+    }
+
 	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
 
@@ -693,16 +701,19 @@
 			else
 		  		[PhoneMainView.instance displayIncomingCall:call];
 	  	} else if ([response.notification.request.content.categoryIdentifier isEqual:@"msg_cat"]) {
-		  	NSString *peer_address = [response.notification.request.content.userInfo objectForKey:@"peer_addr"];
-		  	NSString *local_address = [response.notification.request.content.userInfo objectForKey:@"local_addr"];
-		  	LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
-		  	LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
-		  	LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
-		  	if (room) {
-				[PhoneMainView.instance goToChatRoom:room];
-			  	return;
-		  	}
-		  	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+            // prevent to go to chat room view when removing the notif
+			if (![response.actionIdentifier isEqualToString:@"com.apple.UNNotificationDismissActionIdentifier"]) {
+				NSString *peer_address = [response.notification.request.content.userInfo objectForKey:@"peer_addr"];
+				NSString *local_address = [response.notification.request.content.userInfo objectForKey:@"local_addr"];
+				LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
+				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
+				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
+				if (room) {
+					[PhoneMainView.instance goToChatRoom:room];
+					return;
+				}
+				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
@@ -918,7 +929,7 @@
 											 object:nil];
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
-	[LinphoneManager.instance startLinphoneCore];
+	[LinphoneManager.instance launchLinphoneCore];
         [LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
 }
 

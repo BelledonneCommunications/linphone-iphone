@@ -146,7 +146,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call != nil) {
 			do {
-				try call!.terminate()
+				try call!.terminate() // TODO PAUL
 			} catch {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call ended \(uuid) failed because \(error)")
 			}

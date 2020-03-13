@@ -155,10 +155,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(applicationWillEnterForeground:)
-											   name:UIApplicationDidBecomeActiveNotification
-											 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(keyboardWillShow:)
 											   name:UIKeyboardWillShowNotification
 											 object:nil];
@@ -174,7 +170,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
-    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(onLinphoneCoreReady:)
+                                               name:kLinphoneGlobalStateUpdate
+                                             object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(didEnterBackground:)
+                                               name:UIApplicationDidEnterBackgroundNotification
+                                             object:nil];
     if ([_imagesArray count] > 0) {
         [UIView animateWithDuration:0
                               delay:0
@@ -210,6 +213,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
+}
+
+- (void)didEnterBackground:(NSNotification *)notif {
+    linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
+    _chatRoomCbs = NULL;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -358,11 +366,19 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 }
 
-- (void)applicationWillEnterForeground:(NSNotification *)notif {
-	if (_chatRoom && _markAsRead)
-		[ChatConversationView markAsRead:_chatRoom];
-
-    _markAsRead = TRUE;
+// reload the chatroom after the core starts
+- (void)onLinphoneCoreReady:(NSNotification *)notif {
+    if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
+        LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
+        if (peerAddr) {
+            _chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+        }
+        [self configureForRoom:self.editing];
+        if (_chatRoom && _markAsRead) {
+            [ChatConversationView markAsRead:_chatRoom];
+        }
+        _markAsRead = TRUE;
+    }
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
