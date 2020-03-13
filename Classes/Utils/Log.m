@@ -30,22 +30,6 @@
 #define FILE_SIZE 17
 #define DOMAIN_SIZE 3
 
-+ (NSString *)cacheDirectory {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-	NSString *cachePath = [paths objectAtIndex:0];
-	BOOL isDir = NO;
-	NSError *error;
-	// cache directory must be created if not existing
-	if (![[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
-		if (![[NSFileManager defaultManager] createDirectoryAtPath:cachePath
-									   withIntermediateDirectories:NO
-														attributes:nil
-															 error:&error]) {
-			LOGE(@"Could not create cache directory: %@", error);
-		}
-	}
-	return cachePath;
-}
 
 + (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ... {
 	va_list args;
@@ -64,7 +48,7 @@
 		asl_add_log_file(NULL, STDERR_FILENO);
 		stderrInUse = YES;
 	}
-	linphone_core_set_log_collection_path([self cacheDirectory].UTF8String);
+	linphone_core_set_log_collection_path([LinphoneManager cacheDirectory].UTF8String); // TODO PAUL : code de migration des logs?
 	linphone_core_set_log_handler(linphone_iphone_log_handler);
 	linphone_core_enable_log_collection(enabled);
 	if (level == 0) {

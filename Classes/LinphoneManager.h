@@ -59,6 +59,8 @@ extern NSString *const kLinphoneFileTransferRecvUpdate;
 extern NSString *const kLinphoneQRCodeFound;
 extern NSString *const kLinphoneChatCreateViewChange;
 
+extern NSString *const kLinphoneMsgNotificationGroupId;
+
 typedef enum _NetworkType {
     network_none = 0,
     network_2g,
@@ -113,6 +115,7 @@ typedef struct _LinphoneManagerSounds {
 + (void)instanceRelease;
 #endif
 + (LinphoneCore*) getLc;
++ (BOOL)isLcInitialized;
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
@@ -123,12 +126,15 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)playMessageSound;
 - (void)resetLinphoneCore;
-- (void)startLinphoneCore;
+- (void)launchLinphoneCore;
 - (void)destroyLinphoneCore;
+- (void)startLinphoneCore;
+- (void)stopLinphoneCore;
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
 - (void)addPushCallId:(NSString*) callid;
+- (void)configurePushTokenForProxyConfigs;
 - (void)configurePushTokenForProxyConfig: (LinphoneProxyConfig*)cfg;
 - (BOOL)popPushCallID:(NSString*) callId;
 - (void)acceptCallForCallId:(NSString*)callid;
@@ -150,12 +156,16 @@ typedef struct _LinphoneManagerSounds {
 + (NSString *)documentFile:(NSString *)file;
 + (NSString*)dataFile:(NSString*)file;
 + (NSString*)cacheDirectory;
+// migration
++ (NSString *)oldPreferenceFile:(NSString *)file;
++ (NSString *)oldDataFile:(NSString *)file;
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room;
 - (void)call:(const LinphoneAddress *)address;
 - (BOOL)doCall:(const LinphoneAddress *)iaddr;
 - (BOOL)doCallWithSas:(const LinphoneAddress *)iaddr isSas:(BOOL)isSas;
+- (void)terminateCall:(LinphoneCall *)call;
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
@@ -211,7 +221,8 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) const char*  backCamId;
 @property(strong, nonatomic) NSString *SSID;
 @property (readonly) sqlite3* database;
-@property(nonatomic, strong) NSData *pushNotificationToken;
+@property(nonatomic, strong) NSData *pushKitToken;
+@property(nonatomic, strong) NSData *remoteNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
 @property (nonatomic, assign) BOOL speakerBeforePause;
@@ -230,6 +241,7 @@ typedef struct _LinphoneManagerSounds {
 @property NSDictionary *pushDict;
 @property(strong, nonatomic) OrderedDictionary *linphoneManagerAddressBookMap;
 @property (nonatomic, assign) BOOL contactsUpdated;
+@property (nonatomic, assign) BOOL canConfigurePushTokenForProxyConfigs; // used to register at the right time when receiving push notif tokens
 @property UIImage *avatar;
 
 @end

@@ -176,7 +176,7 @@
             LOGD(@"CallKit: Ending the call with call-id: [%@] and UUID: [%@]", callID, uuid);
 			LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 			if (call) {
-				linphone_call_terminate((LinphoneCall *)call);
+                [LinphoneManager.instance terminateCall:(LinphoneCall *)call];
 			}
 			[self.uuids removeObjectForKey:callID];
 			[self.calls removeObjectForKey:uuid];

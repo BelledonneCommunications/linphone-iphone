@@ -175,11 +175,9 @@
 		proxy = proxies->data;
 		// root section
 		{
-			const char *refkey = linphone_proxy_config_get_ref_key(proxy);
-			if (refkey) {
-				BOOL pushEnabled = (strcmp(refkey, "push_notification") == 0);
-				[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
-			}
+			BOOL pushEnabled = linphone_proxy_config_is_push_notification_allowed(proxy);
+			[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
+
 			const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
 			const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
 			LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
@@ -584,7 +582,7 @@
 		}
 
 		// use empty string "" instead of NULL to avoid being overwritten by default proxy config values
-		linphone_proxy_config_set_ref_key(proxyCfg, pushnotification ? "push_notification" : "no_push_notification");
+		linphone_proxy_config_set_push_notification_allowed(proxyCfg, pushnotification);
 		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);

@@ -5,11 +5,25 @@ source "https://github.com/CocoaPods/Specs.git"
 
 def basic_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/basic-frameworks', '4.3'
+		pod 'linphone-sdk/basic-frameworks', '4.4'
 		else
 		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # loacl sdk
 	end
 	
+	crashlythics
+end
+
+def ext_pods
+	if ENV['PODFILE_PATH'].nil?
+		pod 'linphone-sdk/app-extension-swift', '4.4'
+		else
+		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # loacl sdk
+	end
+	
+	crashlythics
+end
+
+def crashlythics
 	if not ENV['USE_CRASHLYTHICS'].nil?
 		# activate crashlythics
 		pod 'Firebase/Core'
@@ -54,6 +68,24 @@ target 'linphoneExtension' do
   use_frameworks!
 
   # Pods for linphoneExtension
+
+end
+
+target 'msgNotificationService' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for messagesNotification
+  ext_pods
+
+end
+
+target 'msgNotificationContent' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for messagesNotification
+  ext_pods
 
 end
 

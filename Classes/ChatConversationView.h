@@ -58,6 +58,7 @@
 @property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
 @property(nonatomic) Boolean markAsRead;
+@property(nonatomic) const char *peerAddress;
 
 @property (strong, nonatomic) FileDataSource *FileDataSource;
 
