@@ -422,11 +422,17 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallOutgoingProgress: {
 			break;
 		}
+        case LinphoneCallReleased:
+            if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [LinphoneManager.instance stopLinphoneCore];
+                });
+            }
+            break;
 		case LinphoneCallOutgoingRinging:
 		case LinphoneCallPaused:
 		case LinphoneCallPausing:
 		case LinphoneCallRefered:
-		case LinphoneCallReleased:
 			break;
 		case LinphoneCallResuming: {
 			break;
@@ -815,7 +821,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {
-	linphone_call_terminate(call);
+    [LinphoneManager.instance terminateCall:call];
 }
 
 #pragma mark - Chat room Functions
@@ -907,6 +913,7 @@ static RootViewManager *rootViewManagerInstance = nil;
     if (view.chatRoom != cr)
         [view clearMessageView];
 	view.chatRoom = cr;
+    view.peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(cr));
 	self.currentRoom = view.chatRoom;
 	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
 		[view configureForRoom:FALSE];

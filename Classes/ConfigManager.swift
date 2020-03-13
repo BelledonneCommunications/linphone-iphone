@@ -21,7 +21,7 @@ import Foundation
 import linphonesw
 
 /*
-* ConfigManager is a class that manipulates the configuration of the apllication.
+* ConfigManager is a class that manipulates the configuration of the application.
 * There is only one ConfigManager by calling ConfigManager.instance().
 */
 @objc class ConfigManager: NSObject {
