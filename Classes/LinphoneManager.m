@@ -2137,19 +2137,19 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 // TODO PAUL : fonctions a enlever
 + (NSString *)preferenceFile:(NSString *)file {
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_path(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
+	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
 	return [fullPath stringByAppendingPathComponent:file];
 }
 
 + (NSString *)dataFile:(NSString *)file {
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_data_path(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
+	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_data_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
 	return [fullPath stringByAppendingPathComponent:file];
 }
 
 + (NSString *)cacheDirectory {
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *cachePath = [NSString stringWithUTF8String:linphone_factory_get_download_path(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
+	NSString *cachePath = [NSString stringWithUTF8String:linphone_factory_get_download_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
 	BOOL isDir = NO;
 	NSError *error;
 	// cache directory must be created if not existing
@@ -2165,14 +2165,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 + (NSString *)oldPreferenceFile:(NSString *)file {
 	// migration
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_path(factory, nil)];
+	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_dir(factory, nil)];
 	return [fullPath stringByAppendingPathComponent:file];
 }
 
 + (NSString *)oldDataFile:(NSString *)file {
 	// migration
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_data_path(factory, nil)];
+	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_data_dir(factory, nil)];
 	return [fullPath stringByAppendingPathComponent:file];
 }
 

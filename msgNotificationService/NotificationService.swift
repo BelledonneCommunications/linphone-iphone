@@ -51,7 +51,7 @@ class NotificationService: UNNotificationServiceExtension {
 
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
 				NotificationService.log.message(msg: "fetch chat room for invite, addr: \(chatRoomInviteAddr)")
-				let chatRoom = lc!.getPushNotificationChatRoomInvite(chatRoomAddr: chatRoomInviteAddr)
+				let chatRoom = lc!.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
 
 				if let chatRoom = chatRoom {
 					stopCore()
@@ -68,7 +68,7 @@ class NotificationService: UNNotificationServiceExtension {
 				}
 			} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
 				NotificationService.log.message(msg: "fetch msg")
-				let message = lc!.getPushNotificationMessage(callId: callId)
+				let message = lc!.getNewMessageFromCallid(callId: callId)
 
 				if let message = message, let chatRoom = message.chatRoom {
 					let msgData = parseMessage(room: chatRoom, message: message)
