@@ -1408,12 +1408,11 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 - (void)startLinphoneCore {
     linphone_core_start([LinphoneManager getLc]);
-    mIterateTimer =
-    [NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(iterate) userInfo:nil repeats:YES];
+	[CoreManager.instance startIterateTimer];
 }
 
 - (void)stopLinphoneCore {
-    [mIterateTimer invalidate];
+	[CoreManager.instance stopIterateTimer];
     linphone_core_stop([LinphoneManager getLc]);
 }
 
@@ -1464,6 +1463,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
+	[CoreManager.instance setCoreWithCore:theLinphoneCore];
 	[ConfigManager.instance setDbWithDb:_configDb];
 
 	linphone_core_start(theLinphoneCore);
@@ -1507,12 +1507,11 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	 * grab, if any */
 	[self iterate];
 	// start scheduler
-	mIterateTimer =
-		[NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(iterate) userInfo:nil repeats:YES];
+	[CoreManager.instance startIterateTimer];
 }
 
 - (void)destroyLinphoneCore {
-	[mIterateTimer invalidate];
+	[CoreManager.instance stopIterateTimer];
 	// just in case
 	[self removeCTCallCenterCb];
 
@@ -2001,13 +2000,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	// For OutgoingCall, show CallOutgoingView
 	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE];
-}
-
-- (void)terminateCall:(LinphoneCall *)call {// TODO PAUL : needs to be tested with CallKit changes
-    linphone_call_terminate(call);
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        [LinphoneManager.instance stopLinphoneCore];
-    }
 }
 
 #pragma mark - Property Functions

@@ -37,7 +37,7 @@ import AVFoundation
 	static var theCallManager: CallManager?
 	let providerDelegate: ProviderDelegate! // to support callkit
 	let callController: CXCallController! // to support callkit
-	let manager: CoreManager! // callbacks of the linphonecore
+	let manager: CoreManagerDelegate! // callbacks of the linphonecore
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
 	@objc var speakerEnabled : Bool = false
@@ -49,7 +49,7 @@ import AVFoundation
 	fileprivate override init() {
 		providerDelegate = ProviderDelegate()
 		callController = CXCallController()
-		manager = CoreManager()
+		manager = CoreManagerDelegate()
 	}
 
 	@objc static func instance() -> CallManager {
@@ -348,9 +348,27 @@ import AVFoundation
 			Log.directLog(BCTBX_LOG_WARNING, text: "CallKit: Unable to config audio session because : \(error)")
 		}
 	}
+
+	@objc func terminateCall(call: OpaquePointer?) { // TODO PAUL : needs to be tested with CallKit changes
+		if (call == nil) {
+			Log.directLog(BCTBX_LOG_ERROR, text: "Can not terminate null call!")
+			return
+		}
+		let call = Call.getSwiftObject(cObject: call!)
+		do {
+			try call.terminate()
+			Log.directLog(BCTBX_LOG_DEBUG, text: "Call terminated")
+		} catch {
+			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to terminate call")
+		}
+		if (UIApplication.shared.applicationState == .background) {
+			CoreManager.instance().stopIterateTimer()
+			lc!.stop()
+		}
+	}
 }
 
-class CoreManager: CoreDelegate {
+class CoreManagerDelegate: CoreDelegate {
 	static var speaker_already_enabled : Bool = false
 
 	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
@@ -361,7 +379,7 @@ class CoreManager: CoreDelegate {
 		let video = call.params?.videoEnabled ?? false
 		// we keep the speaker auto-enabled state in this static so that we don't
 		// force-enable it on ICE re-invite if the user disabled it.
-		CoreManager.speaker_already_enabled = false
+		CoreManagerDelegate.speaker_already_enabled = false
 
 		if (call.userData == nil) {
 			let appData = CallAppData()
@@ -419,7 +437,7 @@ class CoreManager: CoreDelegate {
 				if (CallManager.instance().speakerBeforePause) {
 					CallManager.instance().speakerBeforePause = false
 					CallManager.instance().setSpeakerEnabled(enable: true)
-					CoreManager.speaker_already_enabled = true
+					CoreManagerDelegate.speaker_already_enabled = true
 				}
 				break
 			case .OutgoingRinging:
@@ -440,7 +458,7 @@ class CoreManager: CoreDelegate {
 			case .End,
 				 .Error:
 				UIDevice.current.isProximityMonitoringEnabled = false
-				CoreManager.speaker_already_enabled = false
+				CoreManagerDelegate.speaker_already_enabled = false
 				if (CallManager.instance().lc!.callsNb == 0) {
 					CallManager.instance().setSpeakerEnabled(enable: false)
 					// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
@@ -487,9 +505,9 @@ class CoreManager: CoreDelegate {
 		}
 
 		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			if (video && !CoreManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+			if (video && !CoreManagerDelegate.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
 				CallManager.instance().setSpeakerEnabled(enable: true)
-				CoreManager.speaker_already_enabled = true
+				CoreManagerDelegate.speaker_already_enabled = true
 			}
 		}
 

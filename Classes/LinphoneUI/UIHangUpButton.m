@@ -20,6 +20,8 @@
 #import "UIHangUpButton.h"
 #import "LinphoneManager.h"
 
+#import "linphoneapp-Swift.h"
+
 @implementation UIHangUpButton
 
 #pragma mark - Static Functions
@@ -97,11 +99,11 @@
 		LinphoneManager.instance.conf = TRUE;
 		linphone_core_terminate_conference(LC);
 	} else if (currentcall != NULL) {
-		[LinphoneManager.instance terminateCall:currentcall];
+		[CallManager.instance terminateCallWithCall:currentcall];
 	} else {
 		const MSList *calls = linphone_core_get_calls(LC);
 		if (bctbx_list_size(calls) == 1) { // Only one call
-			[LinphoneManager.instance terminateCall:(LinphoneCall *)(calls->data)];
+			[CallManager.instance terminateCallWithCall:(calls->data)];
 		}
 	}
 }
