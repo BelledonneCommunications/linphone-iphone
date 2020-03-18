@@ -37,7 +37,15 @@ import linphonesw
 	}
 
 	@objc private func iterate() {
+		var coreIterateTaskId = UIBackgroundTaskIdentifier(rawValue: 0)
+		coreIterateTaskId = UIApplication.shared.beginBackgroundTask(expirationHandler: {
+			Log.directLog(BCTBX_LOG_WARNING, text: "Background task for core iteration launching expired.")
+			UIApplication.shared.endBackgroundTask(coreIterateTaskId)
+		})
 		lc?.iterate()
+		if (coreIterateTaskId != UIBackgroundTaskIdentifier.invalid) {
+			UIApplication.shared.endBackgroundTask(coreIterateTaskId)
+		}
 	}
 
 	@objc func startIterateTimer() {
