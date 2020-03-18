@@ -62,7 +62,9 @@
     LinphoneCall *call = linphone_core_get_current_call(LC);
 
     if (!call) {
-        [LinphoneManager.instance stopLinphoneCore];
+        dispatch_async(dispatch_get_main_queue(), ^{
+			[LinphoneManager.instance stopLinphoneCore];
+		});
     }
 }
 
