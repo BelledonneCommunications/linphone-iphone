@@ -70,6 +70,7 @@ If you don't have CocoaPods already, you can download and install it using :
 ```
 	sudo gem install cocoapods
 ```
+**If you alreadly have Cocoapods, make sur that the version is higher than 1.7.5**.
 
 - Install the app's dependencies with cocoapods first:
 ```
