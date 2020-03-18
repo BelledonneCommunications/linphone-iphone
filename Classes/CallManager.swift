@@ -59,9 +59,13 @@ import AVFoundation
 		return theCallManager!
 	}
 
-	@objc func setCore(core: OpaquePointer) {
-		lc = Core.getSwiftObject(cObject: core)
-		lc?.addDelegate(delegate: manager)
+	@objc func setCore(core: OpaquePointer?) {
+		if (core == nil) {
+			lc = nil
+		} else {
+			lc = Core.getSwiftObject(cObject: core!)
+			lc?.addDelegate(delegate: manager)
+		}
 	}
 
 	@objc static func getAppData(call: OpaquePointer) -> CallAppData? {

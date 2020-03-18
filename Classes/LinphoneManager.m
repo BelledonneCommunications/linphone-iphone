@@ -1407,12 +1407,14 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)startLinphoneCore {
+	[CallManager.instance setCoreWithCore:[LinphoneManager getLc]];
     linphone_core_start([LinphoneManager getLc]);
 	[CoreManager.instance startIterateTimer];
 }
 
 - (void)stopLinphoneCore {
 	[CoreManager.instance stopIterateTimer];
+	[CallManager.instance setCoreWithCore:nil];
     linphone_core_stop([LinphoneManager getLc]);
 }
 
