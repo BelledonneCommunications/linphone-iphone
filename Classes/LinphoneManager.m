@@ -1892,6 +1892,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		factory = factoryIpad;
 	}
 	_configDb = linphone_config_new_for_shared_core(kLinphoneMsgNotificationGroupId.UTF8String, @"linphonerc".UTF8String, factory.UTF8String);
+	lp_config_clean_entry(_configDb, "misc", "max_calls");
 }
 #pragma mark - Audio route Functions
 

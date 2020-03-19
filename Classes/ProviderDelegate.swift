@@ -69,7 +69,7 @@ class ProviderDelegate: NSObject {
 		providerConfiguration.iconTemplateImageData = UIImage(named: "callkit_logo")?.pngData()
 		providerConfiguration.supportedHandleTypes = [.generic]
 
-		providerConfiguration.maximumCallsPerCallGroup = 3
+		providerConfiguration.maximumCallsPerCallGroup = 10
 		providerConfiguration.maximumCallGroups = 2
 
 		//not show app's calls in tel's history
@@ -135,7 +135,6 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
-		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 
 		// remove call infos first, otherwise CXEndCallAction will be called more than onece
 		if (callId != nil) {
@@ -147,6 +146,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		if (call != nil) {
 			do {
 				try call!.terminate() // TODO PAUL
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 			} catch {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call ended \(uuid) failed because \(error)")
 			}
