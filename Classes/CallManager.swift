@@ -142,7 +142,7 @@ import AVFoundation
 		return allow
 	}
 
-	@objc func setSpeakerEnabled(enable: Bool) {
+	@objc func enableSpeaker(enable: Bool) {
 		speakerEnabled = enable
 		do {
 			if (enable && allowSpeaker()) {
@@ -150,6 +150,7 @@ import AVFoundation
 				UIDevice.current.isProximityMonitoringEnabled = false
 				bluetoothEnabled = false
 			} else {
+				try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
 				let buildinPort = AudioHelper.bluetoothAudioDevice()
 				try AVAudioSession.sharedInstance().setPreferredInput(buildinPort)
 				UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
@@ -436,7 +437,7 @@ class CoreManagerDelegate: CoreDelegate {
 
 				if (CallManager.instance().speakerBeforePause) {
 					CallManager.instance().speakerBeforePause = false
-					CallManager.instance().setSpeakerEnabled(enable: true)
+					CallManager.instance().enableSpeaker(enable: true)
 					CoreManagerDelegate.speaker_already_enabled = true
 				}
 				break
@@ -460,7 +461,7 @@ class CoreManagerDelegate: CoreDelegate {
 				UIDevice.current.isProximityMonitoringEnabled = false
 				CoreManagerDelegate.speaker_already_enabled = false
 				if (CallManager.instance().lc!.callsNb == 0) {
-					CallManager.instance().setSpeakerEnabled(enable: false)
+					CallManager.instance().enableSpeaker(enable: false)
 					// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
 					// furthermore it introduces a bug when calling multiple times since route may not be
 					// reconfigured between cause leading to bluetooth being disabled while it should not
@@ -506,7 +507,7 @@ class CoreManagerDelegate: CoreDelegate {
 
 		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
 			if (video && !CoreManagerDelegate.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
-				CallManager.instance().setSpeakerEnabled(enable: true)
+				CallManager.instance().enableSpeaker(enable: true)
 				CoreManagerDelegate.speaker_already_enabled = true
 			}
 		}

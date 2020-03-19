@@ -1929,7 +1929,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)setBluetoothEnabled:(BOOL)enable {
 	if (_bluetoothAvailable) {
-		// The change of route will be done in setSpeakerEnabled
+		// The change of route will be done in enableSpeaker
 		CallManager.instance.bluetoothEnabled = enable;
 		if (CallManager.instance.bluetoothEnabled) {
 			NSError *err = nil;
@@ -1947,7 +1947,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			}
 		}
 	}
-	[CallManager.instance setSpeakerEnabled:CallManager.instance.speakerEnabled];
+	[CallManager.instance enableSpeakerWithEnable:CallManager.instance.speakerEnabled];
 }
 
 #pragma mark - Call Functions

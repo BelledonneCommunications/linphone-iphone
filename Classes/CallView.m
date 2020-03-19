@@ -816,20 +816,20 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[CallManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance enableSpeakerWithEnable:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[CallManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance enableSpeakerWithEnable:FALSE];
 	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
 	[LinphoneManager.instance setBluetoothEnabled:FALSE];
-	[CallManager.instance setSpeakerEnabled:TRUE];
+	[CallManager.instance enableSpeakerWithEnable:TRUE];
 }
 
 - (IBAction)onRoutesClick:(id)sender {

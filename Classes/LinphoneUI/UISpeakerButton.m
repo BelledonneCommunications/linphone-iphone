@@ -46,11 +46,11 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOn {
-	[CallManager.instance setSpeakerEnabled:TRUE];
+	[CallManager.instance enableSpeakerWithEnable:TRUE];
 }
 
 - (void)onOff {
-	[CallManager.instance setSpeakerEnabled:FALSE];
+	[CallManager.instance enableSpeakerWithEnable:FALSE];
 }
 
 - (bool)onUpdate {
