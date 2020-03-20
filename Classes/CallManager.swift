@@ -350,7 +350,7 @@ import AVFoundation
 		}
 	}
 
-	@objc func terminateCall(call: OpaquePointer?) { // TODO PAUL : needs to be tested with CallKit changes
+	@objc func terminateCall(call: OpaquePointer?) {
 		if (call == nil) {
 			Log.directLog(BCTBX_LOG_ERROR, text: "Can not terminate null call!")
 			return
@@ -360,7 +360,7 @@ import AVFoundation
 			try call.terminate()
 			Log.directLog(BCTBX_LOG_DEBUG, text: "Call terminated")
 		} catch {
-			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to terminate call")
+			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to terminate call failed because \(error)")
 		}
 		if (UIApplication.shared.applicationState == .background) {
 			CoreManager.instance().stopIterateTimer()

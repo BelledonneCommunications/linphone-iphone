@@ -2135,7 +2135,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	return [documentsPath stringByAppendingPathComponent:file];
 }
 
-// TODO PAUL : fonctions a enlever
 + (NSString *)preferenceFile:(NSString *)file {
 	LinphoneFactory *factory = linphone_factory_get();
 	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];

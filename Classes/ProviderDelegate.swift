@@ -143,13 +143,9 @@ extension ProviderDelegate: CXProviderDelegate {
 		callInfos.removeValue(forKey: uuid)
 
 		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call != nil) {
-			do {
-				try call!.terminate() // TODO PAUL
-				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-			} catch {
-				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call ended \(uuid) failed because \(error)")
-			}
+		if let call = call {
+			CallManager.instance().terminateCall(call: call.getCobject);
+			Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		}
 		action.fulfill()
 	}
