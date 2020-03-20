@@ -23,7 +23,7 @@ import UserNotificationsUI
 import linphonesw
 
 
-var GROUP_ID = "group.org.linphone.phone.msgNotification"
+var APP_GROUP_ID = "group.org.linphone.phone.msgNotification"
 var isReplySent: Bool = false
 var needToStop: Bool = false
 var coreStopped: Bool = false
@@ -132,10 +132,10 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     }
 
     func startCore() throws {
-		config = Config.newForSharedCore(groupId: GROUP_ID, configFilename: "linphonerc", factoryPath: "")
+		config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryPath: "")
 		log = LoggingService.Instance /*enable liblinphone logs.*/
 		logDelegate = try! LinphoneLoggingServiceManager(config: config, log: log, domain: "msgNotificationContent")
-        lc = try! Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroup: GROUP_ID, mainCore: false)
+        lc = try! Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
 
         coreDelegate = LinphoneCoreManager()
         lc!.addDelegate(delegate: coreDelegate)

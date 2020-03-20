@@ -20,7 +20,7 @@
 import UserNotifications
 import linphonesw
 
-var GROUP_ID = "group.org.linphone.phone.msgNotification"
+var APP_GROUP_ID = "group.org.linphone.phone.msgNotification"
 var LINPHONE_DUMMY_SUBJECT = "dummy subject"
 
 struct MsgData: Codable {
@@ -153,13 +153,13 @@ class NotificationService: UNNotificationServiceExtension {
 
 	func createCore() {
 		NSLog("[msgNotificationService] create core")
-		let config = Config.newForSharedCore(groupId: GROUP_ID, configFilename: "linphonerc", factoryPath: "")
+		let config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryPath: "")
 
 		if (NotificationService.log == nil || NotificationService.log.getDelegate() == nil) {
 			NotificationService.log = LoggingService.Instance /*enable liblinphone logs.*/
 			NotificationService.logDelegate = try! LinphoneLoggingServiceManager(config: config!, log: NotificationService.log, domain: "msgNotificationService")
 		}
-		lc = try! Factory.Instance.createSharedCoreWithConfig(config: config!, systemContext: nil, appGroup: GROUP_ID, mainCore: false)
+		lc = try! Factory.Instance.createSharedCoreWithConfig(config: config!, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
 	}
 
 	func stopCore() {

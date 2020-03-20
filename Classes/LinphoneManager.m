@@ -75,7 +75,7 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 
-NSString *const kLinphoneMsgNotificationGroupId = @"group.org.linphone.phone.msgNotification";
+NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
@@ -1459,7 +1459,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_qrcode_found(cbs, linphone_iphone_qr_code_found);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 
-	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationGroupId UTF8String], true);
+	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationAppGroupId UTF8String], true);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
@@ -1891,7 +1891,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (IPAD && [[NSFileManager defaultManager] fileExistsAtPath:factoryIpad]) {
 		factory = factoryIpad;
 	}
-	_configDb = linphone_config_new_for_shared_core(kLinphoneMsgNotificationGroupId.UTF8String, @"linphonerc".UTF8String, factory.UTF8String);
+	_configDb = linphone_config_new_for_shared_core(kLinphoneMsgNotificationAppGroupId.UTF8String, @"linphonerc".UTF8String, factory.UTF8String);
 	lp_config_clean_entry(_configDb, "misc", "max_calls");
 }
 #pragma mark - Audio route Functions
@@ -2137,19 +2137,19 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 + (NSString *)preferenceFile:(NSString *)file {
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
+	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_config_dir(factory, kLinphoneMsgNotificationAppGroupId.UTF8String)];
 	return [fullPath stringByAppendingPathComponent:file];
 }
 
 + (NSString *)dataFile:(NSString *)file {
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_data_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
+	NSString *fullPath = [NSString stringWithUTF8String:linphone_factory_get_data_dir(factory, kLinphoneMsgNotificationAppGroupId.UTF8String)];
 	return [fullPath stringByAppendingPathComponent:file];
 }
 
 + (NSString *)cacheDirectory {
 	LinphoneFactory *factory = linphone_factory_get();
-	NSString *cachePath = [NSString stringWithUTF8String:linphone_factory_get_download_dir(factory, kLinphoneMsgNotificationGroupId.UTF8String)];
+	NSString *cachePath = [NSString stringWithUTF8String:linphone_factory_get_download_dir(factory, kLinphoneMsgNotificationAppGroupId.UTF8String)];
 	BOOL isDir = NO;
 	NSError *error;
 	// cache directory must be created if not existing
