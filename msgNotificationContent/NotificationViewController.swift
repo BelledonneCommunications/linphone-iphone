@@ -57,9 +57,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         coreStopped = false
     }
 
-    func didReceive(_ notification: UNNotification) {
-        self.title = "test test test" // TODO PAUL : a enlever
-    }
+    func didReceive(_ notification: UNNotification) {}
 
     func didReceive(_ response: UNNotificationResponse,
                     completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {

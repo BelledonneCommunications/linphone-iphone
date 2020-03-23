@@ -2094,11 +2094,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			timeout = @"";
 		}
 
+		// dummy value, for later use
+		NSString *teamId = @"ABCD1234";
+
         NSString *params = [NSString
-                    stringWithFormat:@"pn-provider=apns%@;pn-prid=%@;pn-param=ABCD1234.%@.%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
+                    stringWithFormat:@"pn-provider=apns%@;pn-prid=%@;pn-param=%@.%@.%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
                     @"call-snd=%@;pn-msg-snd=msg.caf%@;pn-silent=1",
-                    APPMODE_SUFFIX, token, [[NSBundle mainBundle] bundleIdentifier], services, ring, timeout];
-	// TODO PAUL : do we need the team id?
+                    APPMODE_SUFFIX, token, teamId, [[NSBundle mainBundle] bundleIdentifier], services, ring, timeout];
+
 		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
 		linphone_proxy_config_get_identity(proxyCfg), params);
 		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);

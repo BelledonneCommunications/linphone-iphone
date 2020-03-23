@@ -110,8 +110,8 @@ class NotificationService: UNNotificationServiceExtension {
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
             bestAttemptContent.categoryIdentifier = "app_active"
-            bestAttemptContent.title = NSLocalizedString("Message received", comment: "") + " [time out]" // TODO PAUL : a enlever
-            bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")          
+            bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
+            bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")
             contentHandler(bestAttemptContent)
         }
     }

@@ -570,7 +570,9 @@
 - (void)application:(UIApplication *)application
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), deviceToken);
-    [LinphoneManager.instance setRemoteNotificationToken:deviceToken];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[LinphoneManager.instance setRemoteNotificationToken:deviceToken];
+	});
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
@@ -582,7 +584,7 @@
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
 	LOGI(@"[PushKit] credentials updated with voip token: %@", credentials.token);
-	dispatch_async(dispatch_get_main_queue(), ^{ // TODO PAUL : why?
+	dispatch_async(dispatch_get_main_queue(), ^{
 		[LinphoneManager.instance setPushKitToken:credentials.token];
 	});
 }
@@ -595,8 +597,9 @@
 - (void)processPush:(NSDictionary *)userInfo {
 	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
 
-//     prevent app to crash if pushKit received for msg
-    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) { // TODO PAUL: a supprimer, fix temporaire: le serveur n'enverra plus de pushkit pr les msg
+	// prevent app to crash if PushKit received for msg
+    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
+		LOGE(@"Received a legacy PushKit notification for a chat message");
         return;
     }
     [LinphoneManager.instance startLinphoneCore];
