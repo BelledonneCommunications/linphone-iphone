@@ -43,7 +43,6 @@ import AVFoundation
 	@objc var speakerEnabled : Bool = false
 	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
-	@objc var callHandled: String = ""
 
 
 	fileprivate override init() {
@@ -179,15 +178,6 @@ import AVFoundation
 			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
 		} else {
 			displayIncomingCall(call: nil, handle: "Calling", hasVideo: false, callId: callId)
-		}
-	}
-
-	// There is an error before display an incoming call. Attention, it's unnormal in this case!
-	@objc func displayForkIncomingCall() {
-		if CallManager.incomingCallMustBeDisplayed() {
-			// Display the call in any way, otherwise it will cause a crash.
-			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: please check the pushkit notification, there must be something wrong!")
-			providerDelegate.reportForkIncomingCall();
 		}
 	}
 

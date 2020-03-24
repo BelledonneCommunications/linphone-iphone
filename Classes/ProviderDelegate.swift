@@ -133,6 +133,7 @@ class ProviderDelegate: NSObject {
 // MARK: - CXProviderDelegate
 extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+		action.fulfill()
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 
@@ -147,7 +148,6 @@ extension ProviderDelegate: CXProviderDelegate {
 			CallManager.instance().terminateCall(call: call.getCobject);
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		}
-		action.fulfill()
 	}
 
 	func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
