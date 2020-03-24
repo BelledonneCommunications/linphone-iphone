@@ -56,7 +56,7 @@ class NotificationService: UNNotificationServiceExtension {
 				if let chatRoom = chatRoom {
 					stopCore()
 					NotificationService.log.message(msg: "chat room invite received")
-					bestAttemptContent.title = "You have been added to a chat room"
+					bestAttemptContent.title = NSLocalizedString("You have been added to a chat room", comment: "")
 					if (chatRoom.subject == LINPHONE_DUMMY_SUBJECT) {
 						bestAttemptContent.body = chatRoom.participants[0].address?.username as! String
 					} else {
