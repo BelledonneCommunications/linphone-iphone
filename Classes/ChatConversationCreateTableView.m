@@ -167,7 +167,7 @@
 	if (!addr)
 		return cell;
 	
-	cell.linphoneImage.hidden = !linphoneContact;
+	cell.linphoneImage.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"] || !linphoneContact;
     cell.securityImage.hidden = !(model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh));
     int capabilities = [[_addressesCached objectAtIndex:indexPath.row] intValue];
     BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;

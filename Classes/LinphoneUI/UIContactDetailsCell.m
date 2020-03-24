@@ -64,7 +64,7 @@
 	if (contact) {
         const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String) : NULL;
         
-		self.linphoneImage.hidden =
+		self.linphoneImage.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"] ||
 			!((model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen) ||
 			  (cfg && !linphone_proxy_config_is_phone_number(cfg,
 													  _addressLabel.text.UTF8String) &&
@@ -109,7 +109,7 @@
 	Contact *contact = [FastAddressBook getContactWithAddress:(addr)];
 
 	if (contact) {
-		self.linphoneImage.hidden = ! ((contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) || (cfg && !linphone_proxy_config_is_phone_number(cfg, _addressLabel.text.UTF8String) && [FastAddressBook isSipURIValid:_addressLabel.text]));
+		self.linphoneImage.hidden =[LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"] || ! ((contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String)) == LinphonePresenceBasicStatusOpen) || (cfg && !linphone_proxy_config_is_phone_number(cfg, _addressLabel.text.UTF8String) && [FastAddressBook isSipURIValid:_addressLabel.text]));
 	}
 	
 	if (addr) {

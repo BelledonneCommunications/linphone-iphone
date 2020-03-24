@@ -74,6 +74,13 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                  object:nil];
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 	_chiffreOptionView.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"]) {
+		self.linphoneButton.hidden = TRUE;
+		self.selectedButtonImage.hidden = TRUE;
+		CGRect frame = _allButton.frame;
+		frame.origin.x = _linphoneButton.frame.origin.x;
+		_allButton.frame = frame;
+	}
 }
 
 - (void)viewUpdateEvent:(NSNotification *)notif {
@@ -198,6 +205,9 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 		[_tableController loadData];
 	}
 	_selectedButtonImage.frame = frame;
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"]) {
+		_allButton.selected = FALSE;
+	}
 }
 
 - (IBAction)onAllClick:(id)event {
