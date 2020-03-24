@@ -80,7 +80,7 @@ class NotificationService: UNNotificationServiceExtension {
 					stopCore()
 
 					bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
-					bestAttemptContent.title = NSLocalizedString("Message received", comment: "") + " [extension]"
+					bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
 					if let subtitle = msgData?.subtitle {
 						bestAttemptContent.subtitle = subtitle
 					}
