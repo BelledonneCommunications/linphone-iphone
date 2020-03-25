@@ -1853,6 +1853,13 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		removeItemAtPath:[LinphoneManager oldDataFile:@"x3dh.c25519.sqlite3"]
 		error:nil];
 	}
+
+	// call history
+	if ([LinphoneManager copyFile:[LinphoneManager oldDataFile:kLinphoneInternalChatDBFilename] destination:[LinphoneManager dataFile:kLinphoneInternalChatDBFilename] override:TRUE ignore:TRUE]) {
+		[NSFileManager.defaultManager
+		removeItemAtPath:[LinphoneManager oldDataFile:kLinphoneInternalChatDBFilename]
+		error:nil];
+	}
 }
 
 - (void)renameDefaultSettings {
