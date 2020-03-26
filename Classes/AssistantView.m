@@ -845,7 +845,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 			[LinphoneManager.instance
 				lpConfigSetInt:[NSDate new].timeIntervalSince1970 +
-							   [LinphoneManager.instance lpConfigIntForKey:@"link_account_popup_time" withDefault:84200]
+							   [LinphoneManager.instance lpConfigIntForKey:@"link_account_popup_time" withDefault:86400]
 						forKey:@"must_link_account_time"];
 			[PhoneMainView.instance popToView:_outgoingView];
 			break;

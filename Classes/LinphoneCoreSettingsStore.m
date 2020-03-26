@@ -287,7 +287,7 @@
 								   withDefault:kLinphoneAudioVbrCodecDefaultBitrate]
 				  forKey:@"audio_codec_bitrate_limit_preference"];
 		[self setInteger:[lm lpConfigIntForKey:@"voiceproc_preference" withDefault:1] forKey:@"voiceproc_preference"];
-		[self setInteger:[lm lpConfigIntForKey:@"eq_active" inSection:@"sound" withDefault:0] forKey:@"eq_active"];
+		[self setInteger:[lm lpConfigIntForKey:@"mic_eq_active" inSection:@"sound" withDefault:0] forKey:@"eq_active"];
 	}
 
 	// video section
@@ -415,7 +415,7 @@
 	// advanced section
 	{
 		[self setObject:[lm lpConfigStringForKey:@"debugenable_preference"] forKey:@"debugenable_preference"];
-		[self setBool:ANIMATED forKey:@"animations_preference"];
+		[self setBool:[LinphoneManager.instance lpConfigBoolForKey:@"animations_preference"] forKey:@"animations_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
@@ -710,7 +710,7 @@
 		[lm lpConfigSetInt:voice_processing forKey:@"voiceproc_preference"];
 
 		BOOL equalizer = [self boolForKey:@"eq_active"];
-		[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
+		[lm lpConfigSetBool:equalizer forKey:@"mic_eq_active" inSection:@"sound"];
 
 		[LinphoneManager.instance configureVbrCodecs];
 

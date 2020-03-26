@@ -1055,7 +1055,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 											 @"Email title for people wanting to send a bug report")];
 		[picker setToRecipients:[NSArray
 									arrayWithObjects:[LinphoneManager.instance lpConfigStringForKey:@"debug_popup_email"
-																						withDefault:@""],
+																						withDefault:@"linphone-iphone@belledonne-communications.com"],
 													 nil]];
 		[picker setMessageBody:NSLocalizedString(@"Here are information about an issue I had on my device.\nI was "
 												 @"doing ...\nI expected Linphone to ...\nInstead, I got an "
