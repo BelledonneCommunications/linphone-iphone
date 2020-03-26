@@ -298,6 +298,34 @@
     LOGI(@"app launched with state : %li", (long)application.applicationState);
     LOGI(@"FINISH LAUNCHING WITH OPTION : %@", launchOptions.description);
     
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (100 * NSEC_PER_MSEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+	if ([defaults boolForKey:@"app_crash"]) {
+		UIAlertController *warningView = [UIAlertController alertControllerWithTitle:@""
+																		 message:NSLocalizedString(@"App has crashed, do you want to delete all configuration files ?", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+
+		UIAlertAction* yesAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
+																style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {
+																if ([NSFileManager.defaultManager
+																	isDeletableFileAtPath:[LinphoneManager preferenceFile:@"linphonerc"]] == YES) {
+																	[NSFileManager.defaultManager
+																	removeItemAtPath:[LinphoneManager preferenceFile:@"linphonerc"] error:nil];}
+														  }];
+
+		[warningView addAction:defaultAction];
+		[warningView addAction:yesAction];
+		[defaults setBool:FALSE forKey:@"app_crash"];
+		[PhoneMainView.instance presentViewController:warningView animated:YES completion:nil];
+	}});
+
     UIApplicationShortcutItem *shortcutItem = [launchOptions objectForKey:@"UIApplicationLaunchOptionsShortcutItemKey"];
     if (shortcutItem) {
         _shortcutItem = shortcutItem;

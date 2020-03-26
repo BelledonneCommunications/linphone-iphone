@@ -24,6 +24,9 @@
 
 // Dump exception
 void uncaughtExceptionHandler(NSException *exception) {
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+	[defaults setBool:TRUE forKey:@"app_crash"];
 	NSLog(@"Crash: %@", exception);
 	NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
 	// Internal error reporting
