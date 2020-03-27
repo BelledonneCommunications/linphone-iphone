@@ -393,13 +393,6 @@ class CoreManagerDelegate: CoreDelegate {
 							// The call is already answered.
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
 						}
-					} else {
-						if (CallManager.incomingCallMustBeDisplayed()) {
-							// it must post an incoming call to the system after receiving a PushKit VoIP push callback.
-							break;
-						}
-						// Nothing happped before, display a new Incoming call.
-						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
 				} else if (UIApplication.shared.applicationState != .active) {
 					// not support callkit , use notif
