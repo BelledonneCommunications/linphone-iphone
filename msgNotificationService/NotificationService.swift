@@ -57,8 +57,12 @@ class NotificationService: UNNotificationServiceExtension {
 					stopCore()
 					NotificationService.log.message(msg: "chat room invite received")
 					bestAttemptContent.title = NSLocalizedString("You have been added to a chat room", comment: "")
-					if (chatRoom.subject == LINPHONE_DUMMY_SUBJECT) {
-						bestAttemptContent.body = chatRoom.participants[0].address?.username as! String
+					if (chatRoom.hasCapability(mask:ChatRoomCapabilities.OneToOne.rawValue)) {
+						if (chatRoom.peerAddress?.displayName.isEmpty != true) {
+							bestAttemptContent.body = chatRoom.peerAddress!.displayName
+						} else {
+							bestAttemptContent.body = chatRoom.peerAddress!.username
+						}
 					} else {
 						bestAttemptContent.body = chatRoom.subject
 					}
@@ -67,7 +71,7 @@ class NotificationService: UNNotificationServiceExtension {
 					return
 				}
 			} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
-				NotificationService.log.message(msg: "fetch msg")
+				NotificationService.log.message(msg: "fetch msg for callid ["+callId+"]")
 				let message = lc!.getNewMessageFromCallid(callId: callId)
 
 				if let message = message, let chatRoom = message.chatRoom {
@@ -97,6 +101,8 @@ class NotificationService: UNNotificationServiceExtension {
 
 					contentHandler(bestAttemptContent)
 					return
+				} else {
+					NotificationService.log.message(msg: "Message not found for callid ["+callId+"]")
 				}
 			}
 			serviceExtensionTimeWillExpire()
@@ -106,6 +112,7 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+		NotificationService.log.warning(msg: "serviceExtensionTimeWillExpire")
 		stopCore()
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
