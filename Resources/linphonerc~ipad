@@ -13,6 +13,8 @@ start_at_boot_preference=1
 stun_preference=stun.linphone.org
 voiceproc_preference=1
 repeat_call_notification=1
+use_callkit=1
+unexpected_pushkit=0
 
 [default_values]
 reg_expires=1314000

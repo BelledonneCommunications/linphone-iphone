@@ -163,6 +163,11 @@
 	LOGI(@"[PushKit] Connecting for push notifications");
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
+	int num = [LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0];
+	if (num > 2) {
+		LOGW(@"[PushKit] unexpected pushkit notifications received %d, please clean your sip account.", num);
+	}
+	[[UIApplication sharedApplication] unregisterForRemoteNotifications];
     // Register for remote notifications.
     LOGI(@"[APNs] register for push notif");
     [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -542,6 +547,7 @@
 	// prevent app to crash if PushKit received for msg
     if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
 		LOGE(@"Received a legacy PushKit notification for a chat message");
+		[LinphoneManager.instance lpConfigSetInt:[LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0]+1 forKey:@"unexpected_pushkit"];
         return;
     }
     [LinphoneManager.instance startLinphoneCore];
