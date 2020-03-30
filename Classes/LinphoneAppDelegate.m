@@ -167,7 +167,7 @@
 	if (num > 2) {
 		LOGW(@"[PushKit] unexpected pushkit notifications received %d, please clean your sip account.", num);
 	}
-	[[UIApplication sharedApplication] unregisterForRemoteNotifications];
+
     // Register for remote notifications.
     LOGI(@"[APNs] register for push notif");
     [[UIApplication sharedApplication] registerForRemoteNotifications];
