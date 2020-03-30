@@ -47,6 +47,7 @@ class NotificationService: UNNotificationServiceExtension {
         NSLog("[msgNotificationService] start msgNotificationService extension")
 
 		if let bestAttemptContent = bestAttemptContent {
+			NSLog("[msgNotificationService] received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 			createCore()
 
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {

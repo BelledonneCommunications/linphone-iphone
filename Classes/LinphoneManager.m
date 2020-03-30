@@ -2058,7 +2058,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
         const unsigned char *remoteTokenBuffer = [remoteTokenData bytes];
         NSMutableString *remoteTokenString = [NSMutableString stringWithCapacity:[remoteTokenData length] * 2];
-		for (int i = 0; i < [PKTokenData length]; ++i) {
+		for (int i = 0; i < [remoteTokenData length]; ++i) {
 			[remoteTokenString appendFormat:@"%02X", (unsigned int)remoteTokenBuffer[i]];
 		}
 
