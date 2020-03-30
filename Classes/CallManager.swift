@@ -43,6 +43,7 @@ import AVFoundation
 	@objc var speakerEnabled : Bool = false
 	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
+	@objc var alreadyRegisteredForNotification: Bool = false
 
 
 	fileprivate override init() {
@@ -393,7 +394,7 @@ class CoreManagerDelegate: CoreDelegate {
 							// The call is already answered.
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
 						}
-					} else if (!(lc.defaultProxyConfig?.pushNotificationAllowed ?? false)) {
+					} else if (!CallManager.instance().alreadyRegisteredForNotification) {
 						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
 				} else if (UIApplication.shared.applicationState != .active) {

@@ -47,7 +47,7 @@
 	if (self != nil) {
 		startedInBackground = FALSE;
 	}
-	_alreadyRegisteredForNotification = false;
+	CallManager.instance.alreadyRegisteredForNotification = false;
     _onlyPortrait = FALSE;
 	return self;
 	[[UIApplication sharedApplication] setDelegate:self];
@@ -152,10 +152,10 @@
 #pragma deploymate push "ignored-api-availability"
 
 - (void)registerForNotifications {
-	if (_alreadyRegisteredForNotification)
+	if (CallManager.instance.alreadyRegisteredForNotification)
 		return;
 
-	_alreadyRegisteredForNotification = true;
+	CallManager.instance.alreadyRegisteredForNotification = true;
 	self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
 	self.voipRegistry.delegate = self;
 

@@ -40,7 +40,6 @@
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
 @property PKPushRegistry* voipRegistry;
-@property BOOL alreadyRegisteredForNotification;
 @property BOOL onlyPortrait;
 @property UIApplicationShortcutItem *shortcutItem;
 
