@@ -152,7 +152,7 @@
 #pragma deploymate push "ignored-api-availability"
 
 - (void)registerForNotifications {
-	if (CallManager.instance.alreadyRegisteredForNotification)
+	if (CallManager.instance.alreadyRegisteredForNotification && [[UIApplication sharedApplication] isRegisteredForRemoteNotifications])
 		return;
 
 	CallManager.instance.alreadyRegisteredForNotification = true;

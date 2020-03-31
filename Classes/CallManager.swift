@@ -394,7 +394,7 @@ class CoreManagerDelegate: CoreDelegate {
 							// The call is already answered.
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
 						}
-					} else if (!CallManager.instance().alreadyRegisteredForNotification) {
+					} else if (!(CallManager.instance().alreadyRegisteredForNotification && UIApplication.shared.isRegisteredForRemoteNotifications)) {
 						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
 				} else if (UIApplication.shared.applicationState != .active) {
