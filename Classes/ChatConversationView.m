@@ -205,7 +205,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (_chatRoom && _chatRoomCbs) {
 		linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
 		_chatRoomCbs = NULL;
-		_chatRoom = NULL;
 	}
 
 	[_messageField resignFirstResponder];
@@ -219,7 +218,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)didEnterBackground:(NSNotification *)notif {
     linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
     _chatRoomCbs = NULL;
-	_chatRoom = NULL;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
