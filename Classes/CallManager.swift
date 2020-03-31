@@ -44,6 +44,7 @@ import AVFoundation
 	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
 	@objc var alreadyRegisteredForNotification: Bool = false
+	@objc var pushTokenForbidden: Bool = false
 
 
 	fileprivate override init() {
@@ -396,6 +397,8 @@ class CoreManagerDelegate: CoreDelegate {
 						}
 					} else if (!(CallManager.instance().alreadyRegisteredForNotification && UIApplication.shared.isRegisteredForRemoteNotifications)) {
 						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
+					} else {
+						CallManager.instance().pushTokenForbidden = true
 					}
 				} else if (UIApplication.shared.applicationState != .active) {
 					// not support callkit , use notif

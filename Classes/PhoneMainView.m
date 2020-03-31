@@ -363,6 +363,19 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallIncomingReceived:
 			if (!CallManager.callKitEnabled) {
 				[self displayIncomingCall:call];
+			} else if (CallManager.instance.pushTokenForbidden) {
+				linphone_call_decline(call, LinphoneReasonUnknown);
+				UIAlertController *errView =
+				[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Push token for calls is not valid anymore", nil)
+													message:NSLocalizedString(@"Please delete all of your accounts from the server.", nil)
+											 preferredStyle:UIAlertControllerStyleAlert];
+
+				UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																		style:UIAlertActionStyleDefault
+																	  handler:^(UIAlertAction *action) {}];
+
+				[errView addAction:defaultAction];
+				[self presentViewController:errView animated:YES completion:nil];
 			}
 			break;
 		case LinphoneCallIncomingEarlyMedia: {
