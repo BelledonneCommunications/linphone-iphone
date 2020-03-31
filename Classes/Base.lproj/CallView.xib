@@ -1161,7 +1161,7 @@
                                     <state key="normal" image="button:GQK-F8-oLr:image">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="E0E63837-0C89-430F-920F-4E9FA68462A0"/>
+                                    <state key="disabled" image="59BB6A35-C469-4FDF-86F9-4404B36D4F19"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onRecordClick:" destination="-1" eventType="touchUpInside" id="IFO-tT-oog"/>
@@ -1343,7 +1343,7 @@
         </view>
     </objects>
     <resources>
-        <image name="E0E63837-0C89-430F-920F-4E9FA68462A0" width="33" height="33">
+        <image name="59BB6A35-C469-4FDF-86F9-4404B36D4F19" width="33" height="33">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGVVZYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QEgcI
 ExQZHh8jJCsuMTtDR0tPUlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdz

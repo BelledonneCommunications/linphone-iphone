@@ -231,6 +231,9 @@
                                     <rect key="frame" x="100" y="915" width="50" height="50"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <state key="normal" image="recording.png"/>
+                                    <connections>
+                                        <action selector="onRecordOnViewClick:" destination="-1" eventType="touchUpInside" id="mDP-eZ-CF4"/>
+                                    </connections>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
