@@ -410,7 +410,7 @@
 	if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
 		LOGI(@"CallKit: satrt video.");
 		CallView *view = VIEW(CallView);
-		[view.videoButton toggle];
+		[view.videoButton setOn];
 	}
 	return YES;
 }
