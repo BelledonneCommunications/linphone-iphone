@@ -1223,7 +1223,7 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 /** Should be called once per linphone_core_new() */
 - (void)finishCoreConfiguration {
 	//Force keep alive to workaround push notif on chat message
-	linphone_core_enable_keep_alive(theLinphoneCore, true);
+	linphone_core_enable_keep_alive([LinphoneManager getLc], true);
 
 	// get default config from bundle
 	NSString *zrtpSecretsFileName = [LinphoneManager dataFile:@"zrtp_secrets"];
