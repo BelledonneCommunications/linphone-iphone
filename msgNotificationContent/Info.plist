@@ -17,19 +17,19 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<key>UNNotificationExtensionOverridesDefaultTitle</key>
-			<true/>
 			<key>UNNotificationExtensionCategory</key>
 			<string>msg_cat</string>
 			<key>UNNotificationExtensionInitialContentSizeRatio</key>
 			<real>0.01</real>
+			<key>UNNotificationExtensionOverridesDefaultTitle</key>
+			<true/>
 		</dict>
 		<key>NSExtensionMainStoryboard</key>
 		<string>MainInterface</string>
