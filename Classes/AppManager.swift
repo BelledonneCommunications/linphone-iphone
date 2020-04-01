@@ -46,7 +46,7 @@ enum NetworkType: Int {
 
 	@objc static func recordingFilePathFromCall(address: String) -> String {
 		var filePath = "recording_"
-		filePath = filePath.appending(address.isEmpty ? address : "unknow")
+		filePath = filePath.appending(address.isEmpty ? "unknow" : address)
 		let now = Date()
 		let dateFormat = DateFormatter()
 		dateFormat.dateFormat = "E-d-MMM-yyyy-HH-mm-ss"
