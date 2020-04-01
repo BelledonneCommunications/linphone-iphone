@@ -1860,6 +1860,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		removeItemAtPath:[LinphoneManager oldDataFile:kLinphoneInternalChatDBFilename]
 		error:nil];
 	}
+
+	if ([LinphoneManager copyFile:[LinphoneManager oldDataFile:@"zrtp_secrets"] destination:[LinphoneManager dataFile:@"zrtp_secrets"] override:TRUE ignore:TRUE]) {
+		[NSFileManager.defaultManager
+		removeItemAtPath:[LinphoneManager oldDataFile:@"zrtp_secrets"]
+		error:nil];
+	}
 }
 
 - (void)renameDefaultSettings {
