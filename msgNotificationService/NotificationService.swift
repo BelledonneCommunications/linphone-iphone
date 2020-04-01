@@ -68,6 +68,7 @@ class NotificationService: UNNotificationServiceExtension {
 						bestAttemptContent.body = chatRoom.subject
 					}
 
+					bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
 					contentHandler(bestAttemptContent)
 					return
 				}
@@ -118,8 +119,15 @@ class NotificationService: UNNotificationServiceExtension {
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
             bestAttemptContent.categoryIdentifier = "app_active"
-            bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
-            bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")
+
+			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
+				bestAttemptContent.title = NSLocalizedString("You have been added to a chat room", comment: "")
+				bestAttemptContent.body = ""
+				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
+			} else {
+				bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
+				bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")
+			}
             contentHandler(bestAttemptContent)
         }
     }
