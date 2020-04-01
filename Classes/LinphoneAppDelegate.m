@@ -164,8 +164,8 @@
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
 	int num = [LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0];
-	if (num > 2) {
-		LOGW(@"[PushKit] unexpected pushkit notifications received %d, please clean your sip account.", num);
+	if (num > 3) {
+		LOGI(@"[PushKit] unexpected pushkit notifications received %d, please clean your sip account.", num);
 	}
 
     // Register for remote notifications.

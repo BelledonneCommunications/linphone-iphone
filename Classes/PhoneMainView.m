@@ -363,7 +363,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallIncomingReceived:
 			if (!CallManager.callKitEnabled) {
 				[self displayIncomingCall:call];
-			} else if ([LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0] > 2) {
+			} else if ([LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0] > 3) {
 				 dispatch_async(dispatch_get_main_queue(), ^{
 					 linphone_call_decline(call, LinphoneReasonUnknown);
 					 UIAlertController *errView =
