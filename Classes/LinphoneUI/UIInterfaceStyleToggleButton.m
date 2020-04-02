@@ -39,6 +39,8 @@
 			default:
 				break;
 		}
+	} else {
+		self.tintColor = [UIColor darkGrayColor];
 	}
 }
 
