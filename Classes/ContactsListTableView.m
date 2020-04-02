@@ -44,7 +44,7 @@ NSArray *sortedAddresses;
 }
 
 - (void)onAddressBookUpdate:(NSNotification *)k {
-	if (!_ongoing && ((PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription) || (IPAD && PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription))) {
+	if ((!_ongoing && (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription)) || (IPAD && PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription)) {
 		[self loadData];
 	}
 }
