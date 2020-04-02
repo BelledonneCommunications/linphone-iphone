@@ -103,6 +103,15 @@ class ProviderDelegate: NSObject {
 				}
 			}
 		}
+
+		DispatchQueue.main.asyncAfter(deadline: .now() + 30) {// in 30 second
+			if (CallManager.instance().lc?.callsNb == 0 && !CallManager.instance().providerDelegate.callInfos.isEmpty ) {
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: end call which does not exist.")
+				for suuid in CallManager.instance().providerDelegate.uuids.values {
+					CallManager.instance().providerDelegate.endCallForError(uuid: suuid, endedAt: .init(), endedReason: .declinedElsewhere)
+				}
+			}
+		}
 	}
 
 	func updateCall(uuid: UUID, handle: String, hasVideo: Bool = false) {
@@ -157,15 +166,6 @@ extension ProviderDelegate: CXProviderDelegate {
 			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
 			callInfo?.accepted = true
 			callInfos.updateValue(callInfo!, forKey: uuid)
-
-			DispatchQueue.main.asyncAfter(deadline: .now() + 30) {// in 30 second
-				if (CallManager.instance().lc?.callsNb == 0 && !CallManager.instance().providerDelegate.callInfos.isEmpty ) {
-					Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: end call which does not exist.")
-					for suuid in CallManager.instance().providerDelegate.uuids.values {
-						CallManager.instance().providerDelegate.endCallForError(uuid: suuid, endedAt: .init(), endedReason: .declinedElsewhere)
-					}
-				}
-			}
 		} else {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		}
