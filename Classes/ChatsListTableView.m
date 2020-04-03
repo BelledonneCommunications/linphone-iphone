@@ -98,12 +98,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	while (iter) {
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
-		// hide empty one-to-one chat room
-		LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chat_room);
-		ChatConversationView *view = VIEW(ChatConversationView);
-		if (linphone_chat_room_get_history_size(chat_room) > 0 || !(capabilities & LinphoneChatRoomCapabilitiesOneToOne) || (IPAD && view.chatRoom == chat_room)) {
-			sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
-		}
+		sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
 		iter = iter->next;
 	}
 	return sorted;
@@ -120,6 +115,9 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		if (idx != -1) {
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
 			[self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+		} else if ([LinphoneManager.instance lpConfigBoolForKey:@"create_chat" withDefault:FALSE]) {
+		// if create chat, show the empty chat
+			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"create_chat"];
 		} else if (![self selectFirstRow]) {
 			ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 			view.tableController.notFirstTime = FALSE;

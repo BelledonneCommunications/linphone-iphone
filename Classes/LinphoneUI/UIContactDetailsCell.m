@@ -152,12 +152,14 @@
 
 - (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
+	[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"create_chat"];
 	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
 	linphone_address_unref(addr);
 }
 
 - (IBAction)onEncrptedChatClick:(id)sender {
     LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
+	[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"create_chat"];
     [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
     linphone_address_unref(addr);
 }
