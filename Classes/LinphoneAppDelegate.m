@@ -31,7 +31,7 @@
 #include "LinphoneManager.h"
 #include "linphone/linphonecore.h"
 
-#ifdef USE_CRASHLYTHICSS
+#ifdef USE_CRASHLYTHICS
 #include "FIRApp.h"
 #endif
 
@@ -252,7 +252,7 @@
 #pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-#ifdef USE_CRASHLYTHICSS
+#ifdef USE_CRASHLYTHICS
 	[FIRApp configure];
 #endif
     

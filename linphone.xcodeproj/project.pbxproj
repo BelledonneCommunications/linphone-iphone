@@ -4005,6 +4005,8 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/linphone.xcarchive/dSYMs/linphone.app.dSYM/Contents/Resources/DWARF/linphone",
+				"$(SRCROOT)/linphone-Info.plist",
 			);
 			outputFileListPaths = (
 			);
@@ -4012,7 +4014,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if USE_CRASHLYTHICS; then\n    ${PODS_ROOT}/Fabric/run\nfi\n";
+			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTHICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n\n\n";
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

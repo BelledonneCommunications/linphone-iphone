@@ -21,8 +21,8 @@
 #import <asl.h>
 #import <os/log.h>
 
-#ifdef USE_CRASHLYTHICSS
-#import <Crashlytics/Crashlytics.h>
+#ifdef USE_CRASHLYTHICS
+@import FirebaseCrashlytics;
 #endif
 
 @implementation Log
@@ -106,20 +106,17 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 		for (int i = 0; i < myWords.count; i++) {
 			NSString *tab = i > 0 ? @"\t" : @"";
 			if (((NSString *)myWords[i]).length > 0) {
-#ifdef USE_CRASHLYTHICSS
-				CLSNSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
-#else
-				NSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
+#ifdef USE_CRASHLYTHICS
+			[[FIRCrashlytics crashlytics] logWithFormat:@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]];
 #endif
-
+			NSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
 			}
 		}
 	} else {
-#ifdef USE_CRASHLYTHICSS
-		CLSNSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
-#else
-		NSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+#ifdef USE_CRASHLYTHICS
+		[[FIRCrashlytics crashlytics] logWithFormat:@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]];
 #endif
+		NSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
 	}
 }
 
