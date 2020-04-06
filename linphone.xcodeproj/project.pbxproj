@@ -61,6 +61,8 @@
 		570742581D5A0691004B9C84 /* ShopView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570742561D5A0691004B9C84 /* ShopView.xib */; };
 		570742611D5A09B8004B9C84 /* ShopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5707425F1D5A09B8004B9C84 /* ShopView.m */; };
 		570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 570742661D5A63DB004B9C84 /* StoreKit.framework */; };
+		6112A01C243B31A700DBD5F5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6112A01B243B31A600DBD5F5 /* GoogleService-Info.plist */; };
+		6112A01E243B5FD500DBD5F5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6112A01D243B5FD500DBD5F5 /* GoogleService-Info.plist */; };
 		6134812D2406CECC00695B41 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6134812C2406CECC00695B41 /* ConfigManager.swift */; };
 		6134812F2407B35200695B41 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6134812E2407B35200695B41 /* AppManager.swift */; };
 		6135761C240E81BB005304D4 /* UIInterfaceStyleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6135761B240E81BA005304D4 /* UIInterfaceStyleButton.m */; };
@@ -912,6 +914,8 @@
 		570742661D5A63DB004B9C84 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5E58962520DCE5700030868C /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		5EF0C33820C806A5005081B0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
+		6112A01B243B31A600DBD5F5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6112A01D243B5FD500DBD5F5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6130C85B22BBB493009CC79C /* LaunchScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchScreen.h; sourceTree = "<group>"; };
 		6134812C2406CECC00695B41 /* ConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
 		6134812E2407B35200695B41 /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
@@ -3115,6 +3119,7 @@
 				EAB783CF232F8E4D0076B1A0 /* msgNotificationService.entitlements */,
 				EAE6C88323FABF690076A018 /* Utils.swift */,
 				EA5F25DB232BD3E200475F2E /* NotificationService.swift */,
+				6112A01D243B5FD500DBD5F5 /* GoogleService-Info.plist */,
 				EA5F25DD232BD3E200475F2E /* Info.plist */,
 			);
 			path = msgNotificationService;
@@ -3123,6 +3128,7 @@
 		EA8CB82A239F96CA00C330CC /* msgNotificationContent */ = {
 			isa = PBXGroup;
 			children = (
+				6112A01B243B31A600DBD5F5 /* GoogleService-Info.plist */,
 				EA8CB83F239FD41400C330CC /* msgNotificationContent.entitlements */,
 				EA8CB82B239F96CA00C330CC /* NotificationViewController.swift */,
 				EA8CB82D239F96CA00C330CC /* MainInterface.storyboard */,
@@ -3186,6 +3192,7 @@
 				EA5F25D5232BD3E200475F2E /* Sources */,
 				203E6292C3E84CD13778F720 /* Frameworks */,
 				EA88A406242A6224007FEC61 /* Resources */,
+				6112A01A243B2CCF00DBD5F5 /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -3204,6 +3211,7 @@
 				EA8CB823239F96CA00C330CC /* Sources */,
 				143EFEE2501CB14E6BB244EF /* Frameworks */,
 				EA88F3AE241BD1ED00E66528 /* Resources */,
+				6112A019243B2C8400DBD5F5 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -3914,6 +3922,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA88A407242A6235007FEC61 /* Localizable.strings in Resources */,
+				6112A01E243B5FD500DBD5F5 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3923,6 +3932,7 @@
 			files = (
 				EA88F3AF241BD1F700E66528 /* MainInterface.storyboard in Resources */,
 				EA88A405242A6216007FEC61 /* Localizable.strings in Resources */,
+				6112A01C243B31A700DBD5F5 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3996,6 +4006,45 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		6112A019243B2C8400DBD5F5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/msgNotificationContent/linphone-Info.plist",
+				"$(SRCROOT)/linphone.xcarchive/dSYMs/msgNotificationContent.appex.dSYM/Contents/Resources/DWARF/msgNotificationContent",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTHICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
+		};
+		6112A01A243B2CCF00DBD5F5 /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/msgNotificationService/linphone-Info.plist",
+				"$(SRCROOT)/linphone.xcarchive/dSYMs/msgNotificationService.appex.dSYM/Contents/Resources/DWARF/msgNotificationService",
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTHICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
 		};
 		614D0A1821E77F5300C43EDF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

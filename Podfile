@@ -79,32 +79,36 @@ post_install do |installer|
 			
 	app_project = Xcodeproj::Project.open(Dir.glob("*.xcodeproj")[0])
 	app_project.native_targets.each do |target|
-		if target.name == 'linphone'
-			target.build_configurations.each do |config|
-				if ENV['USE_CRASHLYTHICS'].nil?
-					if config.name == "Debug" then
-						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
-					else
-						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited)'
-					end
+		target.build_configurations.each do |config|
+			if ENV['USE_CRASHLYTHICS'].nil?
+				if config.name == "Debug" then
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
 				else
-					# activate crashlythics
-					if config.name == "Debug" then
-						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTHICS=1'
-						else
-						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTHICS=1'
-					end
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited)'
 				end
-
-				config.build_settings['OTHER_CFLAGS'] = '-DBCTBX_LOG_DOMAIN=\"ios\"',
-																								'-DCHECK_VERSION_UPDATE=FALSE',
-																								'-DENABLE_QRCODE=TRUE',
-																								'-DENABLE_SMS_INVITE=TRUE',
-																								'$(inherited)',
-																								"-DLINPHONE_SDK_VERSION=\\\"#{$linphone_sdk_version}\\\""
-				
-				app_project.save
+				if target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
+					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited)'
+				end
+			else
+				# activate crashlythics
+				if config.name == "Debug" then
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTHICS=1'
+				else
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTHICS=1'
+				end
+				if target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
+					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -DUSE_CRASHLYTHICS'
+				end
 			end
+
+			config.build_settings['OTHER_CFLAGS'] = '-DBCTBX_LOG_DOMAIN=\"ios\"',
+																							'-DCHECK_VERSION_UPDATE=FALSE',
+																							'-DENABLE_QRCODE=TRUE',
+																							'-DENABLE_SMS_INVITE=TRUE',
+																							'$(inherited)',
+																							"-DLINPHONE_SDK_VERSION=\\\"#{$linphone_sdk_version}\\\""
+
+			app_project.save
 		end
 	end
 end

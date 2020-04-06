@@ -19,6 +19,9 @@
 
 import UserNotifications
 import linphonesw
+#if USE_CRASHLYTHICS
+import Firebase
+#endif
 
 var APP_GROUP_ID = "group.org.linphone.phone.msgNotification"
 var LINPHONE_DUMMY_SUBJECT = "dummy subject"
@@ -40,6 +43,13 @@ class NotificationService: UNNotificationServiceExtension {
     var lc: Core?
     static var logDelegate: LinphoneLoggingServiceManager!
 	static var log: LoggingService!
+	
+	override init() {
+		super.init()
+#if USE_CRASHLYTHICS
+		FirebaseApp.configure()
+#endif
+	}
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
