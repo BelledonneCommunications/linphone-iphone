@@ -18,6 +18,9 @@
 */
 
 import linphonesw
+#if USE_CRASHLYTHICS
+import Firebase
+#endif
 
 enum LinphoneError: Error {
 	case timeout
@@ -63,6 +66,9 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 			level = "unknown"
 		}
 
+#if USE_CRASHLYTHICS
+		Crashlytics.crashlytics().log("\(level) [\(domain)] \(message)\n")
+#endif
 		NSLog("\(level) [\(domain)] \(message)\n")
 	}
 }
