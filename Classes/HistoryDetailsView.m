@@ -210,11 +210,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onChatClick:(id)event {
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"create_chat"];
     [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:FALSE];
 }
 
 - (IBAction)onEncryptedChatClick:(id)sender {
     const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"create_chat"];
     [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:TRUE];
 }
 
