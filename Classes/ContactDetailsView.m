@@ -197,6 +197,39 @@
 	[self selectContact:acontact andReload:NO];
 }
 
+- (void)resetContact {
+	if (self.tmpContact) {
+		_contact.firstName = _tmpContact.firstName.copy;
+		_contact.lastName = _tmpContact.lastName.copy;
+		while (_contact.sipAddresses.count > 0) {
+			[_contact removeSipAddressAtIndex:0];
+		}
+		NSInteger nbSipAd = 0;
+		while (_tmpContact.sipAddresses.count > nbSipAd) {
+			[_contact addSipAddress:_tmpContact.sipAddresses[nbSipAd]];
+			nbSipAd++;
+		}
+		while (_contact.phones.count > 0) {
+			[_contact removePhoneNumberAtIndex:0];
+		}
+		NSInteger nbPhone = 0;
+		while (_tmpContact.phones.count > nbPhone) {
+			[_contact addPhoneNumber:_tmpContact.phones[nbPhone]];
+			nbPhone++;
+		}
+		while (_contact.emails.count > 0) {
+			[_contact removeEmailAtIndex:0];
+		}
+		NSInteger nbEmail = 0;
+		while (_tmpContact.emails.count > nbEmail) {
+			[_contact addEmail:_tmpContact.emails[nbEmail]];
+			nbEmail++;
+		}
+		self.tmpContact = NULL;
+		[self saveData];
+	}
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
@@ -229,7 +262,8 @@
 						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
 	[_tableController.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
 	_tableController.waitView = _waitView;
-	self.tmpContact = NULL;
+	if (!IPAD)
+		self.tmpContact = NULL;
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
 											 selector: @selector(deviceOrientationDidChange:)
@@ -281,36 +315,7 @@
 	}
 	[super viewWillDisappear:animated];
 	PhoneMainView.instance.currentName = NULL;
-	if (self.tmpContact) {
-		_contact.firstName = _tmpContact.firstName.copy;
-		_contact.lastName = _tmpContact.lastName.copy;
-		while (_contact.sipAddresses.count > 0) {
-			[_contact removeSipAddressAtIndex:0];
-		}
-		NSInteger nbSipAd = 0;
-		while (_tmpContact.sipAddresses.count > nbSipAd) {
-			[_contact addSipAddress:_tmpContact.sipAddresses[nbSipAd]];
-			nbSipAd++;
-		}
-		while (_contact.phones.count > 0) {
-			[_contact removePhoneNumberAtIndex:0];
-		}
-		NSInteger nbPhone = 0;
-		while (_tmpContact.phones.count > nbPhone) {
-			[_contact addPhoneNumber:_tmpContact.phones[nbPhone]];
-			nbPhone++;
-		}
-		while (_contact.emails.count > 0) {
-			[_contact removeEmailAtIndex:0];
-		}
-		NSInteger nbEmail = 0;
-		while (_tmpContact.emails.count > nbEmail) {
-			[_contact addEmail:_tmpContact.emails[nbEmail]];
-			nbEmail++;
-		}
-		self.tmpContact = NULL;
-		[self saveData];
-	}
+	[self resetContact];
 
 	BOOL rm = TRUE;
 	for (NSString *sip in _contact.sipAddresses) {

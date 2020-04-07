@@ -54,4 +54,5 @@
 - (void)editContact:(Contact *)contact;
 - (void)editContact:(Contact *)contact address:(NSString *)address;
 - (void)setContact:(Contact *)contact;
+- (void)resetContact;
 @end
