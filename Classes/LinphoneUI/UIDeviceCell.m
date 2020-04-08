@@ -36,6 +36,10 @@
 }
 
 - (void)update {
+	if (!_device) {
+		LOGE(@"Can not update, because the device is null.");
+		return;
+	}
     [_securityButton setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)] forState:UIControlStateNormal];
     
     _deviceLabel.text = [NSString stringWithUTF8String:linphone_participant_device_get_name(_device) ? :

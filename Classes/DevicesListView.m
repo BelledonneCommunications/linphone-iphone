@@ -86,9 +86,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     }
 	
 	LinphoneParticipant *me = linphone_chat_room_get_me(_room);
-	// not show me if there is only one device
-	if (bctbx_list_size(linphone_participant_get_devices(me)) > 1)
-		[_devicesMenuEntries addObject:[[DevicesMenuEntry alloc] initWithTitle:me number:0 isMe:TRUE]];
+	[_devicesMenuEntries addObject:[[DevicesMenuEntry alloc] initWithTitle:me number:0 isMe:TRUE]];
 
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [_tableView reloadData];
@@ -114,8 +112,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
     DevicesMenuEntry *entry = [_devicesMenuEntries objectAtIndex:indexPath.row];
-	if (entry->myself)
-		return (entry->numberOfDevices + 1) * 56.0;
 	return entry->numberOfDevices > 1 ? (entry->numberOfDevices + 1) * 56.0 : 56.0;
 }
 
@@ -142,9 +138,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSInteger num = 0;
 	if (entry->numberOfDevices == 0) {
 		num =  bctbx_list_size(linphone_participant_get_devices(entry->participant));
-		// not show current device
-		if (entry->myself)
-		num -= 1;
 	}
 	[_devicesMenuEntries replaceObjectAtIndex:indexPath.row withObject:[[DevicesMenuEntry alloc] initWithTitle:entry->participant number:num isMe:entry->myself]];
 	[_tableView reloadData];
