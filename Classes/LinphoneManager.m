@@ -856,140 +856,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;
     }
-
-	// Create a new notification
-	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-		NSArray *actions;
-		if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
-		    [LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
-
-			UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-			reply.identifier = @"reply";
-			reply.title = NSLocalizedString(@"Reply", nil);
-			reply.activationMode = UIUserNotificationActivationModeForeground;
-			reply.destructive = NO;
-			reply.authenticationRequired = YES;
-
-			UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-			mark_read.identifier = @"mark_read";
-			mark_read.title = NSLocalizedString(@"Mark Read", nil);
-			mark_read.activationMode = UIUserNotificationActivationModeBackground;
-			mark_read.destructive = NO;
-			mark_read.authenticationRequired = NO;
-
-			actions = @[ mark_read, reply ];
-		} else {
-			// iOS 9 allows for inline reply. We don't propose mark_read in this case
-			UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
-
-			reply_inline.identifier = @"reply_inline";
-			reply_inline.title = NSLocalizedString(@"Reply", nil);
-			reply_inline.activationMode = UIUserNotificationActivationModeBackground;
-			reply_inline.destructive = NO;
-			reply_inline.authenticationRequired = NO;
-			reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
-
-			actions = @[ reply_inline ];
-		}
-
-		UIMutableUserNotificationCategory *msgcat = [[UIMutableUserNotificationCategory alloc] init];
-		msgcat.identifier = @"incoming_msg";
-		[msgcat setActions:actions forContext:UIUserNotificationActionContextDefault];
-		[msgcat setActions:actions forContext:UIUserNotificationActionContextMinimal];
-
-		NSSet *categories = [NSSet setWithObjects:msgcat, nil];
-
-		UIUserNotificationSettings *set = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound)
-						   categories:categories];
-		[[UIApplication sharedApplication] registerUserNotificationSettings:set];
-
-		UILocalNotification *notif = [[UILocalNotification alloc] init];
-		if (notif) {
-			NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
-			notif.repeatInterval = 0;
-			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
-#pragma deploymate push "ignored-api-availability"
-				notif.category = @"incoming_msg";
-#pragma deploymate pop
-			}
-			if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
-			} else {
-				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
-			}
-			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = @"msg.caf";
-			notif.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"call-id" : callID};
-			notif.accessibilityLabel = @"Message notif";
-			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
-		}
-	} else {
-		UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-		content.title = NSLocalizedString(@"Message received", nil);
-		const char* subject = linphone_chat_room_get_subject(room) ?: LINPHONE_DUMMY_SUBJECT;
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-			content.subtitle = strcmp(subject, LINPHONE_DUMMY_SUBJECT) != 0 ? [NSString stringWithUTF8String:subject] : fromMsg;
-			content.body = strcmp(subject, LINPHONE_DUMMY_SUBJECT) != 0
-				? [NSString stringWithFormat:@"%@ : %@", fromMsg, [UIChatBubbleTextCell TextMessageForChat:msg]]
-				: [UIChatBubbleTextCell TextMessageForChat:msg];
-		} else {
-			content.body = strcmp(subject, LINPHONE_DUMMY_SUBJECT) != 0
-				? [NSString stringWithFormat:@"%@ : %@",[NSString stringWithUTF8String:subject], fromMsg]
-				: fromMsg;
-		}
-		content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
-		content.categoryIdentifier = @"msg_cat";
-		// save data to user info for rich notification content
-		NSMutableArray *msgs = [NSMutableArray array];
-		bctbx_list_t *history = linphone_chat_room_get_history(room, 6);
-		while (history) {
-			NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
-			LinphoneChatMessage *msg = history->data;
-			const char *state = linphone_chat_message_state_to_string(linphone_chat_message_get_state(msg));
-			bool_t isOutgoing = linphone_chat_message_is_outgoing(msg);
-			bool_t isFileTransfer = (linphone_chat_message_get_file_transfer_information(msg) != NULL);
-			const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
-			NSString *displayNameDate = [NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(msg)
-											    withFormat:LinphoneDateChatBubble],
-						     [FastAddressBook displayNameForAddress:fromAddress]];
-			UIImage *fromImage = [UIImage resizeImage:[FastAddressBook imageForAddress:fromAddress]
-					      withMaxWidth:200
-					      andMaxHeight:200];
-			NSData *fromImageData = UIImageJPEGRepresentation(fromImage, 1);
-			[msgData setObject:[NSString stringWithUTF8String:state] forKey:@"state"];
-			[msgData setObject:displayNameDate forKey:@"displayNameDate"];
-			[msgData setObject:[NSNumber numberWithBool:isFileTransfer] forKey:@"isFileTransfer"];
-			[msgData setObject:fromImageData forKey:@"fromImageData"];
-			if (isFileTransfer) {
-				LinphoneContent *file = linphone_chat_message_get_file_transfer_information(msg);
-				const char *filename = linphone_content_get_name(file);
-				[msgData setObject:[NSString stringWithUTF8String:filename] forKey:@"msg"];
-			} else {
-				[msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
-			}
-			[msgData setObject:[NSNumber numberWithBool:isOutgoing] forKey:@"isOutgoing"];
-			[msgs addObject:msgData];
-			history = bctbx_list_next(history);
-		}
-		content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
-		content.accessibilityLabel = @"Message notif";
-		UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-		[[UNUserNotificationCenter currentNotificationCenter]
-		 addNotificationRequest:req
-		 withCompletionHandler:^(NSError *_Nullable error) {
-				// Enable or disable features based on authorization.
-				if (error) {
-					LOGD(@"Error while adding notification request :");
-					LOGD(error.description);
-				}
-			}];
-	}
-	[ChatsListTableView saveDataToUserDefaults];
-	[HistoryListTableView saveDataToUserDefaults];
-}
-
-static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
-	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onMessageReceived:lc room:room message:message];
 }
 
 static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
@@ -1283,9 +1149,6 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 
 	[self enableProxyPublish:([UIApplication sharedApplication].applicationState == UIApplicationStateActive)];
 
-	//update UserDefaults for widgets
-	[HistoryListTableView saveDataToUserDefaults];
-
 	LOGI(@"Linphone [%s] started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
 	// Post event
@@ -1446,7 +1309,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_registration_state_changed(cbs,linphone_iphone_registration_state);
 	linphone_core_cbs_set_notify_presence_received_for_uri_or_tel(cbs, linphone_iphone_notify_presence_received_for_uri_or_tel);
 	linphone_core_cbs_set_authentication_requested(cbs, linphone_iphone_popup_password_request);
-	linphone_core_cbs_set_message_received(cbs, linphone_iphone_message_received);
 	linphone_core_cbs_set_message_received_unable_decrypt(cbs, linphone_iphone_message_received_unable_decrypt);
 	linphone_core_cbs_set_transfer_state_changed(cbs, linphone_iphone_transfer_state_changed);
 	linphone_core_cbs_set_is_composing_received(cbs, linphone_iphone_is_composing_received);

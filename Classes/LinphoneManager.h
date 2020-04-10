@@ -60,7 +60,7 @@ extern NSString *const kLinphoneFileTransferRecvUpdate;
 extern NSString *const kLinphoneQRCodeFound;
 extern NSString *const kLinphoneChatCreateViewChange;
 
-extern NSString *const kLinphoneMsgNotificationGroupId;
+extern NSString *const kLinphoneMsgNotificationAppGroupId;
 
 typedef enum _NetworkType {
     network_none = 0,

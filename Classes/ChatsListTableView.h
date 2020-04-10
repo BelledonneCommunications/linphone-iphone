@@ -30,5 +30,4 @@
 
 - (void)loadData;
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom;
-+ (void)saveDataToUserDefaults;
 @end

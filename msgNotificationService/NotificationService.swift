@@ -86,10 +86,10 @@ class NotificationService: UNNotificationServiceExtension {
 				NotificationService.log.message(msg: "fetch msg for callid ["+callId+"]")
 				let message = lc!.getNewMessageFromCallid(callId: callId)
 
-				if let message = message, let chatRoom = message.chatRoom {
-					let msgData = parseMessage(room: chatRoom, message: message)
+				if let message = message {
+					let msgData = parseMessage(message: message)
 
-					if let badge = updateBadge() as NSNumber? {
+					if !message.isUsingUserDefaults, let badge = updateBadge() as NSNumber? {
 						bestAttemptContent.badge = badge
 					}
 
@@ -142,23 +142,17 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-	func parseMessage(room: ChatRoom, message: ChatMessage) -> MsgData? {
-		NotificationService.log.message(msg: "Core received msg \(message.contentType) \n")
-
-		if (message.contentType != "text/plain" && message.contentType != "image/jpeg") {
-			return nil
-		}
-
+	func parseMessage(message: PushNotificationMessage) -> MsgData? {
 		let content = message.isText ? message.textContent : "🗻"
-		let from = message.fromAddress?.username
-		let callId = message.getCustomHeader(headerName: "Call-Id")
-		let localUri = room.localAddress?.asStringUriOnly()
-		let peerUri = room.peerAddress?.asStringUriOnly()
+		let from = message.fromAddr?.username
+		let callId = message.callId
+		let localUri = message.localAddr?.asStringUriOnly()
+		let peerUri = message.peerAddr?.asStringUriOnly()
 
 		var msgData = MsgData(from: from, body: "", subtitle: "", callId:callId, localAddr: localUri, peerAddr:peerUri)
 
 		if let showMsg = lc!.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
-			if let subject = room.subject as String?, subject != "" {
+			if let subject = message.subject as String?, subject != "" {
 				msgData.subtitle = subject
 				msgData.body = from! + " : " + content
 			} else {
@@ -166,7 +160,7 @@ class NotificationService: UNNotificationServiceExtension {
 				msgData.body = content
 			}
 		} else {
-			if let subject = room.subject as String?, subject != "" {
+			if let subject = message.subject as String?, subject != "" {
 				msgData.body = subject + " : " + from!
 			} else {
 				msgData.body = from
