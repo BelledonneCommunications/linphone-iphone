@@ -172,7 +172,7 @@ import AVFoundation
 
 	// From ios13, display the callkit view when the notification is received.
 	@objc func displayIncomingCall(callId: String) {
-		let call = CallManager.instance().lc?.currentCall
+		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call != nil) {
 			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
 			let video = call?.params?.videoEnabled ?? false
