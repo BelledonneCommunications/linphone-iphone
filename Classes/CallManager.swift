@@ -414,9 +414,11 @@ class CoreManagerDelegate: CoreDelegate {
 					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
 					if (uuid != nil) {
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						if (callInfo?.isOutgoing ?? false) {
+						if (callInfo != nil && callInfo!.isOutgoing && !callInfo!.connected) {
 							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
 							CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
+							callInfo!.connected = true
+							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 						}
 					}
 				}

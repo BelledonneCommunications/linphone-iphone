@@ -31,6 +31,7 @@ import os
 	var isOutgoing = false
 	var sasEnabled = false
 	var declined = false
+	var connected = false
 	
 	
 	static func newIncomingCallInfo(callId: String) -> CallInfo {
