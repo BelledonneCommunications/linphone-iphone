@@ -89,6 +89,14 @@ class ProviderDelegate: NSObject {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 60) {// in 30 second
+					if (CallManager.instance().lc?.callsNb == 0 && !CallManager.instance().providerDelegate.callInfos.isEmpty ) {
+						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: end call which does not exist.")
+						for suuid in CallManager.instance().providerDelegate.uuids.values {
+							CallManager.instance().providerDelegate.endCallForError(uuid: suuid, endedAt: .init(), endedReason: .declinedElsewhere)
+						}
+					}
+				}
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
 				if (call == nil) {
@@ -101,15 +109,6 @@ class ProviderDelegate: NSObject {
 					try? call?.decline(reason: Reason.Busy)
 				} else {
 					try? call?.decline(reason: Reason.Unknown)
-				}
-			}
-		}
-
-		DispatchQueue.main.asyncAfter(deadline: .now() + 30) {// in 30 second
-			if (CallManager.instance().lc?.callsNb == 0 && !CallManager.instance().providerDelegate.callInfos.isEmpty ) {
-				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: end call which does not exist.")
-				for suuid in CallManager.instance().providerDelegate.uuids.values {
-					CallManager.instance().providerDelegate.endCallForError(uuid: suuid, endedAt: .init(), endedReason: .declinedElsewhere)
 				}
 			}
 		}

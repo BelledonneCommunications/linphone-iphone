@@ -354,8 +354,7 @@ import AVFoundation
 			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to terminate call failed because \(error)")
 		}
 		if (UIApplication.shared.applicationState == .background) {
-			CoreManager.instance().stopIterateTimer()
-			lc!.stop()
+			CoreManager.instance().stopLinphoneCore()
 		}
 	}
 }

@@ -58,13 +58,8 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[LinphoneManager.instance enterBackgroundMode];
-    LinphoneCall *call = linphone_core_get_current_call(LC);
-
-    if (!call) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-			[LinphoneManager.instance stopLinphoneCore];
-		});
-    }
+  
+	[CoreManager.instance stopLinphoneCore];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {

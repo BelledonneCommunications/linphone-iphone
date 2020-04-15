@@ -1274,11 +1274,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[CoreManager.instance startIterateTimer];
 }
 
-- (void)stopLinphoneCore {
-	[CoreManager.instance stopIterateTimer];
-    linphone_core_stop([LinphoneManager getLc]);
-}
-
 - (void)createLinphoneCore {
 	[self migrationAllPre];
 	if (theLinphoneCore != nil) {

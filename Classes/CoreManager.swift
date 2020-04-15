@@ -56,4 +56,11 @@ import linphonesw
 			timer.invalidate()
 		}
 	}
+	
+	@objc func stopLinphoneCore() {
+		if (lc?.callsNb == 0) {
+			stopIterateTimer()
+			lc?.stop()
+		}
+	}
 }
