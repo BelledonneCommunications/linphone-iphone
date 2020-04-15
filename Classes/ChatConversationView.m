@@ -67,6 +67,7 @@
 		_chatRoom = NULL;
 		_chatRoomCbs = NULL;
         securityDialog = NULL;
+		isOneToOne = TRUE;
 		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -227,6 +228,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// force offset recomputing
 	[_messageField refreshHeight];
+	LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
+	if (peerAddr) {
+		_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+		isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+	}
 	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
@@ -268,8 +274,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self callUpdateEvent:nil];
 	PhoneMainView.instance.currentRoom = _chatRoom;
-	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
+	if (isOneToOne) {
 		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
@@ -290,8 +295,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)configureMessageField {
-	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
+	if (isOneToOne) {
 		_messageField.editable = TRUE;
 		_pictureButton.enabled = TRUE;
 		_messageView.userInteractionEnabled = TRUE;
@@ -372,6 +376,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
         if (peerAddr) {
             _chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+			isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
         }
         [self configureForRoom:self.editing];
         if (_chatRoom && _markAsRead) {
@@ -533,15 +538,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	BOOL isOneToOneChat = _chatRoom && (linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne);
-	_infoButton.hidden = (isOneToOneChat|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
+	_infoButton.hidden = (isOneToOne|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
 }
 
 - (void)updateParticipantLabel {
-	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
     CGRect frame = _addressLabel.frame;
-	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
+	if (isOneToOne) {
 		_particpantsLabel.hidden = TRUE;
         frame.origin.y = (_topBar.frame.size.height - _addressLabel.frame.size.height)/2;
 	} else {
@@ -648,8 +651,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         for (i = 0; i < [_imagesArray count] - 1; ++i) {
             [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue];
         }
-        BOOL isOneToOneChat = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
-        if (isOneToOneChat) {
+        if (isOneToOne) {
             [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue];
             if (![[self.messageField text] isEqualToString:@""]) {
                 [self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil];

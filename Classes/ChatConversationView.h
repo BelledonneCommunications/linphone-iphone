@@ -54,6 +54,7 @@
 	BOOL composingVisible;
     UIConfirmationDialog *securityDialog;
     UIRefreshControl *refreshControl;
+	BOOL isOneToOne;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
