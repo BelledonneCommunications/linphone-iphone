@@ -203,10 +203,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	if (_chatRoom && _chatRoomCbs) {
-		linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
-		_chatRoomCbs = NULL;
-	}
+	[self removeCallBacks];
 
 	[_messageField resignFirstResponder];
 
@@ -217,8 +214,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)didEnterBackground:(NSNotification *)notif {
-    linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
-    _chatRoomCbs = NULL;
+	[self removeCallBacks];
+}
+
+- (void)removeCallBacks {
+	if (_chatRoom && _chatRoomCbs) {
+		linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
+		_chatRoomCbs = NULL;
+	}
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
