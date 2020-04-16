@@ -172,6 +172,14 @@ import AVFoundation
 
 	// From ios13, display the callkit view when the notification is received.
 	@objc func displayIncomingCall(callId: String) {
+		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
+		if (uuid != nil) {
+			// This call was declined.
+			providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: false)
+			providerDelegate.endCallNotExist(uuid: uuid!, timeout: .now())
+			return
+		}
+
 		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call != nil) {
 			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
@@ -355,6 +363,22 @@ import AVFoundation
 		}
 		if (UIApplication.shared.applicationState == .background) {
 			CoreManager.instance().stopLinphoneCore()
+		}
+	}
+
+	@objc func markCallAsDeclined(callId: String) {
+		if !CallManager.callKitEnabled() {
+			return
+		}
+
+		let uuid = providerDelegate.uuids["\(callId)"]
+		if (uuid == nil) {
+			Log.directLog(BCTBX_LOG_MESSAGE, text: "Mark call \(callId) as declined.")
+			let uuid = UUID()
+			providerDelegate.uuids.updateValue(uuid, forKey: callId)
+		} else {
+			// end call
+			providerDelegate.endCallNotExist(uuid: uuid!, timeout: .now())
 		}
 	}
 }
