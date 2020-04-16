@@ -89,14 +89,7 @@ class ProviderDelegate: NSObject {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
-				DispatchQueue.main.asyncAfter(deadline: .now() + 60) {// in 30 second
-					if (CallManager.instance().lc?.callsNb == 0 && !CallManager.instance().providerDelegate.callInfos.isEmpty ) {
-						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: end call which does not exist.")
-						for suuid in CallManager.instance().providerDelegate.uuids.values {
-							CallManager.instance().providerDelegate.endCallForError(uuid: suuid, endedAt: .init(), endedReason: .declinedElsewhere)
-						}
-					}
-				}
+				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 60)
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
 				if (call == nil) {
@@ -129,8 +122,13 @@ class ProviderDelegate: NSObject {
 		provider.reportOutgoingCall(with: uuid, connectedAt: nil)
 	}
 
-	func endCallForError(uuid: UUID, endedAt: Date?, endedReason: CXCallEndedReason) {
-		provider.reportCall(with: uuid, endedAt: endedAt, reason: endedReason)
+	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
+		DispatchQueue.main.asyncAfter(deadline: timeout) {
+			if (CallManager.instance().lc?.callsNb == 0) {
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: terminate call \(uuid) which does not exist.")
+				CallManager.instance().providerDelegate.provider.reportCall(with: uuid, endedAt: .init(), reason: .declinedElsewhere)
+			}
+		}
 	}
 }
 
@@ -166,6 +164,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
 			callInfo?.accepted = true
 			callInfos.updateValue(callInfo!, forKey: uuid)
+			CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 10)
 		} else {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		}
