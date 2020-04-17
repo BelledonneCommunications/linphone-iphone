@@ -176,7 +176,7 @@ import AVFoundation
 		if (uuid != nil) {
 			// This call was declined.
 			providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: false)
-			providerDelegate.endCallNotExist(uuid: uuid!, timeout: .now())
+			providerDelegate.endCall(uuid: uuid!)
 			return
 		}
 
@@ -378,7 +378,7 @@ import AVFoundation
 			providerDelegate.uuids.updateValue(uuid, forKey: callId)
 		} else {
 			// end call
-			providerDelegate.endCallNotExist(uuid: uuid!, timeout: .now())
+			providerDelegate.endCall(uuid: uuid!)
 		}
 	}
 }

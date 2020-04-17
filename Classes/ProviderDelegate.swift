@@ -121,12 +121,18 @@ class ProviderDelegate: NSObject {
 	func reportOutgoingCallConnected(uuid:UUID) {
 		provider.reportOutgoingCall(with: uuid, connectedAt: nil)
 	}
+	
+	func endCall(uuid: UUID) {
+		provider.reportCall(with: uuid, endedAt: .init(), reason: .declinedElsewhere)
+	}
 
 	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
 		DispatchQueue.main.asyncAfter(deadline: timeout) {
-			if (CallManager.instance().lc?.callsNb == 0) {
-				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: terminate call \(uuid) which does not exist.")
-				CallManager.instance().providerDelegate.provider.reportCall(with: uuid, endedAt: .init(), reason: .declinedElsewhere)
+			let callId = CallManager.instance().providerDelegate.callInfos[uuid]?.callId
+			let call = CallManager.instance().callByCallId(callId: callId)
+			if (call == nil) {
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: terminate call with call-id: \(String(describing: callId)) and UUID: \(uuid) which does not exist.")
+				CallManager.instance().providerDelegate.endCall(uuid: uuid)
 			}
 		}
 	}
