@@ -19,7 +19,7 @@
 
 import UserNotifications
 import linphonesw
-#if USE_CRASHLYTHICS
+#if USE_CRASHLYTICS
 import Firebase
 #endif
 
@@ -46,7 +46,7 @@ class NotificationService: UNNotificationServiceExtension {
 	
 	override init() {
 		super.init()
-#if USE_CRASHLYTHICS
+#if USE_CRASHLYTICS
 		FirebaseApp.configure()
 #endif
 	}

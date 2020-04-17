@@ -108,16 +108,16 @@ See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Co
 
 - Then open linphone.xcworkspace with Xcode to build and run the app.
 
-# Enabling crashlythics
+# Enabling crashlytics
 
-We've integrated Crashlythics into liphone-iphone, which can automatically send crash reports. It is disabled by default.
+We've integrated Crashlytics into liphone-iphone, which can automatically send crash reports. It is disabled by default.
 To activate it:
 
 - Replace the GoogleService-Info.plist for this project with yours (specific to your crashlytics account).
 
 - Rebuild the project:
 ```
-    USE_CRASHLYTHICS=true pod install
+    USE_CRASHLYTICS=true pod install
 ```
 
 - Then open `linphone.xcworkspace` with Xcode to build and run the app.

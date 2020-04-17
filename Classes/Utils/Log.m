@@ -21,7 +21,7 @@
 #import <asl.h>
 #import <os/log.h>
 
-#ifdef USE_CRASHLYTHICS
+#ifdef USE_CRASHLYTICS
 @import FirebaseCrashlytics;
 #endif
 
@@ -106,14 +106,14 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 		for (int i = 0; i < myWords.count; i++) {
 			NSString *tab = i > 0 ? @"\t" : @"";
 			if (((NSString *)myWords[i]).length > 0) {
-#ifdef USE_CRASHLYTHICS
+#ifdef USE_CRASHLYTICS
 			[[FIRCrashlytics crashlytics] logWithFormat:@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]];
 #endif
 			NSLog(@"[%@] %@%@", lvl, tab, (NSString *)myWords[i]);
 			}
 		}
 	} else {
-#ifdef USE_CRASHLYTHICS
+#ifdef USE_CRASHLYTICS
 		[[FIRCrashlytics crashlytics] logWithFormat:@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]];
 #endif
 		NSLog(@"[%@] %@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);

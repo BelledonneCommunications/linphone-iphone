@@ -4024,7 +4024,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTHICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
+			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
 		};
 		6112A01A243B2CCF00DBD5F5 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4044,7 +4044,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTHICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
+			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
 		};
 		614D0A1821E77F5300C43EDF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4063,7 +4063,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTHICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n\n\n";
+			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n\n\n";
 		};
 		63DCC71D1A07B08E00916627 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

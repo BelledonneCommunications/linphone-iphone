@@ -21,7 +21,7 @@ import UIKit
 import UserNotifications
 import UserNotificationsUI
 import linphonesw
-#if USE_CRASHLYTHICS
+#if USE_CRASHLYTICS
 import Firebase
 #endif
 
@@ -42,7 +42,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any required interface initialization here.
-#if USE_CRASHLYTHICS
+#if USE_CRASHLYTICS
 		FirebaseApp.configure()
 #endif
         NSLog("[msgNotificationContent] start msgNotificationContent extension")

@@ -10,7 +10,7 @@ def basic_pods
 		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # local sdk
 	end
 
-	crashlythics
+	crashlytics
 end
 
 def ext_pods
@@ -20,11 +20,11 @@ def ext_pods
 		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # local sdk
 	end
 
-	crashlythics
+	crashlytics
 end
 
-def crashlythics
-	if not ENV['USE_CRASHLYTHICS'].nil?
+def crashlytics
+	if not ENV['USE_CRASHLYTICS'].nil?
 		pod 'Firebase/Analytics'
 		pod 'Firebase/Crashlytics'
 	end
@@ -80,7 +80,7 @@ post_install do |installer|
 	app_project = Xcodeproj::Project.open(Dir.glob("*.xcodeproj")[0])
 	app_project.native_targets.each do |target|
 		target.build_configurations.each do |config|
-			if ENV['USE_CRASHLYTHICS'].nil?
+			if ENV['USE_CRASHLYTICS'].nil?
 				if config.name == "Debug" then
 					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
 				else
@@ -90,14 +90,14 @@ post_install do |installer|
 					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited)'
 				end
 			else
-				# activate crashlythics
+				# activate crashlytics
 				if config.name == "Debug" then
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTHICS=1'
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTICS=1'
 				else
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTHICS=1'
+					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTICS=1'
 				end
 				if target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
-					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -DUSE_CRASHLYTHICS'
+					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -DUSE_CRASHLYTICS'
 				end
 			end
 

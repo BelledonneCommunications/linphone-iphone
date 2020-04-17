@@ -18,7 +18,7 @@
 */
 
 import linphonesw
-#if USE_CRASHLYTHICS
+#if USE_CRASHLYTICS
 import Firebase
 #endif
 
@@ -66,7 +66,7 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 			level = "unknown"
 		}
 
-#if USE_CRASHLYTHICS
+#if USE_CRASHLYTICS
 		Crashlytics.crashlytics().log("\(level) [\(domain)] \(message)\n")
 #endif
 		NSLog("\(level) [\(domain)] \(message)\n")
