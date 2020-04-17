@@ -1481,77 +1481,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	     [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 }
 
-- (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId {
-	if (!callId)
-		return;
-
-	if ([callId isEqualToString:@""])
-		return;
-
-	if ([loc_key isEqualToString:@"IM_MSG"]) {
-		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
-		pushBgTaskMsg = 0;
-		pushBgTaskMsg = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-				if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-					LOGW(@"Incomming message with call-id [%@] couldn't be received", callId);
-					UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-					content.title = NSLocalizedString(@"Message received", nil);
-					content.body = NSLocalizedString(@"You have received a message.", nil);
-					content.categoryIdentifier = @"push_msg";
-
-					UNNotificationRequest *req =
-					[UNNotificationRequest requestWithIdentifier:@"push_msg" content:content trigger:NULL];
-					[[UNUserNotificationCenter currentNotificationCenter]
-					 addNotificationRequest:req
-					 withCompletionHandler:^(NSError *_Nullable error) {
-							// Enable or disable features based on authorization.
-							if (error) {
-								LOGD(@"Error while adding notification request :");
-								LOGD(error.description);
-							}
-						}];
-				}
-				for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
-					[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
-				}
-				[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
-				pushBgTaskMsg = 0;
-			}];
-		LOGI(@"Message long running task started for call-id [%@], remaining [%@] because a push has been received",
-		     callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
-	} else if ([loc_key isEqualToString:@"IC_MSG"]) {
-		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
-		pushBgTaskCall = 0;
-		pushBgTaskCall = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-				//does not make sens to notify user as we have no information on this missed called
-				for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
-					[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
-				}
-				[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
-				pushBgTaskCall = 0;
-			}];
-		LOGI(@"Call long running task started for call-id [%@], remaining [%@] because a push has been received",
-		     callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
-	} else if ([loc_key isEqualToString:@"IC_SIL"]) {
-		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
-		pushBgTaskRefer = 0;
-		pushBgTaskRefer = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-				// Could be or not an error since the app doesn't know when to end the background task for a REFER
-				// TODO: Manage pushes in the SDK
-				if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
-					LOGI(@"Incomming refer long running task with call-id [%@] has expired", callId);
-
-				for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
-					[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
-				}
-				[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
-				pushBgTaskRefer = 0;
-			}];
-		LOGI(@"Refer long running task started for call-id [%@], remaining [%@] because a push has been received",
-		     callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
-	}
-}
-
 - (void)enableProxyPublish:(BOOL)enabled {
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOn || !linphone_core_get_default_friend_list(LC)) {
 		LOGW(@"Not changing presence configuration because linphone core not ready yet");
@@ -1978,7 +1907,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		NSString *teamId = @"ABCD1234";
 
         NSString *params = [NSString
-                    stringWithFormat:@"pn-provider=apns%@;pn-prid=%@;pn-param=%@.%@.%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
+                    stringWithFormat:@"pn-provider=apns%@;pn-prid=%@;pn-param=%@.%@.%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-groupchat-str=GC_MSG;pn-"
                     @"call-snd=%@;pn-msg-snd=msg.caf%@;pn-silent=1",
                     APPMODE_SUFFIX, token, teamId, [[NSBundle mainBundle] bundleIdentifier], services, ring, timeout];
 

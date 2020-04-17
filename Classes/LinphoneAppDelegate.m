@@ -484,11 +484,6 @@
 	return TRUE;
 }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
-	[self processRemoteNotification:userInfo];
-}
-
 - (LinphoneChatRoom *)findChatRoomForContact:(NSString *)contact {
 	const MSList *rooms = linphone_core_get_chat_rooms(LC);
 	const char *from = [contact UTF8String];

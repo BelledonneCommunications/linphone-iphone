@@ -67,7 +67,7 @@ class NotificationService: UNNotificationServiceExtension {
 				if let chatRoom = chatRoom {
 					stopCore()
 					NotificationService.log.message(msg: "chat room invite received")
-					bestAttemptContent.title = NSLocalizedString("You have been added to a chat room", comment: "")
+					bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 					if (chatRoom.hasCapability(mask:ChatRoomCapabilities.OneToOne.rawValue)) {
 						if (chatRoom.peerAddress?.displayName.isEmpty != true) {
 							bestAttemptContent.body = chatRoom.peerAddress!.displayName
@@ -131,12 +131,12 @@ class NotificationService: UNNotificationServiceExtension {
             bestAttemptContent.categoryIdentifier = "app_active"
 
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
-				bestAttemptContent.title = NSLocalizedString("You have been added to a chat room", comment: "")
+				bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 				bestAttemptContent.body = ""
 				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
 			} else {
 				bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
-				bestAttemptContent.body = NSLocalizedString("You have received a message.", comment: "")
+				bestAttemptContent.body = NSLocalizedString("IM_MSG", comment: "")
 			}
             contentHandler(bestAttemptContent)
         }
