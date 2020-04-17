@@ -117,15 +117,6 @@ import AVFoundation
 		return false
 	}
 
-	@objc static func incomingCallMustBeDisplayed() -> Bool {
-		if #available(iOS 13.0, *) {
-			if UIApplication.shared.applicationState == .background && CallManager.callKitEnabled() && CallManager.instance().lc?.callsNb ?? 0 < 2 {
-				return true
-			}
-		}
-		return false
-	}
-
 	@objc func allowSpeaker() -> Bool {
 		if (UIDevice.current.userInterfaceIdiom == .pad) {
 			// For now, ipad support only speaker.
