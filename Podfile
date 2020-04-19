@@ -3,21 +3,11 @@ platform :ios, '9.0'
 source "https://gitlab.linphone.org/BC/public/podspec.git"
 source "https://github.com/CocoaPods/Specs.git"
 
-def basic_pods
+def all_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/basic-frameworks', '~> 4.4.0-alpha'
+		pod 'linphone-sdk', '~> 4.4.0-alpha'
 	else
-		pod 'linphone-sdk/basic-frameworks', :path => ENV['PODFILE_PATH']  # local sdk
-	end
-
-	crashlytics
-end
-
-def ext_pods
-	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk/app-extension-swift', '~> 4.4.0-alpha'
-		else
-		pod 'linphone-sdk/app-extension-swift', :path => ENV['PODFILE_PATH']  # local sdk
+		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # local sdk
 	end
 
 	crashlytics
@@ -35,17 +25,8 @@ target 'linphone' do
   use_frameworks!
 
   # Pods for linphone
-  basic_pods
-	ext_pods
 	pod 'SVProgressHUD'
-
-end
-
-target 'linphoneExtension' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for linphoneExtension
+	all_pods
 
 end
 
@@ -54,7 +35,7 @@ target 'msgNotificationService' do
   use_frameworks!
 
   # Pods for messagesNotification
-  ext_pods
+  all_pods
 
 end
 
@@ -63,7 +44,7 @@ target 'msgNotificationContent' do
   use_frameworks!
 
   # Pods for messagesNotification
-  ext_pods
+  all_pods
 
 end
 
@@ -80,33 +61,33 @@ post_install do |installer|
 	app_project = Xcodeproj::Project.open(Dir.glob("*.xcodeproj")[0])
 	app_project.native_targets.each do |target|
 		target.build_configurations.each do |config|
-			if ENV['USE_CRASHLYTICS'].nil?
-				if config.name == "Debug" then
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
-				else
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited)'
-				end
-				if target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
+			if target.name == "linphone" || target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
+				if ENV['USE_CRASHLYTICS'].nil?
+					if config.name == "Debug" then
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
+						else
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited)'
+					end
 					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited)'
-				end
-			else
-				# activate crashlytics
-				if config.name == "Debug" then
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTICS=1'
 				else
-					config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTICS=1'
-				end
-				if target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
+					# activate crashlytics
+					if config.name == "Debug" then
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTICS=1'
+					else
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTICS=1'
+					end
 					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -DUSE_CRASHLYTICS'
 				end
 			end
 
-			config.build_settings['OTHER_CFLAGS'] = '-DBCTBX_LOG_DOMAIN=\"ios\"',
+			if target.name == "linphone"
+				config.build_settings['OTHER_CFLAGS'] = '-DBCTBX_LOG_DOMAIN=\"ios\"',
 																							'-DCHECK_VERSION_UPDATE=FALSE',
 																							'-DENABLE_QRCODE=TRUE',
 																							'-DENABLE_SMS_INVITE=TRUE',
 																							'$(inherited)',
 																							"-DLINPHONE_SDK_VERSION=\\\"#{$linphone_sdk_version}\\\""
+			end
 
 			app_project.save
 		end
