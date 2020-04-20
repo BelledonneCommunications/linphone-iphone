@@ -217,6 +217,8 @@
 		linphone_friend_list_update_subscriptions(fl);
 		lists = lists->next;
 	}
+	[self dumpContactsDisplayNamesToUserDefaults];
+
 	[NSNotificationCenter.defaultCenter
 	 postNotificationName:kLinphoneAddressBookUpdate
 	 object:self];
@@ -349,6 +351,8 @@
 }
 
 - (BOOL)deleteContact:(Contact *)contact {
+	[self removeContactFromUserDefaults:contact];
+
 	CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
 	NSArray *keysToFetch = @[
 							 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
@@ -488,4 +492,32 @@
 		lists = lists->next;
 	}
 }
+
+- (void)dumpContactsDisplayNamesToUserDefaults {
+	LOGD(@"dumpContactsDisplayNamesToUserDefaults");
+	__block NSMutableDictionary *displayNames = [[NSMutableDictionary dictionary] init];
+	[_addressBookMap enumerateKeysAndObjectsUsingBlock:^(NSString *name, Contact *contact, BOOL *stop) {
+		LOGD(@"add %s to userdefaults", name.UTF8String);
+		[displayNames setObject:[contact displayName] forKey:name];
+	}];
+
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	[defaults setObject:displayNames forKey:@"addressBook"];
+}
+
+- (void)removeContactFromUserDefaults:(Contact *)contact {
+	LOGD(@"removeContactFromUserDefaults contact: [%p]", contact);
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	NSMutableDictionary *displayNames = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"addressBook"]];
+	if (displayNames == nil) return;
+
+	NSMutableArray *addresses = contact.sipAddresses;
+	for (id addr in addresses) {
+		[displayNames removeObjectForKey:addr];
+		LOGD(@"removed %s from userdefaults addressBook", ((NSString *)addr).UTF8String);
+	}
+
+	[defaults setObject:displayNames forKey:@"addressBook"];
+}
+
 @end

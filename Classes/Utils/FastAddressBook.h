@@ -35,6 +35,9 @@
 - (BOOL)saveContact:(Contact *)contact;
 - (BOOL)saveCNContact:(CNContact *)CNContact contact:(Contact *)Contact;
 
+- (void)dumpContactsDisplayNamesToUserDefaults;
+- (void)removeContactFromUserDefaults:(Contact *)contact;
+
 + (BOOL)isAuthorized;
 
 // TOOLS

@@ -144,12 +144,13 @@ class NotificationService: UNNotificationServiceExtension {
 
 	func parseMessage(message: PushNotificationMessage) -> MsgData? {
 		let content = message.isText ? message.textContent : "🗻"
-		let from = message.fromAddr?.username
+		let fromAddr = message.fromAddr?.username
 		let callId = message.callId
 		let localUri = message.localAddr?.asStringUriOnly()
 		let peerUri = message.peerAddr?.asStringUriOnly()
+		let from = (message.fromDisplayName != "") ? message.fromDisplayName : fromAddr
 
-		var msgData = MsgData(from: from, body: "", subtitle: "", callId:callId, localAddr: localUri, peerAddr:peerUri)
+		var msgData = MsgData(from: fromAddr, body: "", subtitle: "", callId:callId, localAddr: localUri, peerAddr:peerUri)
 
 		if let showMsg = lc!.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
 			if let subject = message.subject as String?, subject != "" {
