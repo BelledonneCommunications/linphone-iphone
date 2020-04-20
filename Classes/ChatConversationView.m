@@ -226,6 +226,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		return;
+	}
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
 
