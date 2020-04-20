@@ -144,24 +144,31 @@ class NotificationService: UNNotificationServiceExtension {
 
 	func parseMessage(message: PushNotificationMessage) -> MsgData? {
 		let content = message.isText ? message.textContent : "🗻"
-		let from = message.fromAddr?.username
+		let fromAddr = message.fromAddr?.username
 		let callId = message.callId
 		let localUri = message.localAddr?.asStringUriOnly()
 		let peerUri = message.peerAddr?.asStringUriOnly()
+		let from: String
+		if let fromDisplayName = getDisplayNameFromSipAddress(sipAddr: message.fromAddr?.asStringUriOnly()) {
+			from = fromDisplayName
+		} else {
+			from = fromAddr!
+		}
 
-		var msgData = MsgData(from: from, body: "", subtitle: "", callId:callId, localAddr: localUri, peerAddr:peerUri)
+
+		var msgData = MsgData(from: fromAddr, body: "", subtitle: "", callId:callId, localAddr: localUri, peerAddr:peerUri)
 
 		if let showMsg = lc!.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
 			if let subject = message.subject as String?, subject != "" {
 				msgData.subtitle = subject
-				msgData.body = from! + " : " + content
+				msgData.body = from + " : " + content
 			} else {
 				msgData.subtitle = from
 				msgData.body = content
 			}
 		} else {
 			if let subject = message.subject as String?, subject != "" {
-				msgData.body = subject + " : " + from!
+				msgData.body = subject + " : " + from
 			} else {
 				msgData.body = from
 			}
@@ -198,4 +205,29 @@ class NotificationService: UNNotificationServiceExtension {
 
         return count
     }
+
+	func getDisplayNameFromSipAddress(sipAddr: String?) -> String? {
+		if let sipAddr = sipAddr {
+			NotificationService.log.message(msg: "looking for display name for \(sipAddr)")
+
+			if (sipAddr == "") { return nil }
+
+			let defaults = UserDefaults.init(suiteName: APP_GROUP_ID)
+			let addressBook = defaults?.dictionary(forKey: "addressBook")
+
+			if (addressBook == nil) {
+				NotificationService.log.message(msg: "address book not found in user defaults")
+				return nil
+			}
+
+			if let displayName = addressBook?[sipAddr] as? String {
+				NotificationService.log.message(msg: "display name for \(sipAddr): \(displayName)")
+				return displayName
+			} else {
+				NotificationService.log.message(msg: "address book not found in user defaults")
+				return nil
+			}
+		}
+		return nil
+	}
 }
