@@ -510,7 +510,7 @@
 		LinphoneAddress *addr = linphone_address_new(name.UTF8String);
 
 		if (linphone_proxy_config_is_phone_number(cfg, linphone_address_get_username(addr))) {
-			if (oldDisplayNames[name] != nil && oldDisplayNames[name] != [contact displayName]) {
+			if (oldDisplayNames[name] != nil && [FastAddressBook isSipURI:oldDisplayNames[name]]) {
 				NSString *addrForTel = [NSString stringWithString:oldDisplayNames[name]];
 				/* we keep the link between tel number and sip addr to have the information quickly.
 				 If we don't do that, between the startup and presence callback we don't have the dispay name for this address */
@@ -533,6 +533,23 @@
 	NSMutableDictionary *displayNames = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"addressBook"]];
 	if (displayNames == nil) return;
 
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(LC);
+	for (NSString *phone in contact.phones) {
+		char *normalizedPhone = cfg? linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String) : nil;
+		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
+		if (phone != NULL) {
+			if ([FastAddressBook isSipURI:displayNames[name]]) {
+				LOGD(@"removed %s from userdefaults addressBook", ((NSString *)displayNames[name]).UTF8String);
+				[displayNames removeObjectForKey:displayNames[name]];
+			}
+			[displayNames removeObjectForKey:name];
+			LOGD(@"removed %s from userdefaults addressBook", ((NSString *)name).UTF8String);
+		}
+
+		if (normalizedPhone)
+			ms_free(normalizedPhone);
+	}
+
 	NSMutableArray *addresses = contact.sipAddresses;
 	for (id addr in addresses) {
 		[displayNames removeObjectForKey:addr];
@@ -543,7 +560,6 @@
 }
 
 - (void)onPresenceChanged:(NSNotification *)k {
-	LinphoneFriend *f = [[k.userInfo valueForKey:@"friend"] pointerValue];
 	NSString *uri = [NSString stringWithUTF8String:[[k.userInfo valueForKey:@"uri"] pointerValue]];
 	if (![FastAddressBook isSipURI:uri]) {
 		LOGD(@"presence changed for tel [%s]", uri.UTF8String);

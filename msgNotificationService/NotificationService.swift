@@ -216,7 +216,7 @@ class NotificationService: UNNotificationServiceExtension {
 			let addressBook = defaults?.dictionary(forKey: "addressBook")
 
 			if (addressBook == nil) {
-				NotificationService.log.message(msg: "address book not found in user defaults")
+				NotificationService.log.message(msg: "address book not found in userDefaults")
 				return nil
 			}
 
@@ -224,7 +224,7 @@ class NotificationService: UNNotificationServiceExtension {
 				NotificationService.log.message(msg: "display name for \(sipAddr): \(displayName)")
 				return displayName
 			} else {
-				NotificationService.log.message(msg: "address book not found in user defaults")
+				NotificationService.log.message(msg: "display name for \(sipAddr) not found in userDefaults")
 				return nil
 			}
 		}
