@@ -858,6 +858,10 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
     }
 }
 
+static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onMessageReceived:lc room:room message:message];
+}
+
 static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
 							    LinphoneChatMessage *message) {
 
@@ -1313,6 +1317,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_registration_state_changed(cbs,linphone_iphone_registration_state);
 	linphone_core_cbs_set_notify_presence_received_for_uri_or_tel(cbs, linphone_iphone_notify_presence_received_for_uri_or_tel);
 	linphone_core_cbs_set_authentication_requested(cbs, linphone_iphone_popup_password_request);
+	linphone_core_cbs_set_message_received(cbs, linphone_iphone_message_received);
 	linphone_core_cbs_set_message_received_unable_decrypt(cbs, linphone_iphone_message_received_unable_decrypt);
 	linphone_core_cbs_set_transfer_state_changed(cbs, linphone_iphone_transfer_state_changed);
 	linphone_core_cbs_set_is_composing_received(cbs, linphone_iphone_is_composing_received);
