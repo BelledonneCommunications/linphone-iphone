@@ -498,6 +498,20 @@
 	}
 }
 
+- (void)reloadFriends {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[_addressBookMap enumerateKeysAndObjectsUsingBlock:^(NSString *name, Contact *contact, BOOL *stop) {
+			[contact reloadFriend];
+		}];
+	});
+}
+
+- (void)clearFriends {
+	[_addressBookMap enumerateKeysAndObjectsUsingBlock:^(NSString *name, Contact *contact, BOOL *stop) {
+		[contact clearFriend];
+	}];
+}
+
 - (void)dumpContactsDisplayNamesToUserDefaults {
 	LOGD(@"dumpContactsDisplayNamesToUserDefaults");
 	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];

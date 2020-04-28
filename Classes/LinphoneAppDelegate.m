@@ -58,12 +58,13 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	[LinphoneManager.instance enterBackgroundMode];
-  
+	[LinphoneManager.instance.fastAddressBook clearFriends];
 	[CoreManager.instance stopLinphoneCore];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     [LinphoneManager.instance startLinphoneCore];
+    [LinphoneManager.instance.fastAddressBook reloadFriends];
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 }
 
@@ -100,9 +101,9 @@
 		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
-                [instance.fastAddressBook fetchContactsInBackGroundThread];
-                instance.fastAddressBook.needToUpdate = FALSE;
-        }
+		[instance.fastAddressBook fetchContactsInBackGroundThread];
+		instance.fastAddressBook.needToUpdate = FALSE;
+	}
 
         LinphoneCall *call = linphone_core_get_current_call(LC);
 

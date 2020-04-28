@@ -43,6 +43,8 @@
 
 - (instancetype)initWithCNContact:(CNContact *)contact;
 - (instancetype)initWithFriend:(LinphoneFriend *) friend;
+- (void)reloadFriend;
+- (void)clearFriend;
 
 - (BOOL)setSipAddress:(NSString *)sip atIndex:(NSInteger)index;
 - (BOOL)setEmail:(NSString *)email atIndex:(NSInteger)index;
