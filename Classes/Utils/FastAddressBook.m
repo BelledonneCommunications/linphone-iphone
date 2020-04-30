@@ -203,30 +203,30 @@
 			}];
 		}
 
-	}];
-	// load Linphone friends
-	const MSList *lists = linphone_core_get_friends_lists(LC);
-	while (lists) {
-		LinphoneFriendList *fl = lists->data;
-		const MSList *friends = linphone_friend_list_get_friends(fl);
-		while (friends) {
-			LinphoneFriend *f = friends->data;
-			// only append friends that are not native contacts (already added
-			// above)
-			if (linphone_friend_get_ref_key(f) == NULL) {
-				Contact *contact = [[Contact alloc] initWithFriend:f];
-				[self registerAddrsFor:contact];
+		// load Linphone friends
+		const MSList *lists = linphone_core_get_friends_lists(LC);
+		while (lists) {
+			LinphoneFriendList *fl = lists->data;
+			const MSList *friends = linphone_friend_list_get_friends(fl);
+			while (friends) {
+				LinphoneFriend *f = friends->data;
+				// only append friends that are not native contacts (already added
+				// above)
+				if (linphone_friend_get_ref_key(f) == NULL) {
+					Contact *contact = [[Contact alloc] initWithFriend:f];
+					[self registerAddrsFor:contact];
+				}
+				friends = friends->next;
 			}
-			friends = friends->next;
+			linphone_friend_list_update_subscriptions(fl);
+			lists = lists->next;
 		}
-		linphone_friend_list_update_subscriptions(fl);
-		lists = lists->next;
-	}
-	[self dumpContactsDisplayNamesToUserDefaults];
+		[self dumpContactsDisplayNamesToUserDefaults];
 
-	[NSNotificationCenter.defaultCenter
-	 postNotificationName:kLinphoneAddressBookUpdate
-	 object:self];
+		[NSNotificationCenter.defaultCenter
+		 postNotificationName:kLinphoneAddressBookUpdate
+		 object:self];
+	}];
 }
 
 -(void) updateAddressBook:(NSNotification*) notif {
