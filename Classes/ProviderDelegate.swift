@@ -89,8 +89,8 @@ class ProviderDelegate: NSObject {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
-				let latency = ConfigManager.instance().lpConfigIntForKey(key: "max_call_received_latency", defaultValue: 20000000000)
-				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .init(uptimeNanoseconds: UInt64(latency)))
+				let latency = ConfigManager.instance().lpConfigIntForKey(key: "max_call_received_latency", defaultValue: 20)
+				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .init(uptimeNanoseconds: UInt64(latency * 1000000000)))
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
 				if (call == nil) {
