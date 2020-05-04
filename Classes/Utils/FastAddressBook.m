@@ -520,22 +520,26 @@
 
 	__block NSMutableDictionary *displayNames = [[NSMutableDictionary dictionary] init];
 	[_addressBookMap enumerateKeysAndObjectsUsingBlock:^(NSString *name, Contact *contact, BOOL *stop) {
-		NSString *key = name;
-		LinphoneAddress *addr = linphone_address_new(name.UTF8String);
+		if ([FastAddressBook isSipURIValid:name]) {
+			NSString *key = name;
+			LinphoneAddress *addr = linphone_address_new(name.UTF8String);
 
-		if (linphone_proxy_config_is_phone_number(cfg, linphone_address_get_username(addr))) {
-			if (oldDisplayNames[name] != nil && [FastAddressBook isSipURI:oldDisplayNames[name]]) {
-				NSString *addrForTel = [NSString stringWithString:oldDisplayNames[name]];
-				/* we keep the link between tel number and sip addr to have the information quickly.
-				 If we don't do that, between the startup and presence callback we don't have the dispay name for this address */
-				LOGD(@"add %s -> %s link to userdefaults", name.UTF8String, addrForTel.UTF8String);
-				[displayNames setObject:addrForTel forKey:name];
-				key = addrForTel;
+			if (addr && linphone_proxy_config_is_phone_number(cfg, linphone_address_get_username(addr))) {
+				if (oldDisplayNames[name] != nil && [FastAddressBook isSipURI:oldDisplayNames[name]]) {
+					NSString *addrForTel = [NSString stringWithString:oldDisplayNames[name]];
+					/* we keep the link between tel number and sip addr to have the information quickly.
+					 If we don't do that, between the startup and presence callback we don't have the dispay name for this address */
+					LOGD(@"add %s -> %s link to userdefaults", name.UTF8String, addrForTel.UTF8String);
+					[displayNames setObject:addrForTel forKey:name];
+					key = addrForTel;
+				}
 			}
+			LOGD(@"add %s to userdefaults", key.UTF8String);
+			[displayNames setObject:[contact displayName] forKey:key];
+			linphone_address_unref(addr);
+		} else {
+			LOGD(@"cannot add %s to userdefaults: bad sip address", name.UTF8String);
 		}
-		LOGD(@"add %s to userdefaults", key.UTF8String);
-		[displayNames setObject:[contact displayName] forKey:key];
-		linphone_address_unref(addr);
 	}];
 
 	[defaults setObject:displayNames forKey:@"addressBook"];
