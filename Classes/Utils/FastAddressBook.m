@@ -579,9 +579,20 @@
 
 - (void)onPresenceChanged:(NSNotification *)k {
 	NSString *uri = [NSString stringWithUTF8String:[[k.userInfo valueForKey:@"uri"] pointerValue]];
-	if (![FastAddressBook isSipURI:uri]) {
-		LOGD(@"presence changed for tel [%s]", uri.UTF8String);
-		NSString *telAddr = [FastAddressBook normalizeSipURI:uri];
+	NSString *telAddr;
+
+	if ([FastAddressBook isSipURI:uri]) {
+		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+		if (linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC), linphone_address_get_username(addr))) {
+			telAddr = uri;
+		}
+		linphone_address_unref(addr);
+	} else {
+		telAddr = [FastAddressBook normalizeSipURI:uri];
+	}
+
+	if (telAddr) {
+		LOGD(@"presence changed for tel [%s]", telAddr.UTF8String);
 
 		NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
 		NSMutableDictionary *displayNames = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"addressBook"]];
