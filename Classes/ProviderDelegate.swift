@@ -89,8 +89,7 @@ class ProviderDelegate: NSObject {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
-				let latency = ConfigManager.instance().lpConfigIntForKey(key: "max_call_received_latency", defaultValue: 20)
-				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .init(uptimeNanoseconds: UInt64(latency * 1000000000)))
+				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 20)
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
 				if (call == nil) {
@@ -282,12 +281,12 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session activated.")
-		CallManager.instance().lc?.audioSessionActivated(actived: true)
+		CallManager.instance().lc?.activateAudioSession(actived: true)
 	}
 
 	func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session deactivated.")
-		CallManager.instance().lc?.audioSessionActivated(actived: false)
+		CallManager.instance().lc?.activateAudioSession(actived: false)
 	}
 }
 
