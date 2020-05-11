@@ -425,6 +425,7 @@ static RootViewManager *rootViewManagerInstance = nil;
         case LinphoneCallReleased:
             if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
                 dispatch_async(dispatch_get_main_queue(), ^{
+					[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 					[CoreManager.instance stopLinphoneCore];
                 });
             }

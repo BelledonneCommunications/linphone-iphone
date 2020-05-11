@@ -63,6 +63,7 @@
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+	LOGI(@"%@", NSStringFromSelector(_cmd));
     [LinphoneManager.instance startLinphoneCore];
     [LinphoneManager.instance.fastAddressBook reloadFriends];
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
