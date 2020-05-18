@@ -602,6 +602,9 @@
 		if (displayName == nil) return;
 
 		const LinphonePresenceModel *m = [[k.userInfo valueForKey:@"presence_model"] pointerValue];
+		if (!linphone_presence_model_get_contact(m)) {
+			return;
+		}
 		NSString *contact = [NSString stringWithUTF8String:linphone_presence_model_get_contact(m)];
 		NSString *sipAddr = [FastAddressBook normalizeSipURI:contact];
 
