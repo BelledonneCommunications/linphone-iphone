@@ -787,20 +787,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	}
 #pragma deploymate pop
 	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
-	const LinphoneAddress *peerAddress = linphone_chat_room_get_peer_address(room);
-	NSString *from = [FastAddressBook displayNameForAddress:peerAddress];
-
-	const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
-	NSString *fromMsg = [FastAddressBook displayNameForAddress:fromAddress];
-
-	char *peer_address = linphone_address_as_string_uri_only(peerAddress);
-	NSString *peer_uri = [NSString stringWithUTF8String:peer_address];
-	ms_free(peer_address);
-
-	const LinphoneAddress *localAddress = linphone_chat_room_get_local_address(room);
-	char *local_address = localAddress? linphone_address_as_string_uri_only(localAddress) : "";
-	NSString *local_uri = [NSString stringWithUTF8String:local_address];
-	ms_free(local_address);
 
 	int index = [(NSNumber *)[_pushDict objectForKey:callID] intValue] - 1;
 	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", callID, index);
@@ -828,6 +814,8 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		return;
     
 	if (hasFile) {
+		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
+			return;
 		[ChatConversationView autoDownload:msg];
 	}
 
@@ -840,22 +828,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	};
 
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
-
-	if (linphone_chat_message_is_outgoing(msg))
-		return;
-
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		if ((PhoneMainView.instance.currentView == ChatsListView.compositeViewDescription))
-			return;
-
-		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
-			return;
-	}
-
-    // don't show msg notif when app in bg during a call : msgNotificationService extension will show a notif
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        return;
-    }
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {

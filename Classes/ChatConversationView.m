@@ -1357,6 +1357,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 		// define a block , not called immediately. To avoid crash when saving photo before PHAuthorizationStatusNotDetermined.
 		void (^block)(void)= ^ {
+			__block LinphoneChatMessage *msg = message;
 			if ([fileType isEqualToString:@"image"]) {
 				// we're finished, save the image and update the message
 				UIImage *image = [UIImage imageWithData:data];
@@ -1388,10 +1389,9 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 							LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
 							[LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
 														   forKey:@"localimage"
-														inMessage:message];
+														inMessage:msg];
 						}
 						[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-						[view.tableController scrollToLastUnread:TRUE];
 					});
 				}];
 			} else if([fileType isEqualToString:@"video"]) {
@@ -1422,10 +1422,9 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 							LOGI(@"video saved to [%@]", [placeHolder localIdentifier]);
 							[LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
 														   forKey:@"localvideo"
-														inMessage:message];
+														inMessage:msg];
 						}
 						[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-						[view.tableController scrollToLastUnread:TRUE];
 					});
 				}];
 			}
@@ -1454,7 +1453,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 				[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
 				//[LinphoneManager setValueInMessageAppData:filePath forKey:@"cachedfile" inMessage:message];
 				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-				[view.tableController scrollToLastUnread:TRUE];
 			});} else {
 				LOGE(@"[Auto download error] can not save the file %@", name);
 			}
