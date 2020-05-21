@@ -1250,6 +1250,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     [_imagesArray removeObjectAtIndex:key];
     [_assetIdsArray removeObjectAtIndex:key];
     [self refreshImageDrawer];
+	[_imagesCollectionView reloadData];
 }
 
 - (void)clearMessageView {
@@ -1273,8 +1274,11 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     } else {
         imgFrame.size.height = 100;
     }
-    [imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
-    [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
+
+	if ([_imagesArray count] > 1) {
+		[imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
+		 [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
+	}
     [imgView setDeleteDelegate:self];
     [imgView setFrame:imgFrame];
     [_sendButton setEnabled:TRUE];
