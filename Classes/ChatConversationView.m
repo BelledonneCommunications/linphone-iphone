@@ -1250,7 +1250,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     [_imagesArray removeObjectAtIndex:key];
     [_assetIdsArray removeObjectAtIndex:key];
     [self refreshImageDrawer];
-	[_imagesCollectionView reloadData];
 }
 
 - (void)clearMessageView {
@@ -1275,10 +1274,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         imgFrame.size.height = 100;
     }
 
-	if ([_imagesArray count] > 1) {
-		[imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
-		 [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
-	}
+	[imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
+	[imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
     [imgView setDeleteDelegate:self];
     [imgView setFrame:imgFrame];
     [_sendButton setEnabled:TRUE];
@@ -1307,21 +1304,16 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         if ([_messageField.text isEqualToString:@""])
             [_sendButton setEnabled:FALSE];
     } else {
-        [UIView animateWithDuration:0
-                              delay:0
-                            options:UIViewAnimationOptionBeginFromCurrentState
-                         animations:^{
-                             // resizing imagesView
-                             CGRect imagesFrame = [_imagesView frame];
-                             imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
-                             imagesFrame.size.height = heightDiff;
-                             [_imagesView setFrame:imagesFrame];
-                             // resizing chatTable
-                             CGRect tableViewFrame = [_tableController.tableView frame];
-                             tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
-                             [_tableController.tableView setFrame:tableViewFrame];
-                         }
-                         completion:^(BOOL result){[_imagesCollectionView reloadData];}];
+		// resizing imagesView
+		CGRect imagesFrame = [_imagesView frame];
+		imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+		imagesFrame.size.height = heightDiff;
+		[_imagesView setFrame:imagesFrame];
+		// resizing chatTable
+		CGRect tableViewFrame = [_tableController.tableView frame];
+		tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
+		[_tableController.tableView setFrame:tableViewFrame];
+		[_imagesCollectionView reloadData];
     }
 }
 
