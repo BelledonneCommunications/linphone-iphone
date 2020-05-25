@@ -57,6 +57,9 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
+	[LinphoneManager.instance enterBackgroundMode];
+	[LinphoneManager.instance.fastAddressBook clearFriends];
+	[CoreManager.instance stopLinphoneCore];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -70,20 +73,17 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 
-	if (call) {
-		/* save call context */
-		LinphoneManager *instance = LinphoneManager.instance;
-		instance->currentCallContextBeforeGoingBackground.call = call;
-		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
+	if (!call)
+		return;
 
-		const LinphoneCallParams *params = linphone_call_get_current_params(call);
-		if (linphone_call_params_video_enabled(params))
-			linphone_call_enable_camera(call, false);
-	}
+	/* save call context */
+	LinphoneManager *instance = LinphoneManager.instance;
+	instance->currentCallContextBeforeGoingBackground.call = call;
+	instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
 
-	[LinphoneManager.instance enterBackgroundMode];
-	[LinphoneManager.instance.fastAddressBook clearFriends];
-	[CoreManager.instance stopLinphoneCore];
+	const LinphoneCallParams *params = linphone_call_get_current_params(call);
+	if (linphone_call_params_video_enabled(params))
+		linphone_call_enable_camera(call, false);
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
