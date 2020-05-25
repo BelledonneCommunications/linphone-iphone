@@ -57,9 +57,11 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	[LinphoneManager.instance enterBackgroundMode];
-	[LinphoneManager.instance.fastAddressBook clearFriends];
-	[CoreManager.instance stopLinphoneCore];
+	if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
+		[LinphoneManager.instance enterBackgroundMode];
+		[LinphoneManager.instance.fastAddressBook clearFriends];
+		[CoreManager.instance stopLinphoneCore];
+	}
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
