@@ -196,18 +196,23 @@
 - (IASKSettingsReader *)settingsReader {
 	IASKSettingsReader *r = [super settingsReader];
 	NSMutableArray *dataSource = [NSMutableArray arrayWithArray:[r dataSource]];
-	for (int i = 0; i < [dataSource count]; ++i) {
-		NSMutableArray *specifiers = [NSMutableArray arrayWithArray:[dataSource objectAtIndex:i]];
-		for (int j = 0; j < [specifiers count]; ++j) {
-			id sp = [specifiers objectAtIndex:j];
-			if ([sp isKindOfClass:[IASKSpecifier class]]) {
-				sp = [SettingsView filterSpecifier:sp];
+	if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+		for (int i = 0; i < [dataSource count]; ++i) {
+			NSMutableArray *specifiers = [NSMutableArray arrayWithArray:[dataSource objectAtIndex:i]];
+			for (int j = 0; j < [specifiers count]; ++j) {
+				id sp = [specifiers objectAtIndex:j];
+				if ([sp isKindOfClass:[IASKSpecifier class]]) {
+					sp = [SettingsView filterSpecifier:sp];
+				}
+				[specifiers replaceObjectAtIndex:j withObject:sp];
 			}
-			[specifiers replaceObjectAtIndex:j withObject:sp];
-		}
 
-		[dataSource replaceObjectAtIndex:i withObject:specifiers];
+			[dataSource replaceObjectAtIndex:i withObject:specifiers];
+		}
+	} else {
+		NSLog(@"Application is in background, linphonecore is off, skiping filter specifier.");
 	}
+	
 	[r setDataSource:dataSource];
 	return r;
 }
