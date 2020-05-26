@@ -1659,16 +1659,17 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
     [NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneQRCodeFound object:nil];
     dispatch_async(dispatch_get_main_queue(), ^{
         self.urlLabel.text = [notif.userInfo objectForKey:@"qrcode"];
-    });
-    if ([historyViews count] > 0) {
-        if (currentView == _qrCodeView) {
-            UIView *view = [historyViews lastObject];
-            [historyViews removeLastObject];
-            [self changeView:view back:TRUE animation:TRUE];
-        } else {
-            [self changeView:_welcomeView back:TRUE animation:TRUE];
-        }
-    }
+
+		if ([historyViews count] > 0) {
+			if (currentView == _qrCodeView) {
+				UIView *view = [historyViews lastObject];
+				[historyViews removeLastObject];
+				[self changeView:view back:TRUE animation:TRUE];
+			} else {
+				[self changeView:_welcomeView back:TRUE animation:TRUE];
+			}
+		}
+	});
 }
 
 @end
