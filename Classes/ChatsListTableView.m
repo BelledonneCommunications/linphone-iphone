@@ -150,6 +150,9 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	if (cell == nil)
 		cell = [[UIChatCell alloc] initWithIdentifier:kCellId];
 
+	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		return cell;
+	}
 
 	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
