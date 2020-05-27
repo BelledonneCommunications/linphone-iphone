@@ -49,6 +49,10 @@ INIT_WITH_COMMON_CF {
 		linphone_call_params_enable_video(call_params, TRUE);
 		linphone_call_update(call, call_params);
 		linphone_call_params_unref(call_params);
+	} else if (CallManager.instance.inAudioConf) {
+		LinphoneConferenceParams *cp = linphone_conference_params_new(LC);
+		linphone_conference_params_enable_video(cp, true);
+		linphone_conference_update_params(linphone_core_get_conference(LC), cp);
 	} else {
 		LOGW(@"Cannot toggle video button, because no current call");
 	}
@@ -68,6 +72,10 @@ INIT_WITH_COMMON_CF {
 		linphone_call_params_enable_video(call_params, FALSE);
 		linphone_core_update_call(LC, call, call_params);
 		linphone_call_params_unref(call_params);
+	} else if (CallManager.instance.inVideoConf) {
+		LinphoneConferenceParams *cp = linphone_core_create_conference_params(LC);
+		linphone_conference_params_enable_video(cp, false);
+		linphone_conference_update_params(linphone_core_get_conference(LC), cp);
 	} else {
 		LOGW(@"Cannot toggle video button, because no current call");
 	}
@@ -77,8 +85,8 @@ INIT_WITH_COMMON_CF {
 	bool video_enabled = false;
 	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
 	if (linphone_core_video_supported(LC)) {
-		if (linphone_core_video_display_enabled(LC) && currentCall && !linphone_core_sound_resources_locked(LC) &&
-			linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
+		if  (CallManager.instance.inAudioConf || CallManager.instance.inVideoConf || (linphone_core_video_display_enabled(LC) && currentCall && !linphone_core_sound_resources_locked(LC) &&
+			linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning)) {
 			video_enabled = TRUE;
 		}
 	}
@@ -87,11 +95,13 @@ INIT_WITH_COMMON_CF {
 	if (last_update_state != video_enabled)
 		[waitView stopAnimating];
 	if (video_enabled) {
-		video_enabled = linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall));
+		video_enabled =  CallManager.instance.inVideoConf || (currentCall && linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall)));
 	}
 	last_update_state = video_enabled;
 
 	return video_enabled;
 }
+
+
 
 @end

@@ -151,8 +151,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self callDurationUpdate];
 	[self onCurrentCallChange];
 	// Set windows (warn memory leaks)
-	linphone_core_set_native_video_window_id(LC, (__bridge void *)(_videoView));
-	linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
+	if (!CallManager.instance.inAudioConf) { // TODO - remove temp work around for lib crash
+		linphone_core_set_native_video_window_id(LC, (__bridge void *)(_videoView));
+		linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
+	}
+
 
 	[self previewTouchLift];
 	// Enable tap
@@ -359,7 +362,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.35];
 		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _callPauseButton.alpha = _routesView.alpha =
-			_optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = (hidden ? 0 : 1);
+		_optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = _conferenceView.alpha = (hidden ? 0 : 1);
 		_infoView.alpha = (hidden ? 0 : .8f);
 
 		[UIView commitAnimations];
@@ -375,8 +378,16 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 															   userInfo:nil
 																repeats:NO];
 		}
+		
+		if (CallManager.instance.inVideoConf) {
+				_callPauseButton.hidden = true;
+				_videoCameraSwitch.frame = CGRectMake(_videoCameraSwitch.frame.origin.x, _bottomBar.frame.origin.y - 75, _videoCameraSwitch.frame.size.width,_videoCameraSwitch.frame.size.height);
+				_conferenceView.frame = CGRectMake(_conferenceView.frame.origin.x,_conferenceView.frame.origin.y,_conferenceView.frame.size.width,_conferenceCallsTable.tableView.frame.origin.y+[_conferenceCallsTable.tableView numberOfRowsInSection:0]*50);
+			}
+		
 	}
 }
+
 
 - (void)disableVideoDisplay:(BOOL)disabled animated:(BOOL)animation {
 	if (disabled == videoHidden && animation)
@@ -426,12 +437,26 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[_videoWaitingForFirstImage setHidden:NO];
 		[_videoWaitingForFirstImage startAnimating];
 
-		LinphoneCall *call = linphone_core_get_current_call(LC);
-		// linphone_call_params_get_used_video_codec return 0 if no video stream enabled
-		if (call != NULL && linphone_call_params_get_used_video_codec(linphone_call_get_current_params(call))) {
-			linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, (__bridge void *)(self));
+		if (CallManager.instance.inVideoConf)
+			[self hideSpinnerIndicator:nil];
+		else {
+			LinphoneCall *call = linphone_core_get_current_call(LC);
+			// linphone_call_params_get_used_video_codec return 0 if no video stream enabled
+			if (call != NULL && linphone_call_params_get_used_video_codec(linphone_call_get_current_params(call))) {
+				linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, (__bridge void *)(self));
+			}
 		}
 	}
+	
+	if (CallManager.instance.inVideoConf) {
+		[_conferenceView removeFromSuperview];
+		[_callView addSubview:_conferenceView];
+	} else {
+		[_conferenceView removeFromSuperview];
+		[self.view addSubview:_conferenceView];
+		[self.view sendSubviewToBack:_conferenceView];
+	}
+	
 }
 
 - (void)displayVideoCall:(BOOL)animated {
@@ -455,14 +480,14 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(LC));
-	_callView.hidden = !call;
+	_callView.hidden = !call && !CallManager.instance.inVideoConf;
 	_conferenceView.hidden = !linphone_core_is_in_conference(LC);
 	_callPauseButton.hidden = !call && !linphone_core_is_in_conference(LC);
 
 	[_callPauseButton setType:UIPauseButtonType_CurrentCall call:call];
 	[_conferencePauseButton setType:UIPauseButtonType_Conference call:call];
 
-	if (!_callView.hidden) {
+	if (call) {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *uri = linphone_address_as_string_uri_only(addr);
@@ -552,19 +577,14 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_pausedCallsTable update];
 	[_conferenceCallsTable update];
 
-	static LinphoneCall *currentCall = NULL;
-	if (!currentCall || linphone_core_get_current_call(LC) != currentCall) {
-		currentCall = linphone_core_get_current_call(LC);
-		[self onCurrentCallChange];
-	}
+	[self onCurrentCallChange];
 
-	// Fake call update
-	if (call == NULL) {
-		return;
-	}
 
-	BOOL shouldDisableVideo =
-		(!currentCall || !linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall)));
+	
+	
+	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
+	BOOL shouldDisableVideo =currentCall ? !linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall)): !CallManager.instance.inVideoConf;
+
 	if (videoHidden != shouldDisableVideo) {
 		if (!shouldDisableVideo) {
 			[self displayVideoCall:animated];
@@ -577,6 +597,11 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
         linphone_call_enable_camera(call, TRUE);
     }
     [self updateCallView];
+	
+	// Fake call update
+	if (call == NULL) {
+		return;
+	}
 
 	if (state != LinphoneCallPausedByRemote) {
 		_pausedByRemoteView.hidden = YES;
@@ -623,7 +648,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 				  floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max))) {
 				linphone_core_defer_call_update(LC, call);
 				[self displayAskToEnableVideoCall:call];
-			} else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+			} else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)  && !CallManager.instance.inVideoConf) {
 				[self displayAudioCall:animated];
 			}
 			break;
@@ -649,9 +674,15 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark - ActionSheet Functions
 
 - (void)displayAskToEnableVideoCall:(LinphoneCall *)call {
-	if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call))) {
+	if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call)) && !CallManager.instance.inVideoConf) {
 		return;
+	} else if (CallManager.instance.inVideoConf) {
+		   LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
+		   linphone_call_accept_update(call, params);
+		   linphone_call_params_destroy(params);
+		   return;
 	}
+	
 	if (linphone_core_get_video_policy(LC)->automatically_accept &&
 		!([UIApplication sharedApplication].applicationState != UIApplicationStateActive))
 		return;
@@ -858,7 +889,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onOptionsConferenceClick:(id)sender {
 	[self hideOptions:TRUE animated:TRUE];
-	[CallManager.instance groupCall];
+	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
+	bool videoEnabled = currentCall && linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall));
+	LinphoneConferenceParams *cp = linphone_conference_params_new(LC);
+	linphone_conference_params_enable_video(cp,videoEnabled);
+	linphone_core_create_conference_with_params(LC,cp);
+	linphone_core_add_all_to_conference(LC);
 }
 
 #pragma mark - Animation
@@ -917,4 +953,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[_chatNotificationView stopAnimating:appear];
 	}
 }
+
+
 @end
