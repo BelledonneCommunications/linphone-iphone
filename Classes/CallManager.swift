@@ -294,8 +294,8 @@ import AVFoundation
 		}
 	}
 
-	@objc func groupCall() {
-		if (CallManager.callKitEnabled()) {
+	@objc func groupCall(video:Bool) {
+		if (CallManager.callKitEnabled() && !video) {
 			let calls = lc?.calls
 			if (calls == nil || calls!.isEmpty) {
 				return
@@ -319,8 +319,61 @@ import AVFoundation
 			let otherTransacation = CXTransaction(action: heldAction)
 			requestTransaction(otherTransacation, action: "heldCall")
 		} else {
-			try? lc?.addAllToConference()
+			mergeCallsIntoConference(video: video)
 		}
+	}
+	
+	@objc func mergeCallsIntoConference(video:Bool) {
+		if let conferenceParams = try? lc?.createConferenceParams(), conferenceParams != nil, let calls = lc?.calls  {
+			conferenceParams?.videoEnabled = video
+			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams!) {
+				for call in calls {
+					if let returnValue = conference?.addParticipant(call: call), returnValue != 0 {
+						Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Non zero returned value adding participant : \(returnValue)")
+					}
+				}
+			} else {
+				Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Unable to create conference.")
+			}
+		} else {
+			Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Unable to create conference parameters.")
+		}
+
+	}
+	
+	
+	@objc func inVideoConf() -> Bool {
+		return (lc?.isInConference ?? false) && (lc?.conference?.currentParams?.videoEnabled ?? false)
+	}
+	
+	@objc func inAudioConf() -> Bool {
+		return (lc?.isInConference ?? false) && !(lc?.conference?.currentParams?.videoEnabled ?? false)
+	}
+	
+	@objc func callIsInConference(call: OpaquePointer?) -> Bool {
+		return !(lc?.conference?.participants.filter {  Call.getSwiftObject(cObject: call!).remoteAddress?.weakEqual(address2: $0) ?? false }.isEmpty ?? false)
+	}
+	
+	// Future use 
+	@objc func intiateConference(video:Bool, uris:NSArray) {
+		var addresses =  [Address]()
+		for uri in uris {
+			if let address = try?lc?.createAddress(address: uri as! String), address != nil {
+				addresses.append(address!)
+			}
+		}
+		if let conferenceParams = try? lc?.createConferenceParams(), conferenceParams != nil {
+			conferenceParams?.videoEnabled = video
+			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams!), conference != nil,  let callParams = try? lc?.createCallParams(call: nil), callParams != nil {
+				callParams!.videoEnabled = video
+				try? conference?.inviteParticipants(addresses:addresses, params: callParams!)
+			} else {
+				Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Unable to create conference.")
+			}
+		} else {
+			Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Unable to create conference parameters.")
+		}
+
 	}
 
 	@objc func removeAllCallInfos() {
