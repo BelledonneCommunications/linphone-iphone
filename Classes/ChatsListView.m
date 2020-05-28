@@ -41,6 +41,14 @@
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 	_addGroupChatButton.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
 	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
+
+	// For testing crashlytics
+    /*UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    button.frame = CGRectMake(20, 50, 100, 30);
+    [button setTitle:@"Crash" forState:UIControlStateNormal];
+    [button addTarget:self action:@selector(crashButtonTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];*/
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -132,6 +140,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  [_tableController removeSelectionUsing:nil];
 		  [self onEditionChangeClick:nil];
 		}];
+}
+
+- (IBAction)crashButtonTapped:(id)sender {
+    assert(NO);
 }
 
 @end
