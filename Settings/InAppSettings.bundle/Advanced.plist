@@ -67,6 +67,14 @@
 			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>send_db_button</string>
+			<key>Title</key>
+			<string>Send Databases</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Notifications</string>
 			<key>Type</key>
