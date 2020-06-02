@@ -497,6 +497,9 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		removeFromHiddenKeys = debugEnabled;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"send_db"]) {
+			[keys addObject:@"send_db_button"];
+		}
 		[Log enableLogs:debugLevel];
 		[LinphoneManager.instance lpConfigSetInt:debugLevel forKey:@"debugenable_preference"];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
@@ -615,6 +618,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if (!debugEnabled) {
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
+		[hiddenKeys addObject:@"send_db_button"];
 	}
 
 	[hiddenKeys addObject:@"playback_gain_preference"];
@@ -973,6 +977,8 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[errView addAction:defaultAction];
 		[errView addAction:continueAction];
 		[self presentViewController:errView animated:YES completion:nil];
+	} else if ([key isEqual:@"send_db_button"]) {
+		 [self sendEmailWithPrivacyAttachments];
 	}
 }
 
@@ -1029,6 +1035,49 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 
 	[self emailAttachments:attachments];
 }
+
+- (void)sendEmailWithPrivacyAttachments {
+	NSMutableArray *attachments = [[NSMutableArray alloc] initWithCapacity:4];
+
+	// retrieve historydb
+	[attachments addObject:@[
+		[LinphoneManager dataFile:@"linphone_chats.db"],
+		@"application/db",
+		@"linphone-chats-history.db"
+	]];
+	[attachments addObject:@[
+		[LinphoneManager dataFile:@"zrtp_secrets"],
+		@"application/zrtp",
+		@"zrtp_secrets"
+	]];
+	[attachments addObject:@[
+		[LinphoneManager dataFile:@"linphone.db"],
+		@"application/db",
+		@"linphone.db"
+	]];
+	[attachments addObject:@[
+		[LinphoneManager dataFile:@"x3dh.c25519.sqlite3"],
+		@"application/db",
+		@"x3dh.c25519.sqlite3"
+	]];
+
+	if (attachments.count == 0) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Cannot send files", nil)
+																		 message:NSLocalizedString(@"Nothing could be collected from your application, aborting now.", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
+		return;
+	}
+
+	[self emailAttachments:attachments];
+}
+
 - (void)emailAttachments:(NSArray *)attachments {
 	NSString *error = nil;
 #if TARGET_IPHONE_SIMULATOR
