@@ -58,7 +58,6 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
-		[LinphoneManager.instance enterBackgroundMode];
 		[LinphoneManager.instance.fastAddressBook clearFriends];
 		[CoreManager.instance stopLinphoneCore];
 	}
@@ -97,7 +96,6 @@
 		[PhoneMainView.instance startUp];
 	}
 	LinphoneManager *instance = LinphoneManager.instance;
-	[instance becomeActive];
 
 	if (instance.fastAddressBook.needToUpdate) {
 		//Update address book for external changes
