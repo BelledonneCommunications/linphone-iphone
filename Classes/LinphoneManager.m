@@ -589,8 +589,9 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 
 	// dispatch the notification asynchronously
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff)
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
-		});
+	});
 }
 
 - (void)globalStateChangedNotificationHandler:(NSNotification *)notif {
