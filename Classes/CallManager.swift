@@ -372,6 +372,21 @@ import AVFoundation
 			providerDelegate.endCall(uuid: uuid!)
 		}
 	}
+
+	@objc func setHeld(call: OpaquePointer, hold: Bool) {
+		let sCall = Call.getSwiftObject(cObject: call)
+		let callid = sCall.callLog?.callId ?? ""
+		let uuid = providerDelegate.uuids["\(callid)"]
+
+		if (uuid == nil) {
+			Log.directLog(BCTBX_LOG_ERROR, text: "Can not find correspondant call to group.")
+			return
+		}
+		let setHeldAction = CXSetHeldCallAction(call: uuid!, onHold: hold)
+		let transaction = CXTransaction(action: setHeldAction)
+
+		requestTransaction(transaction, action: "setHeld")
+	}
 }
 
 class CoreManagerDelegate: CoreDelegate {

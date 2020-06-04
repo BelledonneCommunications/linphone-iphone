@@ -185,34 +185,33 @@ extension ProviderDelegate: CXProviderDelegate {
 		if (call == nil) {
 			return
 		}
-		if (UIApplication.shared.applicationState != .active) {
-			do {
-				if (CallManager.instance().lc?.isInConference ?? false && action.isOnHold) {
-					try CallManager.instance().lc?.leaveConference()
-					Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Leaving conference")
-					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+
+		do {
+			if (CallManager.instance().lc?.isInConference ?? false && action.isOnHold) {
+				try CallManager.instance().lc?.leaveConference()
+				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Leaving conference")
+				NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+				return
+			}
+
+			let state = action.isOnHold ? "Paused" : "Resumed"
+			Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Call  with call-id: [\(String(describing: callId))] and UUID: [\(uuid)] paused status changed to: [\(state)]")
+			if (action.isOnHold) {
+				if (call!.params?.localConferenceMode ?? false) {
 					return
 				}
-
-				let state = action.isOnHold ? "Paused" : "Resumed"
-				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Call  with call-id: [\(String(describing: callId))] and UUID: [\(uuid)] paused status changed to: [\(state)]")
-				if (action.isOnHold) {
-					if (call!.params?.localConferenceMode ?? false) {
-						return
-					}
-					CallManager.instance().speakerBeforePause = CallManager.instance().speakerEnabled
-					try call!.pause()
+				CallManager.instance().speakerBeforePause = CallManager.instance().speakerEnabled
+				try call!.pause()
+			} else {
+				if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
+					try CallManager.instance().lc?.enterConference()
+					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 				} else {
-					if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
-						try CallManager.instance().lc?.enterConference()
-						NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
-					} else {
-						try call!.resume()
-					}
+					try call!.resume()
 				}
-			} catch {
-				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call set held (paused or resumed) \(uuid) failed because \(error)")
 			}
+		} catch {
+			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call set held (paused or resumed) \(uuid) failed because \(error)")
 		}
 	}
 

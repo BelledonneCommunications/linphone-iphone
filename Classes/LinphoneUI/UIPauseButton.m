@@ -82,8 +82,12 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
-				linphone_call_pause(call);
+				if ([CallManager callKitEnabled]) {
+					[CallManager.instance setHeldWithCall:call hold:true];
+				} else {
+					CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
+					linphone_call_pause(call);
+				}
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -99,8 +103,12 @@
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
 			if (currentCall != nil) {
-				CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
-				linphone_call_pause(currentCall);
+				if ([CallManager callKitEnabled]) {
+					[CallManager.instance setHeldWithCall:currentCall hold:true];
+				} else {
+					CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
+					linphone_call_pause(currentCall);
+				}
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -113,7 +121,11 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				linphone_call_resume(call);
+				if ([CallManager callKitEnabled]) {
+					[CallManager.instance setHeldWithCall:call hold:false];
+				} else {
+					linphone_call_resume(call);
+				}
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -127,7 +139,11 @@
 		}
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
-			linphone_call_resume(currentCall);
+			if ([CallManager callKitEnabled]) {
+				[CallManager.instance setHeldWithCall:currentCall hold:false];
+			} else {
+				linphone_call_resume(currentCall);
+			}
 			break;
 		}
 	}
