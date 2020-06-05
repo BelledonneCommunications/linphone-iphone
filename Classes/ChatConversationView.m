@@ -1349,7 +1349,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 		// define a block , not called immediately. To avoid crash when saving photo before PHAuthorizationStatusNotDetermined.
 		void (^block)(void)= ^ {
-			__block LinphoneChatMessage *msg = message;
 			if ([fileType isEqualToString:@"image"]) {
 				// we're finished, save the image and update the message
 				UIImage *image = [UIImage imageWithData:data];
@@ -1357,68 +1356,67 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 					[view showFileDownloadError];
 					return;
 				}
-				__block PHObjectPlaceholder *placeHolder;
-				[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-					PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
-					placeHolder = [request placeholderForCreatedAsset];
-				} completionHandler:^(BOOL success, NSError *error) {
+				__block NSString *createdAssetId = nil;
+				[[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+					createdAssetId = [PHAssetCreationRequest creationRequestForAssetFromImage:image].placeholderForCreatedAsset.localIdentifier;
+				} error:nil];
+				if (createdAssetId != nil) {
+					LOGI(@"Image saved to [%@]", createdAssetId);
+					[LinphoneManager setValueInMessageAppData:createdAssetId
+												   forKey:@"localimage"
+													inMessage:message];
 					dispatch_async(dispatch_get_main_queue(), ^{
-						if (error) {
-							LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-							[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
-							UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+						[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+						});
+				} else {
+					LOGE(@"Cannot save image data downloaded");
+					[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
+					dispatch_async(dispatch_get_main_queue(), ^{
+						UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
 																						 message:NSLocalizedString(@"Cannot write image to photo library",
 																												   nil)
 																				  preferredStyle:UIAlertControllerStyleAlert];
-						
-							UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+
+						UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																				style:UIAlertActionStyleDefault
 																			  handler:^(UIAlertAction * action) {}];
-						
-							[errView addAction:defaultAction];
-							[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-						} else {
-							LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
-							[LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
-														   forKey:@"localimage"
-														inMessage:msg];
-						}
-						[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+
+						[errView addAction:defaultAction];
+						[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 					});
-				}];
-			} else if([fileType isEqualToString:@"video"]) {
+				}
+			} else if ([fileType isEqualToString:@"video"]) {
 				// until image is properly saved, keep a reminder on it so that the
 				// chat bubble is aware of the fact that image is being saved to device
-			
-				__block PHObjectPlaceholder *placeHolder;
-				[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-					PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]];
-					placeHolder = [request placeholderForCreatedAsset];
-				} completionHandler:^(BOOL success, NSError * _Nullable error) {
+				__block NSString *createdAssetId = nil;
+				[[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+					createdAssetId = [PHAssetCreationRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]].placeholderForCreatedAsset.localIdentifier;
+				} error:nil];
+				if (createdAssetId != nil) {
+					LOGI(@"video saved to [%@]", createdAssetId);
+					[LinphoneManager setValueInMessageAppData:createdAssetId
+												   forKey:@"localvideo"
+													inMessage:message];
 					dispatch_async(dispatch_get_main_queue(), ^{
-						if (error) {
-							LOGE(@"Cannot save video data downloaded [%@]", [error localizedDescription]);
-							[LinphoneManager setValueInMessageAppData:nil forKey:@"localvideo" inMessage:message];
-							UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+						[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+						});
+				} else {
+					LOGE(@"Cannot save video data downloaded");
+					[LinphoneManager setValueInMessageAppData:nil forKey:@"localvideo" inMessage:message];
+					dispatch_async(dispatch_get_main_queue(), ^{
+						UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
 																						 message:NSLocalizedString(@"Cannot write video to photo library",
 																												   nil)
 																				  preferredStyle:UIAlertControllerStyleAlert];
-						
-							UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+
+						UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																				style:UIAlertActionStyleDefault
 																			  handler:^(UIAlertAction * action) {}];
-						
-							[errView addAction:defaultAction];
-							[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-						} else {
-							LOGI(@"video saved to [%@]", [placeHolder localIdentifier]);
-							[LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
-														   forKey:@"localvideo"
-														inMessage:msg];
-						}
-						[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+
+						[errView addAction:defaultAction];
+						[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 					});
-				}];
+				}
 			}
 		};
 		
@@ -1441,11 +1439,10 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 			NSString *key =  @"localfile";
 			//write file to path
 			if([view writeFileInICloud:data fileURL:[view getICloudFileUrl:name]]) {
-			dispatch_async(dispatch_get_main_queue(), ^{
 				[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
-				//[LinphoneManager setValueInMessageAppData:filePath forKey:@"cachedfile" inMessage:message];
-				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-			});} else {
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];});
+			} else {
 				LOGE(@"[Auto download error] can not save the file %@", name);
 			}
 		}
