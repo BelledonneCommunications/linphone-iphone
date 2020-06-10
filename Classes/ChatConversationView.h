@@ -112,5 +112,6 @@
 - (void)showFileDownloadError;
 - (NSURL *)getICloudFileUrl:(NSString *)name;
 - (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
+- (void)removeCallBacks;
 
 @end

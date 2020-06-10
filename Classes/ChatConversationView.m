@@ -175,10 +175,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                            selector:@selector(onLinphoneCoreReady:)
                                                name:kLinphoneGlobalStateUpdate
                                              object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(didEnterBackground:)
-                                               name:UIApplicationDidEnterBackgroundNotification
-                                             object:nil];
     if ([_imagesArray count] > 0) {
         [UIView animateWithDuration:0
                               delay:0
@@ -211,10 +207,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
-}
-
-- (void)didEnterBackground:(NSNotification *)notif {
-	[self removeCallBacks];
 }
 
 - (void)removeCallBacks {
