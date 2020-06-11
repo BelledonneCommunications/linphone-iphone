@@ -51,6 +51,9 @@
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 
 	_durationLabel.text = [LinphoneUtils durationToString:linphone_call_get_duration(call)];
+	
+	_hasVideo.hidden = !linphone_call_params_video_enabled(linphone_call_get_remote_params(call));
+
 }
 
 - (IBAction)onKickClick:(id)sender {

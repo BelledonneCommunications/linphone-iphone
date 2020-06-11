@@ -50,7 +50,7 @@ INIT_WITH_COMMON_CF {
 		linphone_call_update(call, call_params);
 		linphone_call_params_unref(call_params);
 	} else if (CallManager.instance.inAudioConf) {
-		LinphoneConferenceParams *cp = linphone_conference_params_new(LC);
+		LinphoneConferenceParams *cp = linphone_core_create_conference_params(LC);
 		linphone_conference_params_enable_video(cp, true);
 		linphone_conference_update_params(linphone_core_get_conference(LC), cp);
 	} else {
