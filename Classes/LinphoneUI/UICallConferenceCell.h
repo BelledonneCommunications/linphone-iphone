@@ -26,6 +26,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property(nonatomic, setter=setCall:) LinphoneCall *call;
+@property (weak, nonatomic) IBOutlet UIImageView *hasVideo;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 - (IBAction)onKickClick:(id)sender;

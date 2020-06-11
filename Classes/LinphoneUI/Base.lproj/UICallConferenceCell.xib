@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -9,6 +11,7 @@
             <connections>
                 <outlet property="avatarImage" destination="PjC-yS-i03" id="srY-K7-Ajk"/>
                 <outlet property="durationLabel" destination="Jgc-Z9-ItD" id="EGs-SW-dRc"/>
+                <outlet property="hasVideo" destination="ttr-as-ZMF" id="UgP-c6-3kN"/>
                 <outlet property="nameLabel" destination="63x-tV-T6U" id="rBP-rS-gbi"/>
             </connections>
         </placeholder>
@@ -26,7 +29,7 @@
                     </accessibility>
                 </imageView>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="00:02:15" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Jgc-Z9-ItD" userLabel="durationLabel">
-                    <rect key="frame" x="61" y="33" width="253" height="27"/>
+                    <rect key="frame" x="61" y="33" width="70" height="27"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contact name"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -54,6 +57,10 @@
                         <action selector="onKickClick:" destination="-1" eventType="touchUpInside" id="AG0-aA-dG6"/>
                     </connections>
                 </button>
+                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="camera_selected.png" translatesAutoresizingMaskIntoConstraints="NO" id="ttr-as-ZMF">
+                    <rect key="frame" x="295" y="22" width="19" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                </imageView>
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <nil key="simulatedStatusBarMetrics"/>
@@ -63,6 +70,7 @@
     </objects>
     <resources>
         <image name="avatar.png" width="414.39999389648438" height="414.39999389648438"/>
+        <image name="camera_selected.png" width="52.799999237060547" height="30.399999618530273"/>
         <image name="conference_exit_default.png" width="55.200000762939453" height="46.400001525878906"/>
         <image name="conference_exit_over.png" width="55.200000762939453" height="46.400001525878906"/>
     </resources>

@@ -891,7 +891,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[self hideOptions:TRUE animated:TRUE];
 	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
 	bool videoEnabled = currentCall && linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall));
-	LinphoneConferenceParams *cp = linphone_conference_params_new(LC);
+	LinphoneConferenceParams *cp = linphone_core_create_conference_params(LC);
 	linphone_conference_params_enable_video(cp,videoEnabled);
 	linphone_core_create_conference_with_params(LC,cp);
 	linphone_core_add_all_to_conference(LC);
