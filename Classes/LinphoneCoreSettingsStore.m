@@ -150,7 +150,7 @@
 
 	// default values
 	{
-		[self setBool:NO forKey:@"account_pushnotification_preference"];
+		[self setBool:[ConfigManager.instance lpConfigBoolForKeyWithKey:@"account_pushnotification"] forKey:@"account_pushnotification_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_username_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_domain_preference"];
 		[self setCString:"" forKey:@"account_display_name_preference"];
@@ -251,6 +251,8 @@
 			[self setBool:dial_escape_plus forKey:@"account_substitute_+_by_00_preference"];
 		}
 	}
+	
+	[ConfigManager.instance lpConfigSetBoolWithValue:[self boolForKey:@"account_pushnotification_preference"] key:@"account_pushnotification"];
 }
 
 - (void)transformLinphoneCoreToKeys {
@@ -500,6 +502,7 @@
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
 		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
+		[ConfigManager.instance lpConfigSetBoolWithValue:pushnotification key:@"account_pushnotification"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
 
