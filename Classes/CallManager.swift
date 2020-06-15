@@ -497,7 +497,7 @@ class CoreManagerDelegate: CoreDelegate {
 					CallManager.instance().bluetoothEnabled = false
 				}
 
-				if callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted  {
+				if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted)  {
 					// Configure the notification's payload.
 					let content = UNMutableNotificationContent()
 					content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
