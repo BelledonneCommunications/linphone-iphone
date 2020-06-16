@@ -44,6 +44,8 @@ import AVFoundation
 	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
 	@objc var alreadyRegisteredForNotification: Bool = false
+	var referedFromCall: String?
+	var referedToCall: String?
 
 
 	fileprivate override init() {
@@ -231,7 +233,7 @@ import AVFoundation
 		}
 
 		let sAddr = Address.getSwiftObject(cObject: addr!)
-		if (CallManager.callKitEnabled()) {
+		if (CallManager.callKitEnabled() && !CallManager.instance().nextCallIsTransfer) {
 			let uuid = UUID()
 			let name = FastAddressBook.displayName(for: addr) ?? "unknow"
 			let handle = CXHandle(type: .generic, value: name)
@@ -482,6 +484,8 @@ class CoreManagerDelegate: CoreDelegate {
 
 						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
 						CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
+					} else {
+						CallManager.instance().referedToCall = callId
 					}
 				}
 				break
@@ -514,21 +518,41 @@ class CoreManagerDelegate: CoreDelegate {
 				}
 
 				if (CallManager.callKitEnabled()) {
-					// end CallKit
 					var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+					if (callId == CallManager.instance().referedToCall) {
+						// refered call ended before connecting
+						Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered to call :  \(String(describing: CallManager.instance().referedToCall))")
+						CallManager.instance().referedFromCall = nil
+						CallManager.instance().referedToCall = nil
+					}
 					if uuid == nil {
 						// the call not yet connected
 						uuid = CallManager.instance().providerDelegate.uuids[""]
 					}
 					if (uuid != nil) {
+						if (callId == CallManager.instance().referedFromCall) {
+							Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered from call : \(String(describing: CallManager.instance().referedFromCall))")
+							CallManager.instance().referedFromCall = nil
+							let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+							callInfo!.callId = CallManager.instance().referedToCall ?? ""
+							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+							CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
+							CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
+							CallManager.instance().referedToCall = nil
+							break
+						}
+
 						let transaction = CXTransaction(action:
-							CXEndCallAction(call: uuid!))
+						CXEndCallAction(call: uuid!))
 						CallManager.instance().requestTransaction(transaction, action: "endCall")
 					}
 				}
 				break
 			case .Released:
 				call.userData = nil
+				break
+			case .Referred:
+				CallManager.instance().referedFromCall = call.callLog?.callId
 				break
 			default:
 				break
