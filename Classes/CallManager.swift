@@ -168,7 +168,7 @@ import AVFoundation
 		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
 		if (uuid != nil) {
 			// This call was declined.
-			providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: false)
+			providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: true)
 			providerDelegate.endCall(uuid: uuid!)
 			return
 		}
@@ -176,10 +176,10 @@ import AVFoundation
 		let call = CallManager.instance().callByCallId(callId: callId)
 		if (call != nil) {
 			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
-			let video = call?.params?.videoEnabled ?? false
+			let video = UIApplication.shared.applicationState == .active && (lc!.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
 			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
 		} else {
-			displayIncomingCall(call: nil, handle: "Calling", hasVideo: false, callId: callId)
+			displayIncomingCall(call: nil, handle: "Calling", hasVideo: true, callId: callId)
 		}
 	}
 
@@ -408,7 +408,7 @@ class CoreManagerDelegate: CoreDelegate {
 		let address = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
 		let callId = callLog?.callId
-		let video = call.params?.videoEnabled ?? false
+		let video = UIApplication.shared.applicationState == .active && (lc.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 		// we keep the speaker auto-enabled state in this static so that we don't
 		// force-enable it on ICE re-invite if the user disabled it.
 		CoreManagerDelegate.speaker_already_enabled = false
@@ -559,7 +559,7 @@ class CoreManagerDelegate: CoreDelegate {
 		}
 
 		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			if (video && !CoreManagerDelegate.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+			if ((call.currentParams?.videoEnabled ?? false) && !CoreManagerDelegate.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
 				CallManager.instance().enableSpeaker(enable: true)
 				CoreManagerDelegate.speaker_already_enabled = true
 			}
