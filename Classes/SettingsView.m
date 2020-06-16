@@ -618,6 +618,9 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if (!debugEnabled) {
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
+	}
+
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"send_db"]) {
 		[hiddenKeys addObject:@"send_db_button"];
 	}
 
