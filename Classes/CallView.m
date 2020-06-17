@@ -256,7 +256,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
-	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
     [_recordButtonOnView setHidden:!callRecording];
 	[self updateCallView];
 	LinphoneCall *call = linphone_core_get_current_call(LC) ;
@@ -363,11 +362,10 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			_optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = (hidden ? 0 : 1);
 		_infoView.alpha = (hidden ? 0 : .8f);
 
-		[self hideStatusBar:hidden];
-
 		[UIView commitAnimations];
 
 		[PhoneMainView.instance hideTabBar:hidden];
+		[PhoneMainView.instance hideStatusBar:hidden];
 
 		if (!hidden) {
 			// hide controls in 5 sec
@@ -442,13 +440,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (void)displayAudioCall:(BOOL)animated {
 	[self disableVideoDisplay:TRUE animated:animated];
-}
-
-- (void)hideStatusBar:(BOOL)hide {
-	/* we cannot use [PhoneMainView.instance show]; because it will automatically
-	 resize current view to fill empty space, which will resize video. This is
-	 indesirable since we do not want to crop/rescale video view */
-	PhoneMainView.instance.mainViewController.statusBarView.hidden = hide;
 }
 
 - (void)callDurationUpdate {
