@@ -17,8 +17,8 @@
 /* Class = "UILabel"; text = "Linphone iOS 8.0"; ObjectID = "gLk-Bc-zvx"; */
 "gLk-Bc-zvx.text" = "Linphone IOS 8.0";
 
-/* Class = "UILabel"; text = "GNU General Public License V3\n© 2010-2019 Belledonne Communications"; ObjectID = "gVK-Xc-S59"; */
-"gVK-Xc-S59.text" = "Licence Publique Générale GNU V3\n© 2010-2019 Belledonne Communications";
+/* Class = "UILabel"; text = "GNU General Public License V3\n© 2010-2020 Belledonne Communications"; ObjectID = "gVK-Xc-S59"; */
+"gVK-Xc-S59.text" = "Licence Publique Générale GNU V3\n© 2010-2020 Belledonne Communications";
 
 /* Class = "UILabel"; text = "ABOUT"; ObjectID = "iNt-9d-7si"; */
 "iNt-9d-7si.text" = "À PROPOS";
@@ -35,8 +35,8 @@
 /* Class = "UIButton"; accessibilityLabel = "Add contact"; ObjectID = "vX8-wO-ZEN"; */
 "vX8-wO-ZEN.accessibilityLabel" = "Ajouter un contact";
 
-/* Class = "UILabel"; text = "GNU General Public License V3 © 2010-2019 Belledonne Communications"; ObjectID = "vqn-sI-DiC"; */
-"vqn-sI-DiC.text" = "Licence Publique Générale GNU V3 © 2010-2019 Belledonne Communications";
+/* Class = "UILabel"; text = "GNU General Public License V3 © 2010-2020 Belledonne Communications"; ObjectID = "vqn-sI-DiC"; */
+"vqn-sI-DiC.text" = "Licence Publique Générale GNU V3 © 2010-2020 Belledonne Communications";
 
 /* Class = "UILabel"; text = "ABOUT"; ObjectID = "wKp-iH-ojJ"; */
 "wKp-iH-ojJ.text" = "À PROPOS";
