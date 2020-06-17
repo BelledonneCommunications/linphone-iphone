@@ -129,7 +129,7 @@ import AVFoundation
 		let newRoute = AVAudioSession.sharedInstance().currentRoute
 		if (newRoute.outputs.count > 0) {
 			let route = newRoute.outputs[0].portType
-			allow = route != .lineOut || route == .headphones || (AudioHelper.bluetoothRoutes() as Array).contains(where: {($0 as! AVAudioSession.Port) == route})
+			allow = !( route == .lineOut || route == .headphones || (AudioHelper.bluetoothRoutes() as Array).contains(where: {($0 as! AVAudioSession.Port) == route}))
 		}
 
 		return allow
@@ -144,7 +144,7 @@ import AVFoundation
 				bluetoothEnabled = false
 			} else {
 				try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-				let buildinPort = AudioHelper.bluetoothAudioDevice()
+				let buildinPort = AudioHelper.builtinAudioDevice()
 				try AVAudioSession.sharedInstance().setPreferredInput(buildinPort)
 				UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
 			}
