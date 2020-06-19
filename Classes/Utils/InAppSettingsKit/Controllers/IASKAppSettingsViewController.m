@@ -165,6 +165,7 @@ CGRect IASKCGRectSwap(CGRect rect);
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTapToEndEdit:)];   
     tapGesture.cancelsTouchesInView = NO;
     [self.tableView addGestureRecognizer:tapGesture];
+	self.tableView.cellLayoutMarginsFollowReadableWidth = NO;
 }
 
 - (void)viewDidUnload {
