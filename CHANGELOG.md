@@ -14,9 +14,27 @@ Group changes to describe their impact on the project, as follows:
 ## [Unreleased]
 
 ### Added
+- "push notification application extension" to manage message reception.
+- Dark Mode.
+- CI to test the build and archive the application.
+
+### Changed
+- Presenting the callkit view upon receipt of the push notification.
+- Using PushKit only for calls.
+- Moving db files from app containers to App Groups.
+- Updating SDK to 4.4 version
+- Some files are written in Swift.
+
+### Fixed
+- Various crashs and issues.
+
+## [4.2.0] - 2019-12-09
+
+### Added
 - Possiblity to enable Media Encryption Mandatory  in Settings.
 - Possiblity to not show app's calls in iphone's history
 - Using new AAudio & Camera2 frameworks for better performances (if available)
+- Asking the user to agree to access location information from ios 13.
 
 ### Changed
 - Improved performances to reduce startup time.
@@ -29,6 +47,7 @@ Group changes to describe their impact on the project, as follows:
 
 ### Fixed
 - Automatically downloaded images are copied when shared in a chat room.
+- Some UI errors from ios 13.
     
 ## [4.1.0] - 2019-05-06
 
