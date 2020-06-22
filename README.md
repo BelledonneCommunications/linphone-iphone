@@ -79,13 +79,6 @@ If you don't have CocoaPods already, you can download and install it using :
   It will download the linphone-sdk from our gitlab repository so you don't have to build anything yourself.
 - Then open `linphone.xcworkspace` file (**NOT linphone.xcodeproj**) with XCode to build and run the app.
 
-# Testing the application
-
-We are using the Xcode test navigator to test the UI of Linphone.
-
-Change the Scheme to LinphoneTester. Press the test navigator button and all the tests will show.
-See: https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html
-
 # Limitations and known bugs
 
 * Video capture will not work in simulator (not implemented in it).
