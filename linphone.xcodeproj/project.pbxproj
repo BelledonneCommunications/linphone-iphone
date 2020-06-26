@@ -763,7 +763,6 @@
 		EA88F3AB241BD05200E66528 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
 		EA88F3AC241BD05200E66528 /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E58962520DCE5700030868C /* UserNotificationsUI.framework */; };
 		EA88F3AF241BD1F700E66528 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA8CB82D239F96CA00C330CC /* MainInterface.storyboard */; };
-		EA88F3B1241BDAA100E66528 /* CoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA88F3B0241BDAA100E66528 /* CoreManager.swift */; };
 		EA8CB82C239F96CA00C330CC /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8CB82B239F96CA00C330CC /* NotificationViewController.swift */; };
 		EA8CB833239F96CA00C330CC /* msgNotificationContent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EA8CB827239F96CA00C330CC /* msgNotificationContent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EAE6C88423FABF690076A018 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE6C88323FABF690076A018 /* Utils.swift */; };
@@ -1848,7 +1847,6 @@
 		EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = msgNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA5F25DB232BD3E200475F2E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		EA5F25DD232BD3E200475F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		EA88F3B0241BDAA100E66528 /* CoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreManager.swift; sourceTree = "<group>"; };
 		EA8CB827239F96CA00C330CC /* msgNotificationContent.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = msgNotificationContent.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA8CB82B239F96CA00C330CC /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
 		EA8CB82E239F96CA00C330CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -2132,7 +2130,6 @@
 				34216F3F1547EBCD00EA9777 /* VideoZoomHandler.m */,
 				614C087723D1A35F00217F80 /* ProviderDelegate.swift */,
 				614C087923D1A37400217F80 /* CallManager.swift */,
-				EA88F3B0241BDAA100E66528 /* CoreManager.swift */,
 				6134812C2406CECC00695B41 /* ConfigManager.swift */,
 				6134812E2407B35200695B41 /* AppManager.swift */,
 				614C087623D1A35E00217F80 /* linphone-Bridging-Header.h */,
@@ -4194,7 +4191,6 @@
 				2214EBF312F86360002A5394 /* UIMutedMicroButton.m in Sources */,
 				8C9C5E111F83BD97006987FA /* UIChatCreateCollectionViewCell.m in Sources */,
 				22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */,
-				EA88F3B1241BDAA100E66528 /* CoreManager.swift in Sources */,
 				63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */,
 				6134812D2406CECC00695B41 /* ConfigManager.swift in Sources */,
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,

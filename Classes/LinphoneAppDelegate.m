@@ -63,7 +63,9 @@
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view removeCallBacks];
 		}
-		[CoreManager.instance stopLinphoneCore];
+
+		linphone_core_enter_background(LC);
+		[CallManager.instance stopLinphoneCore];
 	}
 }
 

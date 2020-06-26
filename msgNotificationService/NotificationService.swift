@@ -187,6 +187,7 @@ class NotificationService: UNNotificationServiceExtension {
 			NotificationService.logDelegate = try! LinphoneLoggingServiceManager(config: config!, log: NotificationService.log, domain: "msgNotificationService")
 		}
 		lc = try! Factory.Instance.createSharedCoreWithConfig(config: config!, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
+		lc?.autoIterateEnabled = false
 	}
 
 	func stopCore() {
