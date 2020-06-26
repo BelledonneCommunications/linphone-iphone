@@ -89,7 +89,7 @@ class NotificationService: UNNotificationServiceExtension {
 				if let message = message {
 					let msgData = parseMessage(message: message)
 
-					if !message.isUsingUserDefaults, let badge = updateBadge() as NSNumber? {
+					if let badge = updateBadge() as NSNumber? {
 						bestAttemptContent.badge = badge
 					}
 
