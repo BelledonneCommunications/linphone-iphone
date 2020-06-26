@@ -59,7 +59,8 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
 		[LinphoneManager.instance.fastAddressBook clearFriends];
-		[CoreManager.instance stopLinphoneCore];
+		linphone_core_enter_background(LC);
+		[CallManager.instance stopLinphoneCore];
 	}
 }
 

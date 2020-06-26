@@ -88,7 +88,6 @@ typedef struct _LinphoneManagerSounds {
 	SCNetworkReachabilityRef proxyReachability;
 
 @private
-	NSTimer* mIterateTimer;
         NSMutableArray*  pushCallIDs;
 
 	UIBackgroundTaskIdentifier pausedCallBgTask;

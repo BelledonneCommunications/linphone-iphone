@@ -353,7 +353,7 @@ import AVFoundation
 			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to terminate call failed because \(error)")
 		}
 		if (UIApplication.shared.applicationState == .background) {
-			CoreManager.instance().stopLinphoneCore()
+			stopLinphoneCore()
 		}
 	}
 
@@ -370,6 +370,12 @@ import AVFoundation
 		} else {
 			// end call
 			providerDelegate.endCall(uuid: uuid!)
+		}
+	}
+
+	@objc func stopLinphoneCore() {
+		if (lc?.callsNb == 0) {
+			lc?.stop()
 		}
 	}
 }

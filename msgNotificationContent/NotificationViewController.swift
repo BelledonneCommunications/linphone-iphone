@@ -139,6 +139,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 		log = LoggingService.Instance /*enable liblinphone logs.*/
 		logDelegate = try! LinphoneLoggingServiceManager(config: config, log: log, domain: "msgNotificationContent")
         lc = try! Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
+		lc?.autoIterateEnabled = false
 
         coreDelegate = LinphoneCoreManager()
         lc!.addDelegate(delegate: coreDelegate)
