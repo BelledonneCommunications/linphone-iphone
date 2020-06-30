@@ -174,11 +174,7 @@ import AVFoundation
 		}
 
 		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call != nil) {
-			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
-			let video = UIApplication.shared.applicationState == .active && (lc!.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
-			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
-		} else {
+		if (call == nil) {
 			displayIncomingCall(call: nil, handle: "Calling", hasVideo: true, callId: callId)
 		}
 	}
@@ -394,15 +390,6 @@ import AVFoundation
 class CoreManagerDelegate: CoreDelegate {
 	static var speaker_already_enabled : Bool = false
 
-	func getProxyConfigByIncomingCall(call:Call, lc:Core) ->ProxyConfig? {
-		let addr = call.toAddress
-		let proxylist = lc.proxyConfigList
-		if let index = proxylist.firstIndex(where: { $0.identityAddress?.asStringUriOnly() == addr?.asStringUriOnly() }) {
-			return proxylist[index]
-		}
-		return nil
-	}
-
 	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
 		let addr = call.remoteAddress;
 		let address = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
@@ -435,10 +422,7 @@ class CoreManagerDelegate: CoreDelegate {
 							CallManager.instance().acceptCall(call: call, hasVideo: video)
 						}
 					} else {
-						let cfg = getProxyConfigByIncomingCall(call: call, lc: lc)
-					    if (!((cfg?.isPushNotificationAllowed ?? true) && CallManager.instance().alreadyRegisteredForNotification && UIApplication.shared.isRegisteredForRemoteNotifications)) {
-							CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
-						}
+						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
 				} else if (UIApplication.shared.applicationState != .active) {
 					// not support callkit , use notif
