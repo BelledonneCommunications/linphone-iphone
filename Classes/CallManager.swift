@@ -167,14 +167,21 @@ import AVFoundation
 	@objc func displayIncomingCall(callId: String) {
 		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
 		if (uuid != nil) {
-			// This call was declined.
-			providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: true)
-			providerDelegate.endCall(uuid: uuid!)
+			let callInfo = providerDelegate.callInfos[uuid!]
+			if (callInfo?.declined ?? false) {
+				// This call was declined.
+				providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: true)
+				providerDelegate.endCall(uuid: uuid!)
+			}
 			return
 		}
 
 		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call == nil) {
+		if (call != nil) {
+			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
+			let video = UIApplication.shared.applicationState == .active && (lc!.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
+			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
+		} else {
 			displayIncomingCall(call: nil, handle: "Calling", hasVideo: true, callId: callId)
 		}
 	}
@@ -365,6 +372,9 @@ import AVFoundation
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Mark call \(callId) as declined.")
 			let uuid = UUID()
 			providerDelegate.uuids.updateValue(uuid, forKey: callId)
+			let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
+			callInfo.declined = true
+			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 		} else {
 			// end call
 			providerDelegate.endCall(uuid: uuid!)
