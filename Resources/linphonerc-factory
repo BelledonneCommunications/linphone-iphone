@@ -31,6 +31,7 @@ accept_early_media=0
 force_ice_disablement=0
 download_bw=0
 upload_bw=0
+push_notifications_type=remote&voip
 
 [sip]
 auto_net_state_mon=1

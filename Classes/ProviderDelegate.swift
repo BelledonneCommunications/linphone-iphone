@@ -26,11 +26,9 @@ import os
 
 @objc class CallInfo: NSObject {
 	var callId: String = ""
-	var accepted = false
 	var toAddr: Address?
 	var isOutgoing = false
 	var sasEnabled = false
-	var declined = false
 	var connected = false
 	
 	
@@ -79,7 +77,7 @@ class ProviderDelegate: NSObject {
 		return providerConfiguration
 	}()
 
-	func reportIncomingCall(call:Call?, uuid: UUID, handle: String, hasVideo: Bool) {
+	func reportIncomingCall(call:Call, uuid: UUID, handle: String, hasVideo: Bool) {
 		let update = CXCallUpdate()
 		update.remoteHandle = CXHandle(type:.generic, value: handle)
 		update.hasVideo = hasVideo
@@ -92,16 +90,11 @@ class ProviderDelegate: NSObject {
 				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 20)
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
-				if (call == nil) {
-					callInfo?.declined = true
-					self.callInfos.updateValue(callInfo!, forKey: uuid)
-					return
-				}
 				let code = (error as NSError?)?.code
 				if code == CXErrorCodeIncomingCallError.filteredByBlockList.rawValue || code == CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue {
-					try? call?.decline(reason: Reason.Busy)
+					try? call.decline(reason: Reason.Busy)
 				} else {
-					try? call?.decline(reason: Reason.Unknown)
+					try? call.decline(reason: Reason.Unknown)
 				}
 			}
 		}
@@ -165,13 +158,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
 		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call == nil || call?.state != Call.State.IncomingReceived) {
-			// The application is not yet registered or the call is not yet received, mark the call as accepted. The audio session must be configured here.
-			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
-			callInfo?.accepted = true
-			callInfos.updateValue(callInfo!, forKey: uuid)
-			CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 10)
-		} else {
+		if (call != nil) {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		}
 		action.fulfill()

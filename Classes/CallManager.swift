@@ -161,27 +161,7 @@ import AVFoundation
 		}
 	}
 
-	// From ios13, display the callkit view when the notification is received.
-	@objc func displayIncomingCall(callId: String) {
-		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
-		if (uuid != nil) {
-			// This call was declined.
-			providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: false)
-			providerDelegate.endCall(uuid: uuid!)
-			return
-		}
-
-		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call != nil) {
-			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
-			let video = call?.params?.videoEnabled ?? false
-			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
-		} else {
-			displayIncomingCall(call: nil, handle: "Calling", hasVideo: false, callId: callId)
-		}
-	}
-
-	func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String) {
+	func displayIncomingCall(call:Call, handle: String, hasVideo: Bool, callId: String) {
 		let uuid = UUID()
 		let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
 
@@ -384,6 +364,11 @@ class CoreManagerDelegate: CoreDelegate {
 	static var speaker_already_enabled : Bool = false
 
 	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
+		if (cstate == .PushIncomingReceived) {
+			CallManager.instance().displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: call.callLog?.callId ?? "")
+			return;
+		}
+
 		let addr = call.remoteAddress;
 		let address = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
@@ -406,14 +391,6 @@ class CoreManagerDelegate: CoreDelegate {
 					if (uuid != nil) {
 						// Tha app is now registered, updated the call already existed.
 						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: address, hasVideo: video)
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						if (callInfo?.declined ?? false) {
-							// The call is already declined.
-							try? call.decline(reason: Reason.Unknown)
-						} else if (callInfo?.accepted ?? false) {
-							// The call is already answered.
-							CallManager.instance().acceptCall(call: call, hasVideo: video)
-						}
 					} else if (!(CallManager.instance().alreadyRegisteredForNotification && UIApplication.shared.isRegisteredForRemoteNotifications)) {
 						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
