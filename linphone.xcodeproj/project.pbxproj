@@ -960,6 +960,52 @@
 		615A28412180C0820060F920 /* recording.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording.png; sourceTree = "<group>"; };
 		615A28432180C08F0060F920 /* recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "recording@2x.png"; sourceTree = "<group>"; };
 		6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		6187B1B524B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AboutView.strings; sourceTree = "<group>"; };
+		6187B1B624B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
+		6187B1B724B3271600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantView.strings; sourceTree = "<group>"; };
+		6187B1B824B3271600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
+		6187B1B924B3271700D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
+		6187B1BA24B3271700D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/CallOutgoingView.strings; sourceTree = "<group>"; };
+		6187B1BB24B3271700D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/CallView.strings; sourceTree = "<group>"; };
+		6187B1BC24B3271800D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = "hu.lproj/CallView~ipad.strings"; sourceTree = "<group>"; };
+		6187B1BD24B3271800D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ChatConversationCreateView.strings; sourceTree = "<group>"; };
+		6187B1BE24B3271900D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ChatConversationImdnView.strings; sourceTree = "<group>"; };
+		6187B1BF24B3271900D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ChatConversationInfoView.strings; sourceTree = "<group>"; };
+		6187B1C024B3271A00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
+		6187B1C124B3271A00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ChatsListView.strings; sourceTree = "<group>"; };
+		6187B1C224B3271A00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ContactDetailsView.strings; sourceTree = "<group>"; };
+		6187B1C324B3271B00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ContactsListView.strings; sourceTree = "<group>"; };
+		6187B1C424B3271B00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/CountryListView.strings; sourceTree = "<group>"; };
+		6187B1C524B3271B00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/DialerView.strings; sourceTree = "<group>"; };
+		6187B1C624B3271C00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = "hu.lproj/DialerView~ipad.strings"; sourceTree = "<group>"; };
+		6187B1C724B3271C00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/FirstLoginView.strings; sourceTree = "<group>"; };
+		6187B1C824B3271D00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
+		6187B1C924B3271D00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/HistoryListView.strings; sourceTree = "<group>"; };
+		6187B1CA24B3271E00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ImageView.strings; sourceTree = "<group>"; };
+		6187B1CB24B3271E00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UICallConferenceCell.strings; sourceTree = "<group>"; };
+		6187B1CC24B3271E00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UICallPausedCell.strings; sourceTree = "<group>"; };
+		6187B1CD24B3271F00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatBubblePhotoCell.strings; sourceTree = "<group>"; };
+		6187B1CE24B3271F00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatBubbleTextCell.strings; sourceTree = "<group>"; };
+		6187B1CF24B3271F00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatCell.strings; sourceTree = "<group>"; };
+		6187B1D024B3272000D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatConversationImdnTableViewCell.strings; sourceTree = "<group>"; };
+		6187B1D124B3272000D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatConversationInfoTableViewCell.strings; sourceTree = "<group>"; };
+		6187B1D224B3272100D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatCreateCell.strings; sourceTree = "<group>"; };
+		6187B1D324B3272100D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatCreateCollectionViewCell.strings; sourceTree = "<group>"; };
+		6187B1D424B3272100D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UICompositeView.strings; sourceTree = "<group>"; };
+		6187B1D524B3272200D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = "hu.lproj/UICompositeView~ipad.strings"; sourceTree = "<group>"; };
+		6187B1D624B3272200D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIConfirmationDialog.strings; sourceTree = "<group>"; };
+		6187B1D724B3272300D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIContactCell.strings; sourceTree = "<group>"; };
+		6187B1D824B3272300D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIContactDetailsCell.strings; sourceTree = "<group>"; };
+		6187B1D924B3272400D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIHistoryCell.strings; sourceTree = "<group>"; };
+		6187B1DA24B3272400D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/PhoneMainView.strings; sourceTree = "<group>"; };
+		6187B1DB24B3272400D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/SettingsView.strings; sourceTree = "<group>"; };
+		6187B1DC24B3272500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ShopView.strings; sourceTree = "<group>"; };
+		6187B1DD24B3272500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/SideMenuView.strings; sourceTree = "<group>"; };
+		6187B1DE24B3272600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = "hu.lproj/SideMenuView~ipad.strings"; sourceTree = "<group>"; };
+		6187B1DF24B3272600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/StatusBarView.strings; sourceTree = "<group>"; };
+		6187B1E024B3272700D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/TabBarView.strings; sourceTree = "<group>"; };
+		6187B1E124B3272C00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		6187B1E224B3272D00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/MainInterface.strings; sourceTree = "<group>"; };
 		61AE364B20C00B370089D9D3 /* linphoneExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = linphoneExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		61AE364D20C00B370089D9D3 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		61AE364E20C00B370089D9D3 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
@@ -3294,6 +3340,7 @@
 				tr,
 				zh_CN,
 				fr,
+				hu,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
@@ -4314,6 +4361,7 @@
 				570742571D5A0691004B9C84 /* Base */,
 				61E8E46923C5EA2B00434E71 /* en */,
 				61E8E46B23C5EA2E00434E71 /* fr */,
+				6187B1DC24B3272500D580FB /* hu */,
 			);
 			name = ShopView.xib;
 			sourceTree = "<group>";
@@ -4322,6 +4370,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				61AE365120C00B370089D9D3 /* Base */,
+				6187B1E124B3272C00D580FB /* hu */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
@@ -4331,6 +4380,7 @@
 			children = (
 				631098511D4660630041F2B3 /* Base */,
 				8CBD7BBE20B6B87400E5DCC0 /* fr */,
+				6187B1C424B3271B00D580FB /* hu */,
 			);
 			name = CountryListView.xib;
 			sourceTree = "<group>";
@@ -4340,6 +4390,7 @@
 			children = (
 				63130FB11C1ED06900371918 /* Base */,
 				8CBD7BD820B6B88F00E5DCC0 /* fr */,
+				6187B1DE24B3272600D580FB /* hu */,
 			);
 			name = "SideMenuView~ipad.xib";
 			sourceTree = "<group>";
@@ -4349,6 +4400,7 @@
 			children = (
 				634610111B6140A500548952 /* Base */,
 				8CBD7BB420B6B86B00E5DCC0 /* fr */,
+				6187B1BA24B3271700D580FB /* hu */,
 			);
 			name = CallOutgoingView.xib;
 			sourceTree = "<group>";
@@ -4359,6 +4411,7 @@
 				636316D21A1DEBCB0009B839 /* Base */,
 				61E8E46323C5E8EC00434E71 /* ar */,
 				61E8E46523C5E8F000434E71 /* fr */,
+				6187B1B524B3271500D580FB /* hu */,
 			);
 			name = AboutView.xib;
 			sourceTree = "<group>";
@@ -4369,6 +4422,7 @@
 				636316D51A1DEC650009B839 /* Base */,
 				F0AF070E1A24BA770086C9C1 /* ar */,
 				8CBD7BD520B6B88C00E5DCC0 /* fr */,
+				6187B1DB24B3272400D580FB /* hu */,
 			);
 			name = SettingsView.xib;
 			sourceTree = "<group>";
@@ -4378,6 +4432,7 @@
 			children = (
 				638F1A611C2021B2004B8E02 /* Base */,
 				8CBD7BC020B6B87500E5DCC0 /* fr */,
+				6187B1C624B3271C00D580FB /* hu */,
 			);
 			name = "DialerView~ipad.xib";
 			sourceTree = "<group>";
@@ -4387,6 +4442,7 @@
 			children = (
 				638F1A871C2167C2004B8E02 /* Base */,
 				8CBD7BB620B6B86D00E5DCC0 /* fr */,
+				6187B1BC24B3271800D580FB /* hu */,
 			);
 			name = "CallView~ipad.xib";
 			sourceTree = "<group>";
@@ -4396,6 +4452,7 @@
 			children = (
 				638F1A901C21993D004B8E02 /* Base */,
 				8CBD7BCF20B6B88200E5DCC0 /* fr */,
+				6187B1D524B3272200D580FB /* hu */,
 			);
 			name = "UICompositeView~ipad.xib";
 			sourceTree = "<group>";
@@ -4406,6 +4463,7 @@
 				639CEAFE1A1DF4D9004DE38F /* Base */,
 				F0AF070C1A24BA770086C9C1 /* ar */,
 				8CBD7BD920B6B89000E5DCC0 /* fr */,
+				6187B1DF24B3272600D580FB /* hu */,
 			);
 			name = StatusBarView.xib;
 			path = LinphoneUI;
@@ -4417,6 +4475,7 @@
 				639CEB011A1DF4E4004DE38F /* Base */,
 				F0AF07091A24BA770086C9C1 /* ar */,
 				8CBD7BD320B6B88900E5DCC0 /* fr */,
+				6187B1D924B3272400D580FB /* hu */,
 			);
 			name = UIHistoryCell.xib;
 			sourceTree = "<group>";
@@ -4427,6 +4486,7 @@
 				639CEB041A1DF4EB004DE38F /* Base */,
 				F0AF07041A24BA770086C9C1 /* ar */,
 				8CBD7BCE20B6B88100E5DCC0 /* fr */,
+				6187B1D424B3272100D580FB /* hu */,
 			);
 			name = UICompositeView.xib;
 			sourceTree = "<group>";
@@ -4437,6 +4497,7 @@
 				639CEB0A1A1DF4FA004DE38F /* Base */,
 				F0AF07021A24BA770086C9C1 /* ar */,
 				8CBD7BC920B6B87B00E5DCC0 /* fr */,
+				6187B1CF24B3271F00D580FB /* hu */,
 			);
 			name = UIChatCell.xib;
 			sourceTree = "<group>";
@@ -4446,6 +4507,7 @@
 			children = (
 				639E9C941C0DB7BE00019A75 /* Base */,
 				8CBD7BC120B6B87600E5DCC0 /* fr */,
+				6187B1C724B3271C00D580FB /* hu */,
 			);
 			name = FirstLoginView.xib;
 			sourceTree = "<group>";
@@ -4455,6 +4517,7 @@
 			children = (
 				639E9C9E1C0DB7DF00019A75 /* Base */,
 				8CBD7BC620B6B87900E5DCC0 /* fr */,
+				6187B1CC24B3271E00D580FB /* hu */,
 			);
 			name = UICallPausedCell.xib;
 			sourceTree = "<group>";
@@ -4464,6 +4527,7 @@
 			children = (
 				639E9CA11C0DB7E500019A75 /* Base */,
 				8CBD7BC720B6B87A00E5DCC0 /* fr */,
+				6187B1CD24B3271F00D580FB /* hu */,
 			);
 			name = UIChatBubblePhotoCell.xib;
 			sourceTree = "<group>";
@@ -4473,6 +4537,7 @@
 			children = (
 				639E9CA41C0DB7EA00019A75 /* Base */,
 				8CBD7BC820B6B87B00E5DCC0 /* fr */,
+				6187B1CE24B3271F00D580FB /* hu */,
 			);
 			name = UIChatBubbleTextCell.xib;
 			sourceTree = "<group>";
@@ -4482,6 +4547,7 @@
 			children = (
 				639E9CA71C0DB7F200019A75 /* Base */,
 				8CBD7BCD20B6B88000E5DCC0 /* fr */,
+				6187B1D224B3272100D580FB /* hu */,
 			);
 			name = UIChatCreateCell.xib;
 			sourceTree = "<group>";
@@ -4491,6 +4557,7 @@
 			children = (
 				639E9CAA1C0DB7FB00019A75 /* Base */,
 				8CBD7BD020B6B88400E5DCC0 /* fr */,
+				6187B1D624B3272200D580FB /* hu */,
 			);
 			name = UIConfirmationDialog.xib;
 			sourceTree = "<group>";
@@ -4500,6 +4567,7 @@
 			children = (
 				639E9CAD1C0DB80300019A75 /* Base */,
 				8CBD7BD220B6B88700E5DCC0 /* fr */,
+				6187B1D824B3272300D580FB /* hu */,
 			);
 			name = UIContactDetailsCell.xib;
 			sourceTree = "<group>";
@@ -4509,6 +4577,7 @@
 			children = (
 				639E9CB11C0DB83000019A75 /* Base */,
 				8CBD7BD720B6B88E00E5DCC0 /* fr */,
+				6187B1DD24B3272500D580FB /* hu */,
 			);
 			name = SideMenuView.xib;
 			sourceTree = "<group>";
@@ -4518,6 +4587,7 @@
 			children = (
 				639E9CB41C0DB88200019A75 /* Base */,
 				8CBD7BD420B6B88A00E5DCC0 /* fr */,
+				6187B1DA24B3272400D580FB /* hu */,
 			);
 			name = PhoneMainView.xib;
 			sourceTree = "<group>";
@@ -4541,6 +4611,7 @@
 			children = (
 				63B8D68D1BCBE65600C12B09 /* Base */,
 				8CBD7BB920B6B87000E5DCC0 /* fr */,
+				6187B1BD24B3271800D580FB /* hu */,
 			);
 			name = ChatConversationCreateView.xib;
 			sourceTree = "<group>";
@@ -4550,6 +4621,7 @@
 			children = (
 				63EC8D3A1D7438660066547B /* Base */,
 				61E8E46723C5E9B400434E71 /* fr */,
+				6187B1B624B3271500D580FB /* hu */,
 			);
 			name = AssistantLinkView.xib;
 			sourceTree = "<group>";
@@ -4559,6 +4631,7 @@
 			children = (
 				63F1DF521BCE986A00EDED90 /* Base */,
 				8CBD7BC520B6B87800E5DCC0 /* fr */,
+				6187B1CB24B3271E00D580FB /* hu */,
 			);
 			name = UICallConferenceCell.xib;
 			sourceTree = "<group>";
@@ -4568,6 +4641,7 @@
 			children = (
 				8CBD7BA120B6B7FD00E5DCC0 /* Base */,
 				8CBD7BB720B6B86E00E5DCC0 /* fr */,
+				6187B1BF24B3271900D580FB /* hu */,
 			);
 			name = ChatConversationInfoView.xib;
 			sourceTree = "<group>";
@@ -4577,6 +4651,7 @@
 			children = (
 				8CBD7BA420B6B80D00E5DCC0 /* Base */,
 				8CBD7BB820B6B86F00E5DCC0 /* fr */,
+				6187B1BE24B3271900D580FB /* hu */,
 			);
 			name = ChatConversationImdnView.xib;
 			sourceTree = "<group>";
@@ -4587,6 +4662,7 @@
 				8CBD7BA720B6B82400E5DCC0 /* Base */,
 				8CBD7BCA20B6B87D00E5DCC0 /* fr */,
 				8CBD7BE120B6C1E500E5DCC0 /* en */,
+				6187B1D124B3272000D580FB /* hu */,
 			);
 			name = UIChatConversationInfoTableViewCell.xib;
 			sourceTree = "<group>";
@@ -4597,6 +4673,7 @@
 				8CBD7BAA20B6B82A00E5DCC0 /* Base */,
 				8CBD7BCB20B6B87E00E5DCC0 /* fr */,
 				8CBD7BDF20B6C1E200E5DCC0 /* en */,
+				6187B1D024B3272000D580FB /* hu */,
 			);
 			name = UIChatConversationImdnTableViewCell.xib;
 			sourceTree = "<group>";
@@ -4607,6 +4684,7 @@
 				8CBD7BAD20B6B82F00E5DCC0 /* Base */,
 				8CBD7BCC20B6B87E00E5DCC0 /* fr */,
 				8CBD7BE320B6C1E900E5DCC0 /* en */,
+				6187B1D324B3272100D580FB /* hu */,
 			);
 			name = UIChatCreateCollectionViewCell.xib;
 			sourceTree = "<group>";
@@ -4618,6 +4696,7 @@
 				F09548441883F52900E8A69B /* ru */,
 				F0AF06FB1A24BA770086C9C1 /* ar */,
 				8CBD7BC420B6B87800E5DCC0 /* fr */,
+				6187B1CA24B3271E00D580FB /* hu */,
 			);
 			name = ImageView.xib;
 			sourceTree = "<group>";
@@ -4629,6 +4708,7 @@
 				F09548321883F20A00E8A69B /* ru */,
 				F0AF06F11A24BA760086C9C1 /* ar */,
 				8CBD7BBA20B6B87000E5DCC0 /* fr */,
+				6187B1C024B3271A00D580FB /* hu */,
 			);
 			name = ChatConversationView.xib;
 			sourceTree = "<group>";
@@ -4640,6 +4720,7 @@
 				F09548341883F25F00E8A69B /* ru */,
 				F0AF06F21A24BA760086C9C1 /* ar */,
 				8CBD7BBB20B6B87100E5DCC0 /* fr */,
+				6187B1C124B3271A00D580FB /* hu */,
 			);
 			name = ChatsListView.xib;
 			sourceTree = "<group>";
@@ -4651,6 +4732,7 @@
 				F09548381883F29C00E8A69B /* ru */,
 				F0AF06F41A24BA760086C9C1 /* ar */,
 				8CBD7BBC20B6B87200E5DCC0 /* fr */,
+				6187B1C224B3271A00D580FB /* hu */,
 			);
 			name = ContactDetailsView.xib;
 			sourceTree = "<group>";
@@ -4662,6 +4744,7 @@
 				F095483A1883F2CA00E8A69B /* ru */,
 				F0AF06F51A24BA760086C9C1 /* ar */,
 				8CBD7BBD20B6B87300E5DCC0 /* fr */,
+				6187B1C324B3271B00D580FB /* hu */,
 			);
 			name = ContactsListView.xib;
 			sourceTree = "<group>";
@@ -4673,6 +4756,7 @@
 				F095483C1883F2E300E8A69B /* ru */,
 				F0AF06F61A24BA760086C9C1 /* ar */,
 				8CBD7BBF20B6B87400E5DCC0 /* fr */,
+				6187B1C524B3271B00D580FB /* hu */,
 			);
 			name = DialerView.xib;
 			sourceTree = "<group>";
@@ -4684,6 +4768,7 @@
 				636316DB1A1DEDD80009B839 /* ru */,
 				F0AF06F91A24BA760086C9C1 /* ar */,
 				8CBD7BC220B6B87600E5DCC0 /* fr */,
+				6187B1C824B3271D00D580FB /* hu */,
 			);
 			name = HistoryDetailsView.xib;
 			sourceTree = "<group>";
@@ -4695,6 +4780,7 @@
 				F09548421883F51B00E8A69B /* ru */,
 				F0AF06FA1A24BA770086C9C1 /* ar */,
 				8CBD7BC320B6B87700E5DCC0 /* fr */,
+				6187B1C924B3271D00D580FB /* hu */,
 			);
 			name = HistoryListView.xib;
 			sourceTree = "<group>";
@@ -4706,6 +4792,7 @@
 				F09548481883F55800E8A69B /* ru */,
 				F0AF06FD1A24BA770086C9C1 /* ar */,
 				8CBD7BB320B6B86B00E5DCC0 /* fr */,
+				6187B1B924B3271700D580FB /* hu */,
 			);
 			name = CallIncomingView.xib;
 			sourceTree = "<group>";
@@ -4717,6 +4804,7 @@
 				F095485A1883F67B00E8A69B /* ru */,
 				F0AF070F1A24BA770086C9C1 /* ar */,
 				8CBD7BB120B6B86900E5DCC0 /* fr */,
+				6187B1B724B3271600D580FB /* hu */,
 			);
 			name = AssistantView.xib;
 			sourceTree = "<group>";
@@ -4728,6 +4816,7 @@
 				F09548561883F61600E8A69B /* ru */,
 				F0AF070A1A24BA770086C9C1 /* ar */,
 				8CBD7BDA20B6B89000E5DCC0 /* fr */,
+				6187B1E024B3272700D580FB /* hu */,
 			);
 			name = TabBarView.xib;
 			path = LinphoneUI;
@@ -4740,6 +4829,7 @@
 				F09548461883F54200E8A69B /* ru */,
 				F0AF06FC1A24BA770086C9C1 /* ar */,
 				8CBD7BB520B6B86C00E5DCC0 /* fr */,
+				6187B1BB24B3271700D580FB /* hu */,
 			);
 			name = CallView.xib;
 			sourceTree = "<group>";
@@ -4751,6 +4841,7 @@
 				F095485E1883F6EA00E8A69B /* ru */,
 				F0AF07111A24BA770086C9C1 /* ar */,
 				8CBD7BB220B6B86A00E5DCC0 /* fr */,
+				6187B1B824B3271600D580FB /* hu */,
 			);
 			name = AssistantViewScreens.xib;
 			sourceTree = "<group>";
@@ -4759,6 +4850,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				EA8CB82E239F96CA00C330CC /* Base */,
+				6187B1E224B3272D00D580FB /* hu */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
@@ -4769,6 +4861,7 @@
 				F088488C19FF8C41007FFCF3 /* Base */,
 				F0AF07061A24BA770086C9C1 /* ar */,
 				8CBD7BD120B6B88500E5DCC0 /* fr */,
+				6187B1D724B3272300D580FB /* hu */,
 			);
 			name = UIContactCell.xib;
 			sourceTree = "<group>";
@@ -4794,7 +4887,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -4823,7 +4916,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -4920,7 +5013,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -4946,7 +5039,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5042,7 +5135,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5068,7 +5161,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5163,7 +5256,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5189,7 +5282,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5236,7 +5329,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5248,7 +5341,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5278,7 +5371,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5289,7 +5382,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5319,7 +5412,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5330,7 +5423,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5361,7 +5454,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5372,7 +5465,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5455,7 +5548,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5472,7 +5565,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5511,7 +5604,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5524,7 +5617,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5563,7 +5656,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5576,7 +5669,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5615,7 +5708,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5628,7 +5721,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5666,7 +5759,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5683,7 +5776,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5721,7 +5814,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5734,7 +5827,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5772,7 +5865,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5785,7 +5878,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5823,7 +5916,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 61;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
@@ -5836,7 +5929,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.3.0;
+				MARKETING_VERSION = 4.3.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
