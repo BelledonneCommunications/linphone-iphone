@@ -877,7 +877,7 @@ static RootViewManager *rootViewManagerInstance = nil;
             [self presentViewController:errView animated:YES completion:nil];
             return nil;
         }
-		LinphoneChatRoom *basicRoom = linphone_core_create_chat_room_5(LC, addresses->data);
+		LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
         [self goToChatRoom:basicRoom];
         return nil;
     }
