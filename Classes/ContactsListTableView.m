@@ -126,7 +126,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			return name2ASCII;
 		}
 	}
-	return nil;
+	return NSLocalizedString(@"Unknown", nil);
 }
 
 - (void)loadData {
@@ -186,7 +186,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 				  add = (contact.emails.count > 0);
 				}
 
-				NSMutableString *name = [self displayNameForContact:contact] ? [[NSMutableString alloc] initWithString: [self displayNameForContact:contact]] : nil;
+				NSMutableString *name = [[NSMutableString alloc] initWithString: [self displayNameForContact:contact]];
 				if (add && name != nil) {
 					NSString *firstChar = [[name substringToIndex:1] uppercaseString];
 					// Put in correct subAr
