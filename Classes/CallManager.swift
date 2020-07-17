@@ -228,6 +228,22 @@ import AVFoundation
 		}
 	}
 
+	// Used when addressBook updated
+	@objc func updateIncomingCall() {
+		let call = lc?.currentCall
+		if (call == nil || call!.state != .IncomingReceived) {
+			return
+		}
+		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: LinphoneAddressBookUpdated, updating callkit view")
+		let callId = call!.callLog!.callId
+		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
+		if (uuid != nil) {
+			let address = FastAddressBook.displayName(for: call!.remoteAddress?.getCobject) ?? "Unknow"
+			let video = UIApplication.shared.applicationState == .active && (lc?.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
+			CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: address, hasVideo: video)
+		}
+	}
+
 	// for outgoing call. There is not yet callId
 	@objc func startCall(addr: OpaquePointer?, isSas: Bool) {
 		if (addr == nil) {
