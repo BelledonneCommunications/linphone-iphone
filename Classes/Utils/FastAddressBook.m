@@ -226,6 +226,8 @@
 		[NSNotificationCenter.defaultCenter
 		 postNotificationName:kLinphoneAddressBookUpdate
 		 object:self];
+
+		[CallManager.instance updateIncomingCall];
 	}];
 }
 
