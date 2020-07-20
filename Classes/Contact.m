@@ -136,7 +136,7 @@
 		NSString *lOrganization = _person.organizationName;
 		NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
 
-		if (compositeName)
+		if (compositeName && ![compositeName isEqualToString:@""])
 			return compositeName;
 		if (lLocalizedFirstName || lLocalizedLastName)
 			return [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
