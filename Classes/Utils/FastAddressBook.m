@@ -318,7 +318,7 @@
 
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr {
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
-	if (contact && ![contact.displayName isEqualToString:@""])
+	if (contact && ![contact.displayName isEqualToString:NSLocalizedString(@"Unknown", nil)])
 		return [FastAddressBook displayNameForContact:contact];
 
 	LinphoneFriend *friend = linphone_core_find_friend(LC, addr);
