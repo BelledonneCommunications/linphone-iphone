@@ -466,7 +466,8 @@ class CoreManagerDelegate: CoreDelegate {
 					CoreManagerDelegate.speaker_already_enabled = true
 				}
 				break
-			case .OutgoingRinging:
+			case .OutgoingRinging,
+				 .OutgoingEarlyMedia:
 				if (CallManager.callKitEnabled()) {
 					let uuid = CallManager.instance().providerDelegate.uuids[""]
 					if (uuid != nil) {
