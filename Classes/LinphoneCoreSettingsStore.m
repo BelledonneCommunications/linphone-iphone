@@ -551,7 +551,7 @@
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
 
-		if (linphone_proxy_config_set_identity(proxyCfg, identity) == -1) {
+		if (linphone_proxy_config_set_identity_address(proxyCfg, linphoneAddress) == -1) {
 			error = NSLocalizedString(@"Invalid username or domain", nil);
 			goto bad_proxy;
 		}
@@ -586,7 +586,7 @@
 		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
-		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
+		linphone_proxy_config_set_avpf_mode(proxyCfg, use_avpf);
 		linphone_proxy_config_set_expires(proxyCfg, expire);
 		if (is_default) {
 			linphone_core_set_default_proxy_config(LC, proxyCfg);

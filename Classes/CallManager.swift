@@ -400,12 +400,12 @@ import AVFoundation
 class CoreManagerDelegate: CoreDelegate {
 	static var speaker_already_enabled : Bool = false
 
-	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
+	override func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let addr = call.remoteAddress;
 		let address = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
 		let callId = callLog?.callId
-		let video = UIApplication.shared.applicationState == .active && (lc.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+		let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 		// we keep the speaker auto-enabled state in this static so that we don't
 		// force-enable it on ICE re-invite if the user disabled it.
 		CoreManagerDelegate.speaker_already_enabled = false
