@@ -82,7 +82,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
             }
 
             if (needToStop) {
-                log.error(msg: "core stopped by app")
+                log.error(message: "core stopped by app")
                 throw LinphoneError.timeout
             } else {
                 completion(.dismiss)
@@ -90,7 +90,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
             }
 
         } catch {
-            log.error(msg: "error: \(error)")
+            log.error(message: "error: \(error)")
             completion(.dismissAndForwardAction)
         }
     }
@@ -123,19 +123,19 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
             msgDelegate = LinphoneChatMessageManager()
             let chatMsg = try room.createMessage(message: replyText)
             chatMsg.addDelegate(delegate: msgDelegate)
-            room.sendChatMessage(msg: chatMsg)
+			chatMsg.send()
             room.markAsRead()
         }
 
         for i in 0...50 where !isReplySent && !needToStop {
-            log.debug(msg: "reply \(i)")
+            log.debug(message: "reply \(i)")
             lc!.iterate()
             usleep(10000)
         }
     }
 
     func startCore() throws {
-		config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryPath: "")
+		config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryConfigFilename: "")
 		log = LoggingService.Instance /*enable liblinphone logs.*/
 		logDelegate = try! LinphoneLoggingServiceManager(config: config, log: log, domain: "msgNotificationContent")
         lc = try! Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
@@ -145,27 +145,27 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         lc!.addDelegate(delegate: coreDelegate)
 
         try lc!.start()
-        log.message(msg: "core started")
+        log.message(message: "core started")
 
         if (needToStop) {
-            log.error(msg: "core stopped by app")
+            log.error(message: "core stopped by app")
             throw LinphoneError.timeout
         }
     }
 
     func stopCore() {
         lc!.stopAsync()
-        log.message(msg: "stop core")
+        log.message(message: "stop core")
         for i in 0...100 where !coreStopped {
-            log.debug(msg: "stop \(i)")
+            log.debug(message: "stop \(i)")
             lc!.iterate()
             usleep(50000)
         }
     }
 
     class LinphoneCoreManager: CoreDelegate {
-        override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
-            log.message(msg: "global state changed: \(gstate) : \(message) \n")
+		override func onGlobalStateChanged(core: Core, state gstate: GlobalState, message: String) {
+            log.message(message: "global state changed: \(gstate) : \(message) \n")
             if (gstate == .Shutdown) {
                 needToStop = true
             } else if (gstate == .Off) {
@@ -175,8 +175,8 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
     }
 
     class LinphoneChatMessageManager: ChatMessageDelegate {
-        override func onMsgStateChanged(msg: ChatMessage, state: ChatMessage.State) {
-            log.message(msg: "msg state changed: \(state)\n")
+		override func onMsgStateChanged(message: ChatMessage, state: ChatMessage.State) {
+            log.message(message: "msg state changed: \(state)\n")
             if (state == .Delivered) {
                 isReplySent = true
             }

@@ -388,7 +388,7 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 					  withDefault:@"sip.linphone.org"]
 				   .UTF8String) != 0) {
 				LOGI(@"Migrating proxy config to use AVPF");
-				linphone_proxy_config_enable_avpf(proxy, TRUE);
+				linphone_proxy_config_set_avpf_mode(proxy, LinphoneAVPFEnabled);
 			}
 			proxies = proxies->next;
 		}
@@ -511,7 +511,7 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 + (void)dumpLcConfig {
 	if (theLinphoneCore) {
 		LpConfig *conf = LinphoneManager.instance.configDb;
-		char *config = lp_config_dump(conf);
+		char *config = linphone_config_dump(conf);
 		LOGI(@"\n%s", config);
 		ms_free(config);
 	}
@@ -1670,7 +1670,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		factory = factoryIpad;
 	}
 	_configDb = linphone_config_new_for_shared_core(kLinphoneMsgNotificationAppGroupId.UTF8String, @"linphonerc".UTF8String, factory.UTF8String);
-	lp_config_clean_entry(_configDb, "misc", "max_calls");
+	linphone_config_clean_entry(_configDb, "misc", "max_calls");
 }
 #pragma mark - Audio route Functions
 
@@ -2002,7 +2002,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)configureVbrCodecs {
 	PayloadType *pt;
-	int bitrate = lp_config_get_int(
+	int bitrate = linphone_config_get_int(
 					_configDb, "audio", "codec_bitrate_limit",
 					kLinphoneAudioVbrCodecDefaultBitrate); /*default value is in linphonerc or linphonerc-factory*/
 	const MSList *audio_codecs = linphone_core_get_audio_codecs(theLinphoneCore);
@@ -2057,7 +2057,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)lpConfigSetString:(NSString *)value forKey:(NSString *)key inSection:(NSString *)section {
 	if (!key)
 		return;
-	lp_config_set_string(_configDb, [section UTF8String], [key UTF8String], value ? [value UTF8String] : NULL);
+	linphone_config_set_string(_configDb, [section UTF8String], [key UTF8String], value ? [value UTF8String] : NULL);
 }
 - (NSString *)lpConfigStringForKey:(NSString *)key {
 	return [self lpConfigStringForKey:key withDefault:nil];
@@ -2071,7 +2071,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (NSString *)lpConfigStringForKey:(NSString *)key inSection:(NSString *)section withDefault:(NSString *)defaultValue {
 	if (!key)
 		return defaultValue;
-	const char *value = lp_config_get_string(_configDb, [section UTF8String], [key UTF8String], NULL);
+	const char *value = linphone_config_get_string(_configDb, [section UTF8String], [key UTF8String], NULL);
 	return value ? [NSString stringWithUTF8String:value] : defaultValue;
 }
 
@@ -2081,7 +2081,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)lpConfigSetInt:(int)value forKey:(NSString *)key inSection:(NSString *)section {
 	if (!key)
 		return;
-	lp_config_set_int(_configDb, [section UTF8String], [key UTF8String], (int)value);
+	linphone_config_set_int(_configDb, [section UTF8String], [key UTF8String], (int)value);
 }
 - (int)lpConfigIntForKey:(NSString *)key {
 	return [self lpConfigIntForKey:key withDefault:-1];
@@ -2095,7 +2095,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (int)lpConfigIntForKey:(NSString *)key inSection:(NSString *)section withDefault:(int)defaultValue {
 	if (!key)
 		return defaultValue;
-	return lp_config_get_int(_configDb, [section UTF8String], [key UTF8String], (int)defaultValue);
+	return linphone_config_get_int(_configDb, [section UTF8String], [key UTF8String], (int)defaultValue);
 }
 
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString *)key {

@@ -58,15 +58,15 @@ class NotificationService: UNNotificationServiceExtension {
 
 		if let bestAttemptContent = bestAttemptContent {
 			createCore()
-			NotificationService.log.message(msg: "received push payload : \(bestAttemptContent.userInfo.debugDescription)")
+			NotificationService.log.message(message: "received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
-				NotificationService.log.message(msg: "fetch chat room for invite, addr: \(chatRoomInviteAddr)")
+				NotificationService.log.message(message: "fetch chat room for invite, addr: \(chatRoomInviteAddr)")
 				let chatRoom = lc!.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
 
 				if let chatRoom = chatRoom {
 					stopCore()
-					NotificationService.log.message(msg: "chat room invite received")
+					NotificationService.log.message(message: "chat room invite received")
 					bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 					if (chatRoom.hasCapability(mask:ChatRoomCapabilities.OneToOne.rawValue)) {
 						if (chatRoom.peerAddress?.displayName.isEmpty != true) {
@@ -83,7 +83,7 @@ class NotificationService: UNNotificationServiceExtension {
 					return
 				}
 			} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
-				NotificationService.log.message(msg: "fetch msg for callid ["+callId+"]")
+				NotificationService.log.message(message: "fetch msg for callid ["+callId+"]")
 				let message = lc!.getNewMessageFromCallid(callId: callId)
 
 				if let message = message {
@@ -114,7 +114,7 @@ class NotificationService: UNNotificationServiceExtension {
 					contentHandler(bestAttemptContent)
 					return
 				} else {
-					NotificationService.log.message(msg: "Message not found for callid ["+callId+"]")
+					NotificationService.log.message(message: "Message not found for callid ["+callId+"]")
 				}
 			}
 			serviceExtensionTimeWillExpire()
@@ -124,7 +124,7 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-		NotificationService.log.warning(msg: "serviceExtensionTimeWillExpire")
+		NotificationService.log.warning(message: "serviceExtensionTimeWillExpire")
 		stopCore()
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
@@ -174,15 +174,15 @@ class NotificationService: UNNotificationServiceExtension {
 			}
 		}
 
-		NotificationService.log.message(msg: "msg: \(content) \n")
+		NotificationService.log.message(message: "msg: \(content) \n")
 		return msgData;
 	}
 
 	func createCore() {
 		NSLog("[msgNotificationService] create core")
-		let config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryPath: "")
+		let config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryConfigFilename: "")
 
-		if (NotificationService.log == nil || NotificationService.log.getDelegate() == nil) {
+		if (NotificationService.log == nil) {
 			NotificationService.log = LoggingService.Instance /*enable liblinphone logs.*/
 			NotificationService.logDelegate = try! LinphoneLoggingServiceManager(config: config!, log: NotificationService.log, domain: "msgNotificationService")
 		}
@@ -191,7 +191,7 @@ class NotificationService: UNNotificationServiceExtension {
 	}
 
 	func stopCore() {
-		NotificationService.log.message(msg: "stop core")
+		NotificationService.log.message(message: "stop core")
 		if let lc = lc {
 			lc.stop()
 		}
@@ -202,14 +202,14 @@ class NotificationService: UNNotificationServiceExtension {
         count += lc!.unreadChatMessageCount
         count += lc!.missedCallsCount
         count += lc!.callsNb
-		NotificationService.log.message(msg: "badge: \(count)\n")
+		NotificationService.log.message(message: "badge: \(count)\n")
 
         return count
     }
 
 	func getDisplayNameFromSipAddress(sipAddr: String?) -> String? {
 		if let sipAddr = sipAddr {
-			NotificationService.log.message(msg: "looking for display name for \(sipAddr)")
+			NotificationService.log.message(message: "looking for display name for \(sipAddr)")
 
 			if (sipAddr == "") { return nil }
 
@@ -217,15 +217,15 @@ class NotificationService: UNNotificationServiceExtension {
 			let addressBook = defaults?.dictionary(forKey: "addressBook")
 
 			if (addressBook == nil) {
-				NotificationService.log.message(msg: "address book not found in userDefaults")
+				NotificationService.log.message(message: "address book not found in userDefaults")
 				return nil
 			}
 
 			if let displayName = addressBook?[sipAddr] as? String {
-				NotificationService.log.message(msg: "display name for \(sipAddr): \(displayName)")
+				NotificationService.log.message(message: "display name for \(sipAddr): \(displayName)")
 				return displayName
 			} else {
-				NotificationService.log.message(msg: "display name for \(sipAddr) not found in userDefaults")
+				NotificationService.log.message(message: "display name for \(sipAddr) not found in userDefaults")
 				return nil
 			}
 		}

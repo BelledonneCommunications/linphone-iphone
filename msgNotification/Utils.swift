@@ -46,29 +46,29 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 		}
 	}
 
-	override func onLogMessageWritten(logService: LoggingService, domain: String, lev: LogLevel, message: String) {
-		let level: String
+	override func onLogMessageWritten(logService: LoggingService, domain: String, level: LogLevel, message: String) {
+		let levelStr: String
 
-		switch lev {
+		switch level {
 		case .Debug:
-			level = "Debug"
+			levelStr = "Debug"
 		case .Trace:
-			level = "Trace"
+			levelStr = "Trace"
 		case .Message:
-			level = "Message"
+			levelStr = "Message"
 		case .Warning:
-			level = "Warning"
+			levelStr = "Warning"
 		case .Error:
-			level = "Error"
+			levelStr = "Error"
 		case .Fatal:
-			level = "Fatal"
+			levelStr = "Fatal"
 		default:
-			level = "unknown"
+			levelStr = "unknown"
 		}
 
 #if USE_CRASHLYTICS
-		Crashlytics.crashlytics().log("\(level) [\(domain)] \(message)\n")
+		Crashlytics.crashlytics().log("\(levelStr) [\(domain)] \(message)\n")
 #endif
-		NSLog("\(level) [\(domain)] \(message)\n")
+		NSLog("\(levelStr) [\(domain)] \(message)\n")
 	}
 }
