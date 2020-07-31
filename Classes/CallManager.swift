@@ -94,22 +94,6 @@ import AVFoundation
 		}
 	}
 
-	@objc func findCall(callId: String?) -> OpaquePointer? {
-		let call = callByCallId(callId: callId)
-		return call?.getCobject
-	}
-
-	func callByCallId(callId: String?) -> Call? {
-		if (callId == nil) {
-			return nil
-		}
-		let calls = lc?.calls
-		if let callTmp = calls?.first(where: { $0.callLog?.callId == callId }) {
-			return callTmp
-		}
-		return nil
-	}
-
 	@objc static func callKitEnabled() -> Bool {
 		#if !targetEnvironment(simulator)
 		if ConfigManager.instance().lpConfigBoolForKey(key: "use_callkit", section: "app") {
@@ -163,34 +147,9 @@ import AVFoundation
 		}
 	}
 
-	// From ios13, display the callkit view when the notification is received.
-	@objc func displayIncomingCall(callId: String) {
-		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
-		if (uuid != nil) {
-			let callInfo = providerDelegate.callInfos[uuid!]
-			if (callInfo?.declined ?? false) {
-				// This call was declined.
-				providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: true)
-				providerDelegate.endCall(uuid: uuid!)
-			}
-			return
-		}
-
-		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call != nil) {
-			let addr = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
-			let video = UIApplication.shared.applicationState == .active && (lc!.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
-			displayIncomingCall(call: call, handle: addr, hasVideo: video, callId: callId)
-		} else {
-			displayIncomingCall(call: nil, handle: "Calling", hasVideo: true, callId: callId)
-		}
-	}
-
-	func displayIncomingCall(call:Call?, handle: String, hasVideo: Bool, callId: String) {
+	func displayIncomingCall(call:Call, handle: String, hasVideo: Bool, callId: String) {
 		let uuid = UUID()
-		let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
-
-		providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+		providerDelegate.callids.updateValue(callId, forKey: uuid)
 		providerDelegate.uuids.updateValue(uuid, forKey: callId)
 		providerDelegate.reportIncomingCall(call:call, uuid: uuid, handle: handle, hasVideo: hasVideo)
 	}
@@ -243,9 +202,10 @@ import AVFoundation
 			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
 			let transaction = CXTransaction(action: startCallAction)
 
-			let callInfo = CallInfo.newOutgoingCallInfo(addr: sAddr, isSas: isSas)
-			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+			providerDelegate.callids.updateValue("", forKey: uuid)
 			providerDelegate.uuids.updateValue(uuid, forKey: "")
+			providerDelegate.sases.updateValue(isSas, forKey: uuid)
+			providerDelegate.addresses.updateValue(sAddr, forKey: uuid)
 
 			requestTransaction(transaction, action: "startCall")
 		}else {
@@ -329,20 +289,10 @@ import AVFoundation
 	}
 
 	@objc func removeAllCallInfos() {
-		providerDelegate.callInfos.removeAll()
+		providerDelegate.callids.removeAll()
+		providerDelegate.sases.removeAll()
+		providerDelegate.addresses.removeAll()
 		providerDelegate.uuids.removeAll()
-	}
-
-	// To be removed.
-	static func configAudioSession(audioSession: AVAudioSession) {
-		do {
-			try audioSession.setCategory(AVAudioSession.Category.playAndRecord, mode: AVAudioSession.Mode.voiceChat, options: AVAudioSession.CategoryOptions(rawValue: AVAudioSession.CategoryOptions.allowBluetooth.rawValue | AVAudioSession.CategoryOptions.allowBluetoothA2DP.rawValue))
-			try audioSession.setMode(AVAudioSession.Mode.voiceChat)
-			try audioSession.setPreferredSampleRate(48000.0)
-			try AVAudioSession.sharedInstance().setActive(true, options: [])
-		} catch {
-			Log.directLog(BCTBX_LOG_WARNING, text: "CallKit: Unable to config audio session because : \(error)")
-		}
 	}
 
 	@objc func terminateCall(call: OpaquePointer?) {
@@ -359,25 +309,6 @@ import AVFoundation
 		}
 		if (UIApplication.shared.applicationState == .background) {
 			stopLinphoneCore()
-		}
-	}
-
-	@objc func markCallAsDeclined(callId: String) {
-		if !CallManager.callKitEnabled() {
-			return
-		}
-
-		let uuid = providerDelegate.uuids["\(callId)"]
-		if (uuid == nil) {
-			Log.directLog(BCTBX_LOG_MESSAGE, text: "Mark call \(callId) as declined.")
-			let uuid = UUID()
-			providerDelegate.uuids.updateValue(uuid, forKey: callId)
-			let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
-			callInfo.declined = true
-			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
-		} else {
-			// end call
-			providerDelegate.endCall(uuid: uuid!)
 		}
 	}
 
@@ -407,6 +338,11 @@ class CoreManagerDelegate: CoreDelegate {
 	static var speaker_already_enabled : Bool = false
 
 	override func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
+		if (cstate == .PushIncomingReceived) {
+			CallManager.instance().displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: call.callLog?.callId ?? "")
+			return;
+		}
+
 		let addr = call.remoteAddress;
 		let address = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
@@ -429,14 +365,6 @@ class CoreManagerDelegate: CoreDelegate {
 					if (uuid != nil) {
 						// Tha app is now registered, updated the call already existed.
 						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: address, hasVideo: video)
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						if (callInfo?.declined ?? false) {
-							// The call is already declined.
-							try? call.decline(reason: Reason.Unknown)
-						} else if (callInfo?.accepted ?? false) {
-							// The call is already answered.
-							CallManager.instance().acceptCall(call: call, hasVideo: video)
-						}
 					} else {
 						CallManager.instance().displayIncomingCall(call: call, handle: address, hasVideo: video, callId: callId!)
 					}
@@ -455,14 +383,9 @@ class CoreManagerDelegate: CoreDelegate {
 			case .StreamsRunning:
 				if (CallManager.callKitEnabled()) {
 					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
-					if (uuid != nil) {
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						if (callInfo != nil && callInfo!.isOutgoing && !callInfo!.connected) {
-							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
-							CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
-							callInfo!.connected = true
-							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-						}
+					if (uuid != nil && call.dir == Call.Dir.Outgoing) {
+						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
+						CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
 					}
 				}
 
@@ -476,12 +399,9 @@ class CoreManagerDelegate: CoreDelegate {
 				if (CallManager.callKitEnabled()) {
 					let uuid = CallManager.instance().providerDelegate.uuids[""]
 					if (uuid != nil) {
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						callInfo!.callId = callId!
-						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+						CallManager.instance().providerDelegate.callids.updateValue(callId ?? "", forKey: uuid!)
 						CallManager.instance().providerDelegate.uuids.removeValue(forKey: "")
 						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId!)
-
 						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
 						CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
 					} else {
@@ -533,11 +453,9 @@ class CoreManagerDelegate: CoreDelegate {
 						if (callId == CallManager.instance().referedFromCall) {
 							Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered from call : \(String(describing: CallManager.instance().referedFromCall))")
 							CallManager.instance().referedFromCall = nil
-							let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-							callInfo!.callId = CallManager.instance().referedToCall ?? ""
-							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+							CallManager.instance().providerDelegate.callids.updateValue(CallManager.instance().referedToCall ?? "", forKey: uuid!)
 							CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
-							CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
+							CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: CallManager.instance().referedToCall ?? "")
 							CallManager.instance().referedToCall = nil
 							break
 						}

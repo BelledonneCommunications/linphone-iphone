@@ -583,7 +583,6 @@
 
 		// use empty string "" instead of NULL to avoid being overwritten by default proxy config values
 		linphone_proxy_config_set_push_notification_allowed(proxyCfg, pushnotification);
-		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
 		linphone_proxy_config_set_avpf_mode(proxyCfg, use_avpf);

@@ -24,38 +24,15 @@ import linphonesw
 import AVFoundation
 import os
 
-@objc class CallInfo: NSObject {
-	var callId: String = ""
-	var accepted = false
-	var toAddr: Address?
-	var isOutgoing = false
-	var sasEnabled = false
-	var declined = false
-	var connected = false
-	
-	
-	static func newIncomingCallInfo(callId: String) -> CallInfo {
-		let callInfo = CallInfo()
-		callInfo.callId = callId
-		return callInfo
-	}
-	
-	static func newOutgoingCallInfo(addr: Address, isSas: Bool) -> CallInfo {
-		let callInfo = CallInfo()
-		callInfo.isOutgoing = true
-		callInfo.sasEnabled = isSas
-		callInfo.toAddr = addr
-		return callInfo
-	}
-}
-
 /*
 * A delegate to support callkit.
 */
 class ProviderDelegate: NSObject {
 	private let provider: CXProvider
 	var uuids: [String : UUID] = [:]
-	var callInfos: [UUID : CallInfo] = [:]
+	var callids: [UUID : String] = [:]
+	var sases: [UUID : Bool] = [:]
+	var addresses: [UUID: Address] = [:]
 
 	override init() {
 		provider = CXProvider(configuration: ProviderDelegate.providerConfiguration)
@@ -79,29 +56,21 @@ class ProviderDelegate: NSObject {
 		return providerConfiguration
 	}()
 
-	func reportIncomingCall(call:Call?, uuid: UUID, handle: String, hasVideo: Bool) {
+	func reportIncomingCall(call:Call, uuid: UUID, handle: String, hasVideo: Bool) {
 		let update = CXCallUpdate()
 		update.remoteHandle = CXHandle(type:.generic, value: handle)
 		update.hasVideo = hasVideo
 
-		let callInfo = callInfos[uuid]
-		let callId = callInfo?.callId
+		let callId = callids[uuid]
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
-			if error == nil {
-				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 20)
-			} else {
+			if error != nil {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
-				if (call == nil) {
-					callInfo?.declined = true
-					self.callInfos.updateValue(callInfo!, forKey: uuid)
-					return
-				}
 				let code = (error as NSError?)?.code
 				if code == CXErrorCodeIncomingCallError.filteredByBlockList.rawValue || code == CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue {
-					try? call?.decline(reason: Reason.Busy)
+					try? call.decline(reason: Reason.Busy)
 				} else {
-					try? call?.decline(reason: Reason.Unknown)
+					try? call.decline(reason: Reason.Unknown)
 				}
 			}
 		}
@@ -125,17 +94,6 @@ class ProviderDelegate: NSObject {
 	func endCall(uuid: UUID) {
 		provider.reportCall(with: uuid, endedAt: .init(), reason: .declinedElsewhere)
 	}
-
-	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
-		DispatchQueue.main.asyncAfter(deadline: timeout) {
-			let callId = CallManager.instance().providerDelegate.callInfos[uuid]?.callId
-			let call = CallManager.instance().callByCallId(callId: callId)
-			if (call == nil) {
-				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: terminate call with call-id: \(String(describing: callId)) and UUID: \(uuid) which does not exist.")
-				CallManager.instance().providerDelegate.endCall(uuid: uuid)
-			}
-		}
-	}
 }
 
 // MARK: - CXProviderDelegate
@@ -143,15 +101,17 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
 		action.fulfill()
 		let uuid = action.callUUID
-		let callId = callInfos[uuid]?.callId
+		let callId = callids[uuid]
 
 		// remove call infos first, otherwise CXEndCallAction will be called more than onece
 		if (callId != nil) {
 			uuids.removeValue(forKey: callId!)
 		}
-		callInfos.removeValue(forKey: uuid)
+		callids.removeValue(forKey: uuid)
+		sases.removeValue(forKey: uuid)
+		addresses.removeValue(forKey: uuid)
 
-		let call = CallManager.instance().callByCallId(callId: callId)
+		let call = CallManager.instance().lc!.getCallByCallid(callId: callId ?? "")
 		if let call = call {
 			CallManager.instance().terminateCall(call: call.getCobject);
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
@@ -160,18 +120,11 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
 		let uuid = action.callUUID
-		let callInfo = callInfos[uuid]
-		let callId = callInfo?.callId
+		let callId = callids[uuid]
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
-		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call == nil || call?.state != Call.State.IncomingReceived) {
-			// The application is not yet registered or the call is not yet received, mark the call as accepted. The audio session must be configured here.
-			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
-			callInfo?.accepted = true
-			callInfos.updateValue(callInfo!, forKey: uuid)
-			CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 10)
-		} else {
+		let call = CallManager.instance().lc!.getCallByCallid(callId: callId ?? "")
+		if (call != nil) {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		}
 		action.fulfill()
@@ -179,8 +132,8 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
 		let uuid = action.callUUID
-		let callId = callInfos[uuid]?.callId
-		let call = CallManager.instance().callByCallId(callId: callId)
+		let callId = callids[uuid]
+		let call = CallManager.instance().lc!.getCallByCallid(callId: callId ?? "")
 		action.fulfill()
 		if (call == nil) {
 			return
@@ -218,14 +171,13 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
 		do {
 			let uuid = action.callUUID
-			let callInfo = callInfos[uuid]
-			let addr = callInfo?.toAddr
+			let addr = addresses[uuid]
 			if (addr == nil) {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: can not call a null address!")
 				action.fail()
 			}
 
-			try CallManager.instance().doCall(addr: addr!, isSas: callInfo?.sasEnabled ?? false)
+			try CallManager.instance().doCall(addr: addr!, isSas: sases[uuid] ?? false)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call started failed because \(error)")
 			action.fail()
@@ -245,7 +197,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
 		let uuid = action.callUUID
-		let callId = callInfos[uuid]?.callId
+		let callId = callids[uuid]
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call muted with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		CallManager.instance().lc!.micEnabled = !CallManager.instance().lc!.micEnabled
 		action.fulfill()
@@ -253,9 +205,9 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
 		let uuid = action.callUUID
-		let callId = callInfos[uuid]?.callId
+		let callId = callids[uuid]
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call send dtmf with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-		let call = CallManager.instance().callByCallId(callId: callId)
+		let call = CallManager.instance().lc!.getCallByCallid(callId: callId ?? "")
 		if (call != nil) {
 			let digit = (action.digits.cString(using: String.Encoding.utf8)?[0])!
 			do {
@@ -269,7 +221,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
 		let uuid = action.uuid
-		let callId = callInfos[uuid]?.callId
+		let callId = callids[uuid]
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call time out with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		action.fulfill()
 	}
