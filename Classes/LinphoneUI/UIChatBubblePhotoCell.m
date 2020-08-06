@@ -340,8 +340,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
 			_playButton.hidden = ![type isEqualToString:@"video"];
 			_fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
-			// Should fix cell not resizing after doanloading image.
-			//[self layoutSubviews];
 		}
     }
 }
@@ -533,6 +531,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 }
 
 - (void)layoutSubviews {
+	[super layoutSubviews];
     BOOL is_outgoing = linphone_chat_message_is_outgoing(super.message);
     CGRect bubbleFrame = super.bubbleView.frame;
     int origin_x;
