@@ -447,6 +447,7 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 				pushEnabled = true;
 			}
 			linphone_proxy_config_set_push_notification_allowed(proxies->data, pushEnabled);
+			linphone_proxy_config_set_remote_push_notification_allowed(proxies->data, pushEnabled);
 			proxies = proxies->next;
 		}
 		[self lpConfigSetBool:TRUE forKey:@"push_notification_migration_done"];
@@ -476,6 +477,7 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
 		while (proxies) {
 			linphone_proxy_config_set_push_notification_allowed(proxies->data, true);
+			linphone_proxy_config_set_remote_push_notification_allowed(proxies->data, true);
 			proxies = proxies->next;
 		}
 	}
@@ -1298,6 +1300,12 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_push_notification_config_set_provider(linphone_core_get_push_notification_config(theLinphoneCore), "apns");
 #endif
 
+	const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
+	while (proxies) {
+		LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
+		linphone_proxy_config_set_remote_push_notification_allowed(proxy, TRUE);
+		proxies = proxies->next;
+	}
 	linphone_core_start(theLinphoneCore);
 
 	// Let the core handle cbs
