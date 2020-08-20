@@ -888,8 +888,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)configuringUpdate:(NSNotification *)notif {
 	LinphoneConfiguringState status = (LinphoneConfiguringState)[[notif.userInfo valueForKey:@"state"] integerValue];
 
-	_waitView.hidden = true;
-
 	switch (status) {
 		case LinphoneConfiguringSuccessful:
 			// we successfully loaded a remote provisioned config, go to dialer
@@ -908,6 +906,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 			break;
 		case LinphoneConfiguringFailed: {
+			_waitView.hidden = true;
 			NSString *error_message = [notif.userInfo valueForKey:@"message"];
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
 																			 message:error_message
@@ -923,6 +922,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 
 		case LinphoneConfiguringSkipped:
+			_waitView.hidden = true;
 		default:
 			break;
 	}
@@ -1254,6 +1254,16 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
         _waitView.hidden = YES; \
     }); \
 
+// Change button color and wait until object finished to avoid duplicated actions
+#define ONNEWCLICKBUTTON(button, timewaitmsec, body) \
+[button setBackgroundColor:[UIColor lightGrayColor]]; \
+    _waitView.hidden = NO; \
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (timewaitmsec * NSEC_PER_MSEC)); \
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ \
+        body \
+        [button setBackgroundColor:[UIColor clearColor]]; \
+    }); \
+
 #pragma mark - Action Functions
 
 - (IBAction)onGotoCreateAccountClick:(id)sender {
@@ -1439,8 +1449,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
-	ONCLICKBUTTON(sender, 100, {
-        [_waitView setHidden:false];
+	ONNEWCLICKBUTTON(sender, 100, {
 		if (number_of_configs_before > 0) {
 			// TODO remove ME when it is fixed in SDK.
 			linphone_core_set_provisioning_uri(LC, NULL);
