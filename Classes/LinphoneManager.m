@@ -1700,6 +1700,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (newRoute && newRoute.outputs.count > 0) {
 		NSString *route = newRoute.outputs[0].portType;
 		LOGI(@"Current audio route is [%s]", [route UTF8String]);
+		linphone_core_audio_route_changed(theLinphoneCore);
 
 		CallManager.instance.speakerEnabled = [route isEqualToString:AVAudioSessionPortBuiltInSpeaker];
 		if (([[AudioHelper bluetoothRoutes] containsObject:route]) && !CallManager.instance.speakerEnabled) {
