@@ -67,26 +67,22 @@
     size_t listSize = bctbx_list_size(chatRoomEvents);
 	totalEventList = [[NSMutableArray alloc] initWithCapacity:listSize];
     eventList = [[NSMutableArray alloc] initWithCapacity:MIN(listSize, BASIC_EVENT_LIST)];
+	BOOL autoDownload = (linphone_core_get_max_size_for_auto_download_incoming_files(LC) > -1);
 	while (chatRoomEvents) {
         LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
-        [totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
-        if (listSize <= BASIC_EVENT_LIST) {            
-            [eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
-        }
+		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+		// if auto_download is available and file transfer in progress, not add event now
+		if (!(autoDownload && chat && linphone_chat_message_is_file_transfer_in_progress(chat))) {
+			[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+			if (listSize <= BASIC_EVENT_LIST) {
+				[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+			}
+		}
+
 		chatRoomEvents = chatRoomEvents->next;
         listSize -= 1;
 	}
     bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
-
-	/*for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
-		const LinphoneAddress *ftd_peer =
-			linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message));
-		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(_chatRoom);
-		if (linphone_address_equal(ftd_peer, peer) && linphone_chat_message_is_outgoing(ftd.message)) {
-			LOGI(@"Appending transient upload message %p", ftd.message);
-			//TODO : eventList = bctbx_list_append(eventList, linphone_chat_message_ref(ftd.event));
-		}
-	}*/
 }
 
 - (void)refreshData {

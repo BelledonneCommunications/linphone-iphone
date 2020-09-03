@@ -1100,22 +1100,15 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 
 	if (!linphone_chat_message_is_file_transfer(chat) && !linphone_chat_message_is_text(chat) && !hasFile) /*probably an imdn*/
 		return;
-		
+
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
 	if (!from)
 		return;
-  
-    if (hasFile) {
-        [view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-        return;
-    }
 
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 	[view.tableController scrollToLastUnread:TRUE];
 }
-
-
 
 void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
