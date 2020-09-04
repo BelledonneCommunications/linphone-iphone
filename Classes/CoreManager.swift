@@ -59,7 +59,7 @@ import linphonesw
 	
 	@objc func stopLinphoneCore() {
 		if (lc?.callsNb == 0) {
-			stopIterateTimer()
+			//stop iterate when core is off
 			lc?.stop()
 		}
 	}

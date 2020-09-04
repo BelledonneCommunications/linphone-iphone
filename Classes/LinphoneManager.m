@@ -587,11 +587,15 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 			      dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state",
 			      [NSString stringWithUTF8String:message ? message : ""], @"message", nil];
 
-	// dispatch the notification asynchronously
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff)
+	if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff) {
+		[CoreManager.instance stopIterateTimer];
+	} else {
+		// dispatch the notification asynchronously
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
-	});
+		});
+	}
+	
 }
 
 - (void)globalStateChangedNotificationHandler:(NSNotification *)notif {
