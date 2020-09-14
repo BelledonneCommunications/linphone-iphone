@@ -21,7 +21,7 @@
 #import <Social/Social.h>
 
 
-#define SUPPORTED_EXTENTIONS @[@"public.jpeg",@"com.compuserve.gif",@"public.url",@"public.movie",@"com.apple.mapkit.map-item",@"com.adobe.pdf",@"public.png",@"public.image"]
+#define SUPPORTED_EXTENTIONS @[@"public.jpeg",@"com.compuserve.gif",@"public.url",@"public.movie",@"com.apple.mapkit.map-item",@"com.adobe.pdf",@"public.png",@"public.image", @"public.data", @"public.text"]
 
 @interface ShareViewController : SLComposeServiceViewController
 
