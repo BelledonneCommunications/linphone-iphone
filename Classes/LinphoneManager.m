@@ -587,6 +587,9 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 			      dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state",
 			      [NSString stringWithUTF8String:message ? message : ""], @"message", nil];
 
+	if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) == LinphoneGlobalOff) {
+		[CoreManager.instance stopIterateTimer];
+	}
 	// dispatch the notification asynchronously
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff)
@@ -1256,6 +1259,17 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)startLinphoneCore {
+	if (linphone_core_get_global_state(LC) == LinphoneGlobalShutdown) {
+		bool_t is_off = FALSE;
+		uint64_t start_time = ms_get_cur_time_ms();
+
+		while (!is_off && ms_get_cur_time_ms() - start_time < 10000) {
+			linphone_core_iterate(LC);
+			ms_usleep(50000);
+			is_off = (linphone_core_get_global_state(LC) == LinphoneGlobalOff);
+		}
+	}
+
     linphone_core_start([LinphoneManager getLc]);
 	[CoreManager.instance startIterateTimer];
 }
