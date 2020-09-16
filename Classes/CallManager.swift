@@ -33,11 +33,10 @@ import AVFoundation
 * CallManager is a class that manages application calls and supports callkit.
 * There is only one CallManager by calling CallManager.instance().
 */
-@objc class CallManager: NSObject {
+@objc class CallManager: NSObject, CoreDelegate {
 	static var theCallManager: CallManager?
 	let providerDelegate: ProviderDelegate! // to support callkit
 	let callController: CXCallController! // to support callkit
-	let manager: CoreManagerDelegate! // callbacks of the linphonecore
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
 	@objc var speakerEnabled : Bool = false
@@ -47,12 +46,13 @@ import AVFoundation
 	var referedFromCall: String?
 	var referedToCall: String?
 	var endCallkit: Bool = false
+	static var speaker_already_enabled : Bool = false
+
 
 
 	fileprivate override init() {
 		providerDelegate = ProviderDelegate()
 		callController = CXCallController()
-		manager = CoreManagerDelegate()
 	}
 
 	@objc static func instance() -> CallManager {
@@ -407,6 +407,7 @@ import AVFoundation
 			}
 		}
 	}
+<<<<<<< HEAD
 	
 	@objc func performActionWhenCoreIsOn(action:  @escaping ()->Void ) {
 		if (manager.globalState == .On) {
@@ -442,6 +443,13 @@ class CoreManagerDelegate: CoreDelegate {
 			}
 		} else {
 			CallManager.instance().endCallkit = false
+=======
+
+	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
+		if (cstate == .PushIncomingReceived) {
+			CallManager.instance().displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: call.callLog?.callId ?? "")
+			return;
+>>>>>>> 22b977a1a... use new delegates
 		}
 	}
 
@@ -453,7 +461,7 @@ class CoreManagerDelegate: CoreDelegate {
 		let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 		// we keep the speaker auto-enabled state in this static so that we don't
 		// force-enable it on ICE re-invite if the user disabled it.
-		CoreManagerDelegate.speaker_already_enabled = false
+		CallManager.speaker_already_enabled = false
 
 		if (call.userData == nil) {
 			let appData = CallAppData()
@@ -507,7 +515,7 @@ class CoreManagerDelegate: CoreDelegate {
 				if (CallManager.instance().speakerBeforePause) {
 					CallManager.instance().speakerBeforePause = false
 					CallManager.instance().enableSpeaker(enable: true)
-					CoreManagerDelegate.speaker_already_enabled = true
+					CallManager.speaker_already_enabled = true
 				}
 				break
 			case .OutgoingInit,
@@ -533,7 +541,7 @@ class CoreManagerDelegate: CoreDelegate {
 			case .End,
 				 .Error:
 				UIDevice.current.isProximityMonitoringEnabled = false
-				CoreManagerDelegate.speaker_already_enabled = false
+				CallManager.speaker_already_enabled = false
 				if (CallManager.instance().lc!.callsNb == 0) {
 					CallManager.instance().enableSpeaker(enable: false)
 					// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
@@ -600,9 +608,9 @@ class CoreManagerDelegate: CoreDelegate {
 		}
 
 		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			if ((call.currentParams?.videoEnabled ?? false) && !CoreManagerDelegate.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+			if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
 				CallManager.instance().enableSpeaker(enable: true)
-				CoreManagerDelegate.speaker_already_enabled = true
+				CallManager.speaker_already_enabled = true
 			}
 		}
 

@@ -31,13 +31,11 @@ var needToStop: Bool = false
 var coreStopped: Bool = false
 var log: LoggingService!
 
-class NotificationViewController: UIViewController, UNNotificationContentExtension {
+class NotificationViewController: UIViewController, UNNotificationContentExtension, ChatMessageDelegate, CoreDelegate {
 
     var lc: Core?
     var config: Config!
     var logDelegate: LinphoneLoggingServiceManager!
-    var msgDelegate: LinphoneChatMessageManager!
-    var coreDelegate: LinphoneCoreManager!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -120,9 +118,8 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         let local = try lc!.createAddress(address: localAddress)
         let room = lc!.findChatRoom(peerAddr: peer, localAddr: local)
         if let room = room {
-            msgDelegate = LinphoneChatMessageManager()
             let chatMsg = try room.createMessage(message: replyText)
-            chatMsg.addDelegate(delegate: msgDelegate)
+            chatMsg.addDelegate(delegate: self)
 			chatMsg.send()
             room.markAsRead()
         }
@@ -140,8 +137,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 		logDelegate = try! LinphoneLoggingServiceManager(config: config, log: log, domain: "msgNotificationContent")
         lc = try! Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
 
-        coreDelegate = LinphoneCoreManager()
-        lc!.addDelegate(delegate: coreDelegate)
+        lc!.addDelegate(delegate: self)
 
         try lc!.start()
         log.message(message: "core started")
@@ -162,23 +158,19 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         }
     }
 
-    class LinphoneCoreManager: CoreDelegate {
-		override func onGlobalStateChanged(core: Core, state gstate: GlobalState, message: String) {
-            log.message(message: "global state changed: \(gstate) : \(message) \n")
-            if (gstate == .Shutdown) {
-                needToStop = true
-            } else if (gstate == .Off) {
-                coreStopped = true
-            }
-        }
-    }
+	func onGlobalStateChanged(core: Core, state gstate: GlobalState, message: String) {
+		log.message(message: "global state changed: \(gstate) : \(message) \n")
+		if (gstate == .Shutdown) {
+			needToStop = true
+		} else if (gstate == .Off) {
+			coreStopped = true
+		}
+	}
 
-    class LinphoneChatMessageManager: ChatMessageDelegate {
-		override func onMsgStateChanged(message: ChatMessage, state: ChatMessage.State) {
-            log.message(message: "msg state changed: \(state)\n")
-            if (state == .Delivered) {
-                isReplySent = true
-            }
-        }
-    }
+	func onMsgStateChanged(message: ChatMessage, state: ChatMessage.State) {
+		log.message(message: "msg state changed: \(state)\n")
+		if (state == .Delivered) {
+			isReplySent = true
+		}
+	}
 }
