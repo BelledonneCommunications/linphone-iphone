@@ -374,6 +374,7 @@ import AVFoundation
 			providerDelegate.uuids.updateValue(uuid, forKey: callId)
 			let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
 			callInfo.declined = true
+			callInfo.reason = Reason.Busy
 			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 		} else {
 			// end call
@@ -425,8 +426,7 @@ class CoreManagerDelegate: CoreDelegate {
 						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: address, hasVideo: video)
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 						if (callInfo?.declined ?? false) {
-							// The call is already declined.
-							try? call.decline(reason: Reason.Unknown)
+							DispatchQueue.main.asyncAfter(deadline: .now()) {try? call.decline(reason: callInfo!.reason)}
 						} else if (callInfo?.accepted ?? false) {
 							// The call is already answered.
 							CallManager.instance().acceptCall(call: call, hasVideo: video)

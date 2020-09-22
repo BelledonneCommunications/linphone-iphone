@@ -32,8 +32,8 @@ import os
 	var sasEnabled = false
 	var declined = false
 	var connected = false
-	
-	
+	var reason: Reason = Reason.None
+
 	static func newIncomingCallInfo(callId: String) -> CallInfo {
 		let callInfo = CallInfo()
 		callInfo.callId = callId
@@ -92,17 +92,18 @@ class ProviderDelegate: NSObject {
 				CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 20)
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
-				if (call == nil) {
-					callInfo?.declined = true
-					self.callInfos.updateValue(callInfo!, forKey: uuid)
-					return
-				}
 				let code = (error as NSError?)?.code
-				if code == CXErrorCodeIncomingCallError.filteredByBlockList.rawValue || code == CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue {
-					try? call?.decline(reason: Reason.Busy)
-				} else {
-					try? call?.decline(reason: Reason.Unknown)
+				switch code {
+				case CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue:
+					callInfo?.reason = Reason.DoNotDisturb
+				case CXErrorCodeIncomingCallError.filteredByBlockList.rawValue:
+					callInfo?.reason = Reason.DoNotDisturb
+				default:
+					callInfo?.reason = Reason.Unknown
 				}
+				callInfo?.declined = true
+				self.callInfos.updateValue(callInfo!, forKey: uuid)
+				try? call?.decline(reason: callInfo!.reason)
 			}
 		}
 	}
