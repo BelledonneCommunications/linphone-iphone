@@ -64,7 +64,7 @@ import AVFoundation
 
 	@objc func setCore(core: OpaquePointer) {
 		lc = Core.getSwiftObject(cObject: core)
-		lc?.addDelegate(delegate: manager)
+		lc?.addDelegate(delegate: self)
 	}
 
 	@objc static func getAppData(call: OpaquePointer) -> CallAppData? {
