@@ -15,7 +15,6 @@
 		<entry name="realm" overwrite="true">sip.linphone.org</entry>
 		<entry name="nat_policy_ref" overwrite="true">nat_policy_default_values</entry>
 		<entry name="push_notification_allowed" overwrite="true">1</entry>
-		<entry name="remote_push_notification_allowed" overwrite="true">1</entry>
 	</section>
 
 	<section name="nat_policy_default_values">
