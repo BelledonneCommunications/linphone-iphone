@@ -18,6 +18,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <PushKit/PushKit.h>
 
 #import "LinphoneCoreSettingsStore.h"
 #import <UserNotifications/UserNotifications.h>
@@ -26,16 +27,19 @@
 #import "linphoneapp-Swift.h"
 
 
-@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate> {
+@interface LinphoneAppDelegate : NSObject <UIApplicationDelegate, PKPushRegistryDelegate, UNUserNotificationCenterDelegate, CLLocationManagerDelegate> {
     @private
 	UIBackgroundTaskIdentifier bgStartId;
     BOOL startedInBackground;
 	CLLocationManager* locationManager;
 }
 
+- (void)registerForNotifications;
+
 @property (nonatomic, retain) UIAlertController *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
+@property PKPushRegistry* voipRegistry;
 @property BOOL onlyPortrait;
 @property UIApplicationShortcutItem *shortcutItem;
 

@@ -152,6 +152,30 @@
 
 #pragma deploymate push "ignored-api-availability"
 
+- (void)registerForNotifications {
+	if (CallManager.instance.alreadyRegisteredForNotification && [[UIApplication sharedApplication] isRegisteredForRemoteNotifications])
+		return;
+
+	CallManager.instance.alreadyRegisteredForNotification = true;
+	self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+	self.voipRegistry.delegate = self;
+
+	// Initiate registration.
+	LOGI(@"[PushKit] Connecting for push notifications");
+	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+
+	int num = [LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0];
+	if (num > 3) {
+		LOGI(@"[PushKit] unexpected pushkit notifications received %d, please clean your sip account.", num);
+	}
+
+    // Register for remote notifications.
+    LOGI(@"[APNs] register for push notif");
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+
+	[self configureUINotification];
+}
+
 - (void)configureUINotification {
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		return;
@@ -269,7 +293,7 @@
 
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-	[self configureUINotification];
+	[self registerForNotifications]; // Register for notifications must be done ASAP to give a chance for first SIP register to be done with right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -417,6 +441,51 @@
 	}
 }
 
+- (void)processRemoteNotification:(NSDictionary *)userInfo {
+	// support only for calls
+	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+	//NSString *loc_key = [aps objectForKey:@"loc-key"] ?: [[aps objectForKey:@"alert"] objectForKey:@"loc-key"];
+	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
+
+	if([CallManager callKitEnabled]) {
+		// Since ios13, a new Incoming call must be displayed when the callkit is enabled and app is in background.
+		// Otherwise it will cause a crash.
+		[CallManager.instance displayIncomingCallWithCallId:callId];
+	} else {
+		if (linphone_core_get_calls(LC)) {
+			// if there are calls, obviously our TCP socket shall be working
+			LOGD(@"Notification [%p] has no need to be processed because there already is an active call.", userInfo);
+			return;
+		}
+
+		if ([callId isEqualToString:@""]) {
+			// Present apn pusher notifications for info
+			LOGD(@"Notification [%p] came from flexisip-pusher.", userInfo);
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+				UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+				content.title = @"APN Pusher";
+				content.body = @"Push notification received !";
+
+				UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+				[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+					// Enable or disable features based on authorization.
+					if (error) {
+						LOGD(@"Error while adding notification request :");
+						LOGD(error.description);
+					}
+				}];
+			}
+		}
+	}
+
+    LOGI(@"Notification [%p] processed", userInfo);
+	// Tell the core to make sure that we are registered.
+	// It will initiate socket connections, which seems to be required.
+	// Indeed it is observed that if no network action is done in the notification handler, then
+	// iOS kills us.
+	linphone_core_ensure_registered(LC);
+}
+
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
 	if (!callId)
 		return FALSE;
@@ -454,12 +523,53 @@
 - (void)application:(UIApplication *)application
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), deviceToken);
-	linphone_core_did_register_for_remote_push([LinphoneManager getLc], (__bridge void *)deviceToken);
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[LinphoneManager.instance setRemoteNotificationToken:deviceToken];
+	});
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
-	linphone_core_did_register_for_remote_push([LinphoneManager getLc], NULL);
+	[LinphoneManager.instance setRemoteNotificationToken:nil];
+}
+
+#pragma mark - PushKit Functions
+
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
+	LOGI(@"[PushKit] credentials updated with voip token: %@", credentials.token);
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[LinphoneManager.instance setPushKitToken:credentials.token];
+	});
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(NSString *)type {
+    LOGI(@"[PushKit] Token invalidated");
+    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushKitToken:nil];});
+}
+
+- (void)processPush:(NSDictionary *)userInfo {
+	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
+
+	// prevent app to crash if PushKit received for msg
+    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
+		LOGE(@"Received a legacy PushKit notification for a chat message");
+		[LinphoneManager.instance lpConfigSetInt:[LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0]+1 forKey:@"unexpected_pushkit"];
+        return;
+    }
+    [LinphoneManager.instance startLinphoneCore];
+
+	[self configureUINotification];
+	//to avoid IOS to suspend the app before being able to launch long running task
+	[self processRemoteNotification:userInfo];
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
+	[self processPush:payload.dictionaryPayload];
+	dispatch_async(dispatch_get_main_queue(), ^{completion();});
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+	[self processPush:payload.dictionaryPayload];
 }
 
 #pragma mark - UNUserNotifications Framework
@@ -501,7 +611,7 @@
 	if (!callId)
 		return;
 
-	LinphoneCall *call = linphone_core_get_call_by_callid([LinphoneManager getLc], callId.UTF8String);
+	LinphoneCall *call = [CallManager.instance findCallWithCallId:callId];
 
 	if ([response.actionIdentifier isEqual:@"Answer"]) {
 		// use the standard handler
