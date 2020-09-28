@@ -361,6 +361,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	[cell.avatarImage setImage:image bordered:NO withRoundedRadius:YES];
 	[cell setContact:contact];
 	[super accessoryForCell:cell atPath:indexPath];
+	cell.contentView.userInteractionEnabled = false;
 
 	return cell;
 }

@@ -96,6 +96,7 @@
 	} else {
 		cell.imageView.image = [UIImage imageNamed:@"call_incoming.png"];
 	}
+	cell.contentView.userInteractionEnabled =  false;
 
 	return cell;
 }

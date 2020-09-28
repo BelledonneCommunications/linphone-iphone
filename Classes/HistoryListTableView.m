@@ -225,6 +225,7 @@
 	LinphoneCallLog *log = [logId pointerValue];
 	[cell setCallLog:log];
 	[super accessoryForCell:cell atPath:indexPath];
+	cell.contentView.userInteractionEnabled = false;
 	return cell;
 }
 

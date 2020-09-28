@@ -214,6 +214,7 @@
         if ([value hasPrefix:@" "])
           value = [value substringFromIndex:1];
         [cell setAddress:value];
+	cell.contentView.userInteractionEnabled = false;
 
         return cell;
 }

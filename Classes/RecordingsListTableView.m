@@ -146,6 +146,7 @@
     //accessoryForCell set it to gray but we don't want it
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell updateFrame];
+	cell.contentView.userInteractionEnabled = false;
     return cell;
 }
 

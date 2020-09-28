@@ -54,6 +54,7 @@
 		cell = [[UICallConferenceCell alloc] initWithIdentifier:kCellId];
 	}
 	[cell setCall:[self conferenceCallForRow:indexPath.row]];
+	cell.contentView.userInteractionEnabled = false;
 	return cell;
 }
 
