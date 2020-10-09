@@ -547,7 +547,6 @@
 		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 		linphone_address_set_display_name(linphoneAddress, (displayName.length ? displayName.UTF8String : NULL));
 		const char *identity = linphone_address_as_string(linphoneAddress);
-		linphone_address_destroy(linphoneAddress);
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
 
@@ -636,7 +635,9 @@
 	bad_proxy:
 		if (proxy)
 			ms_free(proxy);
-
+		if (linphoneAddress)
+			linphone_address_destroy(linphoneAddress);
+			
 		// in case of error, show an alert to the user
 		if (error != nil) {
 			linphone_proxy_config_done(proxyCfg);
