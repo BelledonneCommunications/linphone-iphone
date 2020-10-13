@@ -679,7 +679,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	} else if (CallManager.instance.inVideoConf) {
 		   LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 		   linphone_call_accept_update(call, params);
-		   linphone_call_params_destroy(params);
+		   linphone_call_params_unref(params);
 		   return;
 	}
 	
