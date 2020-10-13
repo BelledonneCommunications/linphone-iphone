@@ -332,8 +332,10 @@ import AVFoundation
 			conferenceParams?.videoEnabled = video
 			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams!) {
 				for call in calls {
-					if let returnValue = conference?.addParticipant(call: call), returnValue != 0 {
-						Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Non zero returned value adding participant : \(returnValue)")
+					do {
+						try conference?.addParticipant(call: call)
+					} catch {
+						Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Non zero returned value adding participant : \(error)")
 					}
 				}
 			} else {
