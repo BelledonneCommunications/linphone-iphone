@@ -743,11 +743,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[url showError:NSLocalizedString(@"Invalid remote provisioning URL", nil)
 			  when:^BOOL(NSString *inputEntry) {
 				if (inputEntry.length > 0) {
-					// missing prefix will result in http:// being used
-					if ([inputEntry rangeOfString:@"://"].location == NSNotFound) {
-						inputEntry = [NSString stringWithFormat:@"http://%@", inputEntry];
-					}
-					return (linphone_core_set_provisioning_uri(LC, inputEntry.UTF8String) != 0);
+					bool isValid = linphone_core_set_provisioning_uri(LC, [self addSchemeToProvisiionninUriIMissing:inputEntry].UTF8String) != 0;
+					linphone_core_set_provisioning_uri(LC,NULL);
+					return isValid;
 				}
 				return TRUE;
 			  }];
@@ -771,6 +769,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}];
 	[self shouldEnableNextButton];
 
+}
+
+-(NSString *) addSchemeToProvisiionninUriIMissing:(NSString *)uri {
+	// missing prefix will result in http:// being used
+	return [uri rangeOfString:@"://"].location == NSNotFound ? [NSString stringWithFormat:@"http://%@", uri] : uri;
 }
 
 - (void)shouldEnableNextButton {
@@ -1464,6 +1467,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 			[errView addAction:defaultAction];
 			[self presentViewController:errView animated:YES completion:nil];
 		} else {
+			linphone_core_set_provisioning_uri(LC,  [self addSchemeToProvisiionninUriIMissing:[self findTextField:ViewElement_URL].text].UTF8String);
 			[self resetLiblinphone:TRUE];
 		}
     });
