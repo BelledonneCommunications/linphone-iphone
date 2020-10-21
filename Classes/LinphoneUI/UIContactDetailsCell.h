@@ -35,6 +35,7 @@
 @property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *callButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *chatButton;
+@property (weak, nonatomic) IBOutlet UIIconButton *encryptedChatButton;
 @property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
 @property (weak, nonatomic) UIView *waitView;
 @property (strong, nonatomic) IBOutlet UIButton *inviteButton;

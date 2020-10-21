@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,6 +17,7 @@
                 <outlet property="deleteButton" destination="C2f-aP-xjR" id="sxr-th-6rq"/>
                 <outlet property="editTextfield" destination="dTn-Hc-bGM" id="bkN-xg-S9D"/>
                 <outlet property="editView" destination="rAa-qu-PDc" id="cGz-D2-GiI"/>
+                <outlet property="encryptedChatButton" destination="Red-NG-DKu" id="Hre-cq-m5b"/>
                 <outlet property="encryptedChatView" destination="ERg-IK-XJX" id="Aam-pm-R6d"/>
                 <outlet property="inviteButton" destination="lgb-5W-T0c" id="iOl-Fl-AXH"/>
                 <outlet property="linphoneImage" destination="ZaI-29-AOK" id="dY1-vO-spk"/>
@@ -34,7 +36,7 @@
                         <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dTn-Hc-bGM" userLabel="editTextField">
                             <rect key="frame" x="8" y="7" width="327" height="30"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                             <rect key="contentStretch" x="1.3877787807814457e-17" y="0.0" width="1" height="1"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
@@ -53,7 +55,7 @@
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </view>
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SR2-3m-6t5" userLabel="defaultView">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
@@ -138,7 +140,7 @@
                             </subviews>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -158,5 +160,11 @@
         <image name="delete_field_over.png" width="44" height="44"/>
         <image name="linphone_user.png" width="41.599998474121094" height="42.400001525878906"/>
         <image name="security_toogle_icon_green.png" width="33.599998474121094" height="38.400001525878906"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
