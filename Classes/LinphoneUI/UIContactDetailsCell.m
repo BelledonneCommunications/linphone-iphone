@@ -51,7 +51,7 @@
 																_addressLabel.text.UTF8String);
 	}
 	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
-	_chatButton.enabled = _callButton.enabled = (addr != NULL);
+	_chatButton.enabled = _callButton.enabled = _encryptedChatButton.enabled = (addr != NULL);
 
 	_chatButton.accessibilityLabel =
 		[NSString stringWithFormat:NSLocalizedString(@"Chat with %@", nil), _addressLabel.text];
