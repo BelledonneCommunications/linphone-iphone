@@ -264,22 +264,8 @@
 	//init logs asap
 	[Log enableLogs:[[LinphoneManager instance] lpConfigIntForKey:@"debugenable_preference"]];
 	
-	//Starting with iOS 13, the CNCopyCurrentNetworkInfo API will no longer return valid Wi-Fi SSID and BSSID information.
-	//Use the CoreLocation API to request the user’s consent to access location information.
-	if (@available(iOS 13.0, *)) {
-		CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-		switch(status) {
-			case kCLAuthorizationStatusDenied:
-			case kCLAuthorizationStatusRestricted:
-			case kCLAuthorizationStatusNotDetermined:
-				locationManager = [[CLLocationManager alloc]init];
-				locationManager.delegate = self;
-				[locationManager requestWhenInUseAuthorization];
-				break;
-			default:
-				break;
-		}
-	}
+	
+	
 
 	if ([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized) {
 		[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
