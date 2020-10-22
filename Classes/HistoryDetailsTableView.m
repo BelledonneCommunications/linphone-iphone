@@ -84,7 +84,7 @@
 	time_t callTime = linphone_call_log_get_start_date(log);
 	cell.textLabel.textAlignment = NSTextAlignmentCenter;
 	[cell.textLabel
-		setText:[NSString stringWithFormat:@"%@ - %@",
+		setText:[NSString stringWithFormat:@"%@ (%@)",
 										   [LinphoneUtils timeToString:callTime withFormat:LinphoneDateHistoryDetails],
 										   [LinphoneUtils durationToString:duration]]];
 	BOOL outgoing = (linphone_call_log_get_dir(log) == LinphoneCallOutgoing);
