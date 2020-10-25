@@ -723,7 +723,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		const char * usernameC = linphone_auth_info_get_username(auth_info);
 		const char * domainC = linphone_auth_info_get_domain(auth_info);
 		static UIAlertController *alertView = nil;
-
+		
+		if ((usernameC == NULL)||(domainC == NULL))
+			return;
 		// avoid having multiple popups
 		[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
 
