@@ -46,6 +46,7 @@ import AVFoundation
 	@objc var alreadyRegisteredForNotification: Bool = false
 	var referedFromCall: String?
 	var referedToCall: String?
+	var endCallkit: Bool = false
 
 
 	fileprivate override init() {
@@ -400,6 +401,18 @@ import AVFoundation
 
 class CoreManagerDelegate: CoreDelegate {
 	static var speaker_already_enabled : Bool = false
+	
+	override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String) {
+		if lc.proxyConfigList.count == 1 && (cstate == .Failed || cstate == .Cleared){
+			// terminate callkit immediately when registration failed or cleared, supporting single proxy configuration
+			CallManager.instance().endCallkit = true
+			for call in CallManager.instance().providerDelegate.uuids {
+				CallManager.instance().providerDelegate.endCallNotExist(uuid: call.value, timeout: .now() + 0)
+			}
+		} else {
+			CallManager.instance().endCallkit = false
+		}
+	}
 
 	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
 		let addr = call.remoteAddress;
