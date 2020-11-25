@@ -192,9 +192,9 @@ extension ProviderDelegate: CXProviderDelegate {
 		}
 
 		do {
-			if (CallManager.instance().lc?.isInConference ?? false && action.isOnHold) {
+			if (call?.conference != nil && action.isOnHold) {
 				try CallManager.instance().lc?.leaveConference()
-				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Leaving conference")
+				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: call-id: [\(String(describing: callId))] leaving conference")
 				NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 				return
 			}
@@ -208,7 +208,7 @@ extension ProviderDelegate: CXProviderDelegate {
 				CallManager.instance().speakerBeforePause = CallManager.instance().speakerEnabled
 				try call!.pause()
 			} else {
-				if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
+				if (call?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
 					try CallManager.instance().lc?.enterConference()
 					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 				} else {
