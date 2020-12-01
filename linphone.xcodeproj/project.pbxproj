@@ -960,7 +960,6 @@
 		615A28412180C0820060F920 /* recording.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording.png; sourceTree = "<group>"; };
 		615A28432180C08F0060F920 /* recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "recording@2x.png"; sourceTree = "<group>"; };
 		6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
-		6187B1B524B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AboutView.strings; sourceTree = "<group>"; };
 		6187B1B624B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
 		6187B1B724B3271600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		6187B1B824B3271600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
@@ -1006,6 +1005,20 @@
 		6187B1E024B3272700D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/TabBarView.strings; sourceTree = "<group>"; };
 		6187B1E124B3272C00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/MainInterface.strings; sourceTree = "<group>"; };
 		6187B1E224B3272D00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		619314472576E86E0036820F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
+		6193144B2576E8940036820F /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutView.strings; sourceTree = "<group>"; };
+		6193144D2576E8C70036820F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/AboutView.strings; sourceTree = "<group>"; };
+		6193144F2576E9630036820F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314512576E96D0036820F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314532576E99C0036820F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314552576E9D10036820F /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314592576EA160036820F /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/AboutView.strings; sourceTree = "<group>"; };
+		6193145B2576EA1A0036820F /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AboutView.strings; sourceTree = "<group>"; };
+		6193145D2576EA4C0036820F /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/AboutView.strings; sourceTree = "<group>"; };
+		6193145F2576EA7F0036820F /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314612576EAB10036820F /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314632576EAC20036820F /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/AboutView.strings; sourceTree = "<group>"; };
+		619314652576EAD20036820F /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/AboutView.strings; sourceTree = "<group>"; };
 		61AE364B20C00B370089D9D3 /* linphoneExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = linphoneExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		61AE364D20C00B370089D9D3 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		61AE364E20C00B370089D9D3 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
@@ -1026,8 +1039,6 @@
 		61CCC3DE21933B580060EDEA /* UIDeviceCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDeviceCell.m; sourceTree = "<group>"; };
 		61CCC3E021933B660060EDEA /* UIDeviceCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDeviceCell.xib; sourceTree = "<group>"; };
 		61DD7E1E2372E88F001BDD01 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		61E8E46323C5E8EC00434E71 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutView.strings; sourceTree = "<group>"; };
-		61E8E46523C5E8F000434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
 		61E8E46723C5E9B400434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
 		61E8E46923C5EA2B00434E71 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
 		61E8E46B23C5EA2E00434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
@@ -1499,7 +1510,6 @@
 		6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallSideMenuView.xib; sourceTree = "<group>"; };
 		635775231B6673EC00C8B704 /* HistoryDetailsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableView.h; sourceTree = "<group>"; };
 		635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableView.m; sourceTree = "<group>"; };
-		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsView.xib; sourceTree = "<group>"; };
 		636316DB1A1DEDD80009B839 /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/HistoryDetailsView.strings; sourceTree = "<group>"; };
 		636BC9951B5F921B00C754CE /* UIIconButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIIconButton.h; sourceTree = "<group>"; };
@@ -4408,10 +4418,20 @@
 		636316D31A1DEBCB0009B839 /* AboutView.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				636316D21A1DEBCB0009B839 /* Base */,
-				61E8E46323C5E8EC00434E71 /* ar */,
-				61E8E46523C5E8F000434E71 /* fr */,
-				6187B1B524B3271500D580FB /* hu */,
+				619314472576E86E0036820F /* Base */,
+				6193144B2576E8940036820F /* ar */,
+				6193144D2576E8C70036820F /* zh_CN */,
+				6193144F2576E9630036820F /* zh_TW */,
+				619314512576E96D0036820F /* nl */,
+				619314532576E99C0036820F /* en */,
+				619314552576E9D10036820F /* fr */,
+				619314592576EA160036820F /* de */,
+				6193145B2576EA1A0036820F /* hu */,
+				6193145D2576EA4C0036820F /* ja */,
+				6193145F2576EA7F0036820F /* pl */,
+				619314612576EAB10036820F /* ru */,
+				619314632576EAC20036820F /* sv */,
+				619314652576EAD20036820F /* tr */,
 			);
 			name = AboutView.xib;
 			sourceTree = "<group>";
