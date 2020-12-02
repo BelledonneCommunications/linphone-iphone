@@ -379,9 +379,7 @@
         // trailing "/"
         NSString *sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
 		[CallManager.instance performActionWhenCoreIsOnAction:^(void) {
-			if (bctbx_list_size(linphone_core_get_proxy_config_list(LC)) > 0) {
-				[LinphoneManager.instance call: [LinphoneUtils normalizeSipOrPhoneAddress:sipUri]];
-			}
+			[LinphoneManager.instance call: [LinphoneUtils normalizeSipOrPhoneAddress:sipUri]];
 		}];
     } else if ([scheme isEqualToString:@"linphone-widget"]) {
         if ([[url host] isEqualToString:@"call_log"] &&
@@ -423,10 +421,9 @@
 		INPerson *contact = startAudioCallIntent.contacts[0];
 		INPersonHandle *personHandle = contact.personHandle;
 		[CallManager.instance performActionWhenCoreIsOnAction:^(void) {
-			if (bctbx_list_size(linphone_core_get_proxy_config_list(LC)) > 0) {
-				[LinphoneManager.instance call: [LinphoneUtils normalizeSipOrPhoneAddress:personHandle.value]];
-			}
+			[LinphoneManager.instance call: [LinphoneUtils normalizeSipOrPhoneAddress:personHandle.value]];
 		}];
+
 	}
 	
 	return YES;
