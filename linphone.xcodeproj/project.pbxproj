@@ -1004,8 +1004,6 @@
 		6187B1DE24B3272600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = "hu.lproj/SideMenuView~ipad.strings"; sourceTree = "<group>"; };
 		6187B1DF24B3272600D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/StatusBarView.strings; sourceTree = "<group>"; };
 		6187B1E024B3272700D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/TabBarView.strings; sourceTree = "<group>"; };
-		6187B1E124B3272C00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/MainInterface.strings; sourceTree = "<group>"; };
-		6187B1E224B3272D00D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/MainInterface.strings; sourceTree = "<group>"; };
 		61AE364B20C00B370089D9D3 /* linphoneExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = linphoneExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		61AE364D20C00B370089D9D3 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		61AE364E20C00B370089D9D3 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
@@ -4365,7 +4363,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				61AE365120C00B370089D9D3 /* Base */,
-				6187B1E124B3272C00D580FB /* hu */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
@@ -4842,7 +4839,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				EA8CB82E239F96CA00C330CC /* Base */,
-				6187B1E224B3272D00D580FB /* hu */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
