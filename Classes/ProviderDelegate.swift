@@ -33,6 +33,7 @@ import os
 	var declined = false
 	var connected = false
 	var reason: Reason = Reason.None
+	var displayName: String?
 
 	static func newIncomingCallInfo(callId: String) -> CallInfo {
 		let callInfo = CallInfo()
@@ -40,11 +41,12 @@ import os
 		return callInfo
 	}
 	
-	static func newOutgoingCallInfo(addr: Address, isSas: Bool) -> CallInfo {
+	static func newOutgoingCallInfo(addr: Address, isSas: Bool, displayName: String) -> CallInfo {
 		let callInfo = CallInfo()
 		callInfo.isOutgoing = true
 		callInfo.sasEnabled = isSas
 		callInfo.toAddr = addr
+		callInfo.displayName = displayName
 		return callInfo
 	}
 }
@@ -68,7 +70,7 @@ class ProviderDelegate: NSObject {
 		providerConfiguration.ringtoneSound = "notes_of_the_optimistic.caf"
 		providerConfiguration.supportsVideo = true
 		providerConfiguration.iconTemplateImageData = UIImage(named: "callkit_logo")?.pngData()
-		providerConfiguration.supportedHandleTypes = [.generic]
+		providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
 
 		providerConfiguration.maximumCallsPerCallGroup = 10
 		providerConfiguration.maximumCallGroups = 2
@@ -79,10 +81,11 @@ class ProviderDelegate: NSObject {
 		return providerConfiguration
 	}()
 
-	func reportIncomingCall(call:Call?, uuid: UUID, handle: String, hasVideo: Bool) {
+	func reportIncomingCall(call:Call?, uuid: UUID, handle: String, hasVideo: Bool, displayName:String) {
 		let update = CXCallUpdate()
 		update.remoteHandle = CXHandle(type:.generic, value: handle)
 		update.hasVideo = hasVideo
+		update.localizedCallerName = displayName
 
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId
@@ -112,9 +115,10 @@ class ProviderDelegate: NSObject {
 		}
 	}
 
-	func updateCall(uuid: UUID, handle: String, hasVideo: Bool = false) {
+	func updateCall(uuid: UUID, handle: String, hasVideo: Bool = false, displayName:String) {
 		let update = CXCallUpdate()
 		update.remoteHandle = CXHandle(type:.generic, value:handle)
+		update.localizedCallerName = displayName
 		update.hasVideo = hasVideo
 		provider.reportCall(with:uuid, updated:update);
 	}
@@ -221,9 +225,17 @@ extension ProviderDelegate: CXProviderDelegate {
 	}
 
 	func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
+		
+		
 		do {
+						
 			let uuid = action.callUUID
 			let callInfo = callInfos[uuid]
+			let update = CXCallUpdate()
+			update.remoteHandle = action.handle
+			update.localizedCallerName = callInfo?.displayName
+			self.provider.reportCall(with: action.callUUID, updated: update)
+			
 			let addr = callInfo?.toAddr
 			if (addr == nil) {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: can not call a null address!")
