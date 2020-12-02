@@ -1,9 +1,0 @@
-
-/* Class = "UILabel"; text = "ASSISTANT"; ObjectID = "1EG-3g-3uU"; */
-"1EG-3g-3uU.text" = "ASSISTANT";
-
-/* Class = "UIButton"; accessibilityLabel = "Dialer"; ObjectID = "TFl-cN-1Vb"; */
-"TFl-cN-1Vb.accessibilityLabel" = "Dialer";
-
-/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "edC-CG-eZr"; */
-"edC-CG-eZr.accessibilityLabel" = "Back";

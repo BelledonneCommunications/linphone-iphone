@@ -1,9 +1,0 @@
-
-/* Class = "UIButton"; accessibilityLabel = "Chat"; ObjectID = "FDT-HY-OQZ"; */
-"FDT-HY-OQZ.accessibilityLabel" = "Chat";
-
-/* Class = "UIButton"; accessibilityLabel = "Call"; ObjectID = "ZbV-2Z-b4y"; */
-"ZbV-2Z-b4y.accessibilityLabel" = "Call";
-
-/* Class = "UILabel"; text = "john.doe@sip.linphone.org"; ObjectID = "frB-ep-LWi"; */
-"frB-ep-LWi.text" = "john.doe@sip.linphone.org";

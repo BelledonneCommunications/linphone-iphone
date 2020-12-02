@@ -1,9 +1,0 @@
-
-/* Class = "UIButton"; normalTitle = "CANCEL"; ObjectID = "B1K-CB-3of"; */
-"B1K-CB-3of.normalTitle" = "CANCEL";
-
-/* Class = "UIButton"; normalTitle = "DELETE"; ObjectID = "SbQ-re-fGQ"; */
-"SbQ-re-fGQ.normalTitle" = "DELETE";
-
-/* Class = "UILabel"; text = "Are you sure you want to delete all your selection?"; ObjectID = "jLz-g1-cTe"; */
-"jLz-g1-cTe.text" = "Are you sure you want to delete all your selection?";
