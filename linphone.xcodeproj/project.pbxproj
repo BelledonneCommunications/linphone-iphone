@@ -1679,7 +1679,6 @@
 		8CBD7BD820B6B88F00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/SideMenuView~ipad.strings"; sourceTree = "<group>"; };
 		8CBD7BD920B6B89000E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/StatusBarView.strings; sourceTree = "<group>"; };
 		8CBD7BDA20B6B89000E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/TabBarView.strings; sourceTree = "<group>"; };
-		8CBD7BE120B6C1E500E5DCC0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UIChatConversationInfoTableViewCell.strings; sourceTree = "<group>"; };
 		8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoci_core.a; path = "liblinphone-sdk/apple-darwin/lib/libsoci_core.a"; sourceTree = "<group>"; };
 		8CD99A1B20908C27008A7CDA /* callkit_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "callkit_logo@2x.png"; sourceTree = "<group>"; };
 		8CD99A352090A823008A7CDA /* splashscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "splashscreen@2x.png"; sourceTree = "<group>"; };
@@ -4657,7 +4656,6 @@
 			children = (
 				8CBD7BA720B6B82400E5DCC0 /* Base */,
 				8CBD7BCA20B6B87D00E5DCC0 /* fr */,
-				8CBD7BE120B6C1E500E5DCC0 /* en */,
 				6187B1D124B3272000D580FB /* hu */,
 			);
 			name = UIChatConversationInfoTableViewCell.xib;
