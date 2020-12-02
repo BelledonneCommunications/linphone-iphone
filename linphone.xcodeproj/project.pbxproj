@@ -1029,7 +1029,6 @@
 		61E8E46323C5E8EC00434E71 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutView.strings; sourceTree = "<group>"; };
 		61E8E46523C5E8F000434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
 		61E8E46723C5E9B400434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
-		61E8E46923C5EA2B00434E71 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
 		61E8E46B23C5EA2E00434E71 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ShopView.strings; sourceTree = "<group>"; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		6306440B1BECB08500134C72 /* FirstLoginView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstLoginView.h; sourceTree = "<group>"; };
@@ -4359,7 +4358,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				570742571D5A0691004B9C84 /* Base */,
-				61E8E46923C5EA2B00434E71 /* en */,
 				61E8E46B23C5EA2E00434E71 /* fr */,
 				6187B1DC24B3272500D580FB /* hu */,
 			);
