@@ -374,11 +374,13 @@
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
         [PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
-    } else if ([scheme isEqualToString:@"sip"]) {
+    } else if ([scheme isEqualToString:@"sip"]||[scheme isEqualToString:@"sips"]) {
         // remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
         // trailing "/"
         NSString *sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
-        [VIEW(DialerView) setAddress:sipUri];
+		[CallManager.instance performActionWhenCoreIsOnAction:^(void) {
+			[LinphoneManager.instance call: [LinphoneUtils normalizeSipOrPhoneAddress:sipUri]];
+		}];
     } else if ([scheme isEqualToString:@"linphone-widget"]) {
         if ([[url host] isEqualToString:@"call_log"] &&
             [[url path] isEqualToString:@"/show"]) {
