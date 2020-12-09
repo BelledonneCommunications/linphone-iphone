@@ -27,37 +27,13 @@ use_callkit=1
 
 accept_early_media=0
 
-[net]
-force_ice_disablement=0
-download_bw=0
-upload_bw=0
-
 [sip]
-auto_net_state_mon=1
-sip_random_port=0
-#whether SIP passwords must be encrypted in configuration storage file
 store_ha1_passwd=0
 deliver_imdn=1
-linphone_specs=groupchat,lime
-#to avoid app to not detect broken sockets when in long running task.
-tcp_tls_keepalive=30000
 
 [misc]
-#by default it is set to 30 by liblinphone
-history_max_size=-1
-enable_basic_to_client_group_chat_room_migration=0
-aggregate_imdn=1
 version_check_url_root=https://linphone.org/releases
-prefer_basic_chat_room=-1
-auto_net_state_mon=1
 
-[sound]
-dtmf_player_amp=0.007
-echocancellation=0
-eq_gains=50:2:50 100:2:50
-eq_location=mic
-ringer_dev_id=AQ: Audio Queue Device
 
-[video]
-display_filter_auto_rotate=0
+
 
