@@ -47,7 +47,8 @@ import AVFoundation
 	var referedToCall: String?
 	var endCallkit: Bool = false
 	static var speaker_already_enabled : Bool = false
-
+	var globalState : GlobalState = .Off
+	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 
 
 	fileprivate override init() {
@@ -275,7 +276,7 @@ import AVFoundation
 
 		if (CallManager.instance().nextCallIsTransfer) {
 			let call = CallManager.instance().lc!.currentCall
-			try call?.transfer(referTo: addr.asString())
+			try call?.transferTo(referTo: addr)
 			CallManager.instance().nextCallIsTransfer = false
 		} else {
 			//We set the record file name here because we can't do it after the call is started.
@@ -407,35 +408,27 @@ import AVFoundation
 			}
 		}
 	}
-<<<<<<< HEAD
 	
 	@objc func performActionWhenCoreIsOn(action:  @escaping ()->Void ) {
-		if (manager.globalState == .On) {
+		if (globalState == .On) {
 			action()
 		} else {
-			manager.actionsToPerformOnceWhenCoreIsOn.append(action)
+			actionsToPerformOnceWhenCoreIsOn.append(action)
 		}
 	}
-	
-}
 
-class CoreManagerDelegate: CoreDelegate {
-	static var speaker_already_enabled : Bool = false
-	var globalState : GlobalState = .Off
-	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
-	
-	override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
-		if (gstate == .On) {
+	func onGlobalStateChanged(core: Core, state: GlobalState, message: String) {
+		if (state == .On) {
 			actionsToPerformOnceWhenCoreIsOn.forEach {
 				$0()
 			}
 			actionsToPerformOnceWhenCoreIsOn.removeAll()
 		}
-		globalState = gstate
+		globalState = state
 	}
-	
-	override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String) {
-		if lc.proxyConfigList.count == 1 && (cstate == .Failed || cstate == .Cleared){
+
+	func onRegistrationStateChanged(core: Core, proxyConfig: ProxyConfig, state: RegistrationState, message: String) {
+		if core.proxyConfigList.count == 1 && (state == .Failed || state == .Cleared){
 			// terminate callkit immediately when registration failed or cleared, supporting single proxy configuration
 			CallManager.instance().endCallkit = true
 			for call in CallManager.instance().providerDelegate.uuids {
@@ -443,17 +436,10 @@ class CoreManagerDelegate: CoreDelegate {
 			}
 		} else {
 			CallManager.instance().endCallkit = false
-=======
-
-	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
-		if (cstate == .PushIncomingReceived) {
-			CallManager.instance().displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: call.callLog?.callId ?? "")
-			return;
->>>>>>> 22b977a1a... use new delegates
 		}
 	}
 
-	override func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
+	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let addr = call.remoteAddress;
 		let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
