@@ -650,20 +650,15 @@
 	  	if (call != linphone_core_get_current_call(LC))
 		  	return;
 
-	  	LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-	  	linphone_call_accept_update(call, params);
-	  	linphone_call_params_destroy(params);
+		[CallManager.instance acceptVideoWithCall:call confirm:FALSE];
   	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
 		LOGI(@"User accept video proposal");
 	  	if (call != linphone_core_get_current_call(LC))
 			return;
 
 		[[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-	  	[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-      	LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-      	linphone_call_params_enable_video(params, TRUE);
-      	linphone_call_accept_update(call, params);
-      	linphone_call_params_destroy(params);
+		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+		[CallManager.instance acceptVideoWithCall:call confirm:TRUE];
   	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
 	  	if (linphone_core_get_current_call(LC) == call)
 		  	linphone_call_set_authentication_token_verified(call, YES);
@@ -704,9 +699,7 @@
 																	  if (call != linphone_core_get_current_call(LC))
 																		  return;
 
-																	  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-																	  linphone_call_accept_update(call, params);
-																	  linphone_call_params_destroy(params);
+																	  [CallManager.instance acceptVideoWithCall:call confirm:FALSE];
 																	  [videoDismissTimer invalidate];
 																  }
 															onConfirmationClick:^() {
@@ -714,10 +707,7 @@
 																if (call != linphone_core_get_current_call(LC))
 																	return;
 
-																LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-																linphone_call_params_enable_video(params, TRUE);
-																linphone_call_accept_update(call, params);
-																linphone_call_params_destroy(params);
+																[CallManager.instance acceptVideoWithCall:call confirm:TRUE];
 																[videoDismissTimer invalidate];
 															}
 																   inController:PhoneMainView.instance];
