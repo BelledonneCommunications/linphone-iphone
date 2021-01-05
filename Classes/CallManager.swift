@@ -417,6 +417,13 @@ import AVFoundation
 		}
 	}
 
+	@objc func acceptVideo(call: OpaquePointer, confirm: Bool) {
+		let sCall = Call.getSwiftObject(cObject: call)
+		let params = try? lc?.createCallParams(call: sCall)
+		params?.videoEnabled = confirm
+		try? sCall.acceptUpdate(params: params)
+	}
+
 	func onGlobalStateChanged(core: Core, state: GlobalState, message: String) {
 		if (state == .On) {
 			actionsToPerformOnceWhenCoreIsOn.forEach {

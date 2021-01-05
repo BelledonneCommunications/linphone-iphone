@@ -685,9 +685,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			onCancelClick:^() {
 			  LOGI(@"User declined video proposal");
 			  if (call == linphone_core_get_current_call(LC)) {
-				  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-				  linphone_call_accept_update(call, params);
-				  linphone_call_params_unref(params);
+				  [CallManager.instance acceptVideoWithCall:call confirm:FALSE];
 				  [videoDismissTimer invalidate];
 				  videoDismissTimer = nil;
 			  }
@@ -695,10 +693,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			onConfirmationClick:^() {
 			  LOGI(@"User accept video proposal");
 			  if (call == linphone_core_get_current_call(LC)) {
-				  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-				  linphone_call_params_enable_video(params, TRUE);
-				  linphone_call_accept_update(call, params);
-				  linphone_call_params_unref(params);
+				  [CallManager.instance acceptVideoWithCall:call confirm:TRUE];
 				  [videoDismissTimer invalidate];
 				  videoDismissTimer = nil;
 			  }
