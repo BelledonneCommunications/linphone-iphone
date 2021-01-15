@@ -220,13 +220,17 @@ class NotificationService: UNNotificationServiceExtension {
 				return nil
 			}
 
-			if let displayName = addressBook?[sipAddr] as? String {
-				NotificationService.log.message(message: "display name for \(sipAddr): \(displayName)")
-				return displayName
-			} else {
-				NotificationService.log.message(message: "display name for \(sipAddr) not found in userDefaults")
-				return nil
+			if let simpleAddr = lc?.interpretUrl(url: sipAddr) {
+				simpleAddr.clean()
+				let nomalSipaddr = simpleAddr.asString()
+				if let displayName = addressBook?[nomalSipaddr] as? String {
+					NotificationService.log.message(message: "display name for \(sipAddr): \(displayName)")
+					return displayName
+				}
 			}
+
+			NotificationService.log.message(message: "display name for \(sipAddr) not found in userDefaults")
+			return nil
 		}
 		return nil
 	}
