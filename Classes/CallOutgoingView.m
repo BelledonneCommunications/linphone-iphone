@@ -47,6 +47,32 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	_routesEarpieceButton.enabled = !IPAD;
+	
+	[_zeroButton setDigit:'0'];
+	[_zeroButton setDtmf:true];
+	[_oneButton setDigit:'1'];
+	[_oneButton setDtmf:true];
+	[_twoButton setDigit:'2'];
+	[_twoButton setDtmf:true];
+	[_threeButton setDigit:'3'];
+	[_threeButton setDtmf:true];
+	[_fourButton setDigit:'4'];
+	[_fourButton setDtmf:true];
+	[_fiveButton setDigit:'5'];
+	[_fiveButton setDtmf:true];
+	[_sixButton setDigit:'6'];
+	[_sixButton setDtmf:true];
+	[_sevenButton setDigit:'7'];
+	[_sevenButton setDtmf:true];
+	[_eightButton setDigit:'8'];
+	[_eightButton setDtmf:true];
+	[_nineButton setDigit:'9'];
+	[_nineButton setDtmf:true];
+	[_starButton setDigit:'*'];
+	[_starButton setDtmf:true];
+	[_hashButton setDigit:'#'];
+	[_hashButton setDtmf:true];
+	
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -55,6 +81,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(bluetoothAvailabilityUpdateEvent:)
 											   name:kLinphoneBluetoothAvailabilityUpdate
+											 object:nil];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
 											 object:nil];
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
@@ -73,6 +104,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_speakerButton update];
 	[_microButton update];
 	[_routesButton update];
+	[self hidePad:TRUE animated:FALSE];
+	[self callUpdate:call state:linphone_call_get_state(call) animated:true];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -117,10 +151,33 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (IBAction)onNumpadClick:(id)sender {
+	if ([_numpadView isHidden]) {
+		[self hidePad:FALSE animated:ANIMATED];
+	} else {
+		[self hidePad:TRUE animated:ANIMATED];
+	}
+}
+
 - (IBAction)onDeclineClick:(id)sender {
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
 		[CallManager.instance terminateCallWithCall:call];
+	}
+}
+
+- (void)hidePad:(BOOL)hidden animated:(BOOL)animated {
+	if (hidden) {
+		[_numpadButton setOff];
+	} else {
+		[_numpadButton setOn];
+	}
+	if (hidden != _numpadView.hidden) {
+		if (animated) {
+			[self hideAnimation:hidden forView:_numpadView completion:nil];
+		} else {
+			[_numpadView setHidden:hidden];
+		}
 	}
 }
 
@@ -153,5 +210,61 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self hideSpeaker:available];
 	});
 }
+
+- (void)callUpdateEvent:(NSNotification *)notif {
+	LinphoneCall *call = [[notif.userInfo objectForKey:@"call"] pointerValue];
+	LinphoneCallState state = [[notif.userInfo objectForKey:@"state"] intValue];
+	[self callUpdate:call state:state animated:TRUE];
+}
+
+- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
+	_declineButton_earlyMedia.hidden = linphone_call_get_state(call) != LinphoneCallStateOutgoingEarlyMedia;
+	_declineButton.hidden = !_declineButton_earlyMedia.hidden;
+	_numpadButton.hidden = _declineButton_earlyMedia.hidden;
+}
+
+#pragma mark - Animation
+
+- (void)hideAnimation:(BOOL)hidden forView:(UIView *)target completion:(void (^)(BOOL finished))completion {
+	if (hidden) {
+	int original_y = target.frame.origin.y;
+	CGRect newFrame = target.frame;
+	newFrame.origin.y = self.view.frame.size.height;
+	[UIView animateWithDuration:0.5
+		delay:0.0
+		options:UIViewAnimationOptionCurveEaseIn
+		animations:^{
+		  target.frame = newFrame;
+		}
+		completion:^(BOOL finished) {
+		  CGRect originFrame = target.frame;
+		  originFrame.origin.y = original_y;
+		  target.hidden = YES;
+		  target.frame = originFrame;
+		  if (completion)
+			  completion(finished);
+		}];
+	} else {
+		CGRect frame = target.frame;
+		int original_y = frame.origin.y;
+		frame.origin.y = self.view.frame.size.height;
+		target.frame = frame;
+		frame.origin.y = original_y;
+		target.hidden = NO;
+
+		[UIView animateWithDuration:0.5
+			delay:0.0
+			options:UIViewAnimationOptionCurveEaseOut
+			animations:^{
+			  target.frame = frame;
+			}
+			completion:^(BOOL finished) {
+			  target.frame = frame; // in case application did not finish
+			  if (completion)
+				  completion(finished);
+			}];
+	}
+}
+
 
 @end

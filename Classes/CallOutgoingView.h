@@ -23,6 +23,8 @@
 #import "TPMultiLayoutViewController.h"
 #include "linphone/linphonecore.h"
 #import "UIRoundedImageView.h"
+#import "UIDigitButton.h"
+
 
 @interface CallOutgoingView : TPMultiLayoutViewController <UICompositeViewDelegate> {
 }
@@ -36,6 +38,23 @@
 @property(weak, nonatomic) IBOutlet UIButton *routesEarpieceButton;
 @property(weak, nonatomic) IBOutlet UISpeakerButton *routesSpeakerButton;
 @property(weak, nonatomic) IBOutlet UIMutedMicroButton *microButton;
+@property (weak, nonatomic) IBOutlet UIButton *declineButton;
+
+@property (weak, nonatomic) IBOutlet UIToggleButton *numpadButton;
+@property (strong, nonatomic) IBOutlet UIView *numpadView;
+@property(nonatomic, strong) IBOutlet UIDigitButton *oneButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *twoButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *threeButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *fourButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *fiveButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *sixButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *sevenButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *eightButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *nineButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *starButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *zeroButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *hashButton;
+@property (weak, nonatomic) IBOutlet UIButton *declineButton_earlyMedia;
 
 - (IBAction)onDeclineClick:(id)sender;
 
