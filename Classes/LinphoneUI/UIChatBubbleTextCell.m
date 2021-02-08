@@ -57,6 +57,7 @@
 	//[_imdmLabel addGestureRecognizer:resendRecognizer2];
 	//_imdmLabel.userInteractionEnabled = YES;
 
+	self.contentView.userInteractionEnabled = NO;
 	return self;
 }
 
