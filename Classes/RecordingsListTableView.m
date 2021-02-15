@@ -84,6 +84,10 @@
         NSArray *parsedName = [LinphoneUtils parseRecordingName:file];
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
         [dateFormat setDateFormat:@"EEEE, MMM d, yyyy"];
+		if ([parsedName count] < 2) {
+			LOGW(@"Can not parse this recoding file: %@", file);
+			continue;
+		}
         NSString *dayPretty = [dateFormat stringFromDate:[parsedName objectAtIndex:1]];
         NSMutableArray *recOfDay = [recordings objectForKey:dayPretty];
         if (recOfDay) {
