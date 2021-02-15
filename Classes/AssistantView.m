@@ -62,6 +62,7 @@ typedef enum _ViewElement {
 		historyViews = [[NSMutableArray alloc] init];
 		currentView = nil;
 		mustRestoreView = NO;
+		acceptTerms = NO;
 	}
 	return self;
 }
@@ -119,12 +120,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_outgoingView = DialerView.compositeViewDescription;
     _qrCodeButton.hidden = !ENABLE_QRCODE;
 	[self resetLiblinphone:FALSE];
+	[self enableWelcomeViewButtons];
+	NSString *message = NSLocalizedString(@"I accept Belledonne Communications’ terms of use and privacy policy", nil);
+	NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:message];
+	[attributedString addAttribute:NSLinkAttributeName
+						 value:@"https://www.linphone.org/general-terms"
+						 range:[[attributedString string] rangeOfString:NSLocalizedString(@"terms of use", nil)]];
+	[attributedString addAttribute:NSLinkAttributeName
+						 value:@"https://www.linphone.org/privacy-policy"
+						 range:[[attributedString string] rangeOfString:NSLocalizedString(@"privacy policy", nil)]];
+
+	NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : [UIColor redColor],
+									 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+
+	_acceptText.linkTextAttributes = linkAttributes;
+	_acceptText.attributedText = attributedString;
+	_acceptText.editable = NO;
+	_acceptText.delegate = self;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
-	
 }
 
 - (void)fitContent {
@@ -141,6 +158,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[self fitContent];
+}
+
+#pragma mark - UITextViewDelegate
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction {
+	return [[UIApplication sharedApplication] openURL:URL];
 }
 
 #pragma mark - Utils
@@ -267,6 +289,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 								 nil);
 
 	return NSLocalizedString(@"Unknown error, please try again later.", nil);
+}
+
+- (void)enableWelcomeViewButtons {
+	UIImage *image = acceptTerms ? [UIImage imageNamed:@"checkbox_checked.png"] : [UIImage imageNamed:@"checkbox_unchecked.png"];
+	[_acceptButton setImage:image forState:UIControlStateNormal];
+	_gotoRemoteProvisioningButton.enabled = _gotoLinphoneLoginButton.enabled = _gotoCreateAccountButton.enabled = _gotoLoginButton.enabled = acceptTerms;
 }
 
 + (NSString *)errorForLinphoneAccountCreatorPhoneNumberStatus:(LinphoneAccountCreatorPhoneNumberStatus)status {
@@ -1652,6 +1680,11 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
+}
+
+- (IBAction)onAcceptTermsClick:(id)sender {
+	acceptTerms = !acceptTerms;
+	[self enableWelcomeViewButtons];
 }
 
 #pragma mark - select country delegate
