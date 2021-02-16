@@ -122,7 +122,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self resetLiblinphone:FALSE];
 	[self enableWelcomeViewButtons];
 	NSString *message = NSLocalizedString(@"I accept Belledonne Communications’ terms of use and privacy policy", nil);
-	NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:message];
+	NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSForegroundColorAttributeName : [UIColor systemGrayColor]}];
 	[attributedString addAttribute:NSLinkAttributeName
 						 value:@"https://www.linphone.org/general-terms"
 						 range:[[attributedString string] rangeOfString:NSLocalizedString(@"terms of use", nil)]];
