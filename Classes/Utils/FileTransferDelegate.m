@@ -277,7 +277,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     linphone_content_set_size(content, _data.length);
     _message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
     BOOL isOneToOneChat = linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
-    if (!isOneToOneChat && ![_text isEqualToString:@""])
+    if (!isOneToOneChat && (_text!=nil && ![_text isEqualToString:@""]))
         linphone_chat_message_add_text_content(_message, [_text UTF8String]);
     linphone_content_unref(content);
     
