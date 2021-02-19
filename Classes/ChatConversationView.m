@@ -378,6 +378,10 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         [self configureForRoom:self.editing];
         if (_chatRoom && _markAsRead) {
+			if (IPAD) {
+				[VIEW(ChatsListView).tableController loadData];
+			}
+
             [ChatConversationView markAsRead:_chatRoom];
         }
         _markAsRead = TRUE;
