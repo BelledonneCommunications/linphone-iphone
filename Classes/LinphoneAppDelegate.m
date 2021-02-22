@@ -688,6 +688,7 @@
 				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
+			if (!call) return;
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
 		  	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
