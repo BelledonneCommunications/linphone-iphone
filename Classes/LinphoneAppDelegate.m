@@ -66,6 +66,9 @@
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view removeCallBacks];
+		} else if (PhoneMainView.instance.currentView == ChatConversationInfoView.compositeViewDescription) {
+			ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+			[view removeCallbacks];
 		}
 		[CoreManager.instance stopLinphoneCore];
 	}
