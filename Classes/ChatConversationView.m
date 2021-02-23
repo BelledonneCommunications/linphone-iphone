@@ -253,7 +253,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_room_cbs_set_participant_removed(_chatRoomCbs, on_chat_room_participant_removed);
 		linphone_chat_room_cbs_set_participant_admin_status_changed(_chatRoomCbs, on_chat_room_participant_admin_status_changed);
 		linphone_chat_room_cbs_set_chat_message_received(_chatRoomCbs, on_chat_room_chat_message_received);
-		linphone_chat_room_cbs_set_chat_message_sent(_chatRoomCbs, on_chat_room_chat_message_sent);
+		linphone_chat_room_cbs_set_chat_message_sending(_chatRoomCbs, on_chat_room_chat_message_sending);
 		linphone_chat_room_cbs_set_is_composing_received(_chatRoomCbs, on_chat_room_is_composing_received);
 		linphone_chat_room_cbs_set_conference_joined(_chatRoomCbs, on_chat_room_conference_joined);
 		linphone_chat_room_cbs_set_conference_left(_chatRoomCbs, on_chat_room_conference_left);
@@ -1114,7 +1114,7 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	[view.tableController scrollToLastUnread:TRUE];
 }
 
-void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+void on_chat_room_chat_message_sending(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
