@@ -89,7 +89,9 @@ class NotificationService: UNNotificationServiceExtension {
 				if let message = message {
 					let msgData = parseMessage(message: message)
 
-					if !message.isUsingUserDefaults, let badge = updateBadge() as NSNumber? {
+					// Extension only upates app's badge when main shared core is Off = extension's core is On.
+					// Otherwise, the app will update the badge.
+					if lc?.globalState == GlobalState.On, let badge = updateBadge() as NSNumber? {
 						bestAttemptContent.badge = badge
 					}
 
