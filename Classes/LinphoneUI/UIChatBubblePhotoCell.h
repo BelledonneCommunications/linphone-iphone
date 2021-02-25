@@ -40,6 +40,7 @@
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 @property (weak, nonatomic) IBOutlet UIButton *fileButton;
 @property (weak, nonatomic) IBOutlet UIView *fileView;
+@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
@@ -50,6 +51,7 @@
 - (IBAction)onResendClick:(id)event;
 - (IBAction)onPlayClick:(id)sender;
 - (IBAction)onFileClick:(id)sender;
+- (IBAction)onPlusClick:(id)sender;
 
 @end
 

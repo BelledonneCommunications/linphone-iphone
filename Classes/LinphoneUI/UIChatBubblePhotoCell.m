@@ -72,6 +72,7 @@
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;
+	_plusLongGestureRecognizer.enabled = NO;
 	_messageImageView.image = nil;
     _finalImage.image = nil;
     _finalImage.hidden = TRUE;
@@ -133,6 +134,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     dispatch_async(dispatch_get_main_queue(), ^{
         _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
         _imageGestureRecognizer.enabled = NO;
+		_plusLongGestureRecognizer.enabled = NO;
     });
 }
 
@@ -144,6 +146,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         [_messageImageView stopLoading];
         _messageImageView.hidden = YES;
         _imageGestureRecognizer.enabled = YES;
+		_plusLongGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
         [self layoutSubviews];
     });
@@ -187,10 +190,12 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 							UIImage *image = [[UIImage alloc] initWithData:data];
 							[self loadImageAsset:nil image:image];
 							_imageGestureRecognizer.enabled = YES;
+							_plusLongGestureRecognizer.enabled = YES;
 						} else {
 							// support previous versions
 							[self loadFirstImage:localImage type:PHAssetMediaTypeImage];
 							_imageGestureRecognizer.enabled = YES;
+							_plusLongGestureRecognizer.enabled = YES;
 
 							dispatch_async(dispatch_get_main_queue(), ^ {
 								UIImage *image = [chatTableView.imagesInChatroom objectForKey:localImage];
@@ -208,10 +213,12 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 							UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localVideo]];
 							[self loadImageAsset:nil image:image];
 							_imageGestureRecognizer.enabled = NO;
+							_plusLongGestureRecognizer.enabled = YES;
 						} else {
 							// support previous versions
 							[self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
 							_imageGestureRecognizer.enabled = NO;
+							_plusLongGestureRecognizer.enabled = YES;
 
 							dispatch_async(dispatch_get_main_queue(), ^ {
 								PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
@@ -251,11 +258,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 						UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:newVersion? [ChatConversationView getCacheFileUrl:localFile] : [VIEW(ChatConversationView) getICloudFileUrl:localFile]];
 						[self loadImageAsset:nil image:image];
 						_imageGestureRecognizer.enabled = NO;
+						_plusLongGestureRecognizer.enabled = YES;
 					} else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
 						NSData *data = newVersion? [ChatConversationView getCacheFileData:localFile] : [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
 						UIImage *image = [[UIImage alloc] initWithData:data];
 						[self loadImageAsset:nil image:image];
 						_imageGestureRecognizer.enabled = YES;
+						_plusLongGestureRecognizer.enabled = YES;
 					} else {
 						NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
 						_fileName.text = text;
@@ -359,6 +368,110 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
             [self fileErrorBlock];
         }
     }];
+}
+
+- (IBAction)onPlusClick:(id)sender {
+	UILongPressGestureRecognizer *gesture = (UILongPressGestureRecognizer *)sender;
+	if (gesture.state != UIGestureRecognizerStateBegan) {
+		// allow only one click once time
+		return;
+	}
+	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[sheet addButtonWithTitle:NSLocalizedString(@"Save to Photos", nil)
+							block:^() {
+			ChatConversationView *view = VIEW(ChatConversationView);
+			LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
+			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
+			// get download path
+			NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+			NSFileManager *fileManager = [NSFileManager defaultManager];
+			if ([fileManager fileExistsAtPath:filePath]) {
+				NSData* data = [NSData dataWithContentsOfFile:filePath];
+				NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
+
+				// define a block , not called immediately. To avoid crash when saving photo before PHAuthorizationStatusNotDetermined.
+				void (^block)(void)= ^ {
+					if ([fileType isEqualToString:@"image"] ) {
+						// we're finished, save the image and update the message
+						UIImage *image = [UIImage imageWithData:data];
+						if (!image) {
+							[view showFileDownloadError];
+							return;
+						}
+						__block PHObjectPlaceholder *placeHolder;
+						[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+							PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
+							placeHolder = [request placeholderForCreatedAsset];
+						} completionHandler:^(BOOL success, NSError *error) {
+							dispatch_async(dispatch_get_main_queue(), ^{
+								if (error) {
+									LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+									UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+														message:NSLocalizedString(@"Cannot write image to photo library",nil)
+												 preferredStyle:UIAlertControllerStyleAlert];
+
+									UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																							style:UIAlertActionStyleDefault
+																						  handler:^(UIAlertAction * action) {}];
+
+									[errView addAction:defaultAction];
+									[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+								} else {
+									LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
+								}
+							});
+						}];
+					} else if([fileType isEqualToString:@"video"]) {
+						// until image is properly saved, keep a reminder on it so that the
+						// chat bubble is aware of the fact that image is being saved to device
+
+						__block PHObjectPlaceholder *placeHolder;
+						[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+							PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]];
+								placeHolder = [request placeholderForCreatedAsset];
+						} completionHandler:^(BOOL success, NSError * _Nullable error) {
+							dispatch_async(dispatch_get_main_queue(), ^{
+								if (error) {
+									LOGE(@"Cannot save video data downloaded [%@]", [error localizedDescription]);
+									UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+														 message:NSLocalizedString(@"Cannot write video to photo library", nil)
+												  preferredStyle:UIAlertControllerStyleAlert];
+
+									UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																							style:UIAlertActionStyleDefault
+																						  handler:^(UIAlertAction * action) {}];
+										
+									[errView addAction:defaultAction];
+									[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+								} else {
+									LOGI(@"video saved to [%@]", [placeHolder localIdentifier]);
+								}
+							});
+						}];
+					}
+				};
+
+				// When you save an image or video to a photo library, make sure that it is allowed. Otherwise, there will be a backup error.
+				if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+					block();
+				} else {
+					[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+						dispatch_async(dispatch_get_main_queue(), ^{
+							if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+								block();
+							} else {
+								[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+							}
+						});
+					}];
+				}
+			}
+		}];
+	 
+		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[sheet showInView:PhoneMainView.instance.view];
+	});
 }
 
 - (IBAction)onFileClick:(id)sender {
