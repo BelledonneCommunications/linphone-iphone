@@ -92,6 +92,10 @@
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (void)autoDownload:(LinphoneChatMessage *)message;
++(NSString *)getKeyFromFileType:(NSString *)fileType fileName:(NSString *)name;
++ (NSURL *)getCacheFileUrl:(NSString *)name;
++ (void)writeFileInCache:(NSData *)data name:(NSString *)name;
++ (NSData *)getCacheFileData:(NSString *)name;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;

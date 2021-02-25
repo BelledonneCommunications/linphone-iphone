@@ -276,74 +276,33 @@
 
 	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
-		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
-        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
-        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
+		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
+		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
 
+		/*FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:_message];
+		if (thiz) {
+			[thiz stop]
+		}*/
 		[self onDelete];
-        if(localImage){
-            ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
-            UIImage *img = [tableView.imagesInChatroom objectForKey:localImage];
-            if (img) {
-				dispatch_async(dispatch_get_main_queue(), ^ {
-                                   [_chatRoomDelegate startImageUpload:img assetId:localImage withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
-                               });
-            } else {
-                PHFetchResult<PHAsset *> *assets = [LinphoneManager getPHAssets:localImage];
-                
-                if (![assets firstObject])
-                    return;
-                PHAsset *asset = [assets firstObject];
-                if (asset.mediaType != PHAssetMediaTypeImage)
-                    return;
-                
-                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-                options.synchronous = TRUE;
-                [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
-                                                        resultHandler:^(UIImage *image, NSDictionary * info) {
-                                                            if (image) {
-                                                                dispatch_async(dispatch_get_main_queue(),
-                                                                               ^(void) {
-                                                                                   [_chatRoomDelegate startImageUpload:img assetId:localImage withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
-                                                                               });
-                                                            } else {
-                                                                LOGE(@"Can't read image");
-                                                            }
-                }];
-            }
-        } else if (localVideo) {
-            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-            if (![assets firstObject])
-                return;
-            PHAsset *asset = [assets firstObject];
-            if (asset.mediaType != PHAssetMediaTypeVideo)
-                return;
-       
-            PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-            options.version = PHImageRequestOptionsVersionCurrent;
-            options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-            
-            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-                AVURLAsset *urlAsset = (AVURLAsset *)asset;
-                    
-                NSURL *url = urlAsset.URL;
-                NSData *data = [NSData dataWithContentsOfURL:url];
-                dispatch_async(dispatch_get_main_queue(),
-                                ^(void) {
-                                    [_chatRoomDelegate startFileUpload:data assetId:localVideo];
-                                });
-            }];
-
-        } else if (localFile) {
-            NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-            [_chatRoomDelegate startFileUpload:data withName:localFile];
-        }
+		if(localImage){
+			dispatch_async(dispatch_get_main_queue(), ^ {
+				[_chatRoomDelegate resendFile:[ChatConversationView getCacheFileData:localImage] withName:localImage type:@"image" key:@"localimage" message:self.textMessage];
+				});
+		} else if (localVideo) {
+			dispatch_async(dispatch_get_main_queue(), ^ {
+				[_chatRoomDelegate resendFile:[ChatConversationView getCacheFileData:localVideo] withName:localVideo type:@"video" key:@"localvideo" message:self.textMessage];
+				});
+		} else if (localFile) {
+			dispatch_async(dispatch_get_main_queue(), ^ {
+				[_chatRoomDelegate resendFile:[ChatConversationView getCacheFileData:localFile] withName:localFile type:@"image" key:@"localfile" message:self.textMessage];
+				});
+		}
 	} else {
-        [self onDelete];
+		[self onDelete];
 		double delayInSeconds = 0.4;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 		dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-		  [_chatRoomDelegate resendChat:self.textMessage withExternalUrl:nil];
+			[_chatRoomDelegate resendChat:self.textMessage withExternalUrl:nil];
 		});
 	}
 }
@@ -443,53 +402,74 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                                            font:messageFont];
             size.height += textSize.height;
         }
-        
-        if(localFile) {
-            UIImage *image = nil;
-            NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
-            if ([type isEqualToString:@"video"]) {
-                image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-            } else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
-                NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-                image = [[UIImage alloc] initWithData:data];
-            }
 
-            if (image) {
-                size = [self getMediaMessageSizefromOriginalSize:image.size withWidth:width];
-                // add size for message text
-                size.height += textSize.height;
-                size.width = MAX(textSize.width, size.width);
-            } else {
-                CGSize fileSize = CGSizeMake(230, 50);
-                size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
-            }
-        } else {
-            if (!localImage && !localVideo) {
-                //We are loading the image
-                return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
-            }
-            PHFetchResult<PHAsset *> *assets;
-            if(localImage)
-                assets = [LinphoneManager getPHAssets:localImage];
-            else
-                assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-            if (![assets firstObject]) {
-                return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
-            } else {
-                PHAsset *asset = [assets firstObject];
-                CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
-                size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
-                    
-                // add size for message text
-                size.height += textSize.height;
-                size.width = MAX(textSize.width, size.width);
-            }
-        }
-    }
+		CGSize originalImageSize = CGSizeMake(230, 50);
+		if (localFile) {
+			UIImage *image = nil;
+			NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
+			NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localFile];
+			if ([type isEqualToString:@"video"]) {
+				if ([[NSFileManager defaultManager] fileExistsAtPath: filePath]) {
+					image = [self getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localFile]];
+				} else {
+					image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+				}
+			} else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+				if ([[NSFileManager defaultManager] fileExistsAtPath: filePath]) {
+					NSData *data = [NSData dataWithContentsOfFile:filePath];
+					image = [[UIImage alloc] initWithData:data];
+				} else {
+					NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+					image = [[UIImage alloc] initWithData:data];
+				}
+			} else {
+				// other files // todo for text
+				CGSize fileSize = CGSizeMake(230, 50);
+				size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+				size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+				size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+				return size;
+			}
 
-    size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
-    size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
-    return size;
+			originalImageSize = image.size;
+		} else {
+			if (!localImage && !localVideo) {
+				//We are loading the image
+				return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
+			}
+
+			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localImage]]) {
+				NSData* data = [ChatConversationView getCacheFileData:localImage];
+				UIImage *image = [[UIImage alloc] initWithData:data];
+				originalImageSize = image.size;
+			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localVideo]]) {
+				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localVideo]];
+				originalImageSize = image.size;
+			} else {
+				// support previous versions
+				PHFetchResult<PHAsset *> *assets;
+				if(localImage)
+					assets = [LinphoneManager getPHAssets:localImage];
+				else
+					assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
+
+				if (![assets firstObject]) {
+					return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
+				} else {
+					PHAsset *asset = [assets firstObject];
+					originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
+				}
+			}
+		}
+		size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
+		// add size for message text
+		size.height += textSize.height;
+		size.width = MAX(textSize.width, size.width);
+	}
+
+	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+	return size;
 }
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
