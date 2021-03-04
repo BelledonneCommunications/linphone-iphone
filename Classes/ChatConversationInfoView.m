@@ -132,6 +132,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+	[self removeCallbacks];
+}
+
+- (void)removeCallbacks {
 	if (!_room || !_chatRoomCbs)
 		return;
 

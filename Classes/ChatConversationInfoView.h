@@ -49,4 +49,6 @@
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onQuitClick:(id)sender;
 
+- (void)removeCallbacks;
+
 @end

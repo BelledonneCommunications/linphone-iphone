@@ -66,6 +66,9 @@
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view removeCallBacks];
+		} else if (PhoneMainView.instance.currentView == ChatConversationInfoView.compositeViewDescription) {
+			ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+			[view removeCallbacks];
 		}
 		[CoreManager.instance stopLinphoneCore];
 	}
@@ -688,6 +691,7 @@
 				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
+			if (!call) return;
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
 		  	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:response.notification.request.content.body

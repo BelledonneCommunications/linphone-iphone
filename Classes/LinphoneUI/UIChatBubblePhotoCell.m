@@ -52,6 +52,7 @@
         chatTableView = VIEW(ChatConversationView).tableController;
         videoDefaultSize = CGSizeMake(320, 240);
         assetIsLoaded = FALSE;
+		self.contentView.userInteractionEnabled = NO;
 	}
 	return self;
 }
