@@ -71,6 +71,9 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 															@"state" : @(LinphoneChatMessageStateDelivered), // we dont want to trigger
 															@"progress" : @(1.f),    // FileTransferDone here
 														}];
+			if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+				[ChatConversationView writeMediaToGallery:name fileType:fileType];
+			}
 		});
 	} else {
 		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),

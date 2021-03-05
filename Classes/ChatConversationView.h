@@ -96,6 +96,7 @@
 + (NSURL *)getCacheFileUrl:(NSString *)name;
 + (void)writeFileInCache:(NSData *)data name:(NSString *)name;
 + (NSData *)getCacheFileData:(NSString *)name;
++ (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
