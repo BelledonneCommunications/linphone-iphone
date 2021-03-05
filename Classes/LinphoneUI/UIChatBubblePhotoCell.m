@@ -80,23 +80,6 @@
     assetIsLoaded = FALSE;
 	[self disconnectFromFileDelegate];
 
-	if (amessage) {
-		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(amessage);
-		if (c) {
-			const char *name = linphone_content_get_name(c);
-			for (FileTransferDelegate *aftd in [LinphoneManager.instance fileTransferDelegates]) {
-				if (linphone_chat_message_get_file_transfer_information(aftd.message) &&
-					(linphone_chat_message_is_outgoing(aftd.message) == linphone_chat_message_is_outgoing(amessage)) &&
-					strcmp(name, linphone_content_get_name(
-									 linphone_chat_message_get_file_transfer_information(aftd.message))) == 0) {
-					LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", amessage, aftd);
-					[self connectToFileDelegate:aftd];
-					break;
-				}
-			}
-		}
-	}
-
 	[super setChatMessage:amessage];
 }
 
@@ -108,6 +91,7 @@
         _messageImageView.hidden = YES;
         _finalImage.hidden = NO;
         _fileView.hidden = YES;
+		_plusLongGestureRecognizer.enabled = YES;
         [self layoutSubviews];
     });
 }
@@ -165,37 +149,79 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
 	NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 	assert(is_external || localImage || localVideo || localFile);
-	
+
 	LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(self.message);
-	NSString *type = fileContent ? [NSString stringWithUTF8String:linphone_content_get_type(fileContent)] : @"";
-	if (!(localImage || localVideo || localFile)) {
-		_playButton.hidden = YES;
-		_fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
-		_messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
-		_downloadButton.hidden = !_cancelButton.hidden;
-		_fileTransferProgress.hidden = NO;
+	if (fileContent == nil) {
+		LOGW(@"file content is null");
+		return;
+	}
+	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
+	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
+	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+
+
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+		// already downloaded
+		if (!assetIsLoaded) {
+			assetIsLoaded = TRUE;
+			NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:fileName];
+			if ([key isEqualToString:@"localimage"]) {
+				// we did not load the image yet, so start doing so
+				if (_messageImageView.image == nil) {
+					NSData* data = [NSData dataWithContentsOfFile:filePath];
+					UIImage *image = [[UIImage alloc] initWithData:data];
+					[self loadImageAsset:nil image:image];
+					_imageGestureRecognizer.enabled = YES;
+				}
+			} else if ([key isEqualToString:@"localvideo"]) {
+				if (_messageImageView.image == nil) {
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:key]];
+					[self loadImageAsset:nil image:image];
+					_imageGestureRecognizer.enabled = NO;
+				}
+			} else if ([key isEqualToString:@"localfile"]) {
+				if ([fileType isEqualToString:@"video"]) {
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:key]];
+					[self loadImageAsset:nil image:image];
+					_imageGestureRecognizer.enabled = NO;
+				} else if ([key hasSuffix:@"JPG"] || [key hasSuffix:@"PNG"] || [key hasSuffix:@"jpg"] || [key hasSuffix:@"png"]) {
+					NSData *data = [ChatConversationView getCacheFileData:key];
+					UIImage *image = [[UIImage alloc] initWithData:data];
+					[self loadImageAsset:nil image:image];
+					_imageGestureRecognizer.enabled = YES;
+				} else {
+					NSString *text = [NSString stringWithFormat:@"📎 %@",key];
+					_fileName.text = text;
+					[self loadFileAsset];
+				}
+			}
+
+			if (!(localImage || localVideo || localFile)) {
+				// If the file has been downloaded in background, save it in the folders and display it.
+				[LinphoneManager setValueInMessageAppData:fileName forKey:key inMessage:self.message];
+			}
+		}
+		[self uploadingImage:fileType localFile:localFile];
 	} else {
-		// file is being saved on device - just wait for it
-		if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
-			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
+		// support previous methode:
+		if (!(localImage || localVideo || localFile)) {
+			_playButton.hidden = YES;
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
+			_messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
+			_downloadButton.hidden = !_cancelButton.hidden;
+			_fileTransferProgress.hidden = NO;
 		} else {
-			if(!assetIsLoaded) {
-				assetIsLoaded = TRUE;
-				if (localImage) {
-					// we did not load the image yet, so start doing so
-					if (_messageImageView.image == nil) {
-						NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localImage];
-						if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-							NSData* data = [NSData dataWithContentsOfFile:filePath];
-							UIImage *image = [[UIImage alloc] initWithData:data];
-							[self loadImageAsset:nil image:image];
-							_imageGestureRecognizer.enabled = YES;
-							_plusLongGestureRecognizer.enabled = YES;
-						} else {
-							// support previous versions
+			// file is being saved on device - just wait for it
+			if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
+				_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
+			} else {
+				if(!assetIsLoaded) {
+					assetIsLoaded = TRUE;
+					if (localImage) {
+						// we did not load the image yet, so start doing so
+						if (_messageImageView.image == nil) {
 							[self loadFirstImage:localImage type:PHAssetMediaTypeImage];
 							_imageGestureRecognizer.enabled = YES;
-							_plusLongGestureRecognizer.enabled = YES;
 
 							dispatch_async(dispatch_get_main_queue(), ^ {
 								UIImage *image = [chatTableView.imagesInChatroom objectForKey:localImage];
@@ -205,20 +231,10 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 								[LinphoneManager setValueInMessageAppData:name forKey:@"localimage" inMessage:self.message];
 							});
 						}
-					}
-				} else if (localVideo) {
-					if (_messageImageView.image == nil) {
-						NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localVideo];
-						if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-							UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localVideo]];
-							[self loadImageAsset:nil image:image];
-							_imageGestureRecognizer.enabled = NO;
-							_plusLongGestureRecognizer.enabled = YES;
-						} else {
-							// support previous versions
+					} else if (localVideo) {
+						if (_messageImageView.image == nil) {
 							[self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
 							_imageGestureRecognizer.enabled = NO;
-							_plusLongGestureRecognizer.enabled = YES;
 
 							dispatch_async(dispatch_get_main_queue(), ^ {
 								PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
@@ -237,53 +253,50 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 									NSString *name = [NSString stringWithFormat:@"IMG-%f.MOV",  [NSDate timeIntervalSinceReferenceDate]];
 									[ChatConversationView writeFileInCache:data name:name];
 									[LinphoneManager setValueInMessageAppData:name forKey:@"localvideo" inMessage:self.message];
-									
+										
 								}];
-								
 							});
 						}
-					}
-				} else if (localFile) {
-					BOOL newVersion = FALSE;
-					if(![[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localFile]]) {
+					} else if (localFile) {
 						dispatch_async(dispatch_get_main_queue(), ^ {
-								NSURL *url = [VIEW(ChatConversationView) getICloudFileUrl:localFile];
-								NSData *data = [NSData dataWithContentsOfURL:url];
-								[ChatConversationView writeFileInCache:data name:localFile];
+							NSURL *url = [VIEW(ChatConversationView) getICloudFileUrl:localFile];
+							NSData *data = [NSData dataWithContentsOfURL:url];
+							[ChatConversationView writeFileInCache:data name:localFile];
 						});
-					} else {
-						newVersion = TRUE;
-					}
-					if ([type isEqualToString:@"video"]) {
-						UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:newVersion? [ChatConversationView getCacheFileUrl:localFile] : [VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-						[self loadImageAsset:nil image:image];
-						_imageGestureRecognizer.enabled = NO;
-						_plusLongGestureRecognizer.enabled = YES;
-					} else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
-						NSData *data = newVersion? [ChatConversationView getCacheFileData:localFile] : [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
-						UIImage *image = [[UIImage alloc] initWithData:data];
-						[self loadImageAsset:nil image:image];
-						_imageGestureRecognizer.enabled = YES;
-						_plusLongGestureRecognizer.enabled = YES;
-					} else {
-						NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
-						_fileName.text = text;
-						[self loadFileAsset];
+
+						if ([fileType isEqualToString:@"video"]) {
+							UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+							[self loadImageAsset:nil image:image];
+							_imageGestureRecognizer.enabled = NO;
+						} else if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
+							NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
+							UIImage *image = [[UIImage alloc] initWithData:data];
+							[self loadImageAsset:nil image:image];
+							_imageGestureRecognizer.enabled = YES;
+						} else {
+							NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
+							_fileName.text = text;
+							[self loadFileAsset];
+						}
 					}
 				}
 			}
+			[self uploadingImage:fileType localFile:localFile];
 		}
-		// we are uploading the image
-		if (_ftd.message != nil) {
-			_cancelButton.hidden = _fileTransferProgress.hidden = super.notDelivered ? YES : NO;
-			_downloadButton.hidden = YES;
-			_playButton.hidden = YES;
-			_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
-		} else {
-			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
-			_playButton.hidden = ![type isEqualToString:@"video"];
-			_fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
-		}
+	}
+}
+
+- (void)uploadingImage:(NSString *)fileType localFile:(NSString *)localFile {
+	// we are uploading the image
+	if (_ftd.message != nil) {
+		_cancelButton.hidden = _fileTransferProgress.hidden = super.notDelivered ? YES : NO;
+		_downloadButton.hidden = YES;
+		_playButton.hidden = YES;
+		_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
+	} else {
+		_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  YES;
+		_playButton.hidden = ![fileType isEqualToString:@"video"];
+		_fileName.hidden = _fileView.hidden = _fileButton.hidden = localFile ? NO : YES;
 	}
 }
 
@@ -509,10 +522,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 - (IBAction)onImageClick:(id)event {
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (state == LinphoneChatMessageStateNotDelivered) {
-		FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:self.message];
-		if (thiz) {
-			[thiz stopAndDestroy];
-		}
 		[self onResendClick:event];
 	} else {
 		if (![_messageImageView isLoading]) {
