@@ -175,22 +175,22 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 				}
 			} else if ([key isEqualToString:@"localvideo"]) {
 				if (_messageImageView.image == nil) {
-					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:key]];
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:fileName]];
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = NO;
 				}
 			} else if ([key isEqualToString:@"localfile"]) {
 				if ([fileType isEqualToString:@"video"]) {
-					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:key]];
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:fileName]];
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = NO;
-				} else if ([key hasSuffix:@"JPG"] || [key hasSuffix:@"PNG"] || [key hasSuffix:@"jpg"] || [key hasSuffix:@"png"]) {
-					NSData *data = [ChatConversationView getCacheFileData:key];
+				} else if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"] || [fileName hasSuffix:@"jpg"] || [fileName hasSuffix:@"png"]) {
+					NSData *data = [ChatConversationView getCacheFileData:fileName];
 					UIImage *image = [[UIImage alloc] initWithData:data];
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = YES;
 				} else {
-					NSString *text = [NSString stringWithFormat:@"📎 %@",key];
+					NSString *text = [NSString stringWithFormat:@"📎 %@",fileName];
 					_fileName.text = text;
 					[self loadFileAsset];
 				}
