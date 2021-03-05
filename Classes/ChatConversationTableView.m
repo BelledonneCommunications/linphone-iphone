@@ -193,12 +193,11 @@ static const int BASIC_EVENT_LIST=15;
 - (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
     LinphoneEventLog *previousEvent = nil;
     NSInteger indexOfPreviousEvent = indexPath.row - 1;
-    while (!previousEvent && indexOfPreviousEvent > -1) {
-        LinphoneEventLog *tmp = [[eventList objectAtIndex:indexOfPreviousEvent] pointerValue];
-        if (linphone_event_log_get_type(tmp) == LinphoneEventLogTypeConferenceChatMessage) {
-            previousEvent = tmp;
+    if (indexOfPreviousEvent > -1) {
+		previousEvent = [[eventList objectAtIndex:indexOfPreviousEvent] pointerValue];
+        if (linphone_event_log_get_type(previousEvent) != LinphoneEventLogTypeConferenceChatMessage) {
+			return TRUE;
         }
-        --indexOfPreviousEvent;
     }
     if (!previousEvent)
         return TRUE;
