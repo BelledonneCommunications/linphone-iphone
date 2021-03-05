@@ -30,7 +30,6 @@ enum LinphoneError: Error {
 class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 	init(config: Config, log: LoggingService?, domain: String) throws {
 		if let log = log {
-			super.init()
 			let debugLevel = config.getInt(section: "app", key: "debugenable_preference", defaultValue: LogLevel.Debug.rawValue)
 			let debugEnabled = (debugLevel >= LogLevel.Debug.rawValue && debugLevel < LogLevel.Error.rawValue)
 
@@ -46,7 +45,7 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 		}
 	}
 
-	override func onLogMessageWritten(logService: LoggingService, domain: String, lev: LogLevel, message: String) {
+	func onLogMessageWritten(logService: LoggingService, domain: String, lev: LogLevel, message: String) {
 		let level: String
 
 		switch lev {

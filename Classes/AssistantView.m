@@ -602,7 +602,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self changeView:_remoteProvisioningLoginView back:FALSE animation:TRUE];
 
-	linphone_proxy_config_destroy(default_conf);
+	linphone_proxy_config_unref(default_conf);
 }
 
 - (void)resetTextFields {

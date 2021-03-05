@@ -652,7 +652,7 @@
 
 	  	LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 	  	linphone_call_accept_update(call, params);
-	  	linphone_call_params_destroy(params);
+	  	linphone_call_params_unref(params);
   	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
 		LOGI(@"User accept video proposal");
 	  	if (call != linphone_core_get_current_call(LC))
@@ -663,7 +663,7 @@
       	LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
       	linphone_call_params_enable_video(params, TRUE);
       	linphone_call_accept_update(call, params);
-      	linphone_call_params_destroy(params);
+		linphone_call_params_unref(params);
   	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
 	  	if (linphone_core_get_current_call(LC) == call)
 		  	linphone_call_set_authentication_token_verified(call, YES);
@@ -706,7 +706,7 @@
 
 																	  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 																	  linphone_call_accept_update(call, params);
-																	  linphone_call_params_destroy(params);
+																	  linphone_call_params_unref(params);
 																	  [videoDismissTimer invalidate];
 																  }
 															onConfirmationClick:^() {
@@ -717,7 +717,7 @@
 																LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 																linphone_call_params_enable_video(params, TRUE);
 																linphone_call_accept_update(call, params);
-																linphone_call_params_destroy(params);
+																linphone_call_params_unref(params);
 																[videoDismissTimer invalidate];
 															}
 																   inController:PhoneMainView.instance];

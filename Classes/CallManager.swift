@@ -423,7 +423,7 @@ class CoreManagerDelegate: CoreDelegate {
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 	
-	override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
+	func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
 		if (gstate == .On) {
 			actionsToPerformOnceWhenCoreIsOn.forEach {
 				$0()
@@ -433,7 +433,7 @@ class CoreManagerDelegate: CoreDelegate {
 		globalState = gstate
 	}
 	
-	override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String) {
+	func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String) {
 		if lc.proxyConfigList.count == 1 && (cstate == .Failed || cstate == .Cleared){
 			// terminate callkit immediately when registration failed or cleared, supporting single proxy configuration
 			CallManager.instance().endCallkit = true
@@ -445,7 +445,7 @@ class CoreManagerDelegate: CoreDelegate {
 		}
 	}
 
-	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
+	func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
 		let addr = call.remoteAddress;
 		let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
