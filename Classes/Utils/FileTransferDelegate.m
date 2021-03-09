@@ -139,6 +139,10 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key{
+	if ([[LinphoneManager.instance fileTransferDelegates] containsObject:self]) {
+		LOGW(@"fileTransferDelegates has already added %p", self);
+		return;
+	}
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
@@ -185,6 +189,10 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {
+	if ([[LinphoneManager.instance fileTransferDelegates] containsObject:self]) {
+		LOGW(@"fileTransferDelegates has already added %p", self);
+		return FALSE;
+	}
 	[[LinphoneManager.instance fileTransferDelegates] addObject:self];
 
 	_message = message;
