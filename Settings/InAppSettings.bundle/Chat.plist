@@ -27,6 +27,16 @@
 			</array>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>auto_write_to_gallery_mode</string>
+			<key>Title</key>
+			<string>Auto write to gallery</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
 			<key>Key</key>
 			<string>auto_download_incoming_files_max_size</string>
 			<key>Title</key>
