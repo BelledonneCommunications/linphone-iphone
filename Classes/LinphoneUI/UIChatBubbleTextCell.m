@@ -363,6 +363,14 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     return [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
 }
 
++ (CGSize)ViewHeightForFile:(int)width {
+	CGSize fileSize = CGSizeMake(230, 50);
+	CGSize size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+	return size;
+}
+
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText{
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
     static UIFont *messageFont = nil;
@@ -423,12 +431,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 					image = [[UIImage alloc] initWithData:data];
 				}
 			} else {
-				// other files // todo for text
-				CGSize fileSize = CGSizeMake(230, 50);
-				size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
-				size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
-				size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
-				return size;
+				return [self ViewHeightForFile:width];
 			}
 
 			originalImageSize = image.size;
@@ -441,9 +444,15 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localImage]]) {
 				NSData* data = [ChatConversationView getCacheFileData:localImage];
 				UIImage *image = [[UIImage alloc] initWithData:data];
+				if (!image) {
+					return [self ViewHeightForFile:width];
+				}
 				originalImageSize = image.size;
 			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localVideo]]) {
 				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localVideo]];
+				if (!image) {
+					return [self ViewHeightForFile:width];
+				}
 				originalImageSize = image.size;
 			} else {
 				// support previous versions

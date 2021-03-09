@@ -114,7 +114,9 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
                                             }];
 }
 
-- (void) loadFileAsset {
+- (void) loadFileAsset:(NSString *)name {
+	NSString *text = [NSString stringWithFormat:@"📎 %@",name];
+	_fileName.text = text;
     dispatch_async(dispatch_get_main_queue(), ^{
         _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
         _imageGestureRecognizer.enabled = NO;
@@ -170,14 +172,24 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 				if (_messageImageView.image == nil) {
 					NSData* data = [NSData dataWithContentsOfFile:filePath];
 					UIImage *image = [[UIImage alloc] initWithData:data];
-					[self loadImageAsset:nil image:image];
-					_imageGestureRecognizer.enabled = YES;
+					if (image) {
+						[self loadImageAsset:nil image:image];
+						_imageGestureRecognizer.enabled = YES;
+					} else {
+						// compability with other platforms
+						[self loadFileAsset:fileName];
+					}
 				}
 			} else if ([key isEqualToString:@"localvideo"]) {
 				if (_messageImageView.image == nil) {
 					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:fileName]];
-					[self loadImageAsset:nil image:image];
-					_imageGestureRecognizer.enabled = NO;
+					if (image) {
+						[self loadImageAsset:nil image:image];
+						_imageGestureRecognizer.enabled = NO;
+					} else {
+						// compability with other platforms
+						[self loadFileAsset:fileName];
+					}
 				}
 			} else if ([key isEqualToString:@"localfile"]) {
 				if ([fileType isEqualToString:@"video"]) {
@@ -190,9 +202,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = YES;
 				} else {
-					NSString *text = [NSString stringWithFormat:@"📎 %@",fileName];
-					_fileName.text = text;
-					[self loadFileAsset];
+					[self loadFileAsset:fileName];
 				}
 			}
 
@@ -279,9 +289,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 							[self loadImageAsset:nil image:image];
 							_imageGestureRecognizer.enabled = YES;
 						} else {
-							NSString *text = [NSString stringWithFormat:@"📎 %@",localFile];
-							_fileName.text = text;
-							[self loadFileAsset];
+							[self loadFileAsset:fileName];
 						}
 					}
 				}
