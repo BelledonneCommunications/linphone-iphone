@@ -1365,6 +1365,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	if (theLinphoneCore != nil) { // just in case application terminate before linphone core initialization
 
+		// rare case, remove duplicated fileTransferDelegates to avoid crash
+		[_fileTransferDelegates setArray:[[NSSet setWithArray:_fileTransferDelegates] allObjects]];
 		for (FileTransferDelegate *ftd in _fileTransferDelegates) {
 			[ftd stopAndDestroy];
 		}
