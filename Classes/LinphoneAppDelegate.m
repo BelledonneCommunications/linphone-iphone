@@ -69,6 +69,9 @@
 		} else if (PhoneMainView.instance.currentView == ChatConversationInfoView.compositeViewDescription) {
 			ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 			[view removeCallbacks];
+		} else if (PhoneMainView.instance.currentView == RecordingsListView.compositeViewDescription) {
+			// To avoid crash if recording is still played.
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
 		[CoreManager.instance stopLinphoneCore];
 	}

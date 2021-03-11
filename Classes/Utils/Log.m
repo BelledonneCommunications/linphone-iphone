@@ -63,7 +63,7 @@
 }
 
 + (void)directLog:(OrtpLogLevel)level text:(NSString *)text {
-	bctbx_log(BCTBX_LOG_DOMAIN, level, "%s", text.cString);
+	bctbx_log(BCTBX_LOG_DOMAIN, level, "%s", [text cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 #pragma mark - Logs Functions callbacks
