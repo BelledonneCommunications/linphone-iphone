@@ -23,13 +23,13 @@
 
 @required
 
-- (void)deleteImageWithAssetId:(NSString *)assetId;
+- (void)deleteImageWithUuid:(NSUUID *)uuid;
 
 @end
 
 @interface UIImageViewDeletable : UICollectionViewCell
 
-@property NSString *assetId;
+@property NSUUID *uuid;
 @property(nonatomic, strong) id<UIImageViewDeletableDelegate> deleteDelegate;
 @property (weak, nonatomic) IBOutlet UIImageView *image;
 

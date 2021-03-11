@@ -392,24 +392,38 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN + 50, CELL_MIN_HEIGHT);
         return size;
     }
-    
+
     LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
     if (url == nil && fileContent == NULL) {
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
     } else {
+		CGSize textSize = CGSizeMake(0, 0);
+		if (![messageText isEqualToString:@"🗻"]) {
+			textSize = [self computeBoundingBox:messageText
+										   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+										   font:messageFont];
+			size.height += textSize.height;
+		}
+		
+		
+		NSMutableArray<NSString *> *names = [LinphoneManager getMessageAppDataForKey:@"multiparts" inMessage:chat];
+		if (names) {
+			// define an fixed size for multiParts
+			CGSize fileSize = CGSizeMake(400, 200);
+			// then add size as others
+			size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+			size.height += textSize.height;
+			size.width = MAX(textSize.width, size.width);
+			size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+			size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+			return size;
+		}
+
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
-        
-        CGSize textSize = CGSizeMake(0, 0);
-        if (![messageText isEqualToString:@"🗻"]) {
-            textSize = [self computeBoundingBox:messageText
-                                           size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
-                                           font:messageFont];
-            size.height += textSize.height;
-        }
 
 		CGSize originalImageSize = CGSizeMake(230, 50);
 		if (localFile) {

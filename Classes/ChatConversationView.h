@@ -35,6 +35,18 @@
 
 #include "linphone/linphonecore.h"
 
+
+@interface FileContext : NSObject
+@property NSMutableArray <NSString *> *typesArray;
+@property NSMutableArray <NSData *> *datasArray;
+@property NSMutableArray <UIImage *> *imagesArray;
+@property NSMutableArray <NSString *> *namesArray;
+@property NSMutableArray <NSUUID *> *uuidsArray;
+
+- (NSUInteger)count;
+
+@end
+
 //Quicklook Preview Item
 @interface PreviewItem : NSObject <QLPreviewItem>
 @property(readonly, nonatomic) NSURL    *previewItemURL;
@@ -43,7 +55,8 @@
 
 //QuickLook Datasource for rending PDF docs
 @interface FileDataSource : NSObject <QLPreviewControllerDataSource>
-@property (strong, nonatomic) PreviewItem *item;
+//@property (strong, nonatomic) PreviewItem *item;
+@property NSMutableArray<NSURL*> *files;
 @end
 
 @interface ChatConversationView
@@ -64,6 +77,8 @@
 
 @property (strong, nonatomic) FileDataSource *FileDataSource;
 
+@property (strong, nonatomic) FileContext *fileContext;
+
 @property(weak, nonatomic) IBOutlet UIButton *backButton;
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;
 @property(weak, nonatomic) IBOutlet HPGrowingTextView *messageField;
@@ -82,8 +97,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 //@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
-@property NSMutableArray <UIImage *> *imagesArray;
-@property NSMutableArray <NSString *> *assetIdsArray;
+//@property NSMutableArray <UIImage *> *imagesArray;
+//@property NSMutableArray <NSString *> *assetIdsArray;
 @property NSMutableArray <NSNumber *> *qualitySettingsArray;
 @property (weak, nonatomic) IBOutlet UICollectionView *imagesCollectionView;
 @property (weak, nonatomic) IBOutlet UIView *imagesView;
@@ -111,6 +126,7 @@
 - (IBAction)onEncryptedDevicesClick:(id)sender;
 - (void)update;
 - (void)openFileWithURL:(NSURL *)url;
+- (void)openFileWithURLs:(NSMutableArray<NSURL *>*)urls index:(NSInteger)currentIndex;
 - (void)clearMessageView;
 - (void)configureMessageField;
 
@@ -118,5 +134,9 @@
 - (NSURL *)getICloudFileUrl:(NSString *)name;
 - (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 - (void)removeCallBacks;
+
++(UIImage*)drawText:(NSString*)text image:(UIImage *)image textSize:(CGFloat)textSize;
++(UIImage *)getBasicImage;
++ (UIImage *)imageByApplyingAlpha:(CGFloat) alpha image:(UIImage *)image;
 
 @end

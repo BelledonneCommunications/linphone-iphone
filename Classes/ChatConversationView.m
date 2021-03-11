@@ -28,6 +28,51 @@
 #import "SVProgressHUD.h"
 
 
+@implementation FileContext
+
+- (void)addObject:(UIImage *)image withQuality:(float)quality {
+	NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
+	NSData *data = UIImageJPEGRepresentation(image, quality);
+
+	[_imagesArray addObject:image];
+	[_namesArray addObject:name];
+	[_typesArray addObject:@"image"];
+	[_datasArray addObject:data];
+	[_uuidsArray addObject:[NSUUID UUID]];
+}
+
+- (void)addObject:(NSData *)data name:(NSString *)name type:(NSString *)type image:(UIImage *)image {
+	[_imagesArray addObject:image];
+	[_namesArray addObject:name];
+	[_typesArray addObject:type];
+	[_datasArray addObject:data];
+	[_uuidsArray addObject:[NSUUID UUID]];
+}
+
+- (void)deleteContentWithUuid:(NSUUID *)uuid {
+	NSUInteger key = [_uuidsArray indexOfObject:uuid];
+	[_imagesArray removeObjectAtIndex:key];
+	[_uuidsArray removeObjectAtIndex:key];
+	[_namesArray removeObjectAtIndex:key];
+	[_typesArray removeObjectAtIndex:key];
+	[_datasArray removeObjectAtIndex:key];
+}
+
+- (void)clear {
+	_imagesArray = [NSMutableArray array];
+	_uuidsArray = [NSMutableArray array];
+	_namesArray = [NSMutableArray array];
+	_typesArray = [NSMutableArray array];
+	_datasArray = [NSMutableArray array];
+}
+
+- (NSUInteger)count {
+	return [_datasArray count];
+}
+
+@end
+
+
 @implementation PreviewItem
 - (instancetype)initPreviewURL:(NSURL *)docURL
                      WithTitle:(NSString *)title {
@@ -41,18 +86,20 @@
 @end
 
 @implementation FileDataSource
-- (instancetype)initWithPreviewItem:(PreviewItem *)item {
+- (instancetype)initWithFiles:(NSMutableArray<NSURL*>*)files {
     self = [super init];
     if (self) {
-        _item = item;
+        _files = files;
     }
     return self;
 }
 - (NSInteger)numberOfPreviewItemsInPreviewController:(QLPreviewController *)controller {
-    return 1;
+    return _files.count;
 }
 - (id<QLPreviewItem>)previewController:(QLPreviewController *)controller previewItemAtIndex:(NSInteger)index {
-    return self.item;
+	NSURL *url = [_files objectAtIndex:index];
+	return [[PreviewItem alloc] initPreviewURL:url WithTitle:[url lastPathComponent]];
+	
 }
 @end
 
@@ -175,7 +222,8 @@ static UICompositeViewDescription *compositeDescription = nil;
                                            selector:@selector(onLinphoneCoreReady:)
                                                name:kLinphoneGlobalStateUpdate
                                              object:nil];
-    if ([_imagesArray count] > 0) {
+
+	if ([_fileContext count] > 0) {
         [UIView animateWithDuration:0
                               delay:0
                             options:UIViewAnimationOptionBeginFromCurrentState
@@ -419,11 +467,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)saveAndSend:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality{
-    
-    [_imagesArray addObject:image];
-    [_assetIdsArray addObject:phAssetId];
-    [_qualitySettingsArray addObject:@(quality)];
-    [self refreshImageDrawer];
+	[_fileContext addObject:image withQuality:quality];
+	[_qualitySettingsArray addObject:@(quality)];
+	[self refreshImageDrawer];
 }
 
 - (void)chooseImageQuality:(UIImage *)image assetId:(NSString *)phAssetId {
@@ -583,7 +629,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		messageRect.size.height += diff;
 		[_messageView setFrame:messageRect];
 
-        if ([_imagesArray count] > 0) {
+		if ([_fileContext count] > 0) {
             CGRect _imagesRect = [_imagesView frame];
             _imagesRect.origin.y -= diff;
             [_imagesView setFrame:_imagesRect];
@@ -626,24 +672,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSendClick:(id)event {
-    if ([_imagesArray count] > 0) {
-        int i = 0;
-        for (i = 0; i < [_imagesArray count] - 1; ++i) {
-            [self startImageUpload:[_imagesArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue andMessage:NULL];
-        }
-        if (isOneToOne) {
-            [self startImageUpload:[_imagesArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue andMessage:NULL];
-            if (![[self.messageField text] isEqualToString:@""]) {
-                [self sendMessage:[_messageField text] withExterlBodyUrl:nil];
-            }
-        } else {
-            [self startImageUpload:[_imagesArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue andMessage:[self.messageField text]];
-        }
-        
-        [self clearMessageView];
-        return;
-    }
-    [self sendMessageInMessageField];
+	if ([_fileContext count] > 0) {
+		if ( [_fileContext count] == 1) {
+			[self startImageUpload:[_fileContext.imagesArray objectAtIndex:0] withQuality:[_qualitySettingsArray objectAtIndex:0].floatValue andMessage:NULL];
+			if (![[self.messageField text] isEqualToString:@""]) {
+				[self sendMessage:[_messageField text] withExterlBodyUrl:nil];
+			}
+		} else {
+		if (isOneToOne) {
+			int i = 0;
+			for (i = 0; i < [_fileContext count]; ++i) {
+				[self startImageUpload:[_fileContext.imagesArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue andMessage:NULL];
+			}
+			if (![[self.messageField text] isEqualToString:@""]) {
+				[self sendMessage:[_messageField text] withExterlBodyUrl:nil];
+			}
+		} else {
+			[self startMultiFilesUpload];
+		}
+		}
+
+		[self clearMessageView];
+		return;
+	}
+	[self sendMessageInMessageField];
 }
 
 - (IBAction)onListTap:(id)sender {
@@ -710,7 +762,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onPictureClick:(id)event {
 	[_messageField resignFirstResponder];
 	[ImagePickerView SelectImageFromDevice:self atPosition:_pictureButton inView:self.view withDocumentMenuDelegate:self];
-
 }
 
 - (IBAction)onInfoClick:(id)sender {
@@ -738,6 +789,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 #pragma mark ChatRoomDelegate
+
+- (void)startMultiFilesUpload {
+	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
+	[fileTransfer setText:[self.messageField text]];
+	[fileTransfer uploadFileContent:_fileContext forChatRoom:_chatRoom];
+	[_tableController scrollToBottom:true];
+}
 
 - (BOOL)startImageUpload:(UIImage *)image withQuality:(float)quality andMessage:(NSString *)message {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
@@ -802,16 +860,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *localname = [[[mediaURL absoluteString] md5] stringByAppendingString:@".mp4"];
 	NSURL *compressedVideoUrl=[[NSURL fileURLWithPath:documentsDirectory] URLByAppendingPathComponent:localname];
 	exportSession.outputURL = compressedVideoUrl;
-	[exportSession exportAsynchronouslyWithCompletionHandler:^{
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[SVProgressHUD dismiss];
-			[self startFileUpload:[NSData dataWithContentsOfURL:compressedVideoUrl] withName:localname];
-		});
-	}];
 	
+	[exportSession exportAsynchronouslyWithCompletionHandler:^{
+		
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[SVProgressHUD dismiss];
+				if (isOneToOne) {
+				
+				[self startFileUpload:[NSData dataWithContentsOfURL:compressedVideoUrl] withName:localname];
+				} else {
+					
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:compressedVideoUrl];
+					UIImage* newImage = [ChatConversationView drawText:@"🎬" image:image textSize:150];
+					[_fileContext addObject:[NSData dataWithContentsOfURL:compressedVideoUrl] name:localname type:@"video" image:newImage];
+					[self refreshImageDrawer];
+				}
+			});
+		
+	}];
+
 	if (![info valueForKey:UIImagePickerControllerReferenceURL]) {
-			[self writeVideoToGallery:mediaURL];
-		}
+		[self writeVideoToGallery:mediaURL];
+	}
 }
 
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType {
@@ -1003,9 +1073,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  }
 			  }
 		  }
-            
-            
-            if ([_imagesArray count] > 0){
+
+		if ([_fileContext count] > 0){
                 // resizing imagesView
                 CGRect imagesFrame = [_imagesView frame];
                 imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
@@ -1073,8 +1142,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
 			  [_tableController.view setFrame:tableFrame];
 		  }
-            
-            if ([_imagesArray count] > 0){
+
+		if ([_fileContext count] > 0){
                 // resizing imagesView
                 CGRect imagesFrame = [_imagesView frame];
                 imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
@@ -1213,19 +1282,28 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     [view.encryptedButton setImage:image forState:UIControlStateNormal];
 }
 
-- (void)openFileWithURL:(NSURL *)url
+- (void)openFileWithURLs:(NSMutableArray<NSURL *>*)urls index:(NSInteger)currentIndex
 {
     //create the Quicklook controller.
     QLPreviewController *qlController = [[QLPreviewController alloc] init];
     
-    PreviewItem *item = [[PreviewItem alloc] initPreviewURL:url WithTitle:[url lastPathComponent]];
-    self.FileDataSource = [[FileDataSource alloc] initWithPreviewItem:item];
+    //PreviewItem *item = [[PreviewItem alloc] initPreviewURL:url WithTitle:[url lastPathComponent]];
+	self.FileDataSource = [[FileDataSource alloc] initWithFiles:urls];
     
+	
     qlController.dataSource = self.FileDataSource;
+	
+	qlController.currentPreviewItemIndex = currentIndex;
+	
     qlController.delegate = self;
     
     //present the document.
     [self presentViewController:qlController animated:YES completion:nil];
+}
+
+- (void)openFileWithURL:(NSURL *)url
+{
+	[self openFileWithURLs:[NSMutableArray arrayWithObject:url] index:0];
 }
 
 
@@ -1307,23 +1385,23 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     }
 }
 
-- (void)deleteImageWithAssetId:(NSString *)assetId {
-    NSUInteger key = [_assetIdsArray indexOfObject:assetId];
-    [_imagesArray removeObjectAtIndex:key];
-    [_assetIdsArray removeObjectAtIndex:key];
+//- (void)deleteImageWithAssetId:(NSString *)assetId {
+- (void)deleteImageWithUuid:(NSUUID *)uuid {
+	[_fileContext deleteContentWithUuid:uuid];
     [self refreshImageDrawer];
 }
 
 - (void)clearMessageView {
     [_messageField setText:@""];
-    _imagesArray = [NSMutableArray array];
-    _assetIdsArray = [NSMutableArray array];
+
+	if (!_fileContext) _fileContext = [[FileContext alloc] init];
+	[_fileContext clear];
     
     [self refreshImageDrawer];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [_imagesArray count];
+	return [_fileContext count];
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -1336,8 +1414,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         imgFrame.size.height = 100;
     }
 
-	[imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
-	[imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
+	[imgView.image setImage:[UIImage resizeImage:[_fileContext.imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
+	[imgView setUuid:[_fileContext.uuidsArray objectAtIndex:[indexPath item]]];
     [imgView setDeleteDelegate:self];
     [imgView setFrame:imgFrame];
     [_sendButton setEnabled:TRUE];
@@ -1346,8 +1424,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 - (void)refreshImageDrawer {
     int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
-    
-    if ([_imagesArray count] == 0) {
+
+	if ([_fileContext count] == 0) {
         [UIView animateWithDuration:0
                               delay:0
                             options:UIViewAnimationOptionBeginFromCurrentState
@@ -1409,6 +1487,42 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 /* There are three cases: auto download in foreground, auto download in background, on click download*/
 + (void)autoDownload:(LinphoneChatMessage *)message {
 	ChatConversationView *view = VIEW(ChatConversationView);
+	const bctbx_list_t *contents = linphone_chat_message_get_contents(message);
+	int numFiles = (int)bctbx_list_size(contents) - (linphone_chat_message_has_text_content(message) ? 1:0);
+	if (numFiles > 1) {
+		// multipart
+		NSMutableArray<NSString *> *fileNames = [[NSMutableArray alloc] init];
+		NSMutableArray<NSString *> *fileTypes = [[NSMutableArray alloc] init];
+		const bctbx_list_t *it = contents;
+		for (it = contents; it != NULL; it=bctbx_list_next(it)){
+			LinphoneContent *content = (LinphoneContent *)it->data;
+			if (!linphone_content_is_file_transfer(content) && !linphone_content_is_file(content)){
+				continue;
+			}
+			
+			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
+			NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(content)];
+			//if ([type isEqualToString:@"text"]) {
+			//	continue;;
+			//}
+			
+			[fileNames addObject:name];
+			[fileTypes addObject:type];
+			dispatch_async(dispatch_get_main_queue(), ^ {
+				if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+					[ChatConversationView writeMediaToGallery:name fileType:type];
+				}
+			});
+		}
+		[LinphoneManager setValueInMessageAppData:fileNames forKey:@"multiparts" inMessage:message];
+		[LinphoneManager setValueInMessageAppData:fileTypes forKey:@"multipartstypes" inMessage:message];
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+		});
+		return;
+	}
+
+	// single file
 	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(message);
 	NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
@@ -1433,9 +1547,63 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	NSFileCoordinator *co =[[NSFileCoordinator alloc] init];
 	NSError *error = nil;
 	[co coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL * _Nonnull newURL) {
-		[self startFileUpload:[NSData dataWithContentsOfURL:newURL] withName:[newURL lastPathComponent]];
+		if (isOneToOne) {
+			[self startFileUpload:[NSData dataWithContentsOfURL:newURL] withName:[newURL lastPathComponent]];
+		} else {
+			UIImage *image = [ChatConversationView drawText:[NSString stringWithFormat:@"📎 %@",[newURL lastPathComponent]] image:[ChatConversationView getBasicImage] textSize:25];
+			[_fileContext addObject:[NSData dataWithContentsOfURL:newURL] name:[newURL lastPathComponent] type:@"file" image:image];
+			[self refreshImageDrawer];
+		}
 	}];
 	[url stopAccessingSecurityScopedResource];
+}
+
++(UIImage *)getBasicImage {
+	UIColor *color=[UIColor whiteColor];
+	CGRect frame = CGRectMake(0, 0, 200, 100);
+	UIGraphicsBeginImageContext(frame.size);
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextSetFillColorWithColor(context, [color CGColor]);
+	CGContextFillRect(context, frame);
+	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	return image;
+}
+
++(UIImage*)drawText:(NSString*)text image:(UIImage *)image textSize:(CGFloat)textSize
+{
+	UIFont *font = [UIFont boldSystemFontOfSize:textSize];
+	UIGraphicsBeginImageContext(image.size);
+	[image drawInRect:CGRectMake(0,0,image.size.width,image.size.height)];
+	CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+	[[UIColor blackColor] set];
+	[text drawInRect:CGRectIntegral(rect) withFont:font];
+	UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+
+	return newImage;
+}
+
++ (UIImage *)imageByApplyingAlpha:(CGFloat) alpha image:(UIImage *)image{
+	UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0f);
+
+	CGContextRef ctx = UIGraphicsGetCurrentContext();
+	CGRect area = CGRectMake(0, 0, image.size.width, image.size.height);
+
+	CGContextScaleCTM(ctx, 1, -1);
+	CGContextTranslateCTM(ctx, 0, -area.size.height);
+
+	CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
+
+	CGContextSetAlpha(ctx, alpha);
+
+	CGContextDrawImage(ctx, area, image.CGImage);
+
+	UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+
+	UIGraphicsEndImageContext();
+
+	return newImage;
 }
 
 

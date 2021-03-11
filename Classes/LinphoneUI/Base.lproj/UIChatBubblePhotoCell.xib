@@ -15,12 +15,17 @@
                 <outlet property="cancelButton" destination="6dl-Nz-rdv" id="ygz-nv-omC"/>
                 <outlet property="contactDateLabel" destination="JyR-RQ-uwF" id="Tc4-9t-i5V"/>
                 <outlet property="downloadButton" destination="N75-gL-R6t" id="EgN-Ab-Ded"/>
+                <outlet property="file1GestureRecognizer" destination="YtD-r2-Izx" id="fVR-Ic-NHM"/>
+                <outlet property="file2GestureRecognizer" destination="8I7-Dk-yQy" id="55h-SB-frn"/>
+                <outlet property="file3GestureRecognizer" destination="3dI-Eb-WfJ" id="O4K-ik-J3b"/>
                 <outlet property="fileButton" destination="IGl-nl-xIE" id="tLL-3L-Byt"/>
                 <outlet property="fileName" destination="WkE-rP-Y0R" id="bjY-zl-mhs"/>
                 <outlet property="fileTransferProgress" destination="USm-wC-GvG" id="POt-YD-NCG"/>
                 <outlet property="fileView" destination="UzU-cc-LbF" id="OlG-uv-m4j"/>
                 <outlet property="finalAssetView" destination="VYJ-RC-Jmg" id="fnb-mY-nPR"/>
                 <outlet property="finalImage" destination="gzv-K4-5OL" id="YIw-kM-Ld6"/>
+                <outlet property="finalImage2" destination="usd-3K-r99" id="sFW-OE-EgL"/>
+                <outlet property="finalImage3" destination="47s-gu-h6p" id="T82-m9-XBL"/>
                 <outlet property="imageGestureRecognizer" destination="aDF-hC-ddO" id="2jh-Rr-eKk"/>
                 <outlet property="imageSubView" destination="GmN-7v-uuO" id="k9r-Xc-csv"/>
                 <outlet property="imdmIcon" destination="LPj-VT-0fH" id="yYh-pv-EJs"/>
@@ -77,10 +82,29 @@
                             <rect key="frame" x="7" y="10" width="351" height="252"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
+                                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="usd-3K-r99" userLabel="finalImage2">
+                                    <rect key="frame" x="0.0" y="-5" width="351" height="262"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="8I7-Dk-yQy" appends="YES" id="2NO-t8-Ev1"/>
+                                    </connections>
+                                </imageView>
+                                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47s-gu-h6p" userLabel="finalImage3">
+                                    <rect key="frame" x="0.0" y="-5" width="351" height="262"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="3dI-Eb-WfJ" appends="YES" id="odK-qD-IJ7"/>
+                                    </connections>
+                                </imageView>
                                 <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gzv-K4-5OL" userLabel="finalImage">
                                     <rect key="frame" x="0.0" y="0.0" width="351" height="262"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="YtD-r2-Izx" appends="YES" id="RKL-eT-7JA"/>
+                                    </connections>
                                 </imageView>
                             </subviews>
                         </view>
@@ -194,6 +218,21 @@
                 <action selector="onPlusClick:" destination="-1" id="oFW-FN-6xV"/>
             </connections>
         </pongPressGestureRecognizer>
+        <tapGestureRecognizer id="YtD-r2-Izx" userLabel="file1click">
+            <connections>
+                <action selector="onFile1Click:" destination="-1" id="44e-U0-rY3"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="8I7-Dk-yQy" userLabel="file2click">
+            <connections>
+                <action selector="onFile2Click:" destination="-1" id="1Mn-o5-fiV"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="3dI-Eb-WfJ" userLabel="file3click">
+            <connections>
+                <action selector="onFile3Click:" destination="-1" id="gDK-Z9-o9x"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="414.39999389648438" height="414.39999389648438"/>

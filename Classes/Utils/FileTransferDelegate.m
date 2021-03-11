@@ -138,6 +138,47 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	return NULL;
 }
 
+- (void)uploadFileContent: (FileContext *)context forChatRoom:(LinphoneChatRoom *)chatRoom {
+	[LinphoneManager.instance.fileTransferDelegates addObject:self];
+	
+	_message = linphone_chat_room_create_empty_message(chatRoom);
+	NSMutableArray<NSString *> *names = [[NSMutableArray alloc] init];
+	NSMutableArray<NSString *> *types = [[NSMutableArray alloc] init];
+
+	int i = 0;
+	for (i = 0; i < [context count]; ++i) {
+		LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
+		NSString *type = [context.typesArray objectAtIndex:i];
+		NSString *name = [context.namesArray objectAtIndex:i];
+		NSData *data = [context.datasArray objectAtIndex:i];
+		
+		//dispatch_async(dispatch_get_main_queue(), ^{
+		[ChatConversationView writeFileInCache:data name:name];
+		//});
+		
+		linphone_content_set_type(content, [type UTF8String]);
+		
+		linphone_content_set_subtype(content, [name.pathExtension UTF8String]);
+		linphone_content_set_name(content, [name UTF8String]);
+		linphone_content_set_file_path(content, [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name].UTF8String); // take care of upload ?
+		[names addObject:name];
+		[types addObject:type];
+		// ?
+		//linphone_content_set_size(content, [NSMutableData dataWithData:data].length);
+		linphone_chat_message_add_file_content(_message, content);
+		linphone_content_unref(content);
+	}
+
+	if (_text!=nil && ![_text isEqualToString:@""])
+		linphone_chat_message_add_text_content(_message, [_text UTF8String]);
+
+	
+	[LinphoneManager setValueInMessageAppData:names forKey:@"multiparts" inMessage:_message];
+	[LinphoneManager setValueInMessageAppData:types forKey:@"multipartstypes" inMessage:_message];
+	LOGI(@"%p Uploading content from message %p", self, _message);
+	linphone_chat_message_send(_message);
+}
+ 
 - (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key{
 	if ([[LinphoneManager.instance fileTransferDelegates] containsObject:self]) {
 		LOGW(@"fileTransferDelegates has already added %p", self);

@@ -55,7 +55,7 @@
 }
 
 - (IBAction)onDeletePressed {
-    [_deleteDelegate deleteImageWithAssetId:_assetId];
+	[_deleteDelegate deleteImageWithUuid:_uuid];
 }
 
 /*

@@ -37,10 +37,18 @@
 @property(weak, nonatomic) IBOutlet UIView *totalView;
 @property (weak, nonatomic) IBOutlet UIView *finalAssetView;
 @property (weak, nonatomic) IBOutlet UIImageView *finalImage;
+@property (weak, nonatomic) IBOutlet UIImageView *finalImage2;
+@property (weak, nonatomic) IBOutlet UIImageView *finalImage3;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 @property (weak, nonatomic) IBOutlet UIButton *fileButton;
 @property (weak, nonatomic) IBOutlet UIView *fileView;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *file1GestureRecognizer;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *file2GestureRecognizer;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *file3GestureRecognizer;
+@property NSMutableArray <UIImageView *> *multiPartsViews;
+@property NSMutableArray <UIImage *> *multiImages;
+@property NSInteger numFiles;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
@@ -52,6 +60,11 @@
 - (IBAction)onPlayClick:(id)sender;
 - (IBAction)onFileClick:(id)sender;
 - (IBAction)onPlusClick:(id)sender;
+- (IBAction)onFile1Click:(id)sender;
+- (IBAction)onFile2Click:(id)sender;
+- (IBAction)onFile3Click:(id)sender;
+
+
 
 @end
 
