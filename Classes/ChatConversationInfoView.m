@@ -303,7 +303,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	cell.uri = _contacts[indexPath.row];
 	LinphoneAddress *addr = linphone_address_new(cell.uri.UTF8String);
-	cell.nameLabel.text = [FastAddressBook displayNameForAddress:addr];
+	cell.nameLabel.text = (addr == nil? cell.uri : [FastAddressBook displayNameForAddress:addr]);
 	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:YES withRoundedRadius:YES];
 	cell.controllerView = self;
 	if(![_admins containsObject:cell.uri]) {
