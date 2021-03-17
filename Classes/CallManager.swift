@@ -33,11 +33,10 @@ import AVFoundation
 * CallManager is a class that manages application calls and supports callkit.
 * There is only one CallManager by calling CallManager.instance().
 */
-@objc class CallManager: NSObject {
+@objc class CallManager: NSObject, CoreDelegate {
 	static var theCallManager: CallManager?
 	let providerDelegate: ProviderDelegate! // to support callkit
 	let callController: CXCallController! // to support callkit
-	let manager: CoreManagerDelegate! // callbacks of the linphonecore
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
 	@objc var speakerEnabled : Bool = false
@@ -47,12 +46,14 @@ import AVFoundation
 	var referedFromCall: String?
 	var referedToCall: String?
 	var endCallkit: Bool = false
+	static var speaker_already_enabled : Bool = false
+	var globalState : GlobalState = .Off
+	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 
 
 	fileprivate override init() {
 		providerDelegate = ProviderDelegate()
 		callController = CXCallController()
-		manager = CoreManagerDelegate()
 	}
 
 	@objc static func instance() -> CallManager {
@@ -64,7 +65,7 @@ import AVFoundation
 
 	@objc func setCore(core: OpaquePointer) {
 		lc = Core.getSwiftObject(cObject: core)
-		lc?.addDelegate(delegate: manager)
+		lc?.addDelegate(delegate: self)
 	}
 
 	@objc static func getAppData(call: OpaquePointer) -> CallAppData? {
@@ -275,7 +276,7 @@ import AVFoundation
 
 		if (CallManager.instance().nextCallIsTransfer) {
 			let call = CallManager.instance().lc!.currentCall
-			try call?.transfer(referTo: addr.asString())
+			try call?.transferTo(referTo: addr)
 			CallManager.instance().nextCallIsTransfer = false
 		} else {
 			//We set the record file name here because we can't do it after the call is started.
@@ -355,9 +356,6 @@ import AVFoundation
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to terminate call failed because \(error)")
 		}
-		if (UIApplication.shared.applicationState == .background) {
-			CoreManager.instance().stopLinphoneCore()
-		}
 	}
 
 	@objc func markCallAsDeclined(callId: String) {
@@ -409,32 +407,32 @@ import AVFoundation
 	}
 	
 	@objc func performActionWhenCoreIsOn(action:  @escaping ()->Void ) {
-		if (manager.globalState == .On) {
+		if (globalState == .On) {
 			action()
 		} else {
-			manager.actionsToPerformOnceWhenCoreIsOn.append(action)
+			actionsToPerformOnceWhenCoreIsOn.append(action)
 		}
 	}
-	
-}
 
-class CoreManagerDelegate: CoreDelegate {
-	static var speaker_already_enabled : Bool = false
-	var globalState : GlobalState = .Off
-	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
-	
-	override func onGlobalStateChanged(lc: Core, gstate: GlobalState, message: String) {
-		if (gstate == .On) {
+	@objc func acceptVideo(call: OpaquePointer, confirm: Bool) {
+		let sCall = Call.getSwiftObject(cObject: call)
+		let params = try? lc?.createCallParams(call: sCall)
+		params?.videoEnabled = confirm
+		try? sCall.acceptUpdate(params: params)
+	}
+
+	func onGlobalStateChanged(core: Core, state: GlobalState, message: String) {
+		if (state == .On) {
 			actionsToPerformOnceWhenCoreIsOn.forEach {
 				$0()
 			}
 			actionsToPerformOnceWhenCoreIsOn.removeAll()
 		}
-		globalState = gstate
+		globalState = state
 	}
-	
-	override func onRegistrationStateChanged(lc: Core, cfg: ProxyConfig, cstate: RegistrationState, message: String) {
-		if lc.proxyConfigList.count == 1 && (cstate == .Failed || cstate == .Cleared){
+
+	func onRegistrationStateChanged(core: Core, proxyConfig: ProxyConfig, state: RegistrationState, message: String) {
+		if core.proxyConfigList.count == 1 && (state == .Failed || state == .Cleared){
 			// terminate callkit immediately when registration failed or cleared, supporting single proxy configuration
 			CallManager.instance().endCallkit = true
 			for call in CallManager.instance().providerDelegate.uuids {
@@ -445,15 +443,15 @@ class CoreManagerDelegate: CoreDelegate {
 		}
 	}
 
-	override func onCallStateChanged(lc: Core, call: Call, cstate: Call.State, message: String) {
+	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let addr = call.remoteAddress;
 		let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
 		let callId = callLog?.callId
-		let video = UIApplication.shared.applicationState == .active && (lc.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+		let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 		// we keep the speaker auto-enabled state in this static so that we don't
 		// force-enable it on ICE re-invite if the user disabled it.
-		CoreManagerDelegate.speaker_already_enabled = false
+		CallManager.speaker_already_enabled = false
 
 		if (call.userData == nil) {
 			let appData = CallAppData()
@@ -507,7 +505,7 @@ class CoreManagerDelegate: CoreDelegate {
 				if (CallManager.instance().speakerBeforePause) {
 					CallManager.instance().speakerBeforePause = false
 					CallManager.instance().enableSpeaker(enable: true)
-					CoreManagerDelegate.speaker_already_enabled = true
+					CallManager.speaker_already_enabled = true
 				}
 				break
 			case .OutgoingInit,
@@ -533,7 +531,7 @@ class CoreManagerDelegate: CoreDelegate {
 			case .End,
 				 .Error:
 				UIDevice.current.isProximityMonitoringEnabled = false
-				CoreManagerDelegate.speaker_already_enabled = false
+				CallManager.speaker_already_enabled = false
 				if (CallManager.instance().lc!.callsNb == 0) {
 					CallManager.instance().enableSpeaker(enable: false)
 					// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
@@ -600,9 +598,9 @@ class CoreManagerDelegate: CoreDelegate {
 		}
 
 		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			if ((call.currentParams?.videoEnabled ?? false) && !CoreManagerDelegate.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+			if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
 				CallManager.instance().enableSpeaker(enable: true)
-				CoreManagerDelegate.speaker_already_enabled = true
+				CallManager.speaker_already_enabled = true
 			}
 		}
 

@@ -22,7 +22,7 @@
 #import "TPKeyboardAvoidingScrollView.h"
 #import "PhoneMainView.h"
 
-@interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+@interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate, UITextViewDelegate> {
 
   @private
 	LinphoneAccountCreator *account_creator;
@@ -33,6 +33,7 @@
 	size_t number_of_configs_before;
 	BOOL mustRestoreView;
 	long phone_number_length;
+	BOOL acceptTerms;
 }
 
 @property(nonatomic) UICompositeViewDescription *outgoingView;
@@ -70,6 +71,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *downloadButton;
 @property (weak, nonatomic) IBOutlet UITextField *urlLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;
+@property (weak, nonatomic) IBOutlet UIButton *acceptButton;
+- (IBAction)onAcceptTermsClick:(id)sender;
+@property (weak, nonatomic) IBOutlet UITextView *acceptText;
+
 
 + (NSString *)StringForXMLRPCError:(const char *)err;
 + (NSString *)errorForLinphoneAccountCreatorPhoneNumberStatus:(LinphoneAccountCreatorPhoneNumberStatus)status;

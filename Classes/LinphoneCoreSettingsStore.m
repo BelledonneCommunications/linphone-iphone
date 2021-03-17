@@ -338,7 +338,8 @@
 		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
         int maxSize = linphone_core_get_max_size_for_auto_download_incoming_files(LC);
         [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Nerver" : @"Customize") forKey:@"auto_download_mode"];
-        [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];        
+        [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];
+		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:YES] forKey:@"auto_write_to_gallery_mode"];
 	}
 
 	// network section
@@ -547,11 +548,10 @@
 		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 		linphone_address_set_display_name(linphoneAddress, (displayName.length ? displayName.UTF8String : NULL));
 		const char *identity = linphone_address_as_string(linphoneAddress);
-		linphone_address_destroy(linphoneAddress);
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
 
-		if (linphone_proxy_config_set_identity(proxyCfg, identity) == -1) {
+		if (linphone_proxy_config_set_identity_address(proxyCfg, linphoneAddress) == -1) {
 			error = NSLocalizedString(@"Invalid username or domain", nil);
 			goto bad_proxy;
 		}
@@ -586,7 +586,7 @@
 		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
-		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
+		linphone_proxy_config_set_avpf_mode(proxyCfg, use_avpf);
 		linphone_proxy_config_set_expires(proxyCfg, expire);
 		if (is_default) {
 			linphone_core_set_default_proxy_config(LC, proxyCfg);
@@ -636,7 +636,9 @@
 	bad_proxy:
 		if (proxy)
 			ms_free(proxy);
-
+		if (linphoneAddress)
+			linphone_address_destroy(linphoneAddress);
+			
 		// in case of error, show an alert to the user
 		if (error != nil) {
 			linphone_proxy_config_done(proxyCfg);
@@ -778,6 +780,7 @@
         }
         linphone_core_set_max_size_for_auto_download_incoming_files(LC, maxSize);
         [lm lpConfigSetString:[self stringForKey:@"auto_download_mode"] forKey:@"auto_download_mode"];
+		[lm lpConfigSetBool:[self boolForKey:@"auto_write_to_gallery_mode"] forKey:@"auto_write_to_gallery_preference"];
 
 		// network section
 		BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];

@@ -66,6 +66,12 @@
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view removeCallBacks];
+		} else if (PhoneMainView.instance.currentView == ChatConversationInfoView.compositeViewDescription) {
+			ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+			[view removeCallbacks];
+		} else if (PhoneMainView.instance.currentView == RecordingsListView.compositeViewDescription) {
+			// To avoid crash if recording is still played.
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
 		[CoreManager.instance stopLinphoneCore];
 	}
@@ -649,21 +655,15 @@
 	  	LOGI(@"User declined video proposal");
 	  	if (call != linphone_core_get_current_call(LC))
 		  	return;
-
-	  	LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-	  	linphone_call_accept_update(call, params);
-	  	linphone_call_params_destroy(params);
+		[CallManager.instance acceptVideoWithCall:call confirm:FALSE];
   	} else if ([response.actionIdentifier isEqual:@"Accept"]) {
 		LOGI(@"User accept video proposal");
 	  	if (call != linphone_core_get_current_call(LC))
 			return;
 
 		[[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-	  	[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-      	LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-      	linphone_call_params_enable_video(params, TRUE);
-      	linphone_call_accept_update(call, params);
-      	linphone_call_params_destroy(params);
+		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+		[CallManager.instance acceptVideoWithCall:call confirm:TRUE];
   	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
 	  	if (linphone_core_get_current_call(LC) == call)
 		  	linphone_call_set_authentication_token_verified(call, YES);
@@ -694,6 +694,7 @@
 				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
+			if (!call) return;
 			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
 		  	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
@@ -703,21 +704,14 @@
 																	  LOGI(@"User declined video proposal");
 																	  if (call != linphone_core_get_current_call(LC))
 																		  return;
-
-																	  LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-																	  linphone_call_accept_update(call, params);
-																	  linphone_call_params_destroy(params);
+																	  [CallManager.instance acceptVideoWithCall:call confirm:FALSE];
 																	  [videoDismissTimer invalidate];
 																  }
 															onConfirmationClick:^() {
 																LOGI(@"User accept video proposal");
 																if (call != linphone_core_get_current_call(LC))
 																	return;
-
-																LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
-																linphone_call_params_enable_video(params, TRUE);
-																linphone_call_accept_update(call, params);
-																linphone_call_params_destroy(params);
+																[CallManager.instance acceptVideoWithCall:call confirm:TRUE];
 																[videoDismissTimer invalidate];
 															}
 																   inController:PhoneMainView.instance];
