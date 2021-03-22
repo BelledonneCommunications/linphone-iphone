@@ -119,6 +119,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	mustRestoreView = NO;
 	_outgoingView = DialerView.compositeViewDescription;
     _qrCodeButton.hidden = !ENABLE_QRCODE;
+	_waitView.hidden = TRUE;
 	[self resetLiblinphone:FALSE];
 	[self enableWelcomeViewButtons];
 	NSString *message = NSLocalizedString(@"I accept Belledonne Communications’ terms of use and privacy policy", nil);

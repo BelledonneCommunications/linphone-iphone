@@ -174,9 +174,10 @@ extension ProviderDelegate: CXProviderDelegate {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
 		let call = CallManager.instance().callByCallId(callId: callId)
+		//The audio session must be configured here.
+		CallManager.instance().lc?.configureAudioSession()
 		if (call == nil || call?.state != Call.State.IncomingReceived) {
-			// The application is not yet registered or the call is not yet received, mark the call as accepted. The audio session must be configured here.
-			CallManager.configAudioSession(audioSession: AVAudioSession.sharedInstance())
+			// The application is not yet registered or the call is not yet received, mark the call as accepted.
 			callInfo?.accepted = true
 			callInfos.updateValue(callInfo!, forKey: uuid)
 			CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 10)
@@ -242,6 +243,7 @@ extension ProviderDelegate: CXProviderDelegate {
 				action.fail()
 			}
 
+			CallManager.instance().lc?.configureAudioSession()
 			try CallManager.instance().doCall(addr: addr!, isSas: callInfo?.sasEnabled ?? false)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call started failed because \(error)")
