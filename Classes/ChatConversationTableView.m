@@ -259,7 +259,11 @@ static const int BASIC_EVENT_LIST=15;
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
         if (!cell) {
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-        }
+		} else {
+			cell = NULL;
+			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
+		}
+
 		[cell setEvent:event];
         if (chat) {
             cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
