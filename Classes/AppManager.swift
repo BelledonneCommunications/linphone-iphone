@@ -57,7 +57,8 @@ enum NetworkType: Int {
 		let paths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
 		var writablePath = paths[0]
 		writablePath = writablePath.appending("/\(filePath)")
-		Log.directLog(BCTBX_LOG_MESSAGE, text: "file path is \(writablePath)")
+		let message:String = "file path is \(writablePath)"
+		Log.directLog(BCTBX_LOG_MESSAGE, text: message)
 		return writablePath
 		//file name is recording_contact-name_dayName-day-monthName-year-hour-minutes-seconds
 		//The recording prefix is used to identify recordings in the cache directory.
