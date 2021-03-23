@@ -51,6 +51,7 @@
 #import "UIConfirmationDialog.h"
 #import "Utils.h"
 #import "LaunchScreen.h"
+#import "DevicesListView.h"
 
 #define DYNAMIC_CAST(x, cls)                                                                                           \
 	({                                                                                                                 \

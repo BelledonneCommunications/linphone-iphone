@@ -193,12 +193,11 @@ static const int BASIC_EVENT_LIST=15;
 - (BOOL)isFirstIndexInTableView:(NSIndexPath *)indexPath chat:(LinphoneChatMessage *)chat {
     LinphoneEventLog *previousEvent = nil;
     NSInteger indexOfPreviousEvent = indexPath.row - 1;
-    while (!previousEvent && indexOfPreviousEvent > -1) {
-        LinphoneEventLog *tmp = [[eventList objectAtIndex:indexOfPreviousEvent] pointerValue];
-        if (linphone_event_log_get_type(tmp) == LinphoneEventLogTypeConferenceChatMessage) {
-            previousEvent = tmp;
+    if (indexOfPreviousEvent > -1) {
+		previousEvent = [[eventList objectAtIndex:indexOfPreviousEvent] pointerValue];
+        if (linphone_event_log_get_type(previousEvent) != LinphoneEventLogTypeConferenceChatMessage) {
+			return TRUE;
         }
-        --indexOfPreviousEvent;
     }
     if (!previousEvent)
         return TRUE;
@@ -256,11 +255,11 @@ static const int BASIC_EVENT_LIST=15;
             kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
 		else
 			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
-        
+
+		// To use less memory and to avoid overlapping. To be improved.
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-        if (!cell) {
-			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-        }
+		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
+
 		[cell setEvent:event];
         if (chat) {
             cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
@@ -363,9 +362,9 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
 		LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
-		// TODO: fix workaround
-		//linphone_event_log_delete_from_database(event);
-		linphone_chat_room_delete_message(_chatRoom, linphone_event_log_get_chat_message(event));
+		if (linphone_event_log_get_chat_message(event)) {
+			linphone_chat_room_delete_message(_chatRoom, linphone_event_log_get_chat_message(event));
+		}
         NSInteger index = indexPath.row + _currentIndex + (totalEventList.count - eventList.count);
         if (index < totalEventList.count)
             [totalEventList removeObjectAtIndex:index];

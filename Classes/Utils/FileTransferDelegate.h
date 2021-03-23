@@ -23,12 +23,14 @@
 
 @interface FileTransferDelegate : NSObject
 
-- (void)upload:(UIImage *)image withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality;
+- (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key;
+- (void)uploadImage:(UIImage *)image forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality;
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name;
 - (void)uploadVideo:(NSData *)data withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom;
 - (void)cancel;
 - (BOOL)download:(LinphoneChatMessage *)message;
 - (void)stopAndDestroy;
++ (FileTransferDelegate *)messageDelegate:(LinphoneChatMessage *)message;
 
 @property() LinphoneChatMessage *message;
 @property() NSString *text;

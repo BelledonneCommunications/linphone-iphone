@@ -1,0 +1,18 @@
+
+/* Class = "UIButton"; accessibilityLabel = "Select all"; ObjectID = "16S-9G-2cb"; */
+"16S-9G-2cb.accessibilityLabel" = "Select all";
+
+/* Class = "UIButton"; accessibilityLabel = "Edit"; ObjectID = "CWx-9g-0JG"; */
+"CWx-9g-0JG.accessibilityLabel" = "Edit";
+
+/* Class = "UIButton"; accessibilityLabel = "Delete all"; ObjectID = "CqG-tB-maQ"; */
+"CqG-tB-maQ.accessibilityLabel" = "Delete all";
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "rAc-tI-AVp"; */
+"rAc-tI-AVp.accessibilityLabel" = "Back";
+
+/* Class = "UIButton"; accessibilityLabel = "Delete all"; ObjectID = "zDs-pW-vyA"; */
+"zDs-pW-vyA.accessibilityLabel" = "Delete all";
+
+/* Class = "UILabel"; text = "No recording found"; ObjectID = "zXd-Ic-rwm"; */
+"zXd-Ic-rwm.text" = "No recording found";
