@@ -52,7 +52,7 @@
 + (UIImage *)getImageFromVideoUrl:(NSURL *)url;
 
 - (void)setEvent:(LinphoneEventLog *)event;
-- (void)setChatMessage:(LinphoneChatMessage *)message;
+- (void)setChatMessageForCbs:(LinphoneChatMessage *)message;
 
 - (void)onDelete;
 - (void)onResend;

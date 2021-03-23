@@ -103,6 +103,7 @@
 		615A28402180A2620060F920 /* invite_linphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A283F2180A2620060F920 /* invite_linphone@2x.png */; };
 		615A28422180C0870060F920 /* recording.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28412180C0820060F920 /* recording.png */; };
 		615A28442180C0900060F920 /* recording@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28432180C08F0060F920 /* recording@2x.png */; };
+		617B4A60260A2B7800A87337 /* RecordingsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 617B4A62260A2B7800A87337 /* RecordingsListView.xib */; };
 		6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */; };
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
@@ -678,7 +679,6 @@
 		CF1DE92D210A0F5D00A0A97E /* UILinphoneAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CF1DE924210A0F5A00A0A97E /* UILinphoneAudioPlayer.m */; };
 		CF1DE92E210A0F5D00A0A97E /* UILinphoneAudioPlayer.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF1DE92B210A0F5B00A0A97E /* UILinphoneAudioPlayer.xib */; };
 		CF7602D7210867E800749F76 /* RecordingsListView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602D5210867E800749F76 /* RecordingsListView.m */; };
-		CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602D6210867E800749F76 /* RecordingsListView.xib */; };
 		CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E021086EB200749F76 /* RecordingsListTableView.m */; };
 		CF7602E72108759A00749F76 /* UIRecordingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CF7602E52108759A00749F76 /* UIRecordingCell.m */; };
 		CF7602E82108759A00749F76 /* UIRecordingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF7602E62108759A00749F76 /* UIRecordingCell.xib */; };
@@ -959,6 +959,8 @@
 		615A283F2180A2620060F920 /* invite_linphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "invite_linphone@2x.png"; sourceTree = "<group>"; };
 		615A28412180C0820060F920 /* recording.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording.png; sourceTree = "<group>"; };
 		615A28432180C08F0060F920 /* recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "recording@2x.png"; sourceTree = "<group>"; };
+		617B4A61260A2B7800A87337 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/RecordingsListView.xib; sourceTree = "<group>"; };
+		617B4A64260A2B8500A87337 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/RecordingsListView.strings; sourceTree = "<group>"; };
 		6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		6187B1B524B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AboutView.strings; sourceTree = "<group>"; };
 		6187B1B624B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
@@ -1715,7 +1717,6 @@
 		CF1DE92C210A0F5C00A0A97E /* UILinphoneAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneAudioPlayer.h; sourceTree = "<group>"; };
 		CF7602D4210867E800749F76 /* RecordingsListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListView.h; sourceTree = "<group>"; };
 		CF7602D5210867E800749F76 /* RecordingsListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListView.m; sourceTree = "<group>"; };
-		CF7602D6210867E800749F76 /* RecordingsListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecordingsListView.xib; sourceTree = "<group>"; };
 		CF7602DF21086EB100749F76 /* RecordingsListTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingsListTableView.h; sourceTree = "<group>"; };
 		CF7602E021086EB200749F76 /* RecordingsListTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordingsListTableView.m; sourceTree = "<group>"; };
 		CF7602E42108759A00749F76 /* UIRecordingCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIRecordingCell.h; sourceTree = "<group>"; };
@@ -2100,7 +2101,7 @@
 				CF7602E021086EB200749F76 /* RecordingsListTableView.m */,
 				CF7602D4210867E800749F76 /* RecordingsListView.h */,
 				CF7602D5210867E800749F76 /* RecordingsListView.m */,
-				CF7602D6210867E800749F76 /* RecordingsListView.xib */,
+				617B4A62260A2B7800A87337 /* RecordingsListView.xib */,
 				D35E759C159460B50066B1C1 /* SettingsView.h */,
 				D35E759D159460B50066B1C1 /* SettingsView.m */,
 				636316D61A1DEC650009B839 /* SettingsView.xib */,
@@ -3498,7 +3499,7 @@
 				8CE24F4C1F8234A30077AC0A /* next_default@2x.png in Resources */,
 				244523B11E8266CC0037A187 /* chat_read.png in Resources */,
 				61AEBEC62191E47500F35E7F /* chevron_list_close.png in Resources */,
-				CF7602D8210867E800749F76 /* RecordingsListView.xib in Resources */,
+				617B4A60260A2B7800A87337 /* RecordingsListView.xib in Resources */,
 				639E9CAC1C0DB80300019A75 /* UIContactDetailsCell.xib in Resources */,
 				633FEE511D3CD5590014B822 /* deselect_all@2x.png in Resources */,
 				8CF25D951F9F336100BEA0C1 /* check_unselected@2x.png in Resources */,
@@ -4357,6 +4358,15 @@
 				6187B1DC24B3272500D580FB /* hu */,
 			);
 			name = ShopView.xib;
+			sourceTree = "<group>";
+		};
+		617B4A62260A2B7800A87337 /* RecordingsListView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				617B4A61260A2B7800A87337 /* Base */,
+				617B4A64260A2B8500A87337 /* fr */,
+			);
+			name = RecordingsListView.xib;
 			sourceTree = "<group>";
 		};
 		61AE365020C00B370089D9D3 /* MainInterface.storyboard */ = {

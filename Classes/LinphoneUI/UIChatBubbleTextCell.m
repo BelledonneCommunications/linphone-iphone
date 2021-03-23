@@ -63,7 +63,7 @@
 
 - (void)dealloc {
 	[self setEvent:NULL];
-	[self setChatMessage:NULL];
+	[self setChatMessageForCbs:NULL];
 }
 
 #pragma mark -
@@ -77,10 +77,10 @@
 		LOGE(@"Impossible to create a ChatBubbleText whit a non message event");
 		return;
 	}
-	[self setChatMessage:linphone_event_log_get_chat_message(event)];
+	[self setChatMessageForCbs:linphone_event_log_get_chat_message(event)];
 }
 
-- (void)setChatMessage:(LinphoneChatMessage *)amessage {
+- (void)setChatMessageForCbs:(LinphoneChatMessage *)amessage {
 	if (!amessage || amessage == _message) {
 		return;
 	}
@@ -312,6 +312,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
 	ChatConversationView *view = VIEW(ChatConversationView);
 	[view.tableController updateEventEntry:event];
+	[view.tableController scrollToBottom:true];
 }
 
 static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
