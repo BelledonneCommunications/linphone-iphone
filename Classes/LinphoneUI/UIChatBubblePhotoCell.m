@@ -78,9 +78,20 @@
     _finalImage.hidden = TRUE;
 	_fileTransferProgress.progress = 0;
     assetIsLoaded = FALSE;
-	[self disconnectFromFileDelegate];
 
-	[super setChatMessage:amessage];
+	/* As the cell UI will be reset, fileTransDelegate need to be reconnected. Otherwise, the UIProgressView will not work */
+	[self disconnectFromFileDelegate];
+	if (amessage) {
+		for (FileTransferDelegate *aftd in [LinphoneManager.instance fileTransferDelegates]) {
+			if (aftd.message == amessage && linphone_chat_message_get_state(amessage) == LinphoneChatMessageStateFileTransferInProgress) {
+				LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", amessage, aftd);
+				[self connectToFileDelegate:aftd];
+				break;
+			}
+		}
+	}
+
+	[super setChatMessageForCbs:amessage];
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
@@ -157,6 +168,26 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 		LOGW(@"file content is null");
 		return;
 	}
+	
+	BOOL is_outgoing = linphone_chat_message_is_outgoing(self.message);
+	if (!is_outgoing) {
+		LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
+		if (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateDisplayed) {
+			if (state == LinphoneChatMessageStateFileTransferInProgress) {
+				_cancelButton.hidden = _fileTransferProgress.hidden = NO;
+				_downloadButton.hidden = YES;
+				_playButton.hidden = YES;
+				_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
+			} else {
+				_downloadButton.hidden =  NO;
+				_cancelButton.hidden = _fileTransferProgress.hidden =  YES;
+				_playButton.hidden = YES;
+				_fileName.hidden = _fileView.hidden = _fileButton.hidden =  YES;
+			}
+			return;
+		}
+	}
+	
 	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
@@ -539,6 +570,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view.tableController updateEventEntry:self.event];
+		[view.tableController scrollToBottom:true];
 	}
 }
 - (void)onFileTransferRecvUpdate:(NSNotification *)notif {
@@ -550,6 +582,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view.tableController updateEventEntry:self.event];
+		[view.tableController scrollToBottom:true];
 	}
 }
 

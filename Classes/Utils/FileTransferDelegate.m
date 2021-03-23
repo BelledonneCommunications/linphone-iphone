@@ -43,57 +43,41 @@
 	return nil;
 }
 
-static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, const LinphoneContent *content,
-											   const LinphoneBuffer *buffer) {
+static void file_transfer_progress_indication_recv(LinphoneChatMessage *message, LinphoneContent* content, size_t offset, size_t total) {
 	FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:message];
-	size_t size = linphone_buffer_get_size(buffer);
 
-	if (!thiz.data) {
-		thiz.data = [[NSMutableData alloc] initWithCapacity:linphone_content_get_file_size(content)];
-	}
-
-	if (size == 0) {
+	if (offset == total) {
 		NSString *name = [NSString stringWithUTF8String: linphone_content_get_name(content) ? : ""];
-		LOGI(@"Transfer of %@ (%d bytes): download finished", name, size);
-		assert([thiz.data length] == linphone_content_get_file_size(content));
+		LOGI(@"Transfer of %@ (%d bytes): download finished", name, total);
 		NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
 		NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:name];
-		[LinphoneManager setValueInMessageAppData:@"saving..." forKey:key inMessage:message];
 
 		dispatch_async(dispatch_get_main_queue(), ^{
-			[ChatConversationView writeFileInCache:thiz.data name:name];
 			[LinphoneManager setValueInMessageAppData:name
 										   forKey:key
 										inMessage:message];
-			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneFileTransferRecvUpdate
-														  object:thiz
-														userInfo:@{
-															@"state" : @(LinphoneChatMessageStateDelivered), // we dont want to trigger
-															@"progress" : @(1.f),    // FileTransferDone here
-														}];
-			if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
-				[ChatConversationView writeMediaToGallery:name fileType:fileType];
-			}
+			dispatch_async(dispatch_get_main_queue(), ^{
+				if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+					[ChatConversationView writeMediaToGallery:name fileType:fileType];
+				}
+			});
 		});
 	} else {
-		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
-			 linphone_content_get_file_size(content), [thiz.data length], size);
-		[thiz.data appendBytes:linphone_buffer_get_string_content(buffer) length:size];
+		LOGD(@"Transfer of %s (%d bytes): already %ld recv", linphone_content_get_name(content),
+			 total, offset);
 		[NSNotificationCenter.defaultCenter
 			postNotificationName:kLinphoneFileTransferRecvUpdate
 						  object:thiz
 						userInfo:@{
 							@"state" : @(linphone_chat_message_get_state(message)),
-							@"progress" : @([thiz.data length] * 1.f / linphone_content_get_file_size(content)),
+							@"progress" : @(offset * 1.f / total),
 						}];
 	}
 }
 
-static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *message, const LinphoneContent *content,
-														  size_t offset, size_t size) {
+static void file_transfer_progress_indication_send(LinphoneChatMessage *message, LinphoneContent* content, size_t offset, size_t total) {
 	FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:message];
-	size_t total = thiz.data.length;
-	if (thiz.data) {
+	if (total) {
 		size_t remaining = total - offset;
 
 		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -105,37 +89,17 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneFileTransferSendUpdate
 														  object:thiz
 														userInfo:dict];
-
-		LinphoneBuffer *buffer = NULL;
-		@try {
-			buffer = linphone_buffer_new_from_data([thiz.data subdataWithRange:NSMakeRange(offset, size)].bytes, size);
-		} @catch (NSException *exception) {
-			LOGE(@"Exception: %@", exception);
-		}
-
 		// this is the last time we will be notified, so destroy ourselve
-		if (remaining <= size) {
+		if (offset == total) {
 			LOGI(@"Upload ended");
-			
 
-			linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(thiz.message), NULL);
 			thiz.message = NULL;
 			[thiz stopAndDestroy];
-
-			//workaround fix : avoid chatconversationtableview scrolling
-			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneFileTransferSendUpdate
-															  object:thiz
-															userInfo:@{@"state" : @(LinphoneChatMessageStateDelivered),
-																	   }];
-            
 		}
-		return buffer;
 	} else {
 		LOGE(@"Transfer of %s (%d bytes): %d Error - no upload data in progress!", linphone_content_get_name(content),
 			 total, offset);
 	}
-
-	return NULL;
 }
 
 - (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key{
@@ -146,18 +110,17 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
-	_data = [NSMutableData dataWithData:data];
 	linphone_content_set_type(content, [type UTF8String]);
 	linphone_content_set_subtype(content, [subtype UTF8String]);
 	linphone_content_set_name(content, [name UTF8String]);
-	linphone_content_set_size(content, _data.length);
+	linphone_content_set_file_path(content, [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name].UTF8String);
 	_message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
 	BOOL isOneToOneChat = linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
 	if (!isOneToOneChat && (_text!=nil && ![_text isEqualToString:@""]))
 		linphone_chat_message_add_text_content(_message, [_text UTF8String]);
 	linphone_content_unref(content);
 
-	linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message), linphone_iphone_file_transfer_send);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message), file_transfer_progress_indication_send);
 
 	[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:_message];
 
@@ -197,16 +160,14 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 
 	_message = message;
 
-	const char *url = linphone_chat_message_get_external_body_url(_message);
-	LOGI(@"%p Downloading content in %p from %s", self, message, url);
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(_message);
+	if (content == nil) return FALSE;
 
-	if (url == nil)
-		return FALSE;
+	LOGI(@"%p Downloading content in %p ", self, message);
 
-	linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message),
-													 linphone_iphone_file_transfer_recv);
-
-	linphone_chat_message_download_file(_message);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message), file_transfer_progress_indication_recv);
+	linphone_content_set_file_path(content, [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:[NSString stringWithUTF8String:linphone_content_get_name(content)]].UTF8String);
+	linphone_chat_message_download_content(_message, content);
 
 	return TRUE;
 }
@@ -217,8 +178,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		LinphoneChatMessage *msg = _message;
 		_message = NULL;
 		LOGI(@"%p Cancelling transfer from %p", self, msg);
-		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(msg), NULL);
-		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(msg), NULL);
+		linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(msg), NULL);
 		// when we cancel file transfer, this will automatically trigger NotDelivered callback... recalling ourself a
 		// second time so we have to unset message BEFORE calling this
 		linphone_chat_message_cancel_file_transfer(msg);

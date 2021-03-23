@@ -718,10 +718,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 				   account_creator, inputEntry.length > 0 ? inputEntry.UTF8String : NULL, prefix.UTF8String);
 			   if (s != LinphoneAccountCreatorPhoneNumberStatusOk) {
 				   linphone_account_creator_set_phone_number(account_creator, NULL, NULL);
-				   // if phone is empty and username is empty, this is wrong
-				   if (linphone_account_creator_get_username(account_creator) == NULL) {
-					   s = LinphoneAccountCreatorPhoneNumberStatusTooShort;
-				   }
 			   }
 
 			   createPhone.errorLabel.text = [AssistantView errorForLinphoneAccountCreatorPhoneNumberStatus:s];
