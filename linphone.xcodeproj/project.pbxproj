@@ -961,6 +961,7 @@
 		615A28432180C08F0060F920 /* recording@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "recording@2x.png"; sourceTree = "<group>"; };
 		617B4A61260A2B7800A87337 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/RecordingsListView.xib; sourceTree = "<group>"; };
 		617B4A64260A2B8500A87337 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/RecordingsListView.strings; sourceTree = "<group>"; };
+		617B4A75260A3F5500A87337 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/RecordingsListView.strings; sourceTree = "<group>"; };
 		6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		6187B1B524B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AboutView.strings; sourceTree = "<group>"; };
 		6187B1B624B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
@@ -4365,6 +4366,7 @@
 			children = (
 				617B4A61260A2B7800A87337 /* Base */,
 				617B4A64260A2B8500A87337 /* fr */,
+				617B4A75260A3F5500A87337 /* en */,
 			);
 			name = RecordingsListView.xib;
 			sourceTree = "<group>";
