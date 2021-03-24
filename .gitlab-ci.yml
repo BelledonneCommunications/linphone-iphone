@@ -7,7 +7,7 @@ variables:
 job-ios:
 
   stage: build
-  tags: [ "macosx-xcode12" ]
+  tags: [ "macosx" ]
 
   script:
     - pod install --repo-update
