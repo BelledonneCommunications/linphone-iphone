@@ -947,13 +947,22 @@
 - (void)removeAccount {
 	LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
 													  [self integerForKey:@"current_proxy_config_preference"]);
-
+	
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	while (lists) {
+		linphone_friend_list_enable_subscriptions(lists->data, FALSE);
+		linphone_friend_list_update_subscriptions(lists->data);
+		lists = lists->next;
+	}
 	BOOL isDefault = (linphone_core_get_default_proxy_config(LC) == config);
 
 	const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
 	linphone_core_remove_proxy_config(LC, config);
 	if (ai) {
-		linphone_core_remove_auth_info(LC, ai);
+		// Friend list unsubscription above is not instantanous, so give a bit of a time margin before finishing the removal of the auth info
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(20 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			linphone_core_remove_auth_info(LC, ai);
+		});
 	}
 	[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 
