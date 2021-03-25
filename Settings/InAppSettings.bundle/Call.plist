@@ -94,7 +94,7 @@
 			<key>Key</key>
 			<string>media_encrption_mandatory_preference</string>
 			<key>Title</key>
-			<string>Media encryption mandatory</string>
+			<string>Media Encryption mandatory</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
