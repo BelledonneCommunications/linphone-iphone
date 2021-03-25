@@ -322,6 +322,8 @@ import AVFoundation
 			let groupAction = CXSetGroupCallAction(call: currentUuid!, callUUIDToGroupWith: newUuid)
 			let transcation = CXTransaction(action: groupAction)
 			requestTransaction(transcation, action: "groupCall")
+
+			setResumeCalls()
 		} else {
 			try? lc?.addAllToConference()
 		}
@@ -393,7 +395,15 @@ import AVFoundation
 			}
 		}
 	}
-	
+
+	func setResumeCalls() {
+		for call in CallManager.instance().lc!.calls {
+			if (call.state == .Paused || call.state == .Pausing || call.state == .PausedByRemote) {
+				setHeld(call: call, hold: false)
+			}
+		}
+	}
+
 	@objc func performActionWhenCoreIsOn(action:  @escaping ()->Void ) {
 		if (globalState == .On) {
 			action()
