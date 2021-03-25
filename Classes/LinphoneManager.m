@@ -723,7 +723,22 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		const char * usernameC = linphone_auth_info_get_username(auth_info) ? : "";
 		const char * domainC = linphone_auth_info_get_domain(auth_info) ? : "";
 		static UIAlertController *alertView = nil;
-
+		
+		// InstantMessageDeliveryNotifications from previous accounts can trigger some pop-up spam asking for indentification
+		// Try to filter the popup password request to avoid displaying those that do not matter and can be handled through a simple warning
+		const MSList *configList = linphone_core_get_proxy_config_list(LC);
+		bool foundMatchingConfig = false;
+		while (configList && !foundMatchingConfig) {
+			const char * configUsername = linphone_proxy_config_get_identity(configList->data);
+			const char * configDomain = linphone_proxy_config_get_domain(configList->data);
+			foundMatchingConfig = (strcmp(configUsername, usernameC) == 0) && (strcmp(configDomain, domainC) == 0);
+			configList = configList->next;
+		}
+		if (!foundMatchingConfig) {
+			LOGW(@"Received an authentication request from %s@%s, but ignored it did not match any current user", usernameC, domainC);
+			return;
+		}
+		
 		// avoid having multiple popups
 		[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
 
