@@ -174,11 +174,11 @@ extension ProviderDelegate: CXProviderDelegate {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
 		let call = CallManager.instance().callByCallId(callId: callId)
-		CallManager.instance().lc?.configureAudioSession()
 		if (call == nil || call?.state != Call.State.IncomingReceived) {
 			// The application is not yet registered or the call is not yet received, mark the call as accepted. The audio session must be configured here.
 			callInfo?.accepted = true
 			callInfos.updateValue(callInfo!, forKey: uuid)
+			CallManager.instance().lc?.configureAudioSession()
 			CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 10)
 		} else {
 			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
