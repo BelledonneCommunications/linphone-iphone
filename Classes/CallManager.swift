@@ -164,6 +164,19 @@ import AVFoundation
 			}
 		}
 	}
+	
+	@objc func updateCallId(previous: String, current: String) {
+		let uuid = CallManager.instance().providerDelegate.uuids["\(previous)"]
+		if (uuid != nil) {
+			CallManager.instance().providerDelegate.uuids.removeValue(forKey: previous)
+			CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: current)
+			let callInfo = providerDelegate.callInfos[uuid!]
+			if (callInfo != nil) {
+				callInfo!.callId = current
+				providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+			}
+		}
+	}
 
 	// From ios13, display the callkit view when the notification is received.
 	@objc func displayIncomingCall(callId: String) {
