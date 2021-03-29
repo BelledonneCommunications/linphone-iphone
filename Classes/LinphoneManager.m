@@ -1387,7 +1387,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		// rare case, remove duplicated fileTransferDelegates to avoid crash
 		[_fileTransferDelegates setArray:[[NSSet setWithArray:_fileTransferDelegates] allObjects]];
 		for (FileTransferDelegate *ftd in _fileTransferDelegates) {
-			[ftd stopAndDestroy];
+			// Not remove here, avoid array mutated while being enumerated
+			[ftd stopAndDestroyAndRemove:FALSE];
 		}
 		[_fileTransferDelegates removeAllObjects];
 
