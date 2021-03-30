@@ -87,6 +87,7 @@ class ProviderDelegate: NSObject {
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
+		CallManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "")
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 				if CallManager.instance().endCallkit {

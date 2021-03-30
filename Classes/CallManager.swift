@@ -248,6 +248,7 @@ import AVFoundation
 			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 			providerDelegate.uuids.updateValue(uuid, forKey: "")
 
+			setHeldOtherCalls(exceptCallid: "")
 			requestTransaction(transaction, action: "startCall")
 		}else {
 			try? doCall(addr: sAddr, isSas: isSas)
@@ -385,7 +386,14 @@ import AVFoundation
 
 	@objc func setHeld(call: OpaquePointer, hold: Bool) {
 		let sCall = Call.getSwiftObject(cObject: call)
-		let callid = sCall.callLog?.callId ?? ""
+		if (!hold) {
+			setHeldOtherCalls(exceptCallid: sCall.callLog?.callId ?? "")
+		}
+		setHeld(call: sCall, hold: hold)
+	}
+
+	func setHeld(call: Call, hold: Bool) {
+		let callid = call.callLog?.callId ?? ""
 		let uuid = providerDelegate.uuids["\(callid)"]
 
 		if (uuid == nil) {
@@ -396,6 +404,14 @@ import AVFoundation
 		let transaction = CXTransaction(action: setHeldAction)
 
 		requestTransaction(transaction, action: "setHeld")
+	}
+
+	@objc func setHeldOtherCalls(exceptCallid: String) {
+		for call in CallManager.instance().lc!.calls {
+			if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
+				setHeld(call: call, hold: true)
+			}
+		}
 	}
 }
 
