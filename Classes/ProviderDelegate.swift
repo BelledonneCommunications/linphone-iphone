@@ -90,6 +90,7 @@ class ProviderDelegate: NSObject {
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
+		CallManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "") 
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 				if CallManager.instance().endCallkit {
@@ -138,6 +139,10 @@ class ProviderDelegate: NSObject {
 	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
 		DispatchQueue.main.asyncAfter(deadline: timeout) {
 			let callId = CallManager.instance().providerDelegate.callInfos[uuid]?.callId
+			if (callId == nil) {
+				// callkit already ended
+				return
+			}
 			let call = CallManager.instance().callByCallId(callId: callId)
 			if (call == nil) {
 				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: terminate call with call-id: \(String(describing: callId)) and UUID: \(uuid) which does not exist.")

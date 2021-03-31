@@ -164,6 +164,19 @@ import AVFoundation
 			}
 		}
 	}
+	
+	@objc func updateCallId(previous: String, current: String) {
+		let uuid = CallManager.instance().providerDelegate.uuids["\(previous)"]
+		if (uuid != nil) {
+			CallManager.instance().providerDelegate.uuids.removeValue(forKey: previous)
+			CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: current)
+			let callInfo = providerDelegate.callInfos[uuid!]
+			if (callInfo != nil) {
+				callInfo!.callId = current
+				providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+			}
+		}
+	}
 
 	// From ios13, display the callkit view when the notification is received.
 	@objc func displayIncomingCall(callId: String) {
@@ -322,6 +335,8 @@ import AVFoundation
 			let groupAction = CXSetGroupCallAction(call: currentUuid!, callUUIDToGroupWith: newUuid)
 			let transcation = CXTransaction(action: groupAction)
 			requestTransaction(transcation, action: "groupCall")
+
+			setResumeCalls()
 		} else {
 			try? lc?.addAllToConference()
 		}
@@ -393,7 +408,15 @@ import AVFoundation
 			}
 		}
 	}
-	
+
+	func setResumeCalls() {
+		for call in CallManager.instance().lc!.calls {
+			if (call.state == .Paused || call.state == .Pausing || call.state == .PausedByRemote) {
+				setHeld(call: call, hold: false)
+			}
+		}
+	}
+
 	@objc func performActionWhenCoreIsOn(action:  @escaping ()->Void ) {
 		if (globalState == .On) {
 			action()

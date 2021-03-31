@@ -723,7 +723,22 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		const char * usernameC = linphone_auth_info_get_username(auth_info) ? : "";
 		const char * domainC = linphone_auth_info_get_domain(auth_info) ? : "";
 		static UIAlertController *alertView = nil;
-
+		
+		// InstantMessageDeliveryNotifications from previous accounts can trigger some pop-up spam asking for indentification
+		// Try to filter the popup password request to avoid displaying those that do not matter and can be handled through a simple warning
+		const MSList *configList = linphone_core_get_proxy_config_list(LC);
+		bool foundMatchingConfig = false;
+		while (configList && !foundMatchingConfig) {
+			const char * configUsername = linphone_proxy_config_get_identity(configList->data);
+			const char * configDomain = linphone_proxy_config_get_domain(configList->data);
+			foundMatchingConfig = (strcmp(configUsername, usernameC) == 0) && (strcmp(configDomain, domainC) == 0);
+			configList = configList->next;
+		}
+		if (!foundMatchingConfig) {
+			LOGW(@"Received an authentication request from %s@%s, but ignored it did not match any current user", usernameC, domainC);
+			return;
+		}
+		
 		// avoid having multiple popups
 		[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
 
@@ -1023,6 +1038,9 @@ static void linphone_iphone_call_log_updated(LinphoneCore *lc, LinphoneCallLog *
 	}
 }
 
+static void linphone_iphone_call_id_updated(LinphoneCore *lc, const char *previous_call_id, const char *current_call_id) {
+	[CallManager.instance updateCallIdWithPrevious:[NSString stringWithUTF8String:previous_call_id] current:[NSString stringWithUTF8String:current_call_id]];
+}
 #pragma mark - Message composition start
 - (void)onMessageComposeReceived:(LinphoneCore *)core forRoom:(LinphoneChatRoom *)room {
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneTextComposeEvent
@@ -1305,6 +1323,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_version_update_check_result_received(cbs, linphone_iphone_version_update_check_result_received);
 	linphone_core_cbs_set_qrcode_found(cbs, linphone_iphone_qr_code_found);
 	linphone_core_cbs_set_call_log_updated(cbs, linphone_iphone_call_log_updated);
+	linphone_core_cbs_set_call_id_updated(cbs, linphone_iphone_call_id_updated);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 
 	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationAppGroupId UTF8String], true);
@@ -1368,7 +1387,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		// rare case, remove duplicated fileTransferDelegates to avoid crash
 		[_fileTransferDelegates setArray:[[NSSet setWithArray:_fileTransferDelegates] allObjects]];
 		for (FileTransferDelegate *ftd in _fileTransferDelegates) {
-			[ftd stopAndDestroy];
+			// Not remove here, avoid array mutated while being enumerated
+			[ftd stopAndDestroyAndRemove:FALSE];
 		}
 		[_fileTransferDelegates removeAllObjects];
 

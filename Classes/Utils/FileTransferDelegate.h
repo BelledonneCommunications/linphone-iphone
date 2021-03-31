@@ -30,6 +30,7 @@
 - (void)cancel;
 - (BOOL)download:(LinphoneChatMessage *)message;
 - (void)stopAndDestroy;
+- (void)stopAndDestroyAndRemove:(BOOL)remove;
 + (FileTransferDelegate *)messageDelegate:(LinphoneChatMessage *)message;
 
 @property() LinphoneChatMessage *message;

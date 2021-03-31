@@ -173,7 +173,13 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 }
 
 - (void)stopAndDestroy {
-	[[LinphoneManager.instance fileTransferDelegates] removeObject:self];
+	[self stopAndDestroyAndRemove:TRUE];
+}
+
+- (void)stopAndDestroyAndRemove:(BOOL)remove {
+	if (remove)
+		[[LinphoneManager.instance fileTransferDelegates] removeObject:self];
+
 	if (_message != NULL) {
 		LinphoneChatMessage *msg = _message;
 		_message = NULL;
