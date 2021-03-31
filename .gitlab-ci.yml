@@ -10,6 +10,7 @@ job-ios:
   tags: [ "macosx-xcode12" ]
 
   script:
+    - gem which cocoapods
     - pod install --repo-update
     - pwd
     - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=NO
