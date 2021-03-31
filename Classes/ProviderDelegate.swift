@@ -135,6 +135,11 @@ class ProviderDelegate: NSObject {
 	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
 		DispatchQueue.main.asyncAfter(deadline: timeout) {
 			let callId = CallManager.instance().providerDelegate.callInfos[uuid]?.callId
+			if (callId == nil) {
+				// callkit already ended
+				return
+			}
+
 			let call = CallManager.instance().callByCallId(callId: callId)
 			if (call == nil) {
 				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: terminate call with call-id: \(String(describing: callId)) and UUID: \(uuid) which does not exist.")
