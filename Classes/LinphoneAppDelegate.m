@@ -33,6 +33,8 @@
 
 #import <Intents/Intents.h>
 #import <IntentsUI/IntentsUI.h>
+#import "linphoneapp-Swift.h"
+
 
 #ifdef USE_CRASHLYTICS
 #include "FIRApp.h"
@@ -265,6 +267,12 @@
 #ifdef USE_CRASHLYTICS
 	[FIRApp configure];
 #endif
+	
+	
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"vfs_enabled"] && !VFSUtil.activateVFS) {
+		[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
+	}
+	
     UIApplication *app = [UIApplication sharedApplication];
 	UIApplicationState state = app.applicationState;
 
