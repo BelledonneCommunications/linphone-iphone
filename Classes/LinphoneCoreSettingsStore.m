@@ -969,7 +969,7 @@
 	if (isDefault) {
 		// if we removed the default proxy config, set another one instead
 		if (linphone_core_get_proxy_config_list(LC) != NULL) {
-			linphone_core_set_default_proxy_index(LC, 0);
+			linphone_core_set_default_proxy_config(LC, (LinphoneProxyConfig *)(linphone_core_get_proxy_config_list(LC)->data));
 		}
 	}
 	[self transformLinphoneCoreToKeys];

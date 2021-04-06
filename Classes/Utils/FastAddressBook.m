@@ -516,7 +516,7 @@
 	LOGD(@"dumpContactsDisplayNamesToUserDefaults");
 	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
 	__block NSDictionary *oldDisplayNames = [defaults dictionaryForKey:@"addressBook"];
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
 
 	__block NSMutableDictionary *displayNames = [[NSMutableDictionary dictionary] init];
 	[_addressBookMap enumerateKeysAndObjectsUsingBlock:^(NSString *name, Contact *contact, BOOL *stop) {
@@ -524,7 +524,7 @@
 			NSString *key = name;
 			LinphoneAddress *addr = linphone_address_new(name.UTF8String);
 
-			if (addr && linphone_proxy_config_is_phone_number(cfg, linphone_address_get_username(addr))) {
+			if (addr && linphone_account_is_phone_number(account, linphone_address_get_username(addr))) {
 				if (oldDisplayNames[name] != nil && [FastAddressBook isSipURI:oldDisplayNames[name]]) {
 					NSString *addrForTel = [NSString stringWithString:oldDisplayNames[name]];
 					/* we keep the link between tel number and sip addr to have the information quickly.
@@ -583,7 +583,7 @@
 
 	if ([FastAddressBook isSipURI:uri]) {
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
-		if (linphone_proxy_config_is_phone_number(linphone_core_get_default_proxy_config(LC), linphone_address_get_username(addr))) {
+		if (linphone_account_is_phone_number(linphone_core_get_default_account(LC), linphone_address_get_username(addr))) {
 			telAddr = uri;
 		}
 		linphone_address_unref(addr);

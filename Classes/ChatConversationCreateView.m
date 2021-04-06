@@ -240,10 +240,10 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 	cell.controller = self;
 	cell.uri = uri;
 	LinphoneAddress *addr = NULL;
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	if (cfg && linphone_proxy_config_is_phone_number(cfg, uri.UTF8String)) {
-		char *phone = linphone_proxy_config_normalize_phone_number(cfg, uri.UTF8String);
-		addr = linphone_proxy_config_normalize_sip_uri(cfg, phone);
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	if (account && linphone_account_is_phone_number(account, uri.UTF8String)) {
+		char *phone = linphone_account_normalize_phone_number(account, uri.UTF8String);
+		addr = linphone_account_normalize_sip_uri(account, phone);
 		ms_free(phone);
 	} else
 		addr = linphone_address_new(uri.UTF8String);
