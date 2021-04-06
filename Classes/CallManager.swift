@@ -385,7 +385,7 @@ import AVFoundation
 		}
 		if let conferenceParams = try? lc?.createConferenceParams() {
 			conferenceParams.videoEnabled = video
-			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams), conference != nil,  let callParams = try? lc?.createCallParams(call: nil) {
+			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams), let callParams = try? lc?.createCallParams(call: nil) {
 				callParams.videoEnabled = video
 				try? conference.inviteParticipants(addresses:addresses, params: callParams)
 			} else {
