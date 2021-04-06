@@ -11,7 +11,25 @@ Group changes to describe their impact on the project, as follows:
     Security to invite users to upgrade in case of vulnerabilities.
 
 
-## [Unreleased]
+## [4.4.0] - 2021-03-30
+
+### Added
+- Option to store chat files in Gallery.
+
+### Changed
+- Updating SDK to 4.5 version
+- Asking user to read and accept privacy policy and general terms
+- Updated translations
+- Store chat files in App Groups instead of Gallery.
+
+### Removed
+- Location permission request.
+
+### Fixed
+- Various crashs and issues.
+
+
+## [4.3.0] - 2020-06-23
 
 ### Added
 - "push notification application extension" to manage message reception.
