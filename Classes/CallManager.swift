@@ -343,12 +343,14 @@ import AVFoundation
 	}
 	
 	@objc func mergeCallsIntoConference(video:Bool) {
-		if let conferenceParams = try? lc?.createConferenceParams(), conferenceParams != nil, let calls = lc?.calls  {
-			conferenceParams?.videoEnabled = video
-			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams!) {
+		if let conferenceParams = try? lc?.createConferenceParams(), let calls = lc?.calls  {
+			conferenceParams.videoEnabled = video
+			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams) {
 				for call in calls {
-					if let returnValue = conference?.addParticipant(call: call), returnValue != 0 {
-						Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Non zero returned value adding participant : \(returnValue)")
+					do {
+						try conference.addParticipant(call: call)
+					} catch {
+						Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Non zero returned value adding participant : \(error)")
 					}
 				}
 			} else {
@@ -377,15 +379,15 @@ import AVFoundation
 	@objc func intiateConference(video:Bool, uris:NSArray) {
 		var addresses =  [Address]()
 		for uri in uris {
-			if let address = try?lc?.createAddress(address: uri as! String), address != nil {
-				addresses.append(address!)
+			if let address = try?lc?.createAddress(address: uri as! String) {
+				addresses.append(address)
 			}
 		}
-		if let conferenceParams = try? lc?.createConferenceParams(), conferenceParams != nil {
-			conferenceParams?.videoEnabled = video
-			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams!), conference != nil,  let callParams = try? lc?.createCallParams(call: nil), callParams != nil {
-				callParams!.videoEnabled = video
-				try? conference?.inviteParticipants(addresses:addresses, params: callParams!)
+		if let conferenceParams = try? lc?.createConferenceParams() {
+			conferenceParams.videoEnabled = video
+			if  let conference = try? lc?.createConferenceWithParams(params: conferenceParams), let callParams = try? lc?.createCallParams(call: nil) {
+				callParams.videoEnabled = video
+				try? conference.inviteParticipants(addresses:addresses, params: callParams)
 			} else {
 				Log.directLog(BCTBX_LOG_WARNING, text: "CallManager: Unable to create conference.")
 			}
