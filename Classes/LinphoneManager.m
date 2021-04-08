@@ -1204,6 +1204,11 @@ static BOOL libStarted = FALSE;
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
+
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+		// go directly to bg mode
+		[self enterBackgroundMode];
+	}
 }
 
 void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
@@ -1476,14 +1481,106 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		return;
 	}
 
+	if ([self lpConfigBoolForKey:@"publish_presence"]) {
+		// set present to "tv", because "available" does not work yet
+		if (enabled) {
+			linphone_core_set_presence_model(LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
+		}
+
+		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		while (proxies) {
+			LinphoneProxyConfig *cfg = proxies->data;
+			linphone_proxy_config_edit(cfg);
+			linphone_proxy_config_enable_publish(cfg, enabled);
+			linphone_proxy_config_done(cfg);
+			proxies = proxies->next;
+		}
+		// force registration update first, then update friend list subscription
+		[self iterate];
+	}
+
 	linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 }
 
-- (void)becomeActive {
-	linphone_core_enter_foreground(LC);
+- (BOOL)enterBackgroundMode {
+	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
+	BOOL shouldEnterBgMode = FALSE;
 
+	// disable presence
+	[self enableProxyPublish:NO];
+
+	// handle proxy config if any
+	if (proxyCfg) {
+		BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
+			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+				// For registration register
+				[self refreshRegisters];
+			}
+		}
+
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"voip_mode_preference"] && [LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] && !pushNotifEnabled) {
+            // Keep this!! Socket VoIP is deprecated after 9.0, but sometimes it's the only way to keep the phone background and receive the call. For example, when there is only local area network.
+            // register keepalive
+            if ([[UIApplication sharedApplication]
+                 setKeepAliveTimeout:600 /*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
+                 handler:^{
+                     LOGW(@"keepalive handler");
+                     mLastKeepAliveDate = [NSDate date];
+                     if (theLinphoneCore == nil) {
+                         LOGW(@"It seems that Linphone BG mode was deactivated, just skipping");
+                         return;
+                     }
+                     [_iapManager check];
+                     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+                         // For registration register
+                         [self refreshRegisters];
+                     }
+                     linphone_core_iterate(theLinphoneCore);
+                 }]) {
+		     LOGI(@"keepalive handler succesfully registered");
+                 } else {
+                     LOGI(@"keepalive handler cannot be registered");
+                 }
+			shouldEnterBgMode = TRUE;
+		}
+	}
+
+	LinphoneCall *currentCall = linphone_core_get_current_call(theLinphoneCore);
+	const bctbx_list_t *callList = linphone_core_get_calls(theLinphoneCore);
+	if (!currentCall // no active call
+	    && callList  // at least one call in a non active state
+	    && bctbx_list_find_custom(callList, (bctbx_compare_func)comp_call_state_paused, NULL)) {
+		[self startCallPausedLongRunningTask];
+	}
+	if (callList) // If at least one call exist, enter normal bg mode
+		shouldEnterBgMode = TRUE;
+
+	// Stop the video preview
+	if (theLinphoneCore) {
+		linphone_core_enable_video_preview(theLinphoneCore, FALSE);
+		[self iterate];
+	}
+
+	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
+	if (!shouldEnterBgMode && floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+		BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
+		if (pushNotifEnabled) {
+			LOGI(@"Keeping lc core to handle push");
+			return YES;
+		}
+		return NO;
+	}
+	return YES;
+}
+
+- (void)becomeActive {
 	[self checkNewVersion];
 
+	// enable presence
+	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+		[self refreshRegisters];
+	}
 	if (pausedCallBgTask) {
 		[[UIApplication sharedApplication] endBackgroundTask:pausedCallBgTask];
 		pausedCallBgTask = 0;
@@ -1502,6 +1599,16 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (linphone_core_video_display_enabled(theLinphoneCore) && [self lpConfigBoolForKey:@"preview_preference"]) {
 		linphone_core_enable_video_preview(theLinphoneCore, TRUE);
 	}
+	/*check last keepalive handler date*/
+	if (mLastKeepAliveDate != Nil) {
+		NSDate *current = [NSDate date];
+		if ([current timeIntervalSinceDate:mLastKeepAliveDate] > 700) {
+			NSString *datestr = [mLastKeepAliveDate description];
+			LOGW(@"keepalive handler was called for the last time at %@", datestr);
+		}
+	}
+
+	[self enableProxyPublish:YES];
 }
 
 - (void)refreshRegisters {
