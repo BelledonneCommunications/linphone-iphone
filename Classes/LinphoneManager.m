@@ -1244,7 +1244,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 			[LinphoneManager.instance
 			 lpConfigSetInt:[[NSDate date] dateByAddingTimeInterval:[LinphoneManager.instance
 										 lpConfigIntForKey:@"link_account_popup_time"
-										 withDefault:84200]]
+										 withDefault:86400]]
 			 .timeIntervalSince1970
 			 forKey:@"must_link_account_time"];
 		}
@@ -1481,7 +1481,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		return;
 	}
 
-	if ([self lpConfigBoolForKey:@"publish_presence"]) {
+	if ([self lpConfigBoolForKey:@"publish_presence" withDefault:FALSE]) {
 		// set present to "tv", because "available" does not work yet
 		if (enabled) {
 			linphone_core_set_presence_model(LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
@@ -1499,7 +1499,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[self iterate];
 	}
 
-	linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
+	linphone_core_enable_friend_list_subscription(LC, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence" withDefault:TRUE]);
 }
 
 - (BOOL)enterBackgroundMode {
@@ -1512,14 +1512,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	// handle proxy config if any
 	if (proxyCfg) {
 		BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference" withDefault:TRUE] || pushNotifEnabled) {
 			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 				// For registration register
 				[self refreshRegisters];
 			}
 		}
 
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"voip_mode_preference"] && [LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] && !pushNotifEnabled) {
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"voip_mode_preference"] && [LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference" withDefault:TRUE] && !pushNotifEnabled) {
             // Keep this!! Socket VoIP is deprecated after 9.0, but sometimes it's the only way to keep the phone background and receive the call. For example, when there is only local area network.
             // register keepalive
             if ([[UIApplication sharedApplication]

@@ -476,7 +476,7 @@
 		}
 	}
 	
-	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"];
+	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence" withDefault:TRUE];
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
 		linphone_friend_list_enable_subscriptions(lists->data, FALSE);
@@ -487,7 +487,7 @@
 }
 
 -(void)removeFriend:(Contact*) contact{
-	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"];
+	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence" withDefault:TRUE];
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
 		linphone_friend_list_remove_friend(lists->data, contact.friend);

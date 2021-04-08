@@ -653,7 +653,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[hiddenKeys addObject:@"backgroundmode_preference"];
 		[hiddenKeys addObject:@"start_at_boot_preference"];
 	} else {
-		if (![lm lpConfigBoolForKey:@"backgroundmode_preference"]) {
+		if (![lm lpConfigBoolForKey:@"backgroundmode_preference" withDefault:TRUE]) {
 			[hiddenKeys addObject:@"start_at_boot_preference"];
 		}
 	}
@@ -716,7 +716,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[hiddenKeys addObject:@"repeat_call_notification_preference"];
 	}
 	
-	if (![lm lpConfigBoolForKey:@"accept_early_media" inSection:@"app"]) {
+	if (![lm lpConfigBoolForKey:@"accept_early_media" inSection:@"app" withDefault:FALSE]) {
 		[hiddenKeys addObject:@"pref_accept_early_media_preference"];
 	}
 
@@ -948,7 +948,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	} else if ([key isEqual:@"send_logs_button"]) {
 		NSString *message;
 
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory"]) {
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory" withDefault:FALSE]) {
 			message = NSLocalizedString(
 				@"Warning: an email will be created with 3 attachments:\n- Application "
 				@"logs\n- Linphone configuration\n- Chats history.\nThey may contain "
@@ -1009,7 +1009,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}
 	ms_free(filepath);
 
-	if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory"]) {
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory" withDefault:FALSE]) {
 		// retrieve linphone rc
 		[attachments
 			addObject:@[ [LinphoneManager preferenceFile:@"linphonerc"], @"text/plain", @"linphone-configuration.rc" ]];
@@ -1112,7 +1112,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 											 @"Email title for people wanting to send a bug report")];
 		[picker setToRecipients:[NSArray
 									arrayWithObjects:[LinphoneManager.instance lpConfigStringForKey:@"debug_popup_email"
-																						withDefault:@""],
+																						withDefault:@"linphone-iphone@belledonne-communications.com"],
 													 nil]];
 		[picker setMessageBody:NSLocalizedString(@"Here are information about an issue I had on my device.\nI was "
 												 @"doing ...\nI expected Linphone to ...\nInstead, I got an "
