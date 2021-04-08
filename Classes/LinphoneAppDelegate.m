@@ -265,9 +265,9 @@
 #ifdef USE_CRASHLYTICS
 	[FIRApp configure];
 #endif
-	
-	
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"vfs_enabled"] && !VFSUtil.activateVFS) {
+
+
+	if ([[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] && !VFSUtil.activateVFS) {
 		[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
 	}
 	
