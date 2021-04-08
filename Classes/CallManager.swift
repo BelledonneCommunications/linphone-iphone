@@ -112,6 +112,12 @@ import AVFoundation
 		return nil
 	}
 
+	@objc func stopLinphoneCore() {
+		if (lc?.callsNb == 0) {
+			lc?.stopAsync()
+		}
+	}
+
 	@objc static func callKitEnabled() -> Bool {
 		#if !targetEnvironment(simulator)
 		if ConfigManager.instance().lpConfigBoolForKey(key: "use_callkit", section: "app") {
