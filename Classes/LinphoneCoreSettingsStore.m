@@ -418,7 +418,7 @@
 	{
 		[self setObject:[lm lpConfigStringForKey:@"debugenable_preference"] forKey:@"debugenable_preference"];
 		[self setBool:ANIMATED forKey:@"animations_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference" withDefault:TRUE] forKey:@"backgroundmode_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];

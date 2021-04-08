@@ -292,7 +292,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 																   handler:^(UIAlertAction * action) {
 																	   NSString *appName =
 																	   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-																	   NSString *logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@""];
+																	   NSString *logsAddress = [mgr lpConfigStringForKey:@"debug_popup_email" withDefault:@"linphone-iphone@belledonne-communications.com"];
 																	   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
 																   }];
 			[errView addAction:continueAction];
