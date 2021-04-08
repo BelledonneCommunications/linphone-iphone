@@ -278,25 +278,31 @@
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
 		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-
+		
 		/*FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:_message];
 		if (thiz) {
 			[thiz stop]
 		}*/
 		[self onDelete];
-		if(localImage){
-			dispatch_async(dispatch_get_main_queue(), ^ {
-				[_chatRoomDelegate resendFile:[ChatConversationView getCacheFileData:localImage] withName:localImage type:@"image" key:@"localimage" message:self.textMessage];
-				});
-		} else if (localVideo) {
-			dispatch_async(dispatch_get_main_queue(), ^ {
-				[_chatRoomDelegate resendFile:[ChatConversationView getCacheFileData:localVideo] withName:localVideo type:@"video" key:@"localvideo" message:self.textMessage];
-				});
-		} else if (localFile) {
-			dispatch_async(dispatch_get_main_queue(), ^ {
-				[_chatRoomDelegate resendFile:[ChatConversationView getCacheFileData:localFile] withName:localFile type:@"image" key:@"localfile" message:self.textMessage];
-				});
-		}
+		dispatch_async(dispatch_get_main_queue(), ^ {
+			LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(_message);
+			NSData *data = NULL;
+			char *cPath = linphone_content_get_plain_file_path(fileContent);
+			if (cPath) {
+				NSString *filePath = [NSString stringWithUTF8String:linphone_content_get_plain_file_path(fileContent)];
+				data = [NSData dataWithContentsOfFile:filePath];
+				ms_free(cPath);
+				[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
+			}
+
+			if (localImage) {
+				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getCacheFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:self.textMessage];
+			} else if (localVideo) {
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:self.textMessage];
+			} else {
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:self.textMessage];
+			}
+		});
 	} else {
 		[self onDelete];
 		double delayInSeconds = 0.4;
@@ -403,6 +409,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
+		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:chat];
         
         CGSize textSize = CGSizeMake(0, 0);
         if (![messageText isEqualToString:@"🗻"]) {
@@ -416,10 +423,12 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 		if (localFile) {
 			UIImage *image = nil;
 			NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
-			NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localFile];
+			if (!filePath) {
+				filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localFile];
+			}
 			if ([type isEqualToString:@"video"]) {
 				if ([[NSFileManager defaultManager] fileExistsAtPath: filePath]) {
-					image = [self getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localFile]];
+					image = [self getImageFromVideoUrl:[NSURL fileURLWithPath:filePath]];
 				} else {
 					image = [self getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
 				}
@@ -442,15 +451,22 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 				return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
 			}
 
-			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localImage]]) {
-				NSData* data = [ChatConversationView getCacheFileData:localImage];
+			if (!filePath) {
+				if (localImage) {
+					filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localImage];
+				} else {
+					filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localVideo];
+				}
+			}
+			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+				NSData* data = [NSData dataWithContentsOfFile:filePath];
 				UIImage *image = [[UIImage alloc] initWithData:data];
 				if (!image) {
 					return [self ViewHeightForFile:width];
 				}
 				originalImageSize = image.size;
-			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localVideo]]) {
-				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:localVideo]];
+			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL URLWithString:filePath]];
 				if (!image) {
 					return [self ViewHeightForFile:width];
 				}

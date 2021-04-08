@@ -57,6 +57,15 @@
 	return self;
 }
 
+- (void)dealloc {
+	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
+	if (filePath) {
+		[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
+		[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
+	}
+}
+
+
 - (void)onDelete {
     [super onDelete];
 }
@@ -92,6 +101,7 @@
 	}
 
 	[super setChatMessageForCbs:amessage];
+	[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
@@ -161,6 +171,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
 	NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
 	NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 	assert(is_external || localImage || localVideo || localFile);
 
 	LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(self.message);
@@ -190,9 +201,17 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	
 	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
 
-
+	if (!filePath) {
+		char *cPath = linphone_content_get_plain_file_path(fileContent);
+		if (cPath) {
+			filePath = [NSString stringWithUTF8String:cPath];
+			ms_free(cPath);
+			[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
+		} else {
+			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+		}
+	}
 	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 		// already downloaded
 		if (!assetIsLoaded) {
@@ -201,7 +220,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 			if ([key isEqualToString:@"localimage"]) {
 				// we did not load the image yet, so start doing so
 				if (_messageImageView.image == nil) {
-					NSData* data = [NSData dataWithContentsOfFile:filePath];
+					NSData *data = [NSData dataWithContentsOfFile:filePath];
 					UIImage *image = [[UIImage alloc] initWithData:data];
 					if (image) {
 						[self loadImageAsset:nil image:image];
@@ -213,7 +232,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 				}
 			} else if ([key isEqualToString:@"localvideo"]) {
 				if (_messageImageView.image == nil) {
-					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:fileName]];
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL fileURLWithPath:filePath]];
 					if (image) {
 						[self loadImageAsset:nil image:image];
 						_imageGestureRecognizer.enabled = NO;
@@ -224,11 +243,11 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 				}
 			} else if ([key isEqualToString:@"localfile"]) {
 				if ([fileType isEqualToString:@"video"]) {
-					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[ChatConversationView getCacheFileUrl:fileName]];
+					UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL fileURLWithPath:filePath]];
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = NO;
 				} else if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"] || [fileName hasSuffix:@"jpg"] || [fileName hasSuffix:@"png"]) {
-					NSData *data = [ChatConversationView getCacheFileData:fileName];
+					NSData *data = [NSData dataWithContentsOfFile:filePath];
 					UIImage *image = [[UIImage alloc] initWithData:data];
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = YES;
@@ -390,14 +409,15 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 }
 
 - (IBAction)onPlayClick:(id)sender {
-	NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
-	NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-	if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localVideo]]) {
-		AVPlayer *player = [AVPlayer playerWithURL:[ChatConversationView getCacheFileUrl:localVideo]];
-		[self playVideoByPlayer:player];
-		return;
-	} else if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localFile]]) {
-		AVPlayer *player = [AVPlayer playerWithURL:[ChatConversationView getCacheFileUrl:localFile]];
+	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
+	if (!filePath) {
+		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
+		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+		filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:(localVideo?:localFile)];
+	}
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+		AVPlayer *player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
 		[self playVideoByPlayer:player];
 		return;
 	}
@@ -449,6 +469,11 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 
 - (IBAction)onFileClick:(id)sender {
     ChatConversationView *view = VIEW(ChatConversationView);
+	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
+	if (filePath) {
+		[view openFileWithURL:[NSURL URLWithString:filePath]];
+		return;
+	}
     NSString *name = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 	if([[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name]]) {
 		[view openFileWithURL:[ChatConversationView getCacheFileUrl:name]];
@@ -487,6 +512,14 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 		if (![_messageImageView isLoading]) {
 			ImageView *view = VIEW(ImageView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+			NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
+			if (filePath) {
+				NSData *data = [NSData dataWithContentsOfFile:filePath];
+				UIImage *image = [[UIImage alloc] initWithData:data];
+				[view setImage:image];
+				return;
+			}
+
 			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
 			NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 			NSString *imageName = NULL;
