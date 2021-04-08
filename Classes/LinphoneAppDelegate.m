@@ -74,7 +74,7 @@
 			// To avoid crash
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
-		[CoreManager.instance stopLinphoneCore];
+		[CallManager.instance stopLinphoneCore];
 	}
 }
 

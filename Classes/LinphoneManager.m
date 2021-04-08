@@ -586,10 +586,6 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 	NSDictionary *dict = [NSDictionary
 			      dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state",
 			      [NSString stringWithUTF8String:message ? message : ""], @"message", nil];
-
-	if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) == LinphoneGlobalOff) {
-		[CoreManager.instance stopIterateTimer];
-	}
 	// dispatch the notification asynchronously
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff)
@@ -1273,7 +1269,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 - (void)startLinphoneCore {
     linphone_core_start([LinphoneManager getLc]);
-	[CoreManager.instance startIterateTimer];
 }
 
 - (void)createLinphoneCore {
@@ -1325,7 +1320,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
-	[CoreManager.instance setCoreWithCore:theLinphoneCore];
 	[ConfigManager.instance setDbWithDb:_configDb];
 
 	linphone_core_start(theLinphoneCore);
@@ -1368,12 +1362,9 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	/*call iterate once immediately in order to initiate background connections with sip server or remote provisioning
 	 * grab, if any */
 	[self iterate];
-	// start scheduler
-	[CoreManager.instance startIterateTimer];
 }
 
 - (void)destroyLinphoneCore {
-	[CoreManager.instance stopIterateTimer];
 	// just in case
 	[self removeCTCallCenterCb];
 
