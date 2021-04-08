@@ -20,6 +20,7 @@ show_remote_provisioning_in_assistant=0
 debug_popup_email=linphone-iphone@belledonne-communications.com
 send_logs_include_linphonerc_and_chathistory=0
 #use_phone_number=0
+publish_presence=0
 backgroundmode_preference=1
 use_rls_presence=1
 use_callkit=1
