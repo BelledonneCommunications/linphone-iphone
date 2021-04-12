@@ -287,9 +287,9 @@
 		dispatch_async(dispatch_get_main_queue(), ^ {
 			LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(_message);
 			NSData *data = NULL;
-			char *cPath = linphone_content_get_plain_file_path(fileContent);
+			char *cPath =  [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] ? linphone_content_get_plain_file_path(fileContent) : NULL;
 			if (cPath) {
-				NSString *filePath = [NSString stringWithUTF8String:linphone_content_get_plain_file_path(fileContent)];
+				NSString *filePath = [NSString stringWithUTF8String:cPath];
 				data = [NSData dataWithContentsOfFile:filePath];
 				ms_free(cPath);
 				[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];

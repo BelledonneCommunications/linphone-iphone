@@ -203,7 +203,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 
 	if (!filePath) {
-		char *cPath = linphone_content_get_plain_file_path(fileContent);
+		char *cPath = [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] ? linphone_content_get_plain_file_path(fileContent) : NULL;
 		if (cPath) {
 			filePath = [NSString stringWithUTF8String:cPath];
 			ms_free(cPath);
