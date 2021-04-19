@@ -241,11 +241,11 @@
 	Contact* mContact = contact;
 	if (!_addressBookMap)
 		return;
-	
-	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(LC);
+
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 
 	for (NSString *phone in mContact.phones) {
-		char *normalizedPhone = cfg? linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String) : nil;
+		char *normalizedPhone = cfg? linphone_proxy_config_normalize_phone_number(cfg, phone.UTF8String) : nil;
 		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
 		if (phone != NULL)
 			[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
