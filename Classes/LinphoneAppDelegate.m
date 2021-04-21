@@ -168,18 +168,6 @@
 		return;
 
 	CallManager.instance.alreadyRegisteredForNotification = true;
-	self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-	self.voipRegistry.delegate = self;
-
-	// Initiate registration.
-	LOGI(@"[PushKit] Connecting for push notifications");
-	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-
-	int num = [LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0];
-	if (num > 3) {
-		LOGI(@"[PushKit] unexpected pushkit notifications received %d, please clean your sip account.", num);
-	}
-
     // Register for remote notifications.
     LOGI(@"[APNs] register for push notif");
     [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -548,45 +536,6 @@
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
 	[LinphoneManager.instance setRemoteNotificationToken:nil];
-}
-
-#pragma mark - PushKit Functions
-
-- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
-	LOGI(@"[PushKit] credentials updated with voip token: %@", credentials.token);
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[LinphoneManager.instance setPushKitToken:credentials.token];
-	});
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(NSString *)type {
-    LOGI(@"[PushKit] Token invalidated");
-    dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushKitToken:nil];});
-}
-
-- (void)processPush:(NSDictionary *)userInfo {
-	LOGI(@"[PushKit] Notification [%p] received with payload : %@", userInfo, userInfo.description);
-
-	// prevent app to crash if PushKit received for msg
-    if ([userInfo[@"aps"][@"loc-key"] isEqualToString:@"IM_MSG"]) {
-		LOGE(@"Received a legacy PushKit notification for a chat message");
-		[LinphoneManager.instance lpConfigSetInt:[LinphoneManager.instance lpConfigIntForKey:@"unexpected_pushkit" withDefault:0]+1 forKey:@"unexpected_pushkit"];
-        return;
-    }
-    [LinphoneManager.instance startLinphoneCore];
-
-	[self configureUINotification];
-	//to avoid IOS to suspend the app before being able to launch long running task
-	[self processRemoteNotification:userInfo];
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
-	[self processPush:payload.dictionaryPayload];
-	dispatch_async(dispatch_get_main_queue(), ^{completion();});
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
-	[self processPush:payload.dictionaryPayload];
 }
 
 #pragma mark - UNUserNotifications Framework

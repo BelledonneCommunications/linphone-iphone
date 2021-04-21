@@ -242,7 +242,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_pushDict = [[NSMutableDictionary alloc] init];
 		_database = NULL;
 		_conf = FALSE;
-		_canConfigurePushTokenForProxyConfigs = FALSE;
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
 		_linphoneManagerAddressBookMap = [[OrderedDictionary alloc] init];
 		pushCallIDs = [[NSMutableArray alloc] init];
@@ -447,6 +446,7 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 				pushEnabled = true;
 			}
 			linphone_proxy_config_set_push_notification_allowed(proxies->data, pushEnabled);
+			linphone_proxy_config_set_remote_push_notification_allowed(proxies->data, pushEnabled);
 			proxies = proxies->next;
 		}
 		[self lpConfigSetBool:TRUE forKey:@"push_notification_migration_done"];
@@ -473,11 +473,14 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 	if (s && s.boolValue) {
 		LOGI(@"Migrating push notification per account, enabling for ALL");
 		[self lpConfigSetBool:NO forKey:@"pushnotification_preference"];
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-		while (proxies) {
-			linphone_proxy_config_set_push_notification_allowed(proxies->data, true);
-			[self configurePushTokenForProxyConfig:proxies->data];
-			proxies = proxies->next;
+		const MSList *accountsList = linphone_core_get_account_list(LC);
+		while (accountsList) {
+			LinphoneAccount * account = accountsList->data;
+			LinphoneAccountParams * accountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			linphone_account_params_set_push_notification_allowed(accountParams, true);
+			linphone_account_params_set_remote_push_notification_allowed(accountParams, true);
+			linphone_account_set_params(account, accountParams);
+			accountsList = accountsList->next;
 		}
 	}
 }
@@ -619,17 +622,6 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 			 object:self
 			 userInfo:dict];
 		});
-}
-
-- (void)configuringStateChangedNotificationHandler:(NSNotification *)notif {
-	_wasRemoteProvisioned = ((LinphoneConfiguringState)[[[notif userInfo] valueForKey:@"state"] integerValue] ==
-				 LinphoneConfiguringSuccessful);
-	if (_wasRemoteProvisioned) {
-		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-		if (cfg) {
-			[self configurePushTokenForProxyConfig:cfg];
-		}
-	}
 }
 
 #pragma mark - Registration State Functions
@@ -1326,7 +1318,19 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
 	[ConfigManager.instance setDbWithDb:_configDb];
-
+	
+	
+	bool pushEnabled = [self lpConfigIntForKey:@"proxy" inSection:@"push_notification_allowed"];
+	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
+	while (accountsList) {
+		LinphoneAccount * account = accountsList->data;
+		LinphoneAccountParams * accountParams = linphone_account_params_clone(linphone_account_get_params(account));
+		linphone_account_params_set_push_notification_allowed(accountParams, pushEnabled);
+		linphone_account_params_set_remote_push_notification_allowed(accountParams, true);
+		linphone_account_set_params(account, accountParams);
+		accountsList = accountsList->next;
+	}
+	
 	linphone_core_start(theLinphoneCore);
 
 	// Let the core handle cbs
@@ -1357,10 +1361,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[NSNotificationCenter.defaultCenter addObserver:self
 	 selector:@selector(globalStateChangedNotificationHandler:)
 	 name:kLinphoneGlobalStateUpdate
-	 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-	 selector:@selector(configuringStateChangedNotificationHandler:)
-	 name:kLinphoneConfiguringStateUpdate
 	 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(inappReady:) name:kIAPReady object:nil];
 
@@ -1802,116 +1802,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 #pragma mark - Property Functions
-
-- (void)setPushKitToken:(NSData *)pushKitToken {
-	if (pushKitToken == _pushKitToken) {
-		return;
-	}
-	_pushKitToken = pushKitToken;
-
-    [self configurePushTokenForProxyConfigs];
-}
-
 - (void)setRemoteNotificationToken:(NSData *)remoteNotificationToken {
     if (remoteNotificationToken == _remoteNotificationToken) {
         return;
     }
     _remoteNotificationToken = remoteNotificationToken;
-
-    [self configurePushTokenForProxyConfigs];
-}
-
-- (void)configurePushTokenForProxyConfigs {
-    // we register only when the second token is set
-    if (_canConfigurePushTokenForProxyConfigs) {
-        @try {
-            const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-            while (proxies) {
-                [self configurePushTokenForProxyConfig:proxies->data];
-                proxies = proxies->next;
-            }
-        } @catch (NSException* e) {
-            LOGW(@"%s: linphone core not ready yet, ignoring push token", __FUNCTION__);
-        }
-    } else {
-        _canConfigurePushTokenForProxyConfigs = YES;
-    }
-
-}
-
-- (void)configurePushTokenForProxyConfig:(LinphoneProxyConfig *)proxyCfg {
-	linphone_proxy_config_edit(proxyCfg);
-
-	NSData *remoteTokenData = _remoteNotificationToken;
-    NSData *PKTokenData = _pushKitToken;
-	BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
-	if ((remoteTokenData != nil || PKTokenData != nil) && pushNotifEnabled) {
-
-        const unsigned char *remoteTokenBuffer = [remoteTokenData bytes];
-        NSMutableString *remoteTokenString = [NSMutableString stringWithCapacity:[remoteTokenData length] * 2];
-		for (int i = 0; i < [remoteTokenData length]; ++i) {
-			[remoteTokenString appendFormat:@"%02X", (unsigned int)remoteTokenBuffer[i]];
-		}
-
-        const unsigned char *PKTokenBuffer = [PKTokenData bytes];
-        NSMutableString *PKTokenString = [NSMutableString stringWithCapacity:[PKTokenData length] * 2];
-        for (int i = 0; i < [PKTokenData length]; ++i) {
-            [PKTokenString appendFormat:@"%02X", (unsigned int)PKTokenBuffer[i]];
-        }
-
-        NSString *token;
-        NSString *services;
-        if (remoteTokenString && PKTokenString) {
-            token = [NSString stringWithFormat:@"%@:remote&%@:voip", remoteTokenString, PKTokenString];
-            services = @"remote&voip";
-        } else if (remoteTokenString) {
-            token = [NSString stringWithFormat:@"%@:remote", remoteTokenString];
-            services = @"remote";
-        } else {
-            token = [NSString stringWithFormat:@"%@:voip", PKTokenString];
-            services = @"voip";
-        }
-
-		// NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
-		// NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
-		// NSLocalizedString(@"IM_FULLMSG", nil); // Fake for genstrings
-#ifdef DEBUG
-#define APPMODE_SUFFIX @".dev"
-#else
-#define APPMODE_SUFFIX @""
-#endif
-		NSString *ring =
-			([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
-			.lastPathComponent;
-
-		NSString *timeout;
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-			timeout = @";pn-timeout=0";
-		} else {
-			timeout = @"";
-		}
-
-		// dummy value, for later use
-		NSString *teamId = @"ABCD1234";
-
-        NSString *params = [NSString
-                    stringWithFormat:@"pn-provider=apns%@;pn-prid=%@;pn-param=%@.%@.%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-groupchat-str=GC_MSG;pn-"
-                    @"call-snd=%@;pn-msg-snd=msg.caf%@;pn-silent=1",
-                    APPMODE_SUFFIX, token, teamId, [[NSBundle mainBundle] bundleIdentifier], services, ring, timeout];
-
-		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
-		linphone_proxy_config_get_identity(proxyCfg), params);
-		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
-		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
-	} else {
-		LOGI(@"Proxy config %s NOT configured for push notifications", linphone_proxy_config_get_identity(proxyCfg));
-		// no push token:
-		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, NULL);
-		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
-	}
-
-	linphone_proxy_config_done(proxyCfg);
+	linphone_core_did_register_for_remote_push(LC, (__bridge void*)remoteNotificationToken);
 }
 
 #pragma mark - Misc Functions
