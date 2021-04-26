@@ -90,7 +90,7 @@ class ProviderDelegate: NSObject {
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
-		CallManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "") 
+		//CallManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "") 
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 				if CallManager.instance().endCallkit {
@@ -155,7 +155,7 @@ class ProviderDelegate: NSObject {
 // MARK: - CXProviderDelegate
 extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
-		action.fulfill()
+		
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 
@@ -170,6 +170,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			CallManager.instance().terminateCall(call: call.getCobject);
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call ended with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		}
+		action.fulfill()
 	}
 
 	func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
