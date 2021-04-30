@@ -38,8 +38,8 @@
 	[_backToCallButton update];
 	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	_addGroupChatButton.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	_addGroupChatButton.hidden = !(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)));
 	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
 
 	// For testing crashlytics

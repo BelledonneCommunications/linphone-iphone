@@ -29,8 +29,8 @@
 	UIView *currentView;
 	UIView *nextView;
 	NSMutableArray *historyViews;
-	LinphoneProxyConfig *new_config;
-	size_t number_of_configs_before;
+	LinphoneAccount *new_account;
+	size_t number_of_accounts_before;
 	BOOL mustRestoreView;
 	long phone_number_length;
 	BOOL acceptTerms;

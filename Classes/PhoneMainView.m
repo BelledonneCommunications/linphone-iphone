@@ -344,8 +344,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneGlobalState state = (LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue];
 	static BOOL already_shown = FALSE;
 	if (state == LinphoneGlobalOn && !already_shown && LinphoneManager.instance.wasRemoteProvisioned) {
-		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config(LC);
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"show_login_view" inSection:@"app"] && conf == NULL) {
+		LinphoneAccount *account = linphone_core_get_default_account(LC);
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"show_login_view" inSection:@"app"] && account == NULL) {
 			already_shown = TRUE;
 			AssistantView *view = VIEW(AssistantView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
@@ -487,8 +487,8 @@ static RootViewManager *rootViewManagerInstance = nil;
                 } else {
                   // always start to dialer when testing
                   // Change to default view
-                  const MSList *list = linphone_core_get_proxy_config_list(LC);
-                  if (list != NULL ||
+                  const MSList *accountList = linphone_core_get_account_list(LC);
+                  if (accountList != NULL ||
                       ([lm lpConfigBoolForKey:@"hide_assistant_preference"] ==
                        true) ||
                       lm.isTesting) {
@@ -702,9 +702,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 	NSString *lMessage;
 	NSString *lTitle;
 
-	// get default proxy
-	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(LC);
-	if (proxyCfg == nil) {
+	// get default account
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	if (account == nil) {
 		lMessage = NSLocalizedString(@"Please make sure your device is connected to the internet and double check your "
 									 @"SIP account configuration in the settings.",
 									 nil);
@@ -839,9 +839,9 @@ static RootViewManager *rootViewManagerInstance = nil;
     }
     
 	LinphoneAddress *local;
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	if (cfg) {
-		local = linphone_address_clone(linphone_proxy_config_get_contact(cfg));
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	if (account) {
+		local = linphone_address_clone(linphone_account_get_contact_address(account));
 	} else {
 		local = linphone_core_create_primary_contact_parsed(LC);
 	}
@@ -859,8 +859,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup{
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-    if (!(cfg && linphone_proxy_config_get_conference_factory_uri(cfg))
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+    if (!(account && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(account)))
         || ((bctbx_list_size(addresses) == 1) && !isGroup && ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] || !isEncrypted))) {
         // If there's no factory uri, create a basic chat room
         if (bctbx_list_size(addresses) != 1) {

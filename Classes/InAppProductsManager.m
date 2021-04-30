@@ -288,9 +288,9 @@
 
 - (NSString *)getPhoneNumber {
 	NSString *phoneNumber = @"";
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
-	if (config) {
-		const LinphoneAddress *identity = linphone_proxy_config_get_identity_address(config);
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (defaultAccount) {
+		const LinphoneAddress *identity = linphone_account_params_get_identity_address(linphone_account_get_params(defaultAccount));
 		if (identity) {
 			phoneNumber = [NSString stringWithUTF8String:linphone_address_get_username(identity)];
 		}
@@ -300,14 +300,14 @@
 
 - (NSString *)getPassword {
 	NSString *pass;
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	if (cfg &&
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (defaultAccount &&
 		strcmp([LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 													inSection:@"app"
 												  withDefault:@"sip.linphone.org"]
 				   .UTF8String,
-			   linphone_proxy_config_get_domain(cfg)) == 0) {
-		const LinphoneAuthInfo *info = linphone_proxy_config_find_auth_info(cfg);
+			   linphone_account_params_get_domain(linphone_account_get_params(defaultAccount))) == 0) {
+		const LinphoneAuthInfo *info = linphone_account_find_auth_info(defaultAccount);
 		const char *tmpPass;
 		if (linphone_auth_info_get_passwd(info)) {
 			tmpPass = linphone_auth_info_get_passwd(info);
