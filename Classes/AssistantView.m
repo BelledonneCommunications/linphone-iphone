@@ -111,8 +111,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if (!mustRestoreView) {
-		new_config = NULL;
-		number_of_configs_before = bctbx_list_size(linphone_core_get_proxy_config_list(LC));
+		new_account = NULL;
+		number_of_accounts_before = bctbx_list_size(linphone_core_get_account_list(LC));
 		[self resetTextFields];
 		[self changeView:_welcomeView back:FALSE animation:FALSE];
 	}
@@ -437,18 +437,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	// remove previous proxy config, if any
-	if (new_config != NULL) {
-		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(new_config);
-		linphone_core_remove_proxy_config(LC, new_config);
+	if (new_account != NULL) {
+		const LinphoneAuthInfo *auth = linphone_account_find_auth_info(new_account);
+		linphone_core_remove_account(LC, new_account);
 		if (auth) {
 			linphone_core_remove_auth_info(LC, auth);
 		}
 	}
-	new_config = linphone_account_creator_create_proxy_config(account_creator);
+	new_account = linphone_account_creator_create_quentin_account(account_creator);
 
-	if (new_config) {
-		[lm configurePushTokenForProxyConfig:new_config];
-		linphone_core_set_default_proxy_config(LC, new_config);
+	if (new_account) {
+		LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(new_account));
+		LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(newAccountParams);
+#ifdef DEBUG
+#define PROVIDER_NAME "apns.dev"
+#else
+#define PROVIDER_NAME "apns"
+#endif
+		linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
+		linphone_account_set_params(new_account, newAccountParams);
+		linphone_account_params_unref(newAccountParams);
+		
+		linphone_core_set_default_account(LC, new_account);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
@@ -612,8 +622,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)fillDefaultValues {
 	[self resetTextFields];
 
-	LinphoneProxyConfig *default_conf = linphone_core_create_proxy_config(LC);
-	const char *identity = linphone_proxy_config_get_identity(default_conf);
+	LinphoneAccountParams *default_account_params = linphone_core_create_account_params(LC);
+	LinphoneAccount *default_account = linphone_core_create_account(LC, default_account_params);
+	const char *identity = linphone_account_params_get_identity(linphone_account_get_params(default_account));
 	if (identity) {
 		LinphoneAddress *default_addr = linphone_core_interpret_url(LC, identity);
 		if (default_addr) {
@@ -630,7 +641,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self changeView:_remoteProvisioningLoginView back:FALSE animation:TRUE];
 
-	linphone_proxy_config_unref(default_conf);
+	linphone_account_params_unref(default_account_params);
 }
 
 - (void)resetTextFields {
@@ -854,15 +865,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdateEvent:(NSNotification *)notif {
 	NSString *message = [notif.userInfo objectForKey:@"message"];
 	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue]
-					forProxy:[[notif.userInfo objectForKeyedSubscript:@"cfg"] pointerValue]
+					forAccount:[[notif.userInfo objectForKeyedSubscript:@"account"] pointerValue]
 					 message:message];
 }
 
 - (void)registrationUpdate:(LinphoneRegistrationState)state
-				  forProxy:(LinphoneProxyConfig *)proxy
+				  forAccount:(LinphoneAccount *)account
 				   message:(NSString *)message {
 	// in assistant we only care about ourself
-	if (proxy != new_config) {
+	if (account != new_account) {
 		return;
 	}
 
@@ -920,7 +931,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			// we successfully loaded a remote provisioned config, go to dialer
 			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
 											  forKey:@"must_link_account_time"];
-			if (number_of_configs_before < bctbx_list_size(linphone_core_get_proxy_config_list(LC))) {
+			if (number_of_accounts_before < bctbx_list_size(linphone_core_get_account_list(LC))) {
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
 			}
@@ -1404,7 +1415,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		NSString *username = [self findTextField:ViewElement_Username].text;
 		NSString *displayName = [self findTextField:ViewElement_DisplayName].text;
 		NSString *pwd = [self findTextField:ViewElement_Password].text;
-		LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
+		LinphoneAccountParams *accountParams =  linphone_core_create_account_params(LC);
 		LinphoneAddress *addr = linphone_address_new(NULL);
 		LinphoneAddress *tmpAddr = linphone_address_new([NSString stringWithFormat:@"sip:%@",domain].UTF8String);
 		if (tmpAddr == nil) {
@@ -1418,26 +1429,23 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		if (displayName && ![displayName isEqualToString:@""]) {
 			linphone_address_set_display_name(addr, displayName.UTF8String);
 		}
-		linphone_proxy_config_set_identity_address(config, addr);
+		
+		linphone_account_params_set_identity_address(accountParams, addr);
 		// set transport
 		UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
 																	   inView:self.contentView
 																	   ofType:UISegmentedControl.class];
 		if (transports) {
 			NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
-			linphone_proxy_config_set_route(
-				config,
-				[NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
-					.UTF8String);
-			linphone_proxy_config_set_server_addr(
-				config,
-				[NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String]
-					.UTF8String);
+			LinphoneAddress *transportAddr = linphone_address_new([NSString stringWithFormat:@"sip:%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String].UTF8String);
+			linphone_account_params_set_routes_addresses(accountParams, bctbx_list_new(transportAddr));
+			linphone_account_params_set_server_addr(accountParams, [NSString stringWithFormat:@"%s;transport=%s", domain.UTF8String, type.lowercaseString.UTF8String].UTF8String);
+			
+			linphone_address_unref(transportAddr);
 		}
-
-		linphone_proxy_config_enable_publish(config, FALSE);
-		linphone_proxy_config_enable_register(config, TRUE);
-
+		linphone_account_params_set_publish_enabled(accountParams, FALSE);
+		linphone_account_params_set_register_enabled(accountParams, TRUE);
+		
 		LinphoneAuthInfo *info =
 			linphone_auth_info_new(linphone_address_get_username(addr), // username
 								   NULL,								// user id
@@ -1449,11 +1457,12 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		linphone_core_add_auth_info(LC, info);
 		linphone_address_unref(addr);
 		linphone_address_unref(tmpAddr);
-
-		if (config) {
-			[[LinphoneManager instance] configurePushTokenForProxyConfig:config];
-			if (linphone_core_add_proxy_config(LC, config) != -1) {
-				linphone_core_set_default_proxy_config(LC, config);
+		
+		LinphoneAccount *account = linphone_core_create_account(LC, accountParams);
+		linphone_account_params_unref(accountParams);
+		if (account) {
+			if (linphone_core_add_account(LC, account) != -1) {
+				linphone_core_set_default_account(LC, account);
 				// reload address book to prepend proxy config domain to contacts' phone number
 				// todo: STOP doing that!
 				[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
@@ -1477,7 +1486,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
 	ONNEWCLICKBUTTON(sender, 100, {
-		if (number_of_configs_before > 0) {
+		if (number_of_accounts_before > 0) {
 			// TODO remove ME when it is fixed in SDK.
 			linphone_core_set_provisioning_uri(LC, NULL);
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Provisioning Load error", nil)

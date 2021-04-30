@@ -72,8 +72,8 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                selector:@selector(viewUpdateEvent:)
                                                    name:kLinphoneChatCreateViewChange
                                                  object:nil];
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	_chiffreOptionView.hidden = !(cfg && linphone_proxy_config_get_conference_factory_uri(cfg));
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	_chiffreOptionView.hidden = !(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)));
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"]) {
 		self.linphoneButton.hidden = TRUE;
 		self.selectedButtonImage.hidden = TRUE;
