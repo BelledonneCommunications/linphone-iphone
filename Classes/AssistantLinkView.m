@@ -67,23 +67,24 @@
 	linphone_account_creator_cbs_set_activate_alias(linphone_account_creator_get_callbacks(account_creator),
 													assistant_activate_phone_number_link);
 
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	if (cfg &&
+	LinphoneAccount *acc = linphone_core_get_default_account(LC);
+	LinphoneAccountParams const *accParams = linphone_account_get_params(acc);
+	if (acc &&
 		strcmp([LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 													inSection:@"app"
 												  withDefault:@"sip.linphone.org"]
 				   .UTF8String,
-			   linphone_proxy_config_get_domain(cfg)) == 0) {
+			   linphone_account_params_get_domain(accParams)) == 0) {
 		linphone_account_creator_set_username(
-			account_creator, linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg)));
-		const LinphoneAuthInfo *info = linphone_proxy_config_find_auth_info(cfg);
+			account_creator, linphone_address_get_username(linphone_account_params_get_identity_address(accParams)));
+		const LinphoneAuthInfo *info = linphone_account_find_auth_info(acc);
 		if (info) {
 			if (linphone_auth_info_get_passwd(info))
 				linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(info));
 			else
 				linphone_account_creator_set_ha1(account_creator, linphone_auth_info_get_ha1(info));
 		}
-		linphone_account_creator_set_domain(account_creator, linphone_proxy_config_get_domain(cfg));
+		linphone_account_creator_set_domain(account_creator, linphone_account_params_get_domain(accParams));
 	} else {
 		LOGW(@"Default proxy is NOT a sip.linphone.org, aborting");
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
@@ -215,12 +216,13 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 	if (status == LinphoneAccountCreatorStatusAccountActivated) {
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
 		// save country code prefix if none is already entered
-		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-		if (linphone_proxy_config_get_dial_prefix(cfg) == NULL) {
+		LinphoneAccount *acc = linphone_core_get_default_account(LC);
+		LinphoneAccountParams const *accParams = linphone_account_get_params(acc);
+		if (linphone_account_params_get_international_prefix(accParams) == NULL) {
 			const char *prefix = thiz.countryCodeField.text.UTF8String;
-			linphone_proxy_config_edit(cfg);
-			linphone_proxy_config_set_dial_prefix(cfg, prefix[0] == '+' ? &prefix[1] : prefix);
-			linphone_proxy_config_done(cfg);
+			LinphoneAccountParams * newPrefixAccountParams = linphone_account_params_clone(accParams);
+			linphone_account_params_set_international_prefix(newPrefixAccountParams, prefix[0] == '+' ? &prefix[1] : prefix);
+			linphone_account_set_params(acc, newPrefixAccountParams);
 		}
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];

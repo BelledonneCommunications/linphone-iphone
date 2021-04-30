@@ -61,15 +61,15 @@
 }
 
 - (void)updateHeader {
-	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config(LC);
+	LinphoneAccount *default_account = linphone_core_get_default_account(LC);
 
-	if (default_proxy != NULL) {
-		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
+	if (default_account != NULL) {
+		const LinphoneAddress *addr = linphone_account_params_get_identity_address(linphone_account_get_params(default_account));
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		_addressLabel.text = addr? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : NSLocalizedString(@"No address", nil);
-		_presenceImage.image = [StatusBarView imageForState:linphone_proxy_config_get_state(default_proxy)];
+		_presenceImage.image = [StatusBarView imageForState:linphone_account_get_state(default_account)];
 	} else {
-		_nameLabel.text = linphone_core_get_proxy_config_list(LC) ? NSLocalizedString(@"No default account", nil) : NSLocalizedString(@"No account", nil);
+		_nameLabel.text = linphone_core_get_account_list(LC) ? NSLocalizedString(@"No default account", nil) : NSLocalizedString(@"No account", nil);
 		// display direct IP:port address so that we can be reached
 		LinphoneAddress *addr = linphone_core_get_primary_contact_parsed(LC);
 		if (addr) {

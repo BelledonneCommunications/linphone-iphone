@@ -140,13 +140,13 @@
 }
 
 - (void)transformAccountToKeys:(NSString *)username {
-	const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-	while (username && proxies &&
+	const MSList *accountList = linphone_core_get_account_list(LC);
+	while (username && accountList &&
 		   strcmp(username.UTF8String,
-				  linphone_address_get_username(linphone_proxy_config_get_identity_address(proxies->data))) != 0) {
-		proxies = proxies->next;
+				  linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(accountList->data)))) != 0) {
+		accountList = accountList->next;
 	}
-	LinphoneProxyConfig *proxy = NULL;
+	LinphoneAccount *account = NULL;
 
 	// default values
 	{
@@ -171,15 +171,16 @@
 		[self setCString:"" forKey:@"account_stun_preference"];
 	}
 
-	if (proxies) {
-		proxy = proxies->data;
+	if (accountList) {
+		account = accountList->data;
+		LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
 		// root section
 		{
-			BOOL pushEnabled = linphone_proxy_config_is_push_notification_allowed(proxy);
+			BOOL pushEnabled = linphone_account_params_get_push_notification_allowed(accountParams);
 			[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
 
-			const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
-			const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
+			const LinphoneAddress *identity_addr = linphone_account_params_get_identity_address(accountParams);
+			const char *server_addr = linphone_account_params_get_server_addr(accountParams);
 			LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
 			if (identity_addr && proxy_addr) {
 				int port = linphone_address_get_port(proxy_addr);
@@ -214,10 +215,10 @@
 				[self setCString:tname forKey:@"account_transport_preference"];
 			}
 
-			[self setBool:(linphone_proxy_config_get_route(proxy) != NULL) forKey:@"account_outbound_proxy_preference"];
-			[self setBool:linphone_proxy_config_avpf_enabled(proxy) forKey:@"account_avpf_preference"];
-			[self setBool:linphone_proxy_config_register_enabled(proxy) forKey:@"account_is_enabled_preference"];
-			[self setBool:(linphone_core_get_default_proxy_config(LC) == proxy)
+			[self setBool:(linphone_account_params_get_routes_addresses(accountParams) != NULL) forKey:@"account_outbound_proxy_preference"];
+			[self setBool:linphone_account_is_avpf_enabled(account) forKey:@"account_avpf_preference"];
+			[self setBool:linphone_account_params_get_register_enabled(accountParams) forKey:@"account_is_enabled_preference"];
+			[self setBool:(linphone_core_get_default_account(LC) == account)
 				   forKey:@"account_is_default_preference"];
 
 			const LinphoneAuthInfo *ai = linphone_core_find_auth_info(
@@ -230,13 +231,13 @@
 				[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
 			}
 
-			int idx = (int)bctbx_list_index(linphone_core_get_proxy_config_list(LC), proxy);
+			int idx = (int)bctbx_list_index(linphone_core_get_account_list(LC), account);
 			[self setInteger:idx forKey:@"current_proxy_config_preference"];
 
-			int expires = linphone_proxy_config_get_expires(proxy);
+			int expires = linphone_account_params_get_expires(accountParams);
 			[self setInteger:expires forKey:@"account_expire_preference"];
 
-			LinphoneNatPolicy *policy = linphone_proxy_config_get_nat_policy(proxy);
+			LinphoneNatPolicy *policy = linphone_account_params_get_nat_policy(accountParams);
 			if (policy) {
 				[self setBool:linphone_nat_policy_ice_enabled(policy) forKey:@"account_ice_preference"];
 				[self setCString:linphone_nat_policy_get_stun_server(policy) forKey:@"account_stun_preference"];
@@ -245,9 +246,9 @@
 
 		// call section
 		{
-			const char *dial_prefix = linphone_proxy_config_get_dial_prefix(proxy);
+			const char *dial_prefix = linphone_account_params_get_international_prefix(accountParams);
 			[self setCString:dial_prefix forKey:@"account_prefix_preference"];
-			BOOL dial_escape_plus = linphone_proxy_config_get_dial_escape_plus(proxy);
+			BOOL dial_escape_plus = linphone_account_params_get_dial_escape_plus_enabled(accountParams);
 			[self setBool:dial_escape_plus forKey:@"account_substitute_+_by_00_preference"];
 		}
 	}
@@ -258,12 +259,12 @@
 
 	// root section
 	{
-		const bctbx_list_t *accounts = linphone_core_get_proxy_config_list(LC);
+		const bctbx_list_t *accounts = linphone_core_get_account_list(LC);
 		size_t count = bctbx_list_size(accounts);
 		for (size_t i = 1; i <= count; i++, accounts = accounts->next) {
 			NSString *key = [NSString stringWithFormat:@"menu_account_%lu", i];
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)accounts->data;
-			[self setCString:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))
+			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			[self setCString:linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)))
 					  forKey:key];
 		}
 
@@ -456,7 +457,8 @@
 - (void)synchronizeAccounts {
 	LOGI(@"Account changed, synchronizing.");
 	LinphoneManager *lm = LinphoneManager.instance;
-	LinphoneProxyConfig *proxyCfg = NULL;
+	LinphoneAccount *account = NULL;
+	LinphoneAccountParams *newAccountParams = NULL;
 	NSString *error = nil;
 
 	int port_preference = [self integerForKey:@"port_preference"];
@@ -530,17 +532,18 @@
 			proxy = linphone_address_as_string_uri_only(proxy_addr);
 		}
 
-		proxyCfg = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+		account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
 									   [self integerForKey:@"current_proxy_config_preference"]);
+		
 		// if account was deleted, it is not present anymore
-		if (proxyCfg == NULL)
+		if (account == NULL)
 			goto bad_proxy;
 
 
 		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
 		linphone_address_set_username(linphoneAddress, username.UTF8String);
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"]) {
-			char *user = linphone_proxy_config_normalize_phone_number(proxyCfg, username.UTF8String);
+			char *user = linphone_account_normalize_phone_number(account, username.UTF8String);
 			if (user) {
 				linphone_address_set_username(linphoneAddress, user);
 				ms_free(user);
@@ -552,58 +555,60 @@
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
 
-		if (linphone_proxy_config_set_identity_address(proxyCfg, linphoneAddress) == -1) {
+		newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+		
+		if (linphone_account_params_set_identity_address(newAccountParams, linphoneAddress) == -1) {
 			error = NSLocalizedString(@"Invalid username or domain", nil);
 			goto bad_proxy;
 		}
 		// use proxy as route if outbound_proxy is enabled
 		route = isOutboundProxy ? proxy : NULL;
-		if (linphone_proxy_config_set_server_addr(proxyCfg, proxy) == -1) {
+		if (linphone_account_params_set_server_addr(newAccountParams, proxy) == -1) {
 			error = NSLocalizedString(@"Invalid proxy address", nil);
 			goto bad_proxy;
 		}
-		if (linphone_proxy_config_set_route(proxyCfg, route) == -1) {
+		if (linphone_account_params_set_routes_addresses(newAccountParams, bctbx_list_new((void*)route)) == -1) {
 			error = NSLocalizedString(@"Invalid route", nil);
 			goto bad_proxy;
 		}
 
-		LinphoneNatPolicy *policy = linphone_proxy_config_get_nat_policy(proxyCfg) ?: linphone_core_create_nat_policy(LC);
+		LinphoneNatPolicy *policy = linphone_account_params_get_nat_policy(newAccountParams) ?: linphone_core_create_nat_policy(LC);
 		linphone_nat_policy_enable_stun(policy, use_ice); // We always use STUN with ICE
 		linphone_nat_policy_enable_ice(policy, use_ice);
 		linphone_nat_policy_set_stun_server(policy, stun_preference.UTF8String);
-		linphone_proxy_config_set_nat_policy(proxyCfg, policy);
+		linphone_account_params_set_nat_policy(newAccountParams, policy);
 
 		if ([prefix length] > 0) {
-			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix UTF8String]);
+			linphone_account_params_set_international_prefix(newAccountParams, [prefix UTF8String]);
 		}
 
 		if ([self objectForKey:@"account_substitute_+_by_00_preference"]) {
 			bool substitute_plus_by_00 = [self boolForKey:@"account_substitute_+_by_00_preference"];
-			linphone_proxy_config_set_dial_escape_plus(proxyCfg, substitute_plus_by_00);
+			linphone_account_params_set_dial_escape_plus_enabled(newAccountParams, substitute_plus_by_00);
 		}
 
 		// use empty string "" instead of NULL to avoid being overwritten by default proxy config values
-		linphone_proxy_config_set_push_notification_allowed(proxyCfg, pushnotification);
-		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
+		linphone_account_params_set_push_notification_allowed(newAccountParams, pushnotification);
+		linphone_proxy_config_set_remote_push_notification_allowed(newAccountParams, pushnotification);
 
-		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
-		linphone_proxy_config_set_avpf_mode(proxyCfg, use_avpf);
-		linphone_proxy_config_set_expires(proxyCfg, expire);
+		linphone_account_params_set_register_enabled(newAccountParams, is_enabled);
+		linphone_account_params_set_avpf_mode(newAccountParams, use_avpf);
+		linphone_account_params_set_expires(newAccountParams, expire);
+		
+		linphone_account_set_params(account, newAccountParams);
 		if (is_default) {
-			linphone_core_set_default_proxy_config(LC, proxyCfg);
-		} else if (linphone_core_get_default_proxy_config(LC) == proxyCfg) {
-			linphone_core_set_default_proxy_config(LC, NULL);
+			linphone_core_set_default_account(LC, account);
+		} else if (linphone_core_get_default_account(LC) == account) {
+			linphone_core_set_default_account(LC, NULL);
 		}
 
-		LinphoneAuthInfo *proxyAi = (LinphoneAuthInfo *)linphone_proxy_config_find_auth_info(proxyCfg);
+		LinphoneAuthInfo *proxyAi = (LinphoneAuthInfo *)linphone_account_find_auth_info(account);
 		char *realm;
 		if (proxyAi) {
 			realm = ms_strdup(linphone_auth_info_get_realm(proxyAi));
 		} else {
 			realm = NULL;
 		}
-		// setup new proxycfg
-		linphone_proxy_config_done(proxyCfg);
 
 		// modify auth info only after finishing editting the proxy config, so that
 		// UNREGISTER succeed
@@ -620,12 +625,12 @@
 			LinphoneAuthInfo *info;
 			if (password) {
 				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, password, NULL,
-											  linphone_proxy_config_get_realm(proxyCfg),
-											  linphone_proxy_config_get_domain(proxyCfg));
+											  linphone_account_params_get_realm(newAccountParams),
+											  linphone_account_params_get_domain(newAccountParams));
 			} else {
 				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, NULL, ha1,
-											  realm ? realm : linphone_proxy_config_get_realm(proxyCfg),
-											  linphone_proxy_config_get_domain(proxyCfg));
+											  realm ? realm : linphone_account_params_get_realm(newAccountParams),
+											  linphone_account_params_get_domain(newAccountParams));
 			}
 
 			linphone_address_unref(from);
@@ -633,7 +638,7 @@
 			linphone_auth_info_destroy(info);
 			ms_free(realm);
 		}
-
+		
 	bad_proxy:
 		if (proxy)
 			ms_free(proxy);
@@ -642,7 +647,10 @@
 			
 		// in case of error, show an alert to the user
 		if (error != nil) {
-			linphone_proxy_config_done(proxyCfg);
+			if (newAccountParams != NULL) { // If we get here, then we're also sure that Account != NULL
+				
+				linphone_account_params_unref(newAccountParams);
+			}
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil)
 																			 message:error
 																	  preferredStyle:UIAlertControllerStyleAlert];
@@ -654,6 +662,7 @@
 			[errView addAction:defaultAction];
 			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		}
+		
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number
 	[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
@@ -896,17 +905,17 @@
 			NSString *rls_uri = [lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
 			LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
 			const char *rls_domain = linphone_address_get_domain(rls_addr);
-			const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-			if (!proxies) // Enable it if no proxy config for first launch of app
+			const MSList *accounts = linphone_core_get_account_list(LC);
+			if (!accounts) // Enable it if no proxy config for first launch of app
 				[self setInteger:1 forKey:@"use_rls_presence"];
 			else {
-				while (proxies) {
-					const char *proxy_domain = linphone_proxy_config_get_domain(proxies->data);
+				while (accounts) {
+					const char *proxy_domain = linphone_account_params_get_domain(linphone_account_get_params(accounts->data));
 					if (strcmp(rls_domain, proxy_domain) == 0) {
 						[self setInteger:1 forKey:@"use_rls_presence"];
 						break;
 					}
-					proxies = proxies->next;
+					accounts = accounts->next;
 				}
 			}
 			linphone_address_unref(rls_addr);
@@ -951,7 +960,7 @@
 }
 
 - (void)removeAccount {
-	LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+	LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
 													  [self integerForKey:@"current_proxy_config_preference"]);
 	
 	const MSList *lists = linphone_core_get_friends_lists(LC);
@@ -960,10 +969,10 @@
 		linphone_friend_list_update_subscriptions(lists->data);
 		lists = lists->next;
 	}
-	BOOL isDefault = (linphone_core_get_default_proxy_config(LC) == config);
+	BOOL isDefault = (linphone_core_get_default_account(LC) == account);
 
-	const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
-	linphone_core_remove_proxy_config(LC, config);
+	const LinphoneAuthInfo *ai = linphone_account_find_auth_info(account);
+	linphone_core_remove_account(LC, account);
 	if (ai) {
 		// Friend list unsubscription above is not instantanous, so give a bit of a time margin before finishing the removal of the auth info
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -974,8 +983,8 @@
 
 	if (isDefault) {
 		// if we removed the default proxy config, set another one instead
-		if (linphone_core_get_proxy_config_list(LC) != NULL) {
-			linphone_core_set_default_proxy_config(LC, (LinphoneProxyConfig *)(linphone_core_get_proxy_config_list(LC)->data));
+		if (linphone_core_get_account_list(LC) != NULL) {
+			linphone_core_set_default_account(LC, (LinphoneAccount *)(linphone_core_get_account_list(LC)->data));
 		}
 	}
 	[self transformLinphoneCoreToKeys];
