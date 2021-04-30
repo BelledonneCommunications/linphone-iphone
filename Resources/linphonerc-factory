@@ -27,6 +27,8 @@ use_callkit=1
 
 accept_early_media=0
 
+[proxy_default_values]
+remote_push_notification_allowed=1
 
 [sip]
 deliver_imdn=1

@@ -69,11 +69,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   object:nil];
 
 	// Update on show
-	const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	const MSList *list = linphone_core_get_account_list([LinphoneManager getLc]);
 	if (list != NULL) {
-		LinphoneProxyConfig *config = (LinphoneProxyConfig *)list->data;
-		if (config) {
-			[self registrationUpdate:linphone_proxy_config_get_state(config)];
+		LinphoneAccount *account = (LinphoneAccount *)list->data;
+		if (account) {
+			[self registrationUpdate:linphone_account_get_state(account)];
 		}
 	}
 

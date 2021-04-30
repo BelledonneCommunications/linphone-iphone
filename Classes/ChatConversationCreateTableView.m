@@ -106,15 +106,15 @@
 				continue;
 			}
 			
-			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-			if (cfg) {
-				const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
+			LinphoneAccount *account = linphone_core_get_default_account(LC);
+			if (account) {
+				const char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
 				if (!normalizedPhoneNumber) {
 					// get invalid phone number, continue
 					results = results->next;
 					continue;
 				}
-				addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
+				addr = linphone_account_normalize_sip_uri(account, normalizedPhoneNumber);
 				uri = linphone_address_as_string_uri_only(addr);
 				address = [NSString stringWithUTF8String:uri];
 			}
@@ -188,8 +188,8 @@
     if (!cell.userInteractionEnabled)
         return;
 	
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	if (!(cfg && linphone_proxy_config_get_conference_factory_uri(cfg)) || !_isGroupChat) {
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (!(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount))) || !_isGroupChat) {
 		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
         [PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView isEncrypted:_isEncrypted];
 		if (!addr) {
