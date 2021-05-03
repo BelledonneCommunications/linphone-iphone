@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2020 Belledonne Communications SARL.
  *
- * This file is part of linphone-iphone 
+ * This file is part of linphone-iphone
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,16 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol UIImageViewDeletableDelegate
 
-@required
+@interface UIChatContentView : UIImageView 
 
-- (void)deleteFileWithUuid:(NSUUID *)uuid;
+@property(strong, nonatomic) NSMutableArray<NSURL*> *fileUrls;
+@property(nonatomic) NSInteger position;
+@property(readonly, nonatomic) LinphoneContent *content;
+@property(readonly, nonatomic) LinphoneChatMessage *message;
+@property(nonatomic) UIButton *downloadButton;
+@property(nonatomic) NSString *filePath;
 
-@end
-
-@interface UIImageViewDeletable : UICollectionViewCell
-
-@property NSUUID *uuid;
-@property(nonatomic, strong) id<UIImageViewDeletableDelegate> deleteDelegate;
-@property (weak, nonatomic) IBOutlet UIImageView *image;
-
-- (IBAction)onDeletePressed;
+- (void)setContent:(LinphoneContent *)content message:(LinphoneChatMessage *)message;
 
 @end

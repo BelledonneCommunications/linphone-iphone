@@ -183,6 +183,10 @@
 #pragma mark - Property Functions
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
+	if (room) {
+		_vfsEnabled = [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] && (linphone_chat_room_get_capabilities(room) & LinphoneChatRoomCapabilitiesEncrypted);
+	}
+
 	_chatRoom = room;
 	[self reloadData];
 }
@@ -246,6 +250,12 @@ static const int BASIC_EVENT_LIST=15;
 	return eventList.count;
 }
 
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
+	if ([[cell reuseIdentifier] isEqualToString:@"UIChatBubblePhotoCell"]) {
+		[(UIChatBubbleTextCell *)cell clearEncryptedFiles];
+	}
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = nil;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
@@ -260,7 +270,7 @@ static const int BASIC_EVENT_LIST=15;
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
 
-		[cell setEvent:event];
+		[cell setEvent:event vfsEnabled:_vfsEnabled];
         if (chat) {
             cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
             cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];

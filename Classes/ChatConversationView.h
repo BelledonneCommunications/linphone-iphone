@@ -35,6 +35,7 @@
 
 #include "linphone/linphonecore.h"
 
+
 //Quicklook Preview Item
 @interface PreviewItem : NSObject <QLPreviewItem>
 @property(readonly, nonatomic) NSURL    *previewItemURL;
@@ -43,7 +44,7 @@
 
 //QuickLook Datasource for rending PDF docs
 @interface FileDataSource : NSObject <QLPreviewControllerDataSource>
-@property (strong, nonatomic) PreviewItem *item;
+@property NSMutableArray<NSURL*> *files;
 @end
 
 @interface ChatConversationView
@@ -81,14 +82,12 @@
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 @property (weak, nonatomic) IBOutlet UIButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
-//@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
-@property NSMutableArray <UIImage *> *imagesArray;
-@property NSMutableArray <NSString *> *assetIdsArray;
 @property NSMutableArray <NSNumber *> *qualitySettingsArray;
 @property (weak, nonatomic) IBOutlet UICollectionView *imagesCollectionView;
 @property (weak, nonatomic) IBOutlet UIView *imagesView;
 @property (weak, nonatomic) IBOutlet UIButton *encryptedButton;
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
+@property FileContext *fileContext;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (void)autoDownload:(LinphoneChatMessage *)message;
@@ -97,6 +96,8 @@
 + (void)writeFileInCache:(NSData *)data name:(NSString *)name;
 + (NSData *)getCacheFileData:(NSString *)name;
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType;
++(UIImage *)getBasicImage;
++(UIImage*)drawText:(NSString*)text image:(UIImage *)image textSize:(CGFloat)textSize;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
@@ -111,6 +112,7 @@
 - (IBAction)onEncryptedDevicesClick:(id)sender;
 - (void)update;
 - (void)openFileWithURL:(NSURL *)url;
+- (void)openFileWithURLs:(NSMutableArray<NSURL *>*)urls index:(NSInteger)currentIndex;
 - (void)clearMessageView;
 - (void)configureMessageField;
 

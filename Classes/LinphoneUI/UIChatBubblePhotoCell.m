@@ -53,29 +53,21 @@
         videoDefaultSize = CGSizeMake(320, 240);
         assetIsLoaded = FALSE;
 		self.contentView.userInteractionEnabled = NO;
+		_contentViews = [[NSMutableArray alloc] init];
 	}
 	return self;
 }
-
-- (void)dealloc {
-	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
-	if (filePath) {
-		[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
-		[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
-	}
-}
-
 
 - (void)onDelete {
     [super onDelete];
 }
 
 #pragma mark -
-- (void)setEvent:(LinphoneEventLog *)event {
+- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled {
 	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
 		return;
 
-	super.event = event;
+	[super setEvent:event vfsEnabled:enabled];
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
@@ -101,7 +93,6 @@
 	}
 
 	[super setChatMessageForCbs:amessage];
-	[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
@@ -116,8 +107,6 @@
         [self layoutSubviews];
     });
 }
-
-static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 
 - (void) loadAsset:(PHAsset *) asset {
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
@@ -165,6 +154,59 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 		return;
 	}
 	[super update];
+
+	const bctbx_list_t *contents = linphone_chat_message_get_contents(self.message);
+	BOOL multiParts = ((linphone_chat_message_get_text_content(self.message) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
+	if (multiParts) {
+		if (!assetIsLoaded) {
+			NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = NULL;
+			if (self.vfsEnabled) {
+				encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:self.message];
+				if (!encrptedFilePaths) {
+					encrptedFilePaths = [NSMutableDictionary dictionary];
+				}
+			}
+
+			_imageGestureRecognizer.enabled = NO;
+			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
+
+			const bctbx_list_t *it = contents;
+			int i;
+			for (it = contents, i=0; it != NULL; it=bctbx_list_next(it)){
+				LinphoneContent *content = (LinphoneContent *)it->data;
+				if (linphone_content_is_file_transfer(content) || linphone_content_is_file(content)){
+					UIChatContentView *contentView = [[UIChatContentView alloc] initWithFrame: CGRectMake(0,0,0,0)];
+					if(self.vfsEnabled && (linphone_chat_message_is_outgoing(self.message) || linphone_content_is_file(content))) {
+						// downloaded or ougoing message
+						NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
+						NSString *filePath = [encrptedFilePaths valueForKey:name];
+						if (filePath == NULL) {
+							char *cPath = linphone_content_get_plain_file_path(content);
+							if (cPath) {
+								NSString *filePath = [NSString stringWithUTF8String:cPath];
+								ms_free(cPath);
+								[encrptedFilePaths setValue:filePath forKey:name];
+							}
+						}
+						contentView.filePath = filePath;
+					}
+					[contentView setContent:content message:self.message];
+					contentView.position = i;
+					[_contentViews addObject:contentView];
+					i++;
+				}
+			}
+			if (self.vfsEnabled) {
+				[LinphoneManager setValueInMessageAppData:encrptedFilePaths forKey:@"encryptedfiles" inMessage:self.message];
+			}
+			assetIsLoaded = TRUE;
+			[self layoutSubviews];
+		}
+		return;
+	}
+
+
+
 	const char *url = linphone_chat_message_get_external_body_url(self.message);
 	BOOL is_external =
 		(url && (strstr(url, "http") == url)) || linphone_chat_message_get_file_transfer_information(self.message);
@@ -203,11 +245,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 
 	if (!filePath) {
-		char *cPath = [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] ? linphone_content_get_plain_file_path(fileContent) : NULL;
-		if (cPath) {
-			filePath = [NSString stringWithUTF8String:cPath];
-			ms_free(cPath);
-			[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
+		if (self.vfsEnabled) {
+			char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
+			if (cPath) {
+				filePath = [NSString stringWithUTF8String:cPath];
+				ms_free(cPath);
+				[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
+			}
 		} else {
 			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
 		}
@@ -638,20 +682,60 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     bubbleFrame.origin.x = origin_x;
 
     super.bubbleView.frame = bubbleFrame;
-    
-    // Resizing Image view
-    if (_finalImage.image) {
-        CGRect imgFrame = self.finalAssetView.frame;            
-        imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
-        imgFrame.origin.x = (self.innerView.frame.size.width - imgFrame.size.width-17)/2;
-        self.finalAssetView.frame = imgFrame;
-    }
+
+	if (_contentViews.count > 0) {
+		// Positioning contentViews
+		CGFloat imagesw=0;
+		CGFloat max_imagesh=0;
+		CGFloat max_imagesw=0;
+		CGFloat originy=0;
+		CGFloat originx=0;
+		CGFloat availableWidth = chatTableView.tableView.frame.size.width-CELL_IMAGE_X_MARGIN;
+
+		NSMutableArray<NSURL *> *fileUrls = [[NSMutableArray alloc] init];
+		for (UIChatContentView *contentView in _contentViews) {
+			if (contentView.filePath) {
+				[fileUrls addObject:[NSURL fileURLWithPath:contentView.filePath]];
+			}
+		}
+		for (UIChatContentView *contentView in _contentViews) {
+			UIImage *image = contentView.image;
+			CGSize sSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:image.size withWidth:IMAGE_DEFAULT_WIDTH];
+			imagesw += sSize.width;
+			if (imagesw > availableWidth) {
+				imagesw = sSize.width;
+				max_imagesw = MAX(max_imagesw, imagesw);
+				originy = max_imagesh+IMAGE_DEFAULT_MARGIN;
+				max_imagesh = sSize.height;
+				originx = sSize.width;
+			} else {
+				max_imagesw = MAX(max_imagesw, imagesw);
+				max_imagesh = MAX(max_imagesh, sSize.height);
+				originx += (sSize.width+IMAGE_DEFAULT_MARGIN);
+			}
+
+			[contentView setFrame:CGRectMake(originx-sSize.width, originy, sSize.width, sSize.height)];
+			contentView.fileUrls = fileUrls;
+			[_finalAssetView addSubview:contentView];
+		}
+		_finalImage.hidden = YES;
+	} else {
+		// Resizing Image view
+		if (_finalImage.image) {
+			CGRect imgFrame = self.finalAssetView.frame;
+			imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
+			imgFrame.origin.x = (self.innerView.frame.size.width - imgFrame.size.width-17)/2;
+			self.finalAssetView.frame = imgFrame;
+		}
+	}
 
     // Positioning text message
     const char *utf8Text = linphone_chat_message_get_text_content(self.message);
     
     CGRect textFrame = self.messageText.frame;
-    if (_finalImage.image)
+	if (_contentViews.count > 0)
+		textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height-10);
+    else if (_finalImage.image)
         textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
     else
         // When image hasn't be download

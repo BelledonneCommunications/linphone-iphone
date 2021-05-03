@@ -104,6 +104,7 @@
 		615A28422180C0870060F920 /* recording.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28412180C0820060F920 /* recording.png */; };
 		615A28442180C0900060F920 /* recording@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 615A28432180C08F0060F920 /* recording@2x.png */; };
 		617B4A60260A2B7800A87337 /* RecordingsListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 617B4A62260A2B7800A87337 /* RecordingsListView.xib */; };
+		617C242A263022690042FB4A /* UIChatContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 617C2429263022690042FB4A /* UIChatContentView.m */; };
 		6180D6FE21EE41A800AD9CB6 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */; };
 		61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AE364E20C00B370089D9D3 /* ShareViewController.m */; };
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
@@ -962,6 +963,8 @@
 		617B4A61260A2B7800A87337 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/RecordingsListView.xib; sourceTree = "<group>"; };
 		617B4A64260A2B8500A87337 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/RecordingsListView.strings; sourceTree = "<group>"; };
 		617B4A75260A3F5500A87337 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/RecordingsListView.strings; sourceTree = "<group>"; };
+		617C2428263022430042FB4A /* UIChatContentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatContentView.h; sourceTree = "<group>"; };
+		617C2429263022690042FB4A /* UIChatContentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatContentView.m; sourceTree = "<group>"; };
 		6180D6FD21EE41A800AD9CB6 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		6187B1B524B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AboutView.strings; sourceTree = "<group>"; };
 		6187B1B624B3271500D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/AssistantLinkView.strings; sourceTree = "<group>"; };
@@ -2178,6 +2181,8 @@
 				D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleTextCell.h */,
 				D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */,
 				639E9CA51C0DB7EA00019A75 /* UIChatBubbleTextCell.xib */,
+				617C2428263022430042FB4A /* UIChatContentView.h */,
+				617C2429263022690042FB4A /* UIChatContentView.m */,
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
@@ -4207,6 +4212,7 @@
 				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
 				6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,
+				617C242A263022690042FB4A /* UIChatContentView.m in Sources */,
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
 				61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */,
 				D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */,
