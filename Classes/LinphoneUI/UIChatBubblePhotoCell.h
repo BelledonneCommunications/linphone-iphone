@@ -24,6 +24,7 @@
 #import "FileTransferDelegate.h"
 #import "ChatConversationTableView.h"
 #import "UIChatBubbleTextCell.h"
+#import "UIChatContentView.h"
 
 @interface UIChatBubblePhotoCell : UIChatBubbleTextCell
 
@@ -41,8 +42,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *fileButton;
 @property (weak, nonatomic) IBOutlet UIView *fileView;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
+@property(strong, nonatomic) NSMutableArray<UIChatContentView *> *contentViews;
 
-- (void)setEvent:(LinphoneEventLog *)event;
+
+- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 - (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
 - (IBAction)onDownloadClick:(id)event;

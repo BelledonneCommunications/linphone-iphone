@@ -25,10 +25,22 @@
 
 #import "UICheckBoxTableView.h"
 
+@interface FileContext : NSObject
+@property NSMutableArray <NSString *> *typesArray;
+@property NSMutableArray <NSData *> *datasArray;
+@property NSMutableArray <UIImage *> *previewsArray;
+@property NSMutableArray <NSString *> *namesArray;
+@property NSMutableArray <NSUUID *> *uuidsArray;
+
+- (void)clear;
+- (NSUInteger)count;
+- (void)addObject:(NSData *)data name:(NSString *)name type:(NSString *)type;
+@end
+
 @protocol ChatConversationDelegate <NSObject>
 
+- (BOOL)resendMultiFiles:(FileContext *)newFileContext message:(NSString *)message;
 - (BOOL)resendFile:(NSData *)data withName:(NSString *)name type:(NSString *)type key:(NSString *)key message:(NSString *)message;
-- (BOOL)startImageUpload:(UIImage *)image withQuality:(float)quality andMessage:(NSString *)message;
 - (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name;
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url;
 - (void)tableViewIsScrolling;
@@ -45,6 +57,7 @@
 @property(nonatomic) NSInteger currentIndex;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property NSMutableDictionary<NSString *, UIImage *> *imagesInChatroom;
+@property(nonatomic) BOOL vfsEnabled;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;

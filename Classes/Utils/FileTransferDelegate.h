@@ -20,9 +20,11 @@
 #import <Foundation/Foundation.h>
 
 #import "LinphoneManager.h"
+#import "ChatConversationView.h"
 
 @interface FileTransferDelegate : NSObject
 
+- (void)uploadFileContent: (FileContext *)context forChatRoom:(LinphoneChatRoom *)chatRoom;
 - (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key;
 - (void)uploadImage:(UIImage *)image forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality;
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name;
