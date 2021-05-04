@@ -785,6 +785,9 @@
 		if (vfsEnabled) {
 			[lm lpConfigSetBool:TRUE forKey:@"vfs_enabled_preference"];
 			[self setBool:TRUE forKey:@"vfs_enabled_mode"];
+			if (!VFSUtil.activateVFS) {
+				[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
+			}
 		}
 		[lm lpConfigSetBool:[self boolForKey:@"auto_write_to_gallery_mode"] forKey:@"auto_write_to_gallery_preference"];
 
