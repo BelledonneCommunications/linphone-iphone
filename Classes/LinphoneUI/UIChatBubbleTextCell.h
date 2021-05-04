@@ -45,14 +45,16 @@
 @property(nonatomic) Boolean isFirst;
 @property(nonatomic) Boolean isLast;
 @property(nonatomic) Boolean notDelivered;
+@property(nonatomic) BOOL vfsEnabled;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 + (UIImage *)getImageFromVideoUrl:(NSURL *)url;
 
-- (void)setEvent:(LinphoneEventLog *)event;
+- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled;
 - (void)setChatMessageForCbs:(LinphoneChatMessage *)message;
+- (void)clearEncryptedFiles;
 
 - (void)onDelete;
 - (void)onResend;

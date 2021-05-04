@@ -62,17 +62,30 @@
 }
 
 - (void)dealloc {
-	[self setEvent:NULL];
+	[self setEvent:NULL vfsEnabled:_vfsEnabled];
 	[self setChatMessageForCbs:NULL];
 }
 
 #pragma mark -
 
-- (void)setEvent:(LinphoneEventLog *)event {
+- (void)clearEncryptedFiles {
+	if (_vfsEnabled) {
+		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:_message];
+		if (filePath) {
+			if (![filePath isEqualToString:@""])
+				[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
+			[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:_message];
+		}
+	}
+}
+
+
+- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled {
 	if(!event)
 		return;
 
 	_event = event;
+	_vfsEnabled = enabled;
 	if (!(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage)) {
 		LOGE(@"Impossible to create a ChatBubbleText whit a non message event");
 		return;
@@ -278,6 +291,7 @@
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
 		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
+		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 		
 		/*FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:_message];
 		if (thiz) {
@@ -285,22 +299,18 @@
 		}*/
 		[self onDelete];
 		dispatch_async(dispatch_get_main_queue(), ^ {
-			LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(_message);
 			NSData *data = NULL;
-			char *cPath =  [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] ? linphone_content_get_plain_file_path(fileContent) : NULL;
-			if (cPath) {
-				NSString *filePath = [NSString stringWithUTF8String:cPath];
+			if (filePath) {
 				data = [NSData dataWithContentsOfFile:filePath];
-				ms_free(cPath);
-				[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
 			}
-
+			const char *text = linphone_chat_message_get_text_content(_message);
+			NSString *str = text ? [NSString stringWithUTF8String:text] : NULL;
 			if (localImage) {
-				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getCacheFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:self.textMessage];
+				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getCacheFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str];
 			} else if (localVideo) {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:self.textMessage];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str];
 			} else {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:self.textMessage];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str];
 			}
 		});
 	} else {

@@ -57,25 +57,16 @@
 	return self;
 }
 
-- (void)dealloc {
-	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
-	if (filePath) {
-		[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
-		[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
-	}
-}
-
-
 - (void)onDelete {
     [super onDelete];
 }
 
 #pragma mark -
-- (void)setEvent:(LinphoneEventLog *)event {
+- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled {
 	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
 		return;
 
-	super.event = event;
+	[super setEvent:event vfsEnabled:enabled];
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
@@ -101,7 +92,6 @@
 	}
 
 	[super setChatMessageForCbs:amessage];
-	[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
@@ -203,7 +193,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 
 	if (!filePath) {
-		char *cPath = [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] ? linphone_content_get_plain_file_path(fileContent) : NULL;
+		char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
 		if (cPath) {
 			filePath = [NSString stringWithUTF8String:cPath];
 			ms_free(cPath);
