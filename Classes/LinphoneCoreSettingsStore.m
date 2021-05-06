@@ -548,7 +548,6 @@
 		}
 		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 		linphone_address_set_display_name(linphoneAddress, (displayName.length ? displayName.UTF8String : NULL));
-		const char *identity = linphone_address_as_string(linphoneAddress);
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
 
@@ -613,8 +612,10 @@
 		if (strcmp(password,"") == 0) {
 			password = NULL;
 		}
-		
+
+		char *identity = linphone_address_as_string(linphoneAddress);
 		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
+		ms_free(identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
 			LinphoneAuthInfo *info;

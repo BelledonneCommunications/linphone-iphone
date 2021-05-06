@@ -90,8 +90,9 @@
 				if (cfg) {
 					const char *normvalue = linphone_proxy_config_normalize_phone_number(cfg, phone.UTF8String);
 					LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, normvalue);
-					const char *phone_addr = linphone_address_as_string_uri_only(addr);
+					char *phone_addr = linphone_address_as_string_uri_only(addr);
 					contact = [FastAddressBook getContact:[NSString stringWithUTF8String:phone_addr]];
+					ms_free(phone_addr);
 				} else {
 					contact = [FastAddressBook getContact:phone];
 				}
@@ -602,10 +603,13 @@
 		if (displayName == nil) return;
 
 		const LinphonePresenceModel *m = [[k.userInfo valueForKey:@"presence_model"] pointerValue];
-		if (!linphone_presence_model_get_contact(m)) {
+		char *str = linphone_presence_model_get_contact(m);
+		if (str == nil) {
 			return;
 		}
-		NSString *contact = [NSString stringWithUTF8String:linphone_presence_model_get_contact(m)];
+
+		NSString *contact = [NSString stringWithUTF8String:str];
+		ms_free(str);
 		NSString *sipAddr = [FastAddressBook normalizeSipURI:contact];
 
 		if (sipAddr != nil && [displayNames objectForKey:sipAddr] == nil) {

@@ -472,9 +472,10 @@
     	const LinphonePresenceModel *m = f
 			? linphone_friend_get_presence_model_for_uri_or_tel(f, value.UTF8String)
 			: NULL;
-    	const char *contact = m ? linphone_presence_model_get_contact(m) : NULL;
+    	char *contact = m ? linphone_presence_model_get_contact(m) : NULL;
     	if (contact) {
       		LinphoneAddress *contact_addr = linphone_address_new(contact);
+			ms_free(contact);
       		if (contact_addr) {
 				linphone_address_unref(addr);
         		return contact_addr;
@@ -617,17 +618,19 @@
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr withAddressLabel:(UILabel*)addressLabel{
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
 	NSString *tmpAddress = nil;
+	char *uri = linphone_address_as_string_uri_only(addr);
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
-		tmpAddress = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+		tmpAddress = [NSString stringWithUTF8String:uri];
 		addressLabel.hidden = FALSE;
 	} else {
 		label.text = [FastAddressBook displayNameForAddress:addr];
 		if([LinphoneManager.instance lpConfigBoolForKey:@"display_phone_only" inSection:@"app"])
 			addressLabel.hidden = TRUE;
 		else
-			tmpAddress = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+			tmpAddress = [NSString stringWithUTF8String:uri];
 	}
+	ms_free(uri);
 	NSRange range = [tmpAddress rangeOfString:@";"];
 	if (range.location != NSNotFound) {
 		tmpAddress = [tmpAddress substringToIndex:range.location];

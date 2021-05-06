@@ -766,12 +766,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 	while (participants) {
 		LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
-		NSString *uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_get_address(participant))];
+		char *curi = linphone_address_as_string_uri_only(linphone_participant_get_address(participant));
+		NSString *uri = [NSString stringWithUTF8String:curi];
 		[contactsArray addObject:uri];
 
 		if(linphone_participant_is_admin(participant))
 		   [admins addObject:uri];
 		participants = participants->next;
+		ms_free(curi);
 	}
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.create = FALSE;

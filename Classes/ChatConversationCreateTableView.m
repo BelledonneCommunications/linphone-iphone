@@ -174,7 +174,9 @@
     BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
     cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
-	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
+	char *str = linphone_address_as_string(addr);
+	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:str] : phoneOrAddr;
+	ms_free(str);
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
     [cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 	cell.contentView.userInteractionEnabled = false;

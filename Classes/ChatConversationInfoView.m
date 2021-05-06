@@ -362,7 +362,9 @@ void chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *eve
 
 void chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
-	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
+	char *str = linphone_address_as_string(linphone_event_log_get_participant_address(event_log));
+	NSString *participantAddress = [NSString stringWithUTF8String:str];
+	ms_free(str);
 	[view.oldContacts addObject:participantAddress];
 	[view.contacts addObject:participantAddress];
 	[view.tableView reloadData];
@@ -370,7 +372,9 @@ void chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *e
 
 void chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
-	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
+	char *str = linphone_address_as_string(linphone_event_log_get_participant_address(event_log));
+	NSString *participantAddress = [NSString stringWithUTF8String:str];
+	ms_free(str);
 	[view.oldContacts removeObject:participantAddress];
 	[view.contacts removeObject:participantAddress];
 	[view.tableView reloadData];
@@ -378,7 +382,9 @@ void chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 void chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
-	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
+	char *str = linphone_address_as_string(linphone_event_log_get_participant_address(event_log));
+	NSString *participantAddress = [NSString stringWithUTF8String:str];
+	ms_free(str);
 
 	LinphoneParticipant *me = linphone_chat_room_get_me(cr);
 	if (me && linphone_address_equal(linphone_participant_get_address(me), linphone_event_log_get_participant_address(event_log))) {
