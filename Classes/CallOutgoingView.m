@@ -127,20 +127,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[CallManager.instance enableSpeakerWithEnable:FALSE];
-	[LinphoneManager.instance setBluetoothEnabled:TRUE];
+	[CallManager.instance changeRouteToBluetooth];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[CallManager.instance enableSpeakerWithEnable:FALSE];
-	[LinphoneManager.instance setBluetoothEnabled:FALSE];
+	[CallManager.instance changeRouteToDefault];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[LinphoneManager.instance setBluetoothEnabled:FALSE];
-	[CallManager.instance enableSpeakerWithEnable:TRUE];
+	[CallManager.instance changeRouteToSpeaker];
 }
 
 - (IBAction)onRoutesClick:(id)sender {
