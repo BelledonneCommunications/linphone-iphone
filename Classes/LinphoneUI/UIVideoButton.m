@@ -58,7 +58,8 @@ INIT_WITH_COMMON_CF {
 
 	if (!linphone_core_video_display_enabled(LC))
 		return;
-	[CallManager.instance enableSpeakerWithEnable:FALSE];
+	[CallManager.instance changeRouteToDefault];
+	//[CallManager.instance enableSpeakerWithEnable:FALSE];
 	[self setEnabled:FALSE];
 	[waitView startAnimating];
 
