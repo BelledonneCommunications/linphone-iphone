@@ -1731,7 +1731,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
 	if (IPAD)
 		return;
-
+	
 	// there is at least one bug when you disconnect an audio bluetooth headset
 	// since we only get notification of route having changed, we cannot tell if that is due to:
 	// -bluetooth headset disconnected or
@@ -1760,7 +1760,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 userInfo:dict];
 	}
 }
-
+/*
 - (void)setBluetoothEnabled:(BOOL)enable {
 	if (_bluetoothAvailable) {
 		// The change of route will be done in enableSpeaker
@@ -1783,7 +1783,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	[CallManager.instance enableSpeakerWithEnable:CallManager.instance.speakerEnabled];
 }
-
+*/
 #pragma mark - Call Functions
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);

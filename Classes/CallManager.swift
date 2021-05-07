@@ -126,13 +126,13 @@ import AVFoundation
 		#endif
 		return false
 	}
-
+	/*
 	@objc func allowSpeaker() -> Bool {
 		if (UIDevice.current.userInterfaceIdiom == .pad) {
 			// For now, ipad support only speaker.
 			return true
 		}
-
+		return true
 		var allow = true
 		let newRoute = AVAudioSession.sharedInstance().currentRoute
 		if (newRoute.outputs.count > 0) {
@@ -142,7 +142,39 @@ import AVFoundation
 
 		return allow
 	}
-
+	*/
+	
+	@objc func changeRouteToSpeaker() {
+		speakerEnabled = true
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Speaker) {
+				lc!.outputAudioDevice = device
+				break
+			}
+		}
+		UIDevice.current.isProximityMonitoringEnabled = false
+		bluetoothEnabled = false
+	}
+	
+	@objc func changeRouteToBluetooth() {
+		bluetoothEnabled = true
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+				lc!.outputAudioDevice = device
+				break
+			}
+		}
+		speakerEnabled = false
+		UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
+	}
+	
+	@objc func changeRouteToDefault() {
+		bluetoothEnabled = false
+		speakerEnabled = false
+		lc!.outputAudioDevice = lc!.defaultOutputAudioDevice
+	}
+	/*
+	
 	@objc func enableSpeaker(enable: Bool) {
 		speakerEnabled = enable
 		do {
@@ -160,7 +192,7 @@ import AVFoundation
 			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to change audio route: err \(error)")
 		}
 	}
-
+*/
 	func requestTransaction(_ transaction: CXTransaction, action: String) {
 		callController.request(transaction) { error in
 			if let error = error {
@@ -510,7 +542,7 @@ import AVFoundation
 
 					if (CallManager.instance().speakerBeforePause) {
 						CallManager.instance().speakerBeforePause = false
-						CallManager.instance().enableSpeaker(enable: true)
+						CallManager.instance().changeRouteToSpeaker()
 						CallManager.speaker_already_enabled = true
 					}
 					break
@@ -539,7 +571,7 @@ import AVFoundation
 					UIDevice.current.isProximityMonitoringEnabled = false
 					CallManager.speaker_already_enabled = false
 					if (CallManager.instance().lc!.callsNb == 0) {
-						CallManager.instance().enableSpeaker(enable: false)
+						CallManager.instance().changeRouteToDefault()
 						// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
 						// furthermore it introduces a bug when calling multiple times since route may not be
 						// reconfigured between cause leading to bluetooth being disabled while it should not
@@ -605,7 +637,7 @@ import AVFoundation
 
 			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
 				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
-					CallManager.instance().enableSpeaker(enable: true)
+					CallManager.instance().changeRouteToSpeaker()
 					CallManager.speaker_already_enabled = true
 				}
 			}

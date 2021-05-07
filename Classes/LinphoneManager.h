@@ -190,7 +190,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)migrationPerAccount;
 
 - (void)setupGSMInteraction;
-- (void)setBluetoothEnabled:(BOOL)enable;
+//- (void)setBluetoothEnabled:(BOOL)enable;
 - (BOOL)isCTCallCenterExist;
 
 @property (readonly) BOOL isTesting;
