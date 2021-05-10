@@ -784,10 +784,17 @@
         [lm lpConfigSetString:[self stringForKey:@"auto_download_mode"] forKey:@"auto_download_mode"];
 		BOOL vfsEnabled = [self boolForKey:@"vfs_enabled_mode"] || [lm lpConfigBoolForKey:@"vfs_enabled_preference"];
 		if (vfsEnabled) {
-			[lm lpConfigSetBool:TRUE forKey:@"vfs_enabled_preference"];
-			[self setBool:TRUE forKey:@"vfs_enabled_mode"];
-			if (!VFSUtil.activateVFS) {
+			if (TARGET_IPHONE_SIMULATOR) {
+				LOGW(@"[VFS] Can not active for simulators.");
+				[lm lpConfigSetBool:FALSE forKey:@"vfs_enabled_preference"];
+				[self setBool:FALSE forKey:@"vfs_enabled_mode"];
+			} else if (!VFSUtil.activateVFS) {
 				[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
+				[lm lpConfigSetBool:FALSE forKey:@"vfs_enabled_preference"];
+				[self setBool:FALSE forKey:@"vfs_enabled_mode"];
+			} else {
+				[lm lpConfigSetBool:TRUE forKey:@"vfs_enabled_preference"];
+				[self setBool:TRUE forKey:@"vfs_enabled_mode"];
 			}
 		}
 		[lm lpConfigSetBool:[self boolForKey:@"auto_write_to_gallery_mode"] forKey:@"auto_write_to_gallery_preference"];
