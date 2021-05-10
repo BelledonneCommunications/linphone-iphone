@@ -39,8 +39,6 @@ import AVFoundation
 	let callController: CXCallController! // to support callkit
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
-	@objc var speakerEnabled : Bool = false
-	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
 	@objc var alreadyRegisteredForNotification: Bool = false
 	var referedFromCall: String?
@@ -126,26 +124,8 @@ import AVFoundation
 		#endif
 		return false
 	}
-	/*
-	@objc func allowSpeaker() -> Bool {
-		if (UIDevice.current.userInterfaceIdiom == .pad) {
-			// For now, ipad support only speaker.
-			return true
-		}
-		return true
-		var allow = true
-		let newRoute = AVAudioSession.sharedInstance().currentRoute
-		if (newRoute.outputs.count > 0) {
-			let route = newRoute.outputs[0].portType
-			allow = !( route == .lineOut || route == .headphones || (AudioHelper.bluetoothRoutes() as Array).contains(where: {($0 as! AVAudioSession.Port) == route}))
-		}
-
-		return allow
-	}
-	*/
 	
 	@objc func changeRouteToSpeaker() {
-		speakerEnabled = true
 		for device in lc!.audioDevices {
 			if (device.type == AudioDeviceType.Speaker) {
 				lc!.outputAudioDevice = device
@@ -153,46 +133,46 @@ import AVFoundation
 			}
 		}
 		UIDevice.current.isProximityMonitoringEnabled = false
-		bluetoothEnabled = false
 	}
 	
 	@objc func changeRouteToBluetooth() {
-		bluetoothEnabled = true
 		for device in lc!.audioDevices {
 			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
 				lc!.outputAudioDevice = device
 				break
 			}
 		}
-		speakerEnabled = false
 		UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
 	}
 	
 	@objc func changeRouteToDefault() {
-		bluetoothEnabled = false
-		speakerEnabled = false
 		lc!.outputAudioDevice = lc!.defaultOutputAudioDevice
 	}
-	/*
 	
-	@objc func enableSpeaker(enable: Bool) {
-		speakerEnabled = enable
-		do {
-			if (enable && allowSpeaker()) {
-				try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-				UIDevice.current.isProximityMonitoringEnabled = false
-				bluetoothEnabled = false
-			} else {
-				try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-				let buildinPort = AudioHelper.builtinAudioDevice()
-				try AVAudioSession.sharedInstance().setPreferredInput(buildinPort)
-				UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
+	@objc func isBluetoothAvailable() -> Bool {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+				let name = device.deviceName
+				return true;
 			}
-		} catch {
-			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to change audio route: err \(error)")
 		}
+		return false;
 	}
-*/
+	
+	@objc func isSpeakerEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return outputDevice.type == AudioDeviceType.Speaker
+		}
+		return false
+	}
+	
+	@objc func isBluetoothEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return (outputDevice.type == AudioDeviceType.Bluetooth || outputDevice.type == AudioDeviceType.BluetoothA2DP)
+		}
+		return false
+	}
+	
 	func requestTransaction(_ transaction: CXTransaction, action: String) {
 		callController.request(transaction) { error in
 			if let error = error {
@@ -575,7 +555,7 @@ import AVFoundation
 						// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
 						// furthermore it introduces a bug when calling multiple times since route may not be
 						// reconfigured between cause leading to bluetooth being disabled while it should not
-						CallManager.instance().bluetoothEnabled = false
+						//CallManager.instance().bluetoothEnabled = false
 					}
 
 					if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted)  {
@@ -636,7 +616,8 @@ import AVFoundation
 			}
 
 			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+			//	if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().isBluetoothEnabled()) {
 					CallManager.instance().changeRouteToSpeaker()
 					CallManager.speaker_already_enabled = true
 				}
