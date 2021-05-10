@@ -205,7 +205,7 @@ extension ProviderDelegate: CXProviderDelegate {
 				if (call!.params?.localConferenceMode ?? false) {
 					return
 				}
-				CallManager.instance().speakerBeforePause = CallManager.instance().speakerEnabled
+				CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
 				try call!.pause()
 			} else {
 				if (call?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {

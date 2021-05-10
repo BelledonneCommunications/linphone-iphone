@@ -1732,58 +1732,15 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (IPAD)
 		return;
 	
-	// there is at least one bug when you disconnect an audio bluetooth headset
-	// since we only get notification of route having changed, we cannot tell if that is due to:
-	// -bluetooth headset disconnected or
-	// -user wanted to use earpiece
-	// the only thing we can assume is that when we lost a device, it must be a bluetooth one (strong hypothesis though)
-	if ([[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] == AVAudioSessionRouteChangeReasonOldDeviceUnavailable)
-		_bluetoothAvailable = NO;
-
-	AVAudioSessionRouteDescription *newRoute = [AVAudioSession sharedInstance].currentRoute;
-
-	if (newRoute && newRoute.outputs.count > 0) {
-		NSString *route = newRoute.outputs[0].portType;
-		LOGI(@"Current audio route is [%s]", [route UTF8String]);
-		linphone_core_audio_route_changed(theLinphoneCore);
-
-		CallManager.instance.speakerEnabled = [route isEqualToString:AVAudioSessionPortBuiltInSpeaker];
-		if (([[AudioHelper bluetoothRoutes] containsObject:route]) && !CallManager.instance.speakerEnabled) {
-			_bluetoothAvailable = TRUE;
-			CallManager.instance.bluetoothEnabled = TRUE;
-		} else
-			CallManager.instance.bluetoothEnabled = FALSE;
-
-		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
-		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
-		 object:self
-		 userInfo:dict];
-	}
+	_bluetoothAvailable = [CallManager.instance isBluetoothAvailable];
+	
+	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
+	 object:self
+	 userInfo:dict];
+	
 }
-/*
-- (void)setBluetoothEnabled:(BOOL)enable {
-	if (_bluetoothAvailable) {
-		// The change of route will be done in enableSpeaker
-		CallManager.instance.bluetoothEnabled = enable;
-		if (CallManager.instance.bluetoothEnabled) {
-			NSError *err = nil;
-			AVAudioSessionPortDescription *_bluetoothPort = [AudioHelper bluetoothAudioDevice];
-			[[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&err];
-			// if setting bluetooth failed, it must be because the device is not available
-			// anymore (disconnected), so deactivate bluetooth.
-			if (err) {
-				CallManager.instance.bluetoothEnabled = FALSE;
-				LOGE(@"Failed to enable bluetooth: err %@", err.localizedDescription);
-				err = nil;
-			} else {
-				CallManager.instance.speakerEnabled = FALSE;
-				return;
-			}
-		}
-	}
-	[CallManager.instance enableSpeakerWithEnable:CallManager.instance.speakerEnabled];
-}
-*/
+
 #pragma mark - Call Functions
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
@@ -2108,7 +2065,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		if ([ct currentCalls] != nil) {
 			if (call) {
 				LOGI(@"Pausing SIP call because GSM call");
-				CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
+				CallManager.instance.speakerBeforePause = [CallManager.instance isSpeakerEnabled];
 				linphone_call_pause(call);
 				[self startCallPausedLongRunningTask];
 			} else if (linphone_core_is_in_conference(theLinphoneCore)) {
