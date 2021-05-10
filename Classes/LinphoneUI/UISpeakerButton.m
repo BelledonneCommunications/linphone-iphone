@@ -34,6 +34,15 @@ INIT_WITH_COMMON_CF {
 	return self;
 }
 
+- (void)onOn {
+	[CallManager.instance changeRouteToSpeaker];
+}
+
+- (void)onOff {
+	[CallManager.instance changeRouteToDefault];
+}
+
+
 - (void)dealloc {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
@@ -46,7 +55,7 @@ INIT_WITH_COMMON_CF {
 }
 
 - (bool)onUpdate {
-	return CallManager.instance.speakerEnabled;
+	return [CallManager.instance isSpeakerEnabled];
 }
 
 @end

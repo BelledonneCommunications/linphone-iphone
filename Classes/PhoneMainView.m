@@ -381,7 +381,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			if (![LinphoneManager.instance isCTCallCenterExist]) {
 				/*only register CT call center CB for connected call*/
 				[LinphoneManager.instance setupGSMInteraction];
-				[[UIDevice currentDevice] setProximityMonitoringEnabled:!(CallManager.instance.speakerEnabled || CallManager.instance.bluetoothEnabled)];
+				[[UIDevice currentDevice] setProximityMonitoringEnabled:!([CallManager.instance isSpeakerEnabled] ||  [CallManager.instance isBluetoothEnabled])];
 			}
 			break;
 		}

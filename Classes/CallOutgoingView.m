@@ -185,8 +185,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[_routesButton setOn];
 	}
 
-	_routesBluetoothButton.selected = CallManager.instance.bluetoothEnabled;
-	_routesSpeakerButton.selected = CallManager.instance.speakerEnabled;
+	_routesBluetoothButton.selected = [CallManager.instance isBluetoothEnabled];
+	_routesSpeakerButton.selected = [CallManager.instance isSpeakerEnabled];
 	_routesEarpieceButton.selected = !_routesBluetoothButton.selected && !_routesSpeakerButton.selected;
 
 	if (hidden != _routesView.hidden) {
