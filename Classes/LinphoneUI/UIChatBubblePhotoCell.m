@@ -268,48 +268,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 						if (_messageImageView.image == nil) {
 							[self loadFirstImage:localImage type:PHAssetMediaTypeImage];
 							_imageGestureRecognizer.enabled = YES;
-
-							dispatch_async(dispatch_get_main_queue(), ^ {
-								UIImage *image = [chatTableView.imagesInChatroom objectForKey:localImage];
-								NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
-								NSData *data = UIImageJPEGRepresentation(image, 1);
-								[ChatConversationView writeFileInCache:data name:name];
-								[LinphoneManager setValueInMessageAppData:name forKey:@"localimage" inMessage:self.message];
-							});
 						}
 					} else if (localVideo) {
 						if (_messageImageView.image == nil) {
 							[self loadFirstImage:localVideo type:PHAssetMediaTypeVideo];
 							_imageGestureRecognizer.enabled = NO;
-
-							dispatch_async(dispatch_get_main_queue(), ^ {
-								PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-								if (![assets firstObject])
-									return;
-								PHAsset *asset = [assets firstObject];
-								if (asset.mediaType != PHAssetMediaTypeVideo)
-									return;
-								PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-								options.version = PHImageRequestOptionsVersionCurrent;
-								options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-
-								[[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-									AVURLAsset *urlAsset = (AVURLAsset *)asset;
-									NSData *data = [NSData dataWithContentsOfURL:urlAsset.URL];
-									NSString *name = [NSString stringWithFormat:@"IMG-%f.MOV",  [NSDate timeIntervalSinceReferenceDate]];
-									[ChatConversationView writeFileInCache:data name:name];
-									[LinphoneManager setValueInMessageAppData:name forKey:@"localvideo" inMessage:self.message];
-										
-								}];
-							});
 						}
 					} else if (localFile) {
-						dispatch_async(dispatch_get_main_queue(), ^ {
-							NSURL *url = [VIEW(ChatConversationView) getICloudFileUrl:localFile];
-							NSData *data = [NSData dataWithContentsOfURL:url];
-							[ChatConversationView writeFileInCache:data name:localFile];
-						});
-
 						if ([fileType isEqualToString:@"video"]) {
 							UIImage* image = [UIChatBubbleTextCell getImageFromVideoUrl:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
 							[self loadImageAsset:nil image:image];
@@ -408,11 +373,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 		NSURL *url = [VIEW(ChatConversationView) getICloudFileUrl:localFile];
         AVPlayer *player = [AVPlayer playerWithURL:url];
         [self playVideoByPlayer:player];
-		dispatch_async(dispatch_get_main_queue(), ^ {
-				NSData *data = [NSData dataWithContentsOfURL:url];
-				[ChatConversationView writeFileInCache:data name:localFile];
-		});
-		
         return;
     }
     PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
