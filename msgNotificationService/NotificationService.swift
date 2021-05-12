@@ -182,6 +182,11 @@ class NotificationService: UNNotificationServiceExtension {
 
 	func createCore() {
 		NSLog("[msgNotificationService] create core")
+		
+		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
+			VFSUtil.oslog(log: "[VFS] Error unable to activate.", level: .error)
+		}
+		
 		let config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryConfigFilename: "")
 
 		if (NotificationService.log == nil) {

@@ -27,8 +27,12 @@ import os
 
 @objc class VFSUtil: NSObject {
 	
-	@objc static let keyName = Bundle.main.bundleIdentifier!+".vfskey"
-	@objc static let prefName = Bundle.main.bundleIdentifier!+".vfspref"
+	@objc static let keyChainSharingGroup = "org.linphone.phone" // Enable Keychain Sharing capabilities in app and all app extensions that need to activate VFS and set key chain group to be the bundle ID for all and here
+	@objc static let TEAM_ID = "Z2V957B3D6" // Apple TEAM ID
+	
+	@objc static let keyName = "\(keyChainSharingGroup).vfskey"
+	@objc static let prefName = "\(keyChainSharingGroup).vfspref"
+	@objc static let accessGroup = "\(TEAM_ID).\(keyChainSharingGroup)"
 	
 	@objc static func generateKey(requiresBiometry: Bool = false) throws {
 		
@@ -51,7 +55,8 @@ import os
 				kSecAttrIsPermanent as String       : true,
 				kSecAttrApplicationTag as String    : tag,
 				kSecAttrAccessControl as String     : access
-			]
+			],
+			kSecAttrAccessGroup as String : accessGroup
 		]
 		
 		var error: Unmanaged<CFError>?
@@ -66,7 +71,8 @@ import os
 			kSecClass as String                 : kSecClassKey,
 			kSecAttrApplicationTag as String    : tag,
 			kSecAttrKeyType as String           : kSecAttrKeyTypeEC,
-			kSecReturnRef as String             : true
+			kSecReturnRef as String             : true,
+			kSecAttrAccessGroup as String : accessGroup
 		]
 		
 		var item: CFTypeRef?
@@ -106,11 +112,16 @@ import os
 	
 	
 	@objc static func addSecuredPreference(key:String, value:String) -> Bool {
-		let delQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,kSecAttrAccount as String: key.data(using: .utf8)!]
+		let delQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+									   kSecAttrAccount as String: key.data(using: .utf8)!,
+									   kSecAttrAccessGroup as String : accessGroup]
 		SecItemDelete(delQuery as CFDictionary)
 
 		
-		let insertQUery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,kSecAttrAccount as String: key.data(using: .utf8)!,  kSecValueData as String:value.data(using: .utf8)!]
+		let insertQUery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+										  kSecAttrAccessGroup as String : accessGroup,
+										  kSecAttrAccount as String: key.data(using: .utf8)!,
+										  kSecValueData as String:value.data(using: .utf8)!]
 		let insertStatus = SecItemAdd(insertQUery as CFDictionary, nil)
 		return  insertStatus == errSecSuccess
 		
@@ -120,7 +131,8 @@ import os
 		let query: [String:Any] = [
 			kSecClass as String: kSecClassGenericPassword,
 			kSecAttrAccount as String: key.data(using: .utf8)!,
-			kSecReturnData as String: kCFBooleanTrue
+			kSecReturnData as String: kCFBooleanTrue,
+			kSecAttrAccessGroup as String : accessGroup
 		]
 		
 		var result: AnyObject?
@@ -167,6 +179,15 @@ import os
 		}
 	}
 	
+	@objc static func vfsEnabled(groupName: String) -> Bool {
+		let defaults = UserDefaults.init(suiteName: groupName)
+		return defaults?.bool(forKey: "vfs_enabled_preference") == true
+	}
+	
+	@objc static func setVfsEnabbled(enabled: Bool, groupName: String) {
+		let defaults = UserDefaults.init(suiteName: groupName)
+		defaults?.setValue(enabled, forKey: "vfs_enabled_preference")
+	}
 	
 	@objc static func oslog(log:String, level: OSLogType) {
 		if #available(iOS 10.0, *) {

@@ -184,7 +184,7 @@
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
 	if (room) {
-		_vfsEnabled = [[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"] && (linphone_chat_room_get_capabilities(room) & LinphoneChatRoomCapabilitiesEncrypted);
+		_vfsEnabled = [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && (linphone_chat_room_get_capabilities(room) & LinphoneChatRoomCapabilitiesEncrypted);
 	}
 
 	_chatRoom = room;

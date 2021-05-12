@@ -269,14 +269,14 @@
 	[FIRApp configure];
 #endif
 
-
-	if ([[LinphoneManager instance] lpConfigBoolForKey:@"vfs_enabled_preference"]) {
+	
+	if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 		if (TARGET_IPHONE_SIMULATOR) {
 			LOGW(@"[VFS] Can not active for simulators.");
-			[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"vfs_enabled_preference"];
+			[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 		} else if (!VFSUtil.activateVFS) {
 			[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
-			[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"vfs_enabled_preference"];
+			[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 		}
 	}
 

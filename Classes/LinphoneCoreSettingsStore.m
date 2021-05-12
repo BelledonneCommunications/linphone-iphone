@@ -339,7 +339,7 @@
         int maxSize = linphone_core_get_max_size_for_auto_download_incoming_files(LC);
         [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Nerver" : @"Customize") forKey:@"auto_download_mode"];
         [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];
-		[self setBool:[lm lpConfigBoolForKey:@"vfs_enabled_preference" withDefault:NO] forKey:@"vfs_enabled_mode"];
+		[self setBool:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] forKey:@"vfs_enabled_mode"];
 		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:YES] forKey:@"auto_write_to_gallery_mode"];
 	}
 
@@ -781,18 +781,18 @@
         }
         linphone_core_set_max_size_for_auto_download_incoming_files(LC, maxSize);
         [lm lpConfigSetString:[self stringForKey:@"auto_download_mode"] forKey:@"auto_download_mode"];
-		BOOL vfsEnabled = [self boolForKey:@"vfs_enabled_mode"] || [lm lpConfigBoolForKey:@"vfs_enabled_preference"];
+		BOOL vfsEnabled = [self boolForKey:@"vfs_enabled_mode"] || [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId];
 		if (vfsEnabled) {
 			if (TARGET_IPHONE_SIMULATOR) {
 				LOGW(@"[VFS] Can not active for simulators.");
-				[lm lpConfigSetBool:FALSE forKey:@"vfs_enabled_preference"];
+				[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 				[self setBool:FALSE forKey:@"vfs_enabled_mode"];
 			} else if (!VFSUtil.activateVFS) {
 				[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
-				[lm lpConfigSetBool:FALSE forKey:@"vfs_enabled_preference"];
+				[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 				[self setBool:FALSE forKey:@"vfs_enabled_mode"];
 			} else {
-				[lm lpConfigSetBool:TRUE forKey:@"vfs_enabled_preference"];
+				[VFSUtil setVfsEnabbledWithEnabled:true groupName:kLinphoneMsgNotificationAppGroupId];
 				[self setBool:TRUE forKey:@"vfs_enabled_mode"];
 			}
 		}
