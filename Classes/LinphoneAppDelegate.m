@@ -876,4 +876,16 @@
 	} else return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
+// This function is called when a Background Push notification is received
+- (void)application:(UIApplication *)application
+didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+	if ([userInfo objectForKey:@"customPayload"] != nil) {
+		NSDictionary *payload = [userInfo objectForKey:@"customPayload"];
+		if ([payload objectForKey:@"token"] != nil) {
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneValidationTokenReceivedUpdate object:self userInfo:payload];
+		}
+	}
+}
+
 @end

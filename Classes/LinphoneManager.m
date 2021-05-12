@@ -66,6 +66,7 @@ NSString *const kLinphoneLogsUpdate = @"LinphoneLogsUpdate";
 NSString *const kLinphoneSettingsUpdate = @"LinphoneSettingsUpdate";
 NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvailabilityUpdate";
 NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpdate";
+NSString *const kLinphoneValidationTokenReceivedUpdate = @"kLinphoneValidationTokenReceivedUpdate";
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 NSString *const kLinphoneNotifyReceived = @"LinphoneNotifyReceived";
 NSString *const kLinphoneNotifyPresenceReceivedForUriOrTel = @"LinphoneNotifyPresenceReceivedForUriOrTel";
