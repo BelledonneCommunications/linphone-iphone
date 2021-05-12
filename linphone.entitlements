@@ -26,5 +26,9 @@
 		<string>group.belledonne-communications.linphone.widget</string>
 		<string>group.org.linphone.phone.msgNotification</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)org.linphone.phone</string>
+	</array>
 </dict>
 </plist>

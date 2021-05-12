@@ -674,6 +674,8 @@
 		8CF25D9E1F9F76BD00BEA0C1 /* chat_group_informations@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */; };
 		93566413F75DA69D2811A716 /* Pods_msgNotificationService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F30EA7BEA39DA427CE0754E /* Pods_msgNotificationService.framework */; };
 		A634ABAFCB39B6AAE4CA991D /* Pods_linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CEDD144CABFAA70A29AF27 /* Pods_linphone.framework */; };
+		C666756F264C925800A0273C /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
+		C6667571264C925B00A0273C /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
 		C6DA657C261C950C0020CB43 /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
@@ -4322,6 +4324,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C666756F264C925800A0273C /* VFSUtil.swift in Sources */,
 				EA3650DB2330D2E30001148A /* NotificationService.swift in Sources */,
 				EAE6C88423FABF690076A018 /* Utils.swift in Sources */,
 			);
@@ -4331,6 +4334,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6667571264C925B00A0273C /* VFSUtil.swift in Sources */,
 				EA8CB82C239F96CA00C330CC /* NotificationViewController.swift in Sources */,
 				EAE6C88523FABF690076A018 /* Utils.swift in Sources */,
 			);
