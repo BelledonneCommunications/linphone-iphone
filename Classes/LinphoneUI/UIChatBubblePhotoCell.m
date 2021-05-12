@@ -92,6 +92,7 @@
 	}
 
 	[super setChatMessageForCbs:amessage];
+	[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
@@ -195,7 +196,11 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	if (!filePath) {
 		char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
 		if (cPath) {
-			filePath = [NSString stringWithUTF8String:cPath];
+			if (strcmp(cPath, "") != 0) {
+				NSString *tempPath = [NSString stringWithUTF8String:cPath];
+				filePath = [tempPath stringByDeletingPathExtension];
+				[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
+			}
 			ms_free(cPath);
 			[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
 		} else {
@@ -461,7 +466,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
     ChatConversationView *view = VIEW(ChatConversationView);
 	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 	if (filePath) {
-		[view openFileWithURL:[NSURL URLWithString:filePath]];
+		[view openFileWithURL:[NSURL fileURLWithPath:filePath]];
 		return;
 	}
     NSString *name = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
