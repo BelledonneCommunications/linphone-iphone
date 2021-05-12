@@ -29,6 +29,12 @@
 #import "UITextField+DoneButton.h"
 #import "LinphoneAppDelegate.h"
 
+#ifdef DEBUG
+#define PROVIDER_NAME "apns.dev"
+#else
+#define PROVIDER_NAME "apns"
+#endif
+
 typedef enum _ViewElement {
 	ViewElement_Username = 100,
 	ViewElement_Password = 101,
@@ -103,6 +109,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(configuringUpdate:)
 											   name:kLinphoneConfiguringStateUpdate
 											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(receivedValidationTokenByPush:)
+											   name:kLinphoneValidationTokenReceivedUpdate
+											 object:nil];
+
 	if (!account_creator) {
 		account_creator = linphone_account_creator_new(
 			LC,
@@ -179,19 +190,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 				.UTF8String);
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_is_account_exist(linphone_account_creator_get_callbacks(account_creator),
+	
+	LinphoneAccountCreatorCbs *callbacks = linphone_account_creator_get_callbacks(account_creator);
+	linphone_account_creator_cbs_set_is_account_exist(callbacks,
 													  assistant_is_account_used);
-	linphone_account_creator_cbs_set_create_account(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_create_account(callbacks,
 													assistant_create_account);
-	linphone_account_creator_cbs_set_activate_account(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_activate_account(callbacks,
 													assistant_activate_account);
-	linphone_account_creator_cbs_set_is_account_activated(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_is_account_activated(callbacks,
 													   assistant_is_account_activated);
-	linphone_account_creator_cbs_set_recover_account(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_recover_account(callbacks,
 													 assistant_recover_phone_account);
-	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
+	linphone_account_creator_cbs_set_is_account_linked(callbacks,
 													   assistant_is_account_linked);
-	linphone_account_creator_cbs_set_login_linphone_account(linphone_account_creator_get_callbacks(account_creator), assistant_login_linphone_account);
+	linphone_account_creator_cbs_set_login_linphone_account(callbacks, assistant_login_linphone_account);
+	
+	linphone_account_creator_add_callbacks(account_creator, callbacks);
 	
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
@@ -416,7 +431,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)configureProxyConfig {
+- (void)configureAccount {
 	LinphoneManager *lm = LinphoneManager.instance;
 
 	if (!linphone_core_is_network_reachable(LC)) {
@@ -512,11 +527,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (new_account) {
 		LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(new_account));
 		LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(newAccountParams);
-#ifdef DEBUG
-#define PROVIDER_NAME "apns.dev"
-#else
-#define PROVIDER_NAME "apns"
-#endif
 		linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
 		linphone_account_set_params(new_account, newAccountParams);
 		linphone_account_params_unref(newAccountParams);
@@ -1028,6 +1038,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			break;
 	}
 }
+- (void)receivedValidationTokenByPush:(NSNotification *)notif {
+	NSString *token = [notif.userInfo objectForKey:@"token"];
+	linphone_account_creator_set_token(account_creator, [token UTF8String]);
+	linphone_account_creator_create_account_with_token(account_creator);
+}
 
 - (void)showErrorPopup:(const char *)error {
 	const char *err = error ? error : "";
@@ -1129,10 +1144,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (currentView == _linphoneLoginView) {
 		if (status == LinphoneAccountCreatorStatusAccountExistWithAlias) {
 			_outgoingView = DialerView.compositeViewDescription;
-			[self configureProxyConfig];
+			[self configureAccount];
 		} else if (status == LinphoneAccountCreatorStatusAccountExist) {
 			_outgoingView = AssistantLinkView.compositeViewDescription;
-			[self configureProxyConfig];
+			[self configureAccount];
 		} else {
 			if (resp) {
 				if (linphone_account_creator_get_username(account_creator) &&
@@ -1157,10 +1172,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 		} else if (status == LinphoneAccountCreatorStatusAccountNotExist) {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
-			linphone_account_creator_create_account(account_creator);
+			
+			NSMutableString *pnParam =  [NSMutableString stringWithString:@"ABCD1234."];
+			[pnParam appendString:[NSBundle mainBundle].bundleIdentifier];
+			linphone_account_creator_set_pn_param(account_creator, [pnParam UTF8String]);
+			
+			NSData *deviceToken = [LinphoneManager.instance remoteNotificationToken];
+			const char *tokenData = [deviceToken bytes];
+			NSMutableString *pnPrid = [NSMutableString string];
+			for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+				[pnPrid appendFormat:@"%02.2hhX", tokenData[i]];
+			}
+			linphone_account_creator_set_pn_prid(account_creator, [pnPrid UTF8String]);
+			linphone_account_creator_set_pn_provider(account_creator, PROVIDER_NAME);
+			linphone_account_creator_send_token(account_creator);
 		} else {
 			[self showErrorPopup:resp];
-	
 		}
 	}
 }
@@ -1168,7 +1195,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void) isAccountActivated:(const char *)resp {
 	if (currentView != _createAccountView) {
 		if( linphone_account_creator_get_phone_number(account_creator) == NULL) {
-			[self configureProxyConfig];
+			[self configureAccount];
 			[PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
 		} else {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
@@ -1230,7 +1257,7 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorStatusAccountActivated) {
-		[thiz configureProxyConfig];
+		[thiz configureAccount];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else if (status == LinphoneAccountCreatorStatusAccountAlreadyActivated) {
 		// in case we are actually trying to link account, let's try it now
@@ -1245,7 +1272,7 @@ void assistant_login_linphone_account(LinphoneAccountCreator *creator, LinphoneA
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorStatusRequestOk) {
-		[thiz configureProxyConfig];
+		[thiz configureAccount];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else {
 		[thiz showErrorPopup:resp];
@@ -1543,7 +1570,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
         [LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
-        [self configureProxyConfig];
+        [self configureAccount];
     });
 }
 

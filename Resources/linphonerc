@@ -99,5 +99,5 @@ show_local=0
 size=vga
 
 [account_creator]
-backend=flexiapi
-url=https://subscribe.linphone.org/flexiapi/api/
+backend=1
+url=https://subscribe.linphone.org/api/
