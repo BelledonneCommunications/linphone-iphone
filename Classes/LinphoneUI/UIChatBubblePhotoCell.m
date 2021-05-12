@@ -93,6 +93,8 @@
 	}
 
 	[super setChatMessageForCbs:amessage];
+	[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:self.message];
+	[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfiles" inMessage:self.message];
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
@@ -183,7 +185,11 @@
 						if (filePath == NULL) {
 							char *cPath = linphone_content_get_plain_file_path(content);
 							if (cPath) {
-								NSString *filePath = [NSString stringWithUTF8String:cPath];
+								if (strcmp(cPath, "") != 0) {
+									NSString *tempPath = [NSString stringWithUTF8String:cPath];
+									filePath = [tempPath stringByDeletingPathExtension];
+									[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
+								}
 								ms_free(cPath);
 								[encrptedFilePaths setValue:filePath forKey:name];
 							}
@@ -245,13 +251,15 @@
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 
 	if (!filePath) {
-		if (self.vfsEnabled) {
-			char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
-			if (cPath) {
-				filePath = [NSString stringWithUTF8String:cPath];
-				ms_free(cPath);
-				[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
+		char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
+		if (cPath) {
+			if (strcmp(cPath, "") != 0) {
+				NSString *tempPath = [NSString stringWithUTF8String:cPath];
+				filePath = [tempPath stringByDeletingPathExtension];
+				[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
 			}
+			ms_free(cPath);
+			[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
 		} else {
 			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
 		}
@@ -475,7 +483,7 @@
     ChatConversationView *view = VIEW(ChatConversationView);
 	NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 	if (filePath) {
-		[view openFileWithURL:[NSURL URLWithString:filePath]];
+		[view openFileWithURL:[NSURL fileURLWithPath:filePath]];
 		return;
 	}
     NSString *name = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];

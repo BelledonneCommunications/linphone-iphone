@@ -582,7 +582,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				}
 				originalImageSize = image.size;
 			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL URLWithString:filePath]];
+				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL fileURLWithPath:filePath]];
 				if (!image) {
 					return [self ViewHeightForFile:width];
 				}
