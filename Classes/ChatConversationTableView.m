@@ -251,7 +251,7 @@ static const int BASIC_EVENT_LIST=15;
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-	if ([[cell reuseIdentifier] isEqualToString:@"UIChatBubblePhotoCell"]) {
+	if (!_chatRoom && [[cell reuseIdentifier] isEqualToString:@"UIChatBubblePhotoCell"]) {
 		[(UIChatBubbleTextCell *)cell clearEncryptedFiles];
 	}
 }
