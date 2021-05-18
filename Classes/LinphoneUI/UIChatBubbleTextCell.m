@@ -62,30 +62,34 @@
 }
 
 - (void)dealloc {
-	[self setEvent:NULL vfsEnabled:_vfsEnabled];
+	[self setEvent:NULL];
 	[self setChatMessageForCbs:NULL];
 }
 
 #pragma mark -
 
 - (void)clearEncryptedFiles {
-	if (_vfsEnabled) {
+	if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:_message];
 		if (filePath) {
-			if (![filePath isEqualToString:@""])
-				[[NSFileManager defaultManager] removeItemAtPath:filePath error:NULL];
+			if (![filePath isEqualToString:@""]) {
+				NSError *error = nil;
+				[[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+				if (error) {
+					LOGI(@"clean failed %@", error.description);
+				}
+			}
 			[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:_message];
 		}
 	}
 }
 
 
-- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled {
+- (void)setEvent:(LinphoneEventLog *)event {
 	if(!event)
 		return;
 
 	_event = event;
-	_vfsEnabled = enabled;
 	if (!(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage)) {
 		LOGE(@"Impossible to create a ChatBubbleText whit a non message event");
 		return;

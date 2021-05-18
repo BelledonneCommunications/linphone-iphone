@@ -42,7 +42,7 @@
 @property (weak, nonatomic) IBOutlet UIView *fileView;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
 
-- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled;
+- (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 - (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
 - (IBAction)onDownloadClick:(id)event;

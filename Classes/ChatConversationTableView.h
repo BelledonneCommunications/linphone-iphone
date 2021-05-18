@@ -45,7 +45,6 @@
 @property(nonatomic) NSInteger currentIndex;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property NSMutableDictionary<NSString *, UIImage *> *imagesInChatroom;
-@property(nonatomic) BOOL vfsEnabled;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;

@@ -62,11 +62,11 @@
 }
 
 #pragma mark -
-- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled {
+- (void)setEvent:(LinphoneEventLog *)event {
 	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
 		return;
 
-	[super setEvent:event vfsEnabled:enabled];
+	[super setEvent:event];
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
@@ -133,6 +133,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
         _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
         _imageGestureRecognizer.enabled = NO;
 		_plusLongGestureRecognizer.enabled = NO;
+		_playButton.hidden = YES;
     });
 }
 
@@ -194,11 +195,13 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 
 	if (!filePath) {
-		char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
+		char *cPath = [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] ? linphone_content_get_plain_file_path(fileContent) : NULL;
 		if (cPath) {
 			if (strcmp(cPath, "") != 0) {
 				NSString *tempPath = [NSString stringWithUTF8String:cPath];
-				filePath = [tempPath stringByDeletingPathExtension];
+				NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+				filePath = [paths objectAtIndex:0];
+				filePath = [filePath stringByAppendingPathComponent:fileName];
 				[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
 			}
 			ms_free(cPath);
@@ -255,7 +258,7 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 				// If the file has been downloaded in background, save it in the folders and display it.
 				[LinphoneManager setValueInMessageAppData:fileName forKey:key inMessage:self.message];
 				dispatch_async(dispatch_get_main_queue(), ^ {
-					if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+					if (![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
 						[ChatConversationView writeMediaToGallery:fileName fileType:fileType];
 					}
 				});
