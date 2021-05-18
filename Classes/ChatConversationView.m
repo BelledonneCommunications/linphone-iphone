@@ -1492,7 +1492,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-		if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+		if (![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
 			[ChatConversationView writeMediaToGallery:name fileType:fileType];
 		}
 	});

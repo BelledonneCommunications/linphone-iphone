@@ -57,7 +57,7 @@ static void file_transfer_progress_indication_recv(LinphoneChatMessage *message,
 										   forKey:key
 										inMessage:message];
 			dispatch_async(dispatch_get_main_queue(), ^{
-				if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+				if (![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
 					[ChatConversationView writeMediaToGallery:name fileType:fileType];
 				}
 			});

@@ -49,7 +49,6 @@
 @property(nonatomic) BOOL isFirst;
 @property(nonatomic) BOOL isLast;
 @property(nonatomic) BOOL notDelivered;
-@property(nonatomic) BOOL vfsEnabled;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText;
@@ -57,7 +56,7 @@
 + (UIImage *)getImageFromVideoUrl:(NSURL *)url;
 + (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath;
 
-- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled;
+- (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessageForCbs:(LinphoneChatMessage *)message;
 - (void)clearEncryptedFiles;
 

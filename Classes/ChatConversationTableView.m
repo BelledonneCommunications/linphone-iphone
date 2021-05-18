@@ -183,10 +183,6 @@
 #pragma mark - Property Functions
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
-	if (room) {
-		_vfsEnabled = [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && (linphone_chat_room_get_capabilities(room) & LinphoneChatRoomCapabilitiesEncrypted);
-	}
-
 	_chatRoom = room;
 	[self reloadData];
 }
@@ -270,7 +266,7 @@ static const int BASIC_EVENT_LIST=15;
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
 
-		[cell setEvent:event vfsEnabled:_vfsEnabled];
+		[cell setEvent:event];
         if (chat) {
             cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
             cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];

@@ -63,11 +63,11 @@
 }
 
 #pragma mark -
-- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled {
+- (void)setEvent:(LinphoneEventLog *)event {
 	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
 		return;
 
-	[super setEvent:event vfsEnabled:enabled];
+	[super setEvent:event];
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
@@ -133,6 +133,7 @@
         _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
         _imageGestureRecognizer.enabled = NO;
 		_plusLongGestureRecognizer.enabled = NO;
+		_playButton.hidden = YES;
     });
 }
 
@@ -162,7 +163,7 @@
 	if (multiParts) {
 		if (!assetIsLoaded) {
 			NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = NULL;
-			if (self.vfsEnabled) {
+			if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 				encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:self.message];
 				if (!encrptedFilePaths) {
 					encrptedFilePaths = [NSMutableDictionary dictionary];
@@ -178,7 +179,7 @@
 				LinphoneContent *content = (LinphoneContent *)it->data;
 				if (linphone_content_is_file_transfer(content) || linphone_content_is_file(content)){
 					UIChatContentView *contentView = [[UIChatContentView alloc] initWithFrame: CGRectMake(0,0,0,0)];
-					if(self.vfsEnabled && (linphone_chat_message_is_outgoing(self.message) || linphone_content_is_file(content))) {
+					if([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && (linphone_chat_message_is_outgoing(self.message) || linphone_content_is_file(content))) {
 						// downloaded or ougoing message
 						NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 						NSString *filePath = [encrptedFilePaths valueForKey:name];
@@ -187,7 +188,9 @@
 							if (cPath) {
 								if (strcmp(cPath, "") != 0) {
 									NSString *tempPath = [NSString stringWithUTF8String:cPath];
-									filePath = [tempPath stringByDeletingPathExtension];
+									NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+									filePath = [paths objectAtIndex:0];
+									filePath = [filePath stringByAppendingPathComponent:name];
 									[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
 								}
 								ms_free(cPath);
@@ -202,7 +205,7 @@
 					i++;
 				}
 			}
-			if (self.vfsEnabled) {
+			if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 				[LinphoneManager setValueInMessageAppData:encrptedFilePaths forKey:@"encryptedfiles" inMessage:self.message];
 			}
 			assetIsLoaded = TRUE;
@@ -251,11 +254,13 @@
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 
 	if (!filePath) {
-		char *cPath = self.vfsEnabled ? linphone_content_get_plain_file_path(fileContent) : NULL;
+		char *cPath = [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] ? linphone_content_get_plain_file_path(fileContent) : NULL;
 		if (cPath) {
 			if (strcmp(cPath, "") != 0) {
 				NSString *tempPath = [NSString stringWithUTF8String:cPath];
-				filePath = [tempPath stringByDeletingPathExtension];
+				NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+				filePath = [paths objectAtIndex:0];
+				filePath = [filePath stringByAppendingPathComponent:fileName];
 				[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
 			}
 			ms_free(cPath);
@@ -312,7 +317,7 @@
 				// If the file has been downloaded in background, save it in the folders and display it.
 				[LinphoneManager setValueInMessageAppData:fileName forKey:key inMessage:self.message];
 				dispatch_async(dispatch_get_main_queue(), ^ {
-					if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+					if (![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
 						[ChatConversationView writeMediaToGallery:fileName fileType:fileType];
 					}
 				});

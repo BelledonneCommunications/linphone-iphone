@@ -45,7 +45,7 @@
 @property(strong, nonatomic) NSMutableArray<UIChatContentView *> *contentViews;
 
 
-- (void)setEvent:(LinphoneEventLog *)event vfsEnabled:(BOOL)enabled;
+- (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 - (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
 - (IBAction)onDownloadClick:(id)event;

@@ -327,6 +327,11 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
+	if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
+		ChatConversationView *view = VIEW(ChatConversationView);
+		[view.tableController setChatRoom:NULL];
+	}
+
 	LinphoneManager.instance.conf = TRUE;
 	linphone_core_terminate_all_calls(LC);
 	[CallManager.instance removeAllCallInfos];
