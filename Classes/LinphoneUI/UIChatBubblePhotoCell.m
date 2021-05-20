@@ -191,7 +191,9 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
-
+	if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+		filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:(localImage?:(localVideo?:localFile))];
+	}
 
 	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 		// already downloaded
