@@ -312,7 +312,6 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
 	ChatConversationView *view = VIEW(ChatConversationView);
 	[view.tableController updateEventEntry:event];
-	[view.tableController scrollToBottom:true];
 }
 
 static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {

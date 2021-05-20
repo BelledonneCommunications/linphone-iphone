@@ -171,28 +171,32 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	
 	BOOL is_outgoing = linphone_chat_message_is_outgoing(self.message);
 	if (!is_outgoing) {
-		LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
-		if (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateDisplayed) {
-			if (state == LinphoneChatMessageStateFileTransferInProgress) {
-				_cancelButton.hidden = _fileTransferProgress.hidden = NO;
-				_downloadButton.hidden = YES;
-				_playButton.hidden = YES;
-				_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
-			} else {
-				_downloadButton.hidden =  NO;
-				_cancelButton.hidden = _fileTransferProgress.hidden =  YES;
-				_playButton.hidden = YES;
-				_fileName.hidden = _fileView.hidden = _fileButton.hidden =  YES;
-			}
+		if (linphone_chat_message_get_state(self.message) == LinphoneChatMessageStateFileTransferInProgress) {
+			_cancelButton.hidden = _fileTransferProgress.hidden = NO;
+			_downloadButton.hidden = YES;
+			_playButton.hidden = YES;
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
+			return;
+		}
+		if (linphone_content_is_file_transfer(fileContent)) {
+			_downloadButton.hidden =  NO;
+			_cancelButton.hidden = _fileTransferProgress.hidden =  YES;
+			_playButton.hidden = YES;
+			_fileName.hidden = _fileView.hidden = _fileButton.hidden =  YES;
 			return;
 		}
 	}
-	
+
 	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(fileContent)];
 	NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
 	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
 	if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-		filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:(localImage?:(localVideo?:localFile))];
+		NSString *tempName = (localImage?:(localVideo?:localFile));
+		if ([tempName isEqualToString:fileName]) {
+			filePath = [[VIEW(ChatConversationView) getICloudFileUrl:fileName] path];
+		} else {
+			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:tempName];
+		}
 	}
 
 	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
@@ -532,7 +536,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view.tableController updateEventEntry:self.event];
-		[view.tableController scrollToBottom:true];
 	}
 }
 - (void)onFileTransferRecvUpdate:(NSNotification *)notif {
@@ -544,7 +547,6 @@ static const CGFloat CELL_IMAGE_X_MARGIN = 100;
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view.tableController updateEventEntry:self.event];
-		[view.tableController scrollToBottom:true];
 	}
 }
 

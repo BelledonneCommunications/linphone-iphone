@@ -124,8 +124,14 @@
 		LOGW(@"event entry doesn't exist");
 		return;
 	}
-	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]]
+	if (index == (eventList.count-1)) {
+		[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+							  atScrollPosition:UITableViewScrollPositionBottom
+									  animated:YES];
+	} else {
+		[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]]
 						  withRowAnimation:FALSE]; // just reload
+	}
     return;
 }
 
