@@ -34,6 +34,15 @@ INIT_WITH_COMMON_CF {
 	return self;
 }
 
+- (void)onOn {
+	[CallManager.instance changeRouteToSpeaker];
+}
+
+- (void)onOff {
+	[CallManager.instance changeRouteToDefault];
+}
+
+
 - (void)dealloc {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
@@ -45,17 +54,8 @@ INIT_WITH_COMMON_CF {
 		[self update];});
 }
 
-- (void)onOn {
-	[CallManager.instance enableSpeakerWithEnable:TRUE];
-}
-
-- (void)onOff {
-	[CallManager.instance enableSpeakerWithEnable:FALSE];
-}
-
 - (bool)onUpdate {
-	self.enabled = [CallManager.instance allowSpeaker];
-	return CallManager.instance.speakerEnabled;
+	return [CallManager.instance isSpeakerEnabled];
 }
 
 @end

@@ -98,3 +98,5 @@ enabled=1
 show_local=0
 size=vga
 
+[account_creator]
+backend=0

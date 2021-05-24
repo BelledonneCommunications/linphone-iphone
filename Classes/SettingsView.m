@@ -440,10 +440,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	linphone_account_creator_set_password(creator, _tmpPwd.UTF8String);
 	[settingsStore setObject:_tmpPwd forKey:@"account_mandatory_password_preference"];
 	
-	LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+	LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
 													  [settingsStore integerForKey:@"current_proxy_config_preference"]);
-	if (config != NULL) {
-		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(config);
+	if (account != NULL) {
+		const LinphoneAuthInfo *auth = linphone_account_find_auth_info(account);
 		if (auth) {
 			LinphoneAuthInfo * newAuth = linphone_auth_info_clone(auth);
 			linphone_auth_info_set_passwd(newAuth, _tmpPwd.UTF8String);
@@ -578,12 +578,12 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}
 
 	if ([specifier.key hasPrefix:@"menu_account_"]) {
-		const bctbx_list_t *accounts = linphone_core_get_proxy_config_list(LC);
+		const bctbx_list_t *accounts = linphone_core_get_account_list(LC);
 		int index = [specifier.key substringFromIndex:@"menu_account_".length].intValue - 1;
 		if (index < bctbx_list_size(accounts)) {
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)bctbx_list_nth_data(accounts, index);
+			LinphoneAccount *account = (LinphoneAccount *)bctbx_list_nth_data(accounts, index);
 			NSString *name = [NSString
-				stringWithUTF8String:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))];
+				stringWithUTF8String:linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)))];
 			[specifier.specifierDict setValue:name forKey:kIASKTitle];
 		}
 	}
@@ -595,7 +595,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	LinphoneManager *lm = LinphoneManager.instance;
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
 
-	const MSList *accounts = linphone_core_get_proxy_config_list(LC);
+	const MSList *accounts = linphone_core_get_account_list(LC);
 	for (size_t i = bctbx_list_size(accounts) + 1; i <= 5; i++) {
 		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%lu", i]];
 	}
@@ -847,9 +847,9 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																   if (pwd && ![pwd isEqualToString:@""]) {
 																	   if ([pwd isEqualToString:conf_pwd]) {
 																		   _tmpPwd = pwd;
-																		   LinphoneProxyConfig *config = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+																		   LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
 																													[settingsStore integerForKey:@"current_proxy_config_preference"]);
-																		   const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
+																		   const LinphoneAuthInfo *ai = linphone_account_find_auth_info(account);
 																   
 																		   LinphoneAccountCreator *account_creator = linphone_account_creator_new(
 																												  LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]

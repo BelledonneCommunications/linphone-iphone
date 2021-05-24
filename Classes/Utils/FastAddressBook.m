@@ -85,11 +85,11 @@
 			MSList *numbers = linphone_friend_get_phone_numbers(friend);
 			while (numbers) {
 				NSString *phone = [NSString stringWithUTF8String:numbers->data];
-				LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+				LinphoneAccount *account = linphone_core_get_default_account(LC);
 				
-				if (cfg) {
-					const char *normvalue = linphone_proxy_config_normalize_phone_number(cfg, phone.UTF8String);
-					LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, normvalue);
+				if (account) {
+					const char *normvalue = linphone_account_normalize_phone_number(account, phone.UTF8String);
+					LinphoneAddress *addr = linphone_account_normalize_sip_uri(account, normvalue);
 					char *phone_addr = linphone_address_as_string_uri_only(addr);
 					contact = [FastAddressBook getContact:[NSString stringWithUTF8String:phone_addr]];
 					ms_free(phone_addr);
@@ -242,11 +242,11 @@
 	Contact* mContact = contact;
 	if (!_addressBookMap)
 		return;
-
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
 
 	for (NSString *phone in mContact.phones) {
-		char *normalizedPhone = cfg? linphone_proxy_config_normalize_phone_number(cfg, phone.UTF8String) : nil;
+		char *normalizedPhone = account? linphone_account_normalize_phone_number(account, phone.UTF8String) : nil;
 		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
 		if (phone != NULL)
 			[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
@@ -552,9 +552,10 @@
 	NSMutableDictionary *displayNames = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"addressBook"]];
 	if (displayNames == nil) return;
 
-	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(LC);
+	
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
 	for (NSString *phone in contact.phones) {
-		char *normalizedPhone = cfg? linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String) : nil;
+		char *normalizedPhone = account? linphone_account_normalize_phone_number(account, phone.UTF8String) : nil;
 		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
 		if (phone != NULL) {
 			if ([FastAddressBook isSipURI:displayNames[name]]) {
