@@ -52,7 +52,6 @@
 	if (self != nil) {
 		startedInBackground = FALSE;
 	}
-	CallManager.instance.alreadyRegisteredForNotification = false;
     _onlyPortrait = FALSE;
 	return self;
 	[[UIApplication sharedApplication] setDelegate:self];
@@ -164,17 +163,6 @@
 
 #pragma deploymate push "ignored-api-availability"
 
-- (void)registerForNotifications {
-	if (CallManager.instance.alreadyRegisteredForNotification && [[UIApplication sharedApplication] isRegisteredForRemoteNotifications])
-		return;
-
-	CallManager.instance.alreadyRegisteredForNotification = true;
-    // Register for remote notifications.
-    LOGI(@"[APNs] register for push notif");
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
-
-	[self configureUINotification];
-}
 
 - (void)configureUINotification {
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
@@ -290,8 +278,9 @@
 
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-	[self registerForNotifications]; // Register for notifications must be done ASAP to give a chance for first SIP register to be done with right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
-
+	
+	[self configureUINotification];
+	
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
 		if (!start_at_boot || !background_mode) {
@@ -451,51 +440,6 @@
 		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
 		[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 	}
-}
-
-- (void)processRemoteNotification:(NSDictionary *)userInfo {
-	// support only for calls
-	NSDictionary *aps = [userInfo objectForKey:@"aps"];
-	//NSString *loc_key = [aps objectForKey:@"loc-key"] ?: [[aps objectForKey:@"alert"] objectForKey:@"loc-key"];
-	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
-
-	if([CallManager callKitEnabled]) {
-		// Since ios13, a new Incoming call must be displayed when the callkit is enabled and app is in background.
-		// Otherwise it will cause a crash.
-		[CallManager.instance displayIncomingCallWithCallId:callId];
-	} else {
-		if (linphone_core_get_calls(LC)) {
-			// if there are calls, obviously our TCP socket shall be working
-			LOGD(@"Notification [%p] has no need to be processed because there already is an active call.", userInfo);
-			return;
-		}
-
-		if ([callId isEqualToString:@""]) {
-			// Present apn pusher notifications for info
-			LOGD(@"Notification [%p] came from flexisip-pusher.", userInfo);
-			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-				UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-				content.title = @"APN Pusher";
-				content.body = @"Push notification received !";
-
-				UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-				[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-					// Enable or disable features based on authorization.
-					if (error) {
-						LOGD(@"Error while adding notification request :");
-						LOGD(error.description);
-					}
-				}];
-			}
-		}
-	}
-
-    LOGI(@"Notification [%p] processed", userInfo);
-	// Tell the core to make sure that we are registered.
-	// It will initiate socket connections, which seems to be required.
-	// Indeed it is observed that if no network action is done in the notification handler, then
-	// iOS kills us.
-	linphone_core_ensure_registered(LC);
 }
 
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
