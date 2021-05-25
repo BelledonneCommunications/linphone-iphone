@@ -416,7 +416,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)configureProxyConfig {
+- (void)configureAccount {
 	LinphoneManager *lm = LinphoneManager.instance;
 
 	if (!linphone_core_is_network_reachable(LC)) {
@@ -495,8 +495,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_add_auth_info(LC, info);
 	linphone_address_unref(identity);
 	
+	LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(accountParams);
+#ifdef DEBUG
+#define PROVIDER_NAME "apns.dev"
+#else
+#define PROVIDER_NAME "apns"
+#endif
+	linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
+	
 	new_account = linphone_core_create_account(LC, accountParams);
 	linphone_account_params_unref(accountParams);
+ 
 	if (linphone_core_add_account(LC, new_account) != -1) {
 		if (linphone_account_creator_get_set_as_default(account_creator)) {
 			linphone_core_set_default_account(LC, new_account);
@@ -510,18 +519,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	/** end of linphone_account_creator_create_proxy_config re-implementation for accounts **/
 
 	if (new_account) {
-		LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(new_account));
-		LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(newAccountParams);
-#ifdef DEBUG
-#define PROVIDER_NAME "apns.dev"
-#else
-#define PROVIDER_NAME "apns"
-#endif
-		linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
-		linphone_account_set_params(new_account, newAccountParams);
-		linphone_account_params_unref(newAccountParams);
-		
-		linphone_core_set_default_account(LC, new_account);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
@@ -1129,10 +1126,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (currentView == _linphoneLoginView) {
 		if (status == LinphoneAccountCreatorStatusAccountExistWithAlias) {
 			_outgoingView = DialerView.compositeViewDescription;
-			[self configureProxyConfig];
+			[self configureAccount];
 		} else if (status == LinphoneAccountCreatorStatusAccountExist) {
 			_outgoingView = AssistantLinkView.compositeViewDescription;
-			[self configureProxyConfig];
+			[self configureAccount];
 		} else {
 			if (resp) {
 				if (linphone_account_creator_get_username(account_creator) &&
@@ -1168,7 +1165,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void) isAccountActivated:(const char *)resp {
 	if (currentView != _createAccountView) {
 		if( linphone_account_creator_get_phone_number(account_creator) == NULL) {
-			[self configureProxyConfig];
+			[self configureAccount];
 			[PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
 		} else {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
@@ -1230,7 +1227,7 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorStatusAccountActivated) {
-		[thiz configureProxyConfig];
+		[thiz configureAccount];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else if (status == LinphoneAccountCreatorStatusAccountAlreadyActivated) {
 		// in case we are actually trying to link account, let's try it now
@@ -1245,7 +1242,7 @@ void assistant_login_linphone_account(LinphoneAccountCreator *creator, LinphoneA
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorStatusRequestOk) {
-		[thiz configureProxyConfig];
+		[thiz configureAccount];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
 	} else {
 		[thiz showErrorPopup:resp];
@@ -1543,7 +1540,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
         [LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
-        [self configureProxyConfig];
+        [self configureAccount];
     });
 }
 
