@@ -29,14 +29,6 @@
 	if (au != 0)                                                                                                       \
 	LOGE(@"UIBluetoothButton error for %s: ret=%ld", method, au)
 
-- (void)onOn {
-	[LinphoneManager.instance setBluetoothEnabled:TRUE];
-}
-
-- (void)onOff {
-	[LinphoneManager.instance setBluetoothEnabled:FALSE];
-}
-
 - (bool)onUpdate {
 	return false;
 }

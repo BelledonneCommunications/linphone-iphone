@@ -116,9 +116,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (section == 0) {
-		BOOL hasDefault = (linphone_core_get_default_proxy_config(LC) != NULL);
+		BOOL hasDefault = (linphone_core_get_default_account(LC) != NULL);
 		// default account is shown in the header already
-		size_t count = bctbx_list_size(linphone_core_get_proxy_config_list(LC));
+		size_t count = bctbx_list_size(linphone_core_get_account_list(LC));
 		return MAX(0, (int)count - (hasDefault ? 1 : 0));
 	} else {
 		return [_sideMenuEntries count];
@@ -132,14 +132,14 @@
 	if (indexPath.section == 0 && [LinphoneManager isLcInitialized]) {
 		// do not display default account here, it is already in header view
 		int idx =
-			linphone_core_get_default_proxy_config(LC)
-				? bctbx_list_index(linphone_core_get_proxy_config_list(LC), linphone_core_get_default_proxy_config(LC))
+			linphone_core_get_default_account(LC)
+				? bctbx_list_index(linphone_core_get_account_list(LC), linphone_core_get_default_account(LC))
 				: HUGE_VAL;
-		LinphoneProxyConfig *proxy = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
+		LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
 														 (int)indexPath.row + (idx <= indexPath.row ? 1 : 0));
-		if (proxy) {
-			cell.textLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(proxy)];
-			cell.imageView.image = [StatusBarView imageForState:linphone_proxy_config_get_state(proxy)];
+		if (account) {
+			cell.textLabel.text = [NSString stringWithUTF8String:linphone_account_params_get_identity(linphone_account_get_params(account))];
+			cell.imageView.image = [StatusBarView imageForState:linphone_account_get_state(account)];
 		} else {
 			LOGE(@"Invalid index requested, no proxy for row %d", indexPath.row);
 		}

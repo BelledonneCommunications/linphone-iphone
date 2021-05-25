@@ -39,10 +39,7 @@ import AVFoundation
 	let callController: CXCallController! // to support callkit
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
-	@objc var speakerEnabled : Bool = false
-	@objc var bluetoothEnabled : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
-	@objc var alreadyRegisteredForNotification: Bool = false
 	var referedFromCall: String?
 	var referedToCall: String?
 	var endCallkit: Bool = false
@@ -126,41 +123,55 @@ import AVFoundation
 		#endif
 		return false
 	}
-
-	@objc func allowSpeaker() -> Bool {
-		if (UIDevice.current.userInterfaceIdiom == .pad) {
-			// For now, ipad support only speaker.
-			return true
-		}
-
-		var allow = true
-		let newRoute = AVAudioSession.sharedInstance().currentRoute
-		if (newRoute.outputs.count > 0) {
-			let route = newRoute.outputs[0].portType
-			allow = !( route == .lineOut || route == .headphones || (AudioHelper.bluetoothRoutes() as Array).contains(where: {($0 as! AVAudioSession.Port) == route}))
-		}
-
-		return allow
-	}
-
-	@objc func enableSpeaker(enable: Bool) {
-		speakerEnabled = enable
-		do {
-			if (enable && allowSpeaker()) {
-				try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-				UIDevice.current.isProximityMonitoringEnabled = false
-				bluetoothEnabled = false
-			} else {
-				try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-				let buildinPort = AudioHelper.builtinAudioDevice()
-				try AVAudioSession.sharedInstance().setPreferredInput(buildinPort)
-				UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
+	
+	@objc func changeRouteToSpeaker() {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Speaker) {
+				lc!.outputAudioDevice = device
+				break
 			}
-		} catch {
-			Log.directLog(BCTBX_LOG_ERROR, text: "Failed to change audio route: err \(error)")
 		}
+		UIDevice.current.isProximityMonitoringEnabled = false
 	}
-
+	
+	@objc func changeRouteToBluetooth() {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+				lc!.outputAudioDevice = device
+				break
+			}
+		}
+		UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
+	}
+	
+	@objc func changeRouteToDefault() {
+		lc!.outputAudioDevice = lc!.defaultOutputAudioDevice
+	}
+	
+	@objc func isBluetoothAvailable() -> Bool {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+				let name = device.deviceName
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@objc func isSpeakerEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return outputDevice.type == AudioDeviceType.Speaker
+		}
+		return false
+	}
+	
+	@objc func isBluetoothEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return (outputDevice.type == AudioDeviceType.Bluetooth || outputDevice.type == AudioDeviceType.BluetoothA2DP)
+		}
+		return false
+	}
+	
 	func requestTransaction(_ transaction: CXTransaction, action: String) {
 		callController.request(transaction) { error in
 			if let error = error {
@@ -181,29 +192,6 @@ import AVFoundation
 				callInfo!.callId = current
 				providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 			}
-		}
-	}
-
-	// From ios13, display the callkit view when the notification is received.
-	@objc func displayIncomingCall(callId: String) {
-		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
-		if (uuid != nil) {
-			let callInfo = providerDelegate.callInfos[uuid!]
-			if (callInfo?.declined ?? false) {
-				// This call was declined.
-				providerDelegate.reportIncomingCall(call:nil, uuid: uuid!, handle: "Calling", hasVideo: true, displayName: callInfo?.displayName ?? "Calling")
-				providerDelegate.endCall(uuid: uuid!)
-			}
-			return
-		}
-
-		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call != nil) {
-			let displayName = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
-			let video = UIApplication.shared.applicationState == .active && (lc!.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
-			displayIncomingCall(call: call, handle: (call!.remoteAddress?.asStringUriOnly())!, hasVideo: video, callId: callId, displayName: displayName)
-		} else {
-			displayIncomingCall(call: nil, handle: "Calling", hasVideo: true, callId: callId, displayName: "Calling")
 		}
 	}
 
@@ -378,7 +366,6 @@ import AVFoundation
 			let uuid = UUID()
 			providerDelegate.uuids.updateValue(uuid, forKey: callId)
 			let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
-			callInfo.declined = true
 			callInfo.reason = Reason.Busy
 			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 		} else {
@@ -461,166 +448,163 @@ import AVFoundation
 	}
 
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
-		let addr = call.remoteAddress;
-		let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 		let callLog = call.callLog
 		let callId = callLog?.callId
-		let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
-		// we keep the speaker auto-enabled state in this static so that we don't
-		// force-enable it on ICE re-invite if the user disabled it.
-		CallManager.speaker_already_enabled = false
+		if (cstate == .PushIncomingReceived) {
+			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId!, displayName: "Calling")
+		} else {
+			let addr = call.remoteAddress;
+			let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
+			let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+			// we keep the speaker auto-enabled state in this static so that we don't
+			// force-enable it on ICE re-invite if the user disabled it.
+			CallManager.speaker_already_enabled = false
 
-		if (call.userData == nil) {
-			let appData = CallAppData()
-			CallManager.setAppData(sCall: call, appData: appData)
-		}
+			if (call.userData == nil) {
+				let appData = CallAppData()
+				CallManager.setAppData(sCall: call, appData: appData)
+			}
 
 
-		switch cstate {
-			case .IncomingReceived:
-				if (CallManager.callKitEnabled()) {
-					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
-					if (uuid != nil) {
-						// Tha app is now registered, updated the call already existed.
-						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						if (callInfo?.declined ?? false) {
-							DispatchQueue.main.asyncAfter(deadline: .now()) {try? call.decline(reason: callInfo!.reason)}
-						} else if (callInfo?.accepted ?? false) {
-							// The call is already answered.
-							CallManager.instance().acceptCall(call: call, hasVideo: video)
+			switch cstate {
+				case .IncomingReceived:
+					if (CallManager.callKitEnabled()) {
+						let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+						if (uuid != nil) {
+							// Tha app is now registered, updated the call already existed.
+							CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+						} else {
+							CallManager.instance().displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId!, displayName: displayName)
 						}
-					} else {
-						CallManager.instance().displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId!, displayName: displayName)
+					} else if (UIApplication.shared.applicationState != .active) {
+						// not support callkit , use notif
+						let content = UNMutableNotificationContent()
+						content.title = NSLocalizedString("Incoming call", comment: "")
+						content.body = displayName
+						content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
+						content.categoryIdentifier = "call_cat"
+						content.userInfo = ["CallId" : callId!]
+						let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
+							UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
 					}
-				} else if (UIApplication.shared.applicationState != .active) {
-					// not support callkit , use notif
-					let content = UNMutableNotificationContent()
-					content.title = NSLocalizedString("Incoming call", comment: "")
-					content.body = displayName
-					content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
-					content.categoryIdentifier = "call_cat"
-					content.userInfo = ["CallId" : callId!]
-					let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
-						UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
-				}
-				break
-			case .StreamsRunning:
-				if (CallManager.callKitEnabled()) {
-					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
-					if (uuid != nil) {
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						if (callInfo != nil && callInfo!.isOutgoing && !callInfo!.connected) {
-							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
-							CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
-							callInfo!.connected = true
+					break
+				case .StreamsRunning:
+					if (CallManager.callKitEnabled()) {
+						let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+						if (uuid != nil) {
+							let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+							if (callInfo != nil && callInfo!.isOutgoing && !callInfo!.connected) {
+								Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
+								CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
+								callInfo!.connected = true
+								CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+							}
+						}
+					}
+
+					if (CallManager.instance().speakerBeforePause) {
+						CallManager.instance().speakerBeforePause = false
+						CallManager.instance().changeRouteToSpeaker()
+						CallManager.speaker_already_enabled = true
+					}
+					break
+				case .OutgoingInit,
+					 .OutgoingProgress,
+					 .OutgoingRinging,
+					 .OutgoingEarlyMedia:
+					if (CallManager.callKitEnabled()) {
+						let uuid = CallManager.instance().providerDelegate.uuids[""]
+						if (uuid != nil) {
+							let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+							callInfo!.callId = callId!
 							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+							CallManager.instance().providerDelegate.uuids.removeValue(forKey: "")
+							CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId!)
+
+							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
+							CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
+						} else {
+							CallManager.instance().referedToCall = callId
 						}
 					}
-				}
+					break
+				case .End,
+					 .Error:
+					UIDevice.current.isProximityMonitoringEnabled = false
+					CallManager.speaker_already_enabled = false
+					if (CallManager.instance().lc!.callsNb == 0) {
+						CallManager.instance().changeRouteToDefault()
+						// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
+						// furthermore it introduces a bug when calling multiple times since route may not be
+						// reconfigured between cause leading to bluetooth being disabled while it should not
+						//CallManager.instance().bluetoothEnabled = false
+					}
 
-				if (CallManager.instance().speakerBeforePause) {
-					CallManager.instance().speakerBeforePause = false
-					CallManager.instance().enableSpeaker(enable: true)
+					if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted)  {
+						// Configure the notification's payload.
+						let content = UNMutableNotificationContent()
+						content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
+						content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
+
+						// Deliver the notification.
+						let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
+						let center = UNUserNotificationCenter.current()
+						center.add(request) { (error : Error?) in
+							if error != nil {
+							Log.directLog(BCTBX_LOG_ERROR, text: "Error while adding notification request : \(error!.localizedDescription)")
+							}
+						}
+					}
+
+					if (CallManager.callKitEnabled()) {
+						var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+						if (callId == CallManager.instance().referedToCall) {
+							// refered call ended before connecting
+							Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered to call :  \(String(describing: CallManager.instance().referedToCall))")
+							CallManager.instance().referedFromCall = nil
+							CallManager.instance().referedToCall = nil
+						}
+						if uuid == nil {
+							// the call not yet connected
+							uuid = CallManager.instance().providerDelegate.uuids[""]
+						}
+						if (uuid != nil) {
+							if (callId == CallManager.instance().referedFromCall) {
+								Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered from call : \(String(describing: CallManager.instance().referedFromCall))")
+								CallManager.instance().referedFromCall = nil
+								let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+								callInfo!.callId = CallManager.instance().referedToCall ?? ""
+								CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+								CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
+								CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
+								CallManager.instance().referedToCall = nil
+								break
+							}
+
+							let transaction = CXTransaction(action:
+							CXEndCallAction(call: uuid!))
+							CallManager.instance().requestTransaction(transaction, action: "endCall")
+						}
+					}
+					break
+				case .Released:
+					call.userData = nil
+					break
+				case .Referred:
+					CallManager.instance().referedFromCall = call.callLog?.callId
+					break
+				default:
+					break
+			}
+
+			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
+			//	if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
+				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().isBluetoothEnabled()) {
+					CallManager.instance().changeRouteToSpeaker()
 					CallManager.speaker_already_enabled = true
 				}
-				break
-			case .OutgoingInit,
-				 .OutgoingProgress,
-				 .OutgoingRinging,
-				 .OutgoingEarlyMedia:
-				if (CallManager.callKitEnabled()) {
-					let uuid = CallManager.instance().providerDelegate.uuids[""]
-					if (uuid != nil) {
-						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						callInfo!.callId = callId!
-						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-						CallManager.instance().providerDelegate.uuids.removeValue(forKey: "")
-						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId!)
-
-						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
-						CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
-					} else {
-						CallManager.instance().referedToCall = callId
-					}
-				}
-				break
-			case .End,
-				 .Error:
-				UIDevice.current.isProximityMonitoringEnabled = false
-				CallManager.speaker_already_enabled = false
-				if (CallManager.instance().lc!.callsNb == 0) {
-					CallManager.instance().enableSpeaker(enable: false)
-					// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
-					// furthermore it introduces a bug when calling multiple times since route may not be
-					// reconfigured between cause leading to bluetooth being disabled while it should not
-					CallManager.instance().bluetoothEnabled = false
-				}
-
-				if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted)  {
-					// Configure the notification's payload.
-					let content = UNMutableNotificationContent()
-					content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
-					content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
-
-					// Deliver the notification.
-					let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
-					let center = UNUserNotificationCenter.current()
-					center.add(request) { (error : Error?) in
-						if error != nil {
-						Log.directLog(BCTBX_LOG_ERROR, text: "Error while adding notification request : \(error!.localizedDescription)")
-						}
-					}
-				}
-
-				if (CallManager.callKitEnabled()) {
-					var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
-					if (callId == CallManager.instance().referedToCall) {
-						// refered call ended before connecting
-						Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered to call :  \(String(describing: CallManager.instance().referedToCall))")
-						CallManager.instance().referedFromCall = nil
-						CallManager.instance().referedToCall = nil
-					}
-					if uuid == nil {
-						// the call not yet connected
-						uuid = CallManager.instance().providerDelegate.uuids[""]
-					}
-					if (uuid != nil) {
-						if (callId == CallManager.instance().referedFromCall) {
-							Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered from call : \(String(describing: CallManager.instance().referedFromCall))")
-							CallManager.instance().referedFromCall = nil
-							let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-							callInfo!.callId = CallManager.instance().referedToCall ?? ""
-							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-							CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
-							CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-							CallManager.instance().referedToCall = nil
-							break
-						}
-
-						let transaction = CXTransaction(action:
-						CXEndCallAction(call: uuid!))
-						CallManager.instance().requestTransaction(transaction, action: "endCall")
-					}
-				}
-				break
-			case .Released:
-				call.userData = nil
-				break
-			case .Referred:
-				CallManager.instance().referedFromCall = call.callLog?.callId
-				break
-			default:
-				break
-		}
-
-		if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
-				CallManager.instance().enableSpeaker(enable: true)
-				CallManager.speaker_already_enabled = true
 			}
 		}
-
 		// post Notification kLinphoneCallUpdate
 		NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
 			AnyHashable("call"): NSValue.init(pointer:UnsafeRawPointer(call.getCobject)),

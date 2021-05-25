@@ -242,7 +242,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_pushDict = [[NSMutableDictionary alloc] init];
 		_database = NULL;
 		_conf = FALSE;
-		_canConfigurePushTokenForProxyConfigs = FALSE;
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
 		_linphoneManagerAddressBookMap = [[OrderedDictionary alloc] init];
 		pushCallIDs = [[NSMutableArray alloc] init];
@@ -377,10 +376,12 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 - (void)migrationLinphoneSettings {
 	/* AVPF migration */
 	if ([self lpConfigBoolForKey:@"avpf_migration_done"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
-		while (proxies) {
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
-			const char *addr = linphone_proxy_config_get_addr(proxy);
+		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
+		while (accounts)
+		{
+			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			const char *addr = linphone_account_params_get_server_addr(newAccountParams);
 			// we want to enable AVPF for the proxies
 			if (addr &&
 			    strstr(addr, [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
@@ -388,18 +389,22 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 					  withDefault:@"sip.linphone.org"]
 				   .UTF8String) != 0) {
 				LOGI(@"Migrating proxy config to use AVPF");
-				linphone_proxy_config_set_avpf_mode(proxy, LinphoneAVPFEnabled);
+				linphone_account_params_set_avpf_mode(newAccountParams, LinphoneAVPFEnabled);
+				linphone_account_set_params(account, newAccountParams);
 			}
-			proxies = proxies->next;
+			accounts = accounts->next;
+			linphone_account_params_unref(newAccountParams);
 		}
 		[self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
 	}
 	/* Quality Reporting migration */
 	if ([self lpConfigBoolForKey:@"quality_report_migration_done"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
-		while (proxies) {
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
-			const char *addr = linphone_proxy_config_get_addr(proxy);
+		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
+		while (accounts)
+		{
+			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			const char *addr = linphone_account_params_get_server_addr(newAccountParams);
 			// we want to enable quality reporting for the proxies that are on linphone.org
 			if (addr &&
 			    strstr(addr, [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
@@ -407,12 +412,15 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 					  withDefault:@"sip.linphone.org"]
 				   .UTF8String) != 0) {
 				LOGI(@"Migrating proxy config to send quality report");
-				linphone_proxy_config_set_quality_reporting_collector(
-										      proxy, "sip:voip-metrics@sip.linphone.org;transport=tls");
-				linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
-				linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
+				
+				linphone_account_params_set_quality_reporting_collector(
+										      newAccountParams, "sip:voip-metrics@sip.linphone.org;transport=tls");
+				linphone_account_params_set_quality_reporting_interval(newAccountParams, 180);
+				linphone_account_params_set_quality_reporting_enabled(newAccountParams, TRUE);
+				linphone_account_set_params(account, newAccountParams);
 			}
-			proxies = proxies->next;
+			accounts = accounts->next;
+			linphone_account_params_unref(newAccountParams);
 		}
 		[self lpConfigSetBool:TRUE forKey:@"quality_report_migration_done"];
 	}
@@ -425,59 +433,73 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 	}
 	
 	if ([self lpConfigBoolForKey:@"lime_migration_done"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-		while (proxies) {
-			if (!strcmp(linphone_proxy_config_get_domain((LinphoneProxyConfig *)proxies->data),"sip.linphone.org")) {
+		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
+		while (accounts)
+		{
+			if (!strcmp(linphone_account_params_get_domain(linphone_account_get_params((LinphoneAccount *)accounts->data)),"sip.linphone.org")) {
 				linphone_core_set_lime_x3dh_server_url(LC, "https://lime.linphone.org/lime-server/lime-server.php");
 				break;
 			}
-			proxies = proxies->next;
+			accounts = accounts->next;
 		}
 		[self lpConfigSetBool:TRUE forKey:@"lime_migration_done"];
 	}
 
 	if ([self lpConfigBoolForKey:@"push_notification_migration_done"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
 		bool_t pushEnabled;
-		while (proxies) {
-			const char *refkey = linphone_proxy_config_get_ref_key(proxies->data);
+		while (accounts)
+		{
+			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			const char *refkey = linphone_account_params_get_ref_key(newAccountParams);
 			if (refkey) {
 				pushEnabled = (strcmp(refkey, "push_notification") == 0);
 			} else {
 				pushEnabled = true;
 			}
-			linphone_proxy_config_set_push_notification_allowed(proxies->data, pushEnabled);
-			proxies = proxies->next;
+			linphone_account_params_set_push_notification_allowed(newAccountParams, pushEnabled);
+			linphone_account_params_set_remote_push_notification_allowed(newAccountParams, pushEnabled);
+			linphone_account_set_params(account, newAccountParams);
+			linphone_account_params_unref(newAccountParams);
+			accounts = accounts->next;
 		}
 		[self lpConfigSetBool:TRUE forKey:@"push_notification_migration_done"];
 	}
 }
 
 - (void)migrationPerAccount {
-	const bctbx_list_t * proxies = linphone_core_get_proxy_config_list(LC);
+	const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
 	NSString *appDomain  = [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 				inSection:@"app"
 				withDefault:@"sip.linphone.org"];
-	while (proxies) {
-		LinphoneProxyConfig *config = proxies->data;
-		// can not create group chat without conference factory
-		if (!linphone_proxy_config_get_conference_factory_uri(config)) {
-			if (strcmp(appDomain.UTF8String, linphone_proxy_config_get_domain(config)) == 0) {
-				linphone_proxy_config_set_conference_factory_uri(config, "sip:conference-factory@sip.linphone.org");
-			}
-		}
-		proxies = proxies->next;
-	}
+	   while (accounts) {
+		   LinphoneAccount *account = accounts->data;
+		   LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+		   // can not create group chat without conference factory
+		   if (!linphone_account_params_get_conference_factory_uri(newAccountParams)) {
+			   if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
+				   linphone_account_params_set_conference_factory_uri(newAccountParams, "sip:conference-factory@sip.linphone.org");
+				   linphone_account_set_params(account, newAccountParams);
+			   }
+		   }
+		   linphone_account_params_unref(newAccountParams);
+		   accounts = accounts->next;
+	   }
 	
 	NSString *s = [self lpConfigStringForKey:@"pushnotification_preference"];
 	if (s && s.boolValue) {
 		LOGI(@"Migrating push notification per account, enabling for ALL");
 		[self lpConfigSetBool:NO forKey:@"pushnotification_preference"];
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-		while (proxies) {
-			linphone_proxy_config_set_push_notification_allowed(proxies->data, true);
-			[self configurePushTokenForProxyConfig:proxies->data];
-			proxies = proxies->next;
+		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
+		while (accounts) {
+			LinphoneAccount *account = accounts->data;
+			LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			linphone_account_params_set_push_notification_allowed(newAccountParams, true);
+			linphone_account_params_set_remote_push_notification_allowed(newAccountParams, true);
+			linphone_account_set_params(account, newAccountParams);
+			linphone_account_params_unref(newAccountParams);
+			accounts = accounts->next;
 		}
 	}
 }
@@ -621,26 +643,15 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 		});
 }
 
-- (void)configuringStateChangedNotificationHandler:(NSNotification *)notif {
-	_wasRemoteProvisioned = ((LinphoneConfiguringState)[[[notif userInfo] valueForKey:@"state"] integerValue] ==
-				 LinphoneConfiguringSuccessful);
-	if (_wasRemoteProvisioned) {
-		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-		if (cfg) {
-			[self configurePushTokenForProxyConfig:cfg];
-		}
-	}
-}
-
 #pragma mark - Registration State Functions
 
 - (void)onRegister:(LinphoneCore *)lc
-cfg:(LinphoneProxyConfig *)cfg
+account:(LinphoneAccount *)account
 state:(LinphoneRegistrationState)state
 message:(const char *)cmessage {
 	LOGI(@"New registration state: %s (message: %s)", linphone_registration_state_to_string(state), cmessage);
 
-	LinphoneReason reason = linphone_proxy_config_get_error(cfg);
+	LinphoneReason reason = linphone_account_get_error(account);
 	NSString *message = nil;
 	switch (reason) {
 	case LinphoneReasonBadCredentials:
@@ -701,13 +712,13 @@ message:(const char *)cmessage {
 	// Post event
 	NSDictionary *dict =
 		[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state",
-		 [NSValue valueWithPointer:cfg], @"cfg", message, @"message", nil];
+		 [NSValue valueWithPointer:account], @"account", message, @"message", nil];
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneRegistrationUpdate object:self userInfo:dict];
 }
 
-static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig *cfg,
+static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneAccount *account,
 					       LinphoneRegistrationState state, const char *message) {
-	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onRegister:lc cfg:cfg state:state message:message];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onRegister:lc account:account state:state message:message];
 }
 
 #pragma mark - Auth info Function
@@ -722,13 +733,14 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		
 		// InstantMessageDeliveryNotifications from previous accounts can trigger some pop-up spam asking for indentification
 		// Try to filter the popup password request to avoid displaying those that do not matter and can be handled through a simple warning
-		const MSList *configList = linphone_core_get_proxy_config_list(LC);
+		const MSList *accountList = linphone_core_get_account_list(LC);
 		bool foundMatchingConfig = false;
-		while (configList && !foundMatchingConfig) {
-			const char * configUsername = linphone_proxy_config_get_identity(configList->data);
-			const char * configDomain = linphone_proxy_config_get_domain(configList->data);
+		while (accountList && !foundMatchingConfig) {
+			LinphoneAccountParams const *accountParams = linphone_account_get_params(accountList->data);
+			const char * configUsername = linphone_account_params_get_identity(accountParams);
+			const char * configDomain = linphone_account_params_get_domain(accountParams);
 			foundMatchingConfig = (strcmp(configUsername, usernameC) == 0) && (strcmp(configDomain, domainC) == 0);
-			configList = configList->next;
+			accountList = accountList->next;
 		}
 		if (!foundMatchingConfig) {
 			LOGW(@"Received an authentication request from %s@%s, but ignored it did not match any current user", usernameC, domainC);
@@ -1215,16 +1227,17 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	if (status == LinphoneAccountCreatorStatusAccountLinked) {
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
 	} else {
-		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-		if (cfg &&
-		    strcmp(linphone_proxy_config_get_domain(cfg),
+		LinphoneAccount *account = linphone_core_get_default_account(LC);
+		LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
+		if (account &&
+		    strcmp(linphone_account_params_get_domain(accountParams),
 			   [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 			    inSection:@"app"
 			    withDefault:@"sip.linphone.org"]
 			   .UTF8String) == 0) {
 			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Link your account", nil)
 						      message:[NSString stringWithFormat:NSLocalizedString(@"Link your Linphone.org account %s to your phone number.", nil),
-							       linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg))]
+							       linphone_address_get_username(linphone_account_params_get_identity_address(accountParams))]
 						      preferredStyle:UIAlertControllerStyleAlert];
 
 			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Maybe later", nil)
@@ -1256,9 +1269,9 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		[NSDate dateWithTimeIntervalSince1970:[self lpConfigIntForKey:@"must_link_account_time" withDefault:1]];
 	NSDate *now = [NSDate date];
 	if (nextTime.timeIntervalSince1970 > 0 && [now earlierDate:nextTime] == nextTime) {
-		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-		if (cfg) {
-			const char *username = linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg));
+		LinphoneAccount *account = linphone_core_get_default_account(LC);
+		if (account) {
+			const char *username = linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)));
 			LinphoneAccountCreator *account_creator = linphone_account_creator_new(
 											       LC,
 											       [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
@@ -1273,7 +1286,29 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)startLinphoneCore {
-    linphone_core_start([LinphoneManager getLc]);
+	bool pushEnabled = [self lpConfigIntForKey:@"proxy" inSection:@"push_notification_allowed"];
+	linphone_core_set_push_notification_enabled([LinphoneManager getLc], pushEnabled);
+	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
+	while (accountsList) {
+		LinphoneAccount * account = accountsList->data;
+		LinphoneAccountParams * accountParams = linphone_account_params_clone(linphone_account_get_params(account));
+		linphone_account_params_set_push_notification_allowed(accountParams, pushEnabled);
+		linphone_account_params_set_remote_push_notification_allowed(accountParams, pushEnabled);
+		
+		LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(accountParams);
+#ifdef DEBUG
+#define PROVIDER_NAME "apns.dev"
+#else
+#define PROVIDER_NAME "apns"
+#endif
+		linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
+		
+		linphone_account_set_params(account, accountParams);
+		linphone_account_params_unref(accountParams);
+		accountsList = accountsList->next;
+	}
+	
+	linphone_core_start([LinphoneManager getLc]);
 }
 
 - (void)createLinphoneCore {
@@ -1303,7 +1338,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	LinphoneFactory *factory = linphone_factory_get();
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(factory);
-	linphone_core_cbs_set_registration_state_changed(cbs,linphone_iphone_registration_state);
+	linphone_core_cbs_set_account_registration_state_changed(cbs,linphone_iphone_registration_state);
 	linphone_core_cbs_set_notify_presence_received_for_uri_or_tel(cbs, linphone_iphone_notify_presence_received_for_uri_or_tel);
 	linphone_core_cbs_set_authentication_requested(cbs, linphone_iphone_popup_password_request);
 	linphone_core_cbs_set_message_received(cbs, linphone_iphone_message_received);
@@ -1326,8 +1361,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
 	[ConfigManager.instance setDbWithDb:_configDb];
-
-	linphone_core_start(theLinphoneCore);
+	
+	[LinphoneManager.instance startLinphoneCore];
 
 	// Let the core handle cbs
 	linphone_core_cbs_unref(cbs);
@@ -1357,10 +1392,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[NSNotificationCenter.defaultCenter addObserver:self
 	 selector:@selector(globalStateChangedNotificationHandler:)
 	 name:kLinphoneGlobalStateUpdate
-	 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-	 selector:@selector(configuringStateChangedNotificationHandler:)
-	 name:kLinphoneConfiguringStateUpdate
 	 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(inappReady:) name:kIAPReady object:nil];
 
@@ -1487,13 +1518,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			linphone_core_set_presence_model(LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
 		}
 
-		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-		while (proxies) {
-			LinphoneProxyConfig *cfg = proxies->data;
-			linphone_proxy_config_edit(cfg);
-			linphone_proxy_config_enable_publish(cfg, enabled);
-			linphone_proxy_config_done(cfg);
-			proxies = proxies->next;
+		const MSList *accounts = linphone_core_get_account_list(LC);
+		while (accounts) {
+			LinphoneAccount *account = accounts->data;
+			LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			linphone_account_params_set_publish_enabled(newAccountParams, enabled);
+			linphone_account_set_params(account, newAccountParams);
+			linphone_account_params_unref(newAccountParams);
+			accounts = accounts->next;
 		}
 		// force registration update first, then update friend list subscription
 		[self iterate];
@@ -1503,15 +1535,16 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (BOOL)enterBackgroundMode {
-	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
+	LinphoneAccount *account = linphone_core_get_default_account(theLinphoneCore);
 	BOOL shouldEnterBgMode = FALSE;
 
 	// disable presence
 	[self enableProxyPublish:NO];
 
 	// handle proxy config if any
-	if (proxyCfg) {
-		BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
+	if (account) {
+		LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
+		BOOL pushNotifEnabled = linphone_account_params_get_push_notification_allowed(accountParams);
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"] || pushNotifEnabled) {
 			if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 				// For registration register
@@ -1564,12 +1597,15 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
 	if (!shouldEnterBgMode && floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-		BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
-		if (pushNotifEnabled) {
-			LOGI(@"Keeping lc core to handle push");
-			return YES;
+		if (account) {
+			LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
+			BOOL pushNotifEnabled = linphone_account_params_get_push_notification_allowed(accountParams);
+			if (pushNotifEnabled) {
+				LOGI(@"Keeping lc core to handle push");
+				return YES;
+			}
+			return NO;
 		}
-		return NO;
 	}
 	return YES;
 }
@@ -1696,57 +1732,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
 	if (IPAD)
 		return;
-
-	// there is at least one bug when you disconnect an audio bluetooth headset
-	// since we only get notification of route having changed, we cannot tell if that is due to:
-	// -bluetooth headset disconnected or
-	// -user wanted to use earpiece
-	// the only thing we can assume is that when we lost a device, it must be a bluetooth one (strong hypothesis though)
-	if ([[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] == AVAudioSessionRouteChangeReasonOldDeviceUnavailable)
-		_bluetoothAvailable = NO;
-
-	AVAudioSessionRouteDescription *newRoute = [AVAudioSession sharedInstance].currentRoute;
-
-	if (newRoute && newRoute.outputs.count > 0) {
-		NSString *route = newRoute.outputs[0].portType;
-		LOGI(@"Current audio route is [%s]", [route UTF8String]);
-		linphone_core_audio_route_changed(theLinphoneCore);
-
-		CallManager.instance.speakerEnabled = [route isEqualToString:AVAudioSessionPortBuiltInSpeaker];
-		if (([[AudioHelper bluetoothRoutes] containsObject:route]) && !CallManager.instance.speakerEnabled) {
-			_bluetoothAvailable = TRUE;
-			CallManager.instance.bluetoothEnabled = TRUE;
-		} else
-			CallManager.instance.bluetoothEnabled = FALSE;
-
-		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
-		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
-		 object:self
-		 userInfo:dict];
-	}
-}
-
-- (void)setBluetoothEnabled:(BOOL)enable {
-	if (_bluetoothAvailable) {
-		// The change of route will be done in enableSpeaker
-		CallManager.instance.bluetoothEnabled = enable;
-		if (CallManager.instance.bluetoothEnabled) {
-			NSError *err = nil;
-			AVAudioSessionPortDescription *_bluetoothPort = [AudioHelper bluetoothAudioDevice];
-			[[AVAudioSession sharedInstance] setPreferredInput:_bluetoothPort error:&err];
-			// if setting bluetooth failed, it must be because the device is not available
-			// anymore (disconnected), so deactivate bluetooth.
-			if (err) {
-				CallManager.instance.bluetoothEnabled = FALSE;
-				LOGE(@"Failed to enable bluetooth: err %@", err.localizedDescription);
-				err = nil;
-			} else {
-				CallManager.instance.speakerEnabled = FALSE;
-				return;
-			}
-		}
-	}
-	[CallManager.instance enableSpeakerWithEnable:CallManager.instance.speakerEnabled];
+	
+	_bluetoothAvailable = [CallManager.instance isBluetoothAvailable];
+	
+	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
+	 object:self
+	 userInfo:dict];
+	
 }
 
 #pragma mark - Call Functions
@@ -1802,116 +1795,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 #pragma mark - Property Functions
-
-- (void)setPushKitToken:(NSData *)pushKitToken {
-	if (pushKitToken == _pushKitToken) {
-		return;
-	}
-	_pushKitToken = pushKitToken;
-
-    [self configurePushTokenForProxyConfigs];
-}
-
 - (void)setRemoteNotificationToken:(NSData *)remoteNotificationToken {
     if (remoteNotificationToken == _remoteNotificationToken) {
         return;
     }
     _remoteNotificationToken = remoteNotificationToken;
-
-    [self configurePushTokenForProxyConfigs];
-}
-
-- (void)configurePushTokenForProxyConfigs {
-    // we register only when the second token is set
-    if (_canConfigurePushTokenForProxyConfigs) {
-        @try {
-            const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-            while (proxies) {
-                [self configurePushTokenForProxyConfig:proxies->data];
-                proxies = proxies->next;
-            }
-        } @catch (NSException* e) {
-            LOGW(@"%s: linphone core not ready yet, ignoring push token", __FUNCTION__);
-        }
-    } else {
-        _canConfigurePushTokenForProxyConfigs = YES;
-    }
-
-}
-
-- (void)configurePushTokenForProxyConfig:(LinphoneProxyConfig *)proxyCfg {
-	linphone_proxy_config_edit(proxyCfg);
-
-	NSData *remoteTokenData = _remoteNotificationToken;
-    NSData *PKTokenData = _pushKitToken;
-	BOOL pushNotifEnabled = linphone_proxy_config_is_push_notification_allowed(proxyCfg);
-	if ((remoteTokenData != nil || PKTokenData != nil) && pushNotifEnabled) {
-
-        const unsigned char *remoteTokenBuffer = [remoteTokenData bytes];
-        NSMutableString *remoteTokenString = [NSMutableString stringWithCapacity:[remoteTokenData length] * 2];
-		for (int i = 0; i < [remoteTokenData length]; ++i) {
-			[remoteTokenString appendFormat:@"%02X", (unsigned int)remoteTokenBuffer[i]];
-		}
-
-        const unsigned char *PKTokenBuffer = [PKTokenData bytes];
-        NSMutableString *PKTokenString = [NSMutableString stringWithCapacity:[PKTokenData length] * 2];
-        for (int i = 0; i < [PKTokenData length]; ++i) {
-            [PKTokenString appendFormat:@"%02X", (unsigned int)PKTokenBuffer[i]];
-        }
-
-        NSString *token;
-        NSString *services;
-        if (remoteTokenString && PKTokenString) {
-            token = [NSString stringWithFormat:@"%@:remote&%@:voip", remoteTokenString, PKTokenString];
-            services = @"remote&voip";
-        } else if (remoteTokenString) {
-            token = [NSString stringWithFormat:@"%@:remote", remoteTokenString];
-            services = @"remote";
-        } else {
-            token = [NSString stringWithFormat:@"%@:voip", PKTokenString];
-            services = @"voip";
-        }
-
-		// NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
-		// NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
-		// NSLocalizedString(@"IM_FULLMSG", nil); // Fake for genstrings
-#ifdef DEBUG
-#define APPMODE_SUFFIX @".dev"
-#else
-#define APPMODE_SUFFIX @""
-#endif
-		NSString *ring =
-			([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
-			.lastPathComponent;
-
-		NSString *timeout;
-		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-			timeout = @";pn-timeout=0";
-		} else {
-			timeout = @"";
-		}
-
-		// dummy value, for later use
-		NSString *teamId = @"ABCD1234";
-
-        NSString *params = [NSString
-                    stringWithFormat:@"pn-provider=apns%@;pn-prid=%@;pn-param=%@.%@.%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-groupchat-str=GC_MSG;pn-"
-                    @"call-snd=%@;pn-msg-snd=msg.caf%@;pn-silent=1",
-                    APPMODE_SUFFIX, token, teamId, [[NSBundle mainBundle] bundleIdentifier], services, ring, timeout];
-
-		LOGI(@"Proxy config %s configured for push notifications with contact: %@",
-		linphone_proxy_config_get_identity(proxyCfg), params);
-		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
-		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
-	} else {
-		LOGI(@"Proxy config %s NOT configured for push notifications", linphone_proxy_config_get_identity(proxyCfg));
-		// no push token:
-		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, NULL);
-		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
-	}
-
-	linphone_proxy_config_done(proxyCfg);
+	linphone_core_did_register_for_remote_push(LC, (__bridge void*)remoteNotificationToken);
 }
 
 #pragma mark - Misc Functions
@@ -2177,7 +2066,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		if ([ct currentCalls] != nil) {
 			if (call) {
 				LOGI(@"Pausing SIP call because GSM call");
-				CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
+				CallManager.instance.speakerBeforePause = [CallManager.instance isSpeakerEnabled];
 				linphone_call_pause(call);
 				[self startCallPausedLongRunningTask];
 			} else if (linphone_core_is_in_conference(theLinphoneCore)) {
@@ -2192,9 +2081,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (NSString *)contactFilter {
 	NSString *filter = @"*";
 	if ([self lpConfigBoolForKey:@"contact_filter_on_default_domain"]) {
-		LinphoneProxyConfig *proxy_cfg = linphone_core_get_default_proxy_config(theLinphoneCore);
-		if (proxy_cfg && linphone_proxy_config_get_addr(proxy_cfg)) {
-			return [NSString stringWithCString:linphone_proxy_config_get_domain(proxy_cfg)
+		LinphoneAccount *account = linphone_core_get_default_account(theLinphoneCore);
+		LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
+		if (account && linphone_account_params_get_server_addr(accountParams)) {
+			return [NSString stringWithCString:linphone_account_params_get_domain(accountParams)
 				encoding:[NSString defaultCStringEncoding]];
 		}
 	}
@@ -2211,7 +2101,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 #pragma mark -
 
 - (void)removeAllAccounts {
-	linphone_core_clear_proxy_config(LC);
+	linphone_core_clear_accounts(LC);
 	linphone_core_clear_all_auth_info(LC);
 }
 
@@ -2219,12 +2109,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (!addr)
 		return NO;
 
-	const MSList *it = linphone_core_get_proxy_config_list(LC);
-	while (it) {
-		if (linphone_address_weak_equal(addr, linphone_proxy_config_get_identity_address(it->data))) {
+	const MSList *accounts = linphone_core_get_account_list(LC);
+	while (accounts) {
+		if (linphone_address_weak_equal(addr, linphone_account_params_get_identity_address(linphone_account_get_params(accounts->data)))) {
 			return YES;
 		}
-		it = it->next;
+		accounts = accounts->next;
 	}
 	return NO;
 }
