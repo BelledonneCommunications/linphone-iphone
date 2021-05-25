@@ -1287,12 +1287,13 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 - (void)startLinphoneCore {
 	bool pushEnabled = [self lpConfigIntForKey:@"proxy" inSection:@"push_notification_allowed"];
+	linphone_core_set_push_notification_enabled([LinphoneManager getLc], pushEnabled);
 	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
 	while (accountsList) {
 		LinphoneAccount * account = accountsList->data;
 		LinphoneAccountParams * accountParams = linphone_account_params_clone(linphone_account_get_params(account));
 		linphone_account_params_set_push_notification_allowed(accountParams, pushEnabled);
-		linphone_account_params_set_remote_push_notification_allowed(accountParams, true);
+		linphone_account_params_set_remote_push_notification_allowed(accountParams, pushEnabled);
 		
 		LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(accountParams);
 #ifdef DEBUG
