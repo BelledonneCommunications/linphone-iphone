@@ -40,7 +40,6 @@ import AVFoundation
 	var lc: Core?
 	@objc var speakerBeforePause : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
-	@objc var alreadyRegisteredForNotification: Bool = false
 	var referedFromCall: String?
 	var referedToCall: String?
 	var endCallkit: Bool = false
@@ -193,23 +192,6 @@ import AVFoundation
 				callInfo!.callId = current
 				providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 			}
-		}
-	}
-
-	// From ios13, display the callkit view when the notification is received.
-	@objc func displayIncomingCall(callId: String) {
-		let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
-		if (uuid != nil) {
-			return
-		}
-
-		let call = CallManager.instance().callByCallId(callId: callId)
-		if (call != nil) {
-			let displayName = FastAddressBook.displayName(for: call?.remoteAddress?.getCobject) ?? "Unknow"
-			let video = UIApplication.shared.applicationState == .active && (lc!.videoActivationPolicy?.automaticallyAccept ?? false) && (call!.remoteParams?.videoEnabled ?? false)
-			displayIncomingCall(call: call, handle: (call!.remoteAddress?.asStringUriOnly())!, hasVideo: video, callId: callId, displayName: displayName)
-		} else {
-			displayIncomingCall(call: nil, handle: "Calling", hasVideo: true, callId: callId, displayName: "Calling")
 		}
 	}
 
