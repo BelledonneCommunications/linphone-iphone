@@ -176,7 +176,7 @@ class NotificationService: UNNotificationServiceExtension {
 			}
 		}
 
-		NotificationService.log.message(message: "msg: \(content) \n")
+		NotificationService.log.message(message: "received msg size : \(content.count) \n")
 		return msgData;
 	}
 

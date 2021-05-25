@@ -71,10 +71,10 @@
 											 object:nil];
 
 	// Update to default state
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
 	messagesUnreadCount = linphone_config_get_int(linphone_core_get_config(LC), "app", "voice_mail_messages_count", 0);
 
-	[self proxyConfigUpdate:config];
+	[self accountUpdate:account];
 	[self updateUI:linphone_core_get_calls_nb(LC)];
 	[self updateVoicemail];
 }
@@ -107,8 +107,8 @@
 #pragma mark - Event Functions
 
 - (void)registrationUpdate:(NSNotification *)notif {
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
-	[self proxyConfigUpdate:config];
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	[self accountUpdate:account];
 }
 
 - (void)globalStateUpdate:(NSNotification *)notif {
@@ -180,7 +180,7 @@
 			return [UIImage imageNamed:@"led_connected.png"];
 	}
 }
-- (void)proxyConfigUpdate:(LinphoneProxyConfig *)config {
+- (void)accountUpdate:(LinphoneAccount *)account {
 	LinphoneRegistrationState state = LinphoneRegistrationNone;
 	NSString *message = nil;
 	LinphoneGlobalState gstate = linphone_core_get_global_state(LC);
@@ -191,16 +191,16 @@
 		message = NSLocalizedString(@"Network down", nil);
 	} else if (gstate == LinphoneGlobalConfiguring) {
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
-	} else if (config == NULL) {
+	} else if (account == NULL) {
 		state = LinphoneRegistrationNone;
-		if (linphone_core_get_proxy_config_list(LC) != NULL) {
+		if (linphone_core_get_account_list(LC) != NULL) {
 			message = NSLocalizedString(@"No default account", nil);
 		} else {
 			message = NSLocalizedString(@"No account configured", nil);
 		}
 
 	} else {
-		state = linphone_proxy_config_get_state(config);
+		state = linphone_account_get_state(account);
 
 		switch (state) {
 			case LinphoneRegistrationOk:
@@ -406,9 +406,9 @@
 }
 
 - (IBAction)onRegistrationStateClick:(id)sender {
-	if (linphone_core_get_default_proxy_config(LC)) {
+	if (linphone_core_get_default_account(LC)) {
 		linphone_core_refresh_registers(LC);
-	} else if (linphone_core_get_proxy_config_list(LC)) {
+	} else if (linphone_core_get_account_list(LC)) {
 		[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
 	} else {
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];

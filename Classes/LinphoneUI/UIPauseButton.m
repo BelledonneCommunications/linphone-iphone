@@ -85,7 +85,7 @@
 				if ([CallManager callKitEnabled]) {
 					[CallManager.instance setHeldWithCall:call hold:true];
 				} else {
-					CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
+					CallManager.instance.speakerBeforePause = [CallManager.instance isSpeakerEnabled];
 					linphone_call_pause(call);
 				}
 			} else {
@@ -106,7 +106,7 @@
 				if ([CallManager callKitEnabled]) {
 					[CallManager.instance setHeldWithCall:currentCall hold:true];
 				} else {
-					CallManager.instance.speakerBeforePause = CallManager.instance.speakerEnabled;
+					CallManager.instance.speakerBeforePause = [CallManager.instance isSpeakerEnabled];
 					linphone_call_pause(currentCall);
 				}
 			} else {

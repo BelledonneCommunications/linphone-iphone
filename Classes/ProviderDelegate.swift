@@ -26,11 +26,9 @@ import os
 
 @objc class CallInfo: NSObject {
 	var callId: String = ""
-	var accepted = false
 	var toAddr: Address?
 	var isOutgoing = false
 	var sasEnabled = false
-	var declined = false
 	var connected = false
 	var reason: Reason = Reason.None
 	var displayName: String?
@@ -109,7 +107,6 @@ class ProviderDelegate: NSObject {
 				default:
 					callInfo?.reason = Reason.Unknown
 				}
-				callInfo?.declined = true
 				self.callInfos.updateValue(callInfo!, forKey: uuid)
 				try? call?.decline(reason: callInfo!.reason)
 			}
@@ -181,14 +178,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 		let call = CallManager.instance().callByCallId(callId: callId)
 		CallManager.instance().lc?.configureAudioSession()
-		if (call == nil || call?.state != Call.State.IncomingReceived) {
-			// The application is not yet registered or the call is not yet received, mark the call as accepted. The audio session must be configured here.
-			callInfo?.accepted = true
-			callInfos.updateValue(callInfo!, forKey: uuid)
-			CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 10)
-		} else {
-			CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
-		}
+		CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		action.fulfill()
 	}
 
@@ -215,7 +205,7 @@ extension ProviderDelegate: CXProviderDelegate {
 				if (call!.params?.localConferenceMode ?? false) {
 					return
 				}
-				CallManager.instance().speakerBeforePause = CallManager.instance().speakerEnabled
+				CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
 				try call!.pause()
 			} else {
 				if (call?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {

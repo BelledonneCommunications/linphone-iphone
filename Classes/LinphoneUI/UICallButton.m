@@ -66,11 +66,11 @@
 			const LinphoneAddress *to = linphone_call_log_get_to_address(log);
 			const char *domain = linphone_address_get_domain(to);
 			char *bis_address = NULL;
-			LinphoneProxyConfig *def_proxy = linphone_core_get_default_proxy_config(LC);
+			LinphoneAccount *def_account = linphone_core_get_default_account(LC);
 
 			// if the 'to' address is on the default proxy, only present the username
-			if (def_proxy) {
-				const char *def_domain = linphone_proxy_config_get_domain(def_proxy);
+			if (def_account) {
+				const char *def_domain = linphone_account_params_get_domain(linphone_account_get_params(def_account));
 				if (def_domain && domain && !strcmp(domain, def_domain)) {
 					bis_address = ms_strdup(linphone_address_get_username(to));
 				}
