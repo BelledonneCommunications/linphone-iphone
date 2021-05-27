@@ -453,8 +453,6 @@ import AVFoundation
 		if (cstate == .PushIncomingReceived) {
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId!, displayName: "Calling")
 		} else {
-			let addr = call.remoteAddress;
-			let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknow"
 			let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 			// we keep the speaker auto-enabled state in this static so that we don't
 			// force-enable it on ICE re-invite if the user disabled it.
@@ -465,9 +463,10 @@ import AVFoundation
 				CallManager.setAppData(sCall: call, appData: appData)
 			}
 
-
 			switch cstate {
 				case .IncomingReceived:
+					let addr = call.remoteAddress;
+					let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknown"
 					if (CallManager.callKitEnabled()) {
 						let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
 						if (uuid != nil) {
@@ -530,6 +529,11 @@ import AVFoundation
 					break
 				case .End,
 					 .Error:
+					var displayName = "Unknown"
+					if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
+						displayName = contactName
+					}
+					
 					UIDevice.current.isProximityMonitoringEnabled = false
 					CallManager.speaker_already_enabled = false
 					if (CallManager.instance().lc!.callsNb == 0) {
