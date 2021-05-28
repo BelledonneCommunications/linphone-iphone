@@ -199,8 +199,6 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) const char*  backCamId;
 @property(strong, nonatomic) NSString *SSID;
 @property (readonly) sqlite3* database;
-@property(nonatomic, strong) NSData *pushKitToken;
-@property(nonatomic, strong) NSData *remoteNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
 @property (nonatomic, assign) BOOL bluetoothAvailable;

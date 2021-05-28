@@ -1286,14 +1286,18 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)startLinphoneCore {
-	bool pushEnabled = [self lpConfigIntForKey:@"proxy" inSection:@"push_notification_allowed"];
-	linphone_core_set_push_notification_enabled([LinphoneManager getLc], pushEnabled);
+	bool corePushEnabled = [self lpConfigIntForKey:@"proxy" inSection:@"push_notification_allowed"];
+	linphone_core_set_push_notification_enabled([LinphoneManager getLc], corePushEnabled);
+	linphone_core_start([LinphoneManager getLc]);
+	
 	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
 	while (accountsList) {
 		LinphoneAccount * account = accountsList->data;
 		LinphoneAccountParams * accountParams = linphone_account_params_clone(linphone_account_get_params(account));
-		linphone_account_params_set_push_notification_allowed(accountParams, pushEnabled);
-		linphone_account_params_set_remote_push_notification_allowed(accountParams, pushEnabled);
+		// In linphone-iphone, remote and voip push autorisations always go together.
+		bool accountPushAllowed = linphone_account_params_get_push_notification_allowed(accountParams);
+		linphone_account_params_set_remote_push_notification_allowed(accountParams, accountPushAllowed);
+		
 		
 		LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(accountParams);
 #ifdef DEBUG
@@ -1302,13 +1306,10 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 #define PROVIDER_NAME "apns"
 #endif
 		linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
-		
 		linphone_account_set_params(account, accountParams);
 		linphone_account_params_unref(accountParams);
 		accountsList = accountsList->next;
 	}
-	
-	linphone_core_start([LinphoneManager getLc]);
 }
 
 - (void)createLinphoneCore {
@@ -1792,15 +1793,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	// For OutgoingCall, show CallOutgoingView
 	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE];
-}
-
-#pragma mark - Property Functions
-- (void)setRemoteNotificationToken:(NSData *)remoteNotificationToken {
-    if (remoteNotificationToken == _remoteNotificationToken) {
-        return;
-    }
-    _remoteNotificationToken = remoteNotificationToken;
-	linphone_core_did_register_for_remote_push(LC, (__bridge void*)remoteNotificationToken);
 }
 
 #pragma mark - Misc Functions
