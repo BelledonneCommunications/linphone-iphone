@@ -81,6 +81,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
+	
     [LinphoneManager.instance startLinphoneCore];
     [LinphoneManager.instance.fastAddressBook reloadFriends];
 	
@@ -486,13 +487,13 @@
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), deviceToken);
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[LinphoneManager.instance setRemoteNotificationToken:deviceToken];
+		linphone_core_did_register_for_remote_push(LC, (__bridge void*)deviceToken);
 	});
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	LOGI(@"[APNs] %@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
-	[LinphoneManager.instance setRemoteNotificationToken:nil];
+	linphone_core_did_register_for_remote_push(LC, nil);
 }
 
 #pragma mark - UNUserNotifications Framework
