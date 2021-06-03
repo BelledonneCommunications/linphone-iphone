@@ -22,6 +22,11 @@
 #define IPAD (LinphoneManager.runningOnIpad)
 #define ANIMATED ([LinphoneManager.instance lpConfigBoolForKey:@"animations_preference"])
 #define LC ([LinphoneManager getLc])
+#define UIColorFromRGB(rgbValue) \
+[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+				green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
+				 blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
+				alpha:1.0]
 
 @interface LinphoneUtils : NSObject
 
@@ -31,6 +36,7 @@
 + (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button;
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
 + (NSString *)deviceModelIdentifier;
++ (UIImage *)resizeImage:(UIImage *)imageToResize newSize:(CGSize)newSize;
 
 + (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)addr;
 + (UIAlertController *)networkErrorView;

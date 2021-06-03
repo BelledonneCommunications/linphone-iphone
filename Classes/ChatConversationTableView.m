@@ -41,6 +41,17 @@
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
     _imagesInChatroom = [NSMutableDictionary dictionary];
 	_currentIndex = 0;
+	[self startEphemeralDisplayTimer];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(ephemeralDeleted:)
+											   name:kLinphoneEphemeralMessageDeletedInRoom
+											 object:nil];
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+	[self stopEphemeralDisplayTimer];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[super viewWillDisappear:animated];
 }
 
 #pragma mark -
@@ -54,35 +65,48 @@
     [totalEventList removeAllObjects];
 }
 
+-(bool) eventTypeIsOfInterestForOneToOneRoom:(LinphoneEventLogType)type {
+	return
+	type == LinphoneEventLogTypeConferenceChatMessage ||
+	type == LinphoneEventLogTypeConferenceEphemeralMessageEnabled ||
+	type == LinphoneEventLogTypeConferenceEphemeralMessageDisabled ||
+	type == LinphoneEventLogTypeConferenceEphemeralMessageLifetimeChanged;
+}
+
 - (void)updateData {
-    [self clearEventList];
+	[self clearEventList];
 	if (!_chatRoom)
 		return;
-    
+	
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	bctbx_list_t *chatRoomEvents = (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
-		? linphone_chat_room_get_history_message_events(_chatRoom, 0)
-		: linphone_chat_room_get_history_events(_chatRoom, 0);
-    bctbx_list_t *head = chatRoomEvents;
-    size_t listSize = bctbx_list_size(chatRoomEvents);
+	bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
+	bctbx_list_t *chatRoomEvents = linphone_chat_room_get_history_events(_chatRoom, 0);
+	
+	
+	bctbx_list_t *head = chatRoomEvents;
+	size_t listSize = bctbx_list_size(chatRoomEvents);
 	totalEventList = [[NSMutableArray alloc] initWithCapacity:listSize];
-    eventList = [[NSMutableArray alloc] initWithCapacity:MIN(listSize, BASIC_EVENT_LIST)];
+	eventList = [[NSMutableArray alloc] initWithCapacity:MIN(listSize, BASIC_EVENT_LIST)];
 	BOOL autoDownload = (linphone_core_get_max_size_for_auto_download_incoming_files(LC) > -1);
 	while (chatRoomEvents) {
-        LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
-		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-		// if auto_download is available and file transfer in progress, not add event now
-		if (!(autoDownload && chat && linphone_chat_message_is_file_transfer_in_progress(chat))) {
-			[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
-			if (listSize <= BASIC_EVENT_LIST) {
-				[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+		LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
+		if (oneToOne && ![self eventTypeIsOfInterestForOneToOneRoom:linphone_event_log_get_type(event)]) {
+			chatRoomEvents = chatRoomEvents->next;
+		} else {
+			LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+			// if auto_download is available and file transfer in progress, not add event now
+			if (!(autoDownload && chat && linphone_chat_message_is_file_transfer_in_progress(chat))) {
+				[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+				if (listSize <= BASIC_EVENT_LIST) {
+					[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+				}
 			}
+			
+			chatRoomEvents = chatRoomEvents->next;
+			listSize -= 1;
 		}
-
-		chatRoomEvents = chatRoomEvents->next;
-        listSize -= 1;
 	}
-    bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
+	bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
 }
 
 - (void)refreshData {
@@ -185,6 +209,7 @@
 - (void)setChatRoom:(LinphoneChatRoom *)room {
 	_chatRoom = room;
 	[self reloadData];
+	[self updateEphemeralTimes];
 }
 
 static const int MAX_AGGLOMERATED_TIME=300;
@@ -376,6 +401,49 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
             [totalEventList removeObjectAtIndex:index];
 		[eventList removeObjectAtIndex:indexPath.row];
 	}];
+}
+
+#pragma mark ephemeral messages
+
+-(void) startEphemeralDisplayTimer {
+	_ephemeralDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:1
+															  target:self
+															selector:@selector(updateEphemeralTimes)
+															userInfo:nil
+															 repeats:YES];
+}
+
+-(void) updateEphemeralTimes {
+	NSDateComponentsFormatter *f= [[NSDateComponentsFormatter alloc] init];
+	f.unitsStyle = NSDateComponentsFormatterUnitsStylePositional;
+	f.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorPad;
+		
+	for (NSValue *v in eventList) {
+		LinphoneEventLog *event = [v pointerValue];
+		if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
+			LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
+			if (linphone_chat_message_is_outgoing(msg) && linphone_chat_message_is_ephemeral(msg)) {
+				UIChatBubbleTextCell *cell = (UIChatBubbleTextCell  *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[eventList indexOfObject:v] inSection:0]];
+				long duration = linphone_chat_message_get_ephemeral_expire_time(msg) == 0 ?
+					linphone_chat_room_get_ephemeral_lifetime(linphone_chat_message_get_chat_room(msg)) :
+					linphone_chat_message_get_ephemeral_expire_time(msg)-[NSDate date].timeIntervalSince1970;
+				f.allowedUnits = (duration > 86400 ? kCFCalendarUnitDay : 0)|(duration > 3600 ? kCFCalendarUnitHour : 0)|kCFCalendarUnitMinute|kCFCalendarUnitSecond;
+				cell.ephemeralTime.text =  [f stringFromTimeInterval:duration];
+				cell.ephemeralTime.hidden = NO;
+				cell.ephemeralIcon.hidden = NO;
+			}
+		}
+	}
+}
+
+-(void) stopEphemeralDisplayTimer {
+	[_ephemeralDisplayTimer invalidate];
+}
+
+- (void)ephemeralDeleted:(NSNotification *)notif {
+	LinphoneChatRoom *r =[[notif.userInfo objectForKey:@"room"] pointerValue];
+	if (r ==_chatRoom)
+		[self reloadData];
 }
 
 @end

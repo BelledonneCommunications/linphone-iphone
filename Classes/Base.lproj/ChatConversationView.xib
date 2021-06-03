@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,6 +18,7 @@
                 <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
                 <outlet property="encryptedButton" destination="tjL-Vc-5gN" id="zxw-Fs-ofB"/>
+                <outlet property="ephemeralndicator" destination="LN7-ci-kNn" id="hqU-98-qkJ"/>
                 <outlet property="imagesCollectionView" destination="JGQ-p2-HCX" id="6dt-1f-jpa"/>
                 <outlet property="imagesView" destination="3qd-ys-t2L" id="f9L-FU-PMI"/>
                 <outlet property="infoButton" destination="Vqb-Un-4xv" id="pa1-Iz-5QQ"/>
@@ -27,9 +29,11 @@
                 <outlet property="messageView" destination="14" id="89"/>
                 <outlet property="particpantsLabel" destination="Ncq-Zc-X6j" id="tQM-q1-cey"/>
                 <outlet property="pictureButton" destination="73" id="84"/>
+                <outlet property="popupMenu" destination="gdT-1Q-vU2" id="M7Q-tv-zRF"/>
                 <outlet property="portraitView" destination="6" id="xJJ-1H-6N6"/>
                 <outlet property="sendButton" destination="15" id="27"/>
                 <outlet property="tableController" destination="29" id="32"/>
+                <outlet property="toggleMenuButton" destination="CPn-Oc-9PX" id="QdS-xO-bfA"/>
                 <outlet property="toggleSelectionButton" destination="c9z-aq-2UP" id="kiK-wF-8iU"/>
                 <outlet property="topBar" destination="7" id="JH8-F4-Bdq"/>
                 <outlet property="view" destination="6" id="11"/>
@@ -142,6 +146,19 @@
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="0we-lw-TyJ"/>
                                     </connections>
                                 </button>
+                                <button hidden="YES" opaque="NO" tag="4697" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CPn-Oc-9PX" userLabel="toggleMenuButton" customClass="UIInterfaceStyleButton">
+                                    <rect key="frame" x="331" y="0.0" width="83" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="more_menu_default.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onToggleMenu:" destination="-1" eventType="touchUpInside" id="Mlz-Hp-FXl"/>
+                                    </connections>
+                                </button>
                                 <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c9z-aq-2UP" userLabel="toggleSelectionButton" customClass="UIInterfaceStyleButton">
                                     <rect key="frame" x="248" y="0.0" width="83" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
@@ -185,7 +202,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
-                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         </view>
                         <view tag="12" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49" userLabel="contentView">
                             <rect key="frame" x="0.0" y="66" width="414" height="722"/>
@@ -194,7 +211,7 @@
                                 <tableView clipsSubviews="YES" tag="13" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="messagesTableView">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="634"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <gestureRecognizers/>
                                     <connections>
                                         <outlet property="dataSource" destination="29" id="6U9-NJ-Z7W"/>
@@ -216,12 +233,12 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </view>
                                 <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="16" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No conversation." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7C-WH-uR1" userLabel="emptyTableLabel">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="625"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -260,11 +277,15 @@
                                         <view tag="20" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pqa-tg-5ml" userLabel="messageField" customClass="HPGrowingTextView">
                                             <rect key="frame" x="72" y="13" width="269" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <accessibility key="accessibilityConfiguration" label="Message field"/>
                                         </view>
+                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" tag="44536" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ephemeral_messages_color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="LN7-ci-kNn" userLabel="ephemeralIndicator">
+                                            <rect key="frame" x="393" y="44" width="15" height="15"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                        </imageView>
                                     </subviews>
-                                    <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 </view>
                                 <view clipsSubviews="YES" alpha="0.90000000000000002" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3qd-ys-t2L" userLabel="imagesView">
                                     <rect key="frame" x="0.0" y="625" width="414" height="0.0"/>
@@ -282,7 +303,7 @@
                                             </collectionViewFlowLayout>
                                         </collectionView>
                                     </subviews>
-                                    <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 </view>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tjL-Vc-5gN" userLabel="encryptedButton">
                                     <rect key="frame" x="359" y="10" width="34" height="40"/>
@@ -294,13 +315,18 @@
                                 </button>
                             </subviews>
                         </view>
+                        <tableView hidden="YES" clipsSubviews="YES" tag="6992" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="gdT-1Q-vU2" userLabel="popupMenu">
+                            <rect key="frame" x="142" y="66" width="273" height="132"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        </tableView>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <gestureRecognizers/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="365.60000000000002" y="-36.431784107946029"/>
+            <point key="canvasLocation" x="365.21739130434787" y="-36.830357142857139"/>
         </view>
         <view contentMode="scaleToFill" id="680-UL-sil" userLabel="iphone6MetricsView">
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
@@ -319,7 +345,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                 </imageView>
                                 <button opaque="NO" tag="4" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N2g-vL-3x8" userLabel="backButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="37.5" height="66"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="37" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -334,7 +360,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" tag="11" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bqf-Gg-2Rw" userLabel="cancelButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="37.5" height="66"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="37" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Cancel"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -387,8 +413,21 @@
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="fNp-ya-dag"/>
                                     </connections>
                                 </button>
+                                <button hidden="YES" opaque="NO" tag="4697" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pQX-Ll-9wL" userLabel="toggleMenuButton" customClass="UIInterfaceStyleButton">
+                                    <rect key="frame" x="285" y="0.0" width="39" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="more_menu_default.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onToggleMenu:" destination="-1" eventType="touchUpInside" id="vYL-BQ-UTF"/>
+                                    </connections>
+                                </button>
                                 <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uVy-PC-gn9" userLabel="infoButton" customClass="UIIconButton">
-                                    <rect key="frame" x="247.5" y="0.0" width="37.5" height="66"/>
+                                    <rect key="frame" x="248" y="0.0" width="37" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Select all"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -404,7 +443,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="6" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wag-QV-oUD" userLabel="callButton" customClass="UIIconButton">
-                                    <rect key="frame" x="247.5" y="0.0" width="37.5" height="66"/>
+                                    <rect key="frame" x="248" y="0.0" width="37" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <state key="normal" image="call_alt_start_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -416,7 +455,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" tag="7" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t25-en-4LP" userLabel="backToCallButton" customClass="UIBackToCallButton">
-                                    <rect key="frame" x="247.5" y="0.0" width="37.5" height="66"/>
+                                    <rect key="frame" x="248" y="0.0" width="37" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <state key="normal" image="call_back_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -428,7 +467,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4RV-US-Kr1" userLabel="toggleSelectionButton" customClass="UIIconButton">
-                                    <rect key="frame" x="247.5" y="0.0" width="37.5" height="66"/>
+                                    <rect key="frame" x="248" y="0.0" width="37" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Select all"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -513,7 +552,7 @@
                                             </connections>
                                         </button>
                                         <view tag="20" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C02-2r-vXK" userLabel="messageField" customClass="HPGrowingTextView">
-                                            <rect key="frame" x="32.5" y="13" width="257" height="40"/>
+                                            <rect key="frame" x="32" y="13" width="257" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <accessibility key="accessibilityConfiguration" label="Message field"/>
@@ -532,17 +571,26 @@
                                                 <action selector="onSendClick:" destination="-1" eventType="touchUpInside" id="dx4-lF-ekG"/>
                                             </connections>
                                         </button>
+                                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" tag="44536" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ephemeral_messages_color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="Gsu-3J-HRp" userLabel="ephemeralIndicator">
+                                            <rect key="frame" x="305" y="40" width="15" height="15"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                        </imageView>
                                     </subviews>
                                 </view>
                             </subviews>
                         </view>
+                        <tableView hidden="YES" clipsSubviews="YES" tag="6992" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iwm-pi-mku" userLabel="popupMenu">
+                            <rect key="frame" x="13" y="66" width="311" height="132"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        </tableView>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <gestureRecognizers/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="-874.39999999999998" y="-137.18140929535232"/>
+            <point key="canvasLocation" x="-875.36231884057975" y="-137.27678571428569"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="29" userLabel="messagesTableView" customClass="ChatConversationTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -588,8 +636,16 @@
         <image name="delete_default.png" width="34.400001525878906" height="44.799999237060547"/>
         <image name="delete_disabled.png" width="34.400001525878906" height="44.799999237060547"/>
         <image name="deselect_all.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="ephemeral_messages_color_A.png" width="136" height="158.39999389648438"/>
+        <image name="more_menu_default.png" width="10.319999694824219" height="13.680000305175781"/>
         <image name="security_1_indicator.png" width="27.5" height="32.5"/>
         <image name="select_all_default.png" width="43.200000762939453" height="43.200000762939453"/>
         <image name="select_all_disabled.png" width="43.200000762939453" height="43.200000762939453"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

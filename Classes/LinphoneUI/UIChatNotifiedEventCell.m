@@ -146,7 +146,20 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
             
             break;
         }
-
+			
+		case LinphoneEventLogTypeConferenceEphemeralMessageDisabled: {
+			eventString = [NSString stringWithFormat:NSLocalizedString(@"You disabled ephemeral messages", nil)];
+			break;
+		}
+		case LinphoneEventLogTypeConferenceEphemeralMessageEnabled: {
+			eventString = [NSString stringWithFormat:NSLocalizedString(@"You enabled ephemeral messages", nil)];
+			break;
+		}
+		case LinphoneEventLogTypeConferenceEphemeralMessageLifetimeChanged: {
+			eventString = [NSString stringWithFormat:NSLocalizedString(@"Ephemeral messages expiry date: %@",nil),[self formatEphemeralExpiration:linphone_event_log_get_ephemeral_message_lifetime(event)]];
+			break;
+		}
+			
 		default:
 			return;
 	}
@@ -174,4 +187,17 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 	[super layoutSubviews];
 }
 
+- (NSString *) formatEphemeralExpiration:(long)duration {
+	switch (duration) {
+		case 0:return NSLocalizedString(@"Disabled",nil);break;
+		case 60:return NSLocalizedString(@"1 minute",nil);break;
+		case 3600:return NSLocalizedString(@"1 hour",nil);break;
+		case 86400:return NSLocalizedString(@"1 day",nil);break;
+		case 259200:return NSLocalizedString(@"3 days",nil);break;
+		case 604800L:return NSLocalizedString(@"1 week",nil);break;
+	}
+	return NSLocalizedString(@"Unexpected duration",nil);
+}
+
+ 
 @end

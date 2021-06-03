@@ -57,6 +57,7 @@
 @property(nonatomic) NSInteger currentIndex;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property NSMutableDictionary<NSString *, UIImage *> *imagesInChatroom;
+@property(nonatomic) NSTimer *ephemeralDisplayTimer;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;

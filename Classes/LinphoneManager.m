@@ -74,6 +74,8 @@ NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpda
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
+NSString *const kLinphoneEphemeralMessageDeletedInRoom = @"LinphoneEphemeralMessageDeletedInRoom";
+
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 
@@ -589,6 +591,18 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				}
 			}];
 	}
+}
+
+#pragma mark - Ephemeral State Functions
+static void linphone_iphone_ephemeral_message_deleted(LinphoneCore *lc, LinphoneChatRoom *cr) {
+	LinphoneManager *lm = (__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc));
+	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSValue valueWithPointer:cr], @"room", nil];
+	
+	// dispatch the notification asynchronously
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneEphemeralMessageDeletedInRoom object:lm userInfo:dict];
+	});
+	
 }
 
 #pragma mark - Transfert State Functions
@@ -1356,6 +1370,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_call_log_updated(cbs, linphone_iphone_call_log_updated);
 	linphone_core_cbs_set_call_id_updated(cbs, linphone_iphone_call_id_updated);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
+	linphone_core_cbs_set_chat_room_ephemeral_message_deleted(cbs, linphone_iphone_ephemeral_message_deleted);
+
 
 	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationAppGroupId UTF8String], true);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
