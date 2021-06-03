@@ -30,6 +30,15 @@
 
 @implementation LinphoneUtils
 
+
++ (UIImage *)resizeImage:(UIImage *)imageToResize newSize:(CGSize)newSize {
+	UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:newSize];
+	UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext*_Nonnull myContext) {
+		[imageToResize drawInRect:(CGRect) {.origin = CGPointZero, .size = newSize}];
+	}];
+	return [image imageWithRenderingMode:imageToResize.renderingMode];
+}
+
 + (BOOL)hasSelfAvatar {
 	return [LinphoneManager.instance lpConfigStringForKey:@"avatar"] != nil;
 }
@@ -917,5 +926,6 @@
     
     return imgRef;
 }
+
 
 @end

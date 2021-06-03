@@ -49,7 +49,7 @@
 
 @interface ChatConversationView
 	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
-                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UIDocumentMenuDelegate,UIDocumentPickerDelegate> {
+                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UIDocumentMenuDelegate,UIDocumentPickerDelegate,UITableViewDataSource, UITableViewDelegate> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
@@ -88,6 +88,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *encryptedButton;
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 @property FileContext *fileContext;
+@property (weak, nonatomic) IBOutlet UITableView *popupMenu;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleMenuButton;
+@property (weak, nonatomic) IBOutlet UIImageView *ephemeralndicator;
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (void)autoDownload:(LinphoneChatMessage *)message;

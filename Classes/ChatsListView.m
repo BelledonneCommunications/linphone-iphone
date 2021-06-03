@@ -35,6 +35,10 @@
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(ephemeralDeleted:)
+											   name:kLinphoneEphemeralMessageDeletedInRoom
+											 object:nil];
 	[_backToCallButton update];
 	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
@@ -144,6 +148,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)crashButtonTapped:(id)sender {
     assert(NO);
+}
+
+- (void)ephemeralDeleted:(NSNotification *)notif {
+	[self.tableController loadData];
 }
 
 @end

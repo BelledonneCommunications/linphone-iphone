@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,6 +15,8 @@
                 <outlet property="cancelButton" destination="6dl-Nz-rdv" id="ygz-nv-omC"/>
                 <outlet property="contactDateLabel" destination="JyR-RQ-uwF" id="Tc4-9t-i5V"/>
                 <outlet property="downloadButton" destination="N75-gL-R6t" id="EgN-Ab-Ded"/>
+                <outlet property="ephemeralIcon" destination="7JB-ZL-0lZ" id="cUE-Za-Yra"/>
+                <outlet property="ephemeralTime" destination="IRV-qN-sRj" id="Woi-CN-Au3"/>
                 <outlet property="fileButton" destination="IGl-nl-xIE" id="tLL-3L-Byt"/>
                 <outlet property="fileName" destination="WkE-rP-Y0R" id="bjY-zl-mhs"/>
                 <outlet property="fileTransferProgress" destination="USm-wC-GvG" id="POt-YD-NCG"/>
@@ -167,6 +169,17 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
+                        <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ephemeral_messages_color_A.png" id="7JB-ZL-0lZ" userLabel="ephemeralIcon">
+                            <rect key="frame" x="351" y="286" width="10" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        </imageView>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="IRV-qN-sRj" userLabel="ephemeralTime">
+                            <rect key="frame" x="282" y="286" width="65" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
@@ -177,7 +190,7 @@
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-117.59999999999999" y="244.22788605697153"/>
+            <point key="canvasLocation" x="-118.40000000000001" y="244.22788605697153"/>
         </view>
         <tapGestureRecognizer id="5ZI-Ip-lGl" userLabel="resendClick">
             <connections>
@@ -202,6 +215,7 @@
         <image name="color_G.png" width="2" height="2"/>
         <image name="color_I.png" width="2" height="2"/>
         <image name="color_M.png" width="2" height="2"/>
+        <image name="ephemeral_messages_color_A.png" width="136" height="158.39999389648438"/>
         <image name="linphone_logo.png" width="41.599998474121094" height="42.400001525878906"/>
     </resources>
 </document>

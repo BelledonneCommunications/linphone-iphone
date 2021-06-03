@@ -45,6 +45,8 @@
 //@property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
 @property (nonatomic, strong) UIDocumentPickerViewController *documentPicker;
 @property (weak, nonatomic) IBOutlet UIView *innerView;
+@property (weak, nonatomic) IBOutlet UILabel *ephemeralTime;
+@property (weak, nonatomic) IBOutlet UIImageView *ephemeralIcon;
 
 @property(nonatomic) BOOL isFirst;
 @property(nonatomic) BOOL isLast;

@@ -26,6 +26,8 @@
 #import "UIChatBubbleTextCell.h"
 #import "DevicesListView.h"
 #import "SVProgressHUD.h"
+#import "EphemeralSettingsView.h"
+#import "Utils.h"
 
 @implementation FileContext
 
@@ -335,7 +337,21 @@ static UICompositeViewDescription *compositeDescription = nil;
     _encryptedButton.hidden = image ? FALSE : TRUE;
 	[self update];
     [self shareFile];
+	
+	if (![self isBasicChatRoom]) {
+		[self setupPopupMenu];
+		_ephemeralndicator.hidden = !linphone_chat_room_ephemeral_enabled(_chatRoom);
+	}
+
 }
+
+-(BOOL) isBasicChatRoom {
+	if (!_chatRoom)
+		return true;
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	return capabilities & LinphoneChatRoomCapabilitiesBasic;
+}
+
 
 - (void)configureMessageField {
 	if (isOneToOne) {
@@ -563,6 +579,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_backToCallButton update];
 	_infoButton.hidden = (isOneToOne|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
+	_toggleMenuButton.hidden =  [self isBasicChatRoom] || _tableController.tableView.isEditing;
+	_tableController.editButton.hidden = _tableController.editButton.hidden || ![self isBasicChatRoom];
 }
 
 - (void)updateParticipantLabel {
@@ -1539,6 +1557,70 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	UIGraphicsEndImageContext();
 
 	return newImage;
+}
+
+// Popup menu
+
+
+
+- (void) setupPopupMenu {
+	_popupMenu.dataSource = self;
+	_popupMenu.delegate = self;
+	_tableController.editButton.hidden = true;
+	_popupMenu.layer.shadowColor = [UIColor lightGrayColor].CGColor;
+	_popupMenu.layer.shadowOpacity = 0.5;
+	_popupMenu.layer.shadowOffset = CGSizeZero;
+	_popupMenu.layer.shadowRadius = 10;
+	_popupMenu.layer.masksToBounds = false;
+	_toggleMenuButton.hidden = false;
+}
+
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[self onToggleMenu:nil];
+	if (indexPath.row == 0) {
+		[self goToDeviceListView];
+	}
+	if (indexPath.row == 1) {
+		EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
+		view.room = _chatRoom;
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	}
+	if (indexPath.row == 2) {
+		[_tableController onEditClick:nil];
+		[self onEditionChangeClick:nil];
+	}
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return 3;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [[UITableViewCell alloc] init];
+	
+	if (indexPath.row == 0) {
+		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_security_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Conversation's devices",nil);
+	}
+	if (indexPath.row == 1) {
+		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
+	}
+	if (indexPath.row == 2) {
+		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
+	}
+	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	return cell;
+}
+- (IBAction)onToggleMenu:(id)sender {
+	_popupMenu.hidden = !_popupMenu.hidden;
+	if (!_popupMenu.hidden)
+		[_popupMenu selectRowAtIndexPath:nil animated:false scrollPosition:UITableViewScrollPositionNone];
 }
 
 
