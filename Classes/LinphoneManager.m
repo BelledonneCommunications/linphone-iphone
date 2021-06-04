@@ -751,7 +751,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		bool foundMatchingConfig = false;
 		while (accountList && !foundMatchingConfig) {
 			LinphoneAccountParams const *accountParams = linphone_account_get_params(accountList->data);
-			const char * configUsername = linphone_account_params_get_identity(accountParams);
+			const char * configUsername = linphone_address_get_username(linphone_account_params_get_identity_address(accountParams));
 			const char * configDomain = linphone_account_params_get_domain(accountParams);
 			foundMatchingConfig = (strcmp(configUsername, usernameC) == 0) && (strcmp(configDomain, domainC) == 0);
 			accountList = accountList->next;
