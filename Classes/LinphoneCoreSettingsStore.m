@@ -163,6 +163,7 @@
 		[self setCString:"" forKey:@"account_userid_preference"];
 		[self setCString:"" forKey:@"account_mandatory_password_preference"];
 		[self setCString:"" forKey:@"ha1_preference"];
+		[self setCString:"" forKey:@"ha1_algo_preference"];
 		[self setInteger:-1 forKey:@"account_expire_preference"];
 		[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 		[self setCString:"" forKey:@"account_prefix_preference"];
@@ -229,6 +230,7 @@
 				[self setCString:linphone_auth_info_get_passwd(ai) forKey:@"account_mandatory_password_preference"];
 				// hidden but useful if provisioned
 				[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
+				[self setCString:linphone_auth_info_get_algorithm(ai) forKey:@"ha1_algo_preference"];
 			}
 
 			int idx = (int)bctbx_list_index(linphone_core_get_account_list(LC), account);
@@ -494,6 +496,7 @@
 	NSString *transport = [self stringForKey:@"account_transport_preference"];
 	NSString *accountHa1 = [self stringForKey:@"ha1_preference"];
 	NSString *accountPassword = [self stringForKey:@"account_mandatory_password_preference"];
+	NSString *accountAlgoPreference = [self stringForKey:@"ha1_algo_preference"];
 	BOOL isOutboundProxy = [self boolForKey:@"account_outbound_proxy_preference"];
 	BOOL use_avpf = [self boolForKey:@"account_avpf_preference"];
 	BOOL is_default = [self boolForKey:@"account_is_default_preference"];
@@ -507,8 +510,6 @@
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
 
-		const char *route = NULL;
-
 		if ((!proxyAddress || [proxyAddress length] < 1) && domain) {
 			proxyAddress = domain;
 		}
@@ -517,8 +518,7 @@
 			proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
 		}
 
-		char *proxy = ms_strdup(proxyAddress.UTF8String);
-		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxy);
+		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxyAddress.UTF8String);
 
 		if (proxy_addr) {
 			LinphoneTransportType type = LinphoneTransportUdp;
@@ -528,8 +528,6 @@
 				type = LinphoneTransportTls;
 
 			linphone_address_set_transport(proxy_addr, type);
-			ms_free(proxy);
-			proxy = linphone_address_as_string_uri_only(proxy_addr);
 		}
 
 		account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
@@ -561,12 +559,11 @@
 			goto bad_proxy;
 		}
 		// use proxy as route if outbound_proxy is enabled
-		route = isOutboundProxy ? proxy : NULL;
-		if (linphone_account_params_set_server_addr(newAccountParams, proxy) == -1) {
+		if (linphone_account_params_set_server_address(newAccountParams, proxy_addr) == -1) {
 			error = NSLocalizedString(@"Invalid proxy address", nil);
 			goto bad_proxy;
 		}
-		if (linphone_account_params_set_routes_addresses(newAccountParams, bctbx_list_new((void*)route)) == -1) {
+		if (linphone_account_params_set_routes_addresses(newAccountParams, isOutboundProxy ? bctbx_list_new((void*)proxy_addr) : NULL) == -1) {
 			error = NSLocalizedString(@"Invalid route", nil);
 			goto bad_proxy;
 		}
@@ -630,9 +627,12 @@
 											  linphone_account_params_get_realm(newAccountParams),
 											  linphone_account_params_get_domain(newAccountParams));
 			} else {
-				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, NULL, ha1,
-											  realm ? realm : linphone_account_params_get_realm(newAccountParams),
-											  linphone_account_params_get_domain(newAccountParams));
+				info = linphone_auth_info_new_for_algorithm(linphone_address_get_username(from)
+															, userid_str
+															, NULL
+															, ha1
+															, realm ? realm : linphone_account_params_get_realm(newAccountParams),
+											  linphone_account_params_get_domain(newAccountParams), [accountAlgoPreference UTF8String]);
 			}
 
 			linphone_address_unref(from);
@@ -642,8 +642,6 @@
 		}
 		
 	bad_proxy:
-		if (proxy)
-			ms_free(proxy);
 		if (linphoneAddress)
 			linphone_address_destroy(linphoneAddress);
 			
