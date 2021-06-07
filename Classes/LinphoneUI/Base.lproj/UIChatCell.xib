@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,6 +13,7 @@
                 <outlet property="avatarImage" destination="19" id="30"/>
                 <outlet property="chatContentLabel" destination="21" id="24"/>
                 <outlet property="chatLatestTimeLabel" destination="r7A-Mk-LQX" id="J0r-yr-YLk"/>
+                <outlet property="ephemeral" destination="q18-yi-ol3" id="xhD-9e-BbP"/>
                 <outlet property="imdmIcon" destination="aa2-Kl-c1H" id="rnr-XY-r9K"/>
                 <outlet property="securityImage" destination="kdl-Ln-eWv" id="S9v-cN-u4w"/>
                 <outlet property="unreadCountLabel" destination="ZXq-Do-7Ua" id="anx-Na-sYz"/>
@@ -85,6 +86,10 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ephemeral_messages_color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="q18-yi-ol3">
+                    <rect key="frame" x="350" y="59" width="21" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                </imageView>
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -95,6 +100,7 @@
         <image name="avatar.png" width="414.39999389648438" height="414.39999389648438"/>
         <image name="chat_list_indicator.png" width="28" height="28"/>
         <image name="chat_read.png" width="20" height="20"/>
+        <image name="ephemeral_messages_color_A.png" width="136" height="158.39999389648438"/>
         <image name="security_1_indicator.png" width="27.5" height="32.5"/>
     </resources>
 </document>

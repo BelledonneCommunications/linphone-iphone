@@ -148,6 +148,7 @@
 		_chatContentLabel.text = nil;
     
 	[self updateUnreadBadge];
+	_ephemeral.hidden = !linphone_chat_room_ephemeral_enabled(chatRoom);
 }
 
 - (void)updateUnreadBadge {

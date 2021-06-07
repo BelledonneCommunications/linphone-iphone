@@ -37,6 +37,7 @@
 @property(weak, nonatomic) IBOutlet UIBouncingView *unreadCountView;
 @property(weak, nonatomic) IBOutlet UILabel *unreadCountLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *imdmIcon;
+@property (weak, nonatomic) IBOutlet UIImageView *ephemeral;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 
