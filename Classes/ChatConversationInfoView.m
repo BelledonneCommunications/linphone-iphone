@@ -313,7 +313,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	cell.adminButton.hidden = _create || (!_imAdmin && !cell.adminLabel.enabled) || ![_oldContacts containsObject:cell.uri];
 	cell.adminButton.userInteractionEnabled = _imAdmin;
 	cell.removeButton.hidden = !_create && !_imAdmin;
-	linphone_address_unref(addr);
+	if (addr)
+		linphone_address_unref(addr);
 
 	return cell;
 }
