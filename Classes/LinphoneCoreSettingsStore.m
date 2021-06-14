@@ -344,6 +344,7 @@
         [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];
 		[self setBool:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] forKey:@"vfs_enabled_mode"];
 		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:YES] forKey:@"auto_write_to_gallery_mode"];
+		[self setBool:[lm lpConfigBoolForKey:@"ephemeral_feature" withDefault:NO] forKey:@"ephemeral_feature"];
 	}
 
 	// network section
@@ -806,6 +807,7 @@
 			}
 		}
 		[lm lpConfigSetBool:[self boolForKey:@"auto_write_to_gallery_mode"] forKey:@"auto_write_to_gallery_preference"];
+		[lm lpConfigSetBool:[self boolForKey:@"ephemeral_feature"] forKey:@"ephemeral_feature"];
 
 		// network section
 		BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
