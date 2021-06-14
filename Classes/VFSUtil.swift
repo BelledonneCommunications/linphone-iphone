@@ -45,7 +45,7 @@ import os
 				[.privateKeyUsage, .touchIDCurrentSet] : .privateKeyUsage
 		}
 		let access =
-			SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,flags,nil)!
+			SecAccessControlCreateWithFlags(kCFAllocatorDefault, kSecAttrAccessibleAlwaysThisDeviceOnly,flags,nil)!
 		let tag = keyName.data(using: .utf8)!
 		let attributes: [String: Any] = [
 			kSecAttrKeyType as String           : kSecAttrKeyTypeECSECPrimeRandom,
