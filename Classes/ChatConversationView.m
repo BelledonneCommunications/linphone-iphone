@@ -240,6 +240,11 @@ static UICompositeViewDescription *compositeDescription = nil;
                          completion:nil];
     }
 	[self configureForRoom:self.editing];
+	
+	// Resize the popup table depending on wether ephemeral messages are enabled or not.
+	CGRect popupFrame = _popupMenu.frame;
+	popupFrame.size.height = 44 * [_popupMenu numberOfRowsInSection:0];
+	_popupMenu.frame = popupFrame;
 
 }
 
@@ -1573,6 +1578,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	_popupMenu.layer.shadowRadius = 10;
 	_popupMenu.layer.masksToBounds = false;
 	_toggleMenuButton.hidden = false;
+	_popupMenu.tableFooterView = [UIView new];
+	[_popupMenu reloadData];
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
