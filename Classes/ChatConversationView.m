@@ -240,6 +240,11 @@ static UICompositeViewDescription *compositeDescription = nil;
                          completion:nil];
     }
 	[self configureForRoom:self.editing];
+	
+	// Resize the popup table depending on wether ephemeral messages are enabled or not.
+	CGRect popupFrame = _popupMenu.frame;
+	popupFrame.size.height = 44 * [_popupMenu numberOfRowsInSection:0];
+	_popupMenu.frame = popupFrame;
 
 }
 
