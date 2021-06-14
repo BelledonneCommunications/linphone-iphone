@@ -422,7 +422,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 		LinphoneEventLog *event = [v pointerValue];
 		if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
 			LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-			if (linphone_chat_message_is_outgoing(msg) && linphone_chat_message_is_ephemeral(msg)) {
+			if (linphone_chat_message_is_ephemeral(msg)) {
 				UIChatBubbleTextCell *cell = (UIChatBubbleTextCell  *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[eventList indexOfObject:v] inSection:0]];
 				long duration = linphone_chat_message_get_ephemeral_expire_time(msg) == 0 ?
 					linphone_chat_room_get_ephemeral_lifetime(linphone_chat_message_get_chat_room(msg)) :

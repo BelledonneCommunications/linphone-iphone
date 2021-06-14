@@ -49,8 +49,27 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="chat_read.png" translatesAutoresizingMaskIntoConstraints="NO" id="aa2-Kl-c1H" userLabel="imdmIcon">
+                    <rect key="frame" x="69" y="55" width="13" height="13"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Delivery failed">
+                        <accessibilityTraits key="traits" button="YES" image="YES"/>
+                    </accessibility>
+                </imageView>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" fixedFrame="YES" text="This is a placeholder message" lineBreakMode="tailTruncation" numberOfLines="2" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="21" userLabel="chatContentLabel">
+                    <rect key="frame" x="85" y="43" width="239" height="37"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    <accessibility key="accessibilityConfiguration" label="Message"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ephemeral_messages_color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="q18-yi-ol3">
+                    <rect key="frame" x="338" y="51" width="21" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                </imageView>
                 <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7DE-KJ-9Q3" userLabel="unreadCountView" customClass="UIBouncingView">
-                    <rect key="frame" x="350" y="12" width="21" height="21"/>
+                    <rect key="frame" x="338" y="12" width="21" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" fixedFrame="YES" image="chat_list_indicator.png" translatesAutoresizingMaskIntoConstraints="NO" id="NXj-A8-YLh" userLabel="unreadCountImage">
@@ -71,29 +90,10 @@
                     </subviews>
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
-                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="chat_read.png" translatesAutoresizingMaskIntoConstraints="NO" id="aa2-Kl-c1H" userLabel="imdmIcon">
-                    <rect key="frame" x="69" y="55" width="13" height="13"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Delivery failed">
-                        <accessibilityTraits key="traits" button="YES" image="YES"/>
-                    </accessibility>
-                </imageView>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" fixedFrame="YES" text="This is a placeholder message" lineBreakMode="tailTruncation" numberOfLines="2" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="21" userLabel="chatContentLabel">
-                    <rect key="frame" x="85" y="43" width="262" height="37"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Message"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ephemeral_messages_color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="q18-yi-ol3">
-                    <rect key="frame" x="350" y="59" width="21" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                </imageView>
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="226.81159420289856" y="160.71428571428569"/>
+            <point key="canvasLocation" x="226.40000000000001" y="160.11994002998503"/>
         </view>
     </objects>
     <resources>

@@ -152,7 +152,7 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 			break;
 		}
 		case LinphoneEventLogTypeConferenceEphemeralMessageEnabled: {
-			eventString = [NSString stringWithFormat:NSLocalizedString(@"You enabled ephemeral messages", nil)];
+			eventString = [NSString stringWithFormat:NSLocalizedString(@"You enabled ephemeral messages: %@", nil),[self formatEphemeralExpiration:linphone_event_log_get_ephemeral_message_lifetime(event)]];
 			break;
 		}
 		case LinphoneEventLogTypeConferenceEphemeralMessageLifetimeChanged: {
