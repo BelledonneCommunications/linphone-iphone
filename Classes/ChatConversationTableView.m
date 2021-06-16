@@ -343,9 +343,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 - (void) tableView:(UITableView *)tableView deleteRowAtIndex:(NSIndexPath *)indexPath {
 	[tableView beginUpdates];
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
-	// TODO: fix workaround
-	//linphone_event_log_delete_from_database(event);
-	linphone_chat_room_delete_message(_chatRoom, linphone_event_log_get_chat_message(event));
+	linphone_event_log_delete_from_database(event);
 	NSInteger index = indexPath.row + _currentIndex + (totalEventList.count - eventList.count);
 	if (index < totalEventList.count)
 		[totalEventList removeObjectAtIndex:index];
