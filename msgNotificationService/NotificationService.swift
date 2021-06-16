@@ -56,6 +56,10 @@ class NotificationService: UNNotificationServiceExtension {
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         NSLog("[msgNotificationService] start msgNotificationService extension")
 
+		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
+			VFSUtil.oslog(log: "[VFS] Error unable to activate.", level: .error)
+		}
+		
 		if let bestAttemptContent = bestAttemptContent {
 			createCore()
 			NotificationService.log.message(message: "received push payload : \(bestAttemptContent.userInfo.debugDescription)")
@@ -182,10 +186,6 @@ class NotificationService: UNNotificationServiceExtension {
 
 	func createCore() {
 		NSLog("[msgNotificationService] create core")
-		
-		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
-			VFSUtil.oslog(log: "[VFS] Error unable to activate.", level: .error)
-		}
 		
 		let config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryConfigFilename: "")
 
