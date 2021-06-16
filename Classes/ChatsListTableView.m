@@ -63,7 +63,11 @@
 		if (!chatRoom)
 			continue;
 
-		linphone_chat_room_remove_callbacks(chatRoom, linphone_chat_room_get_current_callbacks(chatRoom));
+		
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_current_callbacks(chatRoom);
+		if (cbs) {// If the view is getting changed while a chatroom deletion is in progress, the callbacks may already have been deleted despite the chatroom still being there, causing a potential crash.
+			linphone_chat_room_remove_callbacks(chatRoom, cbs);
+		}
 		_chatRooms = _chatRooms->next;
 	}
 }
