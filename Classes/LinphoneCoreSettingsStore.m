@@ -798,7 +798,7 @@
 				[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 				[self setBool:FALSE forKey:@"vfs_enabled_mode"];
 			} else if (!VFSUtil.activateVFS) {
-				[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
+				[VFSUtil log:@"[VFS] Error unable to activate ! Warning disabling VFS enabled preference." :OS_LOG_TYPE_ERROR];
 				[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 				[self setBool:FALSE forKey:@"vfs_enabled_mode"];
 			} else {

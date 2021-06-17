@@ -57,7 +57,7 @@ class NotificationService: UNNotificationServiceExtension {
         NSLog("[msgNotificationService] start msgNotificationService extension")
 
 		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
-			VFSUtil.oslog(log: "[VFS] Error unable to activate.", level: .error)
+			VFSUtil.log("[VFS] Error unable to activate.", .error)
 		}
 		
 		if let bestAttemptContent = bestAttemptContent {

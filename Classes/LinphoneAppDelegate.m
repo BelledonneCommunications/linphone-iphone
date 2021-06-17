@@ -253,7 +253,7 @@
 			LOGW(@"[VFS] Can not active for simulators.");
 			[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 		} else if (!VFSUtil.activateVFS) {
-			[VFSUtil oslogWithLog:@"[VFS] Error unable to activate." level:OS_LOG_TYPE_ERROR];
+			[VFSUtil log:@"[VFS] Error unable to activate." :OS_LOG_TYPE_ERROR];
 			[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 		}
 	}

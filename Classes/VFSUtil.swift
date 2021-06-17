@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2010-2020 Belledonne Communications SARL.
- *
- * This file is part of linphone-iphone
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (c) 2010-2020 Belledonne Communications SARL.
+*
+* This file is part of linphone-iphone
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 import UIKit
 import Foundation
@@ -116,7 +116,7 @@ import os
 									   kSecAttrAccount as String: key.data(using: .utf8)!,
 									   kSecAttrAccessGroup as String : accessGroup]
 		SecItemDelete(delQuery as CFDictionary)
-
+		
 		
 		let insertQUery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
 										  kSecAttrAccessGroup as String : accessGroup,
@@ -156,46 +156,55 @@ import os
 	@objc static func activateVFS() -> Bool {
 		do {
 			if (getSecuredPreference(key: prefName) == nil) {
-				oslog(log: "[VFS] no secret key set, building one.", level: .info)
+				log("[VFS] no secret key set, building one.", .info)
 				try generateKey(requiresBiometry: false)
 				guard let encryptedHash = encrypt(clearText: randomSha512()) else {
 					return false
 				}
 				if (!addSecuredPreference(key: prefName, value: encryptedHash)) {
-					oslog(log: "[VFS] Unable to save encrypted key in secured defaults.", level: .error)
+					log("[VFS] Unable to save encrypted key in secured defaults.", .error)
 				}
 			}
 			guard let encryptedKey = getSecuredPreference(key: prefName) else {
-				oslog(log: "[VFS] Unable to retrieve encrypted key.", level: .error)
+				log("[VFS] Unable to retrieve encrypted key.", .error)
 				return false
 			}
 			let secret = decrypt(encryptedText: encryptedKey)
 			Factory.Instance.setVfsEncryption(encryptionModule: 2, secret: secret, secretSize: 32)
-			oslog(log: "[VFS] activated", level: .info)
+			log("[VFS] activated", .info)
 			return true
 		} catch {
-			oslog(log: "[VFS] Error setting up VFS: \(error)", level: .info)
+			log("[VFS] Error setting up VFS: \(error)", .info)
 			return false
 		}
 	}
 	
 	@objc static func vfsEnabled(groupName: String) -> Bool {
 		let defaults = UserDefaults.init(suiteName: groupName)
+		if (defaults == nil) {
+			log("Unable to get VFS enabled preference userDefaults is null",.error);
+		}
 		return defaults?.bool(forKey: "vfs_enabled_preference") == true
 	}
 	
 	@objc static func setVfsEnabbled(enabled: Bool, groupName: String) {
 		let defaults = UserDefaults.init(suiteName: groupName)
+		if (defaults == nil) {
+			log("Unable to set VFS enabled preferece userDefaults is null",.error);
+		}
 		defaults?.setValue(enabled, forKey: "vfs_enabled_preference")
 	}
 	
-	@objc static func oslog(log:String, level: OSLogType) {
-		if #available(iOS 10.0, *) {
-			os_log("%{public}@", type: level,log)
-		} else {
-			NSLog(log)
+	@objc static func log(_ log:String, _ level: OSLogType) {
+		switch (level) {
+		case.info:LoggingService.Instance.message(message: log)
+		case.debug:LoggingService.Instance.debug(message: log)
+		case.error:LoggingService.Instance.error(message: log)
+		case.fault:LoggingService.Instance.fatal(message: log)
+		default:LoggingService.Instance.message(message: log)
 		}
+		
 	}
 	
-
+	
 }

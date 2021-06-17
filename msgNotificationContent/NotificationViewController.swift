@@ -21,6 +21,7 @@ import UIKit
 import UserNotifications
 import UserNotificationsUI
 import linphonesw
+import os
 #if USE_CRASHLYTICS
 import Firebase
 #endif
@@ -133,7 +134,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 
     func startCore() throws {
 		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
-			VFSUtil.oslog(log: "[VFS] Error unable to activate.", level: .error)
+			VFSUtil.log("[VFS] Error unable to activate.", .error)
 		}
 		config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryConfigFilename: "")
 		log = LoggingService.Instance /*enable liblinphone logs.*/
