@@ -791,8 +791,8 @@
         }
         linphone_core_set_max_size_for_auto_download_incoming_files(LC, maxSize);
         [lm lpConfigSetString:[self stringForKey:@"auto_download_mode"] forKey:@"auto_download_mode"];
-		BOOL vfsEnabled = [self boolForKey:@"vfs_enabled_mode"] || [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId];
-		if (vfsEnabled) {
+		BOOL vfsPrefEnabled = [self boolForKey:@"vfs_enabled_mode"] || [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId];
+		if (vfsPrefEnabled && ![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 			if (TARGET_IPHONE_SIMULATOR) {
 				LOGW(@"[VFS] Can not active for simulators.");
 				[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
