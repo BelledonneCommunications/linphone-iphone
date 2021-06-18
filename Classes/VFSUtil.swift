@@ -120,25 +120,39 @@ import os
 		
 		let insertQUery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
 										  kSecAttrAccessGroup as String : accessGroup,
+										  kSecAttrAccessible as String : kSecAttrAccessibleAlwaysThisDeviceOnly,
+										  kSecAttrService as String: Bundle.main.bundleIdentifier!,
 										  kSecAttrAccount as String: key.data(using: .utf8)!,
 										  kSecValueData as String:value.data(using: .utf8)!]
 		let insertStatus = SecItemAdd(insertQUery as CFDictionary, nil)
+		log("[VFS] addSecuredPreference : SecItemAdd status \(insertStatus)", .info)
 		return  insertStatus == errSecSuccess
 		
 	}
+	
+	@objc static func deleteSecurePreference(key:String) {
+		let delQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+									   kSecAttrAccount as String: key.data(using: .utf8)!,
+									   kSecAttrAccessGroup as String : accessGroup]
+		let deleteSatus = SecItemDelete(delQuery as CFDictionary)
+		log("[VFS] deleteSecurePreference : SecItemDelete status for removing key \(key) = \(deleteSatus)", .info)
+	}
+	
+	
 	
 	@objc static func getSecuredPreference(key:String) -> String? {
 		let query: [String:Any] = [
 			kSecClass as String: kSecClassGenericPassword,
 			kSecAttrAccount as String: key.data(using: .utf8)!,
 			kSecReturnData as String: kCFBooleanTrue,
-			kSecAttrAccessGroup as String : accessGroup
+			kSecAttrAccessGroup as String : accessGroup,
 		]
 		
 		var result: AnyObject?
 		let status: OSStatus = withUnsafeMutablePointer(to: &result) {
 			SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
 		}
+		log("[VFS] getSecuredPreference : SecItemCopyMatching status \(status)", .info)
 		return status == errSecSuccess ?  String(decoding: result as! Data , as: UTF8.self) : nil
 	}
 	
@@ -153,8 +167,11 @@ import os
 	
 	
 	
-	@objc static func activateVFS() -> Bool {
+	@objc static func activateVFS(forFirstTime: Bool = false) -> Bool {
 		do {
+			if (forFirstTime) {
+				removeExistingVFSKeyIfAny()
+			}
 			if (getSecuredPreference(key: prefName) == nil) {
 				log("[VFS] no secret key set, building one.", .info)
 				try generateKey(requiresBiometry: false)
@@ -182,7 +199,7 @@ import os
 	@objc static func vfsEnabled(groupName: String) -> Bool {
 		let defaults = UserDefaults.init(suiteName: groupName)
 		if (defaults == nil) {
-			log("Unable to get VFS enabled preference userDefaults is null",.error);
+			log("[VFS] Unable to get VFS enabled preference userDefaults is null",.error);
 		}
 		return defaults?.bool(forKey: "vfs_enabled_preference") == true
 	}
@@ -190,7 +207,7 @@ import os
 	@objc static func setVfsEnabbled(enabled: Bool, groupName: String) {
 		let defaults = UserDefaults.init(suiteName: groupName)
 		if (defaults == nil) {
-			log("Unable to set VFS enabled preferece userDefaults is null",.error);
+			log("[VFS] Unable to set VFS enabled preferece userDefaults is null",.error);
 		}
 		defaults?.setValue(enabled, forKey: "vfs_enabled_preference")
 	}
@@ -203,8 +220,20 @@ import os
 		case.fault:LoggingService.Instance.fatal(message: log)
 		default:LoggingService.Instance.message(message: log)
 		}
-		
+		if #available(iOS 10.0, *) {
+				os_log("%{public}@", type: level,log)
+		} else {
+			NSLog(log)
+		}
 	}
+	
+	@objc static func removeExistingVFSKeyIfAny() {
+		log("[VFS] removing existing key if any",.debug)
+		if (getSecuredPreference(key: prefName) != nil) {
+			deleteSecurePreference(key: prefName)
+		}
+	}
+	
 	
 	
 }

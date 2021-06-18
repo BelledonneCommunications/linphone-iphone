@@ -252,7 +252,7 @@
 		if (TARGET_IPHONE_SIMULATOR) {
 			LOGW(@"[VFS] Can not active for simulators.");
 			[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
-		} else if (!VFSUtil.activateVFS) {
+		} else if (![VFSUtil activateVFSForFirstTime:false]) {
 			[VFSUtil log:@"[VFS] Error unable to activate." :OS_LOG_TYPE_ERROR];
 			[VFSUtil setVfsEnabbledWithEnabled:false groupName:kLinphoneMsgNotificationAppGroupId];
 		}
