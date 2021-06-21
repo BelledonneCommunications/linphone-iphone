@@ -172,6 +172,13 @@ import AVFoundation
 		return false
 	}
 	
+	@objc func isReceiverEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return outputDevice.type == AudioDeviceType.Microphone
+		}
+		return false
+	}
+	
 	func requestTransaction(_ transaction: CXTransaction, action: String) {
 		callController.request(transaction) { error in
 			if let error = error {
@@ -603,7 +610,7 @@ import AVFoundation
 
 			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
 			//	if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
-				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().isBluetoothEnabled()) {
+				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && CallManager.instance().isReceiverEnabled()) {
 					CallManager.instance().changeRouteToSpeaker()
 					CallManager.speaker_already_enabled = true
 				}
