@@ -499,7 +499,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				if (imagesw > width) {
 					imagesw = sSize.width;
 					max_imagesw = MAX(max_imagesw, imagesw);
-					max_imagesh = imagesh;
+					max_imagesh += imagesh;
 					imagesh = sSize.height;
 				} else {
 					max_imagesw = MAX(max_imagesw, imagesw);
@@ -507,22 +507,21 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				}
 			}
 		}
-		
 		max_imagesh += imagesh;
+
 		size = CGSizeMake(max_imagesw, max_imagesh);
 		CGSize textSize = CGSizeMake(0, 0);
 		if (![messageText isEqualToString:@"🗻"]) {
 			textSize = [self computeBoundingBox:messageText
-										   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+										   size:CGSizeMake(max_imagesw , CGFLOAT_MAX)
 										   font:messageFont];
-			size.height += textSize.height;
 		}
 		
 		// add size for message text
 		size.height += textSize.height;
 		size.width = MAX(textSize.width, size.width);
 		size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
-		size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+		size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT) ;
 		return size;
 	}
 

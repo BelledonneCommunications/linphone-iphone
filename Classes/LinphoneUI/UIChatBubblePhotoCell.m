@@ -679,7 +679,7 @@
 				imagesw = sSize.width;
 				max_imagesw = MAX(max_imagesw, imagesw);
 				originy = max_imagesh+IMAGE_DEFAULT_MARGIN;
-				max_imagesh = sSize.height;
+				max_imagesh += sSize.height;
 				originx = sSize.width;
 			} else {
 				max_imagesw = MAX(max_imagesw, imagesw);
@@ -691,6 +691,9 @@
 			contentView.fileUrls = fileUrls;
 			[_finalAssetView addSubview:contentView];
 		}
+		CGRect imgFrame = self.finalAssetView.frame;
+		imgFrame.size = CGSizeMake(max_imagesw, max_imagesh);
+		self.finalAssetView.frame = imgFrame;
 		_finalImage.hidden = YES;
 	} else {
 		// Resizing Image view
@@ -706,10 +709,8 @@
     const char *utf8Text = linphone_chat_message_get_text_content(self.message);
     
     CGRect textFrame = self.messageText.frame;
-	if (_contentViews.count > 0)
-		textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height-10);
-    else if (_finalImage.image)
-        textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
+	if (_contentViews.count > 0 || _finalImage.image)
+		textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
     else
         // When image hasn't be download
         textFrame.origin = CGPointMake(textFrame.origin.x, _imageSubView.frame.size.height + _imageSubView.frame.origin.y - 10);
