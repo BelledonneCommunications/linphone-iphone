@@ -361,10 +361,12 @@
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
-	LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view.tableController updateEventEntry:event];
-	[view.tableController scrollToBottom:true];
+	if (!linphone_chat_message_is_outgoing(msg) || (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateFileTransferInProgress)) {
+		LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
+		ChatConversationView *view = VIEW(ChatConversationView);
+		[view.tableController updateEventEntry:event];
+		[view.tableController scrollToBottom:true];
+	}
 }
 
 static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
