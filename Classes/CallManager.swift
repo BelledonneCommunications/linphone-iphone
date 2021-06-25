@@ -43,7 +43,6 @@ import AVFoundation
 	var referedFromCall: String?
 	var referedToCall: String?
 	var endCallkit: Bool = false
-	static var speaker_already_enabled : Bool = false
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 
@@ -168,6 +167,13 @@ import AVFoundation
 	@objc func isBluetoothEnabled() -> Bool {
 		if let outputDevice = lc!.outputAudioDevice {
 			return (outputDevice.type == AudioDeviceType.Bluetooth || outputDevice.type == AudioDeviceType.BluetoothA2DP)
+		}
+		return false
+	}
+	
+	@objc func isReceiverEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return outputDevice.type == AudioDeviceType.Microphone
 		}
 		return false
 	}
@@ -454,9 +460,6 @@ import AVFoundation
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId!, displayName: "Calling")
 		} else {
 			let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
-			// we keep the speaker auto-enabled state in this static so that we don't
-			// force-enable it on ICE re-invite if the user disabled it.
-			CallManager.speaker_already_enabled = false
 
 			if (call.userData == nil) {
 				let appData = CallAppData()
@@ -504,7 +507,6 @@ import AVFoundation
 					if (CallManager.instance().speakerBeforePause) {
 						CallManager.instance().speakerBeforePause = false
 						CallManager.instance().changeRouteToSpeaker()
-						CallManager.speaker_already_enabled = true
 					}
 					break
 				case .OutgoingInit,
@@ -535,7 +537,6 @@ import AVFoundation
 					}
 					
 					UIDevice.current.isProximityMonitoringEnabled = false
-					CallManager.speaker_already_enabled = false
 					if (CallManager.instance().lc!.callsNb == 0) {
 						CallManager.instance().changeRouteToDefault()
 						// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
@@ -602,10 +603,8 @@ import AVFoundation
 			}
 
 			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-			//	if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().bluetoothEnabled) {
-				if ((call.currentParams?.videoEnabled ?? false) && !CallManager.speaker_already_enabled && !CallManager.instance().isBluetoothEnabled()) {
+				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled()) {
 					CallManager.instance().changeRouteToSpeaker()
-					CallManager.speaker_already_enabled = true
 				}
 			}
 		}
