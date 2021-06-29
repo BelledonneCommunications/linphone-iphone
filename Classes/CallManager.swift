@@ -445,10 +445,19 @@ import AVFoundation
 	func onRegistrationStateChanged(core: Core, proxyConfig: ProxyConfig, state: RegistrationState, message: String) {
 		if core.proxyConfigList.count == 1 && (state == .Failed || state == .Cleared){
 			// terminate callkit immediately when registration failed or cleared, supporting single proxy configuration
-			CallManager.instance().endCallkit = true
 			for call in CallManager.instance().providerDelegate.uuids {
+				let callId = CallManager.instance().providerDelegate.callInfos[call.value]?.callId
+				if (callId != nil) {
+					let call = CallManager.instance().lc?.getCallByCallid(callId: callId!)
+					if (call != nil) {
+						// sometimes (for example) due to network, registration failed, in this case, keep the call
+						continue
+					}
+				}
+
 				CallManager.instance().providerDelegate.endCall(uuid: call.value)
 			}
+			CallManager.instance().endCallkit = true
 		} else {
 			CallManager.instance().endCallkit = false
 		}

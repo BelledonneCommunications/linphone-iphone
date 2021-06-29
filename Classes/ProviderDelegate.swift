@@ -134,6 +134,11 @@ class ProviderDelegate: NSObject {
 	
 	func endCall(uuid: UUID) {
 		provider.reportCall(with: uuid, endedAt: .init(), reason: .failed)
+		let callId = callInfos[uuid]?.callId
+		if (callId != nil) {
+			uuids.removeValue(forKey: callId!)
+		}
+		callInfos.removeValue(forKey: uuid)
 	}
 
 	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
