@@ -92,9 +92,10 @@ class ProviderDelegate: NSObject {
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 				if CallManager.instance().endCallkit {
-					CallManager.instance().providerDelegate.endCall(uuid: uuid)
-				} else {
-					CallManager.instance().providerDelegate.endCallNotExist(uuid: uuid, timeout: .now() + 20)
+					let call = CallManager.instance().lc?.getCallByCallid(callId: callId!)
+					if (call?.state == .PushIncomingReceived) {
+						try? call?.terminate()
+					}
 				}
 			} else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: cannot complete incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] from [\(handle)] caused by [\(error!.localizedDescription)]")
