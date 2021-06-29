@@ -68,9 +68,11 @@
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view removeCallBacks];
 			[view.tableController setChatRoom:NULL];
+			[view setChatRoom:NULL];
 		} else if (PhoneMainView.instance.currentView == ChatConversationInfoView.compositeViewDescription) {
 			ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 			[view removeCallbacks];
+			[view setRoom:NULL];
 		} else if (PhoneMainView.instance.currentView == RecordingsListView.compositeViewDescription || PhoneMainView.instance.currentView == DevicesListView.compositeViewDescription) {
 			// To avoid crash
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
