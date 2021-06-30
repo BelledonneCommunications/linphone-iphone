@@ -501,9 +501,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit) {
 		[ContactSelection setSelectionMode:ContactSelectionModeNone];
 	}
-
-	ContactsListView *view = VIEW(ContactsListView);
-	[PhoneMainView.instance popToView:view.compositeViewDescription];
+	
+	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
+	if ([previous isEqualToString:@"ContactsListView"]) {
+		ContactsListView *view = VIEW(ContactsListView);
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	} else {
+		HistoryDetailsView *view = VIEW(HistoryDetailsView);
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	}
 }
 
 - (IBAction)onEditClick:(id)event {
