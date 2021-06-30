@@ -524,7 +524,7 @@
 		}
 	}
 
-	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
+	completionHandler(UNNotificationPresentationOptionAlert);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
