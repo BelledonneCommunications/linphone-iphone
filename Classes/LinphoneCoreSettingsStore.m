@@ -163,6 +163,7 @@
 		[self setCString:"" forKey:@"account_userid_preference"];
 		[self setCString:"" forKey:@"account_mandatory_password_preference"];
 		[self setCString:"" forKey:@"ha1_preference"];
+		[self setCString:"" forKey:@"ha1_algo_preferencex"];
 		[self setInteger:-1 forKey:@"account_expire_preference"];
 		[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 		[self setCString:"" forKey:@"account_prefix_preference"];
@@ -228,6 +229,7 @@
 				[self setCString:linphone_auth_info_get_passwd(ai) forKey:@"account_mandatory_password_preference"];
 				// hidden but useful if provisioned
 				[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
+				[self setCString:linphone_auth_info_get_algorithm(ai) forKey:@"ha1_algo_preference"];
 			}
 
 			int idx = (int)bctbx_list_index(linphone_core_get_proxy_config_list(LC), proxy);
@@ -490,6 +492,7 @@
 	NSString *transport = [self stringForKey:@"account_transport_preference"];
 	NSString *accountHa1 = [self stringForKey:@"ha1_preference"];
 	NSString *accountPassword = [self stringForKey:@"account_mandatory_password_preference"];
+	NSString *accountAlgoPreference = [self stringForKey:@"ha1_algo_preference"];;
 	BOOL isOutboundProxy = [self boolForKey:@"account_outbound_proxy_preference"];
 	BOOL use_avpf = [self boolForKey:@"account_avpf_preference"];
 	BOOL is_default = [self boolForKey:@"account_is_default_preference"];
@@ -622,9 +625,9 @@
 											  linphone_proxy_config_get_realm(proxyCfg),
 											  linphone_proxy_config_get_domain(proxyCfg));
 			} else {
-				info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, NULL, ha1,
+				info = linphone_auth_info_new_for_algorithm(linphone_address_get_username(from), userid_str, NULL, ha1,
 											  realm ? realm : linphone_proxy_config_get_realm(proxyCfg),
-											  linphone_proxy_config_get_domain(proxyCfg));
+											  linphone_proxy_config_get_domain(proxyCfg), [accountAlgoPreference UTF8String]);
 			}
 
 			linphone_address_unref(from);
