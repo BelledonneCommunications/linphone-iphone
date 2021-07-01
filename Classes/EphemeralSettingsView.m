@@ -19,7 +19,6 @@
 
 #import "EphemeralSettingsView.h"
 #import "PhoneMainView.h"
-#import "UIDevicesDetails.h"
 #import "UIDeviceCell.h"
 
 

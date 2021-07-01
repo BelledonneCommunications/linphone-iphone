@@ -112,8 +112,6 @@
 		61AEBEA321906AFC00F35E7F /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEBC2191990A00F35E7F /* DevicesListView.m */; };
 		61AEBEBF2191991F00F35E7F /* DevicesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEBE2191991F00F35E7F /* DevicesListView.xib */; };
-		61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = 61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */; };
-		61AEBEC42191D7D900F35E7F /* UIDevicesDetails.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */; };
 		61AEBEC62191E47500F35E7F /* chevron_list_close.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC52191E47500F35E7F /* chevron_list_close.png */; };
 		61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */; };
 		61AEBECA2191E49300F35E7F /* chevron_list_open.png in Resources */ = {isa = PBXBuildFile; fileRef = 61AEBEC92191E49200F35E7F /* chevron_list_open.png */; };
@@ -1027,9 +1025,6 @@
 		61AEBEB5219198EF00F35E7F /* DevicesListView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DevicesListView.h; sourceTree = "<group>"; };
 		61AEBEBC2191990A00F35E7F /* DevicesListView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DevicesListView.m; sourceTree = "<group>"; };
 		61AEBEBE2191991F00F35E7F /* DevicesListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DevicesListView.xib; sourceTree = "<group>"; };
-		61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDevicesDetails.h; sourceTree = "<group>"; };
-		61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDevicesDetails.m; sourceTree = "<group>"; };
-		61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIDevicesDetails.xib; sourceTree = "<group>"; };
 		61AEBEC52191E47500F35E7F /* chevron_list_close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_close.png; sourceTree = "<group>"; };
 		61AEBEC72191E48400F35E7F /* chevron_list_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron_list_close@2x.png"; sourceTree = "<group>"; };
 		61AEBEC92191E49200F35E7F /* chevron_list_open.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron_list_open.png; sourceTree = "<group>"; };
@@ -2239,9 +2234,6 @@
 				61CCC3D721933B380060EDEA /* UIDeviceCell.h */,
 				61CCC3DE21933B580060EDEA /* UIDeviceCell.m */,
 				61CCC3E021933B660060EDEA /* UIDeviceCell.xib */,
-				61AEBEC02191D7B400F35E7F /* UIDevicesDetails.h */,
-				61AEBEC12191D7C800F35E7F /* UIDevicesDetails.m */,
-				61AEBEC32191D7D900F35E7F /* UIDevicesDetails.xib */,
 				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
 				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
 				D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */,
@@ -3683,7 +3675,6 @@
 				63E27A521C50EDB000D332AE /* hold.mkv in Resources */,
 				633FEEDC1D3CD55A0014B822 /* numpad_8_default@2x.png in Resources */,
 				633FEDAE1D3CD5590014B822 /* call_add_default.png in Resources */,
-				61AEBEC42191D7D900F35E7F /* UIDevicesDetails.xib in Resources */,
 				633FEE1D1D3CD5590014B822 /* chat_start_body_default~ipad@2x.png in Resources */,
 				633FEEEB1D3CD55A0014B822 /* numpad_hash_default.png in Resources */,
 				633FEF221D3CD55A0014B822 /* route_bluetooth_default.png in Resources */,
@@ -4281,7 +4272,6 @@
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
-				61AEBEC22191D7C800F35E7F /* UIDevicesDetails.m in Sources */,
 				D32B6E2915A5BC440033019F /* ChatConversationTableView.m in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */,
 				63D11C531C3D501200E8FCEE /* Log.m in Sources */,

@@ -23,9 +23,15 @@
 @interface DevicesMenuEntry : NSObject {
 @public
     LinphoneParticipant *participant;
-    NSInteger numberOfDevices;
-	BOOL myself;
+	LinphoneParticipantDevice *device;
+	BOOL isFirst;
+	BOOL isUnique;
+	BOOL isMyself;
+	NSInteger index;
+	BOOL isListOpen;
+	NSString *displayName;
 };
+
 @end
 
 @interface DevicesListView : UIViewController <UICompositeViewDelegate, UITableViewDelegate, UITableViewDataSource>
@@ -34,7 +40,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property(nonatomic) LinphoneChatRoom *room;
-@property bctbx_list_t *devices;
 @property NSMutableArray *devicesMenuEntries;
 
 - (IBAction)onBackClick:(id)sender;
