@@ -38,30 +38,30 @@
 - (void)update {
 	if (!_device) {
 		LOGE(@"Can not update, because the device is null.");
+		_securityButton.hidden = FALSE;
+		_dropMenuButton.hidden = TRUE;
 		return;
 	}
-    [_securityButton setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)] forState:UIControlStateNormal];
-    
-	char *uri = linphone_address_as_string_uri_only(linphone_participant_device_get_address(_device));
-    _deviceLabel.text = [NSString stringWithUTF8String:linphone_participant_device_get_name(_device) ? :
-                         uri];
-	ms_free(uri);
-    if (_isOneToOne) {
-        CGRect frame =_deviceLabel.frame;
-        frame.origin.x = 30;
-        _deviceLabel.frame = frame;
-    }
-    
-    self.selectionStyle =UITableViewCellSelectionStyleNone;
-	UITapGestureRecognizer *particpantsBarTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-																						action:@selector(onSecurityCallClick:)];
-	particpantsBarTap.delegate = self;
-	[self addGestureRecognizer:particpantsBarTap];
-}
-
-- (IBAction)onSecurityCallClick:(id)sender {
-    const LinphoneAddress *addr = linphone_participant_device_get_address(_device);
-	[CallManager.instance startCallWithAddr:(LinphoneAddress *)addr isSas:TRUE];
+	
+	if (_isFirst) {
+		_securityImage.hidden = _avatarImage.hidden = FALSE;
+	} else {
+		_securityImage.hidden = _avatarImage.hidden = TRUE;
+		char *uri = linphone_address_as_string_uri_only(linphone_participant_device_get_address(_device));
+		_deviceLabel.text = [NSString stringWithUTF8String:linphone_participant_device_get_name(_device) ? :
+							 uri];
+		ms_free(uri);
+	}
+	if (_isUnique || !_isFirst) {
+		[_securityButton setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)] forState:UIControlStateNormal];
+		_securityButton.hidden = FALSE;
+		_dropMenuButton.hidden = TRUE;
+	} else {
+		UIImage *image = _isListOpen ? [UIImage imageNamed:@"chevron_list_open"] : [UIImage imageNamed:@"chevron_list_close"];
+		[_dropMenuButton setImage:image forState:UIControlStateNormal];
+		_securityButton.hidden = TRUE;
+		_dropMenuButton.hidden = FALSE;
+	}
 }
 
 @end

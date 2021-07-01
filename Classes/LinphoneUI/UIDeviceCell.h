@@ -19,14 +19,20 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIDeviceCell : UITableViewCell <UIGestureRecognizerDelegate>
+@interface UIDeviceCell : UITableViewCell
 
+@property (weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property (weak, nonatomic) IBOutlet UIImageView *securityImage;
 @property (weak, nonatomic) IBOutlet UILabel *deviceLabel;
 @property (weak, nonatomic) IBOutlet UIButton *securityButton;
-@property LinphoneParticipantDevice *device;
-@property BOOL isOneToOne;
+@property (weak, nonatomic) IBOutlet UIButton *dropMenuButton;
 
-- (IBAction)onSecurityCallClick:(id)sender;
+@property LinphoneParticipantDevice *device;
+@property BOOL isFirst;
+@property BOOL isUnique;
+@property BOOL isListOpen;
+
+
 - (id)initWithIdentifier:(NSString *)identifier;
 - (void)update;
 @end
