@@ -473,38 +473,34 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)startUp {
 	@try {
 		LinphoneManager *lm = LinphoneManager.instance;
-                LOGI(@"%s", linphone_global_state_to_string(
-                                linphone_core_get_global_state(LC)));
-                if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
-                  [self changeCurrentView:DialerView.compositeViewDescription];
-                } else if ([LinphoneManager.instance
-                               lpConfigBoolForKey:
-                                   @"enable_first_login_view_preference"] ==
-                           true) {
-                  [PhoneMainView.instance
-                      changeCurrentView:FirstLoginView
-                                            .compositeViewDescription];
-                } else {
-                  // always start to dialer when testing
-                  // Change to default view
-                  const MSList *accountList = linphone_core_get_account_list(LC);
-                  if (accountList != NULL ||
-                      ([lm lpConfigBoolForKey:@"hide_assistant_preference"] ==
-                       true) ||
-                      lm.isTesting) {
-                    [self
-                        changeCurrentView:DialerView.compositeViewDescription];
-                  } else {
-                    AssistantView *view = VIEW(AssistantView);
-                    [PhoneMainView.instance
-                        changeCurrentView:view.compositeViewDescription];
-                    [view reset];
-                  }
-                }
-                [self updateApplicationBadgeNumber]; // Update Badge at startup
-        } @catch (NSException *exception) {
-          // we'll wait until the app transitions correctly
-        }
+		LOGI(@"%s", linphone_global_state_to_string(linphone_core_get_global_state(LC)));
+		
+		// If we've been started by a remote push notification,
+		// we'll already be on the corresponding chat conversation view, no need to go anywhere else
+		if (![[self currentView].name isEqualToString:@"ChatConversationView"]) {
+
+			if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
+				[self changeCurrentView:DialerView.compositeViewDescription];
+			} else if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_first_login_view_preference"] == true) {
+				[PhoneMainView.instance changeCurrentView:FirstLoginView.compositeViewDescription];
+			} else {
+				// always start to dialer when testing
+				// Change to default view
+				const MSList *accountList = linphone_core_get_account_list(LC);
+				if (accountList != NULL || ([lm lpConfigBoolForKey:@"hide_assistant_preference"] == true) || lm.isTesting) {
+					[self changeCurrentView:DialerView.compositeViewDescription];
+				} else {
+					AssistantView *view = VIEW(AssistantView);
+					[PhoneMainView.instance	changeCurrentView:view.compositeViewDescription];
+					[view reset];
+				}
+			}
+		}
+		[self updateApplicationBadgeNumber]; // Update Badge at startup
+		
+	} @catch (NSException *exception) {
+		// we'll wait until the app transitions correctly
+	}
 }
 
 - (void)updateApplicationBadgeNumber {
