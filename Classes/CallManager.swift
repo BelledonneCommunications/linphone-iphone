@@ -45,7 +45,9 @@ import AVFoundation
 	var endCallkit: Bool = false
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
-
+	
+	var backgroundContextCall : Call?
+	@objc var backgroundContextCameraIsEnabled : Bool = false
 
 	fileprivate override init() {
 		providerDelegate = ProviderDelegate()
@@ -113,7 +115,18 @@ import AVFoundation
 			lc?.stopAsync()
 		}
 	}
-
+	
+	@objc func getBackgroundContextCall() -> OpaquePointer? {
+		return backgroundContextCall?.getCobject
+	}
+	@objc func setBackgroundContextCall(call: OpaquePointer?) {
+		if (call == nil) {
+			backgroundContextCall = nil
+		} else {
+			backgroundContextCall = Call.getSwiftObject(cObject: call!)
+		}
+	}
+	
 	@objc static func callKitEnabled() -> Bool {
 		#if !targetEnvironment(simulator)
 		if ConfigManager.instance().lpConfigBoolForKey(key: "use_callkit", section: "app") {
@@ -150,7 +163,6 @@ import AVFoundation
 	@objc func isBluetoothAvailable() -> Bool {
 		for device in lc!.audioDevices {
 			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
-				let name = device.deviceName
 				return true;
 			}
 		}
@@ -177,6 +189,7 @@ import AVFoundation
 		}
 		return false
 	}
+	
 	
 	func requestTransaction(_ transaction: CXTransaction, action: String) {
 		callController.request(transaction) { error in
@@ -237,7 +250,8 @@ import AVFoundation
 			let writablePath = AppManager.recordingFilePathFromCall(address: address?.username ?? "")
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Record file path: \(String(describing: writablePath))")
 			callParams.recordFile = writablePath
-
+			
+			
 			try call.acceptWithParams(params: callParams)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "accept call failed \(error)")
@@ -468,7 +482,7 @@ import AVFoundation
 		if (cstate == .PushIncomingReceived) {
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId!, displayName: "Calling")
 		} else {
-			let video = UIApplication.shared.applicationState == .active && (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+			let video = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 
 			if (call.userData == nil) {
 				let appData = CallAppData()
@@ -612,6 +626,7 @@ import AVFoundation
 			}
 
 			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
+				let check = call.currentParams?.videoEnabled
 				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled()) {
 					CallManager.instance().changeRouteToSpeaker()
 				}

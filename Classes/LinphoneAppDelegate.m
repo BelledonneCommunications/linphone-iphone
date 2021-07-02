@@ -98,9 +98,8 @@
 		return;
 
 	/* save call context */
-	LinphoneManager *instance = LinphoneManager.instance;
-	instance->currentCallContextBeforeGoingBackground.call = call;
-	instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
+	[CallManager.instance setBackgroundContextCallWithCall:call];
+	[CallManager.instance setBackgroundContextCameraIsEnabled:linphone_call_camera_enabled(call)];
 
 	const LinphoneCallParams *params = linphone_call_get_current_params(call);
 	if (linphone_call_params_video_enabled(params))
@@ -126,39 +125,36 @@
 		[instance.fastAddressBook fetchContactsInBackGroundThread];
 		instance.fastAddressBook.needToUpdate = FALSE;
 	}
+	
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
-        LinphoneCall *call = linphone_core_get_current_call(LC);
-
-        if (call) {
-          if (call == instance->currentCallContextBeforeGoingBackground.call) {
-            const LinphoneCallParams *params =
-                linphone_call_get_current_params(call);
-            if (linphone_call_params_video_enabled(params)) {
-              linphone_call_enable_camera(
-                  call, instance->currentCallContextBeforeGoingBackground
-                            .cameraIsEnabled);
-            }
-            instance->currentCallContextBeforeGoingBackground.call = 0;
-          } else if (linphone_call_get_state(call) ==
-                     LinphoneCallIncomingReceived) {
-            if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
-              if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
-                linphone_call_accept(call);
-                [PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-              } else {
-                [PhoneMainView.instance displayIncomingCall:call];
-              }
-            } else {
-              // Click the call notification when callkit is disabled, show app view.
-              [PhoneMainView.instance displayIncomingCall:call];
+	if (call) {
+		if (call == [CallManager.instance getBackgroundContextCall]) {
+			const LinphoneCallParams *params =
+			linphone_call_get_current_params(call);
+			if (linphone_call_params_video_enabled(params)) {
+				linphone_call_enable_camera(call, [CallManager.instance backgroundContextCameraIsEnabled]);
+			}
+			[CallManager.instance setBackgroundContextCallWithCall:nil];
+		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
+			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
+				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
+					linphone_call_accept(call);
+					[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+				} else {
+					[PhoneMainView.instance displayIncomingCall:call];
+				}
+			} else {
+				// Click the call notification when callkit is disabled, show app view.
+				[PhoneMainView.instance displayIncomingCall:call];
             }
 
-            // in this case, the ringing sound comes from the notification.
+			// in this case, the ringing sound comes from the notification.
             // To stop it we have to do the iOS7 ring fix...
             [self fixRing];
-          }
-        }
-        [LinphoneManager.instance.iapManager check];
+		}
+	}
+	[LinphoneManager.instance.iapManager check];
     if (_shortcutItem) {
         [self handleShortcut:_shortcutItem];
         _shortcutItem = nil;

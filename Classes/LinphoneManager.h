@@ -74,12 +74,6 @@ typedef enum _NetworkType {
 
 extern const int kLinphoneAudioVbrCodecDefaultBitrate;
 
-/* Application specific call context */
-typedef struct _CallContext {
-    LinphoneCall* call;
-    bool_t cameraIsEnabled;
-} CallContext;
-
 typedef struct _LinphoneManagerSounds {
     SystemSoundID vibrate;
 } LinphoneManagerSounds;
@@ -99,8 +93,6 @@ typedef struct _LinphoneManagerSounds {
 	UIBackgroundTaskIdentifier pushBgTaskMsg;
 	CTCallCenter* mCallCenter;
     NSDate *mLastKeepAliveDate;
-@public
-    CallContext currentCallContextBeforeGoingBackground;
 }
 + (LinphoneManager*)instance;
 #ifdef DEBUG

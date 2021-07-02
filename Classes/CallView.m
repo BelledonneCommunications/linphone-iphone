@@ -563,8 +563,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		return;
 	}
 
-	BOOL shouldDisableVideo =
-		(!currentCall || !linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall)));
+	BOOL shouldDisableVideo = !currentCall || !linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall));
 	if (videoHidden != shouldDisableVideo) {
 		if (!shouldDisableVideo) {
 			[self displayVideoCall:animated];
@@ -572,8 +571,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			[self displayAudioCall:animated];
 		}
 	}
-    // camera is diabled duiring conference, it must be activated after leaving conference.
-    if (!shouldDisableVideo && !linphone_core_is_in_conference(LC)) {
+    
+    if (!shouldDisableVideo && !linphone_core_is_in_conference(LC) && // camera is diabled duiring conference, it must be activated after leaving conference.
+		[UIApplication sharedApplication].applicationState == UIApplicationStateActive) { // Camera should not be enabled when in background)
         linphone_call_enable_camera(call, TRUE);
     }
     [self updateCallView];
