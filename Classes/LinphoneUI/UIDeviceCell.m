@@ -45,12 +45,18 @@
 	
 	if (_isFirst) {
 		_securityImage.hidden = _avatarImage.hidden = FALSE;
+		if (@available(iOS 13, *)) {
+			self.backgroundColor = [UIColor systemBackgroundColor];
+		} else {
+			self.backgroundColor = [UIColor whiteColor];
+		}
 	} else {
 		_securityImage.hidden = _avatarImage.hidden = TRUE;
 		char *uri = linphone_address_as_string_uri_only(linphone_participant_device_get_address(_device));
 		_deviceLabel.text = [NSString stringWithUTF8String:linphone_participant_device_get_name(_device) ? :
 							 uri];
 		ms_free(uri);
+		self.backgroundColor = [UIColor colorWithRed:(245 / 255.0) green:(245 / 255.0) blue:(245 / 255.0) alpha:1.0];
 	}
 	if (_isUnique || !_isFirst) {
 		[_securityButton setImage:[FastAddressBook imageForSecurityLevel:linphone_participant_device_get_security_level(_device)] forState:UIControlStateNormal];
