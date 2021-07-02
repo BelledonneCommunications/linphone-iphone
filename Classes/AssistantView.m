@@ -62,7 +62,6 @@ typedef enum _ViewElement {
 		historyViews = [[NSMutableArray alloc] init];
 		currentView = nil;
 		mustRestoreView = NO;
-		acceptTerms = NO;
 	}
 	return self;
 }
@@ -292,6 +291,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)enableWelcomeViewButtons {
+	BOOL acceptTerms = [LinphoneManager.instance lpConfigBoolForKey:@"accept_terms" withDefault:FALSE];
 	UIImage *image = acceptTerms ? [UIImage imageNamed:@"checkbox_checked.png"] : [UIImage imageNamed:@"checkbox_unchecked.png"];
 	[_acceptButton setImage:image forState:UIControlStateNormal];
 	_gotoRemoteProvisioningButton.enabled = _gotoLinphoneLoginButton.enabled = _gotoCreateAccountButton.enabled = _gotoLoginButton.enabled = acceptTerms;
@@ -1748,7 +1748,8 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onAcceptTermsClick:(id)sender {
-	acceptTerms = !acceptTerms;
+	BOOL acceptTerms = [LinphoneManager.instance lpConfigBoolForKey:@"accept_terms" withDefault:FALSE];
+	[LinphoneManager.instance lpConfigSetBool:!acceptTerms forKey:@"accept_terms"];
 	[self enableWelcomeViewButtons];
 }
 
@@ -1759,7 +1760,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 	[phoneButton setTitle:[country objectForKey:@"name"] forState:UIControlStateNormal];
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
 	countryCodeField.text = countryCodeField.lastText = [country objectForKey:@"code"];
-	phone_number_length = [[country objectForKey:@"phone_length"] integerValue];
+	phone_number_length = [[country objectForKey:@"phone_length  "] integerValue];
 	[self shouldEnableNextButton];
 }
 

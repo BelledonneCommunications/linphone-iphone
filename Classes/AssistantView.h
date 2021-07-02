@@ -33,7 +33,6 @@
 	size_t number_of_accounts_before;
 	BOOL mustRestoreView;
 	long phone_number_length;
-	BOOL acceptTerms;
 }
 
 @property(nonatomic) UICompositeViewDescription *outgoingView;
