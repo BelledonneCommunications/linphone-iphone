@@ -48,7 +48,8 @@
 		asl_add_log_file(NULL, STDERR_FILENO);
 		stderrInUse = YES;
 	}
-	linphone_core_set_log_collection_path([LinphoneManager cacheDirectory].UTF8String);
+	LinphoneFactory *factory = linphone_factory_get();
+	linphone_core_set_log_collection_path(linphone_factory_get_data_dir(factory, kLinphoneMsgNotificationAppGroupId.UTF8String));
 	linphone_core_set_log_handler(linphone_iphone_log_handler);
 	linphone_core_enable_log_collection(enabled);
 	if (level == 0) {

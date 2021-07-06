@@ -74,7 +74,13 @@
 		if ([encrptedFilePaths count] > 0) {
 			for(NSString *path in [encrptedFilePaths allValues]) {
 				if (![path isEqualToString:@""]) {
+					LOGW(@"[vfs]s remove item at %@",path);
+					if ([path isEqualToString:[LinphoneManager cacheDirectory]]) {
+						LOGE(@"[vfs] something is wrong, can not delete the cache directory");
+						break;
+					}
 					[[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+					
 				}
 			}
 			[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfiles" inMessage:_message];
@@ -85,9 +91,15 @@
 		if (filePath) {
 			if (![filePath isEqualToString:@""]) {
 				NSError *error = nil;
-				[[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-				if (error) {
-					LOGI(@"clean failed %@", error.description);
+				LOGW(@"[vfs] remove item at %@",filePath);
+				if ([filePath isEqualToString:[LinphoneManager cacheDirectory]]) {
+					LOGE(@"[vfs] something is wrong, can not delete the cache directory");
+				} else {
+					[[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+				
+					if (error) {
+						LOGI(@"clean failed %@", error.description);
+					}
 				}
 			}
 			[LinphoneManager setValueInMessageAppData:NULL forKey:@"encryptedfile" inMessage:_message];
