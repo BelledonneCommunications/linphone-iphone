@@ -373,17 +373,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
--(void) nsDataWrite:(NSData *)data {
-	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
-	NSError *error = nil;
-	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
-	NSString *fullCacheFilePathPath = [NSString stringWithFormat:@"%@/%@",path,@"nsData"];
-	[[NSFileManager defaultManager] removeItemAtURL:[NSURL fileURLWithPath:fullCacheFilePathPath] error:&error];
-	if (![data writeToFile:fullCacheFilePathPath atomically:YES]) {
-		NSLog(@"nsDataWrite error %@",error);
-	}
-}
-
 -(NSData *) nsDataRead {
 	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
 	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
@@ -1347,6 +1336,9 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 + (void)writeFileInCache:(NSData *)data name:(NSString *)name {
 	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	if (name || [name isEqualToString:@""]) {
+		LOGW(@"try to write file in %@", filePath);
+	}
 	[[NSFileManager defaultManager] createFileAtPath:filePath
 												contents:data
 											  attributes:nil];
@@ -1393,6 +1385,9 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         // get the url of localfile
         NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
         NSURL *localURL = nil;
+		if (fileName || [fileName isEqualToString:@""]) {
+			LOGW(@"[writeFileInICloud] try to write file in %@", filePath);
+		}
         if ([fileManager createFileAtPath:filePath contents:data attributes:nil]) {
             localURL = [NSURL fileURLWithPath:filePath];
         }

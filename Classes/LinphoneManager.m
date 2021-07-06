@@ -1720,7 +1720,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			     fileError ? fileError.localizedDescription : @"successfully");
 		} else {
 			[fileManager moveItemAtPath:src toPath:dst error:&fileError];
-			LOGI(@"%@ moving to %@ %@", dst, src, fileError ? fileError.localizedDescription : @"successfully");
+			LOGW(@"%@ moving to %@ %@", dst, src, fileError ? fileError.localizedDescription : @"successfully");
 		}
 	}
 }
@@ -1846,7 +1846,21 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (NSString *)cacheDirectory {
-	LinphoneFactory *factory = linphone_factory_get();
+	NSURL *basePath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationAppGroupId];
+	NSString *fullPath = [[basePath path] stringByAppendingString:@"/Library/Caches/"];
+	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+		NSError *error;
+		LOGW(@"Download path %@ does not exist, creating it.", fullPath);
+		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
+									   withIntermediateDirectories:YES
+														attributes:nil
+															 error:&error]) {
+			LOGE(@"Create download path directory error: %@", error.description);
+		}
+	}
+	return fullPath;
+	
+	/*LinphoneFactory *factory = linphone_factory_get();
 	NSString *cachePath = [NSString stringWithUTF8String:linphone_factory_get_download_dir(factory, kLinphoneMsgNotificationAppGroupId.UTF8String)];
 	BOOL isDir = NO;
 	NSError *error;
@@ -1856,8 +1870,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 withIntermediateDirectories:NO
 		 attributes:nil
 		 error:&error];
+		LOGW(@"create new cache directory");
 	}
-	return cachePath;
+	return cachePath;*/
 }
 
 + (NSString *)oldPreferenceFile:(NSString *)file {
