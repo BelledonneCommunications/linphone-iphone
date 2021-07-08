@@ -48,7 +48,7 @@
 	} else {
 		if (_filePath == NULL) {
 			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
-			_filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+			_filePath = [LinphoneManager validFilePath:name];
 		}
 		UIImage *image = [UIChatBubbleTextCell getImageFromContent:content filePath:_filePath];
 		[self setImage:image];
@@ -67,7 +67,7 @@
 
 -(IBAction)onDownloadClick:(id)sender {
 	_downloadButton.enabled = NO;
-	linphone_content_set_file_path(_content, [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:[NSString stringWithUTF8String:linphone_content_get_name(_content)]].UTF8String);
+	linphone_content_set_file_path(_content, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:[NSString stringWithUTF8String:linphone_content_get_name(_content)]].UTF8String);
 	linphone_chat_message_download_content(_message, _content);
 }
 

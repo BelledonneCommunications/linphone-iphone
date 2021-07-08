@@ -132,6 +132,8 @@ typedef struct _LinphoneManagerSounds {
 + (NSString *)documentFile:(NSString *)file;
 + (NSString*)dataFile:(NSString*)file;
 + (NSString*)cacheDirectory;
++ (NSString *)imagesDirectory;
++ (NSString *)validFilePath:(NSString *)name;
 // migration
 + (NSString *)oldPreferenceFile:(NSString *)file;
 + (NSString *)oldDataFile:(NSString *)file;
