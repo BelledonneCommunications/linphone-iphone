@@ -901,7 +901,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	NSString *filePath = [LinphoneManager validFilePath:name];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:filePath]) {
 		NSData* data = [NSData dataWithContentsOfFile:filePath];
@@ -1324,18 +1324,18 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     [PhoneMainView.instance fullScreen:NO];
 }
 
-+ (NSData *)getCacheFileData: (NSString *)name {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
++ (NSData *)getFileData: (NSString *)name {
+	NSString *filePath = [LinphoneManager validFilePath:name];
 	return [NSData dataWithContentsOfFile:filePath];
 }
 
-+ (NSURL *)getCacheFileUrl: (NSString *)name {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
++ (NSURL *)getFileUrl: (NSString *)name {
+	NSString *filePath = [LinphoneManager validFilePath:name];
 	return [NSURL fileURLWithPath:filePath];
 }
 
-+ (void)writeFileInCache:(NSData *)data name:(NSString *)name {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
++ (void)writeFileInImagesDirectory:(NSData *)data name:(NSString *)name {
+	NSString *filePath = [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:name];
 	if (name || [name isEqualToString:@""]) {
 		LOGW(@"try to write file in %@", filePath);
 	}
@@ -1362,44 +1362,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     }
     
     return nil;
-}
-
-- (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    BOOL useMyDevice = FALSE;
-    if (@available(iOS 11.0, *)) {
-        useMyDevice = TRUE;
-    }
-    
-    if (!useMyDevice && ![[fileManager URLForUbiquityContainerIdentifier:nil]URLByAppendingPathComponent:@"Documents"]) {
-        //notify : set configuration to use icloud
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Info", nil) message:NSLocalizedString(@"ICloud Drive is unavailable.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:nil, nil] show];
-        return FALSE;
-    }
-
-	NSString *fileName = fileURL.lastPathComponent;
-    if ([fileManager fileExistsAtPath:[fileURL path]] || [fileName hasPrefix:@"recording"]) {
-        // if it exists, replace the file. If it's a record file, copy the file
-        return [data writeToURL:fileURL atomically:TRUE];
-    } else {
-        // get the url of localfile
-        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
-        NSURL *localURL = nil;
-		if (fileName || [fileName isEqualToString:@""]) {
-			LOGW(@"[writeFileInICloud] try to write file in %@", filePath);
-		}
-        if ([fileManager createFileAtPath:filePath contents:data attributes:nil]) {
-            localURL = [NSURL fileURLWithPath:filePath];
-        }
-        
-        NSError *error;
-        if ([[NSFileManager defaultManager] setUbiquitous:YES itemAtURL:localURL destinationURL:fileURL error:&error]) {
-            return TRUE;
-        } else {
-            LOGE(@"Cannot write file in Icloud file [%@]",[error localizedDescription]);
-            return FALSE;
-        }
-    }
 }
 
 - (void)deleteFileWithUuid:(NSUUID *)uuid {

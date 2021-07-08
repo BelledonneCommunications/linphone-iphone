@@ -266,7 +266,7 @@
 			ms_free(cPath);
 			[LinphoneManager setValueInMessageAppData:filePath forKey:@"encryptedfile" inMessage:self.message];
 		} else {
-			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+			filePath = [LinphoneManager validFilePath:fileName];
 		}
 	}
 	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
@@ -435,7 +435,7 @@
 	if (!filePath) {
 		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
 		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-		filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:(localVideo?:localFile)];
+		filePath = [LinphoneManager validFilePath:(localVideo?:localFile)];
 	}
 	
 	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
@@ -492,8 +492,8 @@
 		return;
 	}
     NSString *name = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
-	if([[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name]]) {
-		[view openFileWithURL:[ChatConversationView getCacheFileUrl:name]];
+	if([[NSFileManager defaultManager] fileExistsAtPath: [LinphoneManager validFilePath:name]]) {
+		[view openFileWithURL:[ChatConversationView getFileUrl:name]];
 	} else {
 		[view openFileWithURL:[view getICloudFileUrl:name]];
 	}
@@ -540,16 +540,16 @@
 			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
 			NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 			NSString *imageName = NULL;
-			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localImage]]) {
+			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath: [LinphoneManager validFilePath:localImage]]) {
 				imageName = localImage;
-			} else if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:localFile]]) {
+			} else if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[LinphoneManager validFilePath:localFile]]) {
 				if ([localFile hasSuffix:@"JPG"] || [localFile hasSuffix:@"PNG"] || [localFile hasSuffix:@"jpg"] || [localFile hasSuffix:@"png"]) {
 					imageName = localFile;
 				}
 			}
 
 			if (imageName) {
-				NSData *data = [NSData dataWithContentsOfFile:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:imageName]];
+				NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager validFilePath:imageName]];
 				UIImage *image = [[UIImage alloc] initWithData:data];
 				if (image)
 					[view setImage:image];
