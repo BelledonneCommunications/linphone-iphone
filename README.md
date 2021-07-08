@@ -23,11 +23,9 @@ various ways:
 
 ## Help on translations
 
-<a target="_blank" style="text-decoration:none; color:black; font-size:66%" href="https://www.transifex.com/belledonne-communications/linphone-ios/"
-title="See more information on Transifex.com">Top translations: linphone-ios</a><br/>
-<img border="0" src="https://transifex.com/projects/p/linphone-ios/resource/localizablestrings/chart/image_png"/><br/><a target="_blank" href="/"><img border="0" src="https://ds0k0en9abmn1.cloudfront.net/static/charts/images/tx-logo-micro.646b0065fce6.png"/></a>
+We no longer use transifex for the translation process, instead we have deployed our own instance of [Weblate](https://weblate.linphone.org/projects/linphone-iphone/).
 
-Interested in helping translate Linphone? Contribute [on Transifex](https://www.transifex.com/belledonne-communications/linphone-ios).
+Due to the full app rewrite we can't re-use previous translations, so we'll be very happy if you want to contribute.
 
 ## Report bugs and submit patchs
 
