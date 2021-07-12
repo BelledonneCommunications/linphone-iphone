@@ -253,9 +253,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
 		[self overrideDefaultSettings];
-		if (![self lpConfigBoolForKey:@"migration_images_done" withDefault:FALSE]) {
-			[self migrationAllImages];
-		}
 
         [self lpConfigSetString:[LinphoneManager dataFile:@"linphone.db"] forKey:@"uri" inSection:@"storage"];
         [self lpConfigSetString:[LinphoneManager dataFile:@"x3dh.c25519.sqlite3"] forKey:@"x3dh_db_path" inSection:@"lime"];
@@ -1406,7 +1403,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	/* Use the rootca from framework, which is already set*/
 	//linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
-	linphone_core_set_user_certificates_path(theLinphoneCore, linphone_factory_get_data_dir(linphone_factory_get(), kLinphoneMsgNotificationAppGroupId.UTF8String));
+	linphone_core_set_user_certificates_path(theLinphoneCore, [LinphoneManager cacheDirectory].UTF8String);
 
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded
 	   (or skipped).
@@ -1667,17 +1664,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_refresh_registers(theLinphoneCore); // just to make sure REGISTRATION is up to date
 }
 
-- (void)migrationAllImages {
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSArray *images = [fileManager contentsOfDirectoryAtPath:[LinphoneManager cacheDirectory] error:NULL];
-
-	for (NSString *image in images)
-	{
-		[fileManager copyItemAtPath:[[LinphoneManager cacheDirectory] stringByAppendingPathComponent:image] toPath:[[LinphoneManager imagesDirectory] stringByAppendingPathComponent:image] error:nil];
-	}
-	[self lpConfigSetBool:TRUE forKey:@"migration_images_done"];
-}
-
 - (void)migrateImportantFiles {
 	if ([LinphoneManager copyFile:[LinphoneManager oldPreferenceFile:@"linphonerc"] destination:[LinphoneManager preferenceFile:@"linphonerc"] override:TRUE ignore:TRUE]) {
 		[NSFileManager.defaultManager
@@ -1893,22 +1879,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	return [fullPath stringByAppendingPathComponent:file];
 }
 
-+ (NSString *)imagesDirectory {
-	NSURL *basePath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationAppGroupId];
-	NSString *fullPath = [[basePath path] stringByAppendingString:@"/Library/Images/"];
-	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
-		NSError *error;
-		LOGW(@"Download path %@ does not exist, creating it.", fullPath);
-		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
-									   withIntermediateDirectories:YES
-														attributes:nil
-															 error:&error]) {
-			LOGE(@"Create download path directory error: %@", error.description);
-		}
-	}
-	return fullPath;
-}
-
 + (NSString *)cacheDirectory {
 	NSURL *basePath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kLinphoneMsgNotificationAppGroupId];
 	NSString *fullPath = [[basePath path] stringByAppendingString:@"/Library/Caches/"];
@@ -1923,15 +1893,20 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}
 	}
 	return fullPath;
-}
-
-+ (NSString *)validFilePath:(NSString *)name {
-	NSString *filePath = [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:name];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-		return filePath;
+	
+	/*LinphoneFactory *factory = linphone_factory_get();
+	NSString *cachePath = [NSString stringWithUTF8String:linphone_factory_get_download_dir(factory, kLinphoneMsgNotificationAppGroupId.UTF8String)];
+	BOOL isDir = NO;
+	NSError *error;
+	// cache directory must be created if not existing
+	if (![[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
+		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath
+		 withIntermediateDirectories:NO
+		 attributes:nil
+		 error:&error];
+		LOGW(@"create new cache directory");
 	}
-	// if migration (move files of cacheDirectory to imagesDirectory) failed
-	return [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	return cachePath;*/
 }
 
 + (NSString *)oldPreferenceFile:(NSString *)file {
