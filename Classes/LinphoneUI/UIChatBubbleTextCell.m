@@ -75,7 +75,7 @@
 			for(NSString *path in [encrptedFilePaths allValues]) {
 				if (![path isEqualToString:@""]) {
 					LOGW(@"[vfs]s remove item at %@",path);
-					if ([path isEqualToString:[LinphoneManager imagesDirectory]]) {
+					if ([path isEqualToString:[LinphoneManager cacheDirectory]]) {
 						LOGE(@"[vfs] something is wrong, can not delete the cache directory");
 						break;
 					}
@@ -92,7 +92,7 @@
 			if (![filePath isEqualToString:@""]) {
 				NSError *error = nil;
 				LOGW(@"[vfs] remove item at %@",filePath);
-				if ([filePath isEqualToString:[LinphoneManager imagesDirectory]]) {
+				if ([filePath isEqualToString:[LinphoneManager cacheDirectory]]) {
 					LOGE(@"[vfs] something is wrong, can not delete the cache directory");
 				} else {
 					[[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
@@ -327,7 +327,7 @@
 				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 				NSString *filePath = [encrptedFilePaths valueForKey:name];
 				if (filePath == NULL) {
-					filePath = [LinphoneManager validFilePath:name];
+					filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
 				}
 				[newfileContext addObject:[NSData dataWithContentsOfFile:filePath] name:name type:[NSString stringWithUTF8String:linphone_content_get_type(content)]];
 			}
@@ -354,11 +354,11 @@
 			const char *text = linphone_chat_message_get_text_content(_message);
 			NSString *str = text ? [NSString stringWithUTF8String:text] : NULL;
 			if (localImage) {
-				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str];
+				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getCacheFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str];
 			} else if (localVideo) {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str];
 			} else {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getCacheFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str];
 			}
 		});
 	} else {
@@ -441,7 +441,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(content)];
 	NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 	if (!filePath) {
-		filePath = [LinphoneManager validFilePath:name];
+		filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
 	}
 	
 	UIImage *image = nil;
@@ -502,7 +502,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 				NSString *filePath=[encrptedFilePaths valueForKey:name];
 				if (filePath == NULL) {
-					filePath = [LinphoneManager validFilePath:name];
+					filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
 				}
 
 				image = [UIChatBubbleTextCell getImageFromContent:content filePath:filePath];
@@ -562,7 +562,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 
 		CGSize originalImageSize = CGSizeMake(230, 50);
 		if (!filePath) {
-			filePath = [LinphoneManager validFilePath:fileName];
+			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
 		}
 		if (localFile) {
 			UIImage *image = nil;
