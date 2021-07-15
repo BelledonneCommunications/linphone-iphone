@@ -1054,15 +1054,6 @@ void linphone_iphone_qr_code_found(LinphoneCore *lc, const char *result) {
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneQRCodeFound object:nil userInfo:eventDic];
 }
 
-static void linphone_iphone_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl) {
-	if (linphone_call_log_get_status(newcl) == LinphoneCallEarlyAborted) {
-		const char *cid = linphone_call_log_get_call_id(newcl);
-		if (cid) {
-			[CallManager.instance markCallAsDeclinedWithCallId:[NSString stringWithUTF8String:cid]];
-		}
-	}
-}
-
 static void linphone_iphone_call_id_updated(LinphoneCore *lc, const char *previous_call_id, const char *current_call_id) {
 	[CallManager.instance updateCallIdWithPrevious:[NSString stringWithUTF8String:previous_call_id] current:[NSString stringWithUTF8String:current_call_id]];
 }
@@ -1370,7 +1361,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_iphone_chatroom_state_changed);
 	linphone_core_cbs_set_version_update_check_result_received(cbs, linphone_iphone_version_update_check_result_received);
 	linphone_core_cbs_set_qrcode_found(cbs, linphone_iphone_qr_code_found);
-	linphone_core_cbs_set_call_log_updated(cbs, linphone_iphone_call_log_updated);
 	linphone_core_cbs_set_call_id_updated(cbs, linphone_iphone_call_id_updated);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 	linphone_core_cbs_set_chat_room_ephemeral_message_deleted(cbs, linphone_iphone_ephemeral_message_deleted);

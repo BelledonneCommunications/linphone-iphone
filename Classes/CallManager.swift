@@ -375,25 +375,6 @@ import AVFoundation
 		}
 	}
 
-	@objc func markCallAsDeclined(callId: String) {
-		if !CallManager.callKitEnabled() {
-			return
-		}
-
-		let uuid = providerDelegate.uuids["\(callId)"]
-		if (uuid == nil) {
-			Log.directLog(BCTBX_LOG_MESSAGE, text: "Mark call \(callId) as declined.")
-			let uuid = UUID()
-			providerDelegate.uuids.updateValue(uuid, forKey: callId)
-			let callInfo = CallInfo.newIncomingCallInfo(callId: callId)
-			callInfo.reason = Reason.Busy
-			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
-		} else {
-			// end call
-			providerDelegate.endCall(uuid: uuid!)
-		}
-	}
-
 	@objc func setHeld(call: OpaquePointer, hold: Bool) {
 		let sCall = Call.getSwiftObject(cObject: call)
 		if (!hold) {
@@ -481,6 +462,9 @@ import AVFoundation
 		let callId = callLog?.callId
 		if (cstate == .PushIncomingReceived) {
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId!, displayName: "Calling")
+			if (callLog!.earlyAborted()) {
+				DispatchQueue.main.asyncAfter(deadline: .now()) {try? call.decline(reason: .Declined)}
+			}
 		} else {
 			let video = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 
