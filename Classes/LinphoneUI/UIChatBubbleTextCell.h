@@ -60,6 +60,7 @@
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 + (UIImage *)getImageFromVideoUrl:(NSURL *)url;
 + (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath;
++ (UIImage *)getImageFromFileName:(NSString *)fileName;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessageForCbs:(LinphoneChatMessage *)message;

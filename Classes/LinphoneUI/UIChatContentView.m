@@ -56,6 +56,7 @@
 		tapGestureRecognizer.numberOfTapsRequired = 1;
 		tapGestureRecognizer.enabled = YES;
 		[self addGestureRecognizer:tapGestureRecognizer];
+		self.userInteractionEnabled = true;
 	}
 }
 

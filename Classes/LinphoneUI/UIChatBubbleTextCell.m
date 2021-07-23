@@ -455,6 +455,23 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	return size;
 }
 
+
++ (UIImage *)getImageFromFileName:(NSString *)fileName {
+	NSString *extension = [[fileName.lowercaseString componentsSeparatedByString:@"."] lastObject];
+	UIImage *image;
+	if ([extension isEqualToString:@"pdf"])
+		image =  [UIImage imageNamed:@"file_pdf_default"];
+	else if ([@[@"png", @"jpg", @"jpeg", @"bmp", @"heic"] containsObject:extension])
+		image = [UIImage imageNamed:@"file_picture_default"];
+	else if ([@[@"mkv", @"avi", @"mov", @"mp4"] containsObject:extension])
+		image = [UIImage imageNamed:@"file_video_default"];
+	else if ([@[@"wav", @"au", @"m4a"] containsObject:extension])
+		image = [UIImage imageNamed:@"file_audio_default"];
+	else
+		image = [UIImage imageNamed:@"file_default"];
+	return [SwiftUtil textToImageWithDrawText:fileName inImage:image];
+}
+
 + (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath; {
 	NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(content)];
 	NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
@@ -470,9 +487,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		image = [[UIImage alloc] initWithData:data];
 	}
 	if (image) return image;
-	UIImage *basicImage = [ChatConversationView getBasicImage];
-	image = [ChatConversationView drawText:[NSString stringWithFormat:@"📎 %@",name] image:basicImage textSize:25];
-	return image;
+	else return [self getImageFromFileName:name];
 }
 
 +(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message {
@@ -652,12 +667,10 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 					NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
 					image = [[UIImage alloc] initWithData:data];
 				}
+			} else if (voiceContent){
+				return [self addVoicePlayerToSize:[self ViewHeightForFile:width] withMargins:true];
 			} else {
-				CGSize fileSize =  [self ViewHeightForFile:width];
-				if (voiceContent) {
-					fileSize = [self addVoicePlayerToSize:fileSize withMargins:true];
-				}
-				return fileSize;
+				image = [UIChatBubbleTextCell getImageFromFileName:fileName];
 			}
 
 			originalImageSize = image.size;

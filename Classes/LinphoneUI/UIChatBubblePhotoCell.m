@@ -28,6 +28,8 @@
 
 #define voicePlayer VIEW(ChatConversationView).sharedVoicePlayer
 #define chatView VIEW(ChatConversationView)
+#define FILE_ICON_TAG 0
+#define REALIMAGE_TAG 1
 
 
 
@@ -105,6 +107,7 @@
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
+	_finalImage.tag = REALIMAGE_TAG;
     dispatch_async(dispatch_get_main_queue(), ^{
         [_finalImage setImage:image];
         [_messageImageView setAsset:asset];
@@ -134,14 +137,10 @@
 }
 
 - (void) loadFileAsset:(NSString *)name {
-	NSString *text = [NSString stringWithFormat:@"📎 %@",name];
-	_fileName.text = text;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
-        _imageGestureRecognizer.enabled = NO;
-		_plusLongGestureRecognizer.enabled = NO;
-		_playButton.hidden = YES;
-    });
+	UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name];
+	[self loadImageAsset:nil image:image];
+	_imageGestureRecognizer.enabled = YES;
+	_finalImage.tag = FILE_ICON_TAG;
 }
 
 - (void) loadPlaceholder {
@@ -550,6 +549,10 @@
 }
 
 - (IBAction)onImageClick:(id)event {
+	if (_finalImage.tag == FILE_ICON_TAG) {
+		[self onFileClick:nil];
+		return;
+	}
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (state == LinphoneChatMessageStateNotDelivered) {
 		[self onResendClick:event];
@@ -690,7 +693,7 @@
 		CGFloat max_imagesh=0;
 		CGFloat max_imagesw=0;
 		CGFloat originy=0;
-		CGFloat originx=0;
+		CGFloat originx=-IMAGE_DEFAULT_MARGIN;
 		CGFloat availableWidth = chatTableView.tableView.frame.size.width-CELL_IMAGE_X_MARGIN;
 
 		NSMutableArray<NSURL *> *fileUrls = [[NSMutableArray alloc] init];
