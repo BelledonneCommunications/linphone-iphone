@@ -64,4 +64,16 @@ enum NetworkType: Int {
 		//The recording prefix is used to identify recordings in the cache directory.
 		//We will use name_dayName-day-monthName-year to separate recordings by days, then hour-minutes-seconds to order them in each day.
 	}
+		
+	@objc static func removeFile(file: String)  {
+		let fileManager = FileManager.default
+		do {
+			try fileManager.removeItem(atPath: file)
+			Log.directLog(BCTBX_LOG_MESSAGE, text: "File :\(file) removed")
+
+		} catch {
+			print("Could not remove file : \(file) \(error)")
+		}
+	}
+	
 }

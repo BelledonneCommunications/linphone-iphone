@@ -306,6 +306,12 @@
 }
 
 - (void)onResend {
+	
+	if (!linphone_core_is_network_reachable(LC)) {
+		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
+		//return;
+	}
+	
 	if (_message == nil || !linphone_chat_message_is_outgoing(_message))
 		return;
 
@@ -314,7 +320,13 @@
 		return;
 
 	const bctbx_list_t *contents = linphone_chat_message_get_contents(_message);
-	BOOL multiParts = ((linphone_chat_message_get_text_content(self.message) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
+	LinphoneContent *voiceContent = [UIChatBubbleTextCell voiceContent:_message];
+	size_t contentCount = bctbx_list_size(contents);
+	if (voiceContent)
+		contentCount--;
+	
+	BOOL multiParts = ((linphone_chat_message_get_text_content(_message) != NULL) ? contentCount > 2 : contentCount > 1);
+		
 	if (multiParts) {
 		FileContext *newfileContext = [[FileContext alloc] init];
 		[newfileContext clear];
@@ -323,6 +335,9 @@
 		const bctbx_list_t *it;
 		for (it = contents, i=0; it != NULL; it=bctbx_list_next(it)){
 			LinphoneContent *content = (LinphoneContent *)it->data;
+			if (linphone_content_is_voice_recording(content)) {
+				continue;
+			}
 			if (linphone_content_is_file_transfer(content) || linphone_content_is_file(content)){
 				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 				NSString *filePath = [encrptedFilePaths valueForKey:name];
@@ -335,11 +350,11 @@
 		[self onDelete];
 		dispatch_async(dispatch_get_main_queue(), ^ {
 			const char *text = linphone_chat_message_get_text_content(_message);
-			[_chatRoomDelegate resendMultiFiles:newfileContext message: text? [NSString stringWithUTF8String:text]: NULL];
+			[_chatRoomDelegate resendMultiFiles:newfileContext message: text? [NSString stringWithUTF8String:text]: NULL voiceContent:voiceContent];
 		});
 		return;
 	}
-	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
+	if (!voiceContent && contentCount == 1 && linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
 		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
@@ -354,11 +369,11 @@
 			const char *text = linphone_chat_message_get_text_content(_message);
 			NSString *str = text ? [NSString stringWithUTF8String:text] : NULL;
 			if (localImage) {
-				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str];
+				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str voiceContent:voiceContent];
 			} else if (localVideo) {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str voiceContent:voiceContent];
 			} else {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str voiceContent:voiceContent];
 			}
 		});
 	} else {
@@ -366,7 +381,10 @@
 		double delayInSeconds = 0.4;
 		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
 		dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-			[_chatRoomDelegate resendChat:self.textMessage withExternalUrl:nil];
+			NSString *text = self.textMessage;
+			if (voiceContent && [text isEqualToString:@"🗻"])
+				text = nil;
+			[_chatRoomDelegate resendChat:text withExternalUrl:nil voiceContent:voiceContent];
 		});
 	}
 }
@@ -457,6 +475,20 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	return image;
 }
 
++(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message {
+	for (const bctbx_list_t *it = linphone_chat_message_get_contents(message); it != NULL; it=bctbx_list_next(it)){
+		LinphoneContent *content = (LinphoneContent *)it->data;
+		if (linphone_content_is_voice_recording(content))
+			return content;
+	}
+	return nil;
+}
+
+
++(CGSize) addVoicePlayerToSize:(CGSize)size withMargins:(BOOL)margins {
+	return CGSizeMake(MAX(size.width,VOICE_RECORDING_PLAYER_WIDTH + (margins ? CELL_MESSAGE_X_MARGIN: 0)), size.height + VOICE_RECORDING_PLAYER_HEIGHT+(margins ? CELL_MESSAGE_Y_MARGIN: 0));
+	
+}
 
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText {
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
@@ -484,14 +516,51 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	CGFloat imagesh=0;
 	CGFloat max_imagesw=0;
 	CGFloat max_imagesh=0;
+	LinphoneContent *voiceContent = [self voiceContent:chat];
 	const bctbx_list_t *contents = linphone_chat_message_get_contents(chat);
-	BOOL multiParts = ((linphone_chat_message_get_text_content(chat) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
+	size_t contentCount = bctbx_list_size(contents);
+	if (voiceContent)
+		contentCount--;
+	
+	BOOL multiParts = ((linphone_chat_message_get_text_content(chat) != NULL) ? contentCount > 2 : contentCount > 1);
+	
+	if (voiceContent && contentCount == 0) {
+		size = CGSizeMake(VOICE_RECORDING_PLAYER_WIDTH, VOICE_RECORDING_PLAYER_HEIGHT);
+		CGSize textSize = CGSizeMake(0, 0);
+		if (![messageText isEqualToString:@"🗻"]) {
+			textSize = [self computeBoundingBox:messageText
+										   size:CGSizeMake(max_imagesw , CGFLOAT_MAX)
+										   font:messageFont];
+		}
+		
+		// add size for message text
+		size.height += textSize.height;
+		size.width = MAX(textSize.width, size.width);
+		size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+		size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT) ;
+		return size;
+	}
+	
 	if (multiParts) {
 		const bctbx_list_t *it = contents;
 		NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:chat];
 
 		for (it = contents; it != NULL; it=bctbx_list_next(it)){
 			LinphoneContent *content = (LinphoneContent *)it->data;
+			if (linphone_content_is_voice_recording(content)) {
+				CGSize sSize = CGSizeMake(VOICE_RECORDING_PLAYER_WIDTH, VOICE_RECORDING_PLAYER_HEIGHT);
+				imagesw += sSize.width;
+				if (imagesw > width) {
+					imagesw = sSize.width;
+					max_imagesw = MAX(max_imagesw, imagesw);
+					max_imagesh += imagesh;
+					imagesh = sSize.height;
+				} else {
+					max_imagesw = MAX(max_imagesw, imagesw);
+					imagesh = MAX(imagesh, sSize.height);
+				}
+				continue;
+			}
 			UIImage *image;
 			if(!linphone_chat_message_is_outgoing(chat) && linphone_content_is_file_transfer(content)) {
 				// not yet downloaded
@@ -538,14 +607,15 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT) ;
 		return size;
 	}
+	
 
-
-    LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
+	LinphoneContent *fileContent = linphone_chat_message_get_utf8_text(chat) ? nil : linphone_chat_message_get_file_transfer_information(chat);
     if (url == nil && fileContent == NULL) {
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
     } else {
+		
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
@@ -583,27 +653,43 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 					image = [[UIImage alloc] initWithData:data];
 				}
 			} else {
-				return [self ViewHeightForFile:width];
+				CGSize fileSize =  [self ViewHeightForFile:width];
+				if (voiceContent) {
+					fileSize = [self addVoicePlayerToSize:fileSize withMargins:true];
+				}
+				return fileSize;
 			}
 
 			originalImageSize = image.size;
 		} else {
 			if (!localImage && !localVideo) {
 				//We are loading the image
-				return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
+				CGSize baseSize = CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
+				if (voiceContent) {
+					baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
+				}
+				return baseSize;
 			}
 
 			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 				NSData* data = [NSData dataWithContentsOfFile:filePath];
 				UIImage *image = [[UIImage alloc] initWithData:data];
 				if (!image) {
-					return [self ViewHeightForFile:width];
+					CGSize fileSize =  [self ViewHeightForFile:width];
+					if (voiceContent) {
+						fileSize = [self addVoicePlayerToSize:fileSize withMargins:true];
+					}
+					return fileSize;
 				}
 				originalImageSize = image.size;
 			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL fileURLWithPath:filePath]];
 				if (!image) {
-					return [self ViewHeightForFile:width];
+					CGSize fileSize =  [self ViewHeightForFile:width];
+					if (voiceContent) {
+						fileSize = [self addVoicePlayerToSize:fileSize withMargins:true];
+					}
+					return fileSize;
 				}
 				originalImageSize = image.size;
 			} else {
@@ -615,7 +701,11 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 					assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
 
 				if (![assets firstObject]) {
-					return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
+					CGSize baseSize = CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
+					if (voiceContent) {
+						baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
+					}
+					return baseSize;
 				} else {
 					PHAsset *asset = [assets firstObject];
 					originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
@@ -626,6 +716,11 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		// add size for message text
 		size.height += textSize.height;
 		size.width = MAX(textSize.width, size.width);
+	}
+	
+	if (voiceContent) {
+		size.width = MAX(size.width,VOICE_RECORDING_PLAYER_WIDTH);
+		size.height += VOICE_RECORDING_PLAYER_HEIGHT;
 	}
 
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);

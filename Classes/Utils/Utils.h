@@ -39,7 +39,7 @@
 + (UIImage *)resizeImage:(UIImage *)imageToResize newSize:(CGSize)newSize;
 
 + (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)addr;
-+ (UIAlertController *)networkErrorView;
++ (UIAlertController *)networkErrorView:(NSString *)action;
 
 typedef enum {
 	LinphoneDateHistoryList,
