@@ -187,6 +187,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableController setChatRoomDelegate:self];
     [_imagesCollectionView registerClass:[UIImageViewDeletable class] forCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class])];
     [_imagesCollectionView setDataSource:self];
+	[_imagesCollectionView setDelegate:self];
 	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
 	
 	_vrInnerView.layer.cornerRadius = 5.0f;
@@ -250,12 +251,12 @@ static UICompositeViewDescription *compositeDescription = nil;
                          animations:^{
                              // resizing imagesView
                              CGRect imagesFrame = [_imagesView frame];
-                             imagesFrame.origin.y = [_messageView frame].origin.y - 100;
-                             imagesFrame.size.height = 100;
+                             imagesFrame.origin.y = [_messageView frame].origin.y - 120;
+                             imagesFrame.size.height = 120;
                              [_imagesView setFrame:imagesFrame];
                              // resizing chatTable
                              CGRect tableViewFrame = [_tableController.tableView frame];
-                             tableViewFrame.size.height -= 100;
+                             tableViewFrame.size.height -= 120;
                              [_tableController.tableView setFrame:tableViewFrame];
 							 [self updateFramesInclRecordingView];
                          }
@@ -1452,14 +1453,19 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
     return [_fileContext count];
 }
 
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+	return UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? CGSizeMake(60, 60) : CGSizeMake(120, 120);
+}
+
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UIImageViewDeletable *imgView = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class]) forIndexPath:indexPath];
     CGRect imgFrame = imgView.frame;
     imgFrame.origin.y = 5;
     if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        imgFrame.size.height = 50;
+        imgFrame.size.height = 60;
     } else {
-        imgFrame.size.height = 100;
+        imgFrame.size.height = 120;
     }
 
 	[imgView.image setImage:[UIImage resizeImage:[_fileContext.previewsArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
@@ -1471,7 +1477,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (void)refreshImageDrawer {
-    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 65 : 125;
     
     if ([_fileContext count] == 0) {
         [UIView animateWithDuration:0
@@ -1560,7 +1566,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	NSFileCoordinator *co =[[NSFileCoordinator alloc] init];
 	NSError *error = nil;
 	[co coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL * _Nonnull newURL) {
-		UIImage *image = [ChatConversationView drawText:[newURL lastPathComponent] image:[ChatConversationView getBasicImage] textSize:10];
+		UIImage *image = [UIChatBubbleTextCell getImageFromFileName:[newURL lastPathComponent]];
 		[_fileContext addObject:[NSData dataWithContentsOfURL:newURL] name:[newURL lastPathComponent] type:@"file" image:image];
 		[self refreshImageDrawer];
 	}];

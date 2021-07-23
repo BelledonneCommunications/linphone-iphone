@@ -49,7 +49,7 @@
 
 @interface ChatConversationView
 	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
-                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UIDocumentMenuDelegate,UIDocumentPickerDelegate,UITableViewDataSource, UITableViewDelegate> {
+                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UICollectionViewDelegate,UIDocumentMenuDelegate,UIDocumentPickerDelegate,UITableViewDataSource, UITableViewDelegate> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;

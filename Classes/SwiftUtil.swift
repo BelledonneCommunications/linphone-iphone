@@ -33,7 +33,7 @@ import UIKit
 		
 		image.draw(in: CGRect(origin: CGPoint(x: size.width/2 - (image.size.width)/2,y: 15), size: image.size))
 
-		let rect = CGRect(origin: CGPoint(x: 0,y: 70), size: size)
+		let rect = CGRect(origin: CGPoint(x: 0,y: 70), size: CGSize(width: size.width, height: 30))
 		text.draw(in: rect, withAttributes: textFontAttributes)
 
 		let newImage = UIGraphicsGetImageFromCurrentImageContext()

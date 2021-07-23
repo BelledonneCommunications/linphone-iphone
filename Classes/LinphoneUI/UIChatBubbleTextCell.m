@@ -635,10 +635,10 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
 		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:chat];
-		NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
-        
+		NSString *fileName = fileContent ? [NSString stringWithUTF8String:linphone_content_get_name(fileContent)] : nil;
+
         CGSize textSize = CGSizeMake(0, 0);
-        if (![messageText isEqualToString:@"🗻"]) {
+        if (![messageText isEqualToString:@"🗻"] && messageText.length > 0) {
             textSize = [self computeBoundingBox:messageText
                                            size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                            font:messageFont];
@@ -677,7 +677,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		} else {
 			if (!localImage && !localVideo) {
 				//We are loading the image
-				CGSize baseSize = CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
+				CGSize baseSize = CGSizeMake(120 + CELL_MESSAGE_X_MARGIN, 120 + CELL_MESSAGE_Y_MARGIN + textSize.height + (textSize.height != 0 ? 20 : 0));
 				if (voiceContent) {
 					baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
 				}

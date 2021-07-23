@@ -268,10 +268,15 @@
 				_playButton.hidden = YES;
 				_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
 			} else {
-				_downloadButton.hidden =  NO;
+				_downloadButton.hidden =  YES;
+				UIChatContentView * contentView = [[UIChatContentView alloc] init];
+				[contentView setContent:fileContent message:self.message];
+				contentView.position = 0;
+				[_contentViews addObject:contentView];
 				_cancelButton.hidden = _fileTransferProgress.hidden =  YES;
 				_playButton.hidden = YES;
 				_fileName.hidden = _fileView.hidden = _fileButton.hidden =  YES;
+				[self layoutSubviews];
 			}
 			return;
 		}
