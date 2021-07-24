@@ -624,7 +624,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	}
 	
 
-	LinphoneContent *fileContent = linphone_chat_message_get_utf8_text(chat) ? nil : linphone_chat_message_get_file_transfer_information(chat);
+	LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
     if (url == nil && fileContent == NULL) {
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
