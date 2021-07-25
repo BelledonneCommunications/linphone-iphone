@@ -625,7 +625,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	
 
 	LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
-    if (url == nil && fileContent == NULL) {
+    if (url == nil && (fileContent == NULL||fileContent == voiceContent)) {
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
@@ -680,6 +680,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				CGSize baseSize = CGSizeMake(120 + CELL_MESSAGE_X_MARGIN, 120 + CELL_MESSAGE_Y_MARGIN + textSize.height + (textSize.height != 0 ? 20 : 0));
 				if (voiceContent) {
 					baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
+					
 				}
 				return baseSize;
 			}
