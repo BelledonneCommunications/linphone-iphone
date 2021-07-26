@@ -575,6 +575,23 @@
 
 @end
 
+
+
+@implementation UIImageView (ImageWithTint)
+
+- (void)setImageNamed:(NSString *)name tintColor:(UIColor *)color {
+	self.image =  [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	self.tintColor = color;
+}
+
+- (void)setImageNamed:(NSString *)name tintColorLetter:(NSString *)letter {
+	UIColor *color = [UIColor color:letter];
+	self.image =  [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	self.tintColor = color;
+}
+
+@end
+
 @implementation NSString (md5)
 
 - (NSString *)md5 {
@@ -802,6 +819,19 @@
 
 - (UIColor *)darkerColor {
 	return [self lumColor:0.75];
+}
+
+
+static NSMutableDictionary *letterColors = nil;
+
++(UIColor *)color:(NSString *)letter {
+	if (letterColors == nil)
+		letterColors  = [[NSMutableDictionary alloc] init];
+	if (![letterColors objectForKey:letter]) {
+		UIImage *colorImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/color_%@.png",[[NSBundle mainBundle] bundlePath],letter]];
+		[letterColors setObject:[UIColor colorWithPatternImage:colorImage] forKey:letter];
+	}
+	return [letterColors objectForKey:letter];
 }
 
 @end

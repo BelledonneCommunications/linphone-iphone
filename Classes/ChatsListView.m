@@ -53,7 +53,27 @@
     [button addTarget:self action:@selector(crashButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];*/
+	
+	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+
+	_tableController.editButton.hidden = forwardMode;
+	_forwardTitle.text =  NSLocalizedString(@"Select a discussion or create a new one",nil);
+	_forwardTitle.hidden = !forwardMode;
+	_cancelForwardButton.hidden = !forwardMode;
+	
+	_tableController.tableView.frame = CGRectMake(0, 66 + (forwardMode ? _forwardTitle.frame.size.height : 0), _tableController.tableView.frame.size.width,  self.view.frame.size.height - 66 - ( forwardMode ? _forwardTitle.frame.size.height : 0 ));
+	_addButton.frame = CGRectMake(forwardMode ? 82 : 0 , _addButton.frame.origin.y, _addButton.frame.size.width, _addButton.frame.size.height);
+	_addGroupChatButton.frame = CGRectMake(forwardMode ? 164 : 82 , _addGroupChatButton.frame.origin.y, _addGroupChatButton.frame.size.width, _addGroupChatButton.frame.size.height);
+
 }
+
+
+
+- (void)ephemeralDeleted:(NSNotification *)notif {
+	//LinphoneChatRoom *r =[[notif.userInfo objectForKey:@"room"] intValue];
+	[self.tableController loadData];
+}
+
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
@@ -150,8 +170,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     assert(NO);
 }
 
-- (void)ephemeralDeleted:(NSNotification *)notif {
-	[self.tableController loadData];
+- (IBAction)onCancelForwardClicked:(id)sender {
+	VIEW(ChatConversationView).pendingForwardMessage = nil;
+	[PhoneMainView.instance popCurrentView];
 }
 
 @end

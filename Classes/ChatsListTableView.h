@@ -28,6 +28,7 @@
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 @property bctbx_list_t *data;
 
+
 - (void)loadData;
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom;
 @end

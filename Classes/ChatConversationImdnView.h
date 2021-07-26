@@ -36,13 +36,11 @@
 @property(nonatomic) bctbx_list_t *receivedList;
 @property(nonatomic) bctbx_list_t *notReceivedList;
 @property(nonatomic) bctbx_list_t *errorList;
+@property(nonatomic) UIChatBubbleTextCell *cell;
+@property(nonatomic) NSTimer *ephemeralDisplayTimer;
+
 
 @property (weak, nonatomic) IBOutlet UIView *msgView;
-@property (weak, nonatomic) IBOutlet UIImageView *msgBackgroundColorImage;
-@property (weak, nonatomic) IBOutlet UIRoundedImageView *msgAvatarImage;
-@property (weak, nonatomic) IBOutlet UIImageView *msgBottomBar;
-@property (weak, nonatomic) IBOutlet UILabel *msgDateLabel;
-@property (weak, nonatomic) IBOutlet UITextViewNoDefine *msgText;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)onBackClick:(id)sender;

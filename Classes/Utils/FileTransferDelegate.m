@@ -102,7 +102,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	}
 }
 
-- (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key  voiceContent:(LinphoneContent *)voiceContent{
+- (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key  rootMessage:(LinphoneChatMessage *)rootMessage{
 	if ([[LinphoneManager.instance fileTransferDelegates] containsObject:self]) {
 		LOGW(@"fileTransferDelegates has already added %p", self);
 		return;
@@ -115,7 +115,8 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	linphone_content_set_subtype(content, [subtype UTF8String]);
 	linphone_content_set_name(content, [name UTF8String]);
 	linphone_content_set_file_path(content, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:name].UTF8String);
-	_message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
+	_message = rootMessage;
+	linphone_chat_message_add_file_content(_message, content);
 	BOOL isOneToOneChat = linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
 	if (!isOneToOneChat && (_text!=nil && ![_text isEqualToString:@""]))
 		linphone_chat_message_add_text_content(_message, [_text UTF8String]);
@@ -125,17 +126,16 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 
 	[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:_message];
 	
-	if (voiceContent)
-		linphone_chat_message_add_content(_message, voiceContent);
+	
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
 	linphone_chat_message_send(_message);
 }
 
-- (void)uploadFileContent: (FileContext *)context forChatRoom:(LinphoneChatRoom *)chatRoom andVoiceContent:(LinphoneContent *)voiceContent{
+- (void)uploadFileContent: (FileContext *)context forChatRoom:(LinphoneChatRoom *)chatRoom  rootMessage:(LinphoneChatMessage *)rootMessage{
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 	
-	_message = linphone_chat_room_create_empty_message(chatRoom);
+	_message = rootMessage;
 	NSMutableArray<NSString *> *names = [[NSMutableArray alloc] init];
 	NSMutableArray<NSString *> *types = [[NSMutableArray alloc] init];
 
@@ -165,8 +165,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	// todo indication progress
 	[LinphoneManager setValueInMessageAppData:names forKey:@"multiparts" inMessage:_message];
 	[LinphoneManager setValueInMessageAppData:types forKey:@"multipartstypes" inMessage:_message];
-	if (voiceContent)
-		linphone_chat_message_add_content(_message, voiceContent);
+
 	LOGI(@"%p Uploading content from message %p", self, _message);
 	linphone_chat_message_send(_message);
 }
@@ -175,21 +174,17 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 - (void)uploadImage:(UIImage *)image forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
 	NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
 	NSData *data = UIImageJPEGRepresentation(image, quality);
-	[self uploadData:data forChatRoom:chatRoom type:@"image" subtype:@"jpg" name:name key:@"localimage" voiceContent:nil];
+	[self uploadData:data forChatRoom:chatRoom type:@"image" subtype:@"jpg" name:name key:@"localimage" rootMessage:nil];
 }
 
-- (void)uploadVideo:(NSData *)data withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom  {
-	NSString *name = [NSString stringWithFormat:@"IMG-%f.MOV",  [NSDate timeIntervalSinceReferenceDate]];
-	[self uploadData:data forChatRoom:chatRoom type:@"video" subtype:@"mov" name:name key:@"localvideo" voiceContent:nil];
-}
 
-- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {
+- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name rootMessage:(LinphoneChatMessage *)rootMessage {
 	NSURL *url = [ChatConversationView getFileUrl:name];
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
 	NSString *fileType = [[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0 ? @"video" : @"file";
 	NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:name];
 
-	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key voiceContent:nil];
+	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key rootMessage:rootMessage];
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {

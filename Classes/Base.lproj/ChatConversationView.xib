@@ -31,6 +31,7 @@
                 <outlet property="pictureButton" destination="73" id="84"/>
                 <outlet property="popupMenu" destination="gdT-1Q-vU2" id="M7Q-tv-zRF"/>
                 <outlet property="portraitView" destination="6" id="xJJ-1H-6N6"/>
+                <outlet property="replyView" destination="wve-MK-7ME" id="fhJ-ne-9Xx"/>
                 <outlet property="sendButton" destination="15" id="27"/>
                 <outlet property="tableController" destination="29" id="32"/>
                 <outlet property="toggleMenuButton" destination="CPn-Oc-9PX" id="QdS-xO-bfA"/>
@@ -387,6 +388,11 @@
                                         <action selector="onEncryptedDevicesClick:" destination="-1" eventType="touchUpInside" id="K1W-Ao-IDg"/>
                                     </connections>
                                 </button>
+                                <view hidden="YES" tag="290392" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wve-MK-7ME" userLabel="ReplyView">
+                                    <rect key="frame" x="0.0" y="536" width="414" height="120"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </view>
                             </subviews>
                         </view>
                         <tableView hidden="YES" clipsSubviews="YES" tag="6992" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="gdT-1Q-vU2" userLabel="popupMenu">

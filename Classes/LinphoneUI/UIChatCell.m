@@ -46,6 +46,7 @@
 - (void)setChatRoom:(LinphoneChatRoom *)achat {
 	chatRoom = achat;
 	[self update];
+	[self.forwardIcon setImageNamed:@"forward_message_default" tintColor:PhoneMainView.instance.darkMode ? UIColor.whiteColor : UIColor.darkGrayColor];
 }
 
 #pragma mark -

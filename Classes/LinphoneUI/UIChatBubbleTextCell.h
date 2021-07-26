@@ -22,6 +22,7 @@
 #import "UITextViewNoDefine.h"
 #import "ChatConversationTableView.h"
 #import "UIRoundedImageView.h"
+#import "UIChatReplyBubbleView.h"
 
 #define CELL_IMAGE_X_MARGIN 100
 #define IMAGE_DEFAULT_WIDTH 120
@@ -30,7 +31,7 @@
 #define VOICE_RECORDING_PLAYER_WIDTH 300
 
 
-@interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate>
+@interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate, UITableViewDataSource,UITableViewDelegate>
 
 @property(readonly, nonatomic) LinphoneEventLog *event;
 @property(readonly, nonatomic) LinphoneChatMessage *message;
@@ -50,6 +51,22 @@
 @property (weak, nonatomic) IBOutlet UIView *innerView;
 @property (weak, nonatomic) IBOutlet UILabel *ephemeralTime;
 @property (weak, nonatomic) IBOutlet UIImageView *ephemeralIcon;
+@property ChatConversationTableView *tableController;
+@property BOOL popupMenuAllowed;
+
+// Message popup menu
+@property UITableView *popupMenu;
+@property NSMutableArray *messageActionsTitles;
+@property NSMutableArray *messageActionsIcons;
+@property NSMutableArray *messageActionsBlocks;
+
+// Message reply/transfer
+@property UIChatReplyBubbleView *replyView;
+@property UILabel *replyOrForward;
+@property (weak, nonatomic) IBOutlet UIImageView *replyTransferIcon;
+@property (weak, nonatomic) IBOutlet UILabel *replyTransferLabel;
+@property (weak, nonatomic) IBOutlet UIView *photoCellContentView;
+
 
 @property(nonatomic) BOOL isFirst;
 @property(nonatomic) BOOL isLast;
@@ -67,8 +84,6 @@
 - (void)clearEncryptedFiles;
 
 - (void)onDelete;
-- (void)onResend;
-- (void)onLime;
 - (void)update;
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state;
@@ -77,5 +92,6 @@
 + (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
 + (NSString *)ContactDateForChat:(LinphoneChatMessage *)message;
 +(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message;
-
+-(void) onPopupMenuPressed;
+-(void) dismissPopup;
 @end
