@@ -837,7 +837,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	_messageActionsIcons = [[NSMutableArray alloc] init];
 
 
-	if (linphone_chat_message_has_text_content(self.message)) {
+	if (linphone_chat_message_get_utf8_text(message)) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];
 		[_messageActionsIcons addObject:@"menu_copy_text_default"];
 		[_messageActionsBlocks addObject:^{[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)]];}];
