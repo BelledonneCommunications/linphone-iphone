@@ -563,13 +563,11 @@
 		[self onResendClick:event];
 	} else {
 		if (![_messageImageView isLoading]) {
-			ImageView *view = VIEW(ImageView);
+			ChatConversationView *view = VIEW(ChatConversationView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 			NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 			if (filePath) {
-				NSData *data = [NSData dataWithContentsOfFile:filePath];
-				UIImage *image = [[UIImage alloc] initWithData:data];
-				[view setImage:image];
+				[view openFileWithURL:[NSURL fileURLWithPath:filePath]];
 				return;
 			}
 
@@ -585,12 +583,7 @@
 			}
 
 			if (imageName) {
-				NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager validFilePath:imageName]];
-				UIImage *image = [[UIImage alloc] initWithData:data];
-				if (image)
-					[view setImage:image];
-				else
-					LOGE(@"Can't read image");
+				[view openFileWithURL:[NSURL fileURLWithPath:[LinphoneManager validFilePath:imageName]]];
 				return;
 			}
 
@@ -603,6 +596,7 @@
             [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
                                                     resultHandler:^(UIImage *image, NSDictionary * info) {
                                                         if (image) {
+															ImageView *view = VIEW(ImageView);
                                                             [view setImage:image];
                                                         }
                                                         else {
