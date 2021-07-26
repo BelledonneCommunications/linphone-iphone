@@ -85,4 +85,5 @@
 + (NSString *)ContactDateForChat:(LinphoneChatMessage *)message;
 +(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message;
 -(void) onPopupMenuPressed;
+-(void) dismissPopup;
 @end
