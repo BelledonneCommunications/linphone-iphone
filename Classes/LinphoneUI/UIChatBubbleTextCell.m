@@ -624,13 +624,14 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	}
 	
 
-	LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
-    if (url == nil && (fileContent == NULL||fileContent == voiceContent)) {
+	// if here, either 1 file + text or just one file or just text.
+	BOOL justText = linphone_chat_message_get_text_content(chat) != NULL && contentCount == 1;
+	if (justText) { // Just text
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
     } else {
-		
+		LinphoneContent *fileContent =  linphone_chat_message_get_file_transfer_information(chat);
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
