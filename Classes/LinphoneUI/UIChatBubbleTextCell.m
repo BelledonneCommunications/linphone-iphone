@@ -879,7 +879,7 @@ static UITableView *_popupMenu;
 	if (_popupMenu)
 		return;
 	self.innerView.layer.borderWidth = 3;
-	self.innerView.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]].CGColor;
+	self.innerView.layer.borderColor = rgb(1,88,7).CGColor;
 	[self buildActions];
 	int width = 250;
 	int cellHeight = 44;
@@ -928,7 +928,7 @@ static UITableView *_popupMenu;
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	void (^ myblock)() = [_messageActionsBlocks objectAtIndex:indexPath.row];
+	void (^ myblock)(void) = [_messageActionsBlocks objectAtIndex:indexPath.row];
 	[self dismissPopup];
 	myblock();
 }
