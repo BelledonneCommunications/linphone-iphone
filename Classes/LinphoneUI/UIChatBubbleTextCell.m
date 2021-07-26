@@ -829,7 +829,6 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 // IMDM Status -> out
 // Delete -> always
 
-static UITableView *_popupMenu;
 
 -(void) buildActions {
 	LinphoneChatMessage *message = self.message;
@@ -877,8 +876,7 @@ static UITableView *_popupMenu;
 }
 
 -(void) onPopupMenuPressed {
-	if (_popupMenu)
-		return;
+	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
 	self.innerView.layer.borderWidth = 3;
 	self.innerView.layer.borderColor = rgb(1,88,7).CGColor;
 	[self buildActions];
@@ -918,6 +916,7 @@ static UITableView *_popupMenu;
 		[_popupMenu removeFromSuperview];
 		_popupMenu = nil;
 		self.innerView.layer.borderWidth = 0;
+		[self setNeedsLayout];
 	}
 }
 
