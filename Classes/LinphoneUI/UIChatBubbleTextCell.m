@@ -681,7 +681,8 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				CGSize baseSize = CGSizeMake(120 + CELL_MESSAGE_X_MARGIN, 120 + CELL_MESSAGE_Y_MARGIN + textSize.height + (textSize.height != 0 ? 20 : 0));
 				if (voiceContent) {
 					baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
-					
+					baseSize.height -= VOICE_RECORDING_PLAYER_HEIGHT;
+					baseSize.height += 10;
 				}
 				return baseSize;
 			}
