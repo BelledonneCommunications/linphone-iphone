@@ -56,7 +56,9 @@
 	resendRecognizer2.numberOfTapsRequired = 1;
 	//[_imdmLabel addGestureRecognizer:resendRecognizer2];
 	//_imdmLabel.userInteractionEnabled = YES;
-
+	
+	[_innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
+	_messageText.userInteractionEnabled = false;
 	self.contentView.userInteractionEnabled = NO;
 	return self;
 }
@@ -269,7 +271,6 @@
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-	_messageText.userInteractionEnabled = !editing;
 	_resendRecognizer.enabled = !editing;
 }
 
@@ -816,5 +817,138 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
     mediaSize.width = MIN(availableWidth, originalSize.width);
     return mediaSize;
 }
+
+
+// Message popup menu
+// Copy text -> if has text
+// Transfer -> always
+// Reply -> always
+// IMDM Status -> out
+// Delete -> always
+
+static UITableView *_popupMenu;
+
+-(void) buildActions {
+	LinphoneChatMessage *message = self.message;
+	_messageActionsTitles = [[NSMutableArray alloc] init];
+	_messageActionsBlocks = [[NSMutableArray alloc] init];
+	_messageActionsIcons = [[NSMutableArray alloc] init];
+
+	if (linphone_chat_message_has_text_content(self.message)) {
+		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];
+		[_messageActionsIcons addObject:@"menu_copy_text_default"];
+		[_messageActionsBlocks addObject:^{[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)]];}];
+	}
+	
+	/*
+	[_messageActionsTitles addObject:NSLocalizedString(@"Transfer", nil)];
+	[_messageActionsIcons addObject:@"menu_forward_default"];
+	[_messageActionsBlocks addObject:^{
+		// TODO
+	}];
+	
+	[_messageActionsTitles addObject:NSLocalizedString(@"Reply", nil)];
+	[_messageActionsIcons addObject:@"menu_reply_default"];
+	[_messageActionsBlocks addObject:^{
+		// TODO
+	}];
+	 */
+	
+	if (linphone_chat_message_is_outgoing(self.message)) {
+		[_messageActionsTitles addObject:NSLocalizedString(@"Message status", nil)];
+		[_messageActionsIcons addObject:@"menu_info"];
+		[_messageActionsBlocks addObject:^{
+			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+			view.msg = message;
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		}];
+	}
+	
+	[_messageActionsTitles addObject:NSLocalizedString(@"Delete", nil)];
+	[_messageActionsIcons addObject:@"delete_default"];
+	[_messageActionsBlocks addObject:^{
+		linphone_chat_room_delete_message(linphone_chat_message_get_chat_room(message), message);
+		[VIEW(ChatConversationView).tableController reloadData];
+	}];
+}
+
+-(void) onPopupMenuPressed {
+	if (_popupMenu)
+		return;
+	self.innerView.layer.borderWidth = 3;
+	self.innerView.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]].CGColor;
+	[self buildActions];
+	int width = 250;
+	int cellHeight = 44;
+	int numberOfItems = (int) _messageActionsTitles.count;
+	CGRect screenRect = UIScreen.mainScreen.bounds;
+	int menuHeight = numberOfItems * cellHeight;
+	
+	CGRect frame = CGRectMake(
+							  linphone_chat_message_is_outgoing(self.message) ? screenRect.size.width - width - 10 : 10,
+							  (self.frame.origin.y + self.frame.size.height) > screenRect.size.height /2 ? self.frame.origin.y - menuHeight :  self.frame.origin.y + self.frame.size.height,
+							  width,
+							  menuHeight);
+	
+	_popupMenu = [[UITableView alloc]initWithFrame:frame];
+	_popupMenu.dataSource = self;
+	_popupMenu.delegate = self;
+	_popupMenu.layer.shadowColor = [UIColor lightGrayColor].CGColor;
+	_popupMenu.layer.shadowOpacity = 0.5;
+	_popupMenu.layer.shadowOffset = CGSizeZero;
+	_popupMenu.layer.shadowRadius = 5;
+	_popupMenu.layer.masksToBounds = false;
+	_popupMenu.tableFooterView = [UIView new];
+	_popupMenu.editing = NO;
+	_popupMenu.userInteractionEnabled  = true;
+	[_popupMenu reloadData];
+	[VIEW(ChatConversationView).tableController.view addSubview:_popupMenu];
+	UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOutsideMenu:)];
+	tapGestureRecognizer.cancelsTouchesInView = NO;
+	tapGestureRecognizer.numberOfTapsRequired = 1;
+	[VIEW(ChatConversationView).tableController.view  addGestureRecognizer:tapGestureRecognizer];
+}
+
+-(void) dismissPopup {
+	[_popupMenu removeFromSuperview];
+	_popupMenu = nil;
+	self.innerView.layer.borderWidth = 0;
+}
+
+
+
+-(void) tapOutsideMenu:(UITapGestureRecognizer *) g {
+	CGPoint p = [g locationInView:VIEW(ChatConversationView).tableController.view];
+	if (!CGRectContainsPoint(_popupMenu.frame,p)) {
+		[self dismissPopup];
+	}
+}
+
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	void (^ myblock)() = [_messageActionsBlocks objectAtIndex:indexPath.row];
+	[self dismissPopup];
+	myblock();
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return [_messageActionsTitles count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [[UITableViewCell alloc] init];
+	
+	cell.imageView.image = [UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]];
+	cell.textLabel.text = [_messageActionsTitles objectAtIndex:indexPath.row];
+	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	return cell;
+}
+
+
+
+
 
 @end

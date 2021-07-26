@@ -30,7 +30,7 @@
 #define VOICE_RECORDING_PLAYER_WIDTH 300
 
 
-@interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate>
+@interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate, UITableViewDataSource,UITableViewDelegate>
 
 @property(readonly, nonatomic) LinphoneEventLog *event;
 @property(readonly, nonatomic) LinphoneChatMessage *message;
@@ -50,6 +50,11 @@
 @property (weak, nonatomic) IBOutlet UIView *innerView;
 @property (weak, nonatomic) IBOutlet UILabel *ephemeralTime;
 @property (weak, nonatomic) IBOutlet UIImageView *ephemeralIcon;
+
+// Message popup menu
+@property NSMutableArray *messageActionsTitles;
+@property NSMutableArray *messageActionsIcons;
+@property NSMutableArray *messageActionsBlocks;
 
 @property(nonatomic) BOOL isFirst;
 @property(nonatomic) BOOL isLast;
@@ -77,5 +82,5 @@
 + (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
 + (NSString *)ContactDateForChat:(LinphoneChatMessage *)message;
 +(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message;
-
+-(void) onPopupMenuPressed;
 @end

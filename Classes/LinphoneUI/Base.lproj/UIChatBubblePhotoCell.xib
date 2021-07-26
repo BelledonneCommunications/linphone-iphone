@@ -30,7 +30,6 @@
                 <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
                 <outlet property="messageText" destination="cx9-0K-P9L" id="kPh-s4-Ioy"/>
                 <outlet property="playButton" destination="cvc-tl-Pcf" id="eKJ-2T-LUl"/>
-                <outlet property="plusLongGestureRecognizer" destination="daf-cW-dRj" id="O5u-t0-uMe"/>
                 <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
                 <outlet property="totalView" destination="8I3-n2-0kS" id="aa8-j9-saW"/>
                 <outlet property="vrPlayPause" destination="7Zn-bp-e0Y" id="ed8-ZL-VpS"/>
@@ -221,7 +220,6 @@
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
                         <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="FIv-pl-I8J"/>
-                        <outletCollection property="gestureRecognizers" destination="daf-cW-dRj" appends="YES" id="qgk-YT-Grl"/>
                     </connections>
                 </view>
             </subviews>
@@ -239,11 +237,6 @@
                 <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>
             </connections>
         </tapGestureRecognizer>
-        <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="daf-cW-dRj" userLabel="plusClick">
-            <connections>
-                <action selector="onPlusClick:" destination="-1" id="oFW-FN-6xV"/>
-            </connections>
-        </pongPressGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="414.39999389648438" height="414.39999389648438"/>

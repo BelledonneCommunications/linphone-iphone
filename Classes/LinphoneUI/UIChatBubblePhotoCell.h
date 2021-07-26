@@ -41,7 +41,6 @@
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 @property (weak, nonatomic) IBOutlet UIButton *fileButton;
 @property (weak, nonatomic) IBOutlet UIView *fileView;
-@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
 @property(strong, nonatomic) NSMutableArray<UIChatContentView *> *contentViews;
 
 // Video recordings
@@ -64,7 +63,6 @@
 - (IBAction)onResendClick:(id)event;
 - (IBAction)onPlayClick:(id)sender;
 - (IBAction)onFileClick:(id)sender;
-- (IBAction)onPlusClick:(id)sender;
 
 @end
 

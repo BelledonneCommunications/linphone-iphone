@@ -63,6 +63,9 @@
 		_contentViews = [[NSMutableArray alloc] init];
 		self.vrWaveMaskPlayback.layer.cornerRadius = 10.0f;
 		self.vrWaveMaskPlayback.layer.masksToBounds = YES;
+		[self.innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
+		self.messageText.userInteractionEnabled = false;
+
 	}
 	return self;
 }
@@ -82,7 +85,6 @@
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;
-	_plusLongGestureRecognizer.enabled = NO;
 	_messageImageView.image = nil;
     _finalImage.image = nil;
     _finalImage.hidden = TRUE;
@@ -115,7 +117,6 @@
         _messageImageView.hidden = YES;
         _finalImage.hidden = NO;
         _fileView.hidden = YES;
-		_plusLongGestureRecognizer.enabled = YES;
         [self layoutSubviews];
     });
 }
@@ -151,7 +152,6 @@
         [_messageImageView stopLoading];
         _messageImageView.hidden = YES;
         _imageGestureRecognizer.enabled = YES;
-		_plusLongGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
         [self layoutSubviews];
     });
@@ -496,25 +496,6 @@
     }];
 }
 
-- (IBAction)onPlusClick:(id)sender {
-	UILongPressGestureRecognizer *gesture = (UILongPressGestureRecognizer *)sender;
-	if (gesture.state != UIGestureRecognizerStateBegan) {
-		// allow only one click once time
-		return;
-	}
-	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[sheet addButtonWithTitle:NSLocalizedString(@"Save to Gallery", nil)
-							block:^() {
-			LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
-			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
-			[ChatConversationView writeMediaToGallery:name fileType:[NSString stringWithUTF8String:linphone_content_get_type(content)?:""]];
-		}];
-	 
-		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-		[sheet showInView:PhoneMainView.instance.view];
-	});
-}
 
 - (IBAction)onFileClick:(id)sender {
     ChatConversationView *view = VIEW(ChatConversationView);
@@ -831,6 +812,14 @@ static AVAudioPlayer* utilityPlayer;
 		[self startPlayer];
 	}
 }
+
+
+//  menu
+
+-(void) onPopupMenuPressed {
+	[super onPopupMenuPressed];
+}
+
 
 @end
 

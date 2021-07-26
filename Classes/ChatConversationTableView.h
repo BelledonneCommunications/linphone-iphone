@@ -64,5 +64,6 @@
 - (void)scrollToLastUnread:(BOOL)animated;
 - (void)updateEventEntry:(LinphoneEventLog *)event;
 - (void)refreshData;
+- (void)reloadData;
 
 @end
