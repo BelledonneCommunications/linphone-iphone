@@ -49,6 +49,7 @@
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
+	[self dismissMessagesPopups];
 	[self stopEphemeralDisplayTimer];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super viewWillDisappear:animated];
@@ -276,6 +277,13 @@ static const int BASIC_EVENT_LIST=15;
 		[(UIChatBubbleTextCell *)cell clearEncryptedFiles];
 	}
 	[(UIChatBubbleTextCell *)cell dismissPopup];
+}
+
+-(void) dismissMessagesPopups {
+	for (UITableViewCell *cell in self.tableView.visibleCells) {
+		if (![[cell reuseIdentifier] isEqualToString:NSStringFromClass(UIChatNotifiedEventCell.class)])
+			[(UIChatBubbleTextCell *)cell dismissPopup];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

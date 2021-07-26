@@ -52,6 +52,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *ephemeralIcon;
 
 // Message popup menu
+@property UITableView *popupMenu;
 @property NSMutableArray *messageActionsTitles;
 @property NSMutableArray *messageActionsIcons;
 @property NSMutableArray *messageActionsBlocks;

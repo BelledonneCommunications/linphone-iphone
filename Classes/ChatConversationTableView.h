@@ -65,5 +65,6 @@
 - (void)updateEventEntry:(LinphoneEventLog *)event;
 - (void)refreshData;
 - (void)reloadData;
+-(void) dismissMessagesPopups;
 
 @end
