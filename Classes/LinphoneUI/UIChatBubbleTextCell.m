@@ -911,9 +911,11 @@ static UITableView *_popupMenu;
 }
 
 -(void) dismissPopup {
-	[_popupMenu removeFromSuperview];
-	_popupMenu = nil;
-	self.innerView.layer.borderWidth = 0;
+	if (_popupMenu) {
+		[_popupMenu removeFromSuperview];
+		_popupMenu = nil;
+		self.innerView.layer.borderWidth = 0;
+	}
 }
 
 
