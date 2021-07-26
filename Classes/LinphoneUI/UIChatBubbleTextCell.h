@@ -56,6 +56,8 @@
 @property NSMutableArray *messageActionsIcons;
 @property NSMutableArray *messageActionsBlocks;
 
+
+
 @property(nonatomic) BOOL isFirst;
 @property(nonatomic) BOOL isLast;
 @property(nonatomic) BOOL notDelivered;
