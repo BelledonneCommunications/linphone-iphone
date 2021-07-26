@@ -837,6 +837,7 @@ static UITableView *_popupMenu;
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
 
+
 	if (linphone_chat_message_has_text_content(self.message)) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];
 		[_messageActionsIcons addObject:@"menu_copy_text_default"];
@@ -868,7 +869,7 @@ static UITableView *_popupMenu;
 	}
 	
 	[_messageActionsTitles addObject:NSLocalizedString(@"Delete", nil)];
-	[_messageActionsIcons addObject:@"delete_default"];
+	[_messageActionsIcons addObject:@"menu_delete"];
 	[_messageActionsBlocks addObject:^{
 		linphone_chat_room_delete_message(linphone_chat_message_get_chat_room(message), message);
 		[VIEW(ChatConversationView).tableController reloadData];
@@ -947,6 +948,9 @@ static UITableView *_popupMenu;
 	cell.imageView.image = [UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]];
 	cell.textLabel.text = [_messageActionsTitles objectAtIndex:indexPath.row];
 	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	if ([[_messageActionsIcons objectAtIndex:indexPath.row] isEqualToString:@"menu_delete"]) {
+		cell.textLabel.textColor = UIColor.redColor;
+	}
 	return cell;
 }
 
