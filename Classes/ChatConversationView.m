@@ -745,7 +745,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	if (!linphone_core_is_network_reachable(LC)) {
 		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
-		//return;
+		return;
 	}
 	if ([_fileContext count] > 0) {
 		if (linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesConference) {
