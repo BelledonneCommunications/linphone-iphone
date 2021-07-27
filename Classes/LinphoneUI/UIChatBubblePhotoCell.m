@@ -26,6 +26,13 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVKit/AVKit.h>
 
+#define voicePlayer VIEW(ChatConversationView).sharedVoicePlayer
+#define chatView VIEW(ChatConversationView)
+#define FILE_ICON_TAG 0
+#define REALIMAGE_TAG 1
+
+
+
 @implementation UIChatBubblePhotoCell {
 	FileTransferDelegate *_ftd;
     CGSize imageSize, bubbleSize, videoDefaultSize;
@@ -54,6 +61,11 @@
         assetIsLoaded = FALSE;
 		self.contentView.userInteractionEnabled = NO;
 		_contentViews = [[NSMutableArray alloc] init];
+		self.vrWaveMaskPlayback.layer.cornerRadius = 10.0f;
+		self.vrWaveMaskPlayback.layer.masksToBounds = YES;
+		[self.innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
+		self.messageText.userInteractionEnabled = false;
+
 	}
 	return self;
 }
@@ -73,7 +85,6 @@
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;
-	_plusLongGestureRecognizer.enabled = NO;
 	_messageImageView.image = nil;
     _finalImage.image = nil;
     _finalImage.hidden = TRUE;
@@ -98,6 +109,7 @@
 }
 
 - (void) loadImageAsset:(PHAsset*) asset  image:(UIImage *)image {
+	_finalImage.tag = REALIMAGE_TAG;
     dispatch_async(dispatch_get_main_queue(), ^{
         [_finalImage setImage:image];
         [_messageImageView setAsset:asset];
@@ -105,7 +117,6 @@
         _messageImageView.hidden = YES;
         _finalImage.hidden = NO;
         _fileView.hidden = YES;
-		_plusLongGestureRecognizer.enabled = YES;
         [self layoutSubviews];
     });
 }
@@ -127,14 +138,10 @@
 }
 
 - (void) loadFileAsset:(NSString *)name {
-	NSString *text = [NSString stringWithFormat:@"📎 %@",name];
-	_fileName.text = text;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _fileName.hidden = _fileView.hidden = _fileButton.hidden = NO;
-        _imageGestureRecognizer.enabled = NO;
-		_plusLongGestureRecognizer.enabled = NO;
-		_playButton.hidden = YES;
-    });
+	UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name];
+	[self loadImageAsset:nil image:image];
+	_imageGestureRecognizer.enabled = YES;
+	_finalImage.tag = FILE_ICON_TAG;
 }
 
 - (void) loadPlaceholder {
@@ -145,11 +152,11 @@
         [_messageImageView stopLoading];
         _messageImageView.hidden = YES;
         _imageGestureRecognizer.enabled = YES;
-		_plusLongGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
         [self layoutSubviews];
     });
 }
+
 
 - (void)update {
 	if (self.message == nil) {
@@ -157,26 +164,48 @@
 		return;
 	}
 	[super update];
-
+	
+	NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = NULL;
+	if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
+		encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:self.message];
+		if (!encrptedFilePaths) {
+			encrptedFilePaths = [NSMutableDictionary dictionary];
+		}
+	}
+	
+	_voiceRecordingFile = nil;
+	LinphoneContent *voiceContent = [UIChatBubbleTextCell voiceContent:self.message];
+	if (voiceContent) {
+		_voiceRecordingFile = [NSString stringWithUTF8String:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] ? linphone_content_get_plain_file_path(voiceContent) : linphone_content_get_file_path(voiceContent)];
+		if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId])
+			[encrptedFilePaths setValue:_voiceRecordingFile forKey:[NSString stringWithUTF8String:linphone_content_get_name(voiceContent)]];
+		[self setVoiceMessageDuration];
+		_vrWaveMaskPlayback.frame = CGRectZero;
+		_vrWaveMaskPlayback.backgroundColor = linphone_chat_message_is_outgoing(self.message) ? UIColor.orangeColor : UIColor.grayColor;
+	}
+	
 	const bctbx_list_t *contents = linphone_chat_message_get_contents(self.message);
+
+	size_t contentCount = bctbx_list_size(contents);
+	if (voiceContent)
+		contentCount--;
 	BOOL multiParts = ((linphone_chat_message_get_text_content(self.message) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
+	if (voiceContent && !multiParts) {
+		_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
+		return;
+	}
+	
 	if (multiParts) {
 		if (!assetIsLoaded) {
-			NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = NULL;
-			if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
-				encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:self.message];
-				if (!encrptedFilePaths) {
-					encrptedFilePaths = [NSMutableDictionary dictionary];
-				}
-			}
-
 			_imageGestureRecognizer.enabled = NO;
 			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
-
 			const bctbx_list_t *it = contents;
 			int i;
 			for (it = contents, i=0; it != NULL; it=bctbx_list_next(it)){
 				LinphoneContent *content = (LinphoneContent *)it->data;
+				if (linphone_content_is_voice_recording(content)) { // Handled elsewhere
+					continue;
+				}
 				if (linphone_content_is_file_transfer(content) || linphone_content_is_file(content)){
 					UIChatContentView *contentView = [[UIChatContentView alloc] initWithFrame: CGRectMake(0,0,0,0)];
 					if([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && (linphone_chat_message_is_outgoing(self.message) || linphone_content_is_file(content))) {
@@ -214,8 +243,6 @@
 		return;
 	}
 
-
-
 	const char *url = linphone_chat_message_get_external_body_url(self.message);
 	BOOL is_external =
 		(url && (strstr(url, "http") == url)) || linphone_chat_message_get_file_transfer_information(self.message);
@@ -241,10 +268,15 @@
 				_playButton.hidden = YES;
 				_fileName.hidden = _fileView.hidden = _fileButton.hidden =YES;
 			} else {
-				_downloadButton.hidden =  NO;
+				_downloadButton.hidden =  YES;
+				UIChatContentView * contentView = [[UIChatContentView alloc] init];
+				[contentView setContent:fileContent message:self.message];
+				contentView.position = 0;
+				[_contentViews addObject:contentView];
 				_cancelButton.hidden = _fileTransferProgress.hidden =  YES;
 				_playButton.hidden = YES;
 				_fileName.hidden = _fileView.hidden = _fileButton.hidden =  YES;
+				[self layoutSubviews];
 			}
 			return;
 		}
@@ -464,25 +496,6 @@
     }];
 }
 
-- (IBAction)onPlusClick:(id)sender {
-	UILongPressGestureRecognizer *gesture = (UILongPressGestureRecognizer *)sender;
-	if (gesture.state != UIGestureRecognizerStateBegan) {
-		// allow only one click once time
-		return;
-	}
-	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[sheet addButtonWithTitle:NSLocalizedString(@"Save to Gallery", nil)
-							block:^() {
-			LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
-			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
-			[ChatConversationView writeMediaToGallery:name fileType:[NSString stringWithUTF8String:linphone_content_get_type(content)?:""]];
-		}];
-	 
-		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-		[sheet showInView:PhoneMainView.instance.view];
-	});
-}
 
 - (IBAction)onFileClick:(id)sender {
     ChatConversationView *view = VIEW(ChatConversationView);
@@ -522,18 +535,20 @@
 }
 
 - (IBAction)onImageClick:(id)event {
+	if (_finalImage.tag == FILE_ICON_TAG) {
+		[self onFileClick:nil];
+		return;
+	}
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (state == LinphoneChatMessageStateNotDelivered) {
 		[self onResendClick:event];
 	} else {
 		if (![_messageImageView isLoading]) {
-			ImageView *view = VIEW(ImageView);
+			ChatConversationView *view = VIEW(ChatConversationView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 			NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 			if (filePath) {
-				NSData *data = [NSData dataWithContentsOfFile:filePath];
-				UIImage *image = [[UIImage alloc] initWithData:data];
-				[view setImage:image];
+				[view openFileWithURL:[NSURL fileURLWithPath:filePath]];
 				return;
 			}
 
@@ -549,12 +564,7 @@
 			}
 
 			if (imageName) {
-				NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager validFilePath:imageName]];
-				UIImage *image = [[UIImage alloc] initWithData:data];
-				if (image)
-					[view setImage:image];
-				else
-					LOGE(@"Can't read image");
+				[view openFileWithURL:[NSURL fileURLWithPath:[LinphoneManager validFilePath:imageName]]];
 				return;
 			}
 
@@ -567,6 +577,7 @@
             [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
                                                     resultHandler:^(UIImage *image, NSDictionary * info) {
                                                         if (image) {
+															ImageView *view = VIEW(ImageView);
                                                             [view setImage:image];
                                                         }
                                                         else {
@@ -662,7 +673,7 @@
 		CGFloat max_imagesh=0;
 		CGFloat max_imagesw=0;
 		CGFloat originy=0;
-		CGFloat originx=0;
+		CGFloat originx=-IMAGE_DEFAULT_MARGIN;
 		CGFloat availableWidth = chatTableView.tableView.frame.size.width-CELL_IMAGE_X_MARGIN;
 
 		NSMutableArray<NSURL *> *fileUrls = [[NSMutableArray alloc] init];
@@ -713,15 +724,102 @@
 		textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
     else
         // When image hasn't be download
-        textFrame.origin = CGPointMake(textFrame.origin.x, _imageSubView.frame.size.height + _imageSubView.frame.origin.y - 10);
+		textFrame.origin = CGPointMake(textFrame.origin.x, _voiceRecordingFile ? _fileView.frame.origin.y :  _imageSubView.frame.size.height + _imageSubView.frame.origin.y - 10);
     if (!utf8Text) {
         textFrame.size.height = 0;
     } else {
         textFrame.size.height = bubbleFrame.size.height - 90;//textFrame.origin.x;
     }
+	
+	if (_voiceRecordingFile) {
+		CGRect vrFrame = _vrView.frame;
+		vrFrame.origin.y = _contentViews.count == 0 && !utf8Text ? _fileView.frame.origin.y : textFrame.origin.y;
+		_vrView.frame = vrFrame;
+		textFrame.origin.y += VOICE_RECORDING_PLAYER_HEIGHT;
+		_vrView.hidden = NO;
+	} else {
+		_vrView.hidden = YES;
+	}
     
     self.messageText.frame = textFrame;
 }
+
+// Voice messages
+
+static AVAudioPlayer* utilityPlayer;
+
+-(void) setVoiceMessageDuration {
+	NSError *error = nil;
+	AVAudioPlayer* utilityPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL URLWithString:_voiceRecordingFile] error:&error]; // Workaround as opening multiple linphone_players at the same time can cause crash (here for example layout refreshed whilst a voice memo is playing
+	_vrTimerLabel.text =  [self formattedDuration:utilityPlayer.duration];
+	utilityPlayer = nil;
+}
+
+-(void) voicePlayTimerUpdate {
+	CGRect r = _vrWaveMaskPlayback.frame;
+	r.size.width += _vrView.frame.size.width / ((linphone_player_get_duration(voicePlayer) / 500)) ;
+	if (r.size.width > _vrView.frame.size.width) {
+		r.size.width = _vrView.frame.size.width;
+	}
+	[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+		_vrWaveMaskPlayback.frame = r;
+		}completion:^(BOOL finished) {}];
+}
+
+
+-(void) stopPlayer {
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[chatView stopSharedPlayer];
+	[_vrPlayPause setImage:[UIImage imageNamed:@"vr_play"] forState:UIControlStateNormal];
+	[_vrPlayerTimer invalidate];
+	_vrWaveMaskPlayback.frame = CGRectZero;
+}
+
+-(NSString *)formattedDuration:(long)valueMs {
+	return [NSString stringWithFormat:@"%02ld:%02ld", valueMs/ 60, (valueMs % 60) ];
+}
+
+-(void) startPlayer {
+	[chatView startSharedPlayer:_voiceRecordingFile.UTF8String];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(stopPlayer)
+											   name:kLinphoneVoiceMessagePlayerLostFocus
+											 object:nil];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(stopPlayer)
+											   name:kLinphoneVoiceMessagePlayerEOF
+											 object:nil];
+	
+	[_vrPlayPause setImage:[UIImage imageNamed:@"vr_stop"] forState:UIControlStateNormal];
+	CGRect r = CGRectZero;
+	r.size.height = _vrView.frame.size.height - 14;
+	r.origin.y = 7;
+	_vrWaveMaskPlayback.frame = r;
+	_vrPlayerTimer =  [NSTimer scheduledTimerWithTimeInterval:0.5
+													target:self
+												  selector:@selector(voicePlayTimerUpdate)
+												  userInfo:nil
+												   repeats:YES];
+	[self voicePlayTimerUpdate];
+
+}
+
+- (IBAction)onVRPlayPauseClick:(id)sender {
+	if ([chatView sharedPlayedIsPlaying:_voiceRecordingFile.UTF8String])
+		[self stopPlayer];
+	else {
+		[self startPlayer];
+	}
+}
+
+
+//  menu
+
+-(void) onPopupMenuPressed {
+	[super onPopupMenuPressed];
+}
+
 
 @end
 

@@ -39,10 +39,10 @@
 
 @protocol ChatConversationDelegate <NSObject>
 
-- (BOOL)resendMultiFiles:(FileContext *)newFileContext message:(NSString *)message;
-- (BOOL)resendFile:(NSData *)data withName:(NSString *)name type:(NSString *)type key:(NSString *)key message:(NSString *)message;
+- (BOOL)resendMultiFiles:(FileContext *)newFileContext message:(NSString *)message voiceContent:(LinphoneContent *)voiceContent;
+- (BOOL)resendFile:(NSData *)data withName:(NSString *)name type:(NSString *)type key:(NSString *)key message:(NSString *)message voiceContent:(LinphoneContent *)voiceContent;
 - (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name;
-- (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url;
+- (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url voiceContent:(LinphoneContent *)voiceContent;
 - (void)tableViewIsScrolling;
 
 @end
@@ -64,5 +64,7 @@
 - (void)scrollToLastUnread:(BOOL)animated;
 - (void)updateEventEntry:(LinphoneEventLog *)event;
 - (void)refreshData;
+- (void)reloadData;
+-(void) dismissMessagesPopups;
 
 @end

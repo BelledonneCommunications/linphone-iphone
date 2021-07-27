@@ -31,19 +31,20 @@
 
 	if(!linphone_chat_message_is_outgoing(_message) && linphone_content_is_file_transfer(_content)) {
 		// has not yet downloaded
-		UIImage *basicImage = [ChatConversationView getBasicImage];
 		NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)] ;
-		UIImage *image = [ChatConversationView drawText:name image:basicImage textSize:25];
+		UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name];
 		[self setImage:image];
 		_downloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		[_downloadButton addTarget:self
 				   action:@selector(onDownloadClick:)
 		 forControlEvents:UIControlEventTouchUpInside];
-		_downloadButton.backgroundColor = [UIColor orangeColor];
-		UIFont *boldFont = [UIFont systemFontOfSize:10];
-		NSMutableAttributedString *boldText = [[NSMutableAttributedString alloc] initWithString:@"Download" attributes:@{ NSFontAttributeName : boldFont }];
+		UIFont *boldFont = [UIFont systemFontOfSize:12];
+		NSMutableParagraphStyle * paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+		paragraphStyle.alignment = NSTextAlignmentCenter;
+		
+		NSMutableAttributedString *boldText = [[NSMutableAttributedString alloc] initWithString:@"Download" attributes:@{ NSFontAttributeName : boldFont, NSParagraphStyleAttributeName:paragraphStyle,NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle) }];
 		[_downloadButton setAttributedTitle:boldText forState:UIControlStateNormal];
-		_downloadButton.frame = CGRectMake(3, 3, 60, 30);
+		_downloadButton.frame = CGRectMake(0, 90, 120, 30);
 		[self addSubview:_downloadButton];
 	} else {
 		if (_filePath == NULL) {
@@ -56,6 +57,7 @@
 		tapGestureRecognizer.numberOfTapsRequired = 1;
 		tapGestureRecognizer.enabled = YES;
 		[self addGestureRecognizer:tapGestureRecognizer];
+		self.userInteractionEnabled = true;
 	}
 }
 
