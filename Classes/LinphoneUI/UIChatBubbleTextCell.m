@@ -210,11 +210,10 @@
         _avatarImage.hidden = !_isFirst;
     }
 	
-	// Not use [UIImage imageNamed], it takes too much time
-	NSString *imageName = outgoing ? @"color_A.png" : @"color_D.png";
-    _backgroundColorImage.image =
-		[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",[[NSBundle mainBundle] bundlePath],imageName]];
-    
+
+	_innerView.backgroundColor = !outgoing ? INCOMING_BG_COLOR : OUTGOING_BG_COLOR;
+
+	
     // set maskedCorners
     if (@available(iOS 11.0, *)) {
         _backgroundColorImage.layer.cornerRadius = 10;
@@ -260,6 +259,7 @@
     frame.origin.y = _isFirst ? 20 : 0;
     _innerView.frame = frame;
 	
+	
 	[_messageText setAccessibilityLabel:outgoing ? @"Outgoing message" : @"Incoming message"];
 	if (outgoing &&
 		(state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed ||
@@ -267,6 +267,21 @@
 		[self displayImdmStatus:state];
 	} else
 		[self displayImdmStatus:LinphoneChatMessageStateInProgress];
+	
+	if (linphone_chat_message_is_reply(_message)) {
+		if (_replyView == nil) {
+			_replyView = [[UIChatReplyBubbleView alloc] initWithNibName:@"UIChatReplyBubbleView" bundle:nil];
+			[self.innerView addSubview:_replyView.view];
+		}
+		_replyView.view.hidden = false;
+		CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height,self.contactDateLabel.frame.size.width, REPLY_CHAT_BUBBLE_HEIGHT);
+		_replyView.view.frame = replyFrame;
+		[_replyView configureForMessage:linphone_chat_message_get_reply_message(_message) withDimissBlock:^{} hideDismiss:true];
+	} else {
+		if (_replyView)
+			_replyView.view.hidden = true;
+	}
+	
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -354,7 +369,7 @@
 		[self onDelete];
 		dispatch_async(dispatch_get_main_queue(), ^ {
 			const char *text = linphone_chat_message_get_text_content(_message);
-			[_chatRoomDelegate resendMultiFiles:newfileContext message: text? [NSString stringWithUTF8String:text]: NULL voiceContent:voiceContent];
+			[_chatRoomDelegate resendMultiFiles:newfileContext message: text? [NSString stringWithUTF8String:text]: NULL rootMessage:_message];
 		});
 		return;
 	}
@@ -373,11 +388,11 @@
 			const char *text = linphone_chat_message_get_text_content(_message);
 			NSString *str = text ? [NSString stringWithUTF8String:text] : NULL;
 			if (localImage) {
-				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str voiceContent:voiceContent];
+				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str rootMessage:_message];
 			} else if (localVideo) {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str voiceContent:voiceContent];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str rootMessage:_message];
 			} else {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str voiceContent:voiceContent];
+				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str rootMessage:_message];
 			}
 		});
 	} else {
@@ -388,7 +403,7 @@
 			NSString *text = self.textMessage;
 			if (voiceContent && [text isEqualToString:@"🗻"])
 				text = nil;
-			[_chatRoomDelegate resendChat:text withExternalUrl:nil voiceContent:voiceContent];
+			[_chatRoomDelegate resendChat:text withExternalUrl:nil rootMessage:_message];
 		});
 	}
 }
@@ -446,9 +461,15 @@ static const CGFloat CELL_MIN_HEIGHT = 65.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 68 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
+static const CGFloat REPLY_CHAT_BUBBLE_HEIGHT  = 100;
+static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
+
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
-    return [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
+    CGSize size = [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
+	size.height += linphone_chat_message_is_forward(chat) || linphone_chat_message_is_reply(chat) ? REPLY_OR_FORWARD_TAG_HEIGHT : 0;
+	size.height += linphone_chat_message_is_reply(chat) ? REPLY_CHAT_BUBBLE_HEIGHT+5 : 0;
+	return size;
 }
 
 + (CGSize)ViewHeightForFile:(int)width {
@@ -791,9 +812,52 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		} else {
 			origin_x = (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
 		}
+		
+		CGRect r = _messageText.frame;
+		r.origin.y = linphone_chat_message_is_reply(_message) ? _replyView.view.frame.origin.y + _replyView.view.frame.size.height + 5 : 21;
+		_messageText.frame = r;
+		
+		r = _contactDateLabel.frame;
+		r.origin.y = linphone_chat_message_is_reply(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 3 : 3;
+		_contactDateLabel.frame = r;
+		
+		r = _avatarLabel.frame;
+		r.origin.y = linphone_chat_message_is_reply(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 4 : 4;
+		_avatarLabel.frame = r;
+		
+		_replyTransferIcon.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
+		_replyTransferLabel.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
+		
+		if (linphone_chat_message_is_reply(_message)) {
+			CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height+3,self.contactDateLabel.frame.size.width, REPLY_CHAT_BUBBLE_HEIGHT);
+			_replyView.view.frame = replyFrame;
+			_replyTransferIcon.image = [UIImage imageNamed:@"menu_reply_default"];
+			_replyTransferLabel.text = NSLocalizedString(@"Answered",nil);
+			_replyTransferLabel.font = FT_FONT_RBT_REG_30;
+			_replyTransferLabel.textColor =  [UIColor lightGrayColor];
+		}
+		
+		if (linphone_chat_message_is_forward(_message)) {
+			_replyTransferIcon.image = [UIImage imageNamed:@"menu_forward_default"];
+			_replyTransferLabel.text = NSLocalizedString(@"Answered",nil);
+			_replyTransferLabel.font = FT_FONT_RBT_REG_30;
+			_replyTransferLabel.textColor =  [UIColor darkGrayColor];
+		}
 
 		bubbleFrame.origin.x = origin_x;
 		_bubbleView.frame = bubbleFrame;
+		if (linphone_chat_message_is_ephemeral(_message)) {
+			if (!_imdmLabel.hidden) {
+				CGRect r = _emView.frame;
+				r.origin.x = _imdmLabel.frame.origin.x +_imdmLabel.frame.size.width -  [_imdmLabel.text sizeWithFont:_imdmLabel.font].width - r.size.width - 5 ;
+				_emView.frame = r;
+			} else {
+				CGRect r = _emView.frame;
+				r.origin.x = [_emView superview].frame.size.width - _emView.frame.size.width - 5;
+				_emView.frame = r;
+			}
+		}
+	
 	}
 }
 
@@ -844,21 +908,22 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	}
 	
 	/*
-	[_messageActionsTitles addObject:NSLocalizedString(@"Transfer", nil)];
+	[_messageActionsTitles addObject:NSLocalizedString(@"Forward", nil)];
 	[_messageActionsIcons addObject:@"menu_forward_default"];
 	[_messageActionsBlocks addObject:^{
 		// TODO
 	}];
+	 */
+
 	
 	[_messageActionsTitles addObject:NSLocalizedString(@"Reply", nil)];
 	[_messageActionsIcons addObject:@"menu_reply_default"];
 	[_messageActionsBlocks addObject:^{
-		// TODO
+		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
 	}];
-	 */
 	
 	if (linphone_chat_message_is_outgoing(self.message)) {
-		[_messageActionsTitles addObject:NSLocalizedString(@"Message status", nil)];
+		[_messageActionsTitles addObject:NSLocalizedString(@"Infos", nil)];
 		[_messageActionsIcons addObject:@"menu_info"];
 		[_messageActionsBlocks addObject:^{
 			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);

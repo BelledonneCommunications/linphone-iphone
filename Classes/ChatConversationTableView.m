@@ -276,7 +276,8 @@ static const int BASIC_EVENT_LIST=15;
 	if (!_chatRoom && [[cell reuseIdentifier] isEqualToString:@"UIChatBubblePhotoCell"]) {
 		[(UIChatBubbleTextCell *)cell clearEncryptedFiles];
 	}
-	[(UIChatBubbleTextCell *)cell dismissPopup];
+	if ([cell isKindOfClass:[UIChatBubbleTextCell class]] ||[cell isKindOfClass:[UIChatBubblePhotoCell class]])
+		[(UIChatBubbleTextCell *)cell dismissPopup];
 }
 
 -(void) dismissMessagesPopups {

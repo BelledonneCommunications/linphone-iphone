@@ -22,13 +22,16 @@
 #import "UITextViewNoDefine.h"
 #import "ChatConversationTableView.h"
 #import "UIRoundedImageView.h"
+#import "UIChatReplyBubbleView.h"
 
 #define CELL_IMAGE_X_MARGIN 100
 #define IMAGE_DEFAULT_WIDTH 120
 #define IMAGE_DEFAULT_MARGIN 5
 #define VOICE_RECORDING_PLAYER_HEIGHT 60
 #define VOICE_RECORDING_PLAYER_WIDTH 300
-
+#define OUTGOING_BG_COLOR rgb(238,238,238)
+#define INCOMING_BG_COLOR rgba(1,88,7,0.2)
+#define REPLY_LEFT_BAR_COLOR rgb(103,174,7)
 
 @interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate, UITableViewDataSource,UITableViewDelegate>
 
@@ -57,6 +60,12 @@
 @property NSMutableArray *messageActionsIcons;
 @property NSMutableArray *messageActionsBlocks;
 
+// Message reply/transfer
+@property UIChatReplyBubbleView *replyView;
+@property UILabel *replyOrForward;
+@property (weak, nonatomic) IBOutlet UIImageView *replyTransferIcon;
+@property (weak, nonatomic) IBOutlet UILabel *replyTransferLabel;
+@property (weak, nonatomic) IBOutlet UIView *photoCellContentView;
 
 
 @property(nonatomic) BOOL isFirst;

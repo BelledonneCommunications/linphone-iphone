@@ -137,7 +137,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
 															  statusBar:StatusBarView.class
-																 tabBar:TabBarView.class
+																 tabBar:nil
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
 														 isLeftFragment:NO
@@ -258,7 +258,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                              CGRect tableViewFrame = [_tableController.tableView frame];
                              tableViewFrame.size.height -= 120;
                              [_tableController.tableView setFrame:tableViewFrame];
-							 [self updateFramesInclRecordingView];
+							 [self updateFramesInclRecordingAndReplyView];
                          }
                          completion:nil];
     }
@@ -269,17 +269,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 	popupFrame.size.height = 44 * [_popupMenu numberOfRowsInSection:0];
 	_popupMenu.frame = popupFrame;
 	
-	// Voice recording
+	// Voice recording & Replies
 	_vrView.hidden = true;
-	_preservePendingRecording = false;
     _toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
+	_replyView.hidden = true;
+	_preservePendingActions = false;
 
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	
-	if (!_preservePendingRecording)
+	if (!_preservePendingActions)
 		[self cancelVoiceRecording];
+	
+	if (!_preservePendingActions)
+		[self closePendingReply];
+	
+	
+	
 	else if (_isVoiceRecording)
 		[self stopVoiceRecording];
 
@@ -330,10 +337,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)applicationWillEnterBackground{
-	if (!_preservePendingRecording)
+	if (!_preservePendingActions)
 		[self cancelVoiceRecording];
 	else if (_isVoiceRecording)
 		[self stopVoiceRecording];
+	if (!_preservePendingActions)
+		[self closePendingReply];
 }
 
 
@@ -420,7 +429,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 -(NSData *) nsDataRead {
-	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSString* groupName = @"group.com.clavys.frogtrust.store";
 	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
 	NSString *fullCacheFilePathPath = [NSString stringWithFormat:@"%@/%@",path,@"nsData"];
 	return[NSData dataWithContentsOfFile:fullCacheFilePathPath];
@@ -428,7 +437,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 - (void)shareFile {
-    NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSString* groupName = @"group.com.clavys.frogtrust.store";
+
 
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
     NSDictionary *dict = [defaults valueForKey:@"photoData"];
@@ -505,13 +515,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl andVoiceContent:(LinphoneContent *)voiceContent {
+- (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl rootMessage:(LinphoneChatMessage *)rootMessage {
 	if (_chatRoom == NULL) {
 		LOGW(@"Cannot send message: No chatroom");
 		return FALSE;
 	}
 
-	LinphoneChatMessage *msg = linphone_chat_room_create_empty_message(_chatRoom);
+	LinphoneChatMessage *msg = rootMessage;
 	if (message && message.length > 0)
 		linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
 
@@ -519,11 +529,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
 	}
 	
-	// Voice recording
-	
-	if (voiceContent)
-		linphone_chat_message_add_content(msg, voiceContent);
-
 	// we must ref & unref message because in case of error, it will be destroy otherwise
 	linphone_chat_message_send(msg);
 
@@ -564,17 +569,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)confirmShare:(NSData *)data url:(NSString *)url fileName:(NSString *)fileName {
+	LinphoneChatMessage *rootMessage = linphone_chat_room_create_empty_message(_chatRoom);
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
     dispatch_async(dispatch_get_main_queue(), ^{
-		[sheet addButtonWithTitle:NSLocalizedString(@"Send to this friend", nil)
+		[sheet addButtonWithTitle:NSLocalizedString(@"send to this conversation", nil)
 							block:^() {
 								if (![[self.messageField text] isEqualToString:@""]) {
-									[self sendMessageInMessageFieldWithVoiceContent:nil];
+									[self sendMessageInMessageField:rootMessage];
 								}
 								if (url)
-									[self sendMessage:url withExterlBodyUrl:nil andVoiceContent:nil];
+									[self sendMessage:url withExterlBodyUrl:nil rootMessage:rootMessage];
 								else
-									[self startFileUpload:data withName:fileName];
+									[self startFileUpload:data withName:fileName rootMessage:rootMessage];
 		}];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -657,8 +663,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     _addressLabel.frame = frame;
 }
 
-- (void)sendMessageInMessageFieldWithVoiceContent:(LinphoneContent *)voiceContent {
-    if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil andVoiceContent:voiceContent]) {
+- (void)sendMessageInMessageField:(LinphoneChatMessage *)rootMessage {
+    if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil rootMessage:rootMessage]) {
         scrollOnGrowingEnabled = FALSE;
         [_messageField setText:@""];
         scrollOnGrowingEnabled = TRUE;
@@ -714,7 +720,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		CGRect tableRect = [_tableController.view frame];
 		tableRect.size.height -= diff;
 		[_tableController.view setFrame:tableRect];
-		[self updateFramesInclRecordingView];
+		[self updateFramesInclRecordingAndReplyView];
 
 		// if we're showing the compose message, update it position
 		if (![_composeLabel isHidden]) {
@@ -739,40 +745,48 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSendClick:(id)event {
-	LinphoneContent *voiceContent = nil;
-	if (_isPendingVoiceRecord && _voiceRecorder && linphone_recorder_get_file(_voiceRecorder)) {
-		voiceContent = linphone_recorder_create_content(_voiceRecorder);
-		_isPendingVoiceRecord = false;
-		[self cancelVoiceRecording];
-		[self stopVoiceRecordPlayer];
-	}
-	
+
 	if (!linphone_core_is_network_reachable(LC)) {
 		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
 		return;
 	}
+	
+	LinphoneChatMessage *rootMessage = _replyBubble ? linphone_chat_room_create_reply_message(_chatRoom, _replyBubble.message) : linphone_chat_room_create_empty_message(_chatRoom);
+	
+	if (_replyBubble) {
+		[self closePendingReply];
+	}
+	
+	if (_isPendingVoiceRecord && _voiceRecorder && linphone_recorder_get_file(_voiceRecorder)) {
+		LinphoneContent * voiceContent = linphone_recorder_create_content(_voiceRecorder);
+		_isPendingVoiceRecord = false;
+		[self cancelVoiceRecording];
+		[self stopVoiceRecordPlayer];
+		linphone_chat_message_add_content(rootMessage, voiceContent);
+	}
+	
 	if ([_fileContext count] > 0) {
 		if (linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesConference) {
-			[self startMultiFilesUploadWithVoiceContent:voiceContent];
+			[self startMultiFilesUpload:rootMessage];
 		} else {
 			int i = 0;
 			for (i = 0; i < [_fileContext count]-1; ++i) {
-				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  voiceContent:voiceContent];
+				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  rootMessage:rootMessage];
 			}
 			if (isOneToOne) {
-				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  voiceContent:voiceContent];
+				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  rootMessage:rootMessage];
 				if (![[self.messageField text] isEqualToString:@""]) {
-					[self sendMessage:[_messageField text] withExterlBodyUrl:nil andVoiceContent:voiceContent];
+					[self sendMessage:[_messageField text] withExterlBodyUrl:nil rootMessage:rootMessage];
 				}
 			} else {
-				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:[self.messageField text]  voiceContent:voiceContent];
+				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:[self.messageField text]  rootMessage:rootMessage];
 			}
 		}
 
 		[self clearMessageView];
 		return;
 	}
-	[self sendMessageInMessageFieldWithVoiceContent:voiceContent];
+	[self sendMessageInMessageField:rootMessage];
 }
 
 - (IBAction)onListTap:(id)sender {
@@ -833,7 +847,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onPictureClick:(id)event {
-	_preservePendingRecording = true;
+	_preservePendingActions = true;
 	[_messageField resignFirstResponder];
 	[ImagePickerView SelectImageFromDevice:self atPosition:_pictureButton inView:self.view withDocumentMenuDelegate:self];
 
@@ -867,15 +881,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark ChatRoomDelegate
 
-- (BOOL)startMultiFilesUploadWithVoiceContent:(LinphoneContent *)voiceContent {
+- (BOOL)startMultiFilesUpload:(LinphoneChatMessage *)rootMessage {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
 	[fileTransfer setText:[self.messageField text]];
-	[fileTransfer uploadFileContent:_fileContext forChatRoom:_chatRoom andVoiceContent:voiceContent];
+	[fileTransfer uploadFileContent:_fileContext forChatRoom:_chatRoom rootMessage:rootMessage];
 	[_tableController scrollToBottom:true];
 	return TRUE;
 }
 
-- (BOOL)startUploadData:(NSData *)data withType:(NSString*)type withName:(NSString *)name andMessage:(NSString *)message voiceContent:(LinphoneContent *)voiceContent {
+- (BOOL)startUploadData:(NSData *)data withType:(NSString*)type withName:(NSString *)name andMessage:(NSString *)message rootMessage:(LinphoneChatMessage *)rootMessage {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
 	if (message)
 		[fileTransfer setText:message];
@@ -885,38 +899,38 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else if ([type isEqualToString:@"image"]) {
 		key = @"localimage";
 	}
-	[fileTransfer uploadData:data forChatRoom:_chatRoom type:type subtype:type name:name key:key voiceContent:voiceContent];
+	[fileTransfer uploadData:data forChatRoom:_chatRoom type:type subtype:type name:name key:key rootMessage:rootMessage];
 	[_tableController scrollToBottom:true];
 	return TRUE;
 }
 
-- (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name  {
+- (BOOL)startFileUpload:(NSData *)data withName:(NSString *)name rootMessage:(LinphoneChatMessage *)rootMessage {
     FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-    [fileTransfer uploadFile:data forChatRoom:_chatRoom withName:name];
+	[fileTransfer uploadFile:data forChatRoom:_chatRoom withName:name rootMessage:rootMessage];
     [_tableController scrollToBottom:true];
     return TRUE;
 }
 
-- (BOOL)resendMultiFiles:(FileContext *)newFileContext message:(NSString *)message voiceContent:(LinphoneContent *)voiceContent {
+- (BOOL)resendMultiFiles:(FileContext *)newFileContext message:(NSString *)message rootMessage:(LinphoneChatMessage *)rootMessage {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
 	if (message)
 		[fileTransfer setText:message];
-	[fileTransfer uploadFileContent:newFileContext forChatRoom:_chatRoom andVoiceContent:voiceContent];
+	[fileTransfer uploadFileContent:newFileContext forChatRoom:_chatRoom rootMessage:rootMessage];
 	[_tableController scrollToBottom:true];
 	return TRUE;
 }
 
-- (BOOL)resendFile: (NSData *)data withName:(NSString *)name type:(NSString *)type key:(NSString *)key message:(NSString *)message voiceContent:(LinphoneContent *)voiceContent{
+- (BOOL)resendFile: (NSData *)data withName:(NSString *)name type:(NSString *)type key:(NSString *)key message:(NSString *)message rootMessage:(LinphoneChatMessage *)rootMessage{
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
 	if (message)
 		[fileTransfer setText:message];
-	[fileTransfer uploadData:data forChatRoom:_chatRoom type:type subtype:type name:name key:key voiceContent:voiceContent];
+	[fileTransfer uploadData:data forChatRoom:_chatRoom type:type subtype:type name:name key:key rootMessage:rootMessage];
 	[_tableController scrollToBottom:true];
 	return TRUE;
 }
 
-- (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url voiceContent:(LinphoneContent *)voiceContent  {
-	[self sendMessage:message withExterlBodyUrl:[NSURL URLWithString:url] andVoiceContent:voiceContent];
+- (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url rootMessage:(LinphoneChatMessage *)rootMessage  {
+	[self sendMessage:message withExterlBodyUrl:[NSURL URLWithString:url] rootMessage:rootMessage];
 }
 
 #pragma mark ImagePickerDelegate
@@ -1171,8 +1185,10 @@ static UICompositeViewDescription *compositeDescription = nil;
                 [_tableController.tableView setFrame:tableViewFrame];
             }
 		if (_showVoiceRecorderView)
-				_vrView.hidden = true;
-		[self updateFramesInclRecordingView];
+				_vrView.hidden = true; // force recalculate
+		if (_showReplyView)
+			_replyView.hidden = true; // force recalculate
+		[self updateFramesInclRecordingAndReplyView];
 		
 		}
 		completion:^(BOOL finished){
@@ -1257,8 +1273,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 			  }
 		  }
 		if (_showVoiceRecorderView)
-				_vrView.hidden = true;
-		[self updateFramesInclRecordingView];
+				_vrView.hidden = true; // force recalculate
+		if (_showReplyView)
+			_replyView.hidden = true; // force recalculate
+		[self updateFramesInclRecordingAndReplyView];
 
             
 		}
@@ -1497,7 +1515,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
                              CGRect tableViewFrame = [_tableController.tableView frame];
                              tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
                              [_tableController.tableView setFrame:tableViewFrame];
-							 [self updateFramesInclRecordingView];
+							 [self updateFramesInclRecordingAndReplyView];
                          }
                          completion:nil];
 		[self setSendButtonState];
@@ -1511,7 +1529,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		CGRect tableViewFrame = [_tableController.tableView frame];
 		tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
 		[_tableController.tableView setFrame:tableViewFrame];
-		[self updateFramesInclRecordingView];
+		[self updateFramesInclRecordingAndReplyView];
 		[_imagesCollectionView reloadData];
     }
 }
@@ -1711,7 +1729,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 -(void) cancelVoiceRecording {
 	_showVoiceRecorderView = false;
 	_toggleRecord.selected = false;
-	[self updateFramesInclRecordingView];
+	[self updateFramesInclRecordingAndReplyView];
 	_isPendingVoiceRecord = false;
 	_isVoiceRecording = false;
 	if (_voiceRecorder && linphone_recorder_get_state(_voiceRecorder) != LinphoneRecorderClosed) {
@@ -1754,7 +1772,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	
 	
 	_showVoiceRecorderView = true;
-	[self updateFramesInclRecordingView];
+	[self updateFramesInclRecordingAndReplyView];
 	_isVoiceRecording = true;
 	_vrWaveMaskPlayer.frame = CGRectZero;
 	
@@ -1907,20 +1925,35 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 	return [NSString stringWithFormat:@"%02ld:%02ld", valueMs/ 60000, (valueMs % 60000) / 1000 ];
 }
 
--(void) updateFramesInclRecordingView { // place below the messages table.
-	BOOL showHide = _showVoiceRecorderView != !_vrView.hidden;
-	if (showHide)
+-(void) updateFramesInclRecordingAndReplyView { // place below the messages table.
+	BOOL showHideVoice = _showVoiceRecorderView != !_vrView.hidden;
+	if (showHideVoice)
 		_vrView.hidden = !_showVoiceRecorderView;
 	
 	CGRect vrFrame = _vrView.frame;
 	CGRect tableFrame = _tableController.tableView.frame;
-	if (showHide) {
+	if (showHideVoice) {
 		tableFrame.size.height = _showVoiceRecorderView ? tableFrame.size.height  - vrFrame.size.height : tableFrame.size.height + vrFrame.size.height;
 		_tableController.tableView.frame = tableFrame;
 		[_tableController.tableView reloadData];
 	}
 	vrFrame.origin.y = tableFrame.origin.y+tableFrame.size.height;
 	_vrView.frame = vrFrame;
+	
+	BOOL showHideReply = _showReplyView != !_replyView.hidden;
+	if (showHideReply)
+		_replyView.hidden = !_showReplyView;
+	
+	CGRect repFrame = _replyView.frame;
+	tableFrame = _tableController.tableView.frame;
+	if (showHideReply) {
+		tableFrame.size.height = _showReplyView ? tableFrame.size.height  - repFrame.size.height : tableFrame.size.height + repFrame.size.height;
+		_tableController.tableView.frame = tableFrame;
+		[_tableController.tableView reloadData];
+	}
+	repFrame.origin.y = _showVoiceRecorderView ? vrFrame.origin.y + vrFrame.size.height : tableFrame.origin.y+tableFrame.size.height;
+	_replyView.frame = repFrame;
+	
 }
 
 -(void) stopAllPlays {
@@ -1934,6 +1967,39 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 
 -(void) setSendButtonState {
 	_sendButton.enabled = !_isVoiceRecording && ((_isPendingVoiceRecord && linphone_recorder_get_duration(_voiceRecorder) > 0)  || [[_messageField text] length] > 0 || _fileContext.count  > 0);
+}
+
+
+- (IBAction)onEmSettingsClicked:(id)sender {
+	ChatConversationEMView *view = VIEW(ChatConversationEMView);
+	view.room = _chatRoom;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+// Reply
+
+-(void) closePendingReply {
+	if (_replyBubble != nil) {
+		_showReplyView = false;
+		[_replyBubble.view removeFromSuperview];
+		[self updateFramesInclRecordingAndReplyView];
+		_replyBubble = nil;
+	}
+}
+
+-(void) initiateReplyViewForMessage:(LinphoneChatMessage *)message {
+	_replyBubble = [[UIChatReplyBubbleView alloc] initWithNibName:@"UIChatReplyBubbleView" bundle:nil];
+	[self addChildViewController:_replyBubble];
+	[_replyView addSubview:_replyBubble.view];
+	[_replyBubble didMoveToParentViewController:self];
+	[_replyBubble configureForMessage:message withDimissBlock:^{
+		[self closePendingReply];
+	} hideDismiss:false];
+	_showReplyView = true;
+	[self updateFramesInclRecordingAndReplyView];
+}
+
+- (IBAction)onCancelReplyClicked:(id)sender {
 }
 
 

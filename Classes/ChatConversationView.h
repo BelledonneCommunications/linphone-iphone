@@ -32,7 +32,8 @@
 #import "UIImageViewDeletable.h"
 #import "UIConfirmationDialog.h"
 #import "UIInterfaceStyleButton.h"
-
+#import "linphone-Swift.h"
+#import "UIChatReplyBubbleView.h"
 #include "linphone/linphonecore.h"
 
 
@@ -111,7 +112,12 @@
 @property LinphoneRecorder *voiceRecorder;
 @property LinphonePlayer *sharedVoicePlayer;
 @property BOOL showVoiceRecorderView;
-@property BOOL preservePendingRecording;
+@property BOOL preservePendingActions;
+
+// Reply
+@property (weak, nonatomic) IBOutlet UIView *replyView;
+@property BOOL showReplyView;
+@property UIChatReplyBubbleView *replyBubble;
 
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
@@ -148,5 +154,7 @@
 -(void) startSharedPlayer:(const char *)path;
 -(void) stopSharedPlayer;
 -(BOOL) sharedPlayedIsPlaying:(const char *)path;
+
+-(void) initiateReplyViewForMessage:(LinphoneChatMessage *)message;
 
 @end

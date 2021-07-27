@@ -30,6 +30,8 @@
                 <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
                 <outlet property="messageText" destination="cx9-0K-P9L" id="kPh-s4-Ioy"/>
                 <outlet property="playButton" destination="cvc-tl-Pcf" id="eKJ-2T-LUl"/>
+                <outlet property="replyTransferIcon" destination="DFk-Mg-EnD" id="gPH-xU-mAw"/>
+                <outlet property="replyTransferLabel" destination="l8e-ta-Fv5" id="9Ns-ZN-Wbl"/>
                 <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
                 <outlet property="totalView" destination="8I3-n2-0kS" id="aa8-j9-saW"/>
                 <outlet property="vrPlayPause" destination="7Zn-bp-e0Y" id="ed8-ZL-VpS"/>
@@ -64,6 +66,17 @@
                     <rect key="frame" x="39" y="20" width="382" height="357"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Répondu" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l8e-ta-Fv5" userLabel="replyTransferLabel">
+                            <rect key="frame" x="17" y="3" width="69" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="menu_reply_default.png" translatesAutoresizingMaskIntoConstraints="NO" id="DFk-Mg-EnD" userLabel="replyTransferIcon">
+                            <rect key="frame" x="3" y="3" width="10" height="10"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
                         <imageView userInteractionEnabled="NO" alpha="0.20000000298023224" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="U2P-5n-gg8" userLabel="backgroundColorImage">
                             <rect key="frame" x="0.0" y="0.0" width="365" height="357"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -247,6 +260,7 @@
         <image name="color_M.png" width="2" height="2"/>
         <image name="ephemeral_messages_color_A.png" width="136" height="158.39999389648438"/>
         <image name="linphone_logo.png" width="41.599998474121094" height="42.400001525878906"/>
+        <image name="menu_reply_default.png" width="25" height="25"/>
         <image name="vr_play.png" width="200" height="200"/>
         <image name="vr_wave.png" width="1078" height="90"/>
     </resources>

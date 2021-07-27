@@ -751,6 +751,10 @@
 	} else {
 		_vrView.hidden = YES;
 	}
+	
+	CGRect r = super.photoCellContentView.frame;
+	r.origin.y = linphone_chat_message_is_reply(super.message) ? super.replyView.view.frame.origin.y + super.replyView.view.frame.size.height + 10 : 25;
+	super.photoCellContentView.frame = r;
     
     self.messageText.frame = textFrame;
 }
