@@ -184,7 +184,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	NSString *fileType = [[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0 ? @"video" : @"file";
 	NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:name];
 
-	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key rootMessage:nil];
+	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key rootMessage:rootMessage];
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {
