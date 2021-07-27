@@ -119,6 +119,9 @@
 @property BOOL showReplyView;
 @property UIChatReplyBubbleView *replyBubble;
 
+// Forward
+@property LinphoneChatMessage *pendingForwardMessage;
+
 
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (void)autoDownload:(LinphoneChatMessage *)message;

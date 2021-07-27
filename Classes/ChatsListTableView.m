@@ -160,6 +160,10 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
+	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+	cell.forwardIcon.hidden = !forwardMode;
+	cell.emIndicator.hidden = forwardMode;
+	cell.imdmIcon.hidden = forwardMode;
 	return cell;
 }
 

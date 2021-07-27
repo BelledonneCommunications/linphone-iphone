@@ -817,12 +817,16 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		r.origin.y = linphone_chat_message_is_reply(_message) ? _replyView.view.frame.origin.y + _replyView.view.frame.size.height + 5 : 21;
 		_messageText.frame = r;
 		
+		r = _messageText.frame;
+		r.origin.y = linphone_chat_message_is_forward(_message) ? _contactDateLabel.frame.origin.y + _contactDateLabel.frame.size.height + 5 : r.origin.y;
+		_messageText.frame = r;
+		
 		r = _contactDateLabel.frame;
-		r.origin.y = linphone_chat_message_is_reply(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 3 : 3;
+		r.origin.y = linphone_chat_message_is_reply(_message)||linphone_chat_message_is_forward(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 3 : 3;
 		_contactDateLabel.frame = r;
 		
 		r = _avatarLabel.frame;
-		r.origin.y = linphone_chat_message_is_reply(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 4 : 4;
+		r.origin.y = linphone_chat_message_is_reply(_message)||linphone_chat_message_is_forward(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 4 : 4;
 		_avatarLabel.frame = r;
 		
 		_replyTransferIcon.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
@@ -839,7 +843,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		
 		if (linphone_chat_message_is_forward(_message)) {
 			_replyTransferIcon.image = [UIImage imageNamed:@"menu_forward_default"];
-			_replyTransferLabel.text = NSLocalizedString(@"Answered",nil);
+			_replyTransferLabel.text = NSLocalizedString(@"Transferred",nil);
 			_replyTransferLabel.font = FT_FONT_RBT_REG_30;
 			_replyTransferLabel.textColor =  [UIColor darkGrayColor];
 		}
@@ -907,13 +911,14 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		[_messageActionsBlocks addObject:^{[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)]];}];
 	}
 	
-	/*
+
 	[_messageActionsTitles addObject:NSLocalizedString(@"Forward", nil)];
 	[_messageActionsIcons addObject:@"menu_forward_default"];
 	[_messageActionsBlocks addObject:^{
-		// TODO
+		VIEW(ChatConversationView).pendingForwardMessage = message;
+		[PhoneMainView.instance changeCurrentView:VIEW(ChatsListView).compositeViewDescription];
 	}];
-	 */
+	 
 
 	
 	[_messageActionsTitles addObject:NSLocalizedString(@"Reply", nil)];
@@ -1019,8 +1024,6 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	}
 	return cell;
 }
-
-
 
 
 

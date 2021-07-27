@@ -402,6 +402,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self setupPopupMenu];
 		_ephemeralndicator.hidden = !linphone_chat_room_ephemeral_enabled(_chatRoom);
 	}
+    [self handlePendingTransferIfAny];
 
 }
 
@@ -569,18 +570,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)confirmShare:(NSData *)data url:(NSString *)url fileName:(NSString *)fileName {
-	LinphoneChatMessage *rootMessage = linphone_chat_room_create_empty_message(_chatRoom);
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
     dispatch_async(dispatch_get_main_queue(), ^{
 		[sheet addButtonWithTitle:NSLocalizedString(@"send to this conversation", nil)
 							block:^() {
 								if (![[self.messageField text] isEqualToString:@""]) {
-									[self sendMessageInMessageField:rootMessage];
+									[self sendMessageInMessageField:linphone_chat_room_create_empty_message(_chatRoom)];
 								}
 								if (url)
-									[self sendMessage:url withExterlBodyUrl:nil rootMessage:rootMessage];
+									[self sendMessage:url withExterlBodyUrl:nil rootMessage:linphone_chat_room_create_empty_message(_chatRoom)];
 								else
-									[self startFileUpload:data withName:fileName rootMessage:rootMessage];
+									[self startFileUpload:data withName:fileName rootMessage:linphone_chat_room_create_empty_message(_chatRoom)];
 		}];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -1999,9 +1999,21 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 	[self updateFramesInclRecordingAndReplyView];
 }
 
-- (IBAction)onCancelReplyClicked:(id)sender {
+-(void) handlePendingTransferIfAny {
+	if (self.pendingForwardMessage) {
+		LinphoneChatMessage *message = self.pendingForwardMessage;
+		self.pendingForwardMessage = nil;
+		UIConfirmationDialog *d = [UIConfirmationDialog ShowWithMessage:NSLocalizedString(@"Transfer this message to this conversation ?",nil)
+														  cancelMessage:nil
+														 confirmMessage:NSLocalizedString(@"Transfer",nil)
+														  onCancelClick:^() {}
+													onConfirmationClick:^() {
+			linphone_chat_message_send(linphone_chat_room_create_forward_message(_chatRoom, message));
+			
+		} constructiveAction:YES];
+		d.alertIcon.image = [UIImage imageNamed:@"forward_message_default"];
+	}
 }
-
 
 
 @end

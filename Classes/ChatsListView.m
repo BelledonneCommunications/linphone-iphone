@@ -53,7 +53,29 @@
     [button addTarget:self action:@selector(crashButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];*/
+	
+	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+
+	_tableController.editButton.hidden = forwardMode;
+	_forwardTitle.text =  NSLocalizedString(@"Select a discussion or create a new one",nil);
+	_forwardTitle.hidden = !forwardMode;
+	_addButtonForwardMode.hidden = !forwardMode;
+	_addButton.hidden = forwardMode;
+	_cancelButtonForwardMode.hidden = !forwardMode;
+
 }
+
+
+
+- (void)ephemeralDeleted:(NSNotification *)notif {
+	//LinphoneChatRoom *r =[[notif.userInfo objectForKey:@"room"] intValue];
+	[self.tableController loadData];
+}
+
+- (void)registrationUpdateEvent:(NSNotification *)notif {
+	if ([[notif.userInfo objectForKey:@"state"] intValue] == LinphoneRegistrationOk) {
+		[self.tableController loadData];
+	}
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
@@ -152,6 +174,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)ephemeralDeleted:(NSNotification *)notif {
 	[self.tableController loadData];
+}
+- (IBAction)onCancelForwardClicked:(id)sender {
+	VIEW(ChatConversationView).pendingForwardMessage = nil;
+	[PhoneMainView.instance popCurrentView];
 }
 
 @end
