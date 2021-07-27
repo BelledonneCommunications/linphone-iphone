@@ -102,7 +102,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	}
 }
 
-- (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key{
+- (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key  voiceContent:(LinphoneContent *)voiceContent{
 	if ([[LinphoneManager.instance fileTransferDelegates] containsObject:self]) {
 		LOGW(@"fileTransferDelegates has already added %p", self);
 		return;
@@ -124,12 +124,15 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message), file_transfer_progress_indication_send);
 
 	[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:_message];
+	
+	if (voiceContent)
+		linphone_chat_message_add_content(_message, voiceContent);
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
 	linphone_chat_message_send(_message);
 }
 
-- (void)uploadFileContent: (FileContext *)context forChatRoom:(LinphoneChatRoom *)chatRoom {
+- (void)uploadFileContent: (FileContext *)context forChatRoom:(LinphoneChatRoom *)chatRoom andVoiceContent:(LinphoneContent *)voiceContent{
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 	
 	_message = linphone_chat_room_create_empty_message(chatRoom);
@@ -162,6 +165,8 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	// todo indication progress
 	[LinphoneManager setValueInMessageAppData:names forKey:@"multiparts" inMessage:_message];
 	[LinphoneManager setValueInMessageAppData:types forKey:@"multipartstypes" inMessage:_message];
+	if (voiceContent)
+		linphone_chat_message_add_content(_message, voiceContent);
 	LOGI(@"%p Uploading content from message %p", self, _message);
 	linphone_chat_message_send(_message);
 }
@@ -170,12 +175,12 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 - (void)uploadImage:(UIImage *)image forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
 	NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
 	NSData *data = UIImageJPEGRepresentation(image, quality);
-	[self uploadData:data forChatRoom:chatRoom type:@"image" subtype:@"jpg" name:name key:@"localimage"];
+	[self uploadData:data forChatRoom:chatRoom type:@"image" subtype:@"jpg" name:name key:@"localimage" voiceContent:nil];
 }
 
 - (void)uploadVideo:(NSData *)data withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom  {
 	NSString *name = [NSString stringWithFormat:@"IMG-%f.MOV",  [NSDate timeIntervalSinceReferenceDate]];
-	[self uploadData:data forChatRoom:chatRoom type:@"video" subtype:@"mov" name:name key:@"localvideo"];
+	[self uploadData:data forChatRoom:chatRoom type:@"video" subtype:@"mov" name:name key:@"localvideo" voiceContent:nil];
 }
 
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name {
@@ -184,7 +189,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	NSString *fileType = [[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0 ? @"video" : @"file";
 	NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:name];
 
-	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key];
+	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key voiceContent:nil];
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {

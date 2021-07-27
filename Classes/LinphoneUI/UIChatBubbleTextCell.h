@@ -26,6 +26,9 @@
 #define CELL_IMAGE_X_MARGIN 100
 #define IMAGE_DEFAULT_WIDTH 120
 #define IMAGE_DEFAULT_MARGIN 5
+#define VOICE_RECORDING_PLAYER_HEIGHT 60
+#define VOICE_RECORDING_PLAYER_WIDTH 300
+
 
 @interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate>
 
@@ -57,6 +60,7 @@
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 + (UIImage *)getImageFromVideoUrl:(NSURL *)url;
 + (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath;
++ (UIImage *)getImageFromFileName:(NSString *)fileName;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessageForCbs:(LinphoneChatMessage *)message;
@@ -72,5 +76,6 @@
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message;
 + (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
 + (NSString *)ContactDateForChat:(LinphoneChatMessage *)message;
++(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message;
 
 @end

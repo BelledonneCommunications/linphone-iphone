@@ -830,7 +830,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
     
     if (!linphone_core_is_network_reachable(LC)) {
-        [PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView] animated:YES completion:nil];
+		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
         return;
     }
     
