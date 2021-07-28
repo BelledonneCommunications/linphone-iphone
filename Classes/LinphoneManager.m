@@ -1303,7 +1303,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 }
 
 - (void)startLinphoneCore {
-	bool corePushEnabled = [self lpConfigIntForKey:@"proxy" inSection:@"push_notification_allowed"];
+	bool corePushEnabled = [self lpConfigIntForKey:@"net" inSection:@"push_notification"];
 	linphone_core_set_push_notification_enabled([LinphoneManager getLc], corePushEnabled);
 	linphone_core_start([LinphoneManager getLc]);
 	
