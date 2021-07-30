@@ -1437,13 +1437,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		linphone_core_destroy(theLinphoneCore);
 		LOGI(@"Destroy linphonecore %p", theLinphoneCore);
 		theLinphoneCore = nil;
-
-		// Post event
-		NSDictionary *dict =
-			[NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
-		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCoreUpdate
-		 object:LinphoneManager.instance
-		 userInfo:dict];
 	}
 	libStarted = FALSE;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
