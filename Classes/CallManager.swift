@@ -639,6 +639,25 @@ import AVFoundation
 			AnyHashable("message"): message
 		])
 	}
+	
+	@objc func activateAudioSession() {
+		lc?.activateAudioSession(actived: true)
+	}
+	
+	@objc func getSpeakerSoundCard() -> String? {
+		var speakerCard: String? = nil
+		var earpieceCard: String? = nil
+		lc?.audioDevices.forEach { device in
+			if (device.hasCapability(capability: .CapabilityPlay)) {
+				if (device.type == .Speaker) {
+					speakerCard = device.id
+				} else if (device.type == .Earpiece) {
+					earpieceCard = device.id
+				}
+			}
+		}
+		return speakerCard != nil ? speakerCard : earpieceCard
+	}
 }
 
 

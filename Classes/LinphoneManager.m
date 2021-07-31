@@ -75,6 +75,8 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 NSString *const kLinphoneEphemeralMessageDeletedInRoom = @"LinphoneEphemeralMessageDeletedInRoom";
+NSString *const kLinphoneVoiceMessagePlayerEOF = @"LinphoneVoiceMessagePlayerEOF";
+NSString *const kLinphoneVoiceMessagePlayerLostFocus = @"LinphoneVoiceMessagePlayerLostFocus";
 
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
@@ -1784,7 +1786,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)call:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
-		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView] animated:YES completion:nil];
+		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"place a call"] animated:YES completion:nil];
 		return;
 	}
 

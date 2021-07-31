@@ -44,6 +44,16 @@
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
 @property(strong, nonatomic) NSMutableArray<UIChatContentView *> *contentViews;
 
+// Video recordings
+@property (weak, nonatomic) IBOutlet UIView *vrView;
+@property (weak, nonatomic) IBOutlet UIButton *vrPlayPause;
+@property (weak, nonatomic) IBOutlet UILabel *vrTimerLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *vrWave;
+@property (weak, nonatomic) IBOutlet UIView *vrWaveMaskPlayback;
+@property NSTimer *vrPlayerTimer;
+@property NSString *voiceRecordingFile;
+
+
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
