@@ -60,6 +60,8 @@ extern NSString *const kLinphoneFileTransferRecvUpdate;
 extern NSString *const kLinphoneQRCodeFound;
 extern NSString *const kLinphoneChatCreateViewChange;
 extern NSString *const kLinphoneEphemeralMessageDeletedInRoom;
+extern NSString *const kLinphoneVoiceMessagePlayerEOF;
+extern NSString *const kLinphoneVoiceMessagePlayerLostFocus;
 
 extern NSString *const kLinphoneMsgNotificationAppGroupId;
 

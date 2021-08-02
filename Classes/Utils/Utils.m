@@ -516,12 +516,10 @@
     return res;
 }
 
-+ (UIAlertController *)networkErrorView {
++ (UIAlertController *)networkErrorView:(NSString *)action {
     UIAlertController *errView =
     [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
-                                        message:NSLocalizedString(@"There is no network connection available, "
-                                                                  @"enable WIFI or WWAN prior to place a call",
-                                                                  nil)
+                                        message:NSLocalizedString([@"There is no network connection available, enable WIFI or WWAN prior to " stringByAppendingString:action],nil)
                                  preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
