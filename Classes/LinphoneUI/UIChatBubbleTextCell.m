@@ -580,7 +580,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
-    } else {
+		size.width += 4;
+    } else { // Just file or file with text
 		LinphoneContent *fileContent =  linphone_chat_message_get_file_transfer_information(chat);
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
