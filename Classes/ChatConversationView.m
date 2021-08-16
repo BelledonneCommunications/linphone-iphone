@@ -1723,7 +1723,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	LinphoneRecorderParams *p = linphone_core_create_recorder_params(LC);
 	linphone_recorder_params_set_file_format(p, LinphoneRecorderFileFormatWav);
 	_voiceRecorder = linphone_core_create_recorder(LC, p);
-	[CallManager.instance activateAudioSession];
 }
 
 -(void) cancelVoiceRecording {
@@ -1766,7 +1765,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	
 	if (!_voiceRecorder)
 		[self createVoiceRecorder];
-	
+	[CallManager.instance activateAudioSession];
 	_toggleRecord.selected = true;
 	[_vrPlayButton setImage:[UIImage imageNamed:@"vr_stop"] forState:UIControlStateNormal];
 	
