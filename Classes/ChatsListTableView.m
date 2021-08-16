@@ -162,8 +162,11 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	[super accessoryForCell:cell atPath:indexPath];
 	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
 	cell.forwardIcon.hidden = !forwardMode;
-	cell.emIndicator.hidden = forwardMode;
-	cell.imdmIcon.hidden = forwardMode;
+	if (forwardMode) {
+		cell.emIndicator.hidden = true;
+		cell.imdmIcon.hidden = true;
+	}
+	
 	return cell;
 }
 
