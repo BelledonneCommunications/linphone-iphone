@@ -621,10 +621,11 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 			} else if (voiceContent){
 				return [self addVoicePlayerToSize:[self ViewHeightForFile:width] withMargins:true];
 			} else {
-				image = [UIChatBubbleTextCell getImageFromFileName:fileName];
+				image = nil;
+				originalImageSize = CGSizeMake(140, 140);
 			}
-
-			originalImageSize = image.size;
+			if (image != nil)
+				originalImageSize = image.size;
 		} else {
 			if (!localImage && !localVideo) {
 				//We are loading the image
