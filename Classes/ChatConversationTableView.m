@@ -403,6 +403,8 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 		LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 		if (linphone_event_log_get_chat_message(event)) {
 			linphone_chat_room_delete_message(_chatRoom, linphone_event_log_get_chat_message(event));
+		} else {
+			linphone_event_log_delete_from_database(event);
 		}
         NSInteger index = indexPath.row + _currentIndex + (totalEventList.count - eventList.count);
         if (index < totalEventList.count)
