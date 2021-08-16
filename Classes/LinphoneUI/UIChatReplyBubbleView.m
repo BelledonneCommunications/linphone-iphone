@@ -66,19 +66,19 @@
 	r.size.width = self.view.superview.frame.size.width;
 	self.view.frame = r;
 	self.dataContent.image = [self firstDataContent];
+	r = _textContent.frame;
 	if (self.dataContent.image == nil) {
-		r = _textContent.frame;
 		r.size.width = self.view.frame.size.width - (hideDismiss ? 20 : 30);
 	} else {
-		r.size.width = self.view.frame.size.width -100;
+		r.size.width = self.view.frame.size.width - 120;
 	}
 	_textContent.frame = r;
 	
+	r = _senderNameWithTextContent.frame;
 	if (self.dataContent.image == nil) {
-		r = _senderNameWithTextContent.frame;
 		r.size.width = self.view.frame.size.width - (hideDismiss ? 20 : 30);
 	} else {
-		r.size.width = self.view.frame.size.width -100;
+		r.size.width = self.view.frame.size.width - 120;
 	}
 	_senderNameWithTextContent.frame = r;
 }
