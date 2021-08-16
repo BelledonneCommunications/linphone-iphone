@@ -1993,7 +1993,7 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 	[_replyBubble didMoveToParentViewController:self];
 	[_replyBubble configureForMessage:message withDimissBlock:^{
 		[self closePendingReply];
-	} hideDismiss:false];
+	} hideDismiss:false withClickBlock:^{}];
 	_showReplyView = true;
 	[self updateFramesInclRecordingAndReplyView];
 }

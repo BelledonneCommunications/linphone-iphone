@@ -18,9 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property LinphoneChatMessage *message;
 @property (weak, nonatomic) IBOutlet UILabel *textContent;
 @property void (^ dismissAction)(void);
+@property void (^ clickAction)(void);
 @property (weak, nonatomic) IBOutlet UIImageView *dataContent;
 
--(void) configureForMessage:(LinphoneChatMessage *)message withDimissBlock:(void (^)(void))dismissBlock hideDismiss:(BOOL)hideDismiss;
+-(void) configureForMessage:(LinphoneChatMessage *)message withDimissBlock:(void (^)(void))dismissBlock hideDismiss:(BOOL)hideDismiss withClickBlock:(void (^)(void))clickBlock;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -66,5 +66,6 @@
 - (void)refreshData;
 - (void)reloadData;
 -(void) dismissMessagesPopups;
+- (void) scrollToMessage:(LinphoneChatMessage *)message;
 
 @end

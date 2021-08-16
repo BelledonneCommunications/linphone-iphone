@@ -276,7 +276,9 @@
 		_replyView.view.hidden = false;
 		CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height,self.contactDateLabel.frame.size.width, REPLY_CHAT_BUBBLE_HEIGHT);
 		_replyView.view.frame = replyFrame;
-		[_replyView configureForMessage:linphone_chat_message_get_reply_message(_message) withDimissBlock:^{} hideDismiss:true];
+		[_replyView configureForMessage:linphone_chat_message_get_reply_message(_message) withDimissBlock:^{} hideDismiss:true withClickBlock:^{
+			[_tableController scrollToMessage:linphone_chat_message_get_reply_message(_message)];
+		}];
 	} else {
 		if (_replyView)
 			_replyView.view.hidden = true;

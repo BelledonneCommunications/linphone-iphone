@@ -36,7 +36,7 @@
 }
 
 
--(void) configureForMessage:(LinphoneChatMessage *)message withDimissBlock:(void (^)(void))dismissBlock hideDismiss:(BOOL)hideDismiss{
+-(void) configureForMessage:(LinphoneChatMessage *)message withDimissBlock:(void (^)(void))dismissBlock hideDismiss:(BOOL)hideDismiss withClickBlock:(void (^)(void))clickBlock{
 	if (!message) {
 		_senderNameWithoutTextContent.text = NSLocalizedString(@"Original message was removed", nil);
 		_senderNameWithoutTextContent.hidden = NO;
@@ -58,7 +58,16 @@
 	_textContent.text = text ? [NSString stringWithUTF8String:text] : @"";
 	_dismissButton.hidden = hideDismiss;
 	_dismissAction = dismissBlock;
-	[_dismissButton addTarget:self action:@selector(dismissClick) forControlEvents:UIControlEventTouchUpInside];
+	_clickAction = clickBlock;
+	if (hideDismiss) {
+		UITapGestureRecognizer *singleFingerTap =
+		  [[UITapGestureRecognizer alloc] initWithTarget:self
+												  action:@selector(onClick)];
+		[self.view addGestureRecognizer:singleFingerTap];
+	}
+	else
+		[_dismissButton addTarget:self action:@selector(dismissClick) forControlEvents:UIControlEventTouchUpInside];
+
 	self.view.backgroundColor = hideDismiss ? UIColor.whiteColor : linphone_chat_message_is_outgoing(message) ? OUTGOING_BG_COLOR  : INCOMING_BG_COLOR;
 	_leftBar.backgroundColor = REPLY_LEFT_BAR_COLOR;
 	_rightBar.backgroundColor = self.view.backgroundColor;
@@ -107,6 +116,10 @@
 
 -(void) dismissClick {
 	_dismissAction();
+}
+
+-(void) onClick {
+	_clickAction();
 }
 
 @end

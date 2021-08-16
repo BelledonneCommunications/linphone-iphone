@@ -205,6 +205,34 @@
 								  animated:animated];
 }
 
+
+- (void) scrollToMessage:(LinphoneChatMessage *)message {
+	if (eventList.count == 0 || _chatRoom == nil)
+		return;
+
+	int index = -1;
+	size_t count = eventList.count;
+	for (int i = (int)count - 1; i > 0; --i) {
+		LinphoneEventLog *event = [[eventList objectAtIndex:i] pointerValue];
+		if (!(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
+			continue;;
+
+		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+		if (chat == message) {
+			index = i;
+			break;
+		}
+		
+	}
+	if (index < 0)
+		return;
+
+	[self.tableView.layer removeAllAnimations];
+	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+						  atScrollPosition:UITableViewScrollPositionTop
+								  animated:true];
+}
+
 #pragma mark - Property Functions
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
@@ -311,6 +339,7 @@ static const int BASIC_EVENT_LIST=15;
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		cell.tableController = self;
 		return cell;
 	} else {
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);
