@@ -328,84 +328,9 @@
 	
 	if (!linphone_core_is_network_reachable(LC)) {
 		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
-		//return;
-	}
-	
-	if (_message == nil || !linphone_chat_message_is_outgoing(_message))
-		return;
-
-	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
-	if (state != LinphoneChatMessageStateNotDelivered && state != LinphoneChatMessageStateFileTransferError)
-		return;
-
-	const bctbx_list_t *contents = linphone_chat_message_get_contents(_message);
-	LinphoneContent *voiceContent = [UIChatBubbleTextCell voiceContent:_message];
-	size_t contentCount = bctbx_list_size(contents);
-	if (voiceContent)
-		contentCount--;
-	
-	BOOL multiParts = ((linphone_chat_message_get_text_content(_message) != NULL) ? contentCount > 2 : contentCount > 1);
-		
-	if (multiParts) {
-		FileContext *newfileContext = [[FileContext alloc] init];
-		[newfileContext clear];
-		NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:_message];
-		int i;
-		const bctbx_list_t *it;
-		for (it = contents, i=0; it != NULL; it=bctbx_list_next(it)){
-			LinphoneContent *content = (LinphoneContent *)it->data;
-			if (linphone_content_is_voice_recording(content)) {
-				continue;
-			}
-			if (linphone_content_is_file_transfer(content) || linphone_content_is_file(content)){
-				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
-				NSString *filePath = [encrptedFilePaths valueForKey:name];
-				if (filePath == NULL) {
-					filePath = [LinphoneManager validFilePath:name];
-				}
-				[newfileContext addObject:[NSData dataWithContentsOfFile:filePath] name:name type:[NSString stringWithUTF8String:linphone_content_get_type(content)]];
-			}
-		}
-		[self onDelete];
-		dispatch_async(dispatch_get_main_queue(), ^ {
-			const char *text = linphone_chat_message_get_text_content(_message);
-			[_chatRoomDelegate resendMultiFiles:newfileContext message: text? [NSString stringWithUTF8String:text]: NULL rootMessage:_message];
-		});
 		return;
 	}
-	if (!voiceContent && contentCount == 1 && linphone_chat_message_get_file_transfer_information(_message) != NULL) {
-		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
-		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
-		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
-
-		[self onDelete];
-		dispatch_async(dispatch_get_main_queue(), ^ {
-			NSData *data = NULL;
-			if (filePath) {
-				data = [NSData dataWithContentsOfFile:filePath];
-			}
-			const char *text = linphone_chat_message_get_text_content(_message);
-			NSString *str = text ? [NSString stringWithUTF8String:text] : NULL;
-			if (localImage) {
-				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str rootMessage:_message];
-			} else if (localVideo) {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str rootMessage:_message];
-			} else {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str rootMessage:_message];
-			}
-		});
-	} else {
-		[self onDelete];
-		double delayInSeconds = 0.4;
-		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-			NSString *text = self.textMessage;
-			if (voiceContent && [text isEqualToString:@"🗻"])
-				text = nil;
-			[_chatRoomDelegate resendChat:text withExternalUrl:nil rootMessage:_message];
-		});
-	}
+	linphone_chat_message_send(_message);
 }
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
