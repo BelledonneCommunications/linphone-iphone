@@ -735,6 +735,9 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		int origin_x;
 
 		bubbleFrame.size = [self.class ViewSizeForMessage:_message withWidth:available_width];
+		if (linphone_chat_message_is_reply(_message)) {
+			bubbleFrame.size.width = MAX(bubbleFrame.size.width, 300);
+		}
 
 		if (tableView.isEditing) {
 			origin_x = 0;
@@ -762,7 +765,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		_replyTransferLabel.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
 		
 		if (linphone_chat_message_is_reply(_message)) {
-			CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height+3,self.contactDateLabel.frame.size.width, REPLY_CHAT_BUBBLE_HEIGHT);
+			CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height+3,MAX(self.contactDateLabel.frame.size.width,200), REPLY_CHAT_BUBBLE_HEIGHT);
 			_replyView.view.frame = replyFrame;
 			_replyTransferIcon.image = [UIImage imageNamed:@"menu_reply_default"];
 			_replyTransferLabel.text = NSLocalizedString(@"Answered",nil);
