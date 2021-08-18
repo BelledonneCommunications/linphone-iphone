@@ -528,16 +528,6 @@
 	}
 }
 
-- (void)onResendClick:(id)event {
-	if (_downloadButton.hidden == NO) {
-		// if download button is displayed, click on it
-		[self onDownloadClick:event];
-	} else if (_cancelButton.hidden == NO) {
-		[self onCancelClick:event];
-    } else {
-		[super onResend];
-	}
-}
 
 - (IBAction)onImageClick:(id)event {
 	if (_finalImage.tag == FILE_ICON_TAG) {
@@ -546,7 +536,7 @@
 	}
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (state == LinphoneChatMessageStateNotDelivered) {
-		[self onResendClick:event];
+		return;
 	} else {
 		if (![_messageImageView isLoading]) {
 			ImageView *view = VIEW(ImageView);

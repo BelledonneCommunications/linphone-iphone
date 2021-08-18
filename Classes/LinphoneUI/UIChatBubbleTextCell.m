@@ -40,22 +40,6 @@
 			[self addSubview:sub];
 		}
 	}
-
-	UITapGestureRecognizer *limeRecognizer =
-	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLime)];
-	limeRecognizer.numberOfTapsRequired = 1;
-	//[_LIMEKO addGestureRecognizer:limeRecognizer];
-	//_LIMEKO.userInteractionEnabled = YES;
-	UITapGestureRecognizer *resendRecognizer =
-	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
-	resendRecognizer.numberOfTapsRequired = 1;
-	[_bubbleView addGestureRecognizer:resendRecognizer];
-	_imdmIcon.userInteractionEnabled = YES;
-	UITapGestureRecognizer *resendRecognizer2 =
-	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
-	resendRecognizer2.numberOfTapsRequired = 1;
-	//[_imdmLabel addGestureRecognizer:resendRecognizer2];
-	//_imdmLabel.userInteractionEnabled = YES;
 	
     
     [_innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
@@ -321,19 +305,6 @@
 	}
 }
 
-- (void)onLime {
-	/*if (!_LIMEKO.hidden)
-		[self displayLIMEWarning];*/
-}
-
-- (void)onResend {
-	
-	if (!linphone_core_is_network_reachable(LC)) {
-		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
-		return;
-	}
-	linphone_chat_message_send(_message);
-}
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
@@ -836,6 +807,20 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
 
+	
+	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
+	if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
+		[_messageActionsTitles addObject:NSLocalizedString(@"Resend", nil)];
+		[_messageActionsIcons addObject:@"menu_resend_default"];
+		[_messageActionsBlocks addObject:^{
+			if (!linphone_core_is_network_reachable(LC)) {
+				[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
+				return;
+			}
+			linphone_chat_message_send(message);
+		}];
+	}
+	
 
 	if (linphone_chat_message_get_utf8_text(message)) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];

@@ -85,8 +85,6 @@
 - (void)clearEncryptedFiles;
 
 - (void)onDelete;
-- (void)onResend;
-- (void)onLime;
 - (void)update;
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state;

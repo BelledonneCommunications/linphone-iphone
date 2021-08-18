@@ -32,7 +32,6 @@
                 <outlet property="playButton" destination="cvc-tl-Pcf" id="eKJ-2T-LUl"/>
                 <outlet property="replyTransferIcon" destination="DFk-Mg-EnD" id="gPH-xU-mAw"/>
                 <outlet property="replyTransferLabel" destination="l8e-ta-Fv5" id="9Ns-ZN-Wbl"/>
-                <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
                 <outlet property="totalView" destination="8I3-n2-0kS" id="aa8-j9-saW"/>
                 <outlet property="vrPlayPause" destination="7Zn-bp-e0Y" id="ed8-ZL-VpS"/>
                 <outlet property="vrTimerLabel" destination="VUD-m6-g1J" id="tOj-bF-YHd"/>
@@ -231,7 +230,6 @@
                         </view>
                     </subviews>
                     <connections>
-                        <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
                         <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="FIv-pl-I8J"/>
                     </connections>
                 </view>
@@ -240,11 +238,6 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="-118.40000000000001" y="244.22788605697153"/>
         </view>
-        <tapGestureRecognizer id="5ZI-Ip-lGl" userLabel="resendClick">
-            <connections>
-                <action selector="onResendClick:" destination="-1" id="XOF-AF-Hes"/>
-            </connections>
-        </tapGestureRecognizer>
         <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
             <connections>
                 <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>

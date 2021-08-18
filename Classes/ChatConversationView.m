@@ -747,8 +747,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onSendClick:(id)event {
 
 	if (!linphone_core_is_network_reachable(LC)) {
-		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
-		return;
+		//[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
+		//return;
 	}
 	
 	LinphoneChatMessage *rootMessage = _replyBubble ? linphone_chat_room_create_reply_message(_chatRoom, _replyBubble.message) : linphone_chat_room_create_empty_message(_chatRoom);

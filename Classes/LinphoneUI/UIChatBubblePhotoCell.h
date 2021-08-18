@@ -60,7 +60,6 @@
 - (IBAction)onDownloadClick:(id)event;
 - (IBAction)onImageClick:(id)event;
 - (IBAction)onCancelClick:(id)sender;
-- (IBAction)onResendClick:(id)event;
 - (IBAction)onPlayClick:(id)sender;
 - (IBAction)onFileClick:(id)sender;
 
