@@ -11,64 +11,63 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIChatReplyBubbleView" customModule="frogtrustapp" customModuleProvider="target">
             <connections>
-                <outlet property="dataContent" destination="P5l-nI-xle" id="S80-kw-jqb"/>
+                <outlet property="contentCollection" destination="ZgY-Ye-8DD" id="hlD-Fw-g1z"/>
                 <outlet property="dismissButton" destination="KrT-j6-YOy" id="K5m-Mw-Cjx"/>
                 <outlet property="leftBar" destination="Iov-AL-8Xz" id="eKb-4B-unZ"/>
-                <outlet property="senderNameWithTextContent" destination="uuW-tW-1Sj" id="Yao-6A-SBh"/>
-                <outlet property="senderNameWithoutTextContent" destination="MX3-HK-fwJ" id="xmf-5w-UoR"/>
+                <outlet property="senderName" destination="uuW-tW-1Sj" id="Yao-6A-SBh"/>
                 <outlet property="textContent" destination="Czc-VH-qiH" id="e35-qw-Sz3"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="kJN-7M-ijh"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="350" height="100"/>
+            <rect key="frame" x="0.0" y="0.0" width="350" height="120"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" tag="290394" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uuW-tW-1Sj" userLabel="nameWithTextContent">
-                    <rect key="frame" x="13" y="5" width="212" height="21"/>
+                    <rect key="frame" x="13" y="5" width="315" height="21"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <view tag="290393" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iov-AL-8Xz" userLabel="leftBar">
-                    <rect key="frame" x="0.0" y="0.0" width="7" height="100"/>
+                    <rect key="frame" x="0.0" y="0.0" width="7" height="120"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </view>
-                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="290394" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MX3-HK-fwJ" userLabel="nameWithoutTextContent">
-                    <rect key="frame" x="13" y="10" width="89" height="80"/>
-                    <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <label opaque="NO" userInteractionEnabled="NO" tag="290395" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="Czc-VH-qiH" userLabel="textContent">
-                    <rect key="frame" x="13" y="29" width="212" height="65"/>
+                    <rect key="frame" x="13" y="86" width="315" height="29"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="ZgY-Ye-8DD">
+                    <rect key="frame" x="13" y="28" width="315" height="55"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="gR0-ml-XVX">
+                        <size key="itemSize" width="55" height="55"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
                 <button opaque="NO" tag="290399" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KrT-j6-YOy" userLabel="dismiss">
-                    <rect key="frame" x="331" y="39" width="12" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES"/>
+                    <rect key="frame" x="336" y="49" width="12" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                     <state key="normal" image="drop_user_ft"/>
                 </button>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="delete" translatesAutoresizingMaskIntoConstraints="NO" id="P5l-nI-xle">
-                    <rect key="frame" x="246" y="10" width="80" height="80"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                </imageView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="85.507246376811594" y="90.401785714285708"/>
+            <point key="canvasLocation" x="85.507246376811594" y="111.83035714285714"/>
         </view>
     </objects>
     <resources>
-        <image name="delete" width="128" height="128"/>
         <image name="drop_user_ft" width="11.5" height="11.5"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

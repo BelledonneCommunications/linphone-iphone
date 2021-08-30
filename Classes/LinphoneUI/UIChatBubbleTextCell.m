@@ -359,7 +359,7 @@ static const CGFloat CELL_MIN_HEIGHT = 65.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 68 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
-static const CGFloat REPLY_CHAT_BUBBLE_HEIGHT  = 100;
+static const CGFloat REPLY_CHAT_BUBBLE_HEIGHT  = 120;
 static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 
@@ -379,20 +379,38 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 }
 
 
++(NSString *)formattedDuration:(long)valueMs {
+	return [NSString stringWithFormat:@"%02ld:%02ld", valueMs/ 60, (valueMs % 60) ];
+}
+
++(NSString *) recordingDuration:(NSString *) _voiceRecordingFile{
+	NSError *error = nil;
+	AVAudioPlayer* utilityPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL URLWithString:_voiceRecordingFile] error:&error]; // Workaround as opening multiple linphone_players at the same time can cause crash (here for example layout refreshed whilst a voice memo is playing
+	return [self formattedDuration:utilityPlayer.duration];
+	utilityPlayer = nil;
+}
+
 + (UIImage *)getImageFromFileName:(NSString *)fileName {
 	NSString *extension = [[fileName.lowercaseString componentsSeparatedByString:@"."] lastObject];
 	UIImage *image;
-	if ([extension isEqualToString:@"pdf"])
-		image =  [UIImage imageNamed:@"file_pdf_default"];
-	else if ([@[@"png", @"jpg", @"jpeg", @"bmp", @"heic"] containsObject:extension])
-		image = [UIImage imageNamed:@"file_picture_default"];
-	else if ([@[@"mkv", @"avi", @"mov", @"mp4"] containsObject:extension])
-		image = [UIImage imageNamed:@"file_video_default"];
-	else if ([@[@"wav", @"au", @"m4a"] containsObject:extension])
-		image = [UIImage imageNamed:@"file_audio_default"];
-	else
-		image = [UIImage imageNamed:@"file_default"];
-	return [SwiftUtil textToImageWithDrawText:fileName inImage:image];
+	NSString * text = fileName;
+	if ([fileName containsString:@"voice-recording"]) {
+		image = [UIImage imageNamed:@"file_voice_default"];
+		text = [self recordingDuration:[LinphoneManager validFilePath:fileName]];
+	} else {
+		if ([extension isEqualToString:@"pdf"])
+			image =  [UIImage imageNamed:@"file_pdf_default"];
+		else if ([@[@"png", @"jpg", @"jpeg", @"bmp", @"heic"] containsObject:extension])
+			image = [UIImage imageNamed:@"file_picture_default"];
+		else if ([@[@"mkv", @"avi", @"mov", @"mp4"] containsObject:extension])
+			image = [UIImage imageNamed:@"file_video_default"];
+		else if ([@[@"wav", @"au", @"m4a"] containsObject:extension])
+			image = [UIImage imageNamed:@"file_audio_default"];
+		else
+			image = [UIImage imageNamed:@"file_default"];
+	}
+	
+	return [SwiftUtil textToImageWithDrawText:text inImage:image];
 }
 
 + (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath; {
@@ -807,12 +825,14 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
 
+	UIChatBubbleTextCell *thiz = self;
 	
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Resend", nil)];
 		[_messageActionsIcons addObject:@"menu_resend_default"];
 		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
 			if (!linphone_core_is_network_reachable(LC)) {
 				[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
 				return;
@@ -825,13 +845,17 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	if (linphone_chat_message_get_utf8_text(message)) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];
 		[_messageActionsIcons addObject:@"menu_copy_text_default"];
-		[_messageActionsBlocks addObject:^{[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)]];}];
+		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
+			[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_text_content(message)]];
+		}];
 	}
 	
 
 	[_messageActionsTitles addObject:NSLocalizedString(@"Forward", nil)];
 	[_messageActionsIcons addObject:@"menu_forward_default"];
 	[_messageActionsBlocks addObject:^{
+		[thiz dismissPopup];
 		VIEW(ChatConversationView).pendingForwardMessage = message;
 		[PhoneMainView.instance changeCurrentView:VIEW(ChatsListView).compositeViewDescription];
 	}];
@@ -841,6 +865,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsTitles addObject:NSLocalizedString(@"Reply", nil)];
 	[_messageActionsIcons addObject:@"menu_reply_default"];
 	[_messageActionsBlocks addObject:^{
+		[thiz dismissPopup];
 		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
 	}];
 	
@@ -848,6 +873,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		[_messageActionsTitles addObject:NSLocalizedString(@"Infos", nil)];
 		[_messageActionsIcons addObject:@"menu_info"];
 		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
 			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
 			view.msg = message;
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
@@ -857,6 +883,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsTitles addObject:NSLocalizedString(@"Delete", nil)];
 	[_messageActionsIcons addObject:@"menu_delete"];
 	[_messageActionsBlocks addObject:^{
+		[thiz dismissPopup];
 		linphone_chat_room_delete_message(linphone_chat_message_get_chat_room(message), message);
 		[VIEW(ChatConversationView).tableController reloadData];
 	}];
