@@ -274,6 +274,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     _toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
 	_replyView.hidden = true;
 	_preservePendingActions = false;
+	
+	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
 
 }
 
