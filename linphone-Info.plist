@@ -110,6 +110,8 @@
 	<string>Add tranfered files to your library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Stream audio and video through the local network</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.org.linphone.phone</key>

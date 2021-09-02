@@ -1774,6 +1774,44 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	[ChatConversationView markAsRead:room];
 }
 
+/*
+ * If ICE is enabled, check if local network permission is given and show an alert message.
+ * It is indeed required for ICE to operate correctly.
+ * If it is not the the case, liblinphone will automatically skip ICE during the call.
+ * The purpose of this function is only to show the alert message.
+ */
+- (void) checkLocalNetworkPermission{
+	NSString *alertSuppressionKey = @"LocalNetworkPermissionAlertSuppression";
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	
+	LinphoneProxyConfig *defaultCfg = linphone_core_get_default_proxy_config(LC);
+	if (!defaultCfg) return;
+	LinphoneNatPolicy *natPolicy = linphone_proxy_config_get_nat_policy(defaultCfg);
+	if (!natPolicy || !linphone_nat_policy_ice_enabled(natPolicy))
+		return;
+	
+	if (linphone_core_local_permission_enabled(LC)) return;
+
+	if (![defaults boolForKey: alertSuppressionKey]) {
+		UIAlertController *noticeView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Local network usage", nil)
+						  message:NSLocalizedString(@"Granting the local network permission is recommended to enhance the audio & video quality. You may enable it from iOS settings.", nil)
+						  preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+						style:UIAlertActionStyleDefault
+						handler:^(UIAlertAction * action) {}];
+		UIAlertAction* ignoreForeverAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Don't show this again.", nil)
+						style:UIAlertActionStyleCancel
+						handler:^(UIAlertAction * action) {
+			[defaults setBool:TRUE forKey: alertSuppressionKey];
+		}];
+
+		[noticeView addAction:defaultAction];
+		[noticeView addAction:ignoreForeverAction];
+		[PhoneMainView.instance presentViewController:noticeView animated:YES completion:nil];
+	}
+}
+
 - (void)call:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
@@ -1813,7 +1851,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		return;
 	}
-
+	[self checkLocalNetworkPermission];
 	// For OutgoingCall, show CallOutgoingView
 	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE];
 }
