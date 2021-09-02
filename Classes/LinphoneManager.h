@@ -186,6 +186,7 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)setupGSMInteraction;
 - (BOOL)isCTCallCenterExist;
+- (void) checkLocalNetworkPermission;
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;
