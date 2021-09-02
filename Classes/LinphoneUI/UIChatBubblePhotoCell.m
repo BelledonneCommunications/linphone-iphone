@@ -165,6 +165,9 @@
 	}
 	[super update];
 	
+	_vrPlayPause.enabled = linphone_core_get_calls_nb(LC) == 0;
+
+	
 	NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = NULL;
 	if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 		encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:self.message];

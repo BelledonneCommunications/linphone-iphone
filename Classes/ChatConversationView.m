@@ -272,6 +272,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// Voice recording
 	_vrView.hidden = true;
 	_preservePendingRecording = false;
+    _toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
 
 }
 
@@ -474,6 +475,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdateEvent:(NSNotification *)notif {
     [self updateSuperposedButtons];
+	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
+
 }
 
 - (void)update {
