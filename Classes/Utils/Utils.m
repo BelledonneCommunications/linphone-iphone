@@ -804,6 +804,19 @@
 	return [self lumColor:0.75];
 }
 
+
+static NSMutableDictionary *letterColors = nil;
+
++(UIColor *)color:(NSString *)letter {
+	if (letterColors == nil)
+		letterColors  = [[NSMutableDictionary alloc] init];
+	if (![letterColors objectForKey:letter]) {
+		UIImage *colorImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/color_%@.png",[[NSBundle mainBundle] bundlePath],letter]];
+		[letterColors setObject:[UIColor colorWithPatternImage:colorImage] forKey:letter];
+	}
+	return [letterColors objectForKey:letter];
+}
+
 @end
 
 @implementation UIImage (ForceDecode)

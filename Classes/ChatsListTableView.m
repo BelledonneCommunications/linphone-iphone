@@ -163,7 +163,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
 	cell.forwardIcon.hidden = !forwardMode;
 	if (forwardMode) {
-		cell.emIndicator.hidden = true;
+		cell.ephemeral.hidden = true;
 		cell.imdmIcon.hidden = true;
 	}
 	

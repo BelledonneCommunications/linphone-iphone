@@ -1,13 +1,25 @@
-//
-//  UIChatReplyBubbleView.h
-//
-//
-//  Created by CD on 26/07/2021.
-//
-
+/*
+ * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #import "UIChatReplyBubbleView.h"
-#import "frogtrustapp-Swift.h"
+#import "linphoneapp-Swift.h"
+#import "Utils.h"
 
 @interface UIChatReplyBubbleView ()
 
@@ -27,26 +39,28 @@
 }
 
 -(void) viewDidLoad {
-	_senderName.font = FT_FONT_RBT_BOLD_30;
-	_senderName.textColor = rgb(59,59,59);
-	_textContent.font = FT_FONT_RBT_REG_30;
 	_contentCollection.dataSource = self;
 	[_contentCollection registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"dataContent"];
-
 }
 
 
 -(void) configureForMessage:(LinphoneChatMessage *)message withDimissBlock:(void (^)(void))dismissBlock hideDismiss:(BOOL)hideDismiss withClickBlock:(void (^)(void))clickBlock{
 	if (!message) {
-		_senderName.text = NSLocalizedString(@"Original message was removed", nil);
+		_textContent.hidden = true;
 		_dismissButton.hidden = true;
 		_contentCollection.hidden = true;
-		_textContent.hidden = true;
+		_senderName.hidden = true;
+		_originalMessageGone.hidden = false;
 		return;
 	}
+	if (hideDismiss) {
+		self.view.layer.cornerRadius = 10;
+		self.view.layer.masksToBounds = true;
+	}
+	_originalMessageGone.hidden = true;
 	self.message = message;
 	self.dataContent = [self loadDataContent];
-	NSString *sender = linphone_chat_message_is_outgoing(message) ? [[FTContactsManager mySelf] displayname] : [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(message)];
+	NSString *sender =  [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(message)];
 	_senderName.text = sender;
 	const char * text = linphone_chat_message_get_text_content(message);
 	if (text && strlen(text) == 0)
@@ -64,8 +78,9 @@
 	else
 		[_dismissButton addTarget:self action:@selector(dismissClick) forControlEvents:UIControlEventTouchUpInside];
 
-	self.view.backgroundColor = hideDismiss ? UIColor.whiteColor : linphone_chat_message_is_outgoing(message) ? OUTGOING_BG_COLOR  : INCOMING_BG_COLOR;
-	_leftBar.backgroundColor = REPLY_LEFT_BAR_COLOR;
+	
+	self.view.backgroundColor = hideDismiss ? UIColor.whiteColor : [UIColor color:@"G"];
+	_leftBar.backgroundColor = linphone_chat_message_is_outgoing(message) ? [UIColor color:@"A"]  : [UIColor color:@"D"];;
 	_rightBar.backgroundColor = self.view.backgroundColor;
 	
 	

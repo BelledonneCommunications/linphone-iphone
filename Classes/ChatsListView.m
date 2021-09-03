@@ -72,10 +72,6 @@
 	[self.tableController loadData];
 }
 
-- (void)registrationUpdateEvent:(NSNotification *)notif {
-	if ([[notif.userInfo objectForKey:@"state"] intValue] == LinphoneRegistrationOk) {
-		[self.tableController loadData];
-	}
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
@@ -172,9 +168,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     assert(NO);
 }
 
-- (void)ephemeralDeleted:(NSNotification *)notif {
-	[self.tableController loadData];
-}
 - (IBAction)onCancelForwardClicked:(id)sender {
 	VIEW(ChatConversationView).pendingForwardMessage = nil;
 	[PhoneMainView.instance popCurrentView];

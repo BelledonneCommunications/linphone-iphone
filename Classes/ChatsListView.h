@@ -34,6 +34,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *addButtonForwardMode;
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 @property (weak, nonatomic) IBOutlet UILabel *forwardTitle;
 @property (weak, nonatomic) IBOutlet UIIconButton *cancelButtonForwardMode;
 

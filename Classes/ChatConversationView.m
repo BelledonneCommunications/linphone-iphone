@@ -1971,12 +1971,6 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 }
 
 
-- (IBAction)onEmSettingsClicked:(id)sender {
-	ChatConversationEMView *view = VIEW(ChatConversationEMView);
-	view.room = _chatRoom;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-}
-
 // Reply
 
 -(void) closePendingReply {
@@ -2011,8 +2005,8 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 													onConfirmationClick:^() {
 			linphone_chat_message_send(linphone_chat_room_create_forward_message(_chatRoom, message));
 			
-		} constructiveAction:YES];
-		d.alertIcon.image = [UIImage imageNamed:@"forward_message_default"];
+		}];
+		d.securityImage.image = [UIImage imageNamed:@"forward_message_default"];
 	}
 }
 

@@ -29,9 +29,7 @@
 #define IMAGE_DEFAULT_MARGIN 5
 #define VOICE_RECORDING_PLAYER_HEIGHT 60
 #define VOICE_RECORDING_PLAYER_WIDTH 300
-#define OUTGOING_BG_COLOR rgb(238,238,238)
-#define INCOMING_BG_COLOR rgba(1,88,7,0.2)
-#define REPLY_LEFT_BAR_COLOR rgb(103,174,7)
+
 
 @interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate, UITableViewDataSource,UITableViewDelegate>
 

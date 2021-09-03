@@ -20,6 +20,7 @@
 #import "UIChatBubbleTextCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
@@ -27,6 +28,8 @@
 @implementation UIChatBubbleTextCell
 
 #pragma mark - Lifecycle Functions
+
+
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
@@ -195,8 +198,10 @@
     }
 	
 
-	_innerView.backgroundColor = !outgoing ? INCOMING_BG_COLOR : OUTGOING_BG_COLOR;
-
+	// Not use [UIImage imageNamed], it takes too much time
+	_backgroundColorImage.image = nil;
+	_backgroundColorImage.backgroundColor = outgoing ? [UIColor color:@"A"] : [UIColor color:@"D"];
+	
 	
     // set maskedCorners
     if (@available(iOS 11.0, *)) {
@@ -735,53 +740,33 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		}
 		
 		CGRect r = _messageText.frame;
-		r.origin.y = linphone_chat_message_is_reply(_message) ? _replyView.view.frame.origin.y + _replyView.view.frame.size.height + 5 : 21;
+		r.origin.y = linphone_chat_message_is_reply(_message) ? _replyView.view.frame.origin.y + _replyView.view.frame.size.height + 5 : 3;
 		_messageText.frame = r;
 		
 		r = _messageText.frame;
 		r.origin.y = linphone_chat_message_is_forward(_message) ? _contactDateLabel.frame.origin.y + _contactDateLabel.frame.size.height + 5 : r.origin.y;
 		_messageText.frame = r;
-		
-		r = _contactDateLabel.frame;
-		r.origin.y = linphone_chat_message_is_reply(_message)||linphone_chat_message_is_forward(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 3 : 3;
-		_contactDateLabel.frame = r;
-		
-		r = _avatarLabel.frame;
-		r.origin.y = linphone_chat_message_is_reply(_message)||linphone_chat_message_is_forward(_message) ? REPLY_OR_FORWARD_TAG_HEIGHT + 4 : 4;
-		_avatarLabel.frame = r;
-		
+
 		_replyTransferIcon.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
 		_replyTransferLabel.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
 		
 		if (linphone_chat_message_is_reply(_message)) {
-			CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height+3,MAX(self.contactDateLabel.frame.size.width,200), REPLY_CHAT_BUBBLE_HEIGHT);
+			CGRect replyFrame = CGRectMake(10, _replyTransferLabel.frame.origin.y+_replyTransferLabel.frame.size.height+5,MAX(self.contactDateLabel.frame.size.width-20,180), REPLY_CHAT_BUBBLE_HEIGHT);
 			_replyView.view.frame = replyFrame;
 			_replyTransferIcon.image = [UIImage imageNamed:@"menu_reply_default"];
-			_replyTransferLabel.text = NSLocalizedString(@"Answered",nil);
-			_replyTransferLabel.font = FT_FONT_RBT_REG_30;
+			_replyTransferLabel.text = NSLocalizedString(@"Answer",nil);
 			_replyTransferLabel.textColor =  [UIColor lightGrayColor];
 		}
 		
 		if (linphone_chat_message_is_forward(_message)) {
 			_replyTransferIcon.image = [UIImage imageNamed:@"menu_forward_default"];
 			_replyTransferLabel.text = NSLocalizedString(@"Transferred",nil);
-			_replyTransferLabel.font = FT_FONT_RBT_REG_30;
 			_replyTransferLabel.textColor =  [UIColor darkGrayColor];
 		}
 
 		bubbleFrame.origin.x = origin_x;
 		_bubbleView.frame = bubbleFrame;
-		if (linphone_chat_message_is_ephemeral(_message)) {
-			if (!_imdmLabel.hidden) {
-				CGRect r = _emView.frame;
-				r.origin.x = _imdmLabel.frame.origin.x +_imdmLabel.frame.size.width -  [_imdmLabel.text sizeWithFont:_imdmLabel.font].width - r.size.width - 5 ;
-				_emView.frame = r;
-			} else {
-				CGRect r = _emView.frame;
-				r.origin.x = [_emView superview].frame.size.width - _emView.frame.size.width - 5;
-				_emView.frame = r;
-			}
-		}
+		
 	
 	}
 }
@@ -892,7 +877,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 -(void) onPopupMenuPressed {
 	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
 	self.innerView.layer.borderWidth = 3;
-	self.innerView.layer.borderColor = rgb(1,88,7).CGColor;
+	self.innerView.layer.borderColor = [UIColor color:@"A"].CGColor;
 	[self buildActions];
 	int width = 250;
 	int cellHeight = 44;

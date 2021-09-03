@@ -686,13 +686,13 @@
 		C64A85522667B74100252AD2 /* ephemeral_messages_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C64A85512667B74100252AD2 /* ephemeral_messages_default.png */; };
 		C666756F264C925800A0273C /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
 		C6667571264C925B00A0273C /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
+		C66B03BB26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */; };
 		C6A1BB3526E8815400540D50 /* menu_info.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3126E8815300540D50 /* menu_info.png */; };
 		C6A1BB3626E8815400540D50 /* menu_forward_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3226E8815400540D50 /* menu_forward_default.png */; };
 		C6A1BB3726E8815400540D50 /* menu_copy_text_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */; };
 		C6A1BB3826E8815400540D50 /* menu_reply_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3426E8815400540D50 /* menu_reply_default.png */; };
 		C6A1BB3A26E881E100540D50 /* menu_delete.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3926E881E100540D50 /* menu_delete.png */; };
 		C6A1BB3E26E882D000540D50 /* UIChatReplyBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = C6A1BB3C26E882D000540D50 /* UIChatReplyBubbleView.m */; };
-		C6A1BB3F26E882D000540D50 /* UIChatReplyBubbleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3D26E882D000540D50 /* UIChatReplyBubbleView.xib */; };
 		C6A1BB4126E889AD00540D50 /* forward_message_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB4026E889AD00540D50 /* forward_message_default.png */; };
 		C6A1BB4326E88F7C00540D50 /* menu_resend_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB4226E88F7C00540D50 /* menu_resend_default.png */; };
 		C6A1BB4526E890BD00540D50 /* file_voice_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB4426E890BD00540D50 /* file_voice_default.png */; };
@@ -1746,6 +1746,9 @@
 		C64A854D2667B67200252AD2 /* EphemeralSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EphemeralSettingsView.m; sourceTree = "<group>"; };
 		C64A854F2667B67A00252AD2 /* EphemeralSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EphemeralSettingsView.xib; sourceTree = "<group>"; };
 		C64A85512667B74100252AD2 /* ephemeral_messages_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ephemeral_messages_default.png; sourceTree = "<group>"; };
+		C66B03BC26E8EB1A009B5EDC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatReplyBubbleView.xib; sourceTree = "<group>"; };
+		C66B03C126E8EB82009B5EDC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
+		C66B03C326E8EB87009B5EDC /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
 		C6A1BB3126E8815300540D50 /* menu_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_info.png; sourceTree = "<group>"; };
 		C6A1BB3226E8815400540D50 /* menu_forward_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_forward_default.png; sourceTree = "<group>"; };
 		C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_copy_text_default.png; sourceTree = "<group>"; };
@@ -1753,7 +1756,6 @@
 		C6A1BB3926E881E100540D50 /* menu_delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_delete.png; sourceTree = "<group>"; };
 		C6A1BB3B26E882D000540D50 /* UIChatReplyBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatReplyBubbleView.h; sourceTree = "<group>"; };
 		C6A1BB3C26E882D000540D50 /* UIChatReplyBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatReplyBubbleView.m; sourceTree = "<group>"; };
-		C6A1BB3D26E882D000540D50 /* UIChatReplyBubbleView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIChatReplyBubbleView.xib; sourceTree = "<group>"; };
 		C6A1BB4026E889AD00540D50 /* forward_message_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_message_default.png; sourceTree = "<group>"; };
 		C6A1BB4226E88F7C00540D50 /* menu_resend_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_resend_default.png; sourceTree = "<group>"; };
 		C6A1BB4426E890BD00540D50 /* file_voice_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_voice_default.png; sourceTree = "<group>"; };
@@ -2213,7 +2215,7 @@
 			children = (
 				C6A1BB3B26E882D000540D50 /* UIChatReplyBubbleView.h */,
 				C6A1BB3C26E882D000540D50 /* UIChatReplyBubbleView.m */,
-				C6A1BB3D26E882D000540D50 /* UIChatReplyBubbleView.xib */,
+				C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */,
 				63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */,
 				63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */,
 				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
@@ -3446,7 +3448,7 @@
 				633FEF3F1D3CD55A0014B822 /* security_pending@2x.png in Resources */,
 				24BFAAA4209B0630004F47A7 /* linphone_logo.png in Resources */,
 				633FEDC41D3CD5590014B822 /* call_hangup_disabled.png in Resources */,
-				C6A1BB3F26E882D000540D50 /* UIChatReplyBubbleView.xib in Resources */,
+				C66B03BB26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib in Resources */,
 				633FEDA81D3CD5590014B822 /* backspace_default.png in Resources */,
 				636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */,
 				8CBD7BA620B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib in Resources */,
@@ -4806,6 +4808,16 @@
 			name = UIChatCreateCollectionViewCell.xib;
 			sourceTree = "<group>";
 		};
+		C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C66B03BC26E8EB1A009B5EDC /* Base */,
+				C66B03C126E8EB82009B5EDC /* en */,
+				C66B03C326E8EB87009B5EDC /* fr */,
+			);
+			name = UIChatReplyBubbleView.xib;
+			sourceTree = "<group>";
+		};
 		D37EE11016035793003608A6 /* ImageView.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -5039,7 +5051,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.11+950fc62\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.50+724b895\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5162,7 +5174,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.11+950fc62\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.50+724b895\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5284,7 +5296,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.11+950fc62\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.50+724b895\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5405,7 +5417,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.11+950fc62\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.1.0-alpha.50+724b895\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;

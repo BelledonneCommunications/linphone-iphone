@@ -32,7 +32,7 @@
 #import "UIImageViewDeletable.h"
 #import "UIConfirmationDialog.h"
 #import "UIInterfaceStyleButton.h"
-#import "linphone-Swift.h"
+#import "linphoneapp-Swift.h"
 #import "UIChatReplyBubbleView.h"
 #include "linphone/linphonecore.h"
 
