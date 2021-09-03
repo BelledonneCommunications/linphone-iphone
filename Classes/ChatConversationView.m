@@ -476,6 +476,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)callUpdateEvent:(NSNotification *)notif {
     [self updateSuperposedButtons];
 	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
+	[_tableController.tableView reloadData];
 
 }
 
