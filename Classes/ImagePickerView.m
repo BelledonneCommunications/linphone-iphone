@@ -22,6 +22,8 @@
 #import "PhoneMainView.h"
 #import "SVProgressHUD.h"
 #import "ShareViewController.h"
+#import <UIKit/UIKit.h>
+
 
 
 @implementation ImagePickerView
@@ -392,8 +394,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 +(void) pickDocumentForDelegate:(id<UIDocumentMenuDelegate>)documentMenuDelegate {
-	UIDocumentMenuViewController *documentProviderMenu = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:SUPPORTED_EXTENTIONS inMode:UIDocumentPickerModeImport];
-	documentProviderMenu.delegate = documentMenuDelegate;
+	UIDocumentPickerViewController *documentProviderMenu = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:SUPPORTED_EXTENTIONS inMode:UIDocumentPickerModeImport];
+	ChatConversationView *chatView = VIEW(ChatConversationView);
+	documentProviderMenu.delegate = chatView;
 	if (IPAD) {
 		/* On iPad the activity view controller will be displayed as a popover using the new UIPopoverPresentationController, it requires that you specify an anchor point for the presentation of the popover using one of the three following properties: barButtonItem, sourceView, sourceRect */
 		ChatConversationView *chatView = VIEW(ChatConversationView);
