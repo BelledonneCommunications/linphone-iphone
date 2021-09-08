@@ -875,6 +875,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 }
 
 -(void) onPopupMenuPressed {
+	if (_popupMenu != nil)
+		[self dismissPopup];
 	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
 	self.innerView.layer.borderWidth = 3;
 	self.innerView.layer.borderColor = [UIColor color:@"A"].CGColor;
@@ -911,14 +913,13 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 }
 
 -(void) dismissPopup {
-	if (_popupMenu) {
-		[_popupMenu removeFromSuperview];
-		_popupMenu = nil;
-		self.innerView.layer.borderWidth = 0;
-		[self setNeedsLayout];
-	}
+	if (!_popupMenu)
+		return;
+	[_popupMenu removeFromSuperview];
+	_popupMenu = nil;
+	self.innerView.layer.borderWidth = 0;
+	[self setNeedsLayout];
 }
-
 
 
 -(void) tapOutsideMenu:(UITapGestureRecognizer *) g {
