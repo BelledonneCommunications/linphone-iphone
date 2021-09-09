@@ -112,6 +112,7 @@ static UILinphoneAudioPlayer *player;
 		[player close];
 	}
 
+	VIEW(RecordingsListView).videoView.hidden = YES;
 	player = [UILinphoneAudioPlayer audioPlayerWithFilePath:[self recording]];
 
     [player.view removeFromSuperview];

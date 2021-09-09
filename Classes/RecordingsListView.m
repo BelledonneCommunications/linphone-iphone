@@ -66,6 +66,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     [super viewDidLoad];
     tableController.tableView.accessibilityIdentifier = @"Recordings table";
     tableController.tableView.tableFooterView = [[UIView alloc] init];
+	UIPanGestureRecognizer *dragndrop =
+		[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveVideoView:)];
+	dragndrop.minimumNumberOfTouches = 1;
+	[_videoView addGestureRecognizer:dragndrop];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -110,5 +114,40 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackPressed:(id)sender {
     [PhoneMainView.instance popCurrentView];
 }
+
+#pragma mark VideoViewMoving
+
+- (void)moveVideoView:(UIPanGestureRecognizer *)dragndrop {
+	CGPoint center = [dragndrop locationInView:_videoView.superview];
+	_videoView.center = center;
+	if (dragndrop.state == UIGestureRecognizerStateEnded) {
+		[self previewTouchLift];
+	}
+}
+
+- (CGFloat)coerce:(CGFloat)value betweenMin:(CGFloat)min andMax:(CGFloat)max {
+	return MAX(min, MIN(value, max));
+}
+
+- (void)previewTouchLift {
+	CGRect previewFrame = _videoView.frame;
+	previewFrame.origin.x = [self coerce:previewFrame.origin.x
+							  betweenMin:5
+								  andMax:(UIScreen.mainScreen.bounds.size.width - 5 - previewFrame.size.width)];
+	previewFrame.origin.y = [self coerce:previewFrame.origin.y
+							  betweenMin:5
+								  andMax:(UIScreen.mainScreen.bounds.size.height - 5 - previewFrame.size.height)];
+
+	if (!CGRectEqualToRect(previewFrame, _videoView.frame)) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		  [UIView animateWithDuration:0.3
+						   animations:^{
+							 LOGD(@"Recentering preview to %@", NSStringFromCGRect(previewFrame));
+			  _videoView.frame = previewFrame;
+						   }];
+		});
+	}
+}
+
 
 @end
