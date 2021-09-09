@@ -743,11 +743,11 @@
 	}
 	
 	CGRect r = super.photoCellContentView.frame;
-	r.origin.y = linphone_chat_message_is_reply(super.message) ? super.replyView.view.frame.origin.y + super.replyView.view.frame.size.height + 10 : 25;
+	r.origin.y = linphone_chat_message_is_reply(super.message) ? super.replyView.view.frame.origin.y + super.replyView.view.frame.size.height + 10 : 7 ;
 	super.photoCellContentView.frame = r;
 	
 	r = super.photoCellContentView.frame;
-	r.origin.y = linphone_chat_message_is_forward(super.message) ? super.contactDateLabel.frame.origin.y + super.contactDateLabel.frame.size.height + 5 : r.origin.y;
+	r.origin.y = linphone_chat_message_is_forward(super.message) ? super.contactDateLabel.frame.origin.y + super.contactDateLabel.frame.size.height + 3 : r.origin.y;
 	super.photoCellContentView.frame = r;
     
     self.messageText.frame = textFrame;
