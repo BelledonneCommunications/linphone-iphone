@@ -345,6 +345,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self stopVoiceRecording];
 	if (!_preservePendingActions)
 		[self closePendingReply];
+	[self stopAllPlays];
+
 }
 
 
