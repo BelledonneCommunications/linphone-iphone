@@ -22,6 +22,7 @@
 #import "ChatConversationImdnView.h"
 #import "PhoneMainView.h"
 #import "UIChatBubbleTextCell.h"
+#import "UIChatBubblePhotoCell.h"
 #import "UIChatConversationImdnTableViewCell.h"
 
 @implementation ChatConversationImdnView
@@ -52,21 +53,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	const LinphoneAddress *addr = linphone_chat_message_get_from_address(_msg);
-	BOOL outgoing = linphone_chat_message_is_outgoing(_msg);
-
-	_msgDateLabel.text = [NSString stringWithFormat:@"%@ - %@",
-						  [LinphoneUtils timeToString:linphone_chat_message_get_time(_msg) withFormat:LinphoneDateChatBubble],
-						  [FastAddressBook displayNameForAddress:addr]];
-	_msgAvatarImage.image = outgoing ? [LinphoneUtils selfAvatar] : [FastAddressBook imageForAddress:addr];
-    _msgText.text =  messageText;
-	_msgBackgroundColorImage.image = _msgBottomBar.image = [UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
-	_msgDateLabel.textColor = [UIColor colorWithPatternImage:_msgBackgroundColorImage.image];
-
+	
+	int index = [VIEW(ChatConversationView).tableController indexOfMesssage:_msg];
+	if (index < 0)
+		[PhoneMainView.instance popToView:ChatConversationView.compositeViewDescription];
+	
+	_cell = (UIChatBubbleTextCell *)[VIEW(ChatConversationView).tableController tableView:VIEW(ChatConversationView).tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+	_cell.frame = CGRectMake(-10,0,_msgView.frame.size.width,_msgView.frame.size.height);
+	_cell.isFirst = true;
+	_cell.isLast = true;
+	[_cell update];
+	for (UIView *v in [_msgView subviews]) {
+		[v removeFromSuperview];
+	}
+	[_msgView addSubview:_cell];
+	
+	
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 
     [self updateImdnList];
+	[self fitContent];
 }
 
 - (void)updateImdnList {
@@ -81,15 +88,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)fitContent {
-    [self setMessageText];
-    
-	BOOL outgoing = linphone_chat_message_is_outgoing(_msg);
-	_msgBackgroundColorImage.image = _msgBottomBar.image = [UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
-	_msgDateLabel.textColor = [UIColor colorWithPatternImage:_msgBackgroundColorImage.image];
+	
+	CGSize messageSize = [UIChatBubbleTextCell ViewHeightForMessage:_msg withWidth:self.view.frame.size.width];
 	[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
 								  _msgView.frame.origin.y,
-								  _msgView.frame.size.width,
-                                  [UIChatBubbleTextCell ViewHeightForMessageText:_msg withWidth:self.view.frame.size.width textForImdn:messageText].height)];
+								  self.view.frame.size.width,
+								  messageSize.height+5)];
 	
 	[_tableView setFrame:CGRectMake(_tableView.frame.origin.x,
 									_msgView.frame.origin.y + _msgView.frame.size.height + 10,
@@ -101,18 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self fitContent];
 }
 
-- (void)setMessageText {
-    const char *utf8Text= linphone_chat_message_get_text_content(_msg);
-    LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(_msg);
-    messageText = nil;
-    if (utf8Text) {
-        messageText =  [NSString stringWithUTF8String:utf8Text];
-        if (fileContent)
-            messageText = [NSString stringWithFormat:@"%@\n%@", messageText, [NSString stringWithUTF8String: linphone_content_get_name(fileContent)]];
-    } else {
-        messageText = [NSString stringWithUTF8String: linphone_content_get_name(fileContent)];
-    }
-}
+
 #pragma mark - TableView
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

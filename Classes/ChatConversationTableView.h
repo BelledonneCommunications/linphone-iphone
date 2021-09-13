@@ -65,7 +65,8 @@
 - (void)updateEventEntry:(LinphoneEventLog *)event;
 - (void)refreshData;
 - (void)reloadData;
--(void) dismissMessagesPopups;
+- (void) dismissMessagesPopups;
 - (void) scrollToMessage:(LinphoneChatMessage *)message;
+- (int) indexOfMesssage:(LinphoneChatMessage *)message;
 
 @end

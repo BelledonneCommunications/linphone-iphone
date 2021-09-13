@@ -207,8 +207,19 @@
 
 
 - (void) scrollToMessage:(LinphoneChatMessage *)message {
-	if (eventList.count == 0 || _chatRoom == nil)
+	int index = [self indexOfMesssage:message];
+	if (index < 0)
 		return;
+
+	[self.tableView.layer removeAllAnimations];
+	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+						  atScrollPosition:UITableViewScrollPositionTop
+								  animated:true];
+}
+
+-(int) indexOfMesssage:(LinphoneChatMessage *)message {
+	if (eventList.count == 0 || _chatRoom == nil)
+		return -1;
 
 	int index = -1;
 	size_t count = eventList.count;
@@ -224,13 +235,7 @@
 		}
 		
 	}
-	if (index < 0)
-		return;
-
-	[self.tableView.layer removeAllAnimations];
-	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-						  atScrollPosition:UITableViewScrollPositionTop
-								  animated:true];
+	return index;
 }
 
 #pragma mark - Property Functions
