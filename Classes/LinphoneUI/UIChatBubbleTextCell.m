@@ -889,7 +889,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	
 	CGRect frame = CGRectMake(
 							  linphone_chat_message_is_outgoing(self.message) ? screenRect.size.width - width - 10 : 10,
-							  (self.frame.origin.y + self.frame.size.height) > screenRect.size.height /2 ? self.frame.origin.y - menuHeight - 10:  self.frame.origin.y + self.frame.size.height,
+							  (self.frame.origin.y + self.frame.size.height) - [VIEW(ChatConversationView).tableController .tableView contentOffset].y > screenRect.size.height /2 ? self.frame.origin.y - menuHeight - 10:  self.frame.origin.y + self.frame.size.height,
 							  width,
 							  menuHeight);
 	
