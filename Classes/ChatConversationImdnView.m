@@ -63,6 +63,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_cell.isFirst = true;
 	_cell.isLast = true;
 	[_cell update];
+	_cell.userInteractionEnabled = false;
 	for (UIView *v in [_msgView subviews]) {
 		[v removeFromSuperview];
 	}

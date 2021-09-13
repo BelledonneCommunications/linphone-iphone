@@ -952,7 +952,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		cell.textLabel.textColor = UIColor.redColor;
 		cell.imageView.tintColor = UIColor.redColor;
 	} else {
-	   cell.imageView.tintColor = UIColor.blackColor;
+		cell.imageView.tintColor = PhoneMainView.instance.darkMode ?  UIColor.whiteColor : UIColor.blackColor;
    }
 	return cell;
 }

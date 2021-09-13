@@ -957,4 +957,15 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
     [controller dismissModalViewControllerAnimated:YES];
 }
 
+#pragma mark - Light/Dark mode
+
+-(BOOL) darkMode {
+	if (@available(iOS 13.0, *)) {
+		UITraitCollection *collection = [UITraitCollection currentTraitCollection];
+		return collection.userInterfaceStyle == UIUserInterfaceStyleDark;
+	} else {
+		return false;
+	}
+}
+
 @end
