@@ -74,6 +74,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
     [self updateImdnList];
 	[self fitContent];
+	[self startEphemeralDisplayTimer];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(ephemeralDeleted:)
+											   name:kLinphoneEphemeralMessageDeletedInRoom
+											 object:nil];
+
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+	[self stopEphemeralDisplayTimer];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[super viewWillDisappear:animated];
 }
 
 - (void)updateImdnList {
@@ -269,6 +281,40 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onBackClick:(id)sender {
 	[PhoneMainView.instance popCurrentView];
+}
+
+#pragma mark ephemeral messages
+
+-(void) startEphemeralDisplayTimer {
+	_ephemeralDisplayTimer = [NSTimer scheduledTimerWithTimeInterval:1
+															  target:self
+															selector:@selector(updateEphemeralTimes)
+															userInfo:nil
+															 repeats:YES];
+}
+
+-(void) updateEphemeralTimes {
+	NSDateComponentsFormatter *f= [[NSDateComponentsFormatter alloc] init];
+	f.unitsStyle = NSDateComponentsFormatterUnitsStylePositional;
+	f.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorPad;
+		
+	if (linphone_chat_message_is_ephemeral(_msg)) {
+		long duration = linphone_chat_message_get_ephemeral_expire_time(_msg) == 0 ?
+			linphone_chat_room_get_ephemeral_lifetime(linphone_chat_message_get_chat_room(_msg)) :
+			linphone_chat_message_get_ephemeral_expire_time(_msg)-[NSDate date].timeIntervalSince1970;
+		f.allowedUnits = (duration > 86400 ? kCFCalendarUnitDay : 0)|(duration > 3600 ? kCFCalendarUnitHour : 0)|kCFCalendarUnitMinute|kCFCalendarUnitSecond;
+		_cell.ephemeralTime.text =  [f stringFromTimeInterval:duration];
+		_cell.ephemeralTime.hidden = NO;
+		_cell.ephemeralIcon.hidden = NO;
+	}
+}
+
+-(void) stopEphemeralDisplayTimer {
+	[_ephemeralDisplayTimer invalidate];
+}
+
+- (void)ephemeralDeleted:(NSNotification *)notif {
+	[PhoneMainView.instance popToView:ChatConversationView.compositeViewDescription];
 }
 
 @end

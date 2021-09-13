@@ -37,6 +37,7 @@
 @property(nonatomic) bctbx_list_t *notReceivedList;
 @property(nonatomic) bctbx_list_t *errorList;
 @property(nonatomic) UIChatBubbleTextCell *cell;
+@property(nonatomic) NSTimer *ephemeralDisplayTimer;
 
 
 @property (weak, nonatomic) IBOutlet UIView *msgView;
