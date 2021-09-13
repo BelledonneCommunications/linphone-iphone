@@ -945,13 +945,15 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
-	
-	cell.imageView.image = [UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]];
+	cell.imageView.image = [[UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 	cell.textLabel.text = [_messageActionsTitles objectAtIndex:indexPath.row];
 	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 	if ([[_messageActionsIcons objectAtIndex:indexPath.row] isEqualToString:@"menu_delete"]) {
 		cell.textLabel.textColor = UIColor.redColor;
-	}
+		cell.imageView.tintColor = UIColor.redColor;
+	} else {
+	   cell.imageView.tintColor = UIColor.blackColor;
+   }
 	return cell;
 }
 
