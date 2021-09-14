@@ -80,7 +80,8 @@
 
 	
 	self.view.backgroundColor = hideDismiss ? UIColor.whiteColor :(linphone_chat_message_is_outgoing(message) ? [[UIColor color:@"A"] colorWithAlphaComponent:0.2]  : [[UIColor color:@"D"] colorWithAlphaComponent:0.2]);
-	_leftBar.hidden = true;
+	_leftBar.backgroundColor = linphone_chat_message_is_outgoing(message) ? [UIColor color:@"A"]  : [UIColor color:@"D"];
+	_leftBar.hidden = !hideDismiss;
 	_rightBar.backgroundColor = self.view.backgroundColor;
 	
 	
@@ -100,7 +101,7 @@
 	
 	if (text == nil) {
 		CGRect r = _contentCollection.frame;
-		r.origin.y = 40;
+		r.origin.y = 30;
 		_contentCollection.frame = r;
 	}
 }
@@ -146,7 +147,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 	UICollectionViewCell *cell =  [collectionView dequeueReusableCellWithReuseIdentifier:@"dataContent" forIndexPath:indexPath];
-	UIImageView *img = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 80)];
+	UIImageView *img = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
 	img.image = [self.dataContent objectAtIndex:indexPath.row];
 	[cell.contentView addSubview:img];
 	return cell;
