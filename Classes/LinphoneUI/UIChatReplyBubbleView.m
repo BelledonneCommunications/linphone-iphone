@@ -79,8 +79,8 @@
 		[_dismissButton addTarget:self action:@selector(dismissClick) forControlEvents:UIControlEventTouchUpInside];
 
 	
-	self.view.backgroundColor = hideDismiss ? UIColor.whiteColor : [UIColor color:@"G"];
-	_leftBar.backgroundColor = linphone_chat_message_is_outgoing(message) ? [UIColor color:@"A"]  : [UIColor color:@"D"];;
+	self.view.backgroundColor = hideDismiss ? UIColor.whiteColor :(linphone_chat_message_is_outgoing(message) ? [[UIColor color:@"A"] colorWithAlphaComponent:0.2]  : [[UIColor color:@"D"] colorWithAlphaComponent:0.2]);
+	_leftBar.hidden = true;
 	_rightBar.backgroundColor = self.view.backgroundColor;
 	
 	

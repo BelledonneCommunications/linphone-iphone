@@ -1982,6 +1982,8 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 }
 
 -(void) initiateReplyViewForMessage:(LinphoneChatMessage *)message {
+	if (_replyBubble != nil)
+		[self closePendingReply];
 	_replyBubble = [[UIChatReplyBubbleView alloc] initWithNibName:@"UIChatReplyBubbleView" bundle:nil];
 	[self addChildViewController:_replyBubble];
 	[_replyView addSubview:_replyBubble.view];
@@ -1991,6 +1993,7 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 	} hideDismiss:false withClickBlock:^{}];
 	_showReplyView = true;
 	[self updateFramesInclRecordingAndReplyView];
+	[self.tableController scrollToMessage:message];
 }
 
 -(void) handlePendingTransferIfAny {
