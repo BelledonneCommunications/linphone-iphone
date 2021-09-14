@@ -31,12 +31,11 @@
 @property(nonatomic, strong) IBOutlet ChatsListTableView *tableController;
 @property(weak, nonatomic) IBOutlet UIButton *addButton;
 @property (weak, nonatomic) IBOutlet UIButton *addGroupChatButton;
-@property (weak, nonatomic) IBOutlet UIButton *addButtonForwardMode;
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 @property (weak, nonatomic) IBOutlet UILabel *forwardTitle;
-@property (weak, nonatomic) IBOutlet UIIconButton *cancelButtonForwardMode;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *cancelForwardButton;
 
 
 - (IBAction)onAddGroupChatClick:(id)event;

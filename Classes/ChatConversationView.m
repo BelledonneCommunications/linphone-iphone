@@ -2002,13 +2002,14 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 		self.pendingForwardMessage = nil;
 		UIConfirmationDialog *d = [UIConfirmationDialog ShowWithMessage:NSLocalizedString(@"Transfer this message to this conversation ?",nil)
 														  cancelMessage:nil
-														 confirmMessage:NSLocalizedString(@"Transfer",nil)
+														 confirmMessage:NSLocalizedString(@"TRANSFER",nil)
 														  onCancelClick:^() {}
 													onConfirmationClick:^() {
 			linphone_chat_message_send(linphone_chat_room_create_forward_message(_chatRoom, message));
 			
 		}];
-		d.securityImage.image = [UIImage imageNamed:@"forward_message_default"];
+		d.forwardImage.hidden = NO;
+		[d setSpecialColor];
 	}
 }
 

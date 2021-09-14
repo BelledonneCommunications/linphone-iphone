@@ -74,6 +74,13 @@ typedef enum {
 
 @end
 
+@interface UIImageView (ImageWithTint)
+
+- (void)setImageNamed:(NSString *)name tintColor:(UIColor *)color;
+- (void)setImageNamed:(NSString *)name tintColorLetter:(NSString *)letter;
+
+@end
+
 @interface NSString (linphoneExt)
 
 - (NSString *)md5;

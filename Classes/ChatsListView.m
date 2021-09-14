@@ -59,9 +59,11 @@
 	_tableController.editButton.hidden = forwardMode;
 	_forwardTitle.text =  NSLocalizedString(@"Select a discussion or create a new one",nil);
 	_forwardTitle.hidden = !forwardMode;
-	_addButtonForwardMode.hidden = !forwardMode;
-	_addButton.hidden = forwardMode;
-	_cancelButtonForwardMode.hidden = !forwardMode;
+	_cancelForwardButton.hidden = !forwardMode;
+	
+	_tableController.tableView.frame = CGRectMake(0, 66 + (forwardMode ? _forwardTitle.frame.size.height : 0), _tableController.tableView.frame.size.width,  self.view.frame.size.height - 66 - ( forwardMode ? _forwardTitle.frame.size.height : 0 ));
+	_addButton.frame = CGRectMake(forwardMode ? 82 : 0 , _addButton.frame.origin.y, _addButton.frame.size.width, _addButton.frame.size.height);
+	_addGroupChatButton.frame = CGRectMake(forwardMode ? 164 : 82 , _addGroupChatButton.frame.origin.y, _addGroupChatButton.frame.size.width, _addGroupChatButton.frame.size.height);
 
 }
 

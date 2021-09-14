@@ -11,9 +11,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatsListView">
             <connections>
                 <outlet property="addButton" destination="Z5G-IF-PBY" id="Tzw-rz-Bwe"/>
-                <outlet property="addButtonForwardMode" destination="Eza-U0-BN7" id="3aG-j7-W65"/>
                 <outlet property="addGroupChatButton" destination="glf-ni-nqe" id="0hy-5m-7C7"/>
                 <outlet property="backToCallButton" destination="Fac-hy-za4" id="8I3-TM-oJ7"/>
+                <outlet property="cancelForwardButton" destination="Kxx-SO-CB0" id="LFJ-NQ-YrU"/>
+                <outlet property="forwardTitle" destination="waa-HU-xFW" id="Qqs-p4-k9A"/>
                 <outlet property="tableController" destination="4" id="18"/>
                 <outlet property="toggleSelectionButton" destination="uqG-2T-VOa" id="cAk-tz-5Z0"/>
                 <outlet property="view" destination="5" id="14"/>
@@ -48,18 +49,6 @@
                                         <action selector="onAddClick:" destination="-1" eventType="touchUpInside" id="g4q-By-6nW"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Eza-U0-BN7" userLabel="addButtonForwardMode">
-                                    <rect key="frame" x="75" y="0.0" width="75" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="New discussion"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="chat_add_default.png">
-                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </state>
-                                    <state key="disabled" image="chat_add_default.png"/>
-                                    <state key="highlighted" backgroundImage="color_E.png"/>
-                                </button>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="glf-ni-nqe" userLabel="addGroupButton" customClass="UIInterfaceStyleButton">
                                     <rect key="frame" x="82" y="0.0" width="83" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
@@ -88,6 +77,20 @@
                                     <connections>
                                         <action selector="onCancelClick:" destination="4" eventType="touchUpInside" id="8xd-cU-loG"/>
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="hKF-q1-5DJ"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kxx-SO-CB0" userLabel="cancelForwardButton" customClass="UIInterfaceStyleButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="82" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="cancel_forward.png">
+                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCancelForwardClicked:" destination="-1" eventType="touchUpInside" id="2gp-RW-sJE"/>
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fac-hy-za4" userLabel="backToCallButton" customClass="UIBackToCallButton">
@@ -162,6 +165,14 @@
                                 <outlet property="delegate" destination="4" id="12"/>
                             </connections>
                         </tableView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="waa-HU-xFW" userLabel="forwardTitle">
+                            <rect key="frame" x="0.0" y="66" width="414" height="66"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No conversations" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MSn-PY-yf1" userLabel="emptyTableLabel">
                             <rect key="frame" x="0.0" y="66" width="414" height="722"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -186,7 +197,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="52" y="93.103448275862078"/>
+            <point key="canvasLocation" x="50.724637681159422" y="93.080357142857139"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="4" userLabel="tableController" customClass="ChatsListTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -206,6 +217,7 @@
         <image name="call_back_disabled.png" width="61.599998474121094" height="44"/>
         <image name="cancel_edit_default.png" width="47.200000762939453" height="47.200000762939453"/>
         <image name="cancel_edit_disabled.png" width="47.200000762939453" height="47.200000762939453"/>
+        <image name="cancel_forward.png" width="80" height="80"/>
         <image name="chat_add_default.png" width="50.400001525878906" height="44.799999237060547"/>
         <image name="chat_add_group.png" width="64" height="42.400001525878906"/>
         <image name="color_E.png" width="2" height="2"/>

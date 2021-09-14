@@ -106,7 +106,7 @@
         <image name="chat_list_indicator.png" width="28" height="28"/>
         <image name="chat_read.png" width="20" height="20"/>
         <image name="ephemeral_messages_color_A.png" width="136" height="158.39999389648438"/>
-        <image name="forward_message_default.png" width="200" height="200"/>
+        <image name="forward_message_default.png" width="187" height="148"/>
         <image name="security_1_indicator.png" width="27.5" height="32.5"/>
     </resources>
 </document>

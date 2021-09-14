@@ -575,6 +575,23 @@
 
 @end
 
+
+
+@implementation UIImageView (ImageWithTint)
+
+- (void)setImageNamed:(NSString *)name tintColor:(UIColor *)color {
+	self.image =  [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	self.tintColor = color;
+}
+
+- (void)setImageNamed:(NSString *)name tintColorLetter:(NSString *)letter {
+	UIColor *color = [UIColor color:letter];
+	self.image =  [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	self.tintColor = color;
+}
+
+@end
+
 @implementation NSString (md5)
 
 - (NSString *)md5 {
