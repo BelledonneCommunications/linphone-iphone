@@ -345,6 +345,7 @@ static const int BASIC_EVENT_LIST=15;
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		cell.tableController = self;
+		cell.popupMenuAllowed = true;
 		return cell;
 	} else {
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);

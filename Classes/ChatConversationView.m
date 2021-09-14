@@ -1871,9 +1871,6 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 		NSDictionary* userInfo = @{@"path": [NSString stringWithUTF8String:currentPlayedFile]};
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneVoiceMessagePlayerEOF object:nil userInfo:userInfo];
 	}
-
-//	ChatConversationView *view = (__bridge ChatConversationView *)linphone_player_cbs_get_user_data(linphone_player_get_current_callbacks(p));
-//	[view stopVoiceRecordPlayer];
 }
 
 // Playback of new recordings

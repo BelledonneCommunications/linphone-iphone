@@ -52,6 +52,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *ephemeralTime;
 @property (weak, nonatomic) IBOutlet UIImageView *ephemeralIcon;
 @property ChatConversationTableView *tableController;
+@property BOOL popupMenuAllowed;
 
 // Message popup menu
 @property UITableView *popupMenu;

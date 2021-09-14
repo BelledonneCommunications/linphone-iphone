@@ -877,6 +877,11 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 -(void) onPopupMenuPressed {
 	if (_popupMenu != nil)
 		[self dismissPopup];
+	
+	if (!self.popupMenuAllowed)
+		return;
+
+	
 	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
 	self.innerView.layer.borderWidth = 3;
 	self.innerView.layer.borderColor = [UIColor color:@"A"].CGColor;
