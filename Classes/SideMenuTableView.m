@@ -65,7 +65,8 @@
 													changeCurrentView:AssistantView.compositeViewDescription];
 											  }]];
 	BOOL mustLink = ([LinphoneManager.instance lpConfigIntForKey:@"must_link_account_time"] > 0);
-	if (mustLink) {
+	BOOL hasAccount = linphone_core_get_account_list(LC) != NULL;
+	if (mustLink && hasAccount) {
 		[_sideMenuEntries
 			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Link my account", nil)
                                                      image:[UIImage imageNamed:@"menu_link_account.png"]
