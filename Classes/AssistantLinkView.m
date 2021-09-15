@@ -68,7 +68,7 @@
 													assistant_activate_phone_number_link);
 
 	LinphoneAccount *acc = linphone_core_get_default_account(LC);
-	LinphoneAccountParams const *accParams = linphone_account_get_params(acc);
+	LinphoneAccountParams const *accParams = (acc) ? linphone_account_get_params(acc) : NULL;
 	if (acc &&
 		strcmp([LinphoneManager.instance lpConfigStringForKey:@"domain_name"
 													inSection:@"app"
