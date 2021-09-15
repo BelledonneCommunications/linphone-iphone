@@ -45,6 +45,9 @@ import AVFoundation
 	var endCallkit: Bool = false
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
+	var conference: Conference?
+
+	
 	
 	var backgroundContextCall : Call?
 	@objc var backgroundContextCameraIsEnabled : Bool = false
@@ -266,7 +269,7 @@ import AVFoundation
 		}
 
 		let sAddr = Address.getSwiftObject(cObject: addr!)
-		if (CallManager.callKitEnabled() && !CallManager.instance().nextCallIsTransfer) {
+		if (CallManager.callKitEnabled() && !CallManager.instance().nextCallIsTransfer && !isInConference()) {
 			let uuid = UUID()
 			let name = FastAddressBook.displayName(for: addr) ?? "unknow"
 			let handle = CXHandle(type: .generic, value: sAddr.asStringUriOnly())
@@ -475,6 +478,12 @@ import AVFoundation
 			CallManager.instance().endCallkit = false
 		}
 	}
+	
+	func onConferenceStateChanged(core: Core, conference: Conference, state: Conference.State) {
+		if (state == .Terminated) {
+			CallManager.instance().conference = nil
+		}
+	}
 
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
@@ -633,12 +642,124 @@ import AVFoundation
 			}
 		}
 		// post Notification kLinphoneCallUpdate
-		NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
-			AnyHashable("call"): NSValue.init(pointer:UnsafeRawPointer(call.getCobject)),
-			AnyHashable("state"): NSNumber(value: cstate.rawValue),
-			AnyHashable("message"): message
-		])
+		DispatchQueue.main.async {
+			NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
+				AnyHashable("call"): NSValue.init(pointer:UnsafeRawPointer(call.getCobject)),
+				AnyHashable("state"): NSNumber(value: cstate.rawValue),
+				AnyHashable("message"): message
+			])
+		}
 	}
+
+
+	// Conference
+	
+	@objc func hostConference() -> Bool {
+		return conference != nil
+	}
+	
+	func addAllToConference() {
+		if (conference == nil) {
+			guard let cp = try?lc?.createConferenceParams() else {
+				Log.directLog(BCTBX_LOG_ERROR, text: "Unable to create conference parameters")
+				return
+			}
+			if let currentCall = lc?.currentCall, let currentParams = currentCall.currentParams  {
+				cp.videoEnabled = currentParams.videoEnabled
+			}
+			conference = try?lc?.createConferenceWithParams(params: cp)
+		}
+		lc?.calls.forEach { call in
+			if (call.conference == nil || call.conference?.participantCount == 1) {
+				try?conference?.addParticipant(call: call)
+			}
+		}
+	}
+	
+	@objc func getConference() -> OpaquePointer? {
+		guard let core = lc else {
+			return nil
+		}
+		return (core.conference != nil) ? core.conference?.getCobject : (core.currentCall?.conference != nil) ? core.currentCall!.conference!.getCobject : nil
+	}
+	
+	func getConference() -> Conference? {
+		guard let core = lc else {
+			return nil
+		}
+		return (core.conference != nil) ? core.conference : (core.currentCall?.conference != nil) ? core.currentCall!.conference : nil
+	}
+	
+	@objc func isInConference() -> Bool {
+		return isInConferenceAsHost()||isInConferenceAsGuest()
+	}
+	
+	@objc func isInConferenceAsGuest() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return !isInConferenceAsHost() && core.currentCall != nil && core.currentCall?.conference != nil && (core.currentCall?.conference!.participantCount)! > 1
+	}
+	
+	@objc func isInConferenceAsHost() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return core.conference?.isIn == true
+	}
+	
+	@objc func hasConferenceAsGuest() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		if (core.callsNb<=1) {
+			return false
+		}
+		var found = false
+		core.calls.forEach {
+			let c = $0.conference
+			if (c != nil && c!.participantCount > 1 && hostConference()) {
+				found =  true
+				return
+			}
+		}
+		return found
+	}
+	
+	@objc func getCallFor(participant : OpaquePointer) -> OpaquePointer? {
+		let p = Participant.getSwiftObject(cObject: participant)
+		guard let core = lc else {
+			return nil
+		}
+		var call:Call? = nil
+		core.calls.forEach { (callIt) in
+			let c = callIt.conference
+			c?.participantList.forEach { (p2) in
+				if (p2.address?.asStringUriOnly() == p.address?.asStringUriOnly()) {
+					call = callIt
+					return
+				}
+			}
+		}
+		return call?.getCobject
+	}
+	
+	@objc func inVideoConf() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return isInConference() && (getConference()?.currentParams?.isVideoEnabled == true || core.currentCall?.currentParams?.videoEnabled == true)
+	}
+	
+	
+	@objc func inAudioConf() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return core.conference?.isIn == true && core.conference != nil && core.currentCall?.conference?.currentParams?.isVideoEnabled == false
+	}
+	
+	
 }
 
 

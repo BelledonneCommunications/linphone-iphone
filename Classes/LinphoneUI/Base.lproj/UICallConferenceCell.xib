@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -9,6 +12,7 @@
             <connections>
                 <outlet property="avatarImage" destination="PjC-yS-i03" id="srY-K7-Ajk"/>
                 <outlet property="durationLabel" destination="Jgc-Z9-ItD" id="EGs-SW-dRc"/>
+                <outlet property="kickButton" destination="nOf-6W-BeC" id="NR8-NM-f5V"/>
                 <outlet property="nameLabel" destination="63x-tV-T6U" id="rBP-rS-gbi"/>
             </connections>
         </placeholder>
@@ -55,7 +59,7 @@
                     </connections>
                 </button>
             </subviews>
-            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="490.57971014492756" y="28.794642857142854"/>
@@ -65,5 +69,8 @@
         <image name="avatar.png" width="414.39999389648438" height="414.39999389648438"/>
         <image name="conference_exit_default.png" width="55.200000762939453" height="46.400001525878906"/>
         <image name="conference_exit_over.png" width="55.200000762939453" height="46.400001525878906"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

@@ -75,7 +75,8 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 NSString *const kLinphoneEphemeralMessageDeletedInRoom = @"LinphoneEphemeralMessageDeletedInRoom";
-
+NSString *const kLinphoneConfStateChanged = @"kLinphoneConfStateChanged";
+NSString *const kLinphoneConfStateParticipantListChanged = @"kLinphoneConfStateParticipantListChanged";
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 
@@ -1374,6 +1375,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_call_id_updated(cbs, linphone_iphone_call_id_updated);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 	linphone_core_cbs_set_chat_room_ephemeral_message_deleted(cbs, linphone_iphone_ephemeral_message_deleted);
+	linphone_core_cbs_set_conference_state_changed(cbs, linphone_iphone_conference_state_changed);
+
 
 
 	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationAppGroupId UTF8String], true);
@@ -2244,5 +2247,37 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	_avatar = ret;
 }
+
+#pragma mark - Conference
+
+
+
+void conference_participant_changed(LinphoneConference *conference, const LinphoneParticipant *participant) {
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfStateParticipantListChanged object:nil];
+}
+
+void conference_device_changed(LinphoneConference *conference, const LinphoneParticipantDevice *participant) {
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfStateParticipantListChanged object:nil];
+}
+
+void linphone_iphone_conference_state_changed(LinphoneCore *lc, LinphoneConference *conf,LinphoneConferenceState state) {
+	
+	if (state == LinphoneConferenceStateCreated) {
+		LinphoneConferenceCbs * cbs = linphone_conference_get_current_callbacks(conf);
+		if (!cbs) {
+			cbs = linphone_factory_create_conference_cbs(linphone_factory_get());
+		}
+		linphone_conference_cbs_set_participant_added(cbs, conference_participant_changed);
+		linphone_conference_cbs_set_participant_device_added(cbs, conference_device_changed);
+		linphone_conference_cbs_set_participant_device_removed(cbs, conference_device_changed);
+		linphone_conference_cbs_set_participant_removed(cbs, conference_participant_changed);
+		linphone_conference_add_callbacks(conf, cbs);
+	}
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	[dict setObject:[NSNumber numberWithInt:state] forKey:@"state"];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfStateChanged object:nil userInfo:dict];
+}
+
+
 
 @end

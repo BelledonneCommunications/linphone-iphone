@@ -60,6 +60,9 @@ extern NSString *const kLinphoneFileTransferRecvUpdate;
 extern NSString *const kLinphoneQRCodeFound;
 extern NSString *const kLinphoneChatCreateViewChange;
 extern NSString *const kLinphoneEphemeralMessageDeletedInRoom;
+extern NSString *const kLinphoneConfStateParticipantListChanged;
+extern NSString *const kLinphoneConfStateChanged;
+
 
 extern NSString *const kLinphoneMsgNotificationAppGroupId;
 
@@ -187,6 +190,7 @@ typedef struct _LinphoneManagerSounds {
 - (void)setupGSMInteraction;
 - (BOOL)isCTCallCenterExist;
 - (void) checkLocalNetworkPermission;
+
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;

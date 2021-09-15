@@ -40,7 +40,7 @@
 
 - (void)setCall:(LinphoneCall *)call {
 	// if no call is provided, we assume that this is a conference
-	if (!call) {
+	if (!call || linphone_call_get_conference(call)) {
 		[_pauseButton setType:UIPauseButtonType_Conference call:call];
 		_nameLabel.text = NSLocalizedString(@"Conference", nil);
 		[_avatarImage setImage:[UIImage imageNamed:@"options_start_conference_default.png"]

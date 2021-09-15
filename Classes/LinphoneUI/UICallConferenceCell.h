@@ -19,13 +19,17 @@
 
 #import "UIRoundedImageView.h"
 #import "LinphoneManager.h"
+#import "UIInterfaceStyleButton.h"
+
+#define CONFERENCE_CELL_HEIGHT 60
 
 @interface UICallConferenceCell : UITableViewCell
 
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *durationLabel;
-@property(nonatomic, setter=setCall:) LinphoneCall *call;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *kickButton;
+@property(nonatomic, setter=setParticipant:) LinphoneParticipant *participant;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 - (IBAction)onKickClick:(id)sender;

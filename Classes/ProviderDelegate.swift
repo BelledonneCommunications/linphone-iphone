@@ -71,7 +71,7 @@ class ProviderDelegate: NSObject {
 		providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
 
 		providerConfiguration.maximumCallsPerCallGroup = 10
-		providerConfiguration.maximumCallGroups = 2
+		providerConfiguration.maximumCallGroups = 10
 
 		//not show app's calls in tel's history
 		//providerConfiguration.includesCallsInRecents = YES;
@@ -199,7 +199,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		}
 
 		do {
-			if (call?.conference != nil && action.isOnHold) {
+			if (CallManager.instance().lc?.isInConference ?? false && action.isOnHold) {
 				try CallManager.instance().lc?.leaveConference()
 				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: call-id: [\(String(describing: callId))] leaving conference")
 				NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
@@ -215,7 +215,7 @@ extension ProviderDelegate: CXProviderDelegate {
 				CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
 				try call!.pause()
 			} else {
-				if (call?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
+				if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
 					try CallManager.instance().lc?.enterConference()
 					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 				} else {
@@ -256,11 +256,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call grouped callUUid : \(action.callUUID) with callUUID: \(String(describing: action.callUUIDToGroupWith)).")
-		do {
-			try CallManager.instance().lc?.addAllToConference()
-		} catch {
-			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call grouped failed because \(error)")
-		}
+		CallManager.instance().addAllToConference()
 		action.fulfill()
 	}
 
