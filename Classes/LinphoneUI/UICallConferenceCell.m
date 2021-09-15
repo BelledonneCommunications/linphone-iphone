@@ -19,6 +19,7 @@
 
 #import "UICallConferenceCell.h"
 #import "Utils.h"
+#import "PhoneMainView.h"
 
 @implementation UICallConferenceCell
 
@@ -38,22 +39,31 @@
 	return self;
 }
 
-- (void)setCall:(LinphoneCall *)call {
-	_call = call;
-	if (!call || !linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call))) {
-		LOGF(@"Invalid call: either NULL or not in conference.");
+- (void)setParticipant:(LinphoneParticipant *)p {
+	_participant = p;
+	if (!p) {
+		return;
+	}
+	const LinphoneAddress *addr = linphone_participant_get_address(p);
+	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+	_durationLabel.text = [LinphoneUtils durationToString:[NSDate date].timeIntervalSince1970 - linphone_participant_get_creation_time(p)];
+	_kickButton.hidden = CallManager.instance.isInConferenceAsGuest;
+}
+
+
+- (IBAction)onKickClick:(id)sender {
+	if (!_participant) {
 		return;
 	}
 
-	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+	if ([CallManager callKitEnabled]) {
+		LinphoneCall *call = [CallManager.instance getCallForParticipant:_participant];
+		if (call) {
+			[CallManager.instance setHeldWithCall:call hold:true];
+		}
+	}
+	linphone_conference_remove_participant_2([CallManager.instance getConference], _participant);
 
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 
-	_durationLabel.text = [LinphoneUtils durationToString:linphone_call_get_duration(call)];
-}
-
-- (IBAction)onKickClick:(id)sender {
-	linphone_core_remove_from_conference(LC, _call);
 }
 @end

@@ -94,8 +94,7 @@
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			linphone_core_leave_conference(LC);
-
+			linphone_core_leave_conference(CallManager.instance.getConference);
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			break;
@@ -132,7 +131,7 @@
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			linphone_core_enter_conference(LC);
+			linphone_core_enter_conference(CallManager.instance.getConference);
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			break;
@@ -154,9 +153,9 @@
 	LinphoneCall *c = call;
 	switch (type) {
 		case UIPauseButtonType_Conference: {
-			self.enabled = (linphone_core_get_conference_size(LC) > 0);
+			self.enabled = CallManager.instance.getConference && (linphone_conference_get_participant_count(CallManager.instance.getConference)> 0);
 			if (self.enabled) {
-				ret = (!linphone_core_is_in_conference(LC));
+				ret = (!CallManager.instance.isInConference);
 			}
 			break;
 		}
@@ -167,8 +166,8 @@
 				LinphoneCallState state = linphone_call_get_state(c);
 				ret = (state == LinphoneCallPaused || state == LinphoneCallPausing);
 				self.enabled = !linphone_core_sound_resources_locked(LC) &&
-							   (state == LinphoneCallPaused || state == LinphoneCallPausing ||
-								state == LinphoneCallStreamsRunning);
+				(state == LinphoneCallPaused || state == LinphoneCallPausing ||
+				 state == LinphoneCallStreamsRunning);
 			} else {
 				self.enabled = FALSE;
 			}

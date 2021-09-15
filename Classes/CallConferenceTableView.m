@@ -21,6 +21,7 @@
 #import "UICallConferenceCell.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @implementation CallConferenceTableView
 
@@ -31,21 +32,6 @@
 }
 
 #pragma mark - UITableViewDataSource Functions
-- (LinphoneCall *)conferenceCallForRow:(NSInteger)row {
-	const MSList *calls = linphone_core_get_calls(LC);
-	int i = -1;
-	while (calls) {
-		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(calls->data))) {
-			i++;
-			if (i == row)
-				break;
-		}
-		calls = calls->next;
-	}
-	return (calls ? calls->data : NULL);
-}
-
-#pragma mark - UITableViewDataSource Functions
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UICallConferenceCell.class);
@@ -53,21 +39,16 @@
 	if (cell == nil) {
 		cell = [[UICallConferenceCell alloc] initWithIdentifier:kCellId];
 	}
-	[cell setCall:[self conferenceCallForRow:indexPath.row]];
-	cell.contentView.userInteractionEnabled = false;
+	LinphoneConference *c = [CallManager.instance getConference];
+	if (c != nil) {
+		[cell setParticipant:bctbx_list_nth_data(linphone_conference_get_participant_list(c),(int)indexPath.row)];
+	}
+	cell.contentView.userInteractionEnabled = NO;
 	return cell;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	const MSList *calls = linphone_core_get_calls(LC);
-	int count = 0;
-	while (calls) {
-		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(calls->data))) {
-			count++;
-		}
-		calls = calls->next;
-	}
-	return count;
+	return [CallManager.instance getConference] ? linphone_conference_get_participant_count([CallManager.instance getConference]) : 0;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
