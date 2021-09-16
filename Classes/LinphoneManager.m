@@ -1305,11 +1305,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	}
 }
 
-- (void)startLinphoneCore {
-	bool corePushEnabled = [self lpConfigIntForKey:@"net" inSection:@"push_notification"];
-	linphone_core_set_push_notification_enabled([LinphoneManager getLc], corePushEnabled);
-	linphone_core_start([LinphoneManager getLc]);
-	
+- (void)configurePushProviderForAccounts {
 	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
 	while (accountsList) {
 		LinphoneAccount * account = accountsList->data;
@@ -1330,6 +1326,14 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		linphone_account_params_unref(accountParams);
 		accountsList = accountsList->next;
 	}
+}
+
+- (void)startLinphoneCore {
+	bool corePushEnabled = [self lpConfigIntForKey:@"net" inSection:@"push_notification"];
+	linphone_core_set_push_notification_enabled([LinphoneManager getLc], corePushEnabled);
+	linphone_core_start([LinphoneManager getLc]);
+	
+	[self configurePushProviderForAccounts];
 }
 
 - (void)createLinphoneCore {
