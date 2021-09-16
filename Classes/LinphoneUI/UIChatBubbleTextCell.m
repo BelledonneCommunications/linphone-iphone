@@ -24,6 +24,7 @@
 
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
+#import <QuartzCore/QuartzCore.h>
 
 @implementation UIChatBubbleTextCell
 
@@ -883,14 +884,12 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 	
 	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
-	self.innerView.layer.borderWidth = 3;
-	self.innerView.layer.borderColor = [UIColor color:@"A"].CGColor;
 	[self buildActions];
 	int width = 250;
-	int cellHeight = 44;
+	int cellHeight = 45;
 	int numberOfItems = (int) _messageActionsTitles.count;
 	CGRect screenRect = UIScreen.mainScreen.bounds;
-	int menuHeight = numberOfItems * cellHeight;
+	int menuHeight = numberOfItems * cellHeight + 15;
 	
 	CGRect frame = CGRectMake(
 							  linphone_chat_message_is_outgoing(self.message) ? screenRect.size.width - width - 10 : 10,
@@ -899,13 +898,18 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 							  menuHeight);
 	
 	_popupMenu = [[UITableView alloc]initWithFrame:frame];
+	_popupMenu.scrollEnabled = false;
 	_popupMenu.dataSource = self;
 	_popupMenu.delegate = self;
-	_popupMenu.layer.shadowColor = [UIColor lightGrayColor].CGColor;
-	_popupMenu.layer.shadowOpacity = 0.5;
-	_popupMenu.layer.shadowOffset = CGSizeZero;
-	_popupMenu.layer.shadowRadius = 5;
+	
 	_popupMenu.layer.masksToBounds = false;
+	
+	_popupMenu.layer.shadowColor = [UIColor darkGrayColor].CGColor;
+	_popupMenu.layer.shadowOpacity = 0.7;
+	_popupMenu.layer.shadowOffset = CGSizeMake(0, 3);
+	_popupMenu.layer.shadowRadius = 5;
+	_popupMenu.layer.shadowPath = [[UIBezierPath bezierPathWithRoundedRect:_popupMenu.layer.bounds cornerRadius:_popupMenu.layer.cornerRadius] CGPath];
+
 	_popupMenu.tableFooterView = [UIView new];
 	_popupMenu.editing = NO;
 	_popupMenu.userInteractionEnabled  = true;
@@ -922,7 +926,6 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		return;
 	[_popupMenu removeFromSuperview];
 	_popupMenu = nil;
-	self.innerView.layer.borderWidth = 0;
 	[self setNeedsLayout];
 }
 
@@ -950,14 +953,16 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
-	cell.imageView.image = [[UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	UIImageView * icon = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.frame.size.width-37, 7, 30, 30)];
+	icon.image =  [[UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	[cell.contentView addSubview:icon];
 	cell.textLabel.text = [_messageActionsTitles objectAtIndex:indexPath.row];
-	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	icon.contentMode = UIViewContentModeScaleAspectFit;
 	if ([[_messageActionsIcons objectAtIndex:indexPath.row] isEqualToString:@"menu_delete"]) {
 		cell.textLabel.textColor = UIColor.redColor;
-		cell.imageView.tintColor = UIColor.redColor;
+		icon.tintColor = UIColor.redColor;
 	} else {
-		cell.imageView.tintColor = PhoneMainView.instance.darkMode ?  UIColor.whiteColor : UIColor.blackColor;
+		icon.tintColor = PhoneMainView.instance.darkMode ?  UIColor.whiteColor : UIColor.blackColor;
    }
 	return cell;
 }
