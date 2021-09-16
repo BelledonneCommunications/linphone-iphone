@@ -683,9 +683,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark - ActionSheet Functions
 
 - (void)displayAskToEnableVideoCall:(LinphoneCall *)call {
-	if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call))) {
-		return;
-	} else if (CallManager.instance.inVideoConf) {
+	
+	if (CallManager.instance.inVideoConf) { // we are hosting a video conf, so just accept people wanting to activate video.
 		LinphoneCallParams *params = linphone_core_create_call_params(LC, call);
 		linphone_call_params_enable_video(params, TRUE);
 		linphone_call_accept_update(call, params);

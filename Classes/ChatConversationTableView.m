@@ -49,6 +49,7 @@
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
+	[self dismissMessagesPopups];
 	[self stopEphemeralDisplayTimer];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super viewWillDisappear:animated];
@@ -204,6 +205,39 @@
 								  animated:animated];
 }
 
+
+- (void) scrollToMessage:(LinphoneChatMessage *)message {
+	int index = [self indexOfMesssage:message];
+	if (index < 0)
+		return;
+
+	[self.tableView.layer removeAllAnimations];
+	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+						  atScrollPosition:UITableViewScrollPositionTop
+								  animated:true];
+}
+
+-(int) indexOfMesssage:(LinphoneChatMessage *)message {
+	if (eventList.count == 0 || _chatRoom == nil)
+		return -1;
+
+	int index = -1;
+	size_t count = eventList.count;
+	for (int i = (int)count - 1; i > 0; --i) {
+		LinphoneEventLog *event = [[eventList objectAtIndex:i] pointerValue];
+		if (!(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
+			continue;;
+
+		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+		if (chat == message) {
+			index = i;
+			break;
+		}
+		
+	}
+	return index;
+}
+
 #pragma mark - Property Functions
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
@@ -275,6 +309,15 @@ static const int BASIC_EVENT_LIST=15;
 	if (!_chatRoom && [[cell reuseIdentifier] isEqualToString:@"UIChatBubblePhotoCell"]) {
 		[(UIChatBubbleTextCell *)cell clearEncryptedFiles];
 	}
+	if ([cell isKindOfClass:[UIChatBubbleTextCell class]] ||[cell isKindOfClass:[UIChatBubblePhotoCell class]])
+		[(UIChatBubbleTextCell *)cell dismissPopup];
+}
+
+-(void) dismissMessagesPopups {
+	for (UITableViewCell *cell in self.tableView.visibleCells) {
+		if (![[cell reuseIdentifier] isEqualToString:NSStringFromClass(UIChatNotifiedEventCell.class)])
+			[(UIChatBubbleTextCell *)cell dismissPopup];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -301,6 +344,8 @@ static const int BASIC_EVENT_LIST=15;
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		cell.tableController = self;
+		cell.popupMenuAllowed = true;
 		return cell;
 	} else {
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);

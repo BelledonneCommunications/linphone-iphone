@@ -45,6 +45,7 @@ typedef void (^UIConfirmationBlock)(void);
 
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *cancelButton;
 @property (weak, nonatomic) IBOutlet UIImageView *securityImage;
+@property (weak, nonatomic) IBOutlet UIImageView *forwardImage;
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *confirmationButton;
 @property (weak, nonatomic) IBOutlet UIView *authView;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;

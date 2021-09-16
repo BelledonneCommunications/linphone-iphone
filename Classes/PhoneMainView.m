@@ -830,7 +830,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
     
     if (!linphone_core_is_network_reachable(LC)) {
-        [PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView] animated:YES completion:nil];
+		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
         return;
     }
     
@@ -955,6 +955,17 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
     [controller dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark - Light/Dark mode
+
+-(BOOL) darkMode {
+	if (@available(iOS 13.0, *)) {
+		UITraitCollection *collection = [UITraitCollection currentTraitCollection];
+		return collection.userInterfaceStyle == UIUserInterfaceStyleDark;
+	} else {
+		return false;
+	}
 }
 
 @end

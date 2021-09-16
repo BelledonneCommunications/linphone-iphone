@@ -41,8 +41,17 @@
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 @property (weak, nonatomic) IBOutlet UIButton *fileButton;
 @property (weak, nonatomic) IBOutlet UIView *fileView;
-@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *plusLongGestureRecognizer;
 @property(strong, nonatomic) NSMutableArray<UIChatContentView *> *contentViews;
+
+// Video recordings
+@property (weak, nonatomic) IBOutlet UIView *vrView;
+@property (weak, nonatomic) IBOutlet UIButton *vrPlayPause;
+@property (weak, nonatomic) IBOutlet UILabel *vrTimerLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *vrWave;
+@property (weak, nonatomic) IBOutlet UIView *vrWaveMaskPlayback;
+@property NSTimer *vrPlayerTimer;
+@property NSString *voiceRecordingFile;
+
 
 
 - (void)setEvent:(LinphoneEventLog *)event;
@@ -51,10 +60,8 @@
 - (IBAction)onDownloadClick:(id)event;
 - (IBAction)onImageClick:(id)event;
 - (IBAction)onCancelClick:(id)sender;
-- (IBAction)onResendClick:(id)event;
 - (IBAction)onPlayClick:(id)sender;
 - (IBAction)onFileClick:(id)sender;
-- (IBAction)onPlusClick:(id)sender;
 
 @end
 

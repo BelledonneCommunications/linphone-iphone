@@ -31,12 +31,22 @@
                 <outlet property="pictureButton" destination="73" id="84"/>
                 <outlet property="popupMenu" destination="gdT-1Q-vU2" id="M7Q-tv-zRF"/>
                 <outlet property="portraitView" destination="6" id="xJJ-1H-6N6"/>
+                <outlet property="replyView" destination="wve-MK-7ME" id="fhJ-ne-9Xx"/>
                 <outlet property="sendButton" destination="15" id="27"/>
                 <outlet property="tableController" destination="29" id="32"/>
                 <outlet property="toggleMenuButton" destination="CPn-Oc-9PX" id="QdS-xO-bfA"/>
+                <outlet property="toggleRecord" destination="aTi-pm-fAG" id="RYV-0Q-v5p"/>
                 <outlet property="toggleSelectionButton" destination="c9z-aq-2UP" id="kiK-wF-8iU"/>
                 <outlet property="topBar" destination="7" id="JH8-F4-Bdq"/>
                 <outlet property="view" destination="6" id="11"/>
+                <outlet property="vrDeleteButton" destination="wi9-en-JCZ" id="09B-Bm-ECJ"/>
+                <outlet property="vrDurationLabel" destination="dMW-Ix-4k0" id="Ugl-f5-r2m"/>
+                <outlet property="vrInnerView" destination="eXD-Gd-FXA" id="wBh-N1-Au9"/>
+                <outlet property="vrPlayButton" destination="FNM-bb-AlC" id="NOD-GE-eIA"/>
+                <outlet property="vrView" destination="Tru-Zm-4EZ" id="Rx2-ls-nMc"/>
+                <outlet property="vrWave" destination="m9m-2e-T7E" id="F07-qS-Yj6"/>
+                <outlet property="vrWaveMask" destination="TzM-ND-yp4" id="FKT-Gu-CyA"/>
+                <outlet property="vrWaveMaskPlayer" destination="OTf-Od-TDn" id="g9D-K1-Gf0"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -209,7 +219,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <tableView clipsSubviews="YES" tag="13" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="8" userLabel="messagesTableView">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="634"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="574"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <gestureRecognizers/>
@@ -221,7 +231,7 @@
                                     </connections>
                                 </tableView>
                                 <view hidden="YES" tag="14" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fx4-ao-53M" userLabel="composeIndicatorView">
-                                    <rect key="frame" x="0.0" y="634" width="414" height="22"/>
+                                    <rect key="frame" x="0.0" y="574" width="414" height="22"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="fpY-Fv-ht2" userLabel="composeLabel">
@@ -236,7 +246,7 @@
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </view>
                                 <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="16" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No conversation." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7C-WH-uR1" userLabel="emptyTableLabel">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="625"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="574"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -260,6 +270,19 @@
                                                 <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="87"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" tag="9019" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aTi-pm-fAG" userLabel="audioRecordingButton">
+                                            <rect key="frame" x="66" y="0.0" width="56" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Send picture"/>
+                                            <inset key="imageEdgeInsets" minX="15" minY="20" maxX="15" maxY="20"/>
+                                            <state key="normal" image="vr_off.png">
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </state>
+                                            <state key="selected" image="vr_on.png"/>
+                                            <connections>
+                                                <action selector="onVrStart:" destination="-1" eventType="touchUpInside" id="6QP-19-E8o"/>
+                                            </connections>
+                                        </button>
                                         <button opaque="NO" tag="21" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="15" userLabel="sendButton">
                                             <rect key="frame" x="349" y="0.0" width="66" height="66"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
@@ -275,7 +298,7 @@
                                             </connections>
                                         </button>
                                         <view tag="20" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pqa-tg-5ml" userLabel="messageField" customClass="HPGrowingTextView">
-                                            <rect key="frame" x="72" y="13" width="269" height="40"/>
+                                            <rect key="frame" x="130" y="13" width="208" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <accessibility key="accessibilityConfiguration" label="Message field"/>
@@ -287,7 +310,59 @@
                                     </subviews>
                                     <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 </view>
-                                <view clipsSubviews="YES" alpha="0.90000000000000002" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3qd-ys-t2L" userLabel="imagesView">
+                                <view hidden="YES" tag="28021" contentMode="scaleToFill" id="Tru-Zm-4EZ" userLabel="VoiceRecording">
+                                    <rect key="frame" x="0.0" y="596" width="414" height="60"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" tag="28022" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wi9-en-JCZ">
+                                            <rect key="frame" x="12" y="13" width="24" height="34"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" image="delete_default.png"/>
+                                            <connections>
+                                                <action selector="onVrDelete:" destination="-1" eventType="touchUpInside" id="yV4-iY-mvE"/>
+                                            </connections>
+                                        </button>
+                                        <view tag="28023" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eXD-Gd-FXA">
+                                            <rect key="frame" x="50" y="8" width="302" height="44"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <subviews>
+                                                <view tag="28024" contentMode="scaleToFill" id="OTf-Od-TDn" userLabel="vr_wave_mask_playback">
+                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </view>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="28025" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="vr_wave.png" translatesAutoresizingMaskIntoConstraints="NO" id="m9m-2e-T7E">
+                                                    <rect key="frame" x="8" y="8" width="232" height="28"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                                <view tag="28026" contentMode="scaleToFill" id="TzM-ND-yp4" userLabel="vr_wave_mask_record">
+                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </view>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="28027" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dMW-Ix-4k0">
+                                                    <rect key="frame" x="245" y="12" width="49" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        </view>
+                                        <button opaque="NO" tag="28028" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FNM-bb-AlC">
+                                            <rect key="frame" x="366" y="13" width="35" height="35"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" image="vr_play.png"/>
+                                            <connections>
+                                                <action selector="onvrPlayPauseStop:" destination="-1" eventType="touchUpInside" id="Wka-en-Ic8"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </view>
+                                <view clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3qd-ys-t2L" userLabel="imagesView">
                                     <rect key="frame" x="0.0" y="625" width="414" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <subviews>
@@ -313,6 +388,11 @@
                                         <action selector="onEncryptedDevicesClick:" destination="-1" eventType="touchUpInside" id="K1W-Ao-IDg"/>
                                     </connections>
                                 </button>
+                                <view hidden="YES" tag="290392" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wve-MK-7ME" userLabel="ReplyView">
+                                    <rect key="frame" x="0.0" y="536" width="414" height="120"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </view>
                             </subviews>
                         </view>
                         <tableView hidden="YES" clipsSubviews="YES" tag="6992" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="gdT-1Q-vU2" userLabel="popupMenu">
@@ -551,8 +631,21 @@
                                                 <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="Ag3-po-DGR"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" tag="9019" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zub-Ow-smm" userLabel="audioRecordingButton">
+                                            <rect key="frame" x="66" y="0.0" width="66" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Send picture"/>
+                                            <state key="normal" image="vr_off.png">
+                                                <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </state>
+                                            <state key="selected" image="vr_on.png"/>
+                                            <connections>
+                                                <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="qhP-B0-dkG"/>
+                                                <action selector="onVrStart:" destination="-1" eventType="touchUpInside" id="yWJ-st-yz2"/>
+                                            </connections>
+                                        </button>
                                         <view tag="20" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C02-2r-vXK" userLabel="messageField" customClass="HPGrowingTextView">
-                                            <rect key="frame" x="32" y="13" width="257" height="40"/>
+                                            <rect key="frame" x="59" y="13" width="230" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <accessibility key="accessibilityConfiguration" label="Message field"/>
@@ -637,10 +730,14 @@
         <image name="delete_disabled.png" width="34.400001525878906" height="44.799999237060547"/>
         <image name="deselect_all.png" width="43.200000762939453" height="43.200000762939453"/>
         <image name="ephemeral_messages_color_A.png" width="136" height="158.39999389648438"/>
-        <image name="more_menu_default.png" width="10.319999694824219" height="13.680000305175781"/>
+        <image name="more_menu_default.png" width="7.1999998092651367" height="9.3599996566772461"/>
         <image name="security_1_indicator.png" width="27.5" height="32.5"/>
         <image name="select_all_default.png" width="43.200000762939453" height="43.200000762939453"/>
         <image name="select_all_disabled.png" width="43.200000762939453" height="43.200000762939453"/>
+        <image name="vr_off.png" width="40" height="40"/>
+        <image name="vr_on.png" width="40" height="40"/>
+        <image name="vr_play.png" width="200" height="200"/>
+        <image name="vr_wave.png" width="1078" height="90"/>
         <systemColor name="secondarySystemBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

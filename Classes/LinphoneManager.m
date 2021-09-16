@@ -75,6 +75,8 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 NSString *const kLinphoneChatCreateViewChange = @"LinphoneChatCreateViewChange";
 NSString *const kLinphoneEphemeralMessageDeletedInRoom = @"LinphoneEphemeralMessageDeletedInRoom";
+NSString *const kLinphoneVoiceMessagePlayerEOF = @"LinphoneVoiceMessagePlayerEOF";
+NSString *const kLinphoneVoiceMessagePlayerLostFocus = @"LinphoneVoiceMessagePlayerLostFocus";
 NSString *const kLinphoneConfStateChanged = @"kLinphoneConfStateChanged";
 NSString *const kLinphoneConfStateParticipantListChanged = @"kLinphoneConfStateParticipantListChanged";
 
@@ -1801,6 +1803,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		return;
 	
 	if (linphone_core_local_permission_enabled(LC)) return;
+	
 
 	if (![defaults boolForKey: alertSuppressionKey]) {
 		UIAlertController *noticeView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Local network usage", nil)
@@ -1825,7 +1828,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)call:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
-		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView] animated:YES completion:nil];
+		[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"place a call"] animated:YES completion:nil];
 		return;
 	}
 
@@ -2270,10 +2273,7 @@ void conference_device_changed(LinphoneConference *conference, const LinphonePar
 void linphone_iphone_conference_state_changed(LinphoneCore *lc, LinphoneConference *conf,LinphoneConferenceState state) {
 	
 	if (state == LinphoneConferenceStateCreated) {
-		LinphoneConferenceCbs * cbs = linphone_conference_get_current_callbacks(conf);
-		if (!cbs) {
-			cbs = linphone_factory_create_conference_cbs(linphone_factory_get());
-		}
+		LinphoneConferenceCbs * cbs = linphone_factory_create_conference_cbs(linphone_factory_get());
 		linphone_conference_cbs_set_participant_added(cbs, conference_participant_changed);
 		linphone_conference_cbs_set_participant_device_added(cbs, conference_device_changed);
 		linphone_conference_cbs_set_participant_device_removed(cbs, conference_device_changed);

@@ -20,6 +20,7 @@
 #import "UIChatBubbleTextCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils.h"
 
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
@@ -27,6 +28,8 @@
 @implementation UIChatBubbleTextCell
 
 #pragma mark - Lifecycle Functions
+
+
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
@@ -40,22 +43,11 @@
 			[self addSubview:sub];
 		}
 	}
+	
+    
+    [_innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
+    _messageText.userInteractionEnabled = false;
 
-	UITapGestureRecognizer *limeRecognizer =
-	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLime)];
-	limeRecognizer.numberOfTapsRequired = 1;
-	//[_LIMEKO addGestureRecognizer:limeRecognizer];
-	//_LIMEKO.userInteractionEnabled = YES;
-	UITapGestureRecognizer *resendRecognizer =
-	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
-	resendRecognizer.numberOfTapsRequired = 1;
-	[_bubbleView addGestureRecognizer:resendRecognizer];
-	_imdmIcon.userInteractionEnabled = YES;
-	UITapGestureRecognizer *resendRecognizer2 =
-	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
-	resendRecognizer2.numberOfTapsRequired = 1;
-	//[_imdmLabel addGestureRecognizer:resendRecognizer2];
-	//_imdmLabel.userInteractionEnabled = YES;
 
 	self.contentView.userInteractionEnabled = NO;
 	return self;
@@ -205,11 +197,12 @@
         _avatarImage.hidden = !_isFirst;
     }
 	
+
 	// Not use [UIImage imageNamed], it takes too much time
-	NSString *imageName = outgoing ? @"color_A.png" : @"color_D.png";
-    _backgroundColorImage.image =
-		[UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@",[[NSBundle mainBundle] bundlePath],imageName]];
-    
+	_backgroundColorImage.image = nil;
+	_backgroundColorImage.backgroundColor = outgoing ? [UIColor color:@"A"] : [UIColor color:@"D"];
+	
+	
     // set maskedCorners
     if (@available(iOS 11.0, *)) {
         _backgroundColorImage.layer.cornerRadius = 10;
@@ -255,6 +248,7 @@
     frame.origin.y = _isFirst ? 20 : 0;
     _innerView.frame = frame;
 	
+	
 	[_messageText setAccessibilityLabel:outgoing ? @"Outgoing message" : @"Incoming message"];
 	if (outgoing &&
 		(state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed ||
@@ -262,6 +256,23 @@
 		[self displayImdmStatus:state];
 	} else
 		[self displayImdmStatus:LinphoneChatMessageStateInProgress];
+	
+	if (linphone_chat_message_is_reply(_message)) {
+		if (_replyView == nil) {
+			_replyView = [[UIChatReplyBubbleView alloc] initWithNibName:@"UIChatReplyBubbleView" bundle:nil];
+			[self.innerView addSubview:_replyView.view];
+		}
+		_replyView.view.hidden = false;
+		CGRect replyFrame = CGRectMake(_contactDateLabel.frame.origin.x, _contactDateLabel.frame.origin.y+_contactDateLabel.frame.size.height,self.contactDateLabel.frame.size.width, REPLY_CHAT_BUBBLE_HEIGHT);
+		_replyView.view.frame = replyFrame;
+		[_replyView configureForMessage:linphone_chat_message_get_reply_message(_message) withDimissBlock:^{} hideDismiss:true withClickBlock:^{
+			[_tableController scrollToMessage:linphone_chat_message_get_reply_message(_message)];
+		}];
+	} else {
+		if (_replyView)
+			_replyView.view.hidden = true;
+	}
+	
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -269,7 +280,6 @@
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-	_messageText.userInteractionEnabled = !editing;
 	_resendRecognizer.enabled = !editing;
 }
 
@@ -300,76 +310,6 @@
 	}
 }
 
-- (void)onLime {
-	/*if (!_LIMEKO.hidden)
-		[self displayLIMEWarning];*/
-}
-
-- (void)onResend {
-	if (_message == nil || !linphone_chat_message_is_outgoing(_message))
-		return;
-
-	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
-	if (state != LinphoneChatMessageStateNotDelivered && state != LinphoneChatMessageStateFileTransferError)
-		return;
-
-	const bctbx_list_t *contents = linphone_chat_message_get_contents(_message);
-	BOOL multiParts = ((linphone_chat_message_get_text_content(self.message) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
-	if (multiParts) {
-		FileContext *newfileContext = [[FileContext alloc] init];
-		[newfileContext clear];
-		NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:_message];
-		int i;
-		const bctbx_list_t *it;
-		for (it = contents, i=0; it != NULL; it=bctbx_list_next(it)){
-			LinphoneContent *content = (LinphoneContent *)it->data;
-			if (linphone_content_is_file_transfer(content) || linphone_content_is_file(content)){
-				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
-				NSString *filePath = [encrptedFilePaths valueForKey:name];
-				if (filePath == NULL) {
-					filePath = [LinphoneManager validFilePath:name];
-				}
-				[newfileContext addObject:[NSData dataWithContentsOfFile:filePath] name:name type:[NSString stringWithUTF8String:linphone_content_get_type(content)]];
-			}
-		}
-		[self onDelete];
-		dispatch_async(dispatch_get_main_queue(), ^ {
-			const char *text = linphone_chat_message_get_text_content(_message);
-			[_chatRoomDelegate resendMultiFiles:newfileContext message: text? [NSString stringWithUTF8String:text]: NULL];
-		});
-		return;
-	}
-	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
-		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
-		NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
-		NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
-
-		[self onDelete];
-		dispatch_async(dispatch_get_main_queue(), ^ {
-			NSData *data = NULL;
-			if (filePath) {
-				data = [NSData dataWithContentsOfFile:filePath];
-			}
-			const char *text = linphone_chat_message_get_text_content(_message);
-			NSString *str = text ? [NSString stringWithUTF8String:text] : NULL;
-			if (localImage) {
-				[_chatRoomDelegate resendFile: (data?:[ChatConversationView getFileData:localImage]) withName:localImage type:@"image" key:@"localimage" message:str];
-			} else if (localVideo) {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localVideo]) withName:localVideo type:@"video" key:@"localvideo" message:str];
-			} else {
-				[_chatRoomDelegate resendFile:(data?:[ChatConversationView getFileData:localFile]) withName:localFile type:@"image" key:@"localfile" message:str];
-			}
-		});
-	} else {
-		[self onDelete];
-		double delayInSeconds = 0.4;
-		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-			[_chatRoomDelegate resendChat:self.textMessage withExternalUrl:nil];
-		});
-	}
-}
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
@@ -424,9 +364,15 @@ static const CGFloat CELL_MIN_HEIGHT = 65.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 68 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
+static const CGFloat REPLY_CHAT_BUBBLE_HEIGHT  = 120;
+static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
+
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
-    return [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
+    CGSize size = [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
+	size.height += linphone_chat_message_is_forward(chat) || linphone_chat_message_is_reply(chat) ? REPLY_OR_FORWARD_TAG_HEIGHT : 0;
+	size.height += linphone_chat_message_is_reply(chat) ? REPLY_CHAT_BUBBLE_HEIGHT+5 : 0;
+	return size;
 }
 
 + (CGSize)ViewHeightForFile:(int)width {
@@ -435,6 +381,41 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
 	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
 	return size;
+}
+
+
++(NSString *)formattedDuration:(long)valueMs {
+	return [NSString stringWithFormat:@"%02ld:%02ld", valueMs/ 60, (valueMs % 60) ];
+}
+
++(NSString *) recordingDuration:(NSString *) _voiceRecordingFile{
+	NSError *error = nil;
+	AVAudioPlayer* utilityPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL URLWithString:_voiceRecordingFile] error:&error]; // Workaround as opening multiple linphone_players at the same time can cause crash (here for example layout refreshed whilst a voice memo is playing
+	return [self formattedDuration:utilityPlayer.duration];
+	utilityPlayer = nil;
+}
+
++ (UIImage *)getImageFromFileName:(NSString *)fileName {
+	NSString *extension = [[fileName.lowercaseString componentsSeparatedByString:@"."] lastObject];
+	UIImage *image;
+	NSString * text = fileName;
+	if ([fileName containsString:@"voice-recording"]) {
+		image = [UIImage imageNamed:@"file_voice_default"];
+		text = [self recordingDuration:[LinphoneManager validFilePath:fileName]];
+	} else {
+		if ([extension isEqualToString:@"pdf"])
+			image =  [UIImage imageNamed:@"file_pdf_default"];
+		else if ([@[@"png", @"jpg", @"jpeg", @"bmp", @"heic"] containsObject:extension])
+			image = [UIImage imageNamed:@"file_picture_default"];
+		else if ([@[@"mkv", @"avi", @"mov", @"mp4"] containsObject:extension])
+			image = [UIImage imageNamed:@"file_video_default"];
+		else if ([@[@"wav", @"au", @"m4a"] containsObject:extension])
+			image = [UIImage imageNamed:@"file_audio_default"];
+		else
+			image = [UIImage imageNamed:@"file_default"];
+	}
+	
+	return [SwiftUtil textToImageWithDrawText:text inImage:image];
 }
 
 + (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath; {
@@ -452,11 +433,23 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		image = [[UIImage alloc] initWithData:data];
 	}
 	if (image) return image;
-	UIImage *basicImage = [ChatConversationView getBasicImage];
-	image = [ChatConversationView drawText:[NSString stringWithFormat:@"📎 %@",name] image:basicImage textSize:25];
-	return image;
+	else return [self getImageFromFileName:name];
 }
 
++(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message {
+	for (const bctbx_list_t *it = linphone_chat_message_get_contents(message); it != NULL; it=bctbx_list_next(it)){
+		LinphoneContent *content = (LinphoneContent *)it->data;
+		if (linphone_content_is_voice_recording(content))
+			return content;
+	}
+	return nil;
+}
+
+
++(CGSize) addVoicePlayerToSize:(CGSize)size withMargins:(BOOL)margins {
+	return CGSizeMake(MAX(size.width,VOICE_RECORDING_PLAYER_WIDTH + (margins ? CELL_MESSAGE_X_MARGIN: 0)), size.height + VOICE_RECORDING_PLAYER_HEIGHT+(margins ? CELL_MESSAGE_Y_MARGIN: 0));
+	
+}
 
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText {
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
@@ -484,14 +477,51 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	CGFloat imagesh=0;
 	CGFloat max_imagesw=0;
 	CGFloat max_imagesh=0;
+	LinphoneContent *voiceContent = [self voiceContent:chat];
 	const bctbx_list_t *contents = linphone_chat_message_get_contents(chat);
-	BOOL multiParts = ((linphone_chat_message_get_text_content(chat) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
+	size_t contentCount = bctbx_list_size(contents);
+	if (voiceContent)
+		contentCount--;
+	
+	BOOL multiParts = ((linphone_chat_message_get_text_content(chat) != NULL) ? contentCount > 2 : contentCount > 1);
+	
+	if (voiceContent && contentCount == 0) {
+		size = CGSizeMake(VOICE_RECORDING_PLAYER_WIDTH, VOICE_RECORDING_PLAYER_HEIGHT);
+		CGSize textSize = CGSizeMake(0, 0);
+		if (![messageText isEqualToString:@"🗻"]) {
+			textSize = [self computeBoundingBox:messageText
+										   size:CGSizeMake(max_imagesw , CGFLOAT_MAX)
+										   font:messageFont];
+		}
+		
+		// add size for message text
+		size.height += textSize.height;
+		size.width = MAX(textSize.width, size.width);
+		size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+		size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT) ;
+		return size;
+	}
+	
 	if (multiParts) {
 		const bctbx_list_t *it = contents;
 		NSMutableDictionary<NSString *, NSString *> *encrptedFilePaths = [LinphoneManager getMessageAppDataForKey:@"encryptedfiles" inMessage:chat];
 
 		for (it = contents; it != NULL; it=bctbx_list_next(it)){
 			LinphoneContent *content = (LinphoneContent *)it->data;
+			if (linphone_content_is_voice_recording(content)) {
+				CGSize sSize = CGSizeMake(VOICE_RECORDING_PLAYER_WIDTH, VOICE_RECORDING_PLAYER_HEIGHT);
+				imagesw += sSize.width;
+				if (imagesw > width) {
+					imagesw = sSize.width;
+					max_imagesw = MAX(max_imagesw, imagesw);
+					max_imagesh += imagesh;
+					imagesh = sSize.height;
+				} else {
+					max_imagesw = MAX(max_imagesw, imagesw);
+					imagesh = MAX(imagesh, sSize.height);
+				}
+				continue;
+			}
 			UIImage *image;
 			if(!linphone_chat_message_is_outgoing(chat) && linphone_content_is_file_transfer(content)) {
 				// not yet downloaded
@@ -538,22 +568,25 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT) ;
 		return size;
 	}
+	
 
-
-    LinphoneContent *fileContent = linphone_chat_message_get_file_transfer_information(chat);
-    if (url == nil && fileContent == NULL) {
+	// if here, either 1 file + text or just one file or just text.
+	BOOL justText = linphone_chat_message_get_text_content(chat) != NULL && contentCount == 1;
+	if (justText) { // Just text
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                     font:messageFont];
-    } else {
+		size.width += 4;
+    } else { // Just file or file with text
+		LinphoneContent *fileContent =  linphone_chat_message_get_file_transfer_information(chat);
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
 		NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:chat];
-		NSString *fileName = [NSString stringWithUTF8String:linphone_content_get_name(fileContent)];
-        
+		NSString *fileName = fileContent ? [NSString stringWithUTF8String:linphone_content_get_name(fileContent)] : nil;
+
         CGSize textSize = CGSizeMake(0, 0);
-        if (![messageText isEqualToString:@"🗻"]) {
+        if (![messageText isEqualToString:@"🗻"] && messageText.length > 0) {
             textSize = [self computeBoundingBox:messageText
                                            size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
                                            font:messageFont];
@@ -582,28 +615,45 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 					NSData *data = [NSData dataWithContentsOfURL:[VIEW(ChatConversationView) getICloudFileUrl:localFile]];
 					image = [[UIImage alloc] initWithData:data];
 				}
+			} else if (voiceContent){
+				return [self addVoicePlayerToSize:[self ViewHeightForFile:width] withMargins:true];
 			} else {
-				return [self ViewHeightForFile:width];
+				image = nil;
+				originalImageSize = CGSizeMake(140, 140);
 			}
-
-			originalImageSize = image.size;
+			if (image != nil)
+				originalImageSize = image.size;
 		} else {
 			if (!localImage && !localVideo) {
 				//We are loading the image
-				return CGSizeMake(CELL_MIN_WIDTH + CELL_MESSAGE_X_MARGIN, CELL_MIN_HEIGHT + CELL_MESSAGE_Y_MARGIN + textSize.height + 20);
+				CGSize baseSize = CGSizeMake(120 + CELL_MESSAGE_X_MARGIN, 120 + CELL_MESSAGE_Y_MARGIN + textSize.height + (textSize.height != 0 ? 20 : 0));
+				if (voiceContent) {
+					baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
+					baseSize.height -= VOICE_RECORDING_PLAYER_HEIGHT;
+					baseSize.height += 10;
+				}
+				return baseSize;
 			}
 
 			if (localImage && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 				NSData* data = [NSData dataWithContentsOfFile:filePath];
 				UIImage *image = [[UIImage alloc] initWithData:data];
 				if (!image) {
-					return [self ViewHeightForFile:width];
+					CGSize fileSize =  [self ViewHeightForFile:width];
+					if (voiceContent) {
+						fileSize = [self addVoicePlayerToSize:fileSize withMargins:true];
+					}
+					return fileSize;
 				}
 				originalImageSize = image.size;
 			} else if (localVideo && [[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 				UIImage *image = [UIChatBubbleTextCell getImageFromVideoUrl:[NSURL fileURLWithPath:filePath]];
 				if (!image) {
-					return [self ViewHeightForFile:width];
+					CGSize fileSize =  [self ViewHeightForFile:width];
+					if (voiceContent) {
+						fileSize = [self addVoicePlayerToSize:fileSize withMargins:true];
+					}
+					return fileSize;
 				}
 				originalImageSize = image.size;
 			} else {
@@ -615,7 +665,11 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 					assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
 
 				if (![assets firstObject]) {
-					return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
+					CGSize baseSize = CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_WIDTH + CELL_MESSAGE_Y_MARGIN + textSize.height);
+					if (voiceContent) {
+						baseSize = [self addVoicePlayerToSize:baseSize withMargins:true];
+					}
+					return baseSize;
 				} else {
 					PHAsset *asset = [assets firstObject];
 					originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
@@ -626,6 +680,11 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		// add size for message text
 		size.height += textSize.height;
 		size.width = MAX(textSize.width, size.width);
+	}
+	
+	if (voiceContent) {
+		size.width = MAX(size.width,VOICE_RECORDING_PLAYER_WIDTH);
+		size.height += VOICE_RECORDING_PLAYER_HEIGHT;
 	}
 
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
@@ -670,15 +729,45 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 		int origin_x;
 
 		bubbleFrame.size = [self.class ViewSizeForMessage:_message withWidth:available_width];
+		if (linphone_chat_message_is_reply(_message)) {
+			bubbleFrame.size.width = MAX(bubbleFrame.size.width, 300);
+		}
 
 		if (tableView.isEditing) {
 			origin_x = 0;
 		} else {
 			origin_x = (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
 		}
+		
+		CGRect r = _messageText.frame;
+		r.origin.y = linphone_chat_message_is_reply(_message) ? _replyView.view.frame.origin.y + _replyView.view.frame.size.height + 5 : 3;
+		_messageText.frame = r;
+		
+		r = _messageText.frame;
+		r.origin.y = linphone_chat_message_is_forward(_message) ? _contactDateLabel.frame.origin.y + _contactDateLabel.frame.size.height + 5 : r.origin.y;
+		_messageText.frame = r;
+
+		_replyTransferIcon.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
+		_replyTransferLabel.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
+		
+		if (linphone_chat_message_is_reply(_message)) {
+			CGRect replyFrame = CGRectMake(10, _replyTransferLabel.frame.origin.y+_replyTransferLabel.frame.size.height+5,MAX(self.contactDateLabel.frame.size.width-20,180), REPLY_CHAT_BUBBLE_HEIGHT);
+			_replyView.view.frame = replyFrame;
+			_replyTransferIcon.image = [UIImage imageNamed:@"menu_reply_default"];
+			_replyTransferLabel.text = NSLocalizedString(@"Answer",nil);
+			_replyTransferLabel.textColor =  [UIColor lightGrayColor];
+		}
+		
+		if (linphone_chat_message_is_forward(_message)) {
+			_replyTransferIcon.image = [UIImage imageNamed:@"menu_forward_default"];
+			_replyTransferLabel.text = NSLocalizedString(@"Transferred",nil);
+			_replyTransferLabel.textColor =  [UIColor darkGrayColor];
+		}
 
 		bubbleFrame.origin.x = origin_x;
 		_bubbleView.frame = bubbleFrame;
+		
+	
 	}
 }
 
@@ -705,5 +794,174 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
     mediaSize.width = MIN(availableWidth, originalSize.width);
     return mediaSize;
 }
+
+
+// Message popup menu
+// Copy text -> if has text
+// Transfer -> always
+// Reply -> always
+// IMDM Status -> out
+// Delete -> always
+
+
+-(void) buildActions {
+	LinphoneChatMessage *message = self.message;
+	_messageActionsTitles = [[NSMutableArray alloc] init];
+	_messageActionsBlocks = [[NSMutableArray alloc] init];
+	_messageActionsIcons = [[NSMutableArray alloc] init];
+
+	UIChatBubbleTextCell *thiz = self;
+	
+	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
+	if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
+		[_messageActionsTitles addObject:NSLocalizedString(@"Resend", nil)];
+		[_messageActionsIcons addObject:@"menu_resend_default"];
+		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
+			if (!linphone_core_is_network_reachable(LC)) {
+				[PhoneMainView.instance presentViewController:[LinphoneUtils networkErrorView:@"send a message"] animated:YES completion:nil];
+				return;
+			}
+			linphone_chat_message_send(message);
+		}];
+	}
+	
+
+	if (linphone_chat_message_get_utf8_text(message)) {
+		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];
+		[_messageActionsIcons addObject:@"menu_copy_text_default"];
+		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
+			[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_text_content(message)]];
+		}];
+	}
+	
+
+	[_messageActionsTitles addObject:NSLocalizedString(@"Forward", nil)];
+	[_messageActionsIcons addObject:@"menu_forward_default"];
+	[_messageActionsBlocks addObject:^{
+		[thiz dismissPopup];
+		VIEW(ChatConversationView).pendingForwardMessage = message;
+		[PhoneMainView.instance changeCurrentView:VIEW(ChatsListView).compositeViewDescription];
+	}];
+	 
+
+	
+	[_messageActionsTitles addObject:NSLocalizedString(@"Reply", nil)];
+	[_messageActionsIcons addObject:@"menu_reply_default"];
+	[_messageActionsBlocks addObject:^{
+		[thiz dismissPopup];
+		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
+	}];
+	
+	if (linphone_chat_message_is_outgoing(self.message) && linphone_chat_room_get_nb_participants(linphone_chat_message_get_chat_room(self.message)) > 1) {
+		[_messageActionsTitles addObject:NSLocalizedString(@"Infos", nil)];
+		[_messageActionsIcons addObject:@"menu_info"];
+		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
+			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+			view.msg = message;
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		}];
+	}
+	
+	[_messageActionsTitles addObject:NSLocalizedString(@"Delete", nil)];
+	[_messageActionsIcons addObject:@"menu_delete"];
+	[_messageActionsBlocks addObject:^{
+		[thiz dismissPopup];
+		linphone_chat_room_delete_message(linphone_chat_message_get_chat_room(message), message);
+		[VIEW(ChatConversationView).tableController reloadData];
+	}];
+}
+
+-(void) onPopupMenuPressed {
+	if (_popupMenu != nil)
+		[self dismissPopup];
+	
+	if (!self.popupMenuAllowed)
+		return;
+
+	
+	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
+	self.innerView.layer.borderWidth = 3;
+	self.innerView.layer.borderColor = [UIColor color:@"A"].CGColor;
+	[self buildActions];
+	int width = 250;
+	int cellHeight = 44;
+	int numberOfItems = (int) _messageActionsTitles.count;
+	CGRect screenRect = UIScreen.mainScreen.bounds;
+	int menuHeight = numberOfItems * cellHeight;
+	
+	CGRect frame = CGRectMake(
+							  linphone_chat_message_is_outgoing(self.message) ? screenRect.size.width - width - 10 : 10,
+							  (self.frame.origin.y + self.frame.size.height) - [VIEW(ChatConversationView).tableController .tableView contentOffset].y > screenRect.size.height /2 ? self.frame.origin.y - menuHeight - 10:  self.frame.origin.y + self.frame.size.height,
+							  width,
+							  menuHeight);
+	
+	_popupMenu = [[UITableView alloc]initWithFrame:frame];
+	_popupMenu.dataSource = self;
+	_popupMenu.delegate = self;
+	_popupMenu.layer.shadowColor = [UIColor lightGrayColor].CGColor;
+	_popupMenu.layer.shadowOpacity = 0.5;
+	_popupMenu.layer.shadowOffset = CGSizeZero;
+	_popupMenu.layer.shadowRadius = 5;
+	_popupMenu.layer.masksToBounds = false;
+	_popupMenu.tableFooterView = [UIView new];
+	_popupMenu.editing = NO;
+	_popupMenu.userInteractionEnabled  = true;
+	[_popupMenu reloadData];
+	[VIEW(ChatConversationView).tableController.view addSubview:_popupMenu];
+	UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOutsideMenu:)];
+	tapGestureRecognizer.cancelsTouchesInView = NO;
+	tapGestureRecognizer.numberOfTapsRequired = 1;
+	[VIEW(ChatConversationView).tableController.view  addGestureRecognizer:tapGestureRecognizer];
+}
+
+-(void) dismissPopup {
+	if (!_popupMenu)
+		return;
+	[_popupMenu removeFromSuperview];
+	_popupMenu = nil;
+	self.innerView.layer.borderWidth = 0;
+	[self setNeedsLayout];
+}
+
+
+-(void) tapOutsideMenu:(UITapGestureRecognizer *) g {
+	CGPoint p = [g locationInView:VIEW(ChatConversationView).tableController.view];
+	if (!CGRectContainsPoint(_popupMenu.frame,p)) {
+		[self dismissPopup];
+	}
+}
+
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	void (^ myblock)(void) = [_messageActionsBlocks objectAtIndex:indexPath.row];
+	[self dismissPopup];
+	myblock();
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return [_messageActionsTitles count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [[UITableViewCell alloc] init];
+	cell.imageView.image = [[UIImage imageNamed:[_messageActionsIcons objectAtIndex:indexPath.row]] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	cell.textLabel.text = [_messageActionsTitles objectAtIndex:indexPath.row];
+	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	if ([[_messageActionsIcons objectAtIndex:indexPath.row] isEqualToString:@"menu_delete"]) {
+		cell.textLabel.textColor = UIColor.redColor;
+		cell.imageView.tintColor = UIColor.redColor;
+	} else {
+		cell.imageView.tintColor = PhoneMainView.instance.darkMode ?  UIColor.whiteColor : UIColor.blackColor;
+   }
+	return cell;
+}
+
+
 
 @end

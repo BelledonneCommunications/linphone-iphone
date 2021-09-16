@@ -516,12 +516,10 @@
     return res;
 }
 
-+ (UIAlertController *)networkErrorView {
++ (UIAlertController *)networkErrorView:(NSString *)action {
     UIAlertController *errView =
     [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
-                                        message:NSLocalizedString(@"There is no network connection available, "
-                                                                  @"enable WIFI or WWAN prior to place a call",
-                                                                  nil)
+                                        message:NSLocalizedString([@"There is no network connection available, enable WIFI or WWAN prior to " stringByAppendingString:action],nil)
                                  preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
@@ -573,6 +571,23 @@
             return image;
         }
     return nil;
+}
+
+@end
+
+
+
+@implementation UIImageView (ImageWithTint)
+
+- (void)setImageNamed:(NSString *)name tintColor:(UIColor *)color {
+	self.image =  [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	self.tintColor = color;
+}
+
+- (void)setImageNamed:(NSString *)name tintColorLetter:(NSString *)letter {
+	UIColor *color = [UIColor color:letter];
+	self.image =  [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+	self.tintColor = color;
 }
 
 @end
@@ -804,6 +819,19 @@
 
 - (UIColor *)darkerColor {
 	return [self lumColor:0.75];
+}
+
+
+static NSMutableDictionary *letterColors = nil;
+
++(UIColor *)color:(NSString *)letter {
+	if (letterColors == nil)
+		letterColors  = [[NSMutableDictionary alloc] init];
+	if (![letterColors objectForKey:letter]) {
+		UIImage *colorImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/color_%@.png",[[NSBundle mainBundle] bundlePath],letter]];
+		[letterColors setObject:[UIColor colorWithPatternImage:colorImage] forKey:letter];
+	}
+	return [letterColors objectForKey:letter];
 }
 
 @end

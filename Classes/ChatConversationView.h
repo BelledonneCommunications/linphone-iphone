@@ -32,7 +32,8 @@
 #import "UIImageViewDeletable.h"
 #import "UIConfirmationDialog.h"
 #import "UIInterfaceStyleButton.h"
-
+#import "linphoneapp-Swift.h"
+#import "UIChatReplyBubbleView.h"
 #include "linphone/linphonecore.h"
 
 
@@ -49,7 +50,7 @@
 
 @interface ChatConversationView
 	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
-                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UIDocumentMenuDelegate,UIDocumentPickerDelegate,UITableViewDataSource, UITableViewDelegate> {
+                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate, UIImageViewDeletableDelegate,QLPreviewControllerDelegate, UICollectionViewDataSource,UICollectionViewDelegate,UIDocumentMenuDelegate,UIDocumentPickerDelegate,UITableViewDataSource, UITableViewDelegate> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
@@ -92,6 +93,36 @@
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleMenuButton;
 @property (weak, nonatomic) IBOutlet UIImageView *ephemeralndicator;
 
+
+// Voice recording
+@property (strong, nonatomic) IBOutlet UIView *vrView;
+@property (weak, nonatomic) IBOutlet UIView *vrInnerView;
+@property (weak, nonatomic) IBOutlet UIButton *vrDeleteButton;
+@property (weak, nonatomic) IBOutlet UIButton *vrPlayButton;
+@property (weak, nonatomic) IBOutlet UIImageView *vrWave;
+@property (weak, nonatomic) IBOutlet UIView *vrWaveMask;
+@property (weak, nonatomic) IBOutlet UIView *vrWaveMaskPlayer;
+@property (weak, nonatomic) IBOutlet UILabel *vrDurationLabel;
+@property NSTimer *vrRecordTimer;
+@property NSTimer *vrPlayerTimer;
+@property (weak, nonatomic) IBOutlet UIButton *toggleRecord;
+@property BOOL isVoiceRecording;
+@property BOOL isPendingVoiceRecord;
+@property BOOL isPlayingVoiceRecording;
+@property LinphoneRecorder *voiceRecorder;
+@property LinphonePlayer *sharedVoicePlayer;
+@property BOOL showVoiceRecorderView;
+@property BOOL preservePendingActions;
+
+// Reply
+@property (weak, nonatomic) IBOutlet UIView *replyView;
+@property BOOL showReplyView;
+@property UIChatReplyBubbleView *replyBubble;
+
+// Forward
+@property LinphoneChatMessage *pendingForwardMessage;
+
+
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (void)autoDownload:(LinphoneChatMessage *)message;
 +(NSString *)getKeyFromFileType:(NSString *)fileType fileName:(NSString *)name;
@@ -122,5 +153,11 @@
 - (void)showFileDownloadError;
 - (NSURL *)getICloudFileUrl:(NSString *)name;
 - (void)removeCallBacks;
+
+-(void) startSharedPlayer:(const char *)path;
+-(void) stopSharedPlayer;
+-(BOOL) sharedPlayedIsPlaying:(const char *)path;
+
+-(void) initiateReplyViewForMessage:(LinphoneChatMessage *)message;
 
 @end
