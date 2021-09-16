@@ -991,6 +991,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			// we successfully loaded a remote provisioned config, go to dialer
 			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
 											  forKey:@"must_link_account_time"];
+			[LinphoneManager.instance configurePushProviderForAccounts];
 			if (number_of_accounts_before < bctbx_list_size(linphone_core_get_account_list(LC))) {
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
