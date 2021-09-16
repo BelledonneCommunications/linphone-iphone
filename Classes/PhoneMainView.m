@@ -403,7 +403,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 		case LinphoneCallEnd: {
 			const MSList *calls = linphone_core_get_calls(LC);
-			if (!calls) {
+			if (!calls || calls->data == call) {
 				while ((currentView == CallView.compositeViewDescription) ||
 					   (currentView == CallIncomingView.compositeViewDescription) ||
 					   (currentView == CallOutgoingView.compositeViewDescription)) {

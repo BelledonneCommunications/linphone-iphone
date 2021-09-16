@@ -642,13 +642,11 @@ import AVFoundation
 			}
 		}
 		// post Notification kLinphoneCallUpdate
-		DispatchQueue.main.async {
-			NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
-				AnyHashable("call"): NSValue.init(pointer:UnsafeRawPointer(call.getCobject)),
-				AnyHashable("state"): NSNumber(value: cstate.rawValue),
-				AnyHashable("message"): message
-			])
-		}
+		NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
+			AnyHashable("call"): NSValue.init(pointer:UnsafeRawPointer(call.getCobject)),
+			AnyHashable("state"): NSNumber(value: cstate.rawValue),
+			AnyHashable("message"): message
+		])
 	}
 
 	// Audio messages
