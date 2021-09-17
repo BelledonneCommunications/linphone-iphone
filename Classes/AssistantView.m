@@ -933,7 +933,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  forAccount:(LinphoneAccount *)account
 				   message:(NSString *)message {
 	// in assistant we only care about ourself
-	if (account != new_account) {
+	if (new_account && account != new_account) {
 		return;
 	}
 
@@ -996,7 +996,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
 			}
-
+			
+			_waitView.hidden = true;
 			if (nextView == nil) {
 				[self fillDefaultValues];
 			} else {
