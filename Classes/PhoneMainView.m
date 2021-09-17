@@ -884,7 +884,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneChatRoomParams *param = linphone_core_create_default_chat_room_params(LC);
 	linphone_chat_room_params_enable_group(param, isGroup);
 	linphone_chat_room_params_enable_encryption(param, isEncrypted);
-	
+	linphone_chat_room_params_set_ephemeral_mode(param,[LinphoneManager.instance lpConfigBoolForKey:@"ephemeral_chat_messages_settings_per_device" withDefault:true] ?
+													LinphoneChatRoomEphemeralModeDeviceManaged :
+													LinphoneChatRoomEphemeralModeAdminManaged);
+	linphone_chat_room_params_set_ephemeral_lifetime(param,0);	
 	LinphoneChatRoom *room = linphone_core_create_chat_room_2(LC, param, subject ?: LINPHONE_DUMMY_SUBJECT, addresses);
 	
     if (!room) {

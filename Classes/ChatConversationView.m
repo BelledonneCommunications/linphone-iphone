@@ -1628,6 +1628,13 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 // Popup menu
 
 
+-(BOOL) canAdminEphemeral:(LinphoneChatRoom *)cr {
+	return linphone_chat_room_has_capability(cr, LinphoneChatRoomCapabilitiesEphemeral) && (
+				(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeDeviceManaged) ||
+				(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeAdminManaged && linphone_participant_is_admin(linphone_chat_room_get_me(cr)))
+			 );
+}
+
 
 - (void) setupPopupMenu {
 	_popupMenu.dataSource = self;
@@ -1652,7 +1659,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		[_tableController onEditClick:nil];
 		[self onEditionChangeClick:nil];
 	}
-	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false]) {
+	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom]) {
 		if (indexPath.row == 2) {
 			EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
 			view.room = _chatRoom;
@@ -1666,7 +1673,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] ? 3 : 2;
+	return [ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom] ? 3 : 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1680,7 +1687,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
 	}
-	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false]) {
+	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom]) {
 		if (indexPath.row == 2) {
 			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
 			cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
