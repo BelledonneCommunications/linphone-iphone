@@ -95,9 +95,9 @@
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 + (void)autoDownload:(LinphoneChatMessage *)message;
 +(NSString *)getKeyFromFileType:(NSString *)fileType fileName:(NSString *)name;
-+ (NSURL *)getFileUrl:(NSString *)name;
-+ (void)writeFileInImagesDirectory:(NSData *)data name:(NSString *)name;
-+ (NSData *)getFileData:(NSString *)name;
++ (NSURL *)getCacheFileUrl:(NSString *)name;
++ (void)writeFileInCache:(NSData *)data name:(NSString *)name;
++ (NSData *)getCacheFileData:(NSString *)name;
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType;
 +(UIImage *)getBasicImage;
 +(UIImage*)drawText:(NSString*)text image:(UIImage *)image textSize:(CGFloat)textSize;
@@ -121,6 +121,7 @@
 
 - (void)showFileDownloadError;
 - (NSURL *)getICloudFileUrl:(NSString *)name;
+- (BOOL)writeFileInICloud:(NSData *)data fileURL:(NSURL *)fileURL;
 - (void)removeCallBacks;
 
 @end
