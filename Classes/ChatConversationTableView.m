@@ -220,16 +220,17 @@
 -(int) indexOfMesssage:(LinphoneChatMessage *)message {
 	if (eventList.count == 0 || _chatRoom == nil)
 		return -1;
+	
+	const char *msgId = linphone_chat_message_get_message_id(message);
 
 	int index = -1;
 	size_t count = eventList.count;
 	for (int i = (int)count - 1; i > 0; --i) {
 		LinphoneEventLog *event = [[eventList objectAtIndex:i] pointerValue];
-		if (!(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
-			continue;;
-
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-		if (chat == message) {
+		if (!chat)
+			continue;
+		if (!strcmp(msgId, linphone_chat_message_get_message_id(chat))) {
 			index = i;
 			break;
 		}
