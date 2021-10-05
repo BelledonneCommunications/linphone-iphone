@@ -1,21 +1,21 @@
 /*
-* Copyright (c) 2010-2020 Belledonne Communications SARL.
-*
-* This file is part of linphone-iphone
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import UIKit
 
@@ -25,19 +25,15 @@ import UIKit
 		let textColor = UIColor.black
 		let fontMax = UIFont.systemFont(ofSize: 12)
 		let backgroundColor = forReplyBubble ? UIColor(red: 246/255.0, green: 246/255.0, blue: 246/255.0, alpha: 1.0) : UIColor.white
-		
 		let size =  CGSize(width: 120, height: 120)
-		
 		let scale = UIScreen.main.scale
 		UIGraphicsBeginImageContextWithOptions(size, false, scale)
 		let context = UIGraphicsGetCurrentContext()
 		backgroundColor.setFill()
 		context!.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
-		
 		let imageSize:CGSize = forReplyBubble ? CGSize(width: 80, height:80*(image.size.height / image.size.width)): image.size
-		
 		image.draw(in: CGRect(origin: CGPoint(x: size.width/2 - (imageSize.width)/2,y: (forReplyBubble ? size.height/2 : 90/2) - (imageSize.height)/2), size: imageSize))
-		
+
 		if (!forReplyBubble) {
 			let label = UILabel(frame: CGRect(x: 0,y: 0,width: size.width,height: 30))
 			label.numberOfLines = 1
@@ -49,8 +45,14 @@ import UIKit
 			label.allowsDefaultTighteningForTruncation = true
 			label.lineBreakMode = .byTruncatingMiddle
 			imageWithLabel(label: label).draw(in: CGRect(origin: CGPoint(x:5,y: 70), size: CGSize(width: size.width-10,height: 30)))
-			let view = UIView(frame: CGRect(x: 0,y: 0,width: size.width,height: 30))
-			view.addSubview(label)
+		} else {
+			let borderWidth: CGFloat = 2.0
+			let path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: 120, height: 120).insetBy(dx: borderWidth / 2, dy: borderWidth / 2), cornerRadius: 5.0)
+			context!.saveGState()
+			path.addClip()
+			UIColor.gray.setStroke()
+			path.lineWidth = borderWidth
+			path.stroke()
 		}
 		
 		let newImage = UIGraphicsGetImageFromCurrentImageContext()
