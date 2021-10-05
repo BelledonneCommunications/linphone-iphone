@@ -32,7 +32,7 @@
 	if(!linphone_chat_message_is_outgoing(_message) && linphone_content_is_file_transfer(_content)) {
 		// has not yet downloaded
 		NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)] ;
-		UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name];
+		UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name forReplyBubble:false];
 		[self setImage:image];
 		_downloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		[_downloadButton addTarget:self
@@ -51,7 +51,7 @@
 			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 			_filePath = [LinphoneManager validFilePath:name];
 		}
-		UIImage *image = [UIChatBubbleTextCell getImageFromContent:content filePath:_filePath];
+		UIImage *image = [UIChatBubbleTextCell getImageFromContent:content filePath:_filePath forReplyBubble:false];
 		[self setImage:image];
 		UITapGestureRecognizer *tapGestureRecognizer =	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onMultiPartClick:)];
 		tapGestureRecognizer.numberOfTapsRequired = 1;

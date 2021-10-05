@@ -396,7 +396,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	utilityPlayer = nil;
 }
 
-+ (UIImage *)getImageFromFileName:(NSString *)fileName {
++ (UIImage *)getImageFromFileName:(NSString *)fileName forReplyBubble:(BOOL)forReplyBubbble {
 	NSString *extension = [[fileName.lowercaseString componentsSeparatedByString:@"."] lastObject];
 	UIImage *image;
 	NSString * text = fileName;
@@ -416,10 +416,10 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 			image = [UIImage imageNamed:@"file_default"];
 	}
 	
-	return [SwiftUtil textToImageWithDrawText:text inImage:image];
+	return [SwiftUtil textToImageWithDrawText:text inImage:image forReplyBubble:forReplyBubbble];
 }
 
-+ (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath; {
++ (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath forReplyBubble:(BOOL)forReplyBubble {
 	NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(content)];
 	NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 	if (!filePath) {
@@ -434,7 +434,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		image = [[UIImage alloc] initWithData:data];
 	}
 	if (image) return image;
-	else return [self getImageFromFileName:name];
+	else return [self getImageFromFileName:name  forReplyBubble:forReplyBubble];
 }
 
 +(LinphoneContent *) voiceContent:(LinphoneChatMessage *)message {
@@ -536,7 +536,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 					filePath = [LinphoneManager validFilePath:name];
 				}
 
-				image = [UIChatBubbleTextCell getImageFromContent:content filePath:filePath];
+				image = [UIChatBubbleTextCell getImageFromContent:content filePath:filePath forReplyBubble:false];
 			}
 			if (image) {
 				CGSize sSize = [self getMediaMessageSizefromOriginalSize:image.size withWidth:IMAGE_DEFAULT_WIDTH];

@@ -1592,7 +1592,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	NSFileCoordinator *co =[[NSFileCoordinator alloc] init];
 	NSError *error = nil;
 	[co coordinateReadingItemAtURL:url options:0 error:&error byAccessor:^(NSURL * _Nonnull newURL) {
-		UIImage *image = [UIChatBubbleTextCell getImageFromFileName:[newURL lastPathComponent]];
+		UIImage *image = [UIChatBubbleTextCell getImageFromFileName:[newURL lastPathComponent] forReplyBubble:false];
 		[_fileContext addObject:[NSData dataWithContentsOfURL:newURL] name:[newURL lastPathComponent] type:@"file" image:image];
 		[self refreshImageDrawer];
 	}];

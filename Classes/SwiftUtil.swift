@@ -21,10 +21,10 @@ import UIKit
 
 @objc class SwiftUtil: NSObject {
 	
-	@objc static func textToImage(drawText text: String, inImage image: UIImage) -> UIImage {
+	@objc static func textToImage(drawText text: String, inImage image: UIImage, forReplyBubble:Bool) -> UIImage {
 		let textColor = UIColor.black
-		let fontMax = UIFont.systemFont(ofSize: 30)
-		let backgroundColor = UIColor.white
+		let fontMax = UIFont.systemFont(ofSize: 12)
+		let backgroundColor = forReplyBubble ? UIColor(red: 246/255.0, green: 246/255.0, blue: 246/255.0, alpha: 1.0) : UIColor.white
 		
 		let size =  CGSize(width: 120, height: 120)
 		
@@ -34,22 +34,24 @@ import UIKit
 		backgroundColor.setFill()
 		context!.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
 		
-		image.draw(in: CGRect(origin: CGPoint(x: size.width/2 - (image.size.width)/2,y: 5), size: image.size))
+		let imageSize:CGSize = forReplyBubble ? CGSize(width: 80, height:80*(image.size.height / image.size.width)): image.size
 		
-		let label = UILabel(frame: CGRect(x: 0,y: 0,width: size.width,height: 50))
-		label.numberOfLines = 0
-		label.font = fontMax
-		label.adjustsFontSizeToFitWidth = true
-		label.text = text
-		label.textColor = textColor
-		label.textAlignment = .center
-		label.allowsDefaultTighteningForTruncation = true
-		label.lineBreakMode = .byTruncatingTail
-		imageWithLabel(label: label).draw(in: CGRect(origin: CGPoint(x:0,y: 60), size: CGSize(width: size.width,height: 50)))
-		let view = UIView(frame: CGRect(x: 0,y: 0,width: size.width,height: 50))
-		view.addSubview(label)
-		label.sizeToFit()
+		image.draw(in: CGRect(origin: CGPoint(x: size.width/2 - (imageSize.width)/2,y: (forReplyBubble ? size.height/2 : 90/2) - (imageSize.height)/2), size: imageSize))
 		
+		if (!forReplyBubble) {
+			let label = UILabel(frame: CGRect(x: 0,y: 0,width: size.width,height: 30))
+			label.numberOfLines = 1
+			label.font = fontMax
+			label.adjustsFontSizeToFitWidth = false
+			label.text = text
+			label.textColor = textColor
+			label.textAlignment = .center
+			label.allowsDefaultTighteningForTruncation = true
+			label.lineBreakMode = .byTruncatingMiddle
+			imageWithLabel(label: label).draw(in: CGRect(origin: CGPoint(x:5,y: 70), size: CGSize(width: size.width-10,height: 30)))
+			let view = UIView(frame: CGRect(x: 0,y: 0,width: size.width,height: 30))
+			view.addSubview(label)
+		}
 		
 		let newImage = UIGraphicsGetImageFromCurrentImageContext()
 		UIGraphicsEndImageContext()

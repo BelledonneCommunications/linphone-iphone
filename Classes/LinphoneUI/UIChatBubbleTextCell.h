@@ -76,8 +76,9 @@
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 + (UIImage *)getImageFromVideoUrl:(NSURL *)url;
-+ (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath;
-+ (UIImage *)getImageFromFileName:(NSString *)fileName;
++ (UIImage *)getImageFromContent:(LinphoneContent *)content filePath:(NSString *)filePath forReplyBubble:(BOOL)forReplyBubble;
++ (UIImage *)getImageFromFileName:(NSString *)fileName forReplyBubble:(BOOL)forReplyBubbble;
+
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessageForCbs:(LinphoneChatMessage *)message;

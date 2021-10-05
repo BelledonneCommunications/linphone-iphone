@@ -124,7 +124,7 @@
 		if (filePath == NULL) {
 			filePath = [LinphoneManager validFilePath:name];
 		}
-		[result addObject:[UIChatBubbleTextCell getImageFromContent:content filePath:filePath]];
+		[result addObject:[UIChatBubbleTextCell getImageFromContent:content filePath:filePath forReplyBubble:true]];
 	}
 	return result;
 }

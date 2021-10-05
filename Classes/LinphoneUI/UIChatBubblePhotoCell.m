@@ -140,7 +140,7 @@
 }
 
 - (void) loadFileAsset:(NSString *)name {
-	UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name];
+	UIImage *image = [UIChatBubbleTextCell getImageFromFileName:name  forReplyBubble:false];
 	[self loadImageAsset:nil image:image];
 	_imageGestureRecognizer.enabled = YES;
 	_finalImage.tag = FILE_ICON_TAG;
