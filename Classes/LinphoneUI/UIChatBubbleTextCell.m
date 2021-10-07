@@ -327,7 +327,7 @@
 				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 				NSString *filePath = [encrptedFilePaths valueForKey:name];
 				if (filePath == NULL) {
-					filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+					filePath = [LinphoneManager getValidFile:name];
 				}
 				[newfileContext addObject:[NSData dataWithContentsOfFile:filePath] name:name type:[NSString stringWithUTF8String:linphone_content_get_type(content)]];
 			}
@@ -441,7 +441,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 	NSString *type = [NSString stringWithUTF8String:linphone_content_get_type(content)];
 	NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 	if (!filePath) {
-		filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+		filePath = [LinphoneManager getValidFile:name];
 	}
 	
 	UIImage *image = nil;
@@ -502,7 +502,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 				NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
 				NSString *filePath=[encrptedFilePaths valueForKey:name];
 				if (filePath == NULL) {
-					filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+					filePath = [LinphoneManager getValidFile:name];
 				}
 
 				image = [UIChatBubbleTextCell getImageFromContent:content filePath:filePath];
@@ -562,7 +562,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 
 		CGSize originalImageSize = CGSizeMake(230, 50);
 		if (!filePath) {
-			filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+			filePath = [LinphoneManager getValidFile:fileName];
 		}
 		if (localFile) {
 			UIImage *image = nil;

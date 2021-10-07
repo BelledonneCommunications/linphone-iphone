@@ -901,7 +901,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	NSString *filePath = [LinphoneManager getValidFile:name];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:filePath]) {
 		NSData* data = [NSData dataWithContentsOfFile:filePath];
@@ -1325,17 +1325,17 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 + (NSData *)getCacheFileData: (NSString *)name {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	NSString *filePath = [LinphoneManager getValidFile:name];
 	return [NSData dataWithContentsOfFile:filePath];
 }
 
 + (NSURL *)getCacheFileUrl: (NSString *)name {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	NSString *filePath = [LinphoneManager getValidFile:name];
 	return [NSURL fileURLWithPath:filePath];
 }
 
 + (void)writeFileInCache:(NSData *)data name:(NSString *)name {
-	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	NSString *filePath =[LinphoneManager getValidFile:name];
 	if (name || [name isEqualToString:@""]) {
 		LOGW(@"try to write file in %@", filePath);
 	}
@@ -1383,7 +1383,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
         return [data writeToURL:fileURL atomically:TRUE];
     } else {
         // get the url of localfile
-        NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:fileName];
+		NSString *filePath = [LinphoneManager getValidFile:fileName];
         NSURL *localURL = nil;
 		if (fileName || [fileName isEqualToString:@""]) {
 			LOGW(@"[writeFileInICloud] try to write file in %@", filePath);

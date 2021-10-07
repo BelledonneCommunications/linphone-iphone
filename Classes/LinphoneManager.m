@@ -1885,6 +1885,24 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	return fullPath;
 }
 
++ (NSString *)getValidFile:(NSString *)name {
+	// At present, downlaod_dir is .../Library/Images, but during sometimes download_dir was .../Library/Caches
+	NSString *filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+		return filePath;
+	}
+
+	NSString *objcGroupdId = [NSString stringWithCString:kLinphoneMsgNotificationAppGroupId.UTF8String encoding:[NSString defaultCStringEncoding]];
+	NSURL *basePath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:objcGroupdId];
+	NSString * fullPath = [[basePath path] stringByAppendingString:@"/Library/Caches/"];
+	fullPath = [fullPath stringByAppendingPathComponent:name];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+		[[NSFileManager defaultManager] copyItemAtPath:fullPath toPath:filePath error:nil];
+	}
+
+	return fullPath;
+}
+
 + (NSString *)oldPreferenceFile:(NSString *)file {
 	// migration
 	LinphoneFactory *factory = linphone_factory_get();

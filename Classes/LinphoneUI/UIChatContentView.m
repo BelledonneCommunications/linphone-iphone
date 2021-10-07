@@ -48,7 +48,7 @@
 	} else {
 		if (_filePath == NULL) {
 			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
-			_filePath = [[LinphoneManager cacheDirectory] stringByAppendingPathComponent:name];
+			_filePath = [LinphoneManager getValidFile:name];
 		}
 		UIImage *image = [UIChatBubbleTextCell getImageFromContent:content filePath:_filePath];
 		[self setImage:image];
