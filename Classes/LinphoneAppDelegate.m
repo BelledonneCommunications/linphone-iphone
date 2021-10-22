@@ -270,7 +270,7 @@
 		[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
 			dispatch_async(dispatch_get_main_queue(), ^{
 				if ([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized) {
-					[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+					[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Gallery permission", nil) message:NSLocalizedString(@"Gallery access permission not authorized ", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
 				}
 			});
 		}];
