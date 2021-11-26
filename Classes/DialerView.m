@@ -21,6 +21,7 @@
 
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "linphoneapp-Swift.h"
 
 @implementation DialerView
 
@@ -397,7 +398,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance popToView:CallView.compositeViewDescription];
+	[PhoneMainView.instance popToView:ActiveCallOrConferenceView.compositeViewDescription];
 }
 
 - (IBAction)onAddressChange:(id)sender {

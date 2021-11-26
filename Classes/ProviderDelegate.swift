@@ -92,7 +92,7 @@ class ProviderDelegate: NSObject {
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 				if CallManager.instance().endCallkit {
-					let call = CallManager.instance().lc?.getCallByCallid(callId: callId!)
+					let call = CallManager.instance().core?.getCallByCallid(callId: callId!)
 					if (call?.state == .PushIncomingReceived) {
 						try? call?.terminate()
 					}
@@ -184,7 +184,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			CallManager.instance().backgroundContextCameraIsEnabled = call!.params?.videoEnabled ?? false
 			call?.cameraEnabled = false // Disable camera while app is not on foreground
 		}
-		CallManager.instance().lc?.configureAudioSession()
+		CallManager.instance().core?.configureAudioSession()
 		CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		action.fulfill()
 	}
@@ -199,8 +199,8 @@ extension ProviderDelegate: CXProviderDelegate {
 		}
 
 		do {
-			if (CallManager.instance().lc?.isInConference ?? false && action.isOnHold) {
-				try CallManager.instance().lc?.leaveConference()
+			if (CallManager.instance().core?.isInConference ?? false && action.isOnHold) {
+				try CallManager.instance().core?.leaveConference()
 				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: call-id: [\(String(describing: callId))] leaving conference")
 				NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 				return
@@ -212,11 +212,10 @@ extension ProviderDelegate: CXProviderDelegate {
 				if (call!.params?.localConferenceMode ?? false) {
 					return
 				}
-				CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
 				try call!.pause()
 			} else {
-				if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
-					try CallManager.instance().lc?.enterConference()
+				if (CallManager.instance().core?.conference != nil && CallManager.instance().core?.callsNb ?? 0 > 1) {
+					try CallManager.instance().core?.enterConference()
 					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 				} else {
 					try call!.resume()
@@ -245,7 +244,7 @@ extension ProviderDelegate: CXProviderDelegate {
 				action.fail()
 			}
 
-			CallManager.instance().lc?.configureAudioSession()
+			CallManager.instance().core?.configureAudioSession()
 			try CallManager.instance().doCall(addr: addr!, isSas: callInfo?.sasEnabled ?? false)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call started failed because \(error)")
@@ -256,7 +255,7 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call grouped callUUid : \(action.callUUID) with callUUID: \(String(describing: action.callUUIDToGroupWith)).")
-		CallManager.instance().addAllToConference()
+		CallManager.instance().addAllToLocalConference()
 		action.fulfill()
 	}
 
@@ -264,7 +263,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: Call muted with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-		CallManager.instance().lc!.micEnabled = !CallManager.instance().lc!.micEnabled
+		CallManager.instance().core!.micEnabled = !CallManager.instance().core!.micEnabled
 		action.fulfill()
 	}
 
@@ -297,12 +296,12 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session activated.")
-		CallManager.instance().lc?.activateAudioSession(actived: true)
+		CallManager.instance().core?.activateAudioSession(actived: true)
 	}
 
 	func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session deactivated.")
-		CallManager.instance().lc?.activateAudioSession(actived: false)
+		CallManager.instance().core?.activateAudioSession(actived: false)
 	}
 }
 

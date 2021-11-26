@@ -32,6 +32,11 @@
 + (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ...;
 + (void)enableLogs:(OrtpLogLevel)level;
 + (void)directLog:(OrtpLogLevel)level text:(NSString *)text;
++ (void)d:(NSString *)text;
++ (void)i:(NSString *)text;
++ (void)w:(NSString *)text;
++ (void)e:(NSString *)text;
++ (void)f:(NSString *)text;
 
 void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args);
 @end

@@ -140,7 +140,7 @@
 			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
 					linphone_call_accept(call);
-					[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+					[PhoneMainView.instance changeCurrentView:ActiveCallOrConferenceView.compositeViewDescription];
 				} else {
 					[PhoneMainView.instance displayIncomingCall:call];
 				}
@@ -321,6 +321,8 @@
         return NO;
     }
 
+	VIEW(ActiveCallOrConferenceView); // to get created and all observers added
+	
 	return YES;
 }
 
@@ -409,16 +411,9 @@
 }
 
 // used for callkit. Called when active video.
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
-{
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
 	
-	
-	if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
-		LOGI(@"CallKit: satrt video.");
-		CallView *view = VIEW(CallView);
-		[view.videoButton setOn];
-	}
-	if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) { // tel URI handler.
+	if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]||[userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) { // tel URI handler.
 		INInteraction *interaction = userActivity.interaction;
 		INStartAudioCallIntent *startAudioCallIntent = (INStartAudioCallIntent *)interaction.intent;
 		INPerson *contact = startAudioCallIntent.contacts[0];
@@ -537,8 +532,7 @@
 
 	if ([response.actionIdentifier isEqual:@"Answer"]) {
 		// use the standard handler
-		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-		linphone_call_accept(call);
+		[CallManager.instance acceptCallWithCall:call hasVideo:NO];
 	} else if ([response.actionIdentifier isEqual:@"Decline"]) {
 		linphone_call_decline(call, LinphoneReasonDeclined);
 	} else if ([response.actionIdentifier isEqual:@"Reply"]) {
@@ -575,7 +569,6 @@
 			return;
 
 		[[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
-		[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 		[CallManager.instance acceptVideoWithCall:call confirm:TRUE];
   	} else if ([response.actionIdentifier isEqual:@"Confirm"]) {
 	  	if (linphone_core_get_current_call(LC) == call)
@@ -608,7 +601,7 @@
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
 			if (!call) return;
-			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+			[PhoneMainView.instance changeCurrentView:ActiveCallOrConferenceView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
 		  	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
 																  cancelMessage:nil
@@ -692,8 +685,7 @@
 		if ([notification.category isEqualToString:@"incoming_call"]) {
 			if ([identifier isEqualToString:@"answer"]) {
 				// use the standard handler
-				[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-				linphone_call_accept(call);
+				[CallManager.instance acceptCallWithCall:call hasVideo:NO];
 			} else if ([identifier isEqualToString:@"decline"]) {
 				LinphoneCall *call = linphone_core_get_current_call(LC);
 				if (call)
@@ -730,8 +722,7 @@
 	if ([notification.category isEqualToString:@"incoming_call"]) {
 		if ([identifier isEqualToString:@"answer"]) {
 			// use the standard handler
-			[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-			linphone_call_accept(call);
+			[CallManager.instance acceptCallWithCall:call hasVideo:NO];
 		} else if ([identifier isEqualToString:@"decline"]) {
 			LinphoneCall *call = linphone_core_get_current_call(LC);
 			if (call)

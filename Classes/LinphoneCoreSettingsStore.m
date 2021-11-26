@@ -25,6 +25,8 @@
 #include "linphone/lpconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
+#import "linphoneapp-Swift.h"
+
 
 @implementation LinphoneCoreSettingsStore
 

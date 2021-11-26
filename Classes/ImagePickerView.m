@@ -301,96 +301,83 @@ static UICompositeViewDescription *compositeDescription = nil;
 					   inView:(UIView *)ipadView
 	 withDocumentMenuDelegate:(id<UIDocumentMenuDelegate>)documentMenuDelegate {
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
-	  ImagePickerView *view = VIEW(ImagePickerView);
-	  view.sourceType = type;
-
-	  // Displays a control that allows the user to choose picture or
-	  // movie capture, if both are available:
-	  view.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeMovie,(NSString *)kUTTypeImage,nil];
-
-	  // Hides the controls for moving & scaling pictures, or for
-	  // trimming movies. To instead show the controls, use YES.
-	  view.allowsEditing = NO;
-	  view.imagePickerDelegate = delegate;
-
-	  if (IPAD && ipadView && ipadPopoverView) {
-		  UIView *iterview = ipadPopoverView;
-		  CGRect ipadPopoverPosition = iterview.frame;
-		  do {
-			  ipadPopoverPosition =
-				  [iterview.superview convertRect:ipadPopoverPosition toView:iterview.superview.superview];
-			  iterview = iterview.superview;
-		  } while (iterview && iterview.superview != ipadView);
-		  [view.popoverController presentPopoverFromRect:ipadPopoverPosition
-												  inView:ipadView
-								permittedArrowDirections:UIPopoverArrowDirectionAny
-												animated:FALSE];
-	  } else {
-		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	  }
-	};
-    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
-        DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
-        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-            [sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
-                                block:^() {
-                                    if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] !=  AVAuthorizationStatusAuthorized ) {
-                                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-                                        return;
-                                    }
-                                    block(UIImagePickerControllerSourceTypeCamera);
-                                }];
-        }
-        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-            [sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
-                                block:^() {
-                                    block(UIImagePickerControllerSourceTypePhotoLibrary);
-                                }];
-        }
+		ImagePickerView *view = VIEW(ImagePickerView);
+		view.sourceType = type;
 		
-		if (documentMenuDelegate) {
-			[sheet addButtonWithTitle:NSLocalizedString(@"Document",nil) block:^(){
-				[self pickDocumentForDelegate:documentMenuDelegate];
-			}];
+		// Displays a control that allows the user to choose picture or
+		// movie capture, if both are available:
+		view.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeMovie,(NSString *)kUTTypeImage,nil];
+		
+		// Hides the controls for moving & scaling pictures, or for
+		// trimming movies. To instead show the controls, use YES.
+		view.allowsEditing = NO;
+		view.imagePickerDelegate = delegate;
+		
+		if (IPAD && ipadView && ipadPopoverView) {
+			UIView *iterview = ipadPopoverView;
+			CGRect ipadPopoverPosition = iterview.frame;
+			do {
+				ipadPopoverPosition =
+				[iterview.superview convertRect:ipadPopoverPosition toView:iterview.superview.superview];
+				iterview = iterview.superview;
+			} while (iterview && iterview.superview != ipadView);
+			[view.popoverController presentPopoverFromRect:ipadPopoverPosition
+													inView:ipadView
+								  permittedArrowDirections:UIPopoverArrowDirectionAny
+												  animated:FALSE];
+		} else {
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		}
-        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-        
-        [sheet showInView:PhoneMainView.instance.view];
-    } else {
-        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
-                    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
-                    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-                        [sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
-                                            block:^() {
-                                                if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] !=  AVAuthorizationStatusAuthorized ) {
-                                                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-                                                    return;
-                                                }
-                                                block(UIImagePickerControllerSourceTypeCamera);
-                                            }];
-                    }
-                    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-                        [sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
-                                            block:^() {
-                                                block(UIImagePickerControllerSourceTypePhotoLibrary);
-                                            }];
-                    }
-					if (documentMenuDelegate) {
-						[sheet addButtonWithTitle:NSLocalizedString(@"Document",nil) block:^(){
-							[self pickDocumentForDelegate:documentMenuDelegate];
-						}];
-					}
-                    [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-                    
-                    [sheet showInView:PhoneMainView.instance.view];
-                } else {
-                    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-                }
-            });
-        }];
-    }
+	};
+	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
+							block:^() {
+			if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] !=  AVAuthorizationStatusAuthorized ) {
+				[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+				return;
+			}
+			if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized)
+				block(UIImagePickerControllerSourceTypeCamera);
+			else {
+				[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+							block(UIImagePickerControllerSourceTypeCamera);
+						} else {
+							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Ok", nil] show];
+						}
+					});
+				}];
+			}
+		}];
+	}
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
+							block:^() {
+			if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized)
+				block(UIImagePickerControllerSourceTypePhotoLibrary);
+			else {
+				[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+							block(UIImagePickerControllerSourceTypePhotoLibrary);
+						} else {
+							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Ok", nil] show];
+						}
+					});
+				}];
+			}
+		}];
+	}
+	if (documentMenuDelegate) {
+		[sheet addButtonWithTitle:NSLocalizedString(@"Document",nil) block:^(){
+			[self pickDocumentForDelegate:documentMenuDelegate];
+		}];
+	}
+	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+	
+	[sheet showInView:PhoneMainView.instance.view];
 }
 
 +(void) pickDocumentForDelegate:(id<UIDocumentMenuDelegate>)documentMenuDelegate {
