@@ -102,7 +102,7 @@ class ProviderDelegate: NSObject {
 				let code = (error as NSError?)?.code
 				switch code {
 				case CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue:
-					callInfo?.reason = Reason.DoNotDisturb
+					callInfo?.reason = Reason.Busy	// This answer is only for this device. Using Reason.DoNotDisturb will make all other end point stop ringing.
 				case CXErrorCodeIncomingCallError.filteredByBlockList.rawValue:
 					callInfo?.reason = Reason.DoNotDisturb
 				default:
