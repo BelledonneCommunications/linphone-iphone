@@ -51,7 +51,7 @@ import AVFoundation
 	@objc var backgroundContextCameraIsEnabled : Bool = false
 
 	fileprivate override init() {
-		providerDelegate = ProviderDelegate()
+		providerDelegate = ProviderDelegate.shared
 		callController = CXCallController()
 	}
 
@@ -61,6 +61,7 @@ import AVFoundation
 		}
 		return theCallManager!
 	}
+
 
 	@objc func setCore(core: OpaquePointer) {
 		self.core = Core.getSwiftObject(cObject: core)

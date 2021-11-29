@@ -53,7 +53,8 @@ import os
 * A delegate to support callkit.
 */
 class ProviderDelegate: NSObject {
-	private let provider: CXProvider
+	static var shared = ProviderDelegate()
+	let provider: CXProvider
 	var uuids: [String : UUID] = [:]
 	var callInfos: [UUID : CallInfo] = [:]
 
@@ -63,21 +64,27 @@ class ProviderDelegate: NSObject {
 		provider.setDelegate(self, queue: nil)
 	}
 
-	static var providerConfiguration: CXProviderConfiguration = {
-		let providerConfiguration = CXProviderConfiguration(localizedName: Bundle.main.infoDictionary!["CFBundleName"] as! String)
-		providerConfiguration.ringtoneSound = "notes_of_the_optimistic.caf"
-		providerConfiguration.supportsVideo = true
-		providerConfiguration.iconTemplateImageData = UIImage(named: "callkit_logo")?.pngData()
-		providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
-
-		providerConfiguration.maximumCallsPerCallGroup = 10
-		providerConfiguration.maximumCallGroups = 10
-
-		//not show app's calls in tel's history
-		//providerConfiguration.includesCallsInRecents = YES;
-		
-		return providerConfiguration
-	}()
+	static var providerConfiguration: CXProviderConfiguration  {
+		get {
+			let providerConfiguration = CXProviderConfiguration(localizedName: Bundle.main.infoDictionary!["CFBundleName"] as! String)
+			providerConfiguration.ringtoneSound = ConfigManager.instance().lpConfigBoolForKey(key: "use_device_ringtone") ? nil : "notes_of_the_optimistic.caf"
+			providerConfiguration.supportsVideo = true
+			providerConfiguration.iconTemplateImageData = UIImage(named: "callkit_logo")?.pngData()
+			providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
+			
+			providerConfiguration.maximumCallsPerCallGroup = 10
+			providerConfiguration.maximumCallGroups = 10
+			
+			//not show app's calls in tel's history
+			//providerConfiguration.includesCallsInRecents = YES;
+			
+			return providerConfiguration
+		}
+	}
+	
+	@objc static func resetSharedProviderConfiguration() {
+		shared.provider.configuration = ProviderDelegate.providerConfiguration
+	}
 
 	func reportIncomingCall(call:Call?, uuid: UUID, handle: String, hasVideo: Bool, displayName:String) {
 		let update = CXCallUpdate()

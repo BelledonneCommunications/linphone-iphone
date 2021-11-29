@@ -8,6 +8,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Use device ringtone</string>
+			<key>Key</key>
+			<string>use_device_ringtone</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Send inband DTMFs</string>
 			<key>Key</key>
 			<string>rfc_dtmf_preference</string>
