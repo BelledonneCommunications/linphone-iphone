@@ -17,27 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Foundation
+import SnapKit
+import UIKit
 
-extension Optional {
-	var logable: Any {
-		switch self {
-		case .none:
-			return "<nil>|⭕️"
-		case let .some(value):
-			return value
+extension UIButton {
+	func addSidePadding(p:CGFloat = 10) {
+		if let w = titleLabel?.textWidth {
+			width(w+p).done()
 		}
 	}
 }
-
-extension Optional: CustomStringConvertible {
-
-	public var description: String {
-		switch self {
-		case .some(let wrappedValue):
-			return "\(wrappedValue)"
-		default:
-			return "<nil>|⭕️"
-		}
-	}
-}
-

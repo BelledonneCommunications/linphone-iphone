@@ -270,7 +270,7 @@
                                     <state key="disabled" image="contact_add_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
-                                        <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="230"/>
+                                        <action selector="onVoipConferenceCreateClick:" destination="-1" eventType="touchUpInside" id="230"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="224" userLabel="callButton" customClass="UICallButton">

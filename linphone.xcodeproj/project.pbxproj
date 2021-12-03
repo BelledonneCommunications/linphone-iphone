@@ -662,6 +662,9 @@
 		C61B1BF22667D075001A4E4A /* menu_security_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C61B1BF12667D075001A4E4A /* menu_security_default.png */; };
 		C61B1BF42667D202001A4E4A /* more_menu_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C61B1BF32667D202001A4E4A /* more_menu_default.png */; };
 		C61B1BF72667EC6B001A4E4A /* ephemeral_messages_color_A.png in Resources */ = {isa = PBXBuildFile; fileRef = C61B1BF62667EC6B001A4E4A /* ephemeral_messages_color_A.png */; };
+		C61E409B275A20A300CCE602 /* ConferenceSchedulingSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61E409A275A20A300CCE602 /* ConferenceSchedulingSummaryView.swift */; };
+		C61E409D275A94E300CCE602 /* UILabelExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61E409C275A94E300CCE602 /* UILabelExtensions.swift */; };
+		C61E409F275A962100CCE602 /* FormButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61E409E275A962100CCE602 /* FormButton.swift */; };
 		C622E3EF26A81290004F5434 /* vr_stop.png in Resources */ = {isa = PBXBuildFile; fileRef = C622E3E926A8128F004F5434 /* vr_stop.png */; };
 		C622E3F026A81290004F5434 /* vr_wave.png in Resources */ = {isa = PBXBuildFile; fileRef = C622E3EA26A8128F004F5434 /* vr_wave.png */; };
 		C622E3F126A81290004F5434 /* vr_on.png in Resources */ = {isa = PBXBuildFile; fileRef = C622E3EB26A8128F004F5434 /* vr_on.png */; };
@@ -767,6 +770,8 @@
 		C6824FBA27219D890043D4FC /* IncomingCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6824FB927219D890043D4FC /* IncomingCallView.swift */; };
 		C683B20E2722702300D4E15C /* VoipTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C683B20D2722702300D4E15C /* VoipTheme.swift */; };
 		C683B213272276CF00D4E15C /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C683B212272276CF00D4E15C /* UIColorExtensions.swift */; };
+		C690CCB1275764CD00609077 /* ConferenceSchedulingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C690CCB0275764CD00609077 /* ConferenceSchedulingView.swift */; };
+		C690CCB42757683800609077 /* NavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C690CCB32757683800609077 /* NavigationView.swift */; };
 		C6A1BB3526E8815400540D50 /* menu_info.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3126E8815300540D50 /* menu_info.png */; };
 		C6A1BB3626E8815400540D50 /* menu_forward_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3226E8815400540D50 /* menu_forward_default.png */; };
 		C6A1BB3726E8815400540D50 /* menu_copy_text_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */; };
@@ -802,10 +807,26 @@
 		C6D09F4127428626003C2173 /* IceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D09F4027428626003C2173 /* IceState.swift */; };
 		C6D09F43274288D4003C2173 /* PayloadType.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D09F42274288D4003C2173 /* PayloadType.swift */; };
 		C6D09F4B27438707003C2173 /* CallsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D09F4A27438706003C2173 /* CallsListView.swift */; };
+		C6D1E41B275937A0008EB388 /* UIButtonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D1E41A275937A0008EB388 /* UIButtonExtensions.swift */; };
+		C6D1E41E2759396B008EB388 /* voip_checkbox_unchecked.png in Resources */ = {isa = PBXBuildFile; fileRef = C6D1E41C2759396B008EB388 /* voip_checkbox_unchecked.png */; };
+		C6D1E41F2759396B008EB388 /* voip_checkbox_checked.png in Resources */ = {isa = PBXBuildFile; fileRef = C6D1E41D2759396B008EB388 /* voip_checkbox_checked.png */; };
+		C6D1E42127593A30008EB388 /* StyledCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D1E42027593A30008EB388 /* StyledCheckBox.swift */; };
+		C6D1E42427595988008EB388 /* security_toggle_icon_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = C6D1E42227595987008EB388 /* security_toggle_icon_grey.png */; };
+		C6D1E42527595988008EB388 /* security_toggle_icon_green.png in Resources */ = {isa = PBXBuildFile; fileRef = C6D1E42327595988008EB388 /* security_toggle_icon_green.png */; };
 		C6D1EC4A274D212B0091881C /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = C6D1EC49274D212B0091881C /* UICamSwitch.m */; };
 		C6D52B45274648E500904660 /* VoipGridParticipantCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D52B44274648E500904660 /* VoipGridParticipantCell.swift */; };
 		C6DA657C261C950C0020CB43 /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
+		C6DB1DE22757E35F00A22704 /* StyledTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DB1DE12757E35F00A22704 /* StyledTextView.swift */; };
+		C6DB1DE42758E49E00A22704 /* StyledSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DB1DE32758E49E00A22704 /* StyledSwitch.swift */; };
+		C6DB1DE6275903C500A22704 /* StyledDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DB1DE5275903C500A22704 /* StyledDatePicker.swift */; };
+		C6DB1DE82759136100A22704 /* StyledValuePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DB1DE72759136000A22704 /* StyledValuePicker.swift */; };
 		C6EA2F4827514D09008E60F8 /* voip_call_forward.png in Resources */ = {isa = PBXBuildFile; fileRef = C6EA2F4727514D08008E60F8 /* voip_call_forward.png */; };
+		C6EA2F592754C91C008E60F8 /* ScheduledConferenceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EA2F582754C91C008E60F8 /* ScheduledConferenceData.swift */; };
+		C6EA2F5F2754CFB0008E60F8 /* TimestampUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EA2F5E2754CFB0008E60F8 /* TimestampUtils.swift */; };
+		C6EA2F632754DBBE008E60F8 /* TimeZoneData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EA2F622754DBBE008E60F8 /* TimeZoneData.swift */; };
+		C6EA2F672754DC45008E60F8 /* ConferenceSchedulingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EA2F662754DC45008E60F8 /* ConferenceSchedulingViewModel.swift */; };
+		C6EA2F6B2754DDF9008E60F8 /* Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EA2F6A2754DDF9008E60F8 /* Duration.swift */; };
+		C6EA2F6D2754E3DC008E60F8 /* MediatorLiveData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6EA2F6C2754E3DC008E60F8 /* MediatorLiveData.swift */; };
 		C6F2D4EF27392D970071BA52 /* CallsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F2D4EE27392D960071BA52 /* CallsViewModel.swift */; };
 		C6F2D4F1273935860071BA52 /* CallExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F2D4F0273935860071BA52 /* CallExtensions.swift */; };
 		C6F2D4F32739475C0071BA52 /* ActiveCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F2D4F22739475C0071BA52 /* ActiveCallView.swift */; };
@@ -1800,6 +1821,9 @@
 		C61B1BF12667D075001A4E4A /* menu_security_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_security_default.png; sourceTree = "<group>"; };
 		C61B1BF32667D202001A4E4A /* more_menu_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = more_menu_default.png; sourceTree = "<group>"; };
 		C61B1BF62667EC6B001A4E4A /* ephemeral_messages_color_A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ephemeral_messages_color_A.png; sourceTree = "<group>"; };
+		C61E409A275A20A300CCE602 /* ConferenceSchedulingSummaryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceSchedulingSummaryView.swift; sourceTree = "<group>"; };
+		C61E409C275A94E300CCE602 /* UILabelExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UILabelExtensions.swift; sourceTree = "<group>"; };
+		C61E409E275A962100CCE602 /* FormButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormButton.swift; sourceTree = "<group>"; };
 		C622E3E926A8128F004F5434 /* vr_stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vr_stop.png; sourceTree = "<group>"; };
 		C622E3EA26A8128F004F5434 /* vr_wave.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vr_wave.png; sourceTree = "<group>"; };
 		C622E3EB26A8128F004F5434 /* vr_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vr_on.png; sourceTree = "<group>"; };
@@ -1906,6 +1930,8 @@
 		C6824FB927219D890043D4FC /* IncomingCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallView.swift; sourceTree = "<group>"; };
 		C683B20D2722702300D4E15C /* VoipTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoipTheme.swift; sourceTree = "<group>"; };
 		C683B212272276CF00D4E15C /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
+		C690CCB0275764CD00609077 /* ConferenceSchedulingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceSchedulingView.swift; sourceTree = "<group>"; };
+		C690CCB32757683800609077 /* NavigationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationView.swift; sourceTree = "<group>"; };
 		C6A1BB3126E8815300540D50 /* menu_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_info.png; sourceTree = "<group>"; };
 		C6A1BB3226E8815400540D50 /* menu_forward_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_forward_default.png; sourceTree = "<group>"; };
 		C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_copy_text_default.png; sourceTree = "<group>"; };
@@ -1942,11 +1968,27 @@
 		C6D09F4027428626003C2173 /* IceState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IceState.swift; sourceTree = "<group>"; };
 		C6D09F42274288D4003C2173 /* PayloadType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PayloadType.swift; sourceTree = "<group>"; };
 		C6D09F4A27438706003C2173 /* CallsListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallsListView.swift; sourceTree = "<group>"; };
+		C6D1E41A275937A0008EB388 /* UIButtonExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButtonExtensions.swift; sourceTree = "<group>"; };
+		C6D1E41C2759396B008EB388 /* voip_checkbox_unchecked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_checkbox_unchecked.png; sourceTree = "<group>"; };
+		C6D1E41D2759396B008EB388 /* voip_checkbox_checked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_checkbox_checked.png; sourceTree = "<group>"; };
+		C6D1E42027593A30008EB388 /* StyledCheckBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledCheckBox.swift; sourceTree = "<group>"; };
+		C6D1E42227595987008EB388 /* security_toggle_icon_grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toggle_icon_grey.png; sourceTree = "<group>"; };
+		C6D1E42327595988008EB388 /* security_toggle_icon_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toggle_icon_green.png; sourceTree = "<group>"; };
 		C6D1EC48274D212A0091881C /* UICamSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICamSwitch.h; sourceTree = "<group>"; };
 		C6D1EC49274D212B0091881C /* UICamSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICamSwitch.m; sourceTree = "<group>"; };
 		C6D52B44274648E500904660 /* VoipGridParticipantCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipGridParticipantCell.swift; sourceTree = "<group>"; };
 		C6DA657B261C950C0020CB43 /* VFSUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VFSUtil.swift; sourceTree = "<group>"; };
+		C6DB1DE12757E35F00A22704 /* StyledTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledTextView.swift; sourceTree = "<group>"; };
+		C6DB1DE32758E49E00A22704 /* StyledSwitch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledSwitch.swift; sourceTree = "<group>"; };
+		C6DB1DE5275903C500A22704 /* StyledDatePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledDatePicker.swift; sourceTree = "<group>"; };
+		C6DB1DE72759136000A22704 /* StyledValuePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledValuePicker.swift; sourceTree = "<group>"; };
 		C6EA2F4727514D08008E60F8 /* voip_call_forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_call_forward.png; sourceTree = "<group>"; };
+		C6EA2F582754C91C008E60F8 /* ScheduledConferenceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferenceData.swift; sourceTree = "<group>"; };
+		C6EA2F5E2754CFB0008E60F8 /* TimestampUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimestampUtils.swift; sourceTree = "<group>"; };
+		C6EA2F622754DBBE008E60F8 /* TimeZoneData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneData.swift; sourceTree = "<group>"; };
+		C6EA2F662754DC45008E60F8 /* ConferenceSchedulingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceSchedulingViewModel.swift; sourceTree = "<group>"; };
+		C6EA2F6A2754DDF9008E60F8 /* Duration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Duration.swift; sourceTree = "<group>"; };
+		C6EA2F6C2754E3DC008E60F8 /* MediatorLiveData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediatorLiveData.swift; sourceTree = "<group>"; };
 		C6F2D4EE27392D960071BA52 /* CallsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallsViewModel.swift; sourceTree = "<group>"; };
 		C6F2D4F0273935860071BA52 /* CallExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallExtensions.swift; sourceTree = "<group>"; };
 		C6F2D4F22739475C0071BA52 /* ActiveCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActiveCallView.swift; sourceTree = "<group>"; };
@@ -2220,6 +2262,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C6EA2F492752237C008E60F8 /* Conference */,
 				C65A5D41272184CE005BA038 /* SwiftUtil */,
 				C65A5D2D2721683B005BA038 /* Voip */,
 				22E0A81D111C44E100B04932 /* AboutView.h */,
@@ -2611,6 +2654,10 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				C6D1E42327595988008EB388 /* security_toggle_icon_green.png */,
+				C6D1E42227595987008EB388 /* security_toggle_icon_grey.png */,
+				C6D1E41D2759396B008EB388 /* voip_checkbox_checked.png */,
+				C6D1E41C2759396B008EB388 /* voip_checkbox_unchecked.png */,
 				C6EA2F4727514D08008E60F8 /* voip_call_forward.png */,
 				C6277DA7274BF1CD00406FB9 /* voip_radio_off.png */,
 				C6277DA6274BF1CD00406FB9 /* voip_radio_on.png */,
@@ -3313,6 +3360,7 @@
 			isa = PBXGroup;
 			children = (
 				C65A5D3727216CC0005BA038 /* MutableLiveData.swift */,
+				C6EA2F6C2754E3DC008E60F8 /* MediatorLiveData.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -3320,6 +3368,8 @@
 		C65A5D41272184CE005BA038 /* SwiftUtil */ = {
 			isa = PBXGroup;
 			children = (
+				C690CCB22757674700609077 /* GenericViews */,
+				C6EA2F5E2754CFB0008E60F8 /* TimestampUtils.swift */,
 				C683B211272276C100D4E15C /* Extensions */,
 				C65A5D3427216CAB005BA038 /* ViewModel */,
 			);
@@ -3330,10 +3380,16 @@
 			isa = PBXGroup;
 			children = (
 				C6710F582722A9B800ED888F /* StyledLabel.swift */,
+				C6DB1DE32758E49E00A22704 /* StyledSwitch.swift */,
+				C6DB1DE5275903C500A22704 /* StyledDatePicker.swift */,
+				C6DB1DE72759136000A22704 /* StyledValuePicker.swift */,
+				C6D1E42027593A30008EB388 /* StyledCheckBox.swift */,
+				C6DB1DE12757E35F00A22704 /* StyledTextView.swift */,
 				C6710FD82722BD0100ED888F /* UICallTimer.swift */,
 				C6710F4E2722903200ED888F /* RotatingSpinner.swift */,
 				C6710FE02722F0E400ED888F /* Avatar.swift */,
 				C6710FE82723DD7D00ED888F /* CallControlButton.swift */,
+				C61E409E275A962100CCE602 /* FormButton.swift */,
 				C658614B273E5B5E00A0DBFC /* VoipExtraButton.swift */,
 				C6D09F3C273EE467003C2173 /* BouncingCounter.swift */,
 				C6F2D502273BAC030071BA52 /* ButtonWithStateBackgrounds.swift */,
@@ -3395,6 +3451,8 @@
 				C60D265B272AA0BD006238BB /* UIImageExtensions.swift */,
 				C6710FDB2722C3BB00ED888F /* UIVIewExtensions.swift */,
 				C6C65E88272723DC00E48FC6 /* UIVIewControllerExtensions.swift */,
+				C61E409C275A94E300CCE602 /* UILabelExtensions.swift */,
+				C6D1E41A275937A0008EB388 /* UIButtonExtensions.swift */,
 			);
 			path = IOS;
 			sourceTree = "<group>";
@@ -3449,6 +3507,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		C690CCB22757674700609077 /* GenericViews */ = {
+			isa = PBXGroup;
+			children = (
+				C690CCB32757683800609077 /* NavigationView.swift */,
+			);
+			path = GenericViews;
+			sourceTree = "<group>";
+		};
 		C6D52B4727481D3F00904660 /* Conference */ = {
 			isa = PBXGroup;
 			children = (
@@ -3459,6 +3525,43 @@
 				C67C97B0274FB4C10074A0D8 /* VoipConferenceDisplayModeSelectionView.swift */,
 			);
 			path = Conference;
+			sourceTree = "<group>";
+		};
+		C6EA2F492752237C008E60F8 /* Conference */ = {
+			isa = PBXGroup;
+			children = (
+				C6EA2F4C2754C691008E60F8 /* data */,
+				C6EA2F4B2754C683008E60F8 /* views */,
+				C6EA2F4D2754C69F008E60F8 /* viewmodels */,
+			);
+			path = Conference;
+			sourceTree = "<group>";
+		};
+		C6EA2F4B2754C683008E60F8 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				C690CCB0275764CD00609077 /* ConferenceSchedulingView.swift */,
+				C61E409A275A20A300CCE602 /* ConferenceSchedulingSummaryView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		C6EA2F4C2754C691008E60F8 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				C6EA2F6A2754DDF9008E60F8 /* Duration.swift */,
+				C6EA2F622754DBBE008E60F8 /* TimeZoneData.swift */,
+				C6EA2F582754C91C008E60F8 /* ScheduledConferenceData.swift */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		C6EA2F4D2754C69F008E60F8 /* viewmodels */ = {
+			isa = PBXGroup;
+			children = (
+				C6EA2F662754DC45008E60F8 /* ConferenceSchedulingViewModel.swift */,
+			);
+			path = viewmodels;
 			sourceTree = "<group>";
 		};
 		D326483415887D4400930C67 /* Utils */ = {
@@ -4079,6 +4182,7 @@
 				633FEDFD1D3CD5590014B822 /* camera_switch_default@2x.png in Resources */,
 				633FEEC51D3CD55A0014B822 /* numpad_5_over.png in Resources */,
 				633FEE721D3CD5590014B822 /* history_all_default.png in Resources */,
+				C6D1E42527595988008EB388 /* security_toggle_icon_green.png in Resources */,
 				C6B4444326AAD0980076C517 /* file_default.png in Resources */,
 				615A283C2180789C0060F920 /* security_toogle_button@2x.png in Resources */,
 				633FEF0A1D3CD55A0014B822 /* options_transfer_call_default.png in Resources */,
@@ -4241,6 +4345,7 @@
 				633FEDF01D3CD5590014B822 /* call_transfer_disabled.png in Resources */,
 				633FEE351D3CD5590014B822 /* conference_exit_default@2x.png in Resources */,
 				C6710FCB2722B20000ED888F /* voip_remote_recording.png in Resources */,
+				C6D1E42427595988008EB388 /* security_toggle_icon_grey.png in Resources */,
 				C6710FAA2722B20000ED888F /* voip_conference_active_speaker.png in Resources */,
 				633FEECF1D3CD55A0014B822 /* numpad_6_over~ipad.png in Resources */,
 				61586B87217A17160038AC45 /* menu_assistant@2x.png in Resources */,
@@ -4253,6 +4358,7 @@
 				C6710FD62722B20000ED888F /* voip_conference_play_big.png in Resources */,
 				633FEDCA1D3CD5590014B822 /* call_outgoing.png in Resources */,
 				633FEDF81D3CD5590014B822 /* camera_disabled.png in Resources */,
+				C6D1E41F2759396B008EB388 /* voip_checkbox_checked.png in Resources */,
 				C6710FBD2722B20000ED888F /* voip_call_header_paused.png in Resources */,
 				8CB2B8FB1F86229E0015CEE2 /* next_disabled@2x.png in Resources */,
 				633FEEE91D3CD55A0014B822 /* numpad_9~ipad.png in Resources */,
@@ -4279,6 +4385,7 @@
 				633FEDE41D3CD5590014B822 /* call_status_incoming~ipad.png in Resources */,
 				633FEE4C1D3CD5590014B822 /* delete_field_default.png in Resources */,
 				633FEE391D3CD5590014B822 /* contact_add_default@2x.png in Resources */,
+				C6D1E41E2759396B008EB388 /* voip_checkbox_unchecked.png in Resources */,
 				633FEE741D3CD5590014B822 /* history_all_disabled.png in Resources */,
 				633FEE081D3CD5590014B822 /* chat_add_disabled.png in Resources */,
 				615A28422180C0870060F920 /* recording.png in Resources */,
@@ -4661,6 +4768,8 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/DropDown/DropDown.framework",
+				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${PODS_ROOT}/../../../../../../../Volumes/dada/bc/linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/bctoolbox-ios.framework",
@@ -4683,6 +4792,8 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DropDown.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManager.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-ios.framework",
@@ -4733,12 +4844,14 @@
 				C6710F5527229D5900ED888F /* LightDarkColor.swift in Sources */,
 				C6F2D4F9273A4CD70071BA52 /* SharedLayoutConstants.swift in Sources */,
 				C6D09F3F274273FB003C2173 /* CallStatsView.swift in Sources */,
+				C6EA2F632754DBBE008E60F8 /* TimeZoneData.swift in Sources */,
 				22F2508E107141E100AC9B3F /* DialerView.m in Sources */,
 				633756451B67D2B200E21BAD /* SideMenuView.m in Sources */,
 				C6F2D4F1273935860071BA52 /* CallExtensions.swift in Sources */,
 				C6710F5C2722AAED00ED888F /* UIDeviceExtensions.swift in Sources */,
 				C65A5D3027216B86005BA038 /* ActiveCallOrConferenceView.swift in Sources */,
 				8CD99A422090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m in Sources */,
+				C6D1E42127593A30008EB388 /* StyledCheckBox.swift in Sources */,
 				22E0A822111C44E100B04932 /* AboutView.m in Sources */,
 				633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
@@ -4748,6 +4861,8 @@
 				C6B04D63274B95D500F70559 /* VoipParticipantCell.swift in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				C683B213272276CF00D4E15C /* UIColorExtensions.swift in Sources */,
+				C61E409F275A962100CCE602 /* FormButton.swift in Sources */,
+				C690CCB1275764CD00609077 /* ConferenceSchedulingView.swift in Sources */,
 				C6710F512722932600ED888F /* UIImageViewExtensions.swift in Sources */,
 				630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */,
 				2214EBF312F86360002A5394 /* UIMutedMicroButton.m in Sources */,
@@ -4769,6 +4884,8 @@
 				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
 				C6D09F43274288D4003C2173 /* PayloadType.swift in Sources */,
 				6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */,
+				C6EA2F5F2754CFB0008E60F8 /* TimestampUtils.swift in Sources */,
+				C6DB1DE82759136100A22704 /* StyledValuePicker.swift in Sources */,
 				C6F2D4F72739861F0071BA52 /* RemotelyRecording.swift in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,
 				617C242A263022690042FB4A /* UIChatContentView.m in Sources */,
@@ -4784,6 +4901,7 @@
 				D35498211587716B000081D8 /* StatusBarView.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */,
 				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
+				C6DB1DE42758E49E00A22704 /* StyledSwitch.swift in Sources */,
 				63BE7A781D75BDF6000990EF /* ShopTableView.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
 				C6710F4F2722903200ED888F /* RotatingSpinner.swift in Sources */,
@@ -4794,6 +4912,7 @@
 				C6C98CD527453ED900059B55 /* ConferenceViewModel.swift in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatsListView.m in Sources */,
+				C6EA2F6D2754E3DC008E60F8 /* MediatorLiveData.swift in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsView.m in Sources */,
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
@@ -4817,6 +4936,7 @@
 				8C9C5E0D1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m in Sources */,
 				631098491D4660580041F2B3 /* CountryListView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
+				C6DB1DE22757E35F00A22704 /* StyledTextView.swift in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
 				C60D265627299C94006238BB /* ControlsViewModel.swift in Sources */,
@@ -4831,8 +4951,10 @@
 				C6B04D67274BD61300F70559 /* VoipConferenceActiveSpeakerView.swift in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableView.m in Sources */,
 				63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */,
+				C6DB1DE6275903C500A22704 /* StyledDatePicker.swift in Sources */,
 				C67C97B8274FD76B0074A0D8 /* AudioRouteUtils.swift in Sources */,
 				C6C98CE1274568F800059B55 /* VoipConferenceGridView.swift in Sources */,
+				C61E409B275A20A300CCE602 /* ConferenceSchedulingSummaryView.swift in Sources */,
 				D3C6526715AC1A8F0092A874 /* UIContactDetailsCell.m in Sources */,
 				631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */,
@@ -4845,6 +4967,7 @@
 				D35860D615B549B500513429 /* Utils.m in Sources */,
 				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,
 				D3807FBF15C28940005BE9BC /* DCRoundSwitch.m in Sources */,
+				C61E409D275A94E300CCE602 /* UILabelExtensions.swift in Sources */,
 				D3807FC115C28940005BE9BC /* DCRoundSwitchKnobLayer.m in Sources */,
 				C6B04D61274B954500F70559 /* ParticipantsListView.swift in Sources */,
 				61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */,
@@ -4858,6 +4981,7 @@
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
 				D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */,
 				8CA70AE41F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m in Sources */,
+				C690CCB42757683800609077 /* NavigationView.swift in Sources */,
 				D3807FEE15C2894A005BE9BC /* IASKSettingsReader.m in Sources */,
 				C6C65E8B2727274A00E48FC6 /* NumpadView.swift in Sources */,
 				C6F2D501273B0EFC0071BA52 /* VoipDialog.swift in Sources */,
@@ -4875,8 +4999,11 @@
 				D3807FF615C2894A005BE9BC /* IASKSpecifier.m in Sources */,
 				C6710FE92723DD7D00ED888F /* CallControlButton.swift in Sources */,
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
+				C6EA2F592754C91C008E60F8 /* ScheduledConferenceData.swift in Sources */,
+				C6EA2F672754DC45008E60F8 /* ConferenceSchedulingViewModel.swift in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
+				C6D1E41B275937A0008EB388 /* UIButtonExtensions.swift in Sources */,
 				C6F2D4EF27392D970071BA52 /* CallsViewModel.swift in Sources */,
 				C6C65E89272723DC00E48FC6 /* UIVIewControllerExtensions.swift in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
@@ -4889,6 +5016,7 @@
 				C6C98CDB274541E400059B55 /* ConferenceParticipantDeviceData.swift in Sources */,
 				637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */,
 				C6710FDE2722D44B00ED888F /* IncomingOuntgoingCommonView.swift in Sources */,
+				C6EA2F6B2754DDF9008E60F8 /* Duration.swift in Sources */,
 				D378AB2A15DCDB4A0098505D /* ImagePickerView.m in Sources */,
 				C6710F592722A9B800ED888F /* StyledLabel.swift in Sources */,
 				22405F001601C19200B92522 /* ImageView.m in Sources */,
@@ -5476,7 +5604,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.20+3cffbc5\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.36+bd3b432\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5603,7 +5731,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.20+3cffbc5\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.36+bd3b432\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5729,7 +5857,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.20+3cffbc5\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.36+bd3b432\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5854,7 +5982,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.20+3cffbc5\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.36+bd3b432\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;

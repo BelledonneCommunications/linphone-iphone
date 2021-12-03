@@ -22,29 +22,29 @@ import Foundation
 import UIKit
 import SwiftUI
 
-class ButtonWithStateBackgrounds : UIButton {
+class FormButton : ButtonWithStateBackgrounds {
 
+	let button_radius = 3.0
+	let button_height = 40.0
+	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
-	init (backgroundStateColors: [UInt: LightDarkColor], iconName:String? = nil) {
-		super.init(frame: .zero)
-		backgroundStateColors.keys.forEach { (stateRawValue) in
-			setBackgroundColor(color: backgroundStateColors[stateRawValue]!.get(), forState: UIButton.State(rawValue: stateRawValue))
+	var title: String? {
+		didSet {
+			setTitle(title, for: .normal)
+			addSidePadding()
 		}
-		iconName.map { setImage(UIImage(named: $0), for: .normal) }
 	}
 	
-	func setBackgroundColor(color: UIColor, forState: UIControl.State) {
-		UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
-		UIGraphicsGetCurrentContext()!.setFillColor(color.cgColor)
-		UIGraphicsGetCurrentContext()!.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-		let colorImage = UIGraphicsGetImageFromCurrentImageContext()
-		UIGraphicsEndImageContext()
-		self.setBackgroundImage(colorImage, for: forState)
+	init () {
+		super.init(backgroundStateColors: VoipTheme.primary_colors_background)
+		layer.cornerRadius = button_radius
+		clipsToBounds = true
+		applyTitleStyle(VoipTheme.big_button)
+		height(button_height).done()
+		addSidePadding()
 	}
 	
-
-
 }

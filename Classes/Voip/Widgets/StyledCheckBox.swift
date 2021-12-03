@@ -17,34 +17,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import Foundation
 import UIKit
-import SwiftUI
+import DropDown
 
-class ButtonWithStateBackgrounds : UIButton {
 
+class StyledCheckBox: UIButton {
+	
+	// layout constants
+	let button_size = 25.0
+
+	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
-	init (backgroundStateColors: [UInt: LightDarkColor], iconName:String? = nil) {
+	init (liveValue:MutableLiveData<Bool>) {
 		super.init(frame: .zero)
-		backgroundStateColors.keys.forEach { (stateRawValue) in
-			setBackgroundColor(color: backgroundStateColors[stateRawValue]!.get(), forState: UIButton.State(rawValue: stateRawValue))
+		setBackgroundImage(UIImage(named:"voip_checkbox_unchecked")/*?.tinted(with: VoipTheme.light_grey_color)*/,for: .normal) // tinting not working with those icons
+		setBackgroundImage(UIImage(named:"voip_checkbox_checked")/*?.tinted(with: VoipTheme.primary_color)*/,for: .selected)
+		onClick {
+			liveValue.value = !liveValue.value!
+			self.isSelected = liveValue.value!
 		}
-		iconName.map { setImage(UIImage(named: $0), for: .normal) }
-	}
-	
-	func setBackgroundColor(color: UIColor, forState: UIControl.State) {
-		UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
-		UIGraphicsGetCurrentContext()!.setFillColor(color.cgColor)
-		UIGraphicsGetCurrentContext()!.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-		let colorImage = UIGraphicsGetImageFromCurrentImageContext()
-		UIGraphicsEndImageContext()
-		self.setBackgroundImage(colorImage, for: forState)
-	}
-	
+		
+		size(w: button_size,h: button_size).done()
+		
+		liveValue.readCurrentAndObserve { (value) in
+			self.isSelected = value!
+		}
+		
+		
+   }
 
 
 }

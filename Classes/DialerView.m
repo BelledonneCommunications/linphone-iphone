@@ -144,6 +144,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_videoCameraSwitch setHidden:FALSE];
 		}
 	}
+	
+	[_addContactButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
+	_addContactButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	_addContactButton.enabled = true;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -388,13 +392,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 
-- (IBAction)onAddContactClick:(id)event {
-	[ContactSelection setSelectionMode:ContactSelectionModeEdit];
-	[ContactSelection setAddAddress:[_addressField text]];
-	[ContactSelection setSipFilter:nil];
-	[ContactSelection setNameOrEmailFilter:nil];
-	[ContactSelection enableEmailFilter:FALSE];
-	[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
+- (IBAction)onVoipConferenceCreateClick:(id)event {
+	ConferenceSchedulingView *view = VIEW(ConferenceSchedulingView);
+	[view resetViewModel];
+	[PhoneMainView.instance changeCurrentView:ConferenceSchedulingView.compositeViewDescription];
 }
 
 - (IBAction)onBackClick:(id)event {
@@ -405,7 +406,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([self displayDebugPopup:_addressField.text]) {
 		_addressField.text = @"";
 	}
-	_addContactButton.enabled = _backspaceButton.enabled = ([[_addressField text] length] > 0);
     if ([_addressField.text length] == 0) {
         [self.view endEditing:YES];
     }

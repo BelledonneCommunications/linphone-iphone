@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,6 +22,7 @@
                 <outlet property="switchView" destination="d5Q-XR-FNz" id="Xeo-ZG-6cr"/>
                 <outlet property="tableController" destination="4" id="18"/>
                 <outlet property="view" destination="5" id="14"/>
+                <outlet property="voipTitle" destination="U0U-ez-rgF" id="yEI-Gk-LdN"/>
                 <outlet property="waitView" destination="Ztm-hK-aBp" id="qYh-M5-heN"/>
             </connections>
         </placeholder>
@@ -29,23 +33,23 @@
             </connections>
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" id="WKv-mw-S2B" userLabel="iphone6MetricsView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                    <rect key="frame" x="0.0" y="42" width="375" height="559"/>
+                    <rect key="frame" x="0.0" y="42" width="414" height="788"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <view alpha="0.90000000000000002" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7" userLabel="topBar">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d5Q-XR-FNz" userLabel="switchView">
-                                    <rect key="frame" x="225" y="0.0" width="150" height="66"/>
+                                    <rect key="frame" x="248" y="0.0" width="166" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r3z-SM-lMq" userLabel="allButton" customClass="UIInterfaceStyleButton">
-                                            <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="83" height="66"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
@@ -65,11 +69,11 @@
                                             </connections>
                                         </button>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="ibu-Ra-oZO" userLabel="selectedButtonImage">
-                                            <rect key="frame" x="0.0" y="63" width="75" height="3"/>
+                                            <rect key="frame" x="0.0" y="63" width="83" height="3"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8lQ-fv-INK" userLabel="sipButton" customClass="UIInterfaceStyleButton">
-                                            <rect key="frame" x="75" y="0.0" width="75" height="66"/>
+                                            <rect key="frame" x="83" y="0.0" width="83" height="66"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Linphone contacts filter"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
@@ -89,7 +93,7 @@
                                     </subviews>
                                 </view>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fNt-yb-wsf" userLabel="backButton" customClass="UIInterfaceStyleButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="82" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -142,8 +146,15 @@
                                         </button>
                                     </subviews>
                                 </view>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U0U-ez-rgF">
+                                    <rect key="frame" x="82" y="0.0" width="249" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rBc-dQ-eIj" userLabel="nextButton" customClass="UIInterfaceStyleButton">
-                                    <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                                    <rect key="frame" x="331" y="0.0" width="83" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back">
                                         <bool key="isElement" value="YES"/>
@@ -160,18 +171,18 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                         </view>
                         <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KRQ-Fm-3cQ" userLabel="addedContacts" customClass="UICollectionView">
-                            <rect key="frame" x="8" y="110" width="359" height="70"/>
+                            <rect key="frame" x="8" y="110" width="398" height="70"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <accessibility key="accessibilityConfiguration" label="addedContacts"/>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="6">
-                            <rect key="frame" x="5" y="178" width="365" height="381"/>
+                            <rect key="frame" x="5" y="178" width="403" height="610"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <color key="separatorColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="4" id="11"/>
@@ -179,7 +190,7 @@
                             </connections>
                         </tableView>
                         <searchBar contentMode="redraw" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rd9-hK-nqR" userLabel="Contact address">
-                            <rect key="frame" x="0.0" y="66" width="375" height="44"/>
+                            <rect key="frame" x="0.0" y="66" width="414" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             <connections>
@@ -187,23 +198,23 @@
                             </connections>
                         </searchBar>
                         <view hidden="YES" tag="8" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ztm-hK-aBp" userLabel="waitView">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="559"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="788"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <activityIndicatorView opaque="NO" tag="9" contentMode="scaleToFill" fixedFrame="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="nqH-qD-vgE" userLabel="activityIndicatorView">
-                                    <rect key="frame" x="179" y="267" width="20" height="20"/>
+                                    <rect key="frame" x="198" y="380" width="20" height="20"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 </activityIndicatorView>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <gestureRecognizers/>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="53.600000000000001" y="80.50974512743629"/>
+            <point key="canvasLocation" x="52.173913043478265" y="80.357142857142847"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="4" userLabel="Suggested addresses" customClass="ChatConversationCreateTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -233,5 +244,11 @@
         <image name="security_toogle_button.png" width="21" height="21"/>
         <image name="security_toogle_icon_green.png" width="33.599998474121094" height="38.400001525878906"/>
         <image name="security_toogle_icon_grey.png" width="33.599998474121094" height="38.400001525878906"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

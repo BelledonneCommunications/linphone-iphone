@@ -20,6 +20,7 @@
 #import "ChatConversationCreateView.h"
 #import "PhoneMainView.h"
 #import "UIChatCreateCollectionViewCell.h"
+#import "linphoneapp-Swift.h"
 
 @implementation ChatConversationCreateView
 
@@ -60,7 +61,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
-	_isForEditing = FALSE; 
+	_isForEditing = FALSE;
+	_voipTitle.text = VoipTexts.call_action_participants_list;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -81,6 +84,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		frame.origin.x = _linphoneButton.frame.origin.x;
 		_allButton.frame = frame;
 	}
+	
+	
+	if (_isForVoipConference) {
+		_switchView.hidden = true;
+		_chiffreOptionView.hidden = true;
+		_voipTitle.hidden = false;
+	} else {
+		_voipTitle.hidden = true;
+	}
+	
 }
 
 - (void)viewUpdateEvent:(NSNotification *)notif {
@@ -146,18 +159,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onBackClick:(id)sender {
 	[_tableController.contactsGroup removeAllObjects];
-	if (_tableController.isForEditing)
-		[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
-	else
-		[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+	if (_isForVoipConference) {
+		[PhoneMainView.instance popToView:ConferenceSchedulingView.compositeViewDescription];
+	} else {
+		if (_tableController.isForEditing)
+			[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
+		else
+			[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+	}
 }
 
 - (IBAction)onNextClick:(id)sender {
-	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
-	view.contacts = _tableController.contactsGroup;
-	view.create = !_isForEditing;
-    view.encrypted = _isEncrypted;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	if (_isForVoipConference) {
+		[PhoneMainView.instance changeCurrentView:VIEW(ConferenceSchedulingSummaryView).compositeViewDescription];
+		[VIEW(ConferenceSchedulingSummaryView) setParticipantsWithAddresses:_tableController.contactsGroup];
+	} else {
+		ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+		view.contacts = _tableController.contactsGroup;
+		view.create = !_isForEditing;
+    	view.encrypted = _isEncrypted;
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	}
 }
 
 - (IBAction)onChiffreClick:(id)sender {

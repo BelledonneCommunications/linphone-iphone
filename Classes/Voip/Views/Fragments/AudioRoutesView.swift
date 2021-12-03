@@ -39,6 +39,7 @@ class AudioRoutesView: UIStackView {
 		// bluetooth
 		let blueTooth = CallControlButton(buttonTheme: VoipTheme.route_bluetooth, onClickAction: {
 			ControlsViewModel.shared.forceBluetoothAudioRoute()
+			ControlsViewModel.shared.audioRoutesSelected.value = false
 		})
 		addArrangedSubview(blueTooth)
 		
@@ -49,6 +50,7 @@ class AudioRoutesView: UIStackView {
 		// Earpiece
 		let earpiece = CallControlButton(buttonTheme: VoipTheme.route_earpiece, onClickAction: {
 			ControlsViewModel.shared.forceEarpieceAudioRoute()
+			ControlsViewModel.shared.audioRoutesSelected.value = false
 		})
 		addArrangedSubview(earpiece)
 		ControlsViewModel.shared.isSpeakerSelected.readCurrentAndObserve { (isSpeakerSelected) in
@@ -61,6 +63,7 @@ class AudioRoutesView: UIStackView {
 		// Speaker
 		let speaker = CallControlButton(buttonTheme: VoipTheme.route_speaker, onClickAction: {
 			ControlsViewModel.shared.forceSpeakerAudioRoute()
+			ControlsViewModel.shared.audioRoutesSelected.value = false
 		})
 		addArrangedSubview(speaker)
 		ControlsViewModel.shared.isSpeakerSelected.readCurrentAndObserve { (selected) in

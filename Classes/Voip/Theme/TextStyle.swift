@@ -27,7 +27,7 @@ struct TextStyle {
 	var align:NSTextAlignment
 	var font:String
 	var size:Float
-		
+	
 	func boldEd() -> TextStyle {
 		return self.font.contains("Bold") ? self : TextStyle(fgColor: self.fgColor,bgColor: self.bgColor,allCaps: self.allCaps,align: self.align,font: self.font.replacingOccurrences(of: "Regular", with: "Bold"), size: self.size)
 	}
@@ -46,6 +46,23 @@ extension UILabel {
 		let fontSizeMultiplier: Float = (UIDevice.ipad() ? 1.25 : UIDevice.is5SorSEGen1() ? 0.9 : 1.0)
 		font = UIFont.init(name: style.font, size: CGFloat(style.size*fontSizeMultiplier))
 	}
+	
+	func addIndicatorIcon(iconName:String, _ padding:CGFloat = 5.0, trailing: Bool = true) {
+		let imageAttachment = NSTextAttachment()
+		imageAttachment.image = UIImage(named:iconName)
+		imageAttachment.bounds = CGRect(x: 5.0, y: 4.0, width: font.lineHeight - 2*padding, height: font.lineHeight - 2*padding)
+		let iconString = NSMutableAttributedString(attachment: imageAttachment)
+		let textXtring = NSMutableAttributedString(string: text != nil ? text! : "")
+		if (trailing) {
+			textXtring.append(iconString)
+			self.text = nil
+			self.attributedText = textXtring
+		} else {
+			iconString.append(textXtring)
+			self.text = nil
+			self.attributedText = iconString
+		}
+	}
 }
 
 extension UIButton {
@@ -59,3 +76,18 @@ extension UIButton {
 		contentHorizontalAlignment = style.align == .left ? .left : style.align == .center ? .center : style.align == .right ? .right : .left
 	}
 }
+
+extension UITextView {
+	func applyStyle(_ style:TextStyle) {
+		textColor = style.fgColor.get()
+		backgroundColor = style.bgColor.get()
+		if (style.allCaps) {
+			text = self.text?.uppercased()
+			tag = 1
+		}
+		textAlignment = style.align
+		let fontSizeMultiplier: Float = (UIDevice.ipad() ? 1.25 : UIDevice.is5SorSEGen1() ? 0.9 : 1.0)
+		font = UIFont.init(name: style.font, size: CGFloat(style.size*fontSizeMultiplier))
+	}
+}
+

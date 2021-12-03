@@ -17,27 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Foundation
+import SnapKit
+import UIKit
 
-extension Optional {
-	var logable: Any {
-		switch self {
-		case .none:
-			return "<nil>|⭕️"
-		case let .some(value):
-			return value
-		}
+extension UILabel {
+	var textWidth: CGFloat? {
+		guard let myText = self.text else { return nil }
+		guard let myFont = self.font else { return  nil }
+		let rect = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+		let labelSize = myText.boundingRect(with: rect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: myFont], context: nil)
+		return ceil(labelSize.width)
 	}
 }
-
-extension Optional: CustomStringConvertible {
-
-	public var description: String {
-		switch self {
-		case .some(let wrappedValue):
-			return "\(wrappedValue)"
-		default:
-			return "<nil>|⭕️"
-		}
-	}
-}
-

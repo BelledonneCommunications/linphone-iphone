@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ * Copyright (c) 2010-2021 Belledonne Communications SARL.
  *
- * This file is part of linphone-iphone
+ * This file is part of linphone-android
+ * (see https://www.linphone.org).
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +19,13 @@
  */
 
 
-extension Optional {
-	var logable: Any {
-		switch self {
-		case .none:
-			return "<nil>|⭕️"
-		case let .some(value):
-			return value
-		}
+import Foundation
+
+struct Duration : Comparable {
+	static func < (lhs: Duration, rhs: Duration) -> Bool {
+		return lhs.value < rhs.value
 	}
+	
+	let value: Int
+	let display: String
 }
-
-extension Optional: CustomStringConvertible {
-
-	public var description: String {
-		switch self {
-		case .some(let wrappedValue):
-			return "\(wrappedValue)"
-		default:
-			return "<nil>|⭕️"
-		}
-	}
-}
-

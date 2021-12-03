@@ -255,6 +255,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		view.tableController.contactsGroup = [_contacts mutableCopy];
 		view.tableController.notFirstTime = TRUE;
 		view.isForEditing = FALSE;
+		view.isForVoipConference = FALSE;
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
@@ -280,6 +281,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		view.tableController.notFirstTime = TRUE;
 		view.isForEditing = !_create;
 		view.isGroupChat = TRUE;
+		view.isForVoipConference = FALSE;
 		view.tableController.contactsGroup = [_contacts mutableCopy];
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}

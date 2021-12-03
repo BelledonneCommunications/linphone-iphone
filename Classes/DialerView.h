@@ -53,7 +53,7 @@
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;
 @property(weak, nonatomic) IBOutlet UIView *padView;
 
-- (IBAction)onAddContactClick:(id)event;
+- (IBAction)onVoipConferenceCreateClick:(id)event;
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onAddressChange:(id)sender;
 - (IBAction)onBackspaceClick:(id)sender;

@@ -20,7 +20,7 @@
 import Foundation
 import UIKit
 
-class VoipTexts { // From android key names. Added intentionnally with NSLocalizedString calls for each key, so it can be picked up by translation system (Weblate or Xcode).
+@objc class VoipTexts : NSObject { // From android key names. Added intentionnally with NSLocalizedString calls for each key, so it can be picked up by translation system (Weblate or Xcode).
 	
 	static let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as! String
 	
@@ -40,7 +40,7 @@ class VoipTexts { // From android key names. Added intentionnally with NSLocaliz
 	static let call_error_temporarily_unavailable = NSLocalizedString("Temporarily unavailable",comment:"")
 	static let call_error_generic = NSLocalizedString("Error: %s",comment:"")
 	static let call_video_update_requested_dialog = NSLocalizedString("Correspondent would like to turn the video on",comment:"")
-	static let call_action_participants_list = NSLocalizedString("Participants list",comment:"")
+	@objc static let call_action_participants_list = NSLocalizedString("Participants list",comment:"")
 	static let call_action_chat = NSLocalizedString("Chat",comment:"")
 	static let call_action_calls_list = NSLocalizedString("Calls list",comment:"")
 	static let call_action_numpad = NSLocalizedString("Numpad",comment:"")

@@ -17,34 +17,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import Foundation
 import UIKit
-import SwiftUI
 
-class ButtonWithStateBackgrounds : UIButton {
-
+class StyledSwitch: UISwitch {
+	
+	var liveValue:MutableLiveData<Bool>?
+	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
-	init (backgroundStateColors: [UInt: LightDarkColor], iconName:String? = nil) {
+	init (liveValue:MutableLiveData<Bool>) {
 		super.init(frame: .zero)
-		backgroundStateColors.keys.forEach { (stateRawValue) in
-			setBackgroundColor(color: backgroundStateColors[stateRawValue]!.get(), forState: UIButton.State(rawValue: stateRawValue))
+		self.liveValue = liveValue
+		tintColor = VoipTheme.light_grey_color
+		onTintColor = VoipTheme.green_color
+		addTarget(self, action: #selector(valueChanged), for: .valueChanged)
+		liveValue.readCurrentAndObserve { (value) in
+			self.isOn = value == true
 		}
-		iconName.map { setImage(UIImage(named: $0), for: .normal) }
-	}
-	
-	func setBackgroundColor(color: UIColor, forState: UIControl.State) {
-		UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
-		UIGraphicsGetCurrentContext()!.setFillColor(color.cgColor)
-		UIGraphicsGetCurrentContext()!.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-		let colorImage = UIGraphicsGetImageFromCurrentImageContext()
-		UIGraphicsEndImageContext()
-		self.setBackgroundImage(colorImage, for: forState)
-	}
-	
+		transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
+   }
 
-
+	@objc func valueChanged(mySwitch: UISwitch) {
+		liveValue!.value = mySwitch.isOn
+	}
 }

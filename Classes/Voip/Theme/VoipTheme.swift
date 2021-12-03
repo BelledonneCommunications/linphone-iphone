@@ -114,6 +114,10 @@ class VoipTheme { // Names & values replicated from Android
 	static let conference_mode_title = TextStyle(fgColor: LightDarkColor(dark_grey_color,dark_grey_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 17.0)
 	static let conference_mode_title_selected = conference_mode_title.boldEd()
 
+	static let conference_scheduling_font = TextStyle(fgColor: voipTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 17.0)
+
+	
+	
 	
 	
 	// Buttons Background (State colors)
@@ -337,6 +341,18 @@ class VoipTheme { // Names & values replicated from Android
 		tintableStateIcons:[UIButton.State.normal.rawValue : TintableIcon(name: "voip_merge_calls",tintColor: LightDarkColor(.white,.white))],
 		backgroundStateColors: button_round_background)
 
+	// Navigation
+	
+	static func nav_button(_ iconName:String) -> ButtonTheme {
+		return ButtonTheme(
+		tintableStateIcons:[
+			UIButton.State.normal.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(.darkGray,.white)),
+			UIButton.State.highlighted.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(primary_color,primary_color)),
+			UIButton.State.disabled.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(light_grey_color,light_grey_color)),
+		],
+		backgroundStateColors: [:])
+	}
+	
 }
 
 
