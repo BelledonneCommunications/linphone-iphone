@@ -186,7 +186,10 @@ import os
 				log("[VFS] Unable to retrieve encrypted key.", .error)
 				return false
 			}
-			let secret = decrypt(encryptedText: encryptedKey)
+			guard let secret = decrypt(encryptedText: encryptedKey) else {
+				log(log: "[VFS] Unable to decryt encrypted key.", level: .error)
+				return false
+			}
 			Factory.Instance.setVfsEncryption(encryptionModule: 2, secret: secret, secretSize: 32)
 			log("[VFS] activated", .info)
 			return true
