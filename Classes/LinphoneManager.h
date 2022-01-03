@@ -200,7 +200,6 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) sqlite3* database;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
-@property (nonatomic, assign) BOOL bluetoothAvailable;
 @property (readonly) NSString* contactSipField;
 @property (readonly,copy) NSString* contactFilter;
 @property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
