@@ -99,7 +99,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ms_free(uri);
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 
-	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
+	[self hideSpeaker: [CallManager.instance isBluetoothAvailable]];
 
 	[_speakerButton update];
 	[_microButton update];

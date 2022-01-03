@@ -233,10 +233,6 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 - (id)init {
 	if ((self = [super init])) {
-		[NSNotificationCenter.defaultCenter addObserver:self
-		 selector:@selector(audioRouteChangeListenerCallback:)
-		 name:AVAudioSessionRouteChangeNotification
-		 object:nil];
 
 		NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
 		self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
@@ -1769,21 +1765,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 #pragma mark - Audio route Functions
 
-- (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
-	if (IPAD)
-		return;
-	
-	_bluetoothAvailable = [CallManager.instance isBluetoothAvailable];
-	
-	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
-	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
-	 object:self
-	 userInfo:dict];
-	
-}
-
 #pragma mark - Call Functions
-- (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
+- (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {	
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 	linphone_chat_message_send(msg);
 
