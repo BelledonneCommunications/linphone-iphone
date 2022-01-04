@@ -102,6 +102,8 @@
 	<string>Share photos with your friends and customize avatars</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Make calls with your friends</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Stream audio and video through the local network</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Linphone will not use, store or communicate your location. The authorization allows us to detect Wifi connection changes</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -110,8 +112,6 @@
 	<string>Add tranfered files to your library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Stream audio and video through the local network</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.org.linphone.phone</key>
