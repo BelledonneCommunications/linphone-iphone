@@ -25,8 +25,6 @@
 #import <AssetsLibrary/ALAssetRepresentation.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVKit/AVKit.h>
-#import "linphoneapp-Swift.h"
-
 
 #define voicePlayer VIEW(ChatConversationView).sharedVoicePlayer
 #define chatView VIEW(ChatConversationView)

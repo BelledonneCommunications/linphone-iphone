@@ -28,8 +28,6 @@
 #import "SVProgressHUD.h"
 #import "EphemeralSettingsView.h"
 #import "Utils.h"
-#import "linphoneapp-Swift.h"
-
 
 @implementation FileContext
 
@@ -1855,7 +1853,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		NSDictionary* userInfo = @{@"path": [NSString stringWithUTF8String:linphone_player_get_user_data(_sharedVoicePlayer)]};
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneVoiceMessagePlayerLostFocus object:nil userInfo:userInfo];
 	}
-	[AudioRouteUtils routeAudioToSpeaker];
+	[CallManager.instance changeRouteToSpeaker];
 	linphone_player_set_user_data(_sharedVoicePlayer, (void *)path);
 	linphone_player_open(_sharedVoicePlayer, path);
 	linphone_player_start(_sharedVoicePlayer);

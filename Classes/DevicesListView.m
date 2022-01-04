@@ -20,8 +20,6 @@
 #import "DevicesListView.h"
 #import "PhoneMainView.h"
 #import "UIDeviceCell.h"
-#import "linphoneapp-Swift.h"
-
 
 @implementation DevicesMenuEntry
 - (id)init:(LinphoneParticipantDevice *)dev isMe:(BOOL)isMe isFirst:(BOOL)first isUnique:(BOOL)unique index:(NSInteger)idx{

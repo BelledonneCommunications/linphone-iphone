@@ -21,8 +21,6 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
-#import "linphoneapp-Swift.h"
-
 
 @interface FileTransferDelegate ()
 @property(strong) NSMutableData *data;

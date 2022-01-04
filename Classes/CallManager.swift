@@ -37,13 +37,15 @@ import AVFoundation
 	static var theCallManager: CallManager?
 	let providerDelegate: ProviderDelegate! // to support callkit
 	let callController: CXCallController! // to support callkit
-	var core: Core?
+	var lc: Core?
+	@objc var speakerBeforePause : Bool = false
 	@objc var nextCallIsTransfer: Bool = false
 	var referedFromCall: String?
 	var referedToCall: String?
 	var endCallkit: Bool = false
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
+	var conference: Conference?
 
 	
 	
@@ -64,8 +66,8 @@ import AVFoundation
 
 
 	@objc func setCore(core: OpaquePointer) {
-		self.core = Core.getSwiftObject(cObject: core)
-		self.core?.addDelegate(delegate: self)
+		lc = Core.getSwiftObject(cObject: core)
+		lc?.addDelegate(delegate: self)
 	}
 
 	@objc static func getAppData(call: OpaquePointer) -> CallAppData? {
@@ -105,7 +107,7 @@ import AVFoundation
 		if (callId == nil) {
 			return nil
 		}
-		let calls = core?.calls
+		let calls = lc?.calls
 		if let callTmp = calls?.first(where: { $0.callLog?.callId == callId }) {
 			return callTmp
 		}
@@ -113,8 +115,8 @@ import AVFoundation
 	}
 
 	@objc func stopLinphoneCore() {
-		if (core?.callsNb == 0) {
-			core?.stopAsync()
+		if (lc?.callsNb == 0) {
+			lc?.stopAsync()
 		}
 	}
 	
@@ -135,6 +137,60 @@ import AVFoundation
 			return true
 		}
 		#endif
+		return false
+	}
+	
+	@objc func changeRouteToSpeaker() {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Speaker) {
+				lc!.outputAudioDevice = device
+				break
+			}
+		}
+		UIDevice.current.isProximityMonitoringEnabled = false
+	}
+	
+	@objc func changeRouteToBluetooth() {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+				lc!.outputAudioDevice = device
+				break
+			}
+		}
+		UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
+	}
+	
+	@objc func changeRouteToDefault() {
+		lc!.outputAudioDevice = lc!.defaultOutputAudioDevice
+	}
+	
+	@objc func isBluetoothAvailable() -> Bool {
+		for device in lc!.audioDevices {
+			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@objc func isSpeakerEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return outputDevice.type == AudioDeviceType.Speaker
+		}
+		return false
+	}
+	
+	@objc func isBluetoothEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return (outputDevice.type == AudioDeviceType.Bluetooth || outputDevice.type == AudioDeviceType.BluetoothA2DP)
+		}
+		return false
+	}
+	
+	@objc func isReceiverEnabled() -> Bool {
+		if let outputDevice = lc!.outputAudioDevice {
+			return outputDevice.type == AudioDeviceType.Microphone
+		}
 		return false
 	}
 	
@@ -183,7 +239,7 @@ import AVFoundation
 
 	func acceptCall(call: Call, hasVideo:Bool) {
 		do {
-			let callParams = try core!.createCallParams(call: call)
+			let callParams = try lc!.createCallParams(call: call)
 			callParams.videoEnabled = hasVideo
 			if (ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference")) {
 				let low_bandwidth = (AppManager.network() == .network_2g)
@@ -214,7 +270,7 @@ import AVFoundation
 		}
 
 		let sAddr = Address.getSwiftObject(cObject: addr!)
-		if (CallManager.callKitEnabled() && !CallManager.instance().nextCallIsTransfer && core?.conference?.isIn != true) {
+		if (CallManager.callKitEnabled() && !CallManager.instance().nextCallIsTransfer && !isInConference()) {
 			let uuid = UUID()
 			let name = FastAddressBook.displayName(for: addr) ?? "unknow"
 			let handle = CXHandle(type: .generic, value: sAddr.asStringUriOnly())
@@ -235,7 +291,7 @@ import AVFoundation
 	func doCall(addr: Address, isSas: Bool) throws {
 		let displayName = FastAddressBook.displayName(for: addr.getCobject)
 
-		let lcallParams = try CallManager.instance().core!.createCallParams(call: nil)
+		let lcallParams = try CallManager.instance().lc!.createCallParams(call: nil)
 		if ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference") && AppManager.network() == .network_2g {
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Enabling low bandwidth mode")
 			lcallParams.lowBandwidthEnabled = true
@@ -250,7 +306,7 @@ import AVFoundation
 		}
 
 		if (CallManager.instance().nextCallIsTransfer) {
-			let call = CallManager.instance().core!.currentCall
+			let call = CallManager.instance().lc!.currentCall
 			try call?.transferTo(referTo: addr)
 			CallManager.instance().nextCallIsTransfer = false
 		} else {
@@ -261,7 +317,7 @@ import AVFoundation
 			if (isSas) {
 				lcallParams.mediaEncryption = .ZRTP
 			}
-			let call = CallManager.instance().core!.inviteAddressWithParams(addr: addr, params: lcallParams)
+			let call = CallManager.instance().lc!.inviteAddressWithParams(addr: addr, params: lcallParams)
 			if (call != nil) {
 				// The LinphoneCallAppData object should be set on call creation with callback
 				// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
@@ -275,6 +331,32 @@ import AVFoundation
 					CallManager.setAppData(sCall: call!, appData: data)
 				}
 			}
+		}
+	}
+
+	@objc func groupCall() {
+		if (CallManager.callKitEnabled()) {
+			let calls = lc?.calls
+			if (calls == nil || calls!.isEmpty) {
+				return
+			}
+			let firstCall = calls!.first?.callLog?.callId ?? ""
+			let lastCall = (calls!.count > 1) ? calls!.last?.callLog?.callId ?? "" : ""
+
+			let currentUuid = CallManager.instance().providerDelegate.uuids["\(firstCall)"]
+			if (currentUuid == nil) {
+				Log.directLog(BCTBX_LOG_ERROR, text: "Can not find correspondant call to group.")
+				return
+			}
+
+			let newUuid = CallManager.instance().providerDelegate.uuids["\(lastCall)"]
+			let groupAction = CXSetGroupCallAction(call: currentUuid!, callUUIDToGroupWith: newUuid)
+			let transcation = CXTransaction(action: groupAction)
+			requestTransaction(transcation, action: "groupCall")
+
+			setResumeCalls()
+		} else {
+			try? lc?.addAllToConference()
 		}
 	}
 
@@ -337,7 +419,7 @@ import AVFoundation
 	}
 
 	@objc func setHeldOtherCalls(exceptCallid: String) {
-		for call in CallManager.instance().core!.calls {
+		for call in CallManager.instance().lc!.calls {
 			if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
 				setHeld(call: call, hold: true)
 			}
@@ -345,7 +427,7 @@ import AVFoundation
 	}
 
 	func setResumeCalls() {
-		for call in CallManager.instance().core!.calls {
+		for call in CallManager.instance().lc!.calls {
 			if (call.state == .Paused || call.state == .Pausing || call.state == .PausedByRemote) {
 				setHeld(call: call, hold: false)
 			}
@@ -362,7 +444,7 @@ import AVFoundation
 
 	@objc func acceptVideo(call: OpaquePointer, confirm: Bool) {
 		let sCall = Call.getSwiftObject(cObject: call)
-		let params = try? core?.createCallParams(call: sCall)
+		let params = try? lc?.createCallParams(call: sCall)
 		params?.videoEnabled = confirm
 		try? sCall.acceptUpdate(params: params)
 	}
@@ -383,7 +465,7 @@ import AVFoundation
 			for call in CallManager.instance().providerDelegate.uuids {
 				let callId = CallManager.instance().providerDelegate.callInfos[call.value]?.callId
 				if (callId != nil) {
-					let call = CallManager.instance().core?.getCallByCallid(callId: callId!)
+					let call = CallManager.instance().lc?.getCallByCallid(callId: callId!)
 					if (call != nil && call?.state != .PushIncomingReceived) {
 						// sometimes (for example) due to network, registration failed, in this case, keep the call
 						continue
@@ -395,6 +477,12 @@ import AVFoundation
 			CallManager.instance().endCallkit = true
 		} else {
 			CallManager.instance().endCallkit = false
+		}
+	}
+	
+	func onConferenceStateChanged(core: Core, conference: Conference, state: Conference.State) {
+		if (state == .Terminated) {
+			CallManager.instance().conference = nil
 		}
 	}
 
@@ -448,6 +536,11 @@ import AVFoundation
 							}
 						}
 					}
+
+					if (CallManager.instance().speakerBeforePause) {
+						CallManager.instance().speakerBeforePause = false
+						CallManager.instance().changeRouteToSpeaker()
+					}
 					break
 				case .OutgoingInit,
 					 .OutgoingProgress,
@@ -476,6 +569,14 @@ import AVFoundation
 						displayName = contactName
 					}
 					
+					UIDevice.current.isProximityMonitoringEnabled = false
+					if (CallManager.instance().lc!.callsNb == 0) {
+						CallManager.instance().changeRouteToDefault()
+						// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
+						// furthermore it introduces a bug when calling multiple times since route may not be
+						// reconfigured between cause leading to bluetooth being disabled while it should not
+						//CallManager.instance().bluetoothEnabled = false
+					}
 
 					if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted)  {
 						// Configure the notification's payload.
@@ -534,6 +635,12 @@ import AVFoundation
 					break
 			}
 
+			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
+				let check = call.currentParams?.videoEnabled
+				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled()) {
+					CallManager.instance().changeRouteToSpeaker()
+				}
+			}
 		}
 		// post Notification kLinphoneCallUpdate
 		NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
@@ -546,13 +653,13 @@ import AVFoundation
 	// Audio messages
 	
 	@objc func activateAudioSession() {
-		core?.activateAudioSession(actived: true)
+		lc?.activateAudioSession(actived: true)
 	}
 	
 	@objc func getSpeakerSoundCard() -> String? {
 		var speakerCard: String? = nil
 		var earpieceCard: String? = nil
-		core?.audioDevices.forEach { device in
+		lc?.audioDevices.forEach { device in
 			if (device.hasCapability(capability: .CapabilityPlay)) {
 				if (device.type == .Speaker) {
 					speakerCard = device.id
@@ -564,46 +671,116 @@ import AVFoundation
 		return speakerCard != nil ? speakerCard : earpieceCard
 	}
 
-	// Local Conference
+
+
+	// Conference
+
+	@objc func hostConference() -> Bool {
+		return conference != nil
+	}
 	
-	@objc func startLocalConference() {
-		if (CallManager.callKitEnabled()) {
-			let calls = core?.calls
-			if (calls == nil || calls!.isEmpty) {
+	func addAllToConference() {
+		if (conference == nil) {
+			guard let cp = try?lc?.createConferenceParams() else {
+				Log.directLog(BCTBX_LOG_ERROR, text: "Unable to create conference parameters")
 				return
 			}
-			let firstCall = calls!.first?.callLog?.callId ?? ""
-			let lastCall = (calls!.count > 1) ? calls!.last?.callLog?.callId ?? "" : ""
-
-			let currentUuid = CallManager.instance().providerDelegate.uuids["\(firstCall)"]
-			if (currentUuid == nil) {
-				Log.directLog(BCTBX_LOG_ERROR, text: "Can not find correspondant call to group.")
-				return
+			if let currentCall = lc?.currentCall, let currentParams = currentCall.currentParams  {
+				cp.videoEnabled = currentParams.videoEnabled
 			}
-
-			let newUuid = CallManager.instance().providerDelegate.uuids["\(lastCall)"]
-			let groupAction = CXSetGroupCallAction(call: currentUuid!, callUUIDToGroupWith: newUuid)
-			let transcation = CXTransaction(action: groupAction)
-			requestTransaction(transcation, action: "groupCall")
-
-			setResumeCalls()
-		} else {
-			addAllToLocalConference()
+			conference = try?lc?.createConferenceWithParams(params: cp)
+		}
+		lc?.calls.forEach { call in
+			if (call.conference == nil || call.conference?.participantCount == 1) {
+				try?conference?.addParticipant(call: call)
+			}
 		}
 	}
 	
-	func addAllToLocalConference() {
-		do {
-			if let core = core, let params = try? core.createConferenceParams() {
-				params.videoEnabled = false // We disable video for local conferencing (cf Android)
-				let conference = core.conference != nil ? core.conference : try core.createConferenceWithParams(params: params)
-				try conference?.addParticipants(calls: core.calls)
-			}
-		} catch {
-			Log.directLog(BCTBX_LOG_ERROR, text: "accept call failed \(error)")
+	@objc func getConference() -> OpaquePointer? {
+		guard let core = lc else {
+			return nil
 		}
+		return (core.conference != nil) ? core.conference?.getCobject : (core.currentCall?.conference != nil) ? core.currentCall!.conference!.getCobject : nil
 	}
 	
+	func getConference() -> Conference? {
+		guard let core = lc else {
+			return nil
+		}
+		return (core.conference != nil) ? core.conference : (core.currentCall?.conference != nil) ? core.currentCall!.conference : nil
+	}
+	
+	@objc func isInConference() -> Bool {
+		return isInConferenceAsHost()||isInConferenceAsGuest()
+	}
+	
+	@objc func isInConferenceAsGuest() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return !isInConferenceAsHost() && core.currentCall != nil && core.currentCall?.conference != nil && (core.currentCall?.conference!.participantCount)! > 1
+	}
+	
+	@objc func isInConferenceAsHost() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return core.conference?.isIn == true
+	}
+	
+	@objc func hasConferenceAsGuest() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		if (core.callsNb<=1) {
+			return false
+		}
+		var found = false
+		core.calls.forEach {
+			let c = $0.conference
+			if (c != nil && c!.participantCount > 1 && hostConference()) {
+				found =  true
+				return
+			}
+		}
+		return found
+	}
+	
+	@objc func getCallFor(participant : OpaquePointer) -> OpaquePointer? {
+		let p = Participant.getSwiftObject(cObject: participant)
+		guard let core = lc else {
+			return nil
+		}
+		var call:Call? = nil
+		core.calls.forEach { (callIt) in
+			let c = callIt.conference
+			c?.participantList.forEach { (p2) in
+				if (p2.address?.asStringUriOnly() == p.address?.asStringUriOnly()) {
+					call = callIt
+					return
+				}
+			}
+		}
+		return call?.getCobject
+	}
+	
+	@objc func inVideoConf() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		let result =  isInConference() && (getConference()?.currentParams?.isVideoEnabled == true || core.currentCall?.currentParams?.videoEnabled == true)
+		NSLog("cdes \(result) \(core.currentCall?.currentParams?.videoEnabled)")
+		return result
+	}
+	
+	
+	@objc func inAudioConf() -> Bool {
+		guard let core = lc else {
+			return false
+		}
+		return core.conference?.isIn == true && core.conference != nil && core.currentCall?.conference?.currentParams?.isVideoEnabled == false
+	}
 	
 	
 }

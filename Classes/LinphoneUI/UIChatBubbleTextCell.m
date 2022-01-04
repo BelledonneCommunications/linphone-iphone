@@ -25,8 +25,6 @@
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
 #import <QuartzCore/QuartzCore.h>
-#import "linphoneapp-Swift.h"
-
 
 @implementation UIChatBubbleTextCell
 

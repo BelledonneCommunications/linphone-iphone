@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICallPausedCell">
+            <connections>
+                <outlet property="avatarImage" destination="NBJ-w0-Uvw" id="lGx-U6-4tn"/>
+                <outlet property="durationLabel" destination="tZi-KI-viq" id="TLb-yi-TBY"/>
+                <outlet property="nameLabel" destination="g3t-eS-m7B" id="dKD-7X-u2j"/>
+                <outlet property="pauseButton" destination="Izu-Zj-sHi" id="BEq-dn-lx2"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="Egc-Di-26M">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" alpha="0.5" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="S7U-QZ-e0e" userLabel="backgroundColor">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <animations/>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="NBJ-w0-Uvw" userLabel="avatarImage" customClass="UIRoundedImageView">
+                    <rect key="frame" x="8" y="3" width="45" height="45"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <animations/>
+                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                        <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                        <bool key="isElement" value="YES"/>
+                    </accessibility>
+                </imageView>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="g3t-eS-m7B" userLabel="nameLabel">
+                    <rect key="frame" x="61" y="6" width="176" height="37"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <animations/>
+                    <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" tag="24" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Izu-Zj-sHi" userLabel="pauseButton" customClass="UIPauseButton">
+                    <rect key="frame" x="322" y="3" width="45" height="45"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <animations/>
+                    <accessibility key="accessibilityConfiguration" label="Pause"/>
+                    <state key="normal" image="pause_small_default.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="disabled" image="pause_small_disabled.png"/>
+                    <state key="selected" image="pause_small_over_selected.png"/>
+                    <state key="highlighted" image="pause_small_over_selected.png"/>
+                </button>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="00:02:15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="tZi-KI-viq" userLabel="durationLabel">
+                    <rect key="frame" x="245" y="7" width="69" height="37"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <animations/>
+                    <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="338.5" y="43"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="color_A.png" width="2" height="2"/>
+        <image name="pause_small_default.png" width="34" height="34"/>
+        <image name="pause_small_disabled.png" width="34" height="34"/>
+        <image name="pause_small_over_selected.png" width="34" height="34"/>
+    </resources>
+</document>

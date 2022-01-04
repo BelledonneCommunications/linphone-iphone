@@ -20,7 +20,6 @@
 #import "UIBackToCallButton.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
-#import "linphoneapp-Swift.h"
 
 @implementation UIBackToCallButton
 
@@ -47,7 +46,7 @@
 }
 
 - (IBAction)onBackToCallClick:(id)sender {
-	[PhoneMainView.instance popToView:ActiveCallOrConferenceView.compositeViewDescription];
+	[PhoneMainView.instance popToView:CallView.compositeViewDescription];
 }
 
 @end

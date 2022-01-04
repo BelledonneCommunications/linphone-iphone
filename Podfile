@@ -26,7 +26,6 @@ target 'linphone' do
 
   # Pods for linphone
 	pod 'SVProgressHUD'
-	pod 'SnapKit'
 	all_pods
 
 end

@@ -120,7 +120,6 @@
 	return nil;
 }
 
-
 - (NSString *)displayName {
 	if (_friend) {
 		const char *friend_name = linphone_friend_get_name(_friend);

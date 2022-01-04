@@ -31,6 +31,7 @@
 #import "LinphoneCoreSettingsStore.h"
 #import "LinphoneAppDelegate.h"
 #import "LinphoneManager.h"
+#import "Utils/AudioHelper.h"
 #import "Utils/FileTransferDelegate.h"
 
 #include "linphone/factory.h"
@@ -45,7 +46,6 @@
 #import "ChatsListView.h"
 #import "ChatConversationView.h"
 #import <UserNotifications/UserNotifications.h>
-#import "linphoneapp-Swift.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
@@ -233,7 +233,11 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		[NSNotificationCenter.defaultCenter addObserver:self
+		 selector:@selector(audioRouteChangeListenerCallback:)
+		 name:AVAudioSessionRouteChangeNotification
+		 object:nil];
+
 		NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
 		self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
 
@@ -1763,7 +1767,20 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	_configDb = linphone_config_new_for_shared_core(kLinphoneMsgNotificationAppGroupId.UTF8String, @"linphonerc".UTF8String, factory.UTF8String);
 	linphone_config_clean_entry(_configDb, "misc", "max_calls");
 }
+#pragma mark - Audio route Functions
 
+- (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
+	if (IPAD)
+		return;
+	
+	_bluetoothAvailable = [CallManager.instance isBluetoothAvailable];
+	
+	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
+	 object:self
+	 userInfo:dict];
+	
+}
 
 #pragma mark - Call Functions
 - (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
@@ -2145,6 +2162,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		if ([ct currentCalls] != nil) {
 			if (call) {
 				LOGI(@"Pausing SIP call because GSM call");
+				CallManager.instance.speakerBeforePause = [CallManager.instance isSpeakerEnabled];
 				linphone_call_pause(call);
 				[self startCallPausedLongRunningTask];
 			} else if (linphone_core_is_in_conference(theLinphoneCore)) {

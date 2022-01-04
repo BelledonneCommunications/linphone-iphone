@@ -22,8 +22,6 @@
 #import "LinphoneAppDelegate.h"
 #import "Log.h"
 #import "PhoneMainView.h"
-#import "linphoneapp-Swift.h"
-
 
 static RootViewManager *rootViewManagerInstance = nil;
 
@@ -375,9 +373,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			break;
 		}
 		case LinphoneCallOutgoingInit: {
-			OutgoingCallView *v = VIEW(OutgoingCallView);
-			[self changeCurrentView:OutgoingCallView.compositeViewDescription];
-			[v setCallWithCall:call];
+			[self changeCurrentView:CallOutgoingView.compositeViewDescription];
 			break;
 		}
 		case LinphoneCallPausedByRemote:
@@ -385,11 +381,38 @@ static RootViewManager *rootViewManagerInstance = nil;
 			if (![LinphoneManager.instance isCTCallCenterExist]) {
 				/*only register CT call center CB for connected call*/
 				[LinphoneManager.instance setupGSMInteraction];
+				[[UIDevice currentDevice] setProximityMonitoringEnabled:!([CallManager.instance isSpeakerEnabled] ||  [CallManager.instance isBluetoothEnabled])];
+			}
+			break;
+		}
+		case LinphoneCallStreamsRunning: {
+			[self changeCurrentView:CallView.compositeViewDescription];
+			break;
+		}
+		case LinphoneCallUpdatedByRemote: {
+			const LinphoneCallParams *current = linphone_call_get_current_params(call);
+			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
+
+			if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
 		}
 		case LinphoneCallError: {
 			[self displayCallError:call message:message];
+		}
+		case LinphoneCallEnd: {
+			const MSList *calls = linphone_core_get_calls(LC);
+			if (!calls || calls->data == call) {
+				while ((currentView == CallView.compositeViewDescription) ||
+					   (currentView == CallIncomingView.compositeViewDescription) ||
+					   (currentView == CallOutgoingView.compositeViewDescription)) {
+					[self popCurrentView];
+				}
+			} else {
+				[self changeCurrentView:CallView.compositeViewDescription];
+			}
+			break;
 		}
 		case LinphoneCallEarlyUpdatedByRemote:
 		case LinphoneCallEarlyUpdating:
@@ -610,15 +633,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	return [mainViewController getCurrentViewController];
 }
 
-- (UIViewController *)popView:(UICompositeViewDescription *)view {
-	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	while (viewStack.count > 0 && [[viewStack lastObject] equal:view]) {
-		[viewStack removeLastObject];
-	}
-	return [self popToView:viewStack.lastObject ?: DialerView.compositeViewDescription];
-}
-
-
 - (void)changeCurrentView:(UICompositeViewDescription *)view {
 	[self _changeCurrentView:view transition:nil animated:ANIMATED];
 }
@@ -750,10 +764,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 			[CallManager.instance acceptCallWithCall:call hasVideo:YES];
 		} else {
 			AudioServicesPlaySystemSound(lm.sounds.vibrate);
-			IncomingCallView *view = VIEW(IncomingCallView);
+			CallIncomingView *view = VIEW(CallIncomingView);
 			[self changeCurrentView:view.compositeViewDescription];
-			[view setCallWithCall:call];
-			//CDFIX [view setDelegate:self];
+			[view setCall:call];
+			[view setDelegate:self];
 		}
 	}
 }

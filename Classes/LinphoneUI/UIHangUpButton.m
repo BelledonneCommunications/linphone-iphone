@@ -1,0 +1,111 @@
+/*
+ * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#import "UIHangUpButton.h"
+#import "LinphoneManager.h"
+
+#import "linphoneapp-Swift.h"
+
+@implementation UIHangUpButton
+
+#pragma mark - Static Functions
+
++ (bool)isInConference:(LinphoneCall *)call {
+	if (!call)
+		return false;
+	return linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
+}
+
++ (int)callCount {
+	int count = 0;
+	const MSList *calls = linphone_core_get_calls(LC);
+
+	while (calls != 0) {
+		if (![UIHangUpButton isInConference:((LinphoneCall *)calls->data)]) {
+			count++;
+		}
+		calls = calls->next;
+	}
+	return count;
+}
+
+#pragma mark - Lifecycle Functions
+
+- (void)initUIHangUpButton {
+	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (id)init {
+	self = [super init];
+	if (self) {
+		[self initUIHangUpButton];
+	}
+	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)decoder {
+	self = [super initWithCoder:decoder];
+	if (self) {
+		[self initUIHangUpButton];
+	}
+	return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+	self = [super initWithFrame:frame];
+	if (self) {
+		[self initUIHangUpButton];
+	}
+	return self;
+}
+
+#pragma mark -
+
+- (void)update {
+	if (linphone_core_get_calls_nb(LC) == 1 ||										   // One call
+		linphone_core_get_current_call(LC) != NULL ||								   // In call
+		linphone_core_is_in_conference(LC) ||										   // In conference
+		(linphone_core_get_conference_size(LC) > 0 && [UIHangUpButton callCount] == 0) // Only one conf
+		) {
+		[self setEnabled:true];
+		return;
+	}
+	[self setEnabled:false];
+}
+
+#pragma mark - Action Functions
+
+- (void)touchUp:(id)sender {
+	LinphoneCall *currentcall = linphone_core_get_current_call(LC);
+	if (linphone_core_is_in_conference(LC) ||										   // In conference
+		(linphone_core_get_conference_size(LC) > 0 && [UIHangUpButton callCount] == 0) // Only one conf
+		) {
+		LinphoneManager.instance.conf = TRUE;
+		linphone_core_terminate_conference(LC);
+	} else if (currentcall != NULL) {
+		[CallManager.instance terminateCallWithCall:currentcall];
+	} else {
+		const MSList *calls = linphone_core_get_calls(LC);
+		if (bctbx_list_size(calls) == 1) { // Only one call
+			[CallManager.instance terminateCallWithCall:(calls->data)];
+		}
+	}
+}
+
+@end

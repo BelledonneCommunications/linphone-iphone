@@ -27,6 +27,10 @@
 #import "AboutView.h"
 #import "AssistantLinkView.h"
 #import "AssistantView.h"
+#import "CallIncomingView.h"
+#import "CallOutgoingView.h"
+#import "CallSideMenuView.h"
+#import "CallView.h"
 #import "ChatConversationCreateView.h"
 #import "ChatConversationInfoView.h"
 #import "ChatConversationImdnView.h"
@@ -74,7 +78,7 @@
 
 @end
 
-@interface PhoneMainView : UIViewController<MFMessageComposeViewControllerDelegate> {
+@interface PhoneMainView : UIViewController<IncomingCallViewDelegate, MFMessageComposeViewControllerDelegate> {
     @private
     NSMutableArray *inhibitedEvents;
 }
@@ -92,7 +96,6 @@
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view;
 - (UIViewController*)popCurrentView;
-- (UIViewController *)popView:(UICompositeViewDescription *)view;
 - (UIViewController *)popToView:(UICompositeViewDescription *)currentView;
 - (void) setPreviousViewName:(NSString*)previous;
 - (NSString*) getPreviousViewName;

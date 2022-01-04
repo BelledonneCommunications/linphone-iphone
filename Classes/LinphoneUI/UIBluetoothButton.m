@@ -18,8 +18,10 @@
  */
 
 #import "UIBluetoothButton.h"
+#import "../Utils/AudioHelper.h"
 #import "Utils.h"
 #import <AudioToolbox/AudioToolbox.h>
+
 #include "linphone/linphonecore.h"
 
 @implementation UIBluetoothButton

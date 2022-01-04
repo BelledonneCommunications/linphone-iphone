@@ -21,8 +21,6 @@
 #import "LinphoneManager.h"
 
 #import <CoreTelephony/CTCallCenter.h>
-#import "linphoneapp-Swift.h"
-
 
 @implementation UICallButton
 
