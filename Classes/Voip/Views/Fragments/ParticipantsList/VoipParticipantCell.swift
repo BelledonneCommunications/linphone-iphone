@@ -30,15 +30,12 @@ class VoipParticipantCell: UITableViewCell {
 	let dismiss_icon_inset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
 	let dismiss_right_margin = 10
 	let check_box_size = 20.0
-	static let cell_height = 80.0
+	let cell_height = 80.0
 	let avatar_left_margin = 15.0
 	let texts_left_margin = 20.0
-	let lime_badge_width = 18.0
-	let lime_badge_offset = -10.0
 
 
 	let avatar = Avatar(diameter:VoipCallCell.avatar_size,color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
-	let limeBadge = UIImageView(image: UIImage(named: "security_toggle_icon_green"))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font)
 	let sipAddress = StyledLabel(VoipTheme.conference_participant_sip_uri_font)
 	let isAdminView = UIView()
@@ -50,7 +47,6 @@ class VoipParticipantCell: UITableViewCell {
 	var participantData: ConferenceParticipantData? = nil {
 		didSet {
 			if let data = participantData {
-				limeBadge.isHidden = true
 				avatar.fillFromAddress(address: data.participant.address!)
 				displayName.text = data.participant.address?.addressBookEnhancedDisplayName()
 				sipAddress.text = data.participant.address?.asStringUriOnly()
@@ -74,29 +70,14 @@ class VoipParticipantCell: UITableViewCell {
 		}
 	}
 	
-	var scheduleConfParticipantAddress: Address?  = nil {
-		didSet {
-			if let address = scheduleConfParticipantAddress {
-				avatar.fillFromAddress(address: address)
-				displayName.text = address.addressBookEnhancedDisplayName()
-				sipAddress.text = address.asStringUriOnly()
-				self.isAdminView.isHidden = true
-				self.removePart?.isHidden = true
-			}
-		}
-	}
-	
 	
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		contentView.height(VoipParticipantCell.cell_height).matchParentSideBorders().done()
+		contentView.height(cell_height).matchParentSideBorders().done()
+		
 	
 		contentView.addSubview(avatar)
 		avatar.size(w: VoipCallCell.avatar_size, h: VoipCallCell.avatar_size).centerY().alignParentLeft(withMargin: avatar_left_margin).done()
-		
-		limeBadge.contentMode = .scaleAspectFit
-		contentView.addSubview(limeBadge)
-		limeBadge.toRightOf(avatar,withLeftMargin: lime_badge_offset).width(lime_badge_width).done()
 	
 		let nameAddress = UIView()
 		nameAddress.addSubview(displayName)
@@ -123,7 +104,6 @@ class VoipParticipantCell: UITableViewCell {
 		contentView.addSubview(isAdminView)
 		isAdminView.height(check_box_size).toLeftOf(removePart!).centerY().done()
 
-		
 		
 	}
 	

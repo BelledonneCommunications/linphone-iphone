@@ -28,12 +28,11 @@ class ButtonWithStateBackgrounds : UIButton {
 		super.init(coder: coder)
 	}
 	
-	init (backgroundStateColors: [UInt: LightDarkColor], iconName:String? = nil) {
+	init (backgroundStateColors: [UInt: LightDarkColor]) {
 		super.init(frame: .zero)
 		backgroundStateColors.keys.forEach { (stateRawValue) in
 			setBackgroundColor(color: backgroundStateColors[stateRawValue]!.get(), forState: UIButton.State(rawValue: stateRawValue))
 		}
-		iconName.map { setImage(UIImage(named: $0), for: .normal) }
 	}
 	
 	func setBackgroundColor(color: UIColor, forState: UIControl.State) {

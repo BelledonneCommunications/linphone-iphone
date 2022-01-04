@@ -27,17 +27,6 @@ extension Optional {
 			return value
 		}
 	}
+	
+	
 }
-
-extension Optional: CustomStringConvertible {
-
-	public var description: String {
-		switch self {
-		case .some(let wrappedValue):
-			return "\(wrappedValue)"
-		default:
-			return "<nil>|⭕️"
-		}
-	}
-}
-

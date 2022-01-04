@@ -45,9 +45,6 @@
 @property(nonatomic) Boolean isGroupChat;
 @property(nonatomic) Boolean isEncrypted;
 
-@property(nonatomic) Boolean isForVoipConference;
-@property (weak, nonatomic) IBOutlet UILabel *voipTitle;
-
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onNextClick:(id)sender;
 - (IBAction)onChiffreClick:(id)sender;

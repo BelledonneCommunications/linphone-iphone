@@ -30,7 +30,6 @@ extension UIView {
 		return self
 	}
 	
-	
 	func square(_ size:Int) -> UIView {
 		snp.makeConstraints { (make) in
 			make.width.equalTo(size)
@@ -92,23 +91,9 @@ extension UIView {
 		return self
 	}
 	
-	func matchBordersOf(view:UIView) -> UIView {
-		snp.makeConstraints { (make) in
-			make.left.right.equalTo(view)
-		}
-		return self
-	}
-	
 	func matchParentDimmensions() -> UIView {
 		snp.makeConstraints { (make) in
 			make.left.right.top.bottom.equalToSuperview()
-		}
-		return self
-	}
-	
-	func matchParentEdges() -> UIView {
-		snp.makeConstraints { (make) in
-			make.edges.equalToSuperview()
 		}
 		return self
 	}
@@ -123,13 +108,6 @@ extension UIView {
 	func matchParentHeight() -> UIView {
 		snp.makeConstraints { (make) in
 			make.top.bottom.equalToSuperview()
-		}
-		return self
-	}
-	
-	func addRightMargin(margin:CGFloat) -> UIView {
-		snp.makeConstraints { (make) in
-			make.rightMargin.equalTo(margin)
 		}
 		return self
 	}
@@ -248,7 +226,7 @@ extension UIView {
 	func alignParentRight(withMargin:CGFloat) -> UIView {
 		return alignParentRight(withMargin:Int(withMargin))
 	}
-	
+
 	
 	func toRightOf(_ view:UIView, withLeftMargin:Int = 0) -> UIView {
 		snp.makeConstraints { (make) in
@@ -260,15 +238,6 @@ extension UIView {
 	func toRightOf(_ view:UIView, withLeftMargin:CGFloat) -> UIView {
 		return toRightOf(view,withLeftMargin: Int(withLeftMargin))
 	}
-	
-	
-	func alignHorizontalCenterWith(_ view:UIView) -> UIView {
-		snp.makeConstraints { (make) in
-			make.centerY.equalTo(view)
-		}
-		return self
-	}
-	
 	
 	func toLeftOf(_ view:UIView) -> UIView {
 		snp.makeConstraints { (make) in
@@ -349,33 +318,9 @@ extension UIView {
 	@objc func handleTap(_ sender: TapGestureRecognizer) {
 		sender.action!()
 	}
-	
+		
 	func VIEW<T>( _ desc: UICompositeViewDescription) -> T{
 		return PhoneMainView.instance().mainViewController.getCachedController(desc.name) as! T
 	}
-	
-	// Theming
-	
-	func setFormInputBackground(readOnly:Bool) {
-		if (readOnly) {
-			backgroundColor = VoipTheme.voipFormDisabledFieldBackgroundColor.get()
-		} else {
-			layer.borderWidth = 1
-			layer.borderColor = VoipTheme.voipFormFieldBackgroundColor.get().cgColor
-		}
-		layer.cornerRadius = 3
-		clipsToBounds = true
-	}
-	
-	@objc func toImage() -> UIImage? {
-		UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-		guard let context = UIGraphicsGetCurrentContext() else { return nil }
-		context.saveGState()
-		layer.render(in: context)
-		context.restoreGState()
-		guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
-		UIGraphicsEndImageContext()
-		return image
-	}
-	
+		
 }

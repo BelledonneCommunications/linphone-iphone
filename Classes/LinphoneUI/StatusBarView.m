@@ -77,8 +77,6 @@
 	[self accountUpdate:account];
 	[self updateUI:linphone_core_get_calls_nb(LC)];
 	[self updateVoicemail];
-	
-	_callQualityButton.userInteractionEnabled = false;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -120,7 +120,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     view.isForEditing = false;
     view.isGroupChat = isGroup;
     view.tableController.notFirstTime = FALSE;
-	view.isForVoipConference = FALSE;
     [view.tableController.contactsGroup removeAllObjects];
     [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }

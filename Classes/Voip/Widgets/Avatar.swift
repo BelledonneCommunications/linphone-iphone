@@ -42,6 +42,7 @@ class Avatar : UIImageView {
 	}
 	
 	
+	
 	func fillFromAddress(address:Address) {
 		if let image = address.contact()?.avatar() {
 			self.image = image

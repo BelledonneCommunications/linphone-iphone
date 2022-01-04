@@ -121,7 +121,7 @@ class ControlsViewModel {
 
 	
 	private func shouldProximitySensorBeEnabled() -> Bool {
-		return core.callsNb > 0 && isVideoEnabled.value != true && nonEarpieceOutputAudioDevice.value != true
+		return isVideoEnabled.value != true && nonEarpieceOutputAudioDevice.value != true
 	}
 	
 
