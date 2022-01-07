@@ -1732,7 +1732,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 -(void) createVoiceRecorder {
 	LinphoneRecorderParams *p = linphone_core_create_recorder_params(LC);
-	linphone_recorder_params_set_file_format(p, LinphoneRecorderFileFormatWav);
+	linphone_recorder_params_set_file_format(p, LinphoneRecorderFileFormatMkv);
 	_voiceRecorder = linphone_core_create_recorder(LC, p);
 }
 
@@ -1788,7 +1788,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	
 	switch (linphone_recorder_get_state(_voiceRecorder)) {
 		case LinphoneRecorderClosed: {
-			NSString *filename = [NSString stringWithFormat:@"%@/voice-recording-%@.wav",[LinphoneManager imagesDirectory], [NSUUID UUID].UUIDString];
+			NSString *filename = [NSString stringWithFormat:@"%@/voice-recording-%@.mkv",[LinphoneManager imagesDirectory], [NSUUID UUID].UUIDString];
 			linphone_recorder_open(_voiceRecorder, filename.UTF8String);
 			linphone_recorder_start(_voiceRecorder);
 			LOGW(@"[Chat Message Sending] Recorder is closed opening it with %@",filename);
