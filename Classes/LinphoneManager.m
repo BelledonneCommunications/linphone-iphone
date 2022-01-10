@@ -1324,12 +1324,33 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	}
 }
 
+- (void)activateBasicChatroomCPIMForLinphoneAccounts {
+	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
+	while (accountsList) {
+		LinphoneAccount * account = accountsList->data;
+		LinphoneAccountParams const * currentParams = linphone_account_get_params(account);
+		LinphoneAddress const * currentAddress = linphone_account_params_get_identity_address(currentParams);
+		
+		if (strcmp(linphone_address_get_domain(currentAddress), "sip.linphone.org") == 0 && !linphone_account_params_cpim_in_basic_chat_room_enabled(currentParams) ) {
+			
+			LOGI(@"Enabling CPIM in basic chatroom for user %s", linphone_address_get_username(currentAddress));
+			LinphoneAccountParams * newParams = linphone_account_params_clone(linphone_account_get_params(account));
+			linphone_account_params_enable_cpim_in_basic_chat_room(newParams, true);
+			linphone_account_set_params(account, newParams);
+			linphone_account_params_unref(newParams);
+		}
+		
+		accountsList = accountsList->next;
+	}
+}
+
 - (void)startLinphoneCore {
 	bool corePushEnabled = [self lpConfigIntForKey:@"net" inSection:@"push_notification"];
 	linphone_core_set_push_notification_enabled([LinphoneManager getLc], corePushEnabled);
 	linphone_core_start([LinphoneManager getLc]);
 	
 	[self configurePushProviderForAccounts];
+	[self activateBasicChatroomCPIMForLinphoneAccounts];
 }
 
 - (void)createLinphoneCore {
