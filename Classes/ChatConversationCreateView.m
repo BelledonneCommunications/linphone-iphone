@@ -90,8 +90,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_switchView.hidden = true;
 		_chiffreOptionView.hidden = true;
 		_voipTitle.hidden = false;
+		if (_isForOngoingVoipConference) {
+			[_nextButton setImage:[UIImage imageNamed:@"valid_default"] forState:UIControlStateNormal];
+		} else {
+			[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
+		}
 	} else {
 		_voipTitle.hidden = true;
+		[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
 	}
 	
 }
@@ -171,8 +177,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onNextClick:(id)sender {
 	if (_isForVoipConference) {
-		[PhoneMainView.instance changeCurrentView:VIEW(ConferenceSchedulingSummaryView).compositeViewDescription];
-		[VIEW(ConferenceSchedulingSummaryView) setParticipantsWithAddresses:_tableController.contactsGroup];
+		if (_isForOngoingVoipConference) {
+			[PhoneMainView.instance changeCurrentView:VIEW(ActiveCallOrConferenceView).compositeViewDescription];
+			[ConferenceViewModelBridge updateParticipantsListWithAddresses:_tableController.contactsGroup];
+		} else {
+			[PhoneMainView.instance changeCurrentView:VIEW(ConferenceSchedulingSummaryView).compositeViewDescription];
+			[VIEW(ConferenceSchedulingSummaryView) setParticipantsWithAddresses:_tableController.contactsGroup];
+		}
 	} else {
 		ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 		view.contacts = _tableController.contactsGroup;

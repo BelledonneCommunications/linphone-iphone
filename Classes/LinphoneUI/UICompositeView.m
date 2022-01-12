@@ -22,6 +22,7 @@
 #import "LinphoneAppDelegate.h"
 #import "Utils.h"
 #import "SideMenuView.h"
+#import "linphoneapp-Swift.h"
 
 @implementation UICompositeViewDescription
 
@@ -302,6 +303,14 @@
 			return ret;
 	}
 	return nil;
+}
+
+-(void) removeCallViewFromCache {
+	for (NSString *key in [viewControllerCache allKeys]) {
+		if ([key isEqualToString:ActiveCallOrConferenceView.compositeViewDescription.name]) {
+			[viewControllerCache removeObjectForKey:key];
+		}
+	}
 }
 
 - (void)clearCache:(NSArray *)exclude {

@@ -24,6 +24,8 @@
 #import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
+#import "SVProgressHUD.h"
+
 
 @implementation ChatsListTableView
 
@@ -202,11 +204,13 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 		// will force a call to [self loadData]
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 		view.waitView.hidden = TRUE;
+		[SVProgressHUD dismiss];
 	}
 }
 
 - (void) deleteChatRooms {
 	_waitView.hidden = FALSE;
+	[SVProgressHUD show];
 	bctbx_list_t *chatRooms = bctbx_list_copy(_chatRooms);
 	while (chatRooms) {
 		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)chatRooms->data;

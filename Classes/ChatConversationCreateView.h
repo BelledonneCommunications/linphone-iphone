@@ -46,6 +46,8 @@
 @property(nonatomic) Boolean isEncrypted;
 
 @property(nonatomic) Boolean isForVoipConference;
+@property(nonatomic) Boolean isForOngoingVoipConference;
+
 @property (weak, nonatomic) IBOutlet UILabel *voipTitle;
 
 - (IBAction)onBackClick:(id)sender;

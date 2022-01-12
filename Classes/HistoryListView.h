@@ -31,6 +31,7 @@
 
 @property(nonatomic, strong) IBOutlet UIButton *allButton;
 @property(nonatomic, strong) IBOutlet UIButton *missedButton;
+@property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *conferenceButton;
 @property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 

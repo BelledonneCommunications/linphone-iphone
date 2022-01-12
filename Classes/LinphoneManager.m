@@ -487,6 +487,15 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 				   linphone_account_set_params(account, newAccountParams);
 			   }
 		   }
+		   if (!linphone_account_params_get_audio_video_conference_factory_address(newAccountParams) && strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
+			   NSString *uri = [self lpConfigStringForKey:@"default_audio_video_conference_factory_uri" withDefault:@"sip:videoconference-factory2@sip.linphone.org"];
+			   LinphoneAddress *a = linphone_factory_create_address(linphone_factory_get(), uri.UTF8String);
+			   if (a) {
+				   linphone_account_params_set_audio_video_conference_factory_address(newAccountParams, a);
+				   linphone_account_set_params(account, newAccountParams);
+			   }
+		   }
+		 
 		   linphone_account_params_unref(newAccountParams);
 		   accounts = accounts->next;
 	   }

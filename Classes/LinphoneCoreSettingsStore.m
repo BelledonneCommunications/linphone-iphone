@@ -331,6 +331,8 @@
 	{
 		
 		[self setBool:[lm lpConfigBoolForKey:@"use_device_ringtone"] forKey:@"use_device_ringtone"];
+		[self setBool:linphone_core_is_record_aware_enabled(LC) forKey:@"record_aware"];
+
 		[self setBool:linphone_core_get_use_info_for_dtmf(LC) forKey:@"sipinfo_dtmf_preference"];
 		[self setBool:linphone_core_get_use_rfc2833_for_dtmf(LC) forKey:@"rfc_dtmf_preference"];
 
@@ -787,7 +789,9 @@
 		linphone_core_set_use_rfc2833_for_dtmf(LC, [self boolForKey:@"rfc_dtmf_preference"]);
 		[lm lpConfigSetBool:[self boolForKey:@"use_device_ringtone"] forKey:@"use_device_ringtone"];
 		[ProviderDelegate resetSharedProviderConfiguration];
-				
+
+		linphone_core_set_record_aware_enabled(LC, [self boolForKey:@"record_aware"]);
+
 		linphone_core_set_use_info_for_dtmf(LC, [self boolForKey:@"sipinfo_dtmf_preference"]);
 		linphone_core_set_inc_timeout(LC, [self integerForKey:@"incoming_call_timeout_preference"]);
 		linphone_core_set_in_call_timeout(LC, [self integerForKey:@"in_call_timeout_preference"]);

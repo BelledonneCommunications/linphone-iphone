@@ -12,3 +12,6 @@
 #import "StatusBarView.h"
 #import "LinphoneUI/UIBouncingView.h"
 #import "PhoneMainView.h"
+#import "UICamSwitch.h"
+#import "UIChatBubbleTextCell.h"
+

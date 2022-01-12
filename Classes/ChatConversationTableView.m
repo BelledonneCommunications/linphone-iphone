@@ -24,6 +24,7 @@
 #import "UIChatBubblePhotoCell.h"
 #import "UIChatNotifiedEventCell.h"
 #import "PhoneMainView.h"
+#import "linphoneapp-Swift.h"
 
 @implementation ChatConversationTableView
 
@@ -326,7 +327,8 @@ static const int BASIC_EVENT_LIST=15;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-        if (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat))
+		BOOL isConferenceIcs = [ICSBubbleView isConferenceInvitationMessageWithCmessage:chat];
+		if (!isConferenceIcs && (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)))
             kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
 		else
 			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
@@ -373,14 +375,12 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
         LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-        
-        //If the message is followed by another one that is not from the same address, we add a little space under it
-        CGFloat height = 0;
-        if ([self isLastIndexInTableView:indexPath chat:chat])
-            height += tableView.frame.size.height * MESSAGE_SPACING_PERCENTAGE / 100;
-        if (![self isFirstIndexInTableView:indexPath chat:chat])
-            height -= 20;
-
+		//If the message is followed by another one that is not from the same address, we add a little space under it
+		CGFloat height = 0;
+		if ([self isLastIndexInTableView:indexPath chat:chat])
+			height += tableView.frame.size.height * MESSAGE_SPACING_PERCENTAGE / 100;
+		if (![self isFirstIndexInTableView:indexPath chat:chat])
+			height -= 20;
 		return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height + height;
 	}
     return [UIChatNotifiedEventCell height];

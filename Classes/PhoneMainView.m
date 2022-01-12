@@ -374,7 +374,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		case LinphoneCallOutgoingInit: {
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallOutgoingRinging: {
 			OutgoingCallView *v = VIEW(OutgoingCallView);
 			[self changeCurrentView:OutgoingCallView.compositeViewDescription];
 			[v setCallWithCall:call];
@@ -395,10 +398,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallEarlyUpdating:
 		case LinphoneCallIdle:
 			break;
-		case LinphoneCallOutgoingEarlyMedia:
-		case LinphoneCallOutgoingProgress: {
-			break;
-		}
         case LinphoneCallReleased:
             if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -407,7 +406,6 @@ static RootViewManager *rootViewManagerInstance = nil;
                 });
             }
             break;
-		case LinphoneCallOutgoingRinging:
 		case LinphoneCallPaused:
 		case LinphoneCallPausing:
 		case LinphoneCallRefered:

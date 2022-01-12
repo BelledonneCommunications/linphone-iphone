@@ -19,6 +19,7 @@
 
 #import "TabBarView.h"
 #import "PhoneMainView.h"
+#import "linphoneapp-Swift.h"
 
 @implementation TabBarView
 
@@ -99,7 +100,8 @@
 
 - (void)updateSelectedButton:(UICompositeViewDescription *)view {
 	_historyButton.selected = [view equal:HistoryListView.compositeViewDescription] ||
-							  [view equal:HistoryDetailsView.compositeViewDescription];
+							  [view equal:HistoryDetailsView.compositeViewDescription] ||
+							  [view equal:ConferenceHistoryDetailsView.compositeViewDescription];
 	_contactsButton.selected = [view equal:ContactsListView.compositeViewDescription] ||
 							   [view equal:ContactDetailsView.compositeViewDescription];
 	_dialerButton.selected = [view equal:DialerView.compositeViewDescription];

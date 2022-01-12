@@ -24,5 +24,6 @@
 @interface UICamSwitch : UIIconButton
 
 @property(nonatomic, weak) IBOutlet UIView *preview;
++ (void) switchCamera;
 
 @end
