@@ -385,15 +385,16 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 }
 
 
-+(NSString *)formattedDuration:(long)valueMs {
-	return [NSString stringWithFormat:@"%02ld:%02ld", valueMs/ 60, (valueMs % 60) ];
++(NSString *)formattedDuration:(long)valueSec {
+	return [NSString stringWithFormat:@"%02ld:%02ld", valueSec/ 60, (valueSec % 60) ];
 }
 
 +(NSString *) recordingDuration:(NSString *) _voiceRecordingFile{
-	NSError *error = nil;
-	AVAudioPlayer* utilityPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL URLWithString:_voiceRecordingFile] error:&error]; // Workaround as opening multiple linphone_players at the same time can cause crash (here for example layout refreshed whilst a voice memo is playing
-	return [self formattedDuration:utilityPlayer.duration];
-	utilityPlayer = nil;
+	LinphonePlayer *p = linphone_core_create_local_player(LC, nil, nil, nil);
+	linphone_player_open(p, _voiceRecordingFile.UTF8String);
+	NSString *result =  [self formattedDuration:linphone_player_get_duration(p)];
+	linphone_player_close(p);
+	return result;
 }
 
 + (UIImage *)getImageFromFileName:(NSString *)fileName forReplyBubble:(BOOL)forReplyBubbble {

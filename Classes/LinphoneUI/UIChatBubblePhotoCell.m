@@ -184,7 +184,7 @@
 		_voiceRecordingFile = [NSString stringWithUTF8String:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] ? linphone_content_get_plain_file_path(voiceContent) : linphone_content_get_file_path(voiceContent)];
 		if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId])
 			[encrptedFilePaths setValue:_voiceRecordingFile forKey:[NSString stringWithUTF8String:linphone_content_get_name(voiceContent)]];
-		[self setVoiceMessageDuration];
+		_vrTimerLabel.text =  [self formattedDuration:linphone_content_get_file_duration(voiceContent)/1000];
 		_vrWaveMaskPlayback.frame = CGRectZero;
 		_vrWaveMaskPlayback.backgroundColor = linphone_chat_message_is_outgoing(self.message) ? UIColor.orangeColor : UIColor.grayColor;
 	}
@@ -755,14 +755,6 @@
 
 // Voice messages
 
-static AVAudioPlayer* utilityPlayer;
-
--(void) setVoiceMessageDuration {
-	NSError *error = nil;
-	AVAudioPlayer* utilityPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL URLWithString:_voiceRecordingFile] error:&error]; // Workaround as opening multiple linphone_players at the same time can cause crash (here for example layout refreshed whilst a voice memo is playing
-	_vrTimerLabel.text =  [self formattedDuration:utilityPlayer.duration];
-	utilityPlayer = nil;
-}
 
 -(void) voicePlayTimerUpdate {
 	CGRect r = _vrWaveMaskPlayback.frame;
