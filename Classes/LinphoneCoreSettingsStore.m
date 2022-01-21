@@ -202,19 +202,15 @@
 					[self setCString:tmp forKey:@"account_proxy_preference"];
 				}
 				const char *tname = "udp";
-				if (linphone_address_get_secure(proxy_addr)) {
-					tname = "tls";
-				} else {
-					switch (linphone_address_get_transport(proxy_addr)) {
-						case LinphoneTransportTcp:
-							tname = "tcp";
-							break;
-						case LinphoneTransportTls:
-							tname = "tls";
-							break;
-						default:
-							break;
-					}
+				switch (linphone_address_get_transport(proxy_addr)) {
+					case LinphoneTransportTcp:
+						tname = "tcp";
+						break;
+					case LinphoneTransportTls:
+						tname = "tls";
+						break;
+					default:
+						break;
 				}
 				linphone_address_unref(proxy_addr);
 				[self setCString:tname forKey:@"account_transport_preference"];
@@ -501,7 +497,6 @@
 	NSString *userID = [self stringForKey:@"account_userid_preference"];
 	NSString *domain = [self stringForKey:@"account_mandatory_domain_preference"];
 	NSString *transport = [self stringForKey:@"account_transport_preference"];
-	BOOL isTransportTls = [transport isEqualToString:@"tls"];
 	NSString *accountHa1 = [self stringForKey:@"ha1_preference"];
 	NSString *accountPassword = [self stringForKey:@"account_mandatory_password_preference"];
 	NSString *accountAlgoPreference = [self stringForKey:@"ha1_algo_preference"];
@@ -522,12 +517,8 @@
 			proxyAddress = domain;
 		}
 
-  		if (![proxyAddress hasPrefix:@"sip:"] && ![proxyAddress hasPrefix:@"sips:"]) {
-			if (isTransportTls) {
-				proxyAddress = [NSString stringWithFormat:@"sips:%@", proxyAddress];
-			} else {
-				proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
-			}
+		if (![proxyAddress hasPrefix:@"sip:"] && ![proxyAddress hasPrefix:@"sips:"]) {
+			proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
 		}
 
 		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxyAddress.UTF8String);
@@ -536,7 +527,7 @@
 			LinphoneTransportType type = LinphoneTransportUdp;
 			if ([transport isEqualToString:@"tcp"])
 				type = LinphoneTransportTcp;
-			else if (isTransportTls)
+			else if ([transport isEqualToString:@"tls"])
 				type = LinphoneTransportTls;
 
 			linphone_address_set_transport(proxy_addr, type);
@@ -549,9 +540,8 @@
 		if (account == NULL)
 			goto bad_proxy;
 
-		
-		LinphoneAddress *linphoneAddress;
-		linphoneAddress = linphone_core_interpret_url(LC, isTransportTls ? "sips:user@domain.com" : "sip:user@domain.com");
+
+		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
 		linphone_address_set_username(linphoneAddress, username.UTF8String);
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"]) {
 			char *user = linphone_account_normalize_phone_number(account, username.UTF8String);
