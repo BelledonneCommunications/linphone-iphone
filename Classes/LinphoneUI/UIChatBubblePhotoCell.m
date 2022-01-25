@@ -66,10 +66,7 @@
         self.vrView.layer.cornerRadius = 30.0f;
 		self.vrView.layer.masksToBounds = YES;
         [self.innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
-		self.messageText.userInteractionEnabled = true;
-		self.messageText.editable = false;
-		self.messageText.selectable = true;
-		self.messageText.dataDetectorTypes = UIDataDetectorTypeLink;
+		[self.messageText addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
 	}
 	return self;
 }

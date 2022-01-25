@@ -19,7 +19,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UITextViewNoDefine : UITextView
+@interface UITextViewNoDefine : UITextView<UITextViewDelegate>
 
 @property BOOL allowSelectAll;
 
