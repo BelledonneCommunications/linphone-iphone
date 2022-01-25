@@ -401,37 +401,54 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
     [self loadData];
 }
 
-- (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView
-				  editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+  leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
-	UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive
-																			title:NSLocalizedString(@"Delete", nil)
-																		  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-																			  [self tableView:tableView deleteRowAtIndex:indexPath];
-																		  }];
-
-	UITableViewRowAction *imdnAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal
-																			title:NSLocalizedString(@"Info", nil)
-																		  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-																			  LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-																			  ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
-																			  view.msg = msg;
-																			  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-																		  }];
-
-	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage &&
-		!(linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne))
-		return @[deleteAction, imdnAction];
-	else
-		return @[deleteAction];
+	
+	UIContextualAction *replyAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+																		 title:NSLocalizedString(@"Reply", nil)
+																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
+		[VIEW(ChatConversationView) initiateReplyViewForMessage:msg];
+		
+	}];
+	
+		UISwipeActionsConfiguration *swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[replyAction]];
+		swipeActionConfig.performsFirstActionWithFullSwipe = YES;
+		return swipeActionConfig;
 }
 
-- (void)tableView:(UITableView *)tableView
-	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-	 forRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (editingStyle == UITableViewCellEditingStyleDelete) {
+- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	UIContextualAction *delete = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
+																		 title:NSLocalizedString(@"Delete", nil)
+																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
 		[self tableView:tableView deleteRowAtIndex:indexPath];
+	}];
+	
+	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
+	UIContextualAction *imdnAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+																		 title:NSLocalizedString(@"Info", nil)
+																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
+														   ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+														   view.msg = msg;
+														   [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	}];
+	
+	UISwipeActionsConfiguration *swipeActionConfig;
+	
+	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage &&
+		!(linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne)) {
+		swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[delete, imdnAction]];
+	} else {
+		swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[delete]];
 	}
+	
+	swipeActionConfig.performsFirstActionWithFullSwipe = YES;
+	return swipeActionConfig;
 }
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
