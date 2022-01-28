@@ -58,6 +58,8 @@
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property NSMutableDictionary<NSString *, UIImage *> *imagesInChatroom;
 @property(nonatomic) NSTimer *ephemeralDisplayTimer;
+@property (nullable, nonatomic) UIButton *floatingScrollButton;
+@property (nullable, nonatomic) UILabel *scrollBadge;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;

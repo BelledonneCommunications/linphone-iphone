@@ -631,7 +631,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 						 _composeIndicatorView.frame = newComposingFrame;
 					 }
 					 completion:^(BOOL finished) {
-						 [_tableController scrollToBottom:TRUE];
 						 _composeIndicatorView.hidden = !visible;
 					 }];
 }
@@ -1348,10 +1347,18 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
 	if (!from)
 		return;
-
+	
+	bool isDisplayingBottomOfTable = [view.tableController.tableView indexPathsForVisibleRows].lastObject.row == [view.tableController totalNumberOfItems] - 1;
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-	[view.tableController scrollToLastUnread:TRUE];
+	
+	
+	if (isDisplayingBottomOfTable) {
+		[view.tableController scrollToBottom:TRUE];
+	} else {
+		int unread_msg = linphone_chat_room_get_unread_messages_count(cr);
+		[[view.tableController scrollBadge] setText:[NSString stringWithFormat:@"%d", unread_msg]];
+	}
 }
 
 void on_chat_room_chat_message_sending(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {

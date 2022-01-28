@@ -53,6 +53,7 @@
 	[self stopEphemeralDisplayTimer];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super viewWillDisappear:animated];
+	[_floatingScrollButton setHidden:TRUE];
 }
 
 #pragma mark -
@@ -83,6 +84,7 @@
 	bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
 	bctbx_list_t *chatRoomEvents = linphone_chat_room_get_history_events(_chatRoom, 0);
 	
+	int unread_count = 0;
 	
 	bctbx_list_t *head = chatRoomEvents;
 	size_t listSize = bctbx_list_size(chatRoomEvents);
@@ -95,6 +97,11 @@
 			chatRoomEvents = chatRoomEvents->next;
 		} else {
 			LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+			if (chat && !linphone_chat_message_is_read(chat)) {
+				if (unread_count == 0) {
+				//	[eventList addObject:[NSString stringWithString:@"Ceci est un test wesh wesh"]];
+				}
+			}
 			// if auto_download is available and file transfer in progress, not add event now
 			if (!(autoDownload && chat && linphone_chat_message_is_file_transfer_in_progress(chat))) {
 				[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
@@ -164,6 +171,8 @@
 	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 						  atScrollPosition:UITableViewScrollPositionBottom
 								  animated:YES];
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+		[ChatConversationView markAsRead:_chatRoom];
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
@@ -411,7 +420,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
 		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
 		[VIEW(ChatConversationView) initiateReplyViewForMessage:msg];
-		
+		[self scrollToBottom:TRUE];
 	}];
 	
 		UISwipeActionsConfiguration *swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[replyAction]];
@@ -508,5 +517,6 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	if (r ==_chatRoom)
 		[self reloadData];
 }
+
 
 @end
