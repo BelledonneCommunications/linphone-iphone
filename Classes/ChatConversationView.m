@@ -1344,7 +1344,7 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
     if ((linphone_core_get_max_size_for_auto_download_incoming_files(LC) > -1) && linphone_chat_message_get_file_transfer_information(chat))
         hasFile = TRUE;
 
-	if (!linphone_chat_message_is_file_transfer(chat) && !linphone_chat_message_is_text(chat) && !hasFile) /*probably an imdn*/
+	if (!linphone_chat_message_is_file_transfer(chat) && !linphone_chat_message_is_text(chat) && !hasFile && ![ICSBubbleView isConferenceInvitationMessageWithCmessage:chat]) /*probably an imdn*/
 		return;
 
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);

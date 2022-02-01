@@ -46,10 +46,9 @@ import linphonesw
 		contentView.addSubview(subjectLabel)
 		subjectLabel.alignParentLeft(withMargin: form_margin).alignParentTop().done()
 		
-		let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: viewModel.subject)
+		let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: viewModel.subject,maxLines:1)
 		contentView.addSubview(subjectInput)
 		subjectInput.alignUnder(view: subjectLabel,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).height(form_input_height).done()
-		
 		
 		let schedulingStack = UIStackView()
 		schedulingStack.axis = .vertical

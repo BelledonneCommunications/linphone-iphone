@@ -24,7 +24,7 @@ import linphonesw
 
 class ConferenceSchedulingViewModel  {
 	
-	let core = Core.get()
+	var core : Core { get { Core.get() } }
 	static let shared = ConferenceSchedulingViewModel()
 	
 	let subject = MutableLiveData<String>()

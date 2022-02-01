@@ -42,10 +42,6 @@ extension Core {
 				return
 			}
 		}
-		
-		let inConference = conference != nil && conference!.isIn
-		if !inConference, let call = currentCall {
-			try?call.update(params: nil)
-		}*/
+		*/
 	}
 }

@@ -89,5 +89,13 @@ extension UITextView {
 		let fontSizeMultiplier: Float = (UIDevice.ipad() ? 1.25 : UIDevice.is5SorSEGen1() ? 0.9 : 1.0)
 		font = UIFont.init(name: style.font, size: CGFloat(style.size*fontSizeMultiplier))
 	}
+	var numberOfCurrentlyDisplayedLines: Int {
+		return text.components(separatedBy: "\n").count
+	}
+	func removeTextUntilSatisfying(maxNumberOfLines: Int) {
+		while numberOfCurrentlyDisplayedLines > (maxNumberOfLines) {
+			text = String(text.dropLast())
+		}
+	}
 }
 

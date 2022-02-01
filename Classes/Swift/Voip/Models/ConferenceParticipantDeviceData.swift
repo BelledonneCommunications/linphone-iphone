@@ -28,7 +28,7 @@ class ConferenceParticipantDeviceData  {
 	let videoEnabled = MutableLiveData<Bool>()
 	let activeSpeaker = MutableLiveData<Bool>()
 	let isInConference = MutableLiveData<Bool>()
-	let core = Core.get()
+	var core : Core { get { Core.get() } }
 
 	private var participantDeviceDelegate :  ParticipantDeviceDelegate?
 	
@@ -45,26 +45,41 @@ class ConferenceParticipantDeviceData  {
 			}, onConferenceLeft: { (participantDevice) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice)  has left the conference")
 				self.isInConference.value = false
-			}, onAudioDirectionChanged: { (participantDevice, direction) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice) audio stream direction changed: \(direction)")
-			}, onVideoDirectionChanged: { (participantDevice, direction) in
+			}, onStreamCapabilityChanged: { (participantDevice, direction, streamType) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice) video stream direction changed: \(direction)")
 				self.videoEnabled.value = direction == MediaDirection.SendOnly || direction == MediaDirection.SendRecv
-			}, onTextDirectionChanged: { (participantDevice, direction) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice)  text stream direction changed: \(direction)")
-			})
+				if (streamType == StreamType.Video) {
+					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video capability changed to \(direction)")
+				}
+			}, onStreamAvailabilityChanged: { (participantDevice, available, streamType) in
+				if (streamType == StreamType.Video) {
+					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video availability changed to \(available)")
+					self.videoEnabled.value = available
+				}
+			}
+		
+		)
 		
 		participantDevice.addDelegate(delegate: participantDeviceDelegate!)
 		activeSpeaker.value = false
 		
-		// TODO: What happens if we have disabled video locally?
-		videoEnabled.value = participantDevice.videoDirection == MediaDirection.SendOnly || participantDevice.videoDirection == MediaDirection.SendRecv
-		isInConference.value = participantDevice.isInConference
 		
+		videoEnabled.value = participantDevice.getStreamAvailability(streamType: .Video)
+		
+		isInConference.value = participantDevice.isInConference
+		let videoCapability = participantDevice.getStreamCapability(streamType: .Video)
+		Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())], is in conf? \(isInConference.value), is video enabled? \(videoEnabled.value) \(videoCapability)")
 	}
 	
 	func destroy() {
+		clearObservers()
 		participantDevice.removeDelegate(delegate: participantDeviceDelegate!)
+	}
+	
+	func clearObservers() {
+		isInConference.clearObservers()
+		videoEnabled.clearObservers()
+		activeSpeaker.clearObservers()
 	}
 	
 	func switchCamera() {
@@ -76,12 +91,10 @@ class ConferenceParticipantDeviceData  {
 	}
 	
 	func setVideoView(view:UIView) {
-		if (!isMe && participantDevice.videoDirection != MediaDirection.SendRecv) {
-			Log.e("[Conference Participant Device] Participant \(participantDevice) device video direction is \(participantDevice.videoDirection), don't set video window!")
-			return
-		}
 		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice)")
-		if (isMe) { // TODO: remove
+		if (isMe) {
+			core.usePreviewWindow(yesno: false)
+			view.contentMode = .scaleAspectFit
 			core.nativePreviewWindow = view
 		} else {
 			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())

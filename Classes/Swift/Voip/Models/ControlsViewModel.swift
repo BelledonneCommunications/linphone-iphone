@@ -24,8 +24,8 @@ import AVFoundation
 
 
 class ControlsViewModel {
-	let core = Core.get()
-	
+	var core : Core { get { Core.get() } }
+
 	let isSpeakerSelected = MutableLiveData<Bool>()
 	let isMicrophoneMuted = MutableLiveData<Bool>()
 	let isMuteMicrophoneEnabled = MutableLiveData<Bool>()
@@ -138,7 +138,7 @@ class ControlsViewModel {
 	func toggleVideo() {
 		if let conference = core.conference, conference.isIn {
 			if let params = try?core.createConferenceParams() {
-				let videoEnabled = conference.currentParams?.isVideoEnabled == true
+				let videoEnabled = conference.currentParams?.videoEnabled == true
 				params.videoEnabled = !videoEnabled
 				_ = conference.updateParams(params: params)
 			}

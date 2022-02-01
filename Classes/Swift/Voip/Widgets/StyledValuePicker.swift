@@ -41,8 +41,8 @@ class StyledValuePicker: UIView {
 
 		formattedLabel.isUserInteractionEnabled = false
 		formattedLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
-		formattedLabel.text =  "  "+options[liveIndex.value!]
-		
+		liveIndex.value.map { formattedLabel.text =  "  "+options[$0] }
+
 		if (readOnly) {
 			formattedLabel.textColor = formattedLabel.textColor.withAlphaComponent(0.5)
 		}

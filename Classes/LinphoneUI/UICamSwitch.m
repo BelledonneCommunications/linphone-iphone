@@ -54,10 +54,6 @@ INIT_WITH_COMMON_CF {
 	if (newCamId) {
 		LOGI(@"Switching from [%s] to [%s]", currentCamId, newCamId);
 		linphone_core_set_video_device(LC, newCamId);
-		LinphoneCall *call = linphone_core_get_current_call(LC);
-		if (call != NULL) {
-			linphone_core_update_call(LC, call, NULL);
-		}
 	}
 }
 

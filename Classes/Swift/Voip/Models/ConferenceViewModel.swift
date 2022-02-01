@@ -24,7 +24,7 @@ import AVFoundation
 
 class ConferenceViewModel {
 	
-	let core = Core.get()
+	var core : Core { get { Core.get() } }
 	static let shared = ConferenceViewModel()
 	
 	let conferenceExists = MutableLiveData<Bool>()
@@ -81,7 +81,7 @@ class ConferenceViewModel {
 		coreDelegate = CoreDelegateStub(
 			onConferenceStateChanged: { (core, conference, state) in
 				Log.i("[Conference] \(conference) Conference state changed: \(state)")
-				self.isVideoConference.value = conference.currentParams?.isVideoEnabled == true
+				self.isVideoConference.value = conference.currentParams?.videoEnabled == true
 				
 				if (state == Conference.State.Instantiated) {
 					self.initConference(conference)
@@ -135,7 +135,7 @@ class ConferenceViewModel {
 		
 		isConferenceLocallyPaused.value = !conference.isIn
 		self.isMeAdmin.value = conference.me?.isAdmin == true
-		isVideoConference.value = conference.currentParams?.isVideoEnabled == true
+		isVideoConference.value = conference.currentParams?.videoEnabled == true
 
 		self.subject.value =   conference.subject.isEmpty ? (
 			conference.me?.isFocus == true ? (

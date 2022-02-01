@@ -24,8 +24,8 @@ import linphonesw
 
 @objc class AudioRouteUtils : NSObject {
 	
-	static let core = Core.get()
-	
+	static var core : Core { get { Core.get() } }
+
 	static private func applyAudioRouteChange( call: Call?, types: [AudioDeviceType], output: Bool = true) {
 		let typesNames = types.map { String(describing: $0) }.joined(separator: "/")
 		

@@ -57,6 +57,10 @@ class VoipGridParticipantCell: UICollectionViewCell {
 					}
 					self.switchCamera.isHidden = videoEnabled != true || !data.isSwitchCameraAvailable()
 				}
+				if (data.participantDevice.address == nil) {
+					avatar.isHidden = true
+				}
+				self.displayName.text = ""
 				data.participantDevice.address.map {
 					avatar.fillFromAddress(address: $0)
 					if let displayName = $0.addressBookEnhancedDisplayName() {

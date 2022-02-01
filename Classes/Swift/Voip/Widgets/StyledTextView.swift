@@ -24,15 +24,19 @@ class StyledTextView: UITextView, UITextViewDelegate {
 	var placeholder:String?
 	var style:TextStyle?
 	var liveValue: MutableLiveData<String>? = nil
+	var maxLines:Int
 
 	required init?(coder: NSCoder) {
+		maxLines = 0
 		super.init(coder: coder)
 	}
 	
-	init (_ style:TextStyle, placeHolder:String? = nil, liveValue: MutableLiveData<String>, readOnly:Bool = false) {
+	init (_ style:TextStyle, placeHolder:String? = nil, liveValue: MutableLiveData<String>, readOnly:Bool = false, maxLines:Int = 999) {
+		self.maxLines = maxLines
 		self.style = style
 		self.liveValue = liveValue
 		super.init(frame:.zero, textContainer: nil)
+		textContainer.maximumNumberOfLines = maxLines
 		applyStyle(style)
 		setFormInputBackground(readOnly:readOnly)
 		placeHolder.map {
@@ -43,6 +47,7 @@ class StyledTextView: UITextView, UITextViewDelegate {
 			self.text = value
 			if (value == nil || value?.count == 0) {
 				self.showPlaceHolder()
+				self.resignFirstResponder()
 			}
 		}
 		if (readOnly) {
@@ -71,6 +76,7 @@ class StyledTextView: UITextView, UITextViewDelegate {
 	}
 	
 	func textViewDidChange(_ textView: UITextView) {
+		textView.removeTextUntilSatisfying(maxNumberOfLines: self.maxLines)
 		liveValue?.value = textView.text
 	}
 	
