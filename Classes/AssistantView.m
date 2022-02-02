@@ -91,6 +91,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
+- (IBAction)onContactTap {
+	NSString *url = @"https://www.linphone.org/contact";
+	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
+		LOGE(@"Failed to open %@, invalid URL", url);
+	}
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	UITapGestureRecognizer *tapGestureRecognizer =
+	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onContactTap)];
+	tapGestureRecognizer.numberOfTapsRequired = 1;
+	[_linphoneSpecificFeatureWarningContactLink addGestureRecognizer:tapGestureRecognizer];
+	_linphoneSpecificFeatureWarningContactLink.userInteractionEnabled = YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
@@ -1386,6 +1402,13 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
         nextView = _loginView;
         [self loadAssistantConfig:@"assistant_external_sip.rc"];
     });
+}
+
+- (IBAction)onGoToNonLinphoneInfoPage:(id)sender {
+	ONCLICKBUTTON(sender, 100, {		
+		nextView = _linphoneSpecificFeatureWarningView;
+		[self changeView:nextView back:FALSE animation:TRUE];
+	});
 }
 
 - (IBAction)onGotoRemoteProvisioningClick:(id)sender {
