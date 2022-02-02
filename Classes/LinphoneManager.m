@@ -685,7 +685,7 @@ message:(const char *)cmessage {
 		break;
 	case LinphoneReasonIOError:
 		message = NSLocalizedString(
-					    @"Cannot reach the server: either it is an invalid address or it may be temporary down.", nil);
+					    @"Cannot reach the server: either the address is invalid or it may be temporarily down.", nil);
 		break;
 
 	case LinphoneReasonUnauthorized:
