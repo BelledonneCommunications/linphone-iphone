@@ -5,7 +5,7 @@ source "https://github.com/CocoaPods/Specs.git"
 
 def all_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk', '~> 5.1.0-beta.67+d777941e'
+		pod 'linphone-sdk', '~> 5.1.0-beta.69+950f104'
 	else
 		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # local sdk
 	end
