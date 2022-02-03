@@ -310,7 +310,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	BOOL acceptTerms = [LinphoneManager.instance lpConfigBoolForKey:@"accept_terms" withDefault:FALSE];
 	UIImage *image = acceptTerms ? [UIImage imageNamed:@"checkbox_checked.png"] : [UIImage imageNamed:@"checkbox_unchecked.png"];
 	[_acceptButton setImage:image forState:UIControlStateNormal];
-	_gotoRemoteProvisioningButton.enabled = _gotoLinphoneLoginButton.enabled = _gotoCreateAccountButton.enabled = _gotoLoginButton.enabled = acceptTerms;
+	_gotoRemoteProvisioningButton.enabled = _gotoLinphoneLoginButton.enabled = _gotoCreateAccountButton.enabled = _gotoLinphoneSpecificFeatureWarningButton.enabled = acceptTerms;
 }
 
 + (NSString *)errorForLinphoneAccountCreatorPhoneNumberStatus:(LinphoneAccountCreatorPhoneNumberStatus)status {
@@ -1361,12 +1361,13 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 
 // Change button color and wait the display of this
 #define ONCLICKBUTTON(button, timewaitmsec, body) \
+UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 [button setBackgroundColor:[UIColor lightGrayColor]]; \
     _waitView.hidden = NO; \
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (timewaitmsec * NSEC_PER_MSEC)); \
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ \
         body \
-        [button setBackgroundColor:[UIColor clearColor]]; \
+        [button setBackgroundColor:previousColor]; \
         _waitView.hidden = YES; \
     }); \
 

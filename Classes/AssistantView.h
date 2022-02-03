@@ -58,7 +58,7 @@
 @property(nonatomic, strong) IBOutlet UIImageView *welcomeLogoImage;
 @property(nonatomic, strong) IBOutlet UIButton *gotoCreateAccountButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneLoginButton;
-@property(nonatomic, strong) IBOutlet UIView *gotoLinphoneSpecificFeatureWarningButton;
+@property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneSpecificFeatureWarningButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLoginButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisioningButton;
 @property (weak, nonatomic) IBOutlet UILabel *phoneLabel;
