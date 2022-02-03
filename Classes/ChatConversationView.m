@@ -316,6 +316,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		[self refreshImageDrawer];
 		return;
 	}
 	composingVisible = !composingVisible;
@@ -1679,7 +1680,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self canAdminEphemeral:_chatRoom] ? 3 : 2;
+	return (_chatRoom && [self canAdminEphemeral:_chatRoom]) ? 3 : 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
