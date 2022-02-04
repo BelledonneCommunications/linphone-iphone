@@ -24,7 +24,13 @@
 
 @implementation UIChatContentView
 
+static NSMutableDictionary<NSString *, UIChatContentView *> *instances;
+
 - (void)setContent:(LinphoneContent *)content message:(LinphoneChatMessage *)message {
+	
+	if (!instances)
+		instances = [[NSMutableDictionary alloc] init];
+	
 	_content = content;
 	_message = message;
 	self.userInteractionEnabled = YES;
@@ -41,11 +47,14 @@
 		UIFont *boldFont = [UIFont systemFontOfSize:12];
 		NSMutableParagraphStyle * paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 		paragraphStyle.alignment = NSTextAlignmentCenter;
-		
 		NSMutableAttributedString *boldText = [[NSMutableAttributedString alloc] initWithString:@"Download" attributes:@{ NSFontAttributeName : boldFont, NSParagraphStyleAttributeName:paragraphStyle,NSUnderlineStyleAttributeName: @(NSUnderlineStyleSingle) }];
 		[_downloadButton setAttributedTitle:boldText forState:UIControlStateNormal];
 		_downloadButton.frame = CGRectMake(0, 90, 120, 30);
 		[self addSubview:_downloadButton];
+		_progress =  [[UIProgressView alloc] initWithFrame:CGRectMake(5, 75, 110, 30)];
+		_progress.tintColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]];
+		_progress.hidden = true;
+		[self addSubview:_progress];
 	} else {
 		if (_filePath == NULL) {
 			NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
@@ -70,7 +79,26 @@
 -(IBAction)onDownloadClick:(id)sender {
 	_downloadButton.enabled = NO;
 	linphone_content_set_file_path(_content, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:[NSString stringWithUTF8String:linphone_content_get_name(_content)]].UTF8String);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message), file_transfer_progress_indication_recv);
+	_progress.hidden = false;
+	_downloadButton.enabled = false;
+	[instances setValue:self forKey:[NSString stringWithUTF8String:linphone_content_get_name(_content)]];
+
 	linphone_chat_message_download_content(_message, _content);
+}
+
+static void file_transfer_progress_indication_recv(LinphoneChatMessage *message, LinphoneContent* content, size_t offset, size_t total) {
+	CGFloat p =  offset * 1.f / total;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		UIChatContentView *thiz = [instances objectForKey:[NSString stringWithUTF8String:linphone_content_get_name(content)]];
+		if (offset == total) {
+			thiz.progress.hidden = true;
+		} else {
+			thiz.progress.hidden = false;
+			thiz.progress.progress = p;
+			LOGD(@"Transfer of %s (%d bytes): already %ld recv progress = %f", linphone_content_get_name(content), total, p);
+		}
+	});
 }
 
 @end

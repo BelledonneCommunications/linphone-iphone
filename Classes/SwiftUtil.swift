@@ -105,10 +105,16 @@ import linphonesw
 		cacheMessageSize[message.messageId] = size
 	}
 	
+	@objc static func removeCachedMessageHeight(cmessage:OpaquePointer) {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		cacheMessageSize.removeValue(forKey: message.messageId)
+	}
+	
 	@objc static func messageHeightCanBeCached(cmessage:OpaquePointer) -> Bool {
 		let message = ChatMessage.getSwiftObject(cObject: cmessage)
-		return  (message.isOutgoing && [.Delivered, .DeliveredToUser, .Displayed].contains(message.state)) ||  (!message.isOutgoing && ![.InProgress, .FileTransferInProgress, .FileTransferError].contains(message.state))
+		return  (message.isOutgoing && [.Delivered, .DeliveredToUser, .Displayed].contains(message.state)) ||  (!message.isOutgoing && [.Displayed].contains(message.state))
 	}
+	
 	
 }
 

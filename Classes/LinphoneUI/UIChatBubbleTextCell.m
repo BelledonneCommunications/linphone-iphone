@@ -314,6 +314,9 @@
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
+	if (state == LinphoneChatMessageStateFileTransferInProgress)
+		return;
+	
 	if (!linphone_chat_message_is_outgoing(msg) || (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateFileTransferInProgress)) {
 		LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
 		ChatConversationView *view = VIEW(ChatConversationView);
@@ -373,10 +376,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	
 	CGSize cached = [SwiftUtil getCachedMessageHeightWithCmessage:chat];
 	if (cached.height != 0) {
-		LOGI(@"ViewHeightForMessage - found cached value %f",cached.height);
 		return cached;
 	}
-	LOGI(@"ViewHeightForMessage - computing value");
 	
     CGSize size = [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
 	size.height += linphone_chat_message_is_forward(chat) || linphone_chat_message_is_reply(chat) ? REPLY_OR_FORWARD_TAG_HEIGHT : 0;
