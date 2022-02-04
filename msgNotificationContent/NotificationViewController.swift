@@ -46,6 +46,7 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 #endif
         NSLog("[msgNotificationContent] start msgNotificationContent extension")
 
+		
         let replyAction = UNTextInputNotificationAction(identifier: "Reply",
                          title: NSLocalizedString("Reply", comment: ""),
                          options: [],
@@ -61,7 +62,9 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         coreStopped = false
     }
 
-    func didReceive(_ notification: UNNotification) {}
+    func didReceive(_ notification: UNNotification) {
+		VFSUtil.log("Notification received \(notification.request.content.userInfo) category \(notification.request.content.categoryIdentifier)",.info)
+	}
 
     func didReceive(_ response: UNNotificationResponse,
                     completionHandler completion: @escaping (UNNotificationContentExtensionResponseOption) -> Void) {

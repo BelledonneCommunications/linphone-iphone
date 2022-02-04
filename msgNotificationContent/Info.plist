@@ -26,6 +26,8 @@
 		<dict>
 			<key>UNNotificationExtensionCategory</key>
 			<string>msg_cat</string>
+			<key>UNNotificationExtensionDefaultContentHidden</key>
+			<false/>
 			<key>UNNotificationExtensionInitialContentSizeRatio</key>
 			<real>0.01</real>
 			<key>UNNotificationExtensionOverridesDefaultTitle</key>
