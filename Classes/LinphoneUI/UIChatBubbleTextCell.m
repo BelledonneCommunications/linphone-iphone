@@ -373,9 +373,23 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
+	
+	CGSize cached = [SwiftUtil getCachedMessageHeightWithCmessage:chat];
+	if (cached.height != 0) {
+		LOGI(@"ViewHeightForMessage - found cached value %f",cached.height);
+		return cached;
+	}
+	LOGI(@"ViewHeightForMessage - computing value");
+	
     CGSize size = [self ViewHeightForMessageText:chat withWidth:width textForImdn:nil];
 	size.height += linphone_chat_message_is_forward(chat) || linphone_chat_message_is_reply(chat) ? REPLY_OR_FORWARD_TAG_HEIGHT : 0;
 	size.height += linphone_chat_message_is_reply(chat) ? REPLY_CHAT_BUBBLE_HEIGHT+5 : 0;
+	
+	// No modifications of size below as it goes into cache
+	if ([SwiftUtil messageHeightCanBeCachedWithCmessage:chat]) {
+		[SwiftUtil setCachedMessageHeightWithCmessage:chat size:size];
+	}
+	
 	return size;
 }
 

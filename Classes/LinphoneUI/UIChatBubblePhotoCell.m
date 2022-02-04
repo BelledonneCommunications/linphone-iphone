@@ -30,7 +30,7 @@
 #define chatView VIEW(ChatConversationView)
 #define FILE_ICON_TAG 0
 #define REALIMAGE_TAG 1
-
+#define PHOTO_LIBRARY_FETCH_IMAGE_SIZE CGSizeMake(UIScreen.mainScreen.bounds.size.width * 0.8f,UIScreen.mainScreen.bounds.size.width * 0.8f)
 
 
 @implementation UIChatBubblePhotoCell {
@@ -126,19 +126,30 @@
 }
 
 - (void) loadAsset:(PHAsset *) asset {
-    PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-    options.synchronous = TRUE;
-    [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
-                                            resultHandler:^(UIImage *image, NSDictionary * info) {
-                                                if (image) {
-                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
-                                                    [chatTableView.imagesInChatroom setObject:image forKey:[asset localIdentifier]];
-                                                    [self loadImageAsset:asset image:image];
-                                                }
-                                                else {
-                                                    LOGE(@"Can't read image");
-                                                }
-                                            }];
+	
+	UIImage *image = [SwiftUtil getCachedImageWithKey:asset];
+	if (image) {
+		imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
+		[chatTableView.imagesInChatroom setObject:image forKey:[asset localIdentifier]];
+		[self loadImageAsset:asset image:image];
+		return;
+	} else {
+		PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+		options.synchronous = FALSE;
+		options.resizeMode = PHImageRequestOptionsResizeModeNone;
+		[[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHOTO_LIBRARY_FETCH_IMAGE_SIZE contentMode:PHImageContentModeAspectFit options:options
+												resultHandler:^(UIImage *image, NSDictionary * info) {
+			if (image) {
+				imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - CELL_IMAGE_X_MARGIN];
+				[chatTableView.imagesInChatroom setObject:image forKey:[asset localIdentifier]];
+				[self loadImageAsset:asset image:image];
+				[SwiftUtil setCachedImageWithKey:asset image:image];
+			}
+			else {
+				LOGE(@"Can't read image");
+			}
+		}];
+	}
 }
 
 - (void) loadFileAsset:(NSString *)name {
@@ -316,8 +327,13 @@
 			if ([key isEqualToString:@"localimage"]) {
 				// we did not load the image yet, so start doing so
 				if (_messageImageView.image == nil) {
-					NSData *data = [NSData dataWithContentsOfFile:filePath];
-					UIImage *image = [[UIImage alloc] initWithData:data];
+					UIImage *cachedImage = [SwiftUtil getCachedImageWithKey:filePath] ? : [UIImage imageWithContentsOfFile:filePath];
+					UIImage *image = [SwiftUtil getCachedImageWithKey:filePath];
+					if (!image) {
+						image = [UIImage imageWithContentsOfFile:filePath];
+						if (image)
+							[SwiftUtil  setCachedImageWithKey:filePath image:image];
+					}
 					if (image) {
 						[self loadImageAsset:nil image:image];
 						_imageGestureRecognizer.enabled = YES;
@@ -343,8 +359,7 @@
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = NO;
 				} else if ([fileName hasSuffix:@"JPG"] || [fileName hasSuffix:@"PNG"] || [fileName hasSuffix:@"jpg"] || [fileName hasSuffix:@"png"]) {
-					NSData *data = [NSData dataWithContentsOfFile:filePath];
-					UIImage *image = [[UIImage alloc] initWithData:data];
+					UIImage *image = [UIImage imageWithContentsOfFile:filePath];
 					[self loadImageAsset:nil image:image];
 					_imageGestureRecognizer.enabled = YES;
 				} else {
@@ -545,8 +560,7 @@
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 			NSString *filePath = [LinphoneManager getMessageAppDataForKey:@"encryptedfile" inMessage:self.message];
 			if (filePath) {
-				NSData *data = [NSData dataWithContentsOfFile:filePath];
-				UIImage *image = [[UIImage alloc] initWithData:data];
+				UIImage *image = [UIImage imageWithContentsOfFile:filePath];
 				[view setImage:image];
 				return;
 			}
@@ -563,8 +577,7 @@
 			}
 
 			if (imageName) {
-				NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager validFilePath:imageName]];
-				UIImage *image = [[UIImage alloc] initWithData:data];
+				UIImage *image = [UIImage imageWithContentsOfFile: [LinphoneManager validFilePath:imageName]];
 				if (image)
 					[view setImage:image];
 				else
