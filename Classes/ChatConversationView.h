@@ -132,6 +132,7 @@
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType;
 +(UIImage *)getBasicImage;
 +(UIImage*)drawText:(NSString*)text image:(UIImage *)image textSize:(CGFloat)textSize;
++(BOOL) isBasicChatRoom:(LinphoneChatRoom *)room;
 
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
