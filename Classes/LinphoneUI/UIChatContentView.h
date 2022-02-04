@@ -28,6 +28,8 @@
 @property(readonly, nonatomic) LinphoneChatMessage *message;
 @property(nonatomic) UIButton *downloadButton;
 @property(nonatomic) NSString *filePath;
+@property(nonatomic) UIProgressView *progress;
+
 
 - (void)setContent:(LinphoneContent *)content message:(LinphoneChatMessage *)message;
 

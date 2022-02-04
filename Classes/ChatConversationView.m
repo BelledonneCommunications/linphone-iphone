@@ -530,7 +530,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	BOOL basic = [ChatConversationView isBasicChatRoom:_chatRoom];
 	if (message && message.length > 0) {
 		if (!basic)
-			linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
+ 			linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
 	}
 
 	if (externalUrl) {
