@@ -18,6 +18,9 @@
  */
 
 import UIKit
+import Photos
+import linphonesw
+
 
 @objc class SwiftUtil: NSObject {
 	
@@ -67,6 +70,44 @@ import UIKit
 		let img = UIGraphicsGetImageFromCurrentImageContext()!
 		UIGraphicsEndImageContext()
 		return img
+	}
+	
+	// Image cache
+	static var imageCache:[String:UIImage] = [:]
+	
+	@objc static func getCachedImage(key:String) -> UIImage? {
+		return key != nil ? imageCache[key] : nil
+	}
+	
+	@objc static func setCachedImage(key:String,image:UIImage)  {
+		imageCache[key] = image
+	}
+
+	@objc static func resetCachedAsset()  {
+		imageCache.removeAll()
+	}
+	
+	// Chat bubble height cache :
+	
+	static var cacheMessageSize:[String:CGSize] = [:]
+	
+	@objc static func getCachedMessageHeight(cmessage:OpaquePointer) -> CGSize {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		if let cached = cacheMessageSize[message.messageId] {
+			return cached
+		} else {
+			return .zero
+		}
+	}
+	
+	@objc static func setCachedMessageHeight(cmessage:OpaquePointer, size:CGSize) {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		cacheMessageSize[message.messageId] = size
+	}
+	
+	@objc static func messageHeightCanBeCached(cmessage:OpaquePointer) -> Bool {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		return  (message.isOutgoing && [.Delivered, .DeliveredToUser, .Displayed].contains(message.state)) ||  (!message.isOutgoing && ![.InProgress, .FileTransferInProgress, .FileTransferError].contains(message.state))
 	}
 	
 }

@@ -79,6 +79,7 @@
 		}
 		[CallManager.instance stopLinphoneCore];
 	}
+	[SwiftUtil resetCachedAsset];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
