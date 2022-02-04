@@ -403,7 +403,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self update];
     [self shareFile];
 	
-	if (![self isBasicChatRoom]) {
+	if (![ChatConversationView isBasicChatRoom:_chatRoom]) {
 		[self setupPopupMenu];
 		_ephemeralndicator.hidden = !linphone_chat_room_ephemeral_enabled(_chatRoom);
 	}
@@ -411,10 +411,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 }
 
--(BOOL) isBasicChatRoom {
-	if (!_chatRoom)
++(BOOL) isBasicChatRoom:(LinphoneChatRoom *)room {
+	if (!room)
 		return true;
-	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(room);
 	return capabilities & LinphoneChatRoomCapabilitiesBasic;
 }
 
@@ -528,8 +528,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	LinphoneChatMessage *msg = rootMessage;
-	if (message && message.length > 0)
-		linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
+	BOOL basic = [ChatConversationView isBasicChatRoom:_chatRoom];
+	if (message && message.length > 0) {
+		if (!basic)
+			linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
+	}
 
 	if (externalUrl) {
 		linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
@@ -537,6 +540,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	// we must ref & unref message because in case of error, it will be destroy otherwise
 	linphone_chat_message_send(msg);
+	if (basic && message && message.length > 0) {
+		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(_chatRoom, message.UTF8String));
+	}
 
 	return TRUE;
 }
@@ -640,8 +646,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_backToCallButton update];
 	_infoButton.hidden = (isOneToOne|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
-	_toggleMenuButton.hidden =  [self isBasicChatRoom] || _tableController.tableView.isEditing;
-	_tableController.editButton.hidden = _tableController.editButton.hidden || ![self isBasicChatRoom];
+	_toggleMenuButton.hidden =  [ChatConversationView isBasicChatRoom:_chatRoom] || _tableController.tableView.isEditing;
+	_tableController.editButton.hidden = _tableController.editButton.hidden || ![ChatConversationView isBasicChatRoom:_chatRoom];
 }
 
 - (void)updateParticipantLabel {
