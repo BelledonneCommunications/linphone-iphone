@@ -159,6 +159,33 @@
         [self handleShortcut:_shortcutItem];
         _shortcutItem = nil;
     }
+	
+	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
+																		completionHandler:^(BOOL granted, NSError *_Nullable error) {
+		if (error)
+			LOGD(error.description);
+		if (!granted) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				UIAlertController *errView =
+				[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Push notification not allowed", nil)
+													message:NSLocalizedString(@"Push notifications are required to receive calls and messages.", nil)
+											 preferredStyle:UIAlertControllerStyleAlert];
+				
+				UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																		style:UIAlertActionStyleDefault
+																	  handler:^(UIAlertAction *action){
+				}];
+				[errView addAction:defaultAction];
+				[PhoneMainView.instance.mainViewController presentViewController:errView animated:YES completion:nil];
+			});
+		} else  {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self configureUINotification];
+			});
+		}
+		
+	}];
+	
 }
 
 #pragma deploymate push "ignored-api-availability"
@@ -227,15 +254,9 @@
 										   options:UNNotificationCategoryOptionCustomDismissAction];
 
 	[UNUserNotificationCenter currentNotificationCenter].delegate = self;
-	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
-																		completionHandler:^(BOOL granted, NSError *_Nullable error) {
-																			// Enable or disable features based on authorization.
-																			if (error)
-																				LOGD(error.description);
-																		}];
-    
 	NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
 	[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
+	
 }
 
 #pragma deploymate pop
@@ -278,9 +299,7 @@
 
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-	
-	[self configureUINotification];
-	
+		
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
 		if (!start_at_boot || !background_mode) {
@@ -521,6 +540,10 @@
 	}
 
 	completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+	
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
