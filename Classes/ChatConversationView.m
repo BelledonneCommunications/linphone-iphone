@@ -528,22 +528,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	LinphoneChatMessage *msg = rootMessage;
-	BOOL basic = [ChatConversationView isBasicChatRoom:_chatRoom];
-	if (message && message.length > 0) {
-		if (!basic)
- 			linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
-	}
-
 	if (externalUrl) {
 		linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
 	}
 	
-	// we must ref & unref message because in case of error, it will be destroy otherwise
-	linphone_chat_message_send(msg);
-	if (basic && message && message.length > 0) {
-		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(_chatRoom, message.UTF8String));
+	if (message && message.length > 0) {
+		if ([ChatConversationView isBasicChatRoom:_chatRoom])
+			linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(_chatRoom, message.UTF8String));
+		else {
+			linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
+			linphone_chat_message_send(msg);
+		}
 	}
-
 	return TRUE;
 }
 
