@@ -46,7 +46,7 @@ import AVFoundation
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 	var conference: Conference?
-	
+	var callkitAudioSessionActivated : Bool? = nil // if "nil", ignore.
 	
 	var backgroundContextCall : Call?
 	@objc var backgroundContextCameraIsEnabled : Bool = false
@@ -633,7 +633,8 @@ import AVFoundation
 					break
 			}
 
-			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
+			let readyForRoutechange = CallManager.instance().callkitAudioSessionActivated == nil || (CallManager.instance().callkitAudioSessionActivated == true)
+			if (readyForRoutechange && (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning)) {
 				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled()) {
 					CallManager.instance().changeRouteToSpeaker()
 				} else if (isBluetoothAvailable()) {
