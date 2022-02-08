@@ -232,6 +232,18 @@
 
 #pragma mark - ViewController Functions
 
+- (void)updateBackOrCancelButton {
+	if (self.tableController.isEditing) {
+		_backButton.hidden = TRUE;
+		_cancelButton.hidden = FALSE;
+	} else {
+		if (!IPAD) {
+			_backButton.hidden = FALSE;
+		}
+		_cancelButton.hidden = TRUE;
+	}
+}
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
@@ -262,7 +274,7 @@
 						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
 	[_tableController.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
 	_tableController.waitView = _waitView;
-	if (!IPAD)
+	if (!IPAD && !self.tableController.isEditing)
 		self.tmpContact = NULL;
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self
@@ -282,6 +294,8 @@
 		}
 	}
 	[_editButton setImage:[UIImage imageNamed:@"valid_default.png"] forState:UIControlStateSelected];
+	
+	[self updateBackOrCancelButton];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification*)notif {
@@ -296,15 +310,7 @@
 		}
 	}
 	
-	if (self.tableController.isEditing) {
-		_backButton.hidden = TRUE;
-		_cancelButton.hidden = FALSE;
-	} else {
-		if (!IPAD) {
-			_backButton.hidden = FALSE;
-		}
-		_cancelButton.hidden = TRUE;
-	}
+	[self updateBackOrCancelButton];
     
     [self recomputeTableViewSize:_editButton.hidden];
 }
@@ -315,7 +321,9 @@
 	}
 	[super viewWillDisappear:animated];
 	PhoneMainView.instance.currentName = NULL;
-	[self resetContact];
+	if (!_tableController.isEditing) {
+		[self resetContact];
+	}
 
 	BOOL rm = TRUE;
 	for (NSString *sip in _contact.sipAddresses) {
@@ -433,6 +441,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (!_isAdding) {
 		_contact.firstName = _tmpContact.firstName.copy;
 		_contact.lastName = _tmpContact.lastName.copy;
+		_contact.avatar = _tmpContact.avatar.copy;
+		[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+		
 		while (_contact.sipAddresses.count > 0) {
 			[_contact removeSipAddressAtIndex:0];
 		}
@@ -503,7 +514,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	
 	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
-	if ([previous isEqualToString:@"ContactsListView"]) {
+	if ([previous isEqualToString:@"ContactsListView"] || [previous isEqualToString:@"ImagePickerView"]) {
 		ContactsListView *view = VIEW(ContactsListView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
