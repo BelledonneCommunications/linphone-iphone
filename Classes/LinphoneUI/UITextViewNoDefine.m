@@ -23,15 +23,23 @@
 
 @synthesize allowSelectAll;
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-	// disable "define" option, since it messes with the keyboard
-	if ([[NSStringFromSelector(action) lowercaseString] rangeOfString:@"define"].location != NSNotFound) {
-		return NO;
-	} else if (action == @selector(selectAll:) && allowSelectAll) {
-		return YES;
-	} else {
-		return [super canPerformAction:action withSender:sender];
-	}
+-(void)awakeFromNib{
+	[super awakeFromNib];
+	self.delegate = self;
+	self.userInteractionEnabled = true;
+	self.editable = false;
+	self.selectable = true;
+	self.dataDetectorTypes = UIDataDetectorTypeLink;
+}
+
+- (BOOL)canBecomeFirstResponder {
+	return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+	textView.selectedTextRange = nil;
+	[textView endEditing:YES];
 }
 
 @end

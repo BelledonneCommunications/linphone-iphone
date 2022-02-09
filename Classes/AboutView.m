@@ -53,11 +53,20 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSString *curVersion = [NSString stringWithFormat:@"version %@",[infoDict objectForKey:@"CFBundleShortVersionString"]];
 	_appVersionLabel.text = [NSString stringWithFormat:@"%@ iOS %@", name, curVersion];
 	_libVersionLabel.text = [NSString stringWithFormat:@"%@ SDK %s", name, LINPHONE_SDK_VERSION];
+	_translateLabel.text = [NSString stringWithString:NSLocalizedString(@"Help us translate Linphone", nil)];
+	
 	UITapGestureRecognizer *tapGestureRecognizer =
 		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLicenceTap)];
 	tapGestureRecognizer.numberOfTapsRequired = 1;
 	[_licenceLabel addGestureRecognizer:tapGestureRecognizer];
 	_licenceLabel.userInteractionEnabled = YES;
+	
+	UITapGestureRecognizer *tapGestureRecognizerTranslate =
+		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTranslateTap)];
+	tapGestureRecognizer.numberOfTapsRequired = 1;
+	[_translateLabel addGestureRecognizer:tapGestureRecognizerTranslate];
+	_translateLabel.userInteractionEnabled = YES;
+	
 	UITapGestureRecognizer *tapGestureRecognizerPolicy =
 		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onPolicyTap)];
 	tapGestureRecognizerPolicy.numberOfTapsRequired = 1;
@@ -76,7 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onPolicyTap {
-	NSString *url = @"https://www.linphone.org/terms-and-privacy";
+	NSString *url = @"https://www.linphone.org/privacy-policy";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}
@@ -84,6 +93,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onLicenceTap {
 	NSString *url = @"https://www.gnu.org/licenses/gpl-3.0.html";
+	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
+		LOGE(@"Failed to open %@, invalid URL", url);
+	}
+}
+- (IBAction)onTranslateTap {
+	NSString *url = @"https://weblate.linphone.org/projects/linphone-iphone";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
 		LOGE(@"Failed to open %@, invalid URL", url);
 	}

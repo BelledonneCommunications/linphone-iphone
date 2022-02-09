@@ -53,6 +53,7 @@
 	[self stopEphemeralDisplayTimer];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super viewWillDisappear:animated];
+	[_floatingScrollButton setHidden:TRUE];
 }
 
 #pragma mark -
@@ -83,6 +84,7 @@
 	bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
 	bctbx_list_t *chatRoomEvents = linphone_chat_room_get_history_events(_chatRoom, 0);
 	
+	int unread_count = 0;
 	
 	bctbx_list_t *head = chatRoomEvents;
 	size_t listSize = bctbx_list_size(chatRoomEvents);
@@ -95,6 +97,11 @@
 			chatRoomEvents = chatRoomEvents->next;
 		} else {
 			LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+			if (chat && !linphone_chat_message_is_read(chat)) {
+				if (unread_count == 0) {
+				//	[eventList addObject:[NSString stringWithString:@"Ceci est un test wesh wesh"]];
+				}
+			}
 			// if auto_download is available and file transfer in progress, not add event now
 			if (!(autoDownload && chat && linphone_chat_message_is_file_transfer_in_progress(chat))) {
 				[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
@@ -164,6 +171,8 @@
 	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 						  atScrollPosition:UITableViewScrollPositionBottom
 								  animated:YES];
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+		[ChatConversationView markAsRead:_chatRoom];
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
@@ -401,37 +410,54 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
     [self loadData];
 }
 
-- (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView
-				  editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+  leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
-	UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive
-																			title:NSLocalizedString(@"Delete", nil)
-																		  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-																			  [self tableView:tableView deleteRowAtIndex:indexPath];
-																		  }];
-
-	UITableViewRowAction *imdnAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal
-																			title:NSLocalizedString(@"Info", nil)
-																		  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
-																			  LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-																			  ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
-																			  view.msg = msg;
-																			  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-																		  }];
-
-	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage &&
-		!(linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne))
-		return @[deleteAction, imdnAction];
-	else
-		return @[deleteAction];
+	
+	UIContextualAction *replyAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+																		 title:NSLocalizedString(@"Reply", nil)
+																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
+		[VIEW(ChatConversationView) initiateReplyViewForMessage:msg];
+		[self scrollToBottom:TRUE];
+	}];
+	
+		UISwipeActionsConfiguration *swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[replyAction]];
+		swipeActionConfig.performsFirstActionWithFullSwipe = YES;
+		return swipeActionConfig;
 }
 
-- (void)tableView:(UITableView *)tableView
-	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-	 forRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (editingStyle == UITableViewCellEditingStyleDelete) {
+- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	UIContextualAction *delete = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
+																		 title:NSLocalizedString(@"Delete", nil)
+																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
 		[self tableView:tableView deleteRowAtIndex:indexPath];
+	}];
+	
+	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
+	UIContextualAction *imdnAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+																		 title:NSLocalizedString(@"Info", nil)
+																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
+														   ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+														   view.msg = msg;
+														   [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	}];
+	
+	UISwipeActionsConfiguration *swipeActionConfig;
+	
+	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage &&
+		!(linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne)) {
+		swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[delete, imdnAction]];
+	} else {
+		swipeActionConfig = [UISwipeActionsConfiguration configurationWithActions:@[delete]];
 	}
+	
+	swipeActionConfig.performsFirstActionWithFullSwipe = YES;
+	return swipeActionConfig;
 }
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
@@ -491,5 +517,6 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	if (r ==_chatRoom)
 		[self reloadData];
 }
+
 
 @end

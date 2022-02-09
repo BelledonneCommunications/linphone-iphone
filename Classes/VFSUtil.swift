@@ -187,7 +187,7 @@ import os
 				return false
 			}
 			guard let secret = decrypt(encryptedText: encryptedKey) else {
-				log(log: "[VFS] Unable to decryt encrypted key.", level: .error)
+				log("[VFS] Unable to decryt encrypted key.", .error)
 				return false
 			}
 			Factory.Instance.setVfsEncryption(encryptionModule: 2, secret: secret, secretSize: 32)

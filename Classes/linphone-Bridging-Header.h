@@ -8,4 +8,4 @@
 #import "FastAddressBook.h"
 #import "Log.h"
 #import "AudioHelper.h"
-
+#import "ChatConversationTableView.h"

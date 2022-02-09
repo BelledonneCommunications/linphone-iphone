@@ -61,6 +61,10 @@
          [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
 }
 
+-(void) viewDidAppear:(BOOL)animated {
+	[self didSelectPost];
+}
+
 - (NSArray *)configurationItems {
     // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
     return @[];

@@ -148,7 +148,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self hideRoutes:TRUE animated:FALSE];
 	[self hideOptions:TRUE animated:FALSE];
 	[self hidePad:TRUE animated:FALSE];
-	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
+	[self hideSpeaker: [CallManager.instance isBluetoothAvailable]];
 	[self callDurationUpdate];
 	[self onCurrentCallChange];
 	// Set windows (warn memory leaks)

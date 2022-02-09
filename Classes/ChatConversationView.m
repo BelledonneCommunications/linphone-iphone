@@ -316,6 +316,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+		[self refreshImageDrawer];
 		return;
 	}
 	composingVisible = !composingVisible;
@@ -434,7 +435,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 -(NSData *) nsDataRead {
-	NSString* groupName = @"group.com.clavys.frogtrust.store";
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
 	NSString *path  =[[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupName] path];
 	NSString *fullCacheFilePathPath = [NSString stringWithFormat:@"%@/%@",path,@"nsData"];
 	return[NSData dataWithContentsOfFile:fullCacheFilePathPath];
@@ -442,7 +443,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 - (void)shareFile {
-	NSString* groupName = @"group.com.clavys.frogtrust.store";
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
 
 
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
@@ -525,24 +526,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LOGW(@"Cannot send message: No chatroom");
 		return FALSE;
 	}
-
+	
 	LinphoneChatMessage *msg = rootMessage;
 	BOOL basic = [ChatConversationView isBasicChatRoom:_chatRoom];
-	if (message && message.length > 0) {
-		if (!basic)
- 			linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
+	if (!basic && message && message.length > 0) {
+		linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
 	}
-
+	
 	if (externalUrl) {
 		linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
 	}
 	
-	// we must ref & unref message because in case of error, it will be destroy otherwise
-	linphone_chat_message_send(msg);
+	bctbx_list_t const *contentList = linphone_chat_message_get_contents(msg);
+	if (bctbx_list_size(contentList) > 0) {
+		linphone_chat_message_send(msg);
+	}
+	
 	if (basic && message && message.length > 0) {
 		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(_chatRoom, message.UTF8String));
 	}
-
+	
 	return TRUE;
 }
 
@@ -637,7 +640,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 						 _composeIndicatorView.frame = newComposingFrame;
 					 }
 					 completion:^(BOOL finished) {
-						 [_tableController scrollToBottom:TRUE];
 						 _composeIndicatorView.hidden = !visible;
 					 }];
 }
@@ -1354,10 +1356,18 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
 	if (!from)
 		return;
-
+	
+	bool isDisplayingBottomOfTable = [view.tableController.tableView indexPathsForVisibleRows].lastObject.row == [view.tableController totalNumberOfItems] - 1;
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-	[view.tableController scrollToLastUnread:TRUE];
+	
+	
+	if (isDisplayingBottomOfTable) {
+		[view.tableController scrollToBottom:TRUE];
+	} else {
+		int unread_msg = linphone_chat_room_get_unread_messages_count(cr);
+		[[view.tableController scrollBadge] setText:[NSString stringWithFormat:@"%d", unread_msg]];
+	}
 }
 
 void on_chat_room_chat_message_sending(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
@@ -1635,10 +1645,9 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 
 -(BOOL) canAdminEphemeral:(LinphoneChatRoom *)cr {
-	return linphone_chat_room_has_capability(cr, LinphoneChatRoomCapabilitiesEphemeral) && (
-				(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeDeviceManaged) ||
-				(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeAdminManaged && linphone_participant_is_admin(linphone_chat_room_get_me(cr)))
-			 );
+	// If ephemeral mode is DeviceManaged, then we don't need to check anything else
+	return	(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeDeviceManaged)
+	||	( linphone_chat_room_has_capability(cr, LinphoneChatRoomCapabilitiesEphemeral) && linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeAdminManaged && linphone_participant_is_admin(linphone_chat_room_get_me(cr)));
 }
 
 
@@ -1665,7 +1674,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		[_tableController onEditClick:nil];
 		[self onEditionChangeClick:nil];
 	}
-	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom]) {
+	if ([self canAdminEphemeral:_chatRoom]) {
 		if (indexPath.row == 2) {
 			EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
 			view.room = _chatRoom;
@@ -1679,7 +1688,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom] ? 3 : 2;
+	return (_chatRoom && [self canAdminEphemeral:_chatRoom]) ? 3 : 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1693,7 +1702,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
 	}
-	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom]) {
+	
+	if ([self canAdminEphemeral:_chatRoom]) {
 		if (indexPath.row == 2) {
 			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
 			cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
@@ -1738,7 +1748,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 -(void) createVoiceRecorder {
 	LinphoneRecorderParams *p = linphone_core_create_recorder_params(LC);
-	linphone_recorder_params_set_file_format(p, LinphoneRecorderFileFormatWav);
+	linphone_recorder_params_set_file_format(p, LinphoneRecorderFileFormatMkv);
 	_voiceRecorder = linphone_core_create_recorder(LC, p);
 }
 
@@ -1794,7 +1804,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	
 	switch (linphone_recorder_get_state(_voiceRecorder)) {
 		case LinphoneRecorderClosed: {
-			NSString *filename = [NSString stringWithFormat:@"%@/voice-recording-%@.wav",[LinphoneManager imagesDirectory], [NSUUID UUID].UUIDString];
+			NSString *filename = [NSString stringWithFormat:@"%@/voice-recording-%@.mkv",[LinphoneManager imagesDirectory], [NSUUID UUID].UUIDString];
 			linphone_recorder_open(_voiceRecorder, filename.UTF8String);
 			linphone_recorder_start(_voiceRecorder);
 			LOGW(@"[Chat Message Sending] Recorder is closed opening it with %@",filename);

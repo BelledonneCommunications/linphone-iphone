@@ -191,6 +191,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			CallManager.instance().backgroundContextCameraIsEnabled = call!.params?.videoEnabled ?? false
 			call?.cameraEnabled = false // Disable camera while app is not on foreground
 		}
+		CallManager.instance().callkitAudioSessionActivated = false
 		CallManager.instance().lc?.configureAudioSession()
 		CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
 		action.fulfill()
@@ -305,11 +306,13 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session activated.")
 		CallManager.instance().lc?.activateAudioSession(actived: true)
+		CallManager.instance().callkitAudioSessionActivated = true
 	}
 
 	func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session deactivated.")
 		CallManager.instance().lc?.activateAudioSession(actived: false)
+		CallManager.instance().callkitAudioSessionActivated = nil
 	}
 }
 

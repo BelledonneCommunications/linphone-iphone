@@ -46,8 +46,7 @@ import AVFoundation
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 	var conference: Conference?
-
-	
+	var callkitAudioSessionActivated : Bool? = nil // if "nil", ignore.
 	
 	var backgroundContextCall : Call?
 	@objc var backgroundContextCameraIsEnabled : Bool = false
@@ -141,27 +140,17 @@ import AVFoundation
 	}
 	
 	@objc func changeRouteToSpeaker() {
-		for device in lc!.audioDevices {
-			if (device.type == AudioDeviceType.Speaker) {
-				lc!.outputAudioDevice = device
-				break
-			}
-		}
+		lc?.outputAudioDevice = lc?.audioDevices.first { $0.type == AudioDeviceType.Speaker }
 		UIDevice.current.isProximityMonitoringEnabled = false
 	}
 	
 	@objc func changeRouteToBluetooth() {
-		for device in lc!.audioDevices {
-			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
-				lc!.outputAudioDevice = device
-				break
-			}
-		}
+		lc?.outputAudioDevice = lc?.audioDevices.first { $0.type == AudioDeviceType.BluetoothA2DP || $0.type == AudioDeviceType.Bluetooth }
 		UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
 	}
 	
 	@objc func changeRouteToDefault() {
-		lc!.outputAudioDevice = lc!.defaultOutputAudioDevice
+		lc?.outputAudioDevice = lc?.defaultOutputAudioDevice
 	}
 	
 	@objc func isBluetoothAvailable() -> Bool {
@@ -485,6 +474,15 @@ import AVFoundation
 			CallManager.instance().conference = nil
 		}
 	}
+	
+	func onAudioDevicesListUpdated(core: Core) {
+		let bluetoothAvailable = isBluetoothAvailable();
+		
+		var dict = Dictionary<String, Bool>()
+		dict["available"] = bluetoothAvailable
+		NotificationCenter.default.post(name: Notification.Name("LinphoneBluetoothAvailabilityUpdate"), object: self, userInfo: dict)
+		
+	}
 
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
@@ -635,10 +633,13 @@ import AVFoundation
 					break
 			}
 
-			if (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-				let check = call.currentParams?.videoEnabled
+			let readyForRoutechange = CallManager.instance().callkitAudioSessionActivated == nil || (CallManager.instance().callkitAudioSessionActivated == true)
+			if (readyForRoutechange && (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning)) {
 				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled()) {
 					CallManager.instance().changeRouteToSpeaker()
+				} else if (isBluetoothAvailable()) {
+					// Use bluetooth device by default if one is available
+					CallManager.instance().changeRouteToBluetooth()
 				}
 			}
 		}

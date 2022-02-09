@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -22,11 +22,15 @@
                 <outlet property="downloadButton" destination="eM0-bn-v3C" id="hsP-3U-clZ"/>
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
-                <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
+                <outlet property="gotoLinphoneSpecificFeatureWarningButton" destination="39" id="U5E-VI-lU1"/>
+                <outlet property="gotoLoginButton" destination="8Uk-jk-U5R" id="8hN-LJ-hac"/>
                 <outlet property="gotoRemoteProvisioningButton" destination="Kbn-dL-C5h" id="zLh-uO-x8P"/>
                 <outlet property="infoLoginButton" destination="ZDs-1W-ZXo" id="aoP-Mb-gPi"/>
                 <outlet property="linphoneLoginButton" destination="eIr-bh-JLB" id="mhf-Tc-zyb"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
+                <outlet property="linphoneSpecificFeatureWarningContactLink" destination="gol-XQ-ghT" id="PgK-cA-ISq"/>
+                <outlet property="linphoneSpecificFeatureWarningText" destination="gPg-U6-Op5" id="nhQ-0n-Fua"/>
+                <outlet property="linphoneSpecificFeatureWarningView" destination="D9B-vb-AvL" id="xwU-g9-CD3"/>
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="phoneLabel" destination="ZSJ-Lv-n60" id="5Qi-xR-wyK"/>
                 <outlet property="phoneTitle" destination="rAy-0V-sqv" id="MZq-EF-6HF"/>
@@ -156,7 +160,7 @@
                         <color key="titleColor" red="0.67030966281890869" green="0.71867996454238892" blue="0.75078284740447998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
-                        <action selector="onGotoLoginClick:" destination="-1" eventType="touchUpInside" id="qRw-RY-0ip"/>
+                        <action selector="onGoToNonLinphoneInfoPage:" destination="-1" eventType="touchUpInside" id="bYh-d2-kHK"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="Kbn-dL-C5h" userLabel="remoteProvisioningButton" customClass="UIRoundBorderedButton">
@@ -1587,6 +1591,50 @@ Once it is done, come back here and click on the button.</string>
             <autoresizingMask key="autoresizingMask"/>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <point key="canvasLocation" x="1918" y="554"/>
+        </view>
+        <view contentMode="scaleToFill" id="D9B-vb-AvL">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gPg-U6-Op5">
+                    <rect key="frame" x="10" y="10" width="335" height="183"/>
+                    <string key="text">Some features require a Linphone account, such as group messaging or ephemeral messaging.  These features are hidden when you register with a third party SIP account.
+
+To enable it in a commercial project, please contact us.</string>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="https://www.linphone.org/contact" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gol-XQ-ghT">
+                    <rect key="frame" x="50" y="213" width="275" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.9497097135" green="0.27055108550000001" blue="0.030769694600000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Uk-jk-U5R">
+                    <rect key="frame" x="110" y="259" width="155" height="31"/>
+                    <color key="backgroundColor" red="0.9497097135" green="0.27055108550000001" blue="0.030769694600000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="I understand"/>
+                    <connections>
+                        <action selector="onGotoLoginClick:" destination="-1" eventType="touchUpInside" id="EKQ-47-1Cz"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="gol-XQ-ghT" firstAttribute="top" secondItem="gPg-U6-Op5" secondAttribute="bottom" constant="20" id="BHO-FK-4Y0"/>
+                <constraint firstAttribute="trailing" secondItem="gol-XQ-ghT" secondAttribute="trailing" constant="50" id="Cfx-sn-2oz"/>
+                <constraint firstItem="gol-XQ-ghT" firstAttribute="leading" secondItem="D9B-vb-AvL" secondAttribute="leading" constant="50" id="LJ7-Sq-QAD"/>
+                <constraint firstItem="8Uk-jk-U5R" firstAttribute="leading" secondItem="D9B-vb-AvL" secondAttribute="leading" constant="110" id="XAt-Ff-klv"/>
+                <constraint firstAttribute="trailing" secondItem="gPg-U6-Op5" secondAttribute="trailing" constant="30" id="dyE-ID-1tg"/>
+                <constraint firstItem="gPg-U6-Op5" firstAttribute="leading" secondItem="D9B-vb-AvL" secondAttribute="leading" constant="10" id="hwD-fu-8da"/>
+                <constraint firstItem="8Uk-jk-U5R" firstAttribute="top" secondItem="gol-XQ-ghT" secondAttribute="bottom" constant="25" id="lOA-SM-kEo"/>
+                <constraint firstItem="gPg-U6-Op5" firstAttribute="top" secondItem="D9B-vb-AvL" secondAttribute="top" constant="10" id="t58-Sk-dQD"/>
+                <constraint firstAttribute="trailing" secondItem="8Uk-jk-U5R" secondAttribute="trailing" constant="110" id="xCp-Uy-pdV"/>
+            </constraints>
+            <point key="canvasLocation" x="904.79999999999995" y="252.32383808095955"/>
         </view>
     </objects>
     <resources>

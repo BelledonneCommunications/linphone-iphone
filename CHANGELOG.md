@@ -3,13 +3,53 @@ All notable changes to this project will be documented in this file.
 
 Group changes to describe their impact on the project, as follows:
 
-    Added for new features.
-    Changed for changes in existing functionality.
-    Deprecated for once-stable features removed in upcoming releases.
-    Removed for deprecated features removed in this release.
-    Fixed for any bug fixes.
-    Security to invite users to upgrade in case of vulnerabilities.
+	Added for new features.
+	Changed for changes in existing functionality.
+	Deprecated for once-stable features removed in upcoming releases.
+	Removed for deprecated features removed in this release.
+	Fixed for any bug fixes.
+	Security to invite users to upgrade in case of vulnerabilities.
+	
+## [4.6.0] - 2021-31-02
 
+### Added
+- Reply to chat message feature (with original message preview)
+- Transfert chat message feature
+- Swipe action on chat messages to reply / delete
+- Voice recordings in chat feature
+- SIP URIs in chat messages are clickable to easily initiate a call
+- New fragment explaining generic SIP account limitations contrary to sip.linphone.org SIP accounts
+- Link to Weblate added in about page
+- New 'scroll to bottom' button in chat conversations, which a "unread message count" badge
+
+### Changed
+- Removed beta feature of ephemeral messages in the settings, now always available.
+- SDK updated to 5.1.0 release
+
+### Fixed
+- Potential crash when editing a contact avatar image.
+- App extension logs missing when exporting logs
+
+## [4.5.0] - 2021-07-08
+
+### Added
+- Add option to enable VFS
+- Ephemeral messages (beta)
+
+### Changed
+- Updating SDK to 5.0 version
+- Using linphone SDK 5.0 API to better handle audio route 
+- Replaced all notions of "Proxy configs" with "Accounts" from the 5.0 SDK
+- Removed most of the code related to remote and VOIP Push Notification receptions, now handled in the SDK
+- No longer pause all calls when receiving a new call.
+- No longer switch to speaker during video call if another output device (bluetooth headset) is already connected
+- When answering a video call while the phone is locked, send the "No camera available" image until the video is enabled through the CallKit button
+- Chat messages containing both text and file are now displayed in the same chat bubble
+
+### Fixed
+- Fix several memory leaks
+- Various crashs and issues.
+- When the App is started through a Push Notification, properly redirect the view to the corresponding chat rather than going to the home page
 
 ## [4.4.0] - 2021-03-30
 
@@ -66,7 +106,7 @@ Group changes to describe their impact on the project, as follows:
 ### Fixed
 - Automatically downloaded images are copied when shared in a chat room.
 - Some UI errors from ios 13.
-    
+	
 ## [4.1.0] - 2019-05-06
 
 ### Added

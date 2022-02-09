@@ -49,6 +49,7 @@
 @property(nonatomic, strong) IBOutlet UIView *createAccountActivateEmailView;
 @property(nonatomic, strong) IBOutlet UIView *linphoneLoginView;
 @property(nonatomic, strong) IBOutlet UIView *loginView;
+@property(nonatomic, strong) IBOutlet UIView *linphoneSpecificFeatureWarningView;
 @property(nonatomic, strong) IBOutlet UIView *remoteProvisioningLoginView;
 @property(strong, nonatomic) IBOutlet UIView *remoteProvisioningView;
 @property (strong, nonatomic) IBOutlet UIView *createAccountActivateSMSView;
@@ -57,6 +58,7 @@
 @property(nonatomic, strong) IBOutlet UIImageView *welcomeLogoImage;
 @property(nonatomic, strong) IBOutlet UIButton *gotoCreateAccountButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneLoginButton;
+@property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneSpecificFeatureWarningButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLoginButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisioningButton;
 @property (weak, nonatomic) IBOutlet UILabel *phoneLabel;
@@ -64,6 +66,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *activationTitle;
 @property (weak, nonatomic) IBOutlet UILabel *activationEmailText;
 @property (weak, nonatomic) IBOutlet UILabel *activationSMSText;
+@property (weak, nonatomic) IBOutlet UILabel *linphoneSpecificFeatureWarningText;
+@property (weak, nonatomic) IBOutlet UILabel *linphoneSpecificFeatureWarningContactLink;
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
 @property (weak, nonatomic) IBOutlet UIButton *qrCodeButton;

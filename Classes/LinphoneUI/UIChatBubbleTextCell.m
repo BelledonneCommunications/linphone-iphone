@@ -47,10 +47,7 @@
 	
     
     [_innerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
-    _messageText.userInteractionEnabled = true;
-	_messageText.editable = false;
-	_messageText.selectable = true;
-	_messageText.dataDetectorTypes = UIDataDetectorTypeLink;
+    [_messageText addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onPopupMenuPressed)]];
 
 
 	self.contentView.userInteractionEnabled = NO;

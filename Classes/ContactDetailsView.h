@@ -49,6 +49,8 @@
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onAvatarClick:(id)sender;
 
+
+- (void)updateBackOrCancelButton;
 - (void)newContact;
 - (void)newContact:(NSString *)address;
 - (void)editContact:(Contact *)contact;
