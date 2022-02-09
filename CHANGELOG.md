@@ -13,13 +13,22 @@ Group changes to describe their impact on the project, as follows:
 ## [4.6.0] - 2021-31-02
 
 ### Added
+- Reply to chat message feature (with original message preview)
+- Transfert chat message feature
+- Swipe action on chat messages to reply / delete
+- Voice recordings in chat feature
+- SIP URIs in chat messages are clickable to easily initiate a call
+- New fragment explaining generic SIP account limitations contrary to sip.linphone.org SIP accounts
+- Link to Weblate added in about page
+- New 'scroll to bottom' button in chat conversations, which a "unread message count" badge
 
 ### Changed
+- Removed beta feature of ephemeral messages in the settings, now always available.
+- SDK updated to 5.1.0 release
 
 ### Fixed
-(6) Clickable links in chat bubbles
-(6) "sips" account when transport is tls
-(6) app extension logs missing when exporting logs
+- Potential crash when editing a contact avatar image.
+- App extension logs missing when exporting logs
 
 ## [4.5.0] - 2021-07-08
 
