@@ -746,8 +746,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	[_tableController setChatRoom:NULL];
-	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
