@@ -888,6 +888,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	view.oldAdmins = [admins mutableCopy];
 	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT];
 	view.room = _chatRoom;
+	view.peerAddress = _peerAddress;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

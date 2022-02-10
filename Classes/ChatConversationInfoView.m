@@ -83,12 +83,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_oldContacts = [[NSMutableArray alloc] init];
 	_room = NULL;
 	_chatRoomCbs = NULL;
+	_peerAddress = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	_waitView.hidden = YES;
 
+	[self configure];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onLinphoneCoreReady:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	if (!_room || !_chatRoomCbs)
+		return;
+
+	linphone_chat_room_remove_callbacks(_room, _chatRoomCbs);
+	_chatRoomCbs = NULL;
+}
+
+- (void)configure {
 	if (_create)
 		_room = NULL;
 
@@ -131,19 +149,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableView reloadData];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-	[self removeCallbacks];
-}
-
-- (void)removeCallbacks {
-	if (!_room || !_chatRoomCbs)
-		return;
-
-	linphone_chat_room_remove_callbacks(_room, _chatRoomCbs);
-	_chatRoomCbs = NULL;
-}
-
 #pragma mark - next functions
+
+- (void)onLinphoneCoreReady:(NSNotification *)notif {
+	if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
+		if (!_create && _peerAddress) {
+			LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
+			if (peerAddr) {
+				_room = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+			}
+			[self configure];
+		}
+	}
+}
 
 - (void)onCreate {
 	bctbx_list_t *addresses = NULL;

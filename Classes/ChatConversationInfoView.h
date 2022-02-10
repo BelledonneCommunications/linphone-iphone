@@ -34,6 +34,7 @@
 @property(nonatomic) NSString *oldSubject;
 @property(nonatomic) LinphoneChatRoom *room;
 @property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
+@property(nonatomic) const char *peerAddress;
 
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;
 @property (weak, nonatomic) IBOutlet UIRoundBorderedButton *quitButton;
@@ -48,7 +49,5 @@
 - (IBAction)onNextClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onQuitClick:(id)sender;
-
-- (void)removeCallbacks;
 
 @end
