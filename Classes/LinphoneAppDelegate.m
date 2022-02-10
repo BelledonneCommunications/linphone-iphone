@@ -325,12 +325,6 @@
 	if (bgStartId != UIBackgroundTaskInvalid)
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 
-    //Enable all notification type. VoIP Notifications don't present a UI but we will use this to show local nofications later
-    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert| UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
-
-    //register the notification settings
-    [application registerUserNotificationSettings:notificationSettings];
-
     //output what state the app is in. This will be used to see when the app is started in the background
     LOGI(@"app launched with state : %li", (long)application.applicationState);
     LOGI(@"FINISH LAUNCHING WITH OPTION : %@", launchOptions.description);
