@@ -94,7 +94,7 @@
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			linphone_core_leave_conference(CallManager.instance.getConference);
+			linphone_conference_leave(CallManager.instance.getConference);
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			break;
@@ -131,7 +131,7 @@
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			linphone_core_enter_conference(CallManager.instance.getConference);
+			linphone_conference_enter(CallManager.instance.getConference);
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			break;
