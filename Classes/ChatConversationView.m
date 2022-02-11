@@ -782,10 +782,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		} else {
 			int i = 0;
 			for (i = 0; i < [_fileContext count]-1; ++i) {
-				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  rootMessage:rootMessage];
+				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  rootMessage:NULL];
 			}
 			if (isOneToOne) {
-				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  rootMessage:rootMessage];
+				[self startUploadData:[_fileContext.datasArray objectAtIndex:i] withType:[_fileContext.typesArray objectAtIndex:i] withName:[_fileContext.namesArray objectAtIndex:i] andMessage:NULL  rootMessage:NULL];
 				if (![[self.messageField text] isEqualToString:@""]) {
 					[self sendMessage:[_messageField text] withExterlBodyUrl:nil rootMessage:rootMessage];
 				}

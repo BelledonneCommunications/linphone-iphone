@@ -115,10 +115,10 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	linphone_content_set_subtype(content, [subtype UTF8String]);
 	linphone_content_set_name(content, [name UTF8String]);
 	linphone_content_set_file_path(content, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:name].UTF8String);
-	_message = rootMessage;
+	_message = rootMessage? : linphone_chat_room_create_empty_message(chatRoom);
 	linphone_chat_message_add_file_content(_message, content);
 	BOOL isOneToOneChat = linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
-	BOOL basic = [ChatConversationView isBasicChatRoom:linphone_chat_message_get_chat_room(rootMessage)];
+	BOOL basic = [ChatConversationView isBasicChatRoom:linphone_chat_message_get_chat_room(_message)];
 
 	if (!basic && !isOneToOneChat && (_text!=nil && ![_text isEqualToString:@""]))
 		linphone_chat_message_add_utf8_text_content(_message, [_text UTF8String]);
