@@ -333,7 +333,12 @@
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
-		[self setBool:linphone_core_is_media_encryption_mandatory(LC) forKey:@"media_encrption_mandatory_preference"];
+		if (linphone_core_get_media_encryption(LC) == LinphoneMediaEncryptionNone) {
+			[self setBool:FALSE forKey:@"media_encrption_mandatory_preference"];
+			linphone_core_set_media_encryption_mandatory(LC, FALSE);
+		} else {
+			[self setBool:linphone_core_is_media_encryption_mandatory(LC) forKey:@"media_encrption_mandatory_preference"];
+		}
 		[self setBool:[lm lpConfigBoolForKey:@"pref_accept_early_media"]
 			   forKey:@"pref_accept_early_media_preference"];
 	}
@@ -866,8 +871,10 @@
 			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
 		else if (menc && [menc compare:@"DTLS"] == NSOrderedSame)
 			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionDTLS);
-		else
+		else {
 			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionNone);
+			[self setBool:FALSE forKey:@"media_encrption_mandatory_preference"];
+		}
 
 		linphone_core_enable_adaptive_rate_control(LC, [self boolForKey:@"adaptive_rate_control_preference"]);
 

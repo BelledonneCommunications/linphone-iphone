@@ -232,6 +232,11 @@
 	UIScrollView *scrollView = self.tableView;
 	[scrollView setContentInset:inset];
 	[scrollView setScrollIndicatorInsets:inset];
+	// specific for media encryption
+	if (linphone_core_get_media_encryption(LC) == LinphoneMediaEncryptionNone && linphone_core_is_media_encryption_mandatory(LC)) {
+		linphone_core_set_media_encryption_mandatory(LC, FALSE);
+		[self.tableView reloadData];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
