@@ -117,10 +117,11 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	linphone_content_set_file_path(content, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:name].UTF8String);
 	_message = rootMessage? : linphone_chat_room_create_empty_message(chatRoom);
 	linphone_chat_message_add_file_content(_message, content);
-	BOOL isOneToOneChat = linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
+	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
 	BOOL basic = [ChatConversationView isBasicChatRoom:linphone_chat_message_get_chat_room(_message)];
 
-	if (!basic && !isOneToOneChat && (_text!=nil && ![_text isEqualToString:@""]))
+	if ((!basic || cpimEnabled) && (_text!=nil && ![_text isEqualToString:@""]))
 		linphone_chat_message_add_utf8_text_content(_message, [_text UTF8String]);
 	linphone_content_unref(content);
 
@@ -132,7 +133,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
 	linphone_chat_message_send(_message);
-	if (basic && !isOneToOneChat && (_text!=nil && ![_text isEqualToString:@""])) {
+	if (basic && !cpimEnabled && (_text!=nil && ![_text isEqualToString:@""])) {
 		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(linphone_chat_message_get_chat_room(rootMessage), _text.UTF8String));
 	}
 }
@@ -165,9 +166,10 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	}
 
 	BOOL basic = [ChatConversationView isBasicChatRoom:linphone_chat_message_get_chat_room(rootMessage)];
+	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
+	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
 
-	
-	if (!basic && _text!=nil && ![_text isEqualToString:@""])
+	if ((!basic || cpimEnabled) && _text!=nil && ![_text isEqualToString:@""])
 		linphone_chat_message_add_utf8_text_content(_message, [_text UTF8String]);
 
 	// todo indication progress
@@ -176,7 +178,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 
 	LOGI(@"%p Uploading content from message %p", self, _message);
 	linphone_chat_message_send(_message);
-	if (basic && _text!=nil && ![_text isEqualToString:@""]) {
+	if (basic && !cpimEnabled && _text!=nil && ![_text isEqualToString:@""]) {
 		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(linphone_chat_message_get_chat_room(rootMessage), _text.UTF8String));
 	}
 }

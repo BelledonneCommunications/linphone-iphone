@@ -529,7 +529,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	LinphoneChatMessage *msg = rootMessage;
 	BOOL basic = [ChatConversationView isBasicChatRoom:_chatRoom];
-	if (!basic && message && message.length > 0) {
+	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
+	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
+	if ((!basic || cpimEnabled) && message && message.length > 0) {
 		linphone_chat_message_add_utf8_text_content(msg, message.UTF8String);
 	}
 	
@@ -542,7 +544,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_message_send(msg);
 	}
 	
-	if (basic && message && message.length > 0) {
+	if (basic && !cpimEnabled && message && message.length > 0) {
 		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(_chatRoom, message.UTF8String));
 	}
 	
