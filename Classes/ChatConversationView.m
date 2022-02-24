@@ -988,9 +988,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		});
 	}];
 	
-	if (![info valueForKey:UIImagePickerControllerReferenceURL]) {
+	BOOL saveToGallery = [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"];
+
+	if (![info valueForKey:UIImagePickerControllerReferenceURL] && saveToGallery) {
 			[self writeVideoToGallery:mediaURL];
-		}
+	}
 }
 
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType {
@@ -1077,6 +1079,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 -(void) writeVideoToGallery:(NSURL *)url {
+	
 	NSString *localIdentifier;
 	PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
 	for (PHAssetCollection *assetCollection in assetCollections) {

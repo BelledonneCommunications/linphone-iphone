@@ -183,13 +183,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 				PHFetchResult<PHAsset *> *phFetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[alassetURL] options:nil];
 				phasset = [phFetchResult firstObject];
 			}
-			
+			BOOL saveToGallery = [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"];
 			UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage] ? [info objectForKey:UIImagePickerControllerEditedImage] : [info objectForKey:UIImagePickerControllerOriginalImage];
-			if (!phasset) {
+			if (!phasset && saveToGallery) {
 				[self writeImageToGallery:image];
 				return;
 			}
-			[self passImageToDelegate:image PHAssetId:[phasset localIdentifier]];
+			[self passImageToDelegate:image PHAssetId:saveToGallery ? [phasset localIdentifier] : nil];
 		}
 	});
 	
@@ -197,6 +197,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 
 -(void) writeImageToGallery:(UIImage *)image {
+	
 	NSString *localIdentifier;
 	[SVProgressHUD show];
 	
