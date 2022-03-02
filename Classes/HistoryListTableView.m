@@ -146,7 +146,7 @@
 			if (prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
 													linphone_call_log_get_remote_address(log))) {
 				bctbx_list_t *list = linphone_call_log_get_user_data(prev);
-				list = bctbx_list_append(list, log);
+				list = bctbx_list_append(list, linphone_call_log_ref(log));
 				linphone_call_log_set_user_data(prev, list);
 			} else {
 				[eventsOnThisDay addObject:[NSValue valueWithPointer:linphone_call_log_ref(log)]];
