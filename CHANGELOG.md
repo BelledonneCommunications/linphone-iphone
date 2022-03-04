@@ -10,6 +10,14 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [4.6.1] - 2021-04-03
+
+### Fixed
+- Crash in chatroom info view after entering background and re-entering foreground
+- Crash in local call conferences when pausing/resuming
+- Hard to see text (written in black) on dark mode
+- Removed duplicate push authorization request pop up on install
+
 ## [4.6.0] - 2021-31-02
 
 ### Added
