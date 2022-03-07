@@ -10,6 +10,15 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+	
+## [4.6.2] - 2021-07-03
+
+### Fixed
+- Bug preventing the activation of the phone speaker during calls
+- Bug with "reply" feature in chatrooms
+- Bug causing IMDNs to be missing in some chatrooms
+- Update linphone SDK to 5.1.7
+	
 ## [4.6.1] - 2021-04-03
 
 ### Fixed

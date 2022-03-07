@@ -5022,7 +5022,7 @@
 					"$(inherited)",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5148,7 +5148,7 @@
 					"$(inherited)",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5273,7 +5273,7 @@
 					"$(inherited)",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5397,7 +5397,7 @@
 					"$(inherited)",
 				);
 				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				OTHER_CFLAGS = (
 					"-DBCTBX_LOG_DOMAIN=\\\"ios\\\"",
 					"-DCHECK_VERSION_UPDATE=FALSE",
@@ -5457,7 +5457,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5499,7 +5499,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5541,7 +5541,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5584,7 +5584,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5684,7 +5684,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5736,7 +5736,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5788,7 +5788,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5840,7 +5840,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5896,7 +5896,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -5948,7 +5948,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -6000,7 +6000,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -6052,7 +6052,7 @@
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 4.6.1;
+				MARKETING_VERSION = 4.6.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
