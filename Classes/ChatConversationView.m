@@ -304,6 +304,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
+	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
 }
 
 - (void)removeCallBacks {
@@ -1758,6 +1759,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 -(void) cancelVoiceRecording {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
 	_showVoiceRecorderView = false;
 	_toggleRecord.selected = false;
 	[self updateFramesInclRecordingAndReplyView];
@@ -1774,6 +1776,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 -(void) stopVoiceRecording {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
 	if (_voiceRecorder && linphone_recorder_get_state(_voiceRecorder) == LinphoneRecorderRunning) {
 		LOGI(@"[Chat Message Sending] Pausing / closing voice recorder");
 		linphone_recorder_pause(_voiceRecorder);
@@ -1794,6 +1797,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 -(void) startVoiceRecording {
+	[[UIApplication sharedApplication] setIdleTimerDisabled:true];
 	
 	if (!_voiceRecorder)
 		[self createVoiceRecorder];
