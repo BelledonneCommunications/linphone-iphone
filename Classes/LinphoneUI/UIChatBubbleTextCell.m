@@ -871,7 +871,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
 	}];
 	
-	if (linphone_chat_message_is_outgoing(self.message) && linphone_chat_room_get_nb_participants(linphone_chat_message_get_chat_room(self.message)) > 1) {
+	if (linphone_chat_message_is_outgoing(self.message) || linphone_chat_room_get_nb_participants(linphone_chat_message_get_chat_room(self.message)) > 1) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Infos", nil)];
 		[_messageActionsIcons addObject:@"menu_info"];
 		[_messageActionsBlocks addObject:^{
