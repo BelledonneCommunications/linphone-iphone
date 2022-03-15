@@ -33,7 +33,7 @@ deliver_imdn=1
 linphone_specs=groupchat,lime
 
 [misc]
-version_check_url_root=https://download.linphone.org/releases
+version_check_url_root=https://linphone.org/releases
 prefer_basic_chat_room=-1
 
 [sound]
