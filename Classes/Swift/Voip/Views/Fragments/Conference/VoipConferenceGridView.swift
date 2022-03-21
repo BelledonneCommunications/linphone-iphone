@@ -40,7 +40,8 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	var recordCallButtons : [CallControlButton] = []
 	var pauseCallButtons :  [CallControlButton] = []
 	var grid : UICollectionView
-	
+	var gridContainer = UIView()
+
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
@@ -51,7 +52,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
 				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
-					self.grid.reloadData()
+					self.reloadData()
 				}
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
@@ -64,7 +65,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 					}
 				}
 			}
-			self.grid.reloadData()
+			self.reloadData()
 		}
 	}
 			
@@ -132,16 +133,20 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		grid.dataSource = self
 		grid.delegate = self
 		grid.register(VoipGridParticipantCell.self, forCellWithReuseIdentifier: "VoipGridParticipantCell")
-		grid.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		grid.backgroundColor = .clear
 		grid.isScrollEnabled = false
-		addSubview(grid)
-		grid.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
-
+		addSubview(gridContainer)
+		gridContainer.addSubview(grid)
+		gridContainer.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		
+		gridContainer.matchParentSideBorders(insetedByDx: inter_cell).alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom(withMargin: inter_cell).done()
+		grid.matchParentDimmensions().done()
+	
 		headerView.matchParentSideBorders().alignParentTop().done()
 				
 		
 		// Full screen video togggle
-		grid.onClick {
+		gridContainer.onClick {
 			ControlsViewModel.shared.toggleFullScreen()
 		}
 		
@@ -149,23 +154,37 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 			if (self.isHidden) {
 				return
 			}
-			self.grid.removeConstraints().done()
+			self.gridContainer.removeConstraints().done()
 			if (fullScreen == true) {
-				self.grid.removeFromSuperview()
-				PhoneMainView.instance().mainViewController.view?.addSubview(self.grid)
-				self.grid.matchParentDimmensions().center().done()
-				self.grid.reloadData() // Cauz of the frames
+				self.gridContainer.removeFromSuperview()
+				PhoneMainView.instance().mainViewController.view?.addSubview(self.gridContainer)
+				self.gridContainer.matchParentDimmensions().center().done()
 			} else {
-				self.grid.removeFromSuperview()
-				self.addSubview(self.grid)
-				self.grid.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
-				self.grid.reloadData()
+				self.gridContainer.removeFromSuperview()
+				self.addSubview(self.gridContainer)
+				self.gridContainer.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
+			}
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				self.reloadData()
 			}
 		}
 	}
 	
 	
 	// UICollectionView related delegates
+	
+	func reloadData() {
+		computeCellSize()
+		self.grid.reloadData()
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+			let width:CGFloat = CGFloat(self.columnCount) * self.cellSize.width + (CGFloat(self.columnCount)-1.0)*self.inter_cell
+			let height:CGFloat = CGFloat(self.rowCount) * self.cellSize.height + (CGFloat(self.rowCount)-1.0)*self.inter_cell
+			if (width > 0) {
+				self.grid.removeConstraints().width(width).height(height).center().done()
+			}
+			Log.e("cdes > \(width)")
+		}
+	}
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
 	   return inter_cell
@@ -193,44 +212,43 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		return cell
 	}
 	
+	let placement = [[1, 2, 3, 4, 5, 6], [1, 1, 2, 2, 3,3], [1, 1, 1, 2, 2, 2],  [1, 1, 1, 1, 2, 2],  [1, 1, 1, 1, 1, 2],  [1, 1, 1, 1, 1, 1]]
+	var cellSize: CGSize = .zero
+	var columnCount: Int = 0
+	var rowCount: Int = 0
+	
+	func computeCellSize() {
+		let participantsCount = self.collectionView(self.grid, numberOfItemsInSection: 0)
+		if (participantsCount == 0) {
+			return
+		}
+		let availableSize = gridContainer.frame.size
+		var maxSize = 0.0
+		for rowCount in 1...participantsCount {
+			let neededColumns = placement[rowCount-1][participantsCount-1]
+			let candidateWidth = availableSize.width / CGFloat(neededColumns) - CGFloat((neededColumns-1) * Int(inter_cell))
+			let candidateHeight = availableSize.height / CGFloat(rowCount) - CGFloat((rowCount - 1) * Int(inter_cell))
+			let candidateSize = min(candidateWidth,candidateHeight)
+			if (candidateSize > maxSize) {
+				self.columnCount = neededColumns
+				self.rowCount = rowCount
+				maxSize = candidateSize
+			}
+			Log.i("neededColumns \(neededColumns) rowCount \(rowCount) availableSize \(availableSize) participantsCount \(participantsCount) candidateWidth \(candidateWidth) candidateHeight \(candidateHeight) candidateSize \(candidateSize) maxSize \(maxSize)")
+		}
+				
+		cellSize =  CGSize(width: maxSize ,height: maxSize)
+	}
+	
 	func collectionView(_ collectionView: UICollectionView,
-						 layout collectionViewLayout: UICollectionViewLayout,
+						layout collectionViewLayout: UICollectionViewLayout,
 						sizeForItemAt indexPath: IndexPath) -> CGSize {
 		
 		guard let participantsCount = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
 			return .zero
 		}
 		
-		var cellSize : CGSize = .zero
-		let availableSize = collectionView.frame.size
-		
-		if (participantsCount == 1) {
-			cellSize = availableSize
-		} else if (participantsCount == 2) {
-			cellSize = CGSize(width:availableSize.width, height:availableSize.height/2)
-			cellSize.height -= inter_cell/2
-		} else if (participantsCount == 3) {
-			cellSize = CGSize(width:availableSize.width, height:availableSize.height/3)
-			cellSize.height -= 2*inter_cell/3
-		} else if (participantsCount == 4) {
-			cellSize =  CGSize(width:availableSize.width/2, height:availableSize.height/2)
-			cellSize.height -= inter_cell/2
-			cellSize.width -= inter_cell/2
-		} else if (participantsCount == 5) {
-			if (indexPath.row == 4) { // last (local) participant takes full width (under discussion)
-				cellSize = CGSize(width:availableSize.width, height:availableSize.height/3)
-			} else {
-				cellSize = CGSize(width:availableSize.width/2, height:availableSize.height/3)
-				cellSize.width -= inter_cell/2
-			}
-			cellSize.height -= 2*inter_cell/3
-		} else  {
-			cellSize = CGSize(width:availableSize.width/2, height:availableSize.height/CGFloat((participantsCount/2)))
-			cellSize.height -= 2*inter_cell/3
-			cellSize.width -= inter_cell/2
-		}
 		return cellSize
-		
 	}
 	
 	required init?(coder: NSCoder) {

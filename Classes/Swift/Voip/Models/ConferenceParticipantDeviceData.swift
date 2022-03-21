@@ -92,9 +92,9 @@ class ConferenceParticipantDeviceData  {
 	
 	func setVideoView(view:UIView) {
 		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice)")
+		view.contentMode = .scaleAspectFit
 		if (isMe) {
 			core.usePreviewWindow(yesno: false)
-			view.contentMode = .scaleAspectFit
 			core.nativePreviewWindow = view
 		} else {
 			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())

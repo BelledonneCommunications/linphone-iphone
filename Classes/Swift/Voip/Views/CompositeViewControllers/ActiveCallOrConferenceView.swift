@@ -121,7 +121,7 @@ import linphonesw
 				self.extraButtonsView.isHidden = true
 				self.conferencePausedView?.isHidden = true
 				self.conferenceGridView!.isHidden = false
-				self.conferenceActiveSpeakerView!.isHidden = true
+				self.conferenceActiveSpeakerView?.isHidden = true
 				self.conferenceGridView?.conferenceViewModel = ConferenceViewModel.shared
 			} else {
 				self.conferenceGridView?.isHidden = true
