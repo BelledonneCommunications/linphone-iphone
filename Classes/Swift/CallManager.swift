@@ -609,7 +609,7 @@ import AVFoundation
 	
 	func addAllToLocalConference() {
 		do {
-			if let core = core, let params = try? core.createConferenceParams() {
+			if let core = core, let params = try? core.createConferenceParams(conference: nil) {
 				params.videoEnabled = false // We disable video for local conferencing (cf Android)
 				let conference = core.conference != nil ? core.conference : try core.createConferenceWithParams(params: params)
 				try conference?.addParticipants(calls: core.calls)

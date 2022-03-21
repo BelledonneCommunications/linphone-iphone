@@ -4804,22 +4804,24 @@
 				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/bctoolbox-ios.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/belr.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/lime.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
-				"${PODS_ROOT}/../../linphone-sdk/ios/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-ios.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/bctoolbox.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belcard.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belle-sip.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/belr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/lime.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/limetester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphone.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/linphonetester.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msamr.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mscodec2.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msopenh264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mssilk.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/mswebrtc.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/msx264.framework",
+				"${PODS_ROOT}/linphone-sdk/linphone-sdk/apple-darwin/Frameworks/ortp.framework",
 				"${BUILT_PRODUCTS_DIR}/linphone-sdk/linphonesw.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -4829,11 +4831,13 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-ios.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belle-sip.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
@@ -5642,7 +5646,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.125+0f20296\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5769,7 +5773,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.125+0f20296\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5895,7 +5899,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.125+0f20296\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -6020,7 +6024,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.125+0f20296\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;

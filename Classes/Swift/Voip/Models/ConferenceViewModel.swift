@@ -92,7 +92,7 @@ class ConferenceViewModel {
 					self.terminateConference(conference)
 				}
 				
-				let layout = conference.layout == .None ? .Grid : conference.layout
+				let layout = conference.layout == .Legacy ? .Grid : conference.layout
 				self.conferenceDisplayMode.value = layout
 				Log.i("[Conference] \(conference) Conference current layout is: \(layout)")
 			}

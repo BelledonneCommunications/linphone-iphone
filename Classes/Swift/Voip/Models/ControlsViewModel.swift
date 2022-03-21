@@ -137,7 +137,7 @@ class ControlsViewModel {
 	
 	func toggleVideo() {
 		if let conference = core.conference, conference.isIn {
-			if let params = try?core.createConferenceParams() {
+			if let params = try?core.createConferenceParams(conference:conference) {
 				let videoEnabled = conference.currentParams?.videoEnabled == true
 				params.videoEnabled = !videoEnabled
 				_ = conference.updateParams(params: params)
