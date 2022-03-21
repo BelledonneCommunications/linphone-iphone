@@ -114,7 +114,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
 		: @"";
 	_nextButton.enabled = _nameLabel.text.length > 0 && _contacts.count > 0;
-	LinphoneParticipant *me = _room && !linphone_chat_room_has_been_left(_room)
+	LinphoneParticipant *me = _room && !linphone_chat_room_is_read_only(_room)
 		? linphone_chat_room_get_me(_room)
 		: NULL;
 	_imAdmin = me
