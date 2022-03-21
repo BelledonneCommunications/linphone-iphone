@@ -425,13 +425,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_messageField.editable = TRUE;
 		_pictureButton.enabled = TRUE;
 		_messageView.userInteractionEnabled = TRUE;
-		if (linphone_chat_room_has_been_left(_chatRoom)) {
+		if (linphone_chat_room_is_read_only(_chatRoom)) {
 			linphone_chat_room_add_participant(_chatRoom, linphone_participant_get_address(linphone_chat_room_get_me(_chatRoom)));
 		}
 	} else {
-		_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
-		_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
-		_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
+		_messageField.editable = !linphone_chat_room_is_read_only(_chatRoom);
+		_pictureButton.enabled = !linphone_chat_room_is_read_only(_chatRoom);
+		_messageView.userInteractionEnabled = !linphone_chat_room_is_read_only(_chatRoom);
 	}
 }
 
