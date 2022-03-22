@@ -32,6 +32,8 @@ import os
 	var connected = false
 	var reason: Reason = Reason.None
 	var displayName: String?
+	var videoEnabled = false
+	var isConference = false
 
 	static func newIncomingCallInfo(callId: String) -> CallInfo {
 		let callInfo = CallInfo()
@@ -39,12 +41,14 @@ import os
 		return callInfo
 	}
 	
-	static func newOutgoingCallInfo(addr: Address, isSas: Bool, displayName: String) -> CallInfo {
+	static func newOutgoingCallInfo(addr: Address, isSas: Bool, displayName: String, isVideo: Bool, isConference:Bool) -> CallInfo {
 		let callInfo = CallInfo()
 		callInfo.isOutgoing = true
 		callInfo.sasEnabled = isSas
 		callInfo.toAddr = addr
 		callInfo.displayName = displayName
+		callInfo.videoEnabled = isVideo
+		callInfo.isConference = isConference
 		return callInfo
 	}
 }
@@ -252,7 +256,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			}
 
 			CallManager.instance().core?.configureAudioSession()
-			try CallManager.instance().doCall(addr: addr!, isSas: callInfo?.sasEnabled ?? false)
+			try CallManager.instance().doCall(addr: addr!, isSas: callInfo?.sasEnabled ?? false, isVideo: callInfo?.videoEnabled ?? false, isConference: callInfo?.isConference ?? false)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call started failed because \(error)")
 			action.fail()

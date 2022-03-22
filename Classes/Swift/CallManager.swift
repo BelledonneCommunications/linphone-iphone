@@ -27,6 +27,8 @@ import AVFoundation
 @objc class CallAppData: NSObject {
 	@objc var batteryWarningShown = false
 	@objc var videoRequested = false /*set when user has requested for video*/
+	@objc var isConference = true
+
 }
 
 /*
@@ -207,7 +209,7 @@ import AVFoundation
 	}
 
 	// for outgoing call. There is not yet callId
-	@objc func startCall(addr: OpaquePointer?, isSas: Bool) {
+	@objc func startCall(addr: OpaquePointer?, isSas: Bool, isVideo: Bool, isConference: Bool = false) {
 		if (addr == nil) {
 			print("Can not start a call with null address!")
 			return
@@ -221,27 +223,27 @@ import AVFoundation
 			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
 			let transaction = CXTransaction(action: startCallAction)
 
-			let callInfo = CallInfo.newOutgoingCallInfo(addr: sAddr, isSas: isSas, displayName: name)
+			let callInfo = CallInfo.newOutgoingCallInfo(addr: sAddr, isSas: isSas, displayName: name, isVideo: isVideo, isConference:isConference)
 			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 			providerDelegate.uuids.updateValue(uuid, forKey: "")
 
 			setHeldOtherCalls(exceptCallid: "")
 			requestTransaction(transaction, action: "startCall")
 		}else {
-			try? doCall(addr: sAddr, isSas: isSas)
+			try? doCall(addr: sAddr, isSas: isSas, isVideo:isVideo, isConference:isConference)
 		}
 	}
 	
-	func startCall(addr:String, isSas: Bool = false) {
+	func startCall(addr:String, isSas: Bool = false, isVideo: Bool, isConference: Bool = false) {
 		do {
 		 let address = try Factory.Instance.createAddress(addr: addr)
-			startCall(addr: address.getCobject,isSas: isSas)
+			startCall(addr: address.getCobject,isSas: isSas, isVideo: isVideo, isConference:isConference)
 		} catch {
 			Log.e("[CallManager] unable to create address for a new outgoing call : \(addr) \(error) ")
 		}
 	}
 
-	func doCall(addr: Address, isSas: Bool) throws {
+	func doCall(addr: Address, isSas: Bool, isVideo: Bool, isConference:Bool = false) throws {
 		let displayName = FastAddressBook.displayName(for: addr.getCobject)
 
 		let lcallParams = try CallManager.instance().core!.createCallParams(call: nil)
@@ -270,6 +272,13 @@ import AVFoundation
 			if (isSas) {
 				lcallParams.mediaEncryption = .ZRTP
 			}
+			if (isConference) {
+				lcallParams.videoEnabled = true
+				lcallParams.videoDirection = isVideo ? .SendRecv : .RecvOnly
+			} else {
+				lcallParams.videoEnabled = isVideo
+			}
+			
 			let call = CallManager.instance().core!.inviteAddressWithParams(addr: addr, params: lcallParams)
 			if (call != nil) {
 				// The LinphoneCallAppData object should be set on call creation with callback
@@ -280,6 +289,7 @@ import AVFoundation
 					Log.directLog(BCTBX_LOG_ERROR, text: "New call instanciated but app data was not set. Expect it to crash.")
 					/* will be used later to notify user if video was not activated because of the linphone core*/
 				} else {
+					data!.isConference = isConference
 					data!.videoRequested = lcallParams.videoEnabled
 					CallManager.setAppData(sCall: call!, appData: data)
 				}

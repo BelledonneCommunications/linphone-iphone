@@ -33,6 +33,7 @@ class CallsViewModel {
 	let callConnectedEvent = MutableLiveData<Call>()
 	let callUpdateEvent = MutableLiveData<Call>()
 	let noMoreCallEvent = MutableLiveData(false)
+
 	var core : Core { get { Core.get() } }
 
 	static let shared = CallsViewModel()

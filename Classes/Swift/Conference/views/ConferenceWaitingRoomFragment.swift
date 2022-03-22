@@ -84,7 +84,7 @@ import linphonesw
 		}
 		
 		start.onClick {
-			self.conferenceUrl.map{ CallManager.instance().startCall(addr: $0, isSas: false) }
+			self.conferenceUrl.map{ CallManager.instance().startCall(addr: $0, isSas: false, isVideo: true, isConference: true) }
 		}
 		
 		

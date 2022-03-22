@@ -1862,7 +1862,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	[self checkLocalNetworkPermission];
 	// For OutgoingCall, show CallOutgoingView
-	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE];
+	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE isVideo:false isConference:false];
 }
 
 #pragma mark - Misc Functions

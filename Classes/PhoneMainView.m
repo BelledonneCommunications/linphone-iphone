@@ -378,9 +378,12 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingProgress:
 		case LinphoneCallOutgoingRinging: {
-			OutgoingCallView *v = VIEW(OutgoingCallView);
-			[self changeCurrentView:OutgoingCallView.compositeViewDescription];
-			[v setCallWithCall:call];
+			CallAppData *data = [CallManager getAppDataWithCall:call];
+			if (!data.isConference) {
+				OutgoingCallView *v = VIEW(OutgoingCallView);
+				[self changeCurrentView:OutgoingCallView.compositeViewDescription];
+				[v setCallWithCall:call];
+			}
 			break;
 		}
 		case LinphoneCallPausedByRemote:

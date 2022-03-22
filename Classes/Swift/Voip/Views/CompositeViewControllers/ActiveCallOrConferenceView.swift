@@ -33,6 +33,8 @@ import linphonesw
 	var currentCallView : ActiveCallView? = nil
 	var conferenceGridView: VoipConferenceGridView? = nil
 	var conferenceActiveSpeakerView: VoipConferenceActiveSpeakerView? = nil
+	let conferenceJoinSpinner = RotatingSpinner()
+
 
 	let extraButtonsView = VoipExtraButtonsView()
 	var numpadView : NumpadView? = nil
@@ -125,6 +127,17 @@ import linphonesw
 				self.conferenceGridView?.conferenceViewModel = ConferenceViewModel.shared
 			} else {
 				self.conferenceGridView?.isHidden = true
+			}
+		}
+		
+		ConferenceViewModel.shared.conferenceCreationPending.readCurrentAndObserve { isCreationPending in
+			if (ConferenceViewModel.shared.conferenceExists.value == true && isCreationPending == true) {
+				fullScreenMutableContainerView.addSubview(self.conferenceJoinSpinner)
+				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
+				self.conferenceJoinSpinner.startRotation()
+			} else {
+				self.conferenceJoinSpinner.removeFromSuperview()
+				self.conferenceJoinSpinner.stopRotation()
 			}
 		}
 		

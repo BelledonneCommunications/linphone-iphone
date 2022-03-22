@@ -88,7 +88,7 @@ class CallData  {
 		isRemotelyPaused.value = isCallRemotelyPaused()
 		canBePaused.value = canCallBePaused()
 		let conference = call.conference
-		isInRemoteConference.value = conference != nil
+		isInRemoteConference.value = conference != nil || CallManager.getAppData(call: call.getCobject!)?.isConference == true
 		if (conference != nil) {
 			remoteConferenceSubject.value = conference?.subject != nil && (conference?.subject.count)! > 0 ?  conference!.subject : VoipTexts.conference_default_title
 		}
