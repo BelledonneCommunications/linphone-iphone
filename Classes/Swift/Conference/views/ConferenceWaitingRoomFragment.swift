@@ -41,7 +41,8 @@ import linphonesw
 	let buttonsView = UIStackView()
 	let cancel = FormButton(title: VoipTexts.cancel.uppercased(), backgroundStateColors: VoipTheme.primary_colors_background_gray, bold:false)
 	let start = FormButton(title: VoipTexts.conference_waiting_room_start_call.uppercased(), backgroundStateColors: VoipTheme.primary_colors_background)
-	
+	let conferenceJoinSpinner = RotatingSpinner()
+
 	var conferenceUrl : String? = nil
 	let conferenceSubject = MutableLiveData<String>()
 
@@ -80,11 +81,31 @@ import linphonesw
 		buttonsView.addArrangedSubview(start)
 
 		cancel.onClick {
+			Core.get().calls.forEach { call in
+				if ([Call.State.OutgoingInit, Call.State.OutgoingRinging, Call.State.OutgoingProgress].contains(call.state)) {
+					CallManager.instance().terminateCall(call: call.getCobject)
+				}
+			}
+			ConferenceWaitingRoomViewModel.shared.joinInProgress.value = false
 			PhoneMainView.instance().popView(self.compositeViewDescription())
 		}
-		
+	
 		start.onClick {
+			ConferenceWaitingRoomViewModel.shared.joinInProgress.value = true
 			self.conferenceUrl.map{ CallManager.instance().startCall(addr: $0, isSas: false, isVideo: true, isConference: true) }
+		}
+		
+		ConferenceWaitingRoomViewModel.shared.joinInProgress.readCurrentAndObserve { joining in
+			self.start.isEnabled = joining != true
+			self.localVideo.isHidden = joining == true
+			if (joining == true) {
+				self.view.addSubview(self.conferenceJoinSpinner)
+				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
+				self.conferenceJoinSpinner.startRotation()
+			} else {
+				self.conferenceJoinSpinner.stopRotation()
+				self.conferenceJoinSpinner.removeFromSuperview()
+			}
 		}
 		
 		
