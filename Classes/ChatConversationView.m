@@ -19,6 +19,7 @@
 
 #import <Photos/PHAssetChangeRequest.h>
 
+#import "linphoneapp-Swift.h"
 #import "ChatConversationView.h"
 #import "PhoneMainView.h"
 #import "Utils.h"

@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#import "linphoneapp-Swift.h"
 #import "UIChatBubbleTextCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
