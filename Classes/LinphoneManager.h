@@ -35,7 +35,6 @@
 #include "bctoolbox/list.h"
 #import "OrderedDictionary.h"
 
-#import "linphoneapp-Swift.h"
 
 extern NSString *const LINPHONERC_APPLICATION_KEY;
 

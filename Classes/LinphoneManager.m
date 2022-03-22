@@ -22,6 +22,7 @@
 #include <netdb.h>
 #include <sys/sysctl.h>
 
+#import "linphoneapp-Swift.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreTelephony/CTCallCenter.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
