@@ -90,16 +90,16 @@ import linphonesw
 	}
 	
 	static private func routeAudioTo( call: Call?, types: [AudioDeviceType]) {
-			let currentCall = call != nil ? call : core.currentCall != nil ? core.currentCall : core.calls[0]
-			if (call != nil || currentCall != nil) {
-				let callToUse = call != nil ? call : currentCall
-				applyAudioRouteChange(call: callToUse, types: types)
-				changeCaptureDeviceToMatchAudioRoute(call: callToUse, types: types)
-			} else {
-				applyAudioRouteChange(call: call, types: types)
-				changeCaptureDeviceToMatchAudioRoute(call: call, types: types)
-			}
+		let currentCall = call != nil ? call : core.currentCall != nil ? core.currentCall : (core.callsNb > 0 ? core.calls[0] : nil)
+		if (call != nil || currentCall != nil) {
+			let callToUse = call != nil ? call : currentCall
+			applyAudioRouteChange(call: callToUse, types: types)
+			changeCaptureDeviceToMatchAudioRoute(call: callToUse, types: types)
+		} else {
+			applyAudioRouteChange(call: call, types: types)
+			changeCaptureDeviceToMatchAudioRoute(call: call, types: types)
 		}
+	}
 	
 	static func routeAudioToEarpiece(call: Call? = nil) {
 		routeAudioTo(call: call, types: [AudioDeviceType.Microphone]) // on iOS Earpiece = Microphone
