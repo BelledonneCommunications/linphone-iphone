@@ -3340,7 +3340,7 @@
 				C67C97B7274FD76B0074A0D8 /* AudioRouteUtils.swift */,
 				C6710F5A2722A9FB00ED888F /* Theme */,
 				C6710F4D2722900A00ED888F /* Widgets */,
-				C65A5D3127216C3E005BA038 /* Models */,
+				C65A5D3127216C3E005BA038 /* ViewModels */,
 				C65A5D2E27216B4C005BA038 /* Views */,
 			);
 			path = Voip;
@@ -3356,7 +3356,7 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		C65A5D3127216C3E005BA038 /* Models */ = {
+		C65A5D3127216C3E005BA038 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
 				C65A5D3E27216E3A005BA038 /* CallData.swift */,
@@ -3367,7 +3367,7 @@
 				C6F2D4EE27392D960071BA52 /* CallsViewModel.swift */,
 				C6C98CD427453ED700059B55 /* ConferenceViewModel.swift */,
 			);
-			path = Models;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		C65A5D3427216CAB005BA038 /* ViewModel */ = {
@@ -5646,7 +5646,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.61+5e27e59a\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5773,7 +5773,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.61+5e27e59a\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5899,7 +5899,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.61+5e27e59a\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -6024,7 +6024,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.44+75de6a92\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.61+5e27e59a\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
