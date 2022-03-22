@@ -119,7 +119,7 @@ class CallData  {
 			let localAddress = try?Factory.Instance.createAddress(addr: localSipUri),
 			let remoteSipAddress = try?Factory.Instance.createAddress(addr: remoteSipUri)
 		else {
-			Log.e("[Call] Failed to get either local \(localSipUri.logable) or remote \(remoteSipUri.logable) SIP address!")
+			Log.e("[Call] Failed to get either local \(localSipUri.orNil) or remote \(remoteSipUri.orNil) SIP address!")
 			return
 		}
 		do {

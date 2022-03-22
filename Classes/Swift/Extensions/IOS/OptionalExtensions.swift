@@ -19,7 +19,7 @@
 
 
 extension Optional {
-	var logable: Any {
+	var orNil: Any {
 		switch self {
 		case .none:
 			return "<nil>|⭕️"

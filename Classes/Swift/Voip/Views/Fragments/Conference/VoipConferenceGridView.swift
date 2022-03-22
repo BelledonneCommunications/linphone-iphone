@@ -182,7 +182,6 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 			if (width > 0) {
 				self.grid.removeConstraints().width(width).height(height).center().done()
 			}
-			Log.e("cdes > \(width)")
 		}
 	}
 	
@@ -244,7 +243,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 						layout collectionViewLayout: UICollectionViewLayout,
 						sizeForItemAt indexPath: IndexPath) -> CGSize {
 		
-		guard let participantsCount = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
+		guard let _ = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
 			return .zero
 		}
 		

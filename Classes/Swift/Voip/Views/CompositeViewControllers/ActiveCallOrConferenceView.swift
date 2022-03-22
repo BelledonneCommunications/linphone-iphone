@@ -311,7 +311,6 @@ import linphonesw
 	}
 	
 	func goToChat() {
-		let core = Core.get()
 		guard
 			let chatRoom = CallsViewModel.shared.currentCallData.value??.chatRoom
 		else {
