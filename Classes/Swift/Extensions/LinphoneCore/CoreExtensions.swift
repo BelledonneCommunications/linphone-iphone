@@ -30,18 +30,14 @@ extension Core {
 	}
 	
 	func toggleCamera() {
-		
-		UICamSwitch.switchCamera()
-		/* Not working
 		Log.i("[Core] Current camera device is \(videoDevice)")
-		
+		var switched = false
 		videoDevicesList.forEach  {
-			if ($0 != videoDevice && $0 != "StaticImage: Static picture") {
+			if (!switched && $0 != videoDevice && $0 != "StaticImage: Static picture") {
 				Log.i("[Core] New camera device will be \($0)")
 				try?setVideodevice(newValue: $0)
-				return
+				switched = true
 			}
 		}
-		*/
 	}
 }
