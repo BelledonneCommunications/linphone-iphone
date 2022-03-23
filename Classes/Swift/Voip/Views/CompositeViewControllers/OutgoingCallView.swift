@@ -47,7 +47,7 @@ import linphonesw
 		cancelCall.alignParentLeft(withMargin:SharedLayoutConstants.margin_call_view_side_controls_buttons).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		
 		// Controls
-		let controlsView = ControlsView(showVideo: false)
+		let controlsView = ControlsView(showVideo: false, controlsViewModel: ControlsViewModel.shared)
 		view.addSubview(controlsView)
 		controlsView.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
 		

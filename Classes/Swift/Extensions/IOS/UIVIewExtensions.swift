@@ -285,6 +285,13 @@ extension UIView {
 		return self
 	}
 	
+	func alignVerticalCenterWith(_ view:UIView) -> UIView {
+		snp.makeConstraints { (make) in
+			make.centerX.equalTo(view)
+		}
+		return self
+	}
+	
 	
 	func toLeftOf(_ view:UIView) -> UIView {
 		snp.makeConstraints { (make) in

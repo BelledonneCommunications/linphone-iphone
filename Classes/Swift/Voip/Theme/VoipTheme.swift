@@ -123,7 +123,8 @@ class VoipTheme { // Names & values replicated from Android
 	static let conference_invite_subject_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)
 	static let conference_invite_title_font = TextStyle(fgColor: LightDarkColor(dark_grey_color,dark_grey_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 16.0)
 	static let conference_preview_subject_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 24.0)
-
+	static let conference_waiting_room_no_video_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 16.0)
+		
 	static let empty_list_font = TextStyle(fgColor: primaryTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 18.0)
 
 	
@@ -203,7 +204,6 @@ class VoipTheme { // Names & values replicated from Android
 	
 	// Buttons Icons (State colors) + Background colors
 
-	
 	static let call_terminate = ButtonTheme(
 		tintableStateIcons:[UIButton.State.normal.rawValue : TintableIcon(name: "voip_hangup",tintColor: LightDarkColor(.white,.white))],
 		backgroundStateColors: [
@@ -267,6 +267,12 @@ class VoipTheme { // Names & values replicated from Android
 			UIButton.State.disabled.rawValue : TintableIcon(name: "voip_call_numpad",tintColor: LightDarkColor(voip_light_gray,voip_light_gray)),
 		],
 		backgroundStateColors: button_background)
+	
+	// Waiting room layout picker
+	
+	static let conf_waiting_room_layout_picker = ButtonTheme(
+		tintableStateIcons:[:],
+		backgroundStateColors: button_toggle_background_reverse)
 	
 	// AUdio routes
 	static let route_bluetooth = ButtonTheme(

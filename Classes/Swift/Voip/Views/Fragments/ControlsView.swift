@@ -25,7 +25,7 @@ class ControlsView: UIStackView {
 	// Layout constants
 	static let controls_button_spacing = 5.0
 	
-	init (showVideo:Bool) {
+	init (showVideo:Bool, controlsViewModel:ControlsViewModel) {
 		super.init(frame: .zero)
 		axis = .horizontal
 		distribution = .equalSpacing
@@ -34,35 +34,35 @@ class ControlsView: UIStackView {
 	
 		// Mute
 		let mute = CallControlButton(buttonTheme: VoipTheme.call_mute, onClickAction: {
-			ControlsViewModel.shared.toggleMuteMicrophone()
+			controlsViewModel.toggleMuteMicrophone()
 		})
 		addArrangedSubview(mute)
-		ControlsViewModel.shared.isMicrophoneMuted.readCurrentAndObserve { (muted) in
+		controlsViewModel.isMicrophoneMuted.readCurrentAndObserve { (muted) in
 			mute.isSelected = muted == true
 		}
-		ControlsViewModel.shared.isMuteMicrophoneEnabled.readCurrentAndObserve { (enabled) in
+		controlsViewModel.isMuteMicrophoneEnabled.readCurrentAndObserve { (enabled) in
 			mute.isEnabled = enabled == true
 		}
 		
 		// Speaker
 		let speaker = CallControlButton(buttonTheme: VoipTheme.call_speaker, onClickAction: {
-			ControlsViewModel.shared.toggleSpeaker()
+			controlsViewModel.toggleSpeaker()
 		})
 		addArrangedSubview(speaker)
-		ControlsViewModel.shared.isSpeakerSelected.readCurrentAndObserve { (selected) in
+		controlsViewModel.isSpeakerSelected.readCurrentAndObserve { (selected) in
 			speaker.isSelected = selected == true
 		}
 		
 		// Audio routes
 		let routes = CallControlButton(buttonTheme: VoipTheme.call_audio_route, onClickAction: {
-			ControlsViewModel.shared.toggleRoutesMenu()
+			controlsViewModel.toggleRoutesMenu()
 		})
 		addArrangedSubview(routes)
-		ControlsViewModel.shared.audioRoutesSelected.readCurrentAndObserve { (selected) in
+		controlsViewModel.audioRoutesSelected.readCurrentAndObserve { (selected) in
 			routes.isSelected = selected == true
 		}
 		
-		ControlsViewModel.shared.audioRoutesEnabled.readCurrentAndObserve { (routesEnabled) in
+		controlsViewModel.audioRoutesEnabled.readCurrentAndObserve { (routesEnabled) in
 			speaker.isHidden = routesEnabled == true
 			routes.isHidden = !speaker.isHidden
 		}
@@ -71,11 +71,11 @@ class ControlsView: UIStackView {
 		if (showVideo) {
 			let video = CallControlButton(buttonTheme: VoipTheme.call_video, onClickAction: {
 				if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
-					ControlsViewModel.shared.toggleVideo()
+					controlsViewModel.toggleVideo()
 				} else {
 					AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
 						if granted {
-							ControlsViewModel.shared.toggleVideo()
+							controlsViewModel.toggleVideo()
 						} else {
 							VoipDialog(message:VoipTexts.camera_required_for_video).show()
 						}
@@ -83,15 +83,15 @@ class ControlsView: UIStackView {
 				}
 			})
 			addArrangedSubview(video)
-			video.showActivityIndicatorDataSource = ControlsViewModel.shared.isVideoUpdateInProgress
-			ControlsViewModel.shared.isVideoEnabled.readCurrentAndObserve { (selected) in
+			video.showActivityIndicatorDataSource = controlsViewModel.isVideoUpdateInProgress
+			controlsViewModel.isVideoEnabled.readCurrentAndObserve { (selected) in
 				video.isSelected = selected == true
 			}
-			ControlsViewModel.shared.isVideoAvailable.readCurrentAndObserve { (available) in
-				video.isEnabled = available == true && ControlsViewModel.shared.isVideoUpdateInProgress.value != true
+			controlsViewModel.isVideoAvailable.readCurrentAndObserve { (available) in
+				video.isEnabled = available == true && controlsViewModel.isVideoUpdateInProgress.value != true
 			}
-			ControlsViewModel.shared.isVideoUpdateInProgress.readCurrentAndObserve { (updateInProgress) in
-				video.isEnabled = updateInProgress != true && ControlsViewModel.shared.isVideoAvailable.value == true
+			controlsViewModel.isVideoUpdateInProgress.readCurrentAndObserve { (updateInProgress) in
+				video.isEnabled = updateInProgress != true && controlsViewModel.isVideoAvailable.value == true
 			}
 
 		}

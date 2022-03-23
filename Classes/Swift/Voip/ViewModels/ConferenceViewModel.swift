@@ -181,6 +181,19 @@ class ConferenceViewModel {
 		conference.addDelegate(delegate: self.conferenceDelegate!)
 		isRecording.value = conference.isRecording
 		updateConferenceLayout(conference: conference)
+		
+		if let call = core.currentCall, CallManager.getAppData(call: call.getCobject!)?.isConference == true { // Apply waiting room preference
+			if (ConferenceWaitingRoomViewModel.sharedModel.isSpeakerSelected.value == true) {
+				ControlsViewModel.shared.forceSpeakerAudioRoute()
+			} else {
+				ControlsViewModel.shared.forceEarpieceAudioRoute()
+				ControlsViewModel.shared.updateUI()
+			}
+			Core.get().micEnabled = ConferenceWaitingRoomViewModel.sharedModel.isMicrophoneMuted.value != true
+			conference.layout = ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value!
+			updateConferenceLayout(conference: conference)
+		}
+		
 	}
 	
 	func configureConference(_ conference: Conference) {

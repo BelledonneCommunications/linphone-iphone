@@ -137,10 +137,9 @@ class ControlsViewModel {
 	
 	func toggleVideo() {
 		if let conference = core.conference, conference.isIn {
-			if let params = try?core.createConferenceParams(conference:conference) {
-				let videoEnabled = conference.currentParams?.videoEnabled == true
-				params.videoEnabled = !videoEnabled
-				_ = conference.updateParams(params: params)
+			if let currentCall = core.currentCall, let params = try?core.createCallParams(call: currentCall) {
+				params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly
+				try?currentCall.update(params: params)
 			}
 		} else if let currentCall = core.currentCall {
 			let state = currentCall.state
@@ -159,7 +158,7 @@ class ControlsViewModel {
 	}
 	
 	
-	private func updateUI() {
+	func updateUI() {
 		updateVideoAvailable()
 		updateVideoEnabled()
 		updateMicState()

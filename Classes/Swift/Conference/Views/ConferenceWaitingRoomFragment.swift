@@ -38,6 +38,8 @@ import linphonesw
 	let subject = StyledLabel(VoipTheme.conference_preview_subject_font)
 	let localVideo = UIView()
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
+	let noVideoLabel = StyledLabel(VoipTheme.conference_waiting_room_no_video_font, VoipTexts.conference_waiting_room_video_disabled)
+
 	let buttonsView = UIStackView()
 	let cancel = FormButton(title: VoipTexts.cancel.uppercased(), backgroundStateColors: VoipTheme.primary_colors_background_gray, bold:false)
 	let start = FormButton(title: VoipTexts.conference_waiting_room_start_call.uppercased(), backgroundStateColors: VoipTheme.primary_colors_background)
@@ -45,7 +47,6 @@ import linphonesw
 
 	var conferenceUrl : String? = nil
 	let conferenceSubject = MutableLiveData<String>()
-
 
 	static let compositeDescription = UICompositeViewDescription(ConferenceWaitingRoomFragment.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: nil, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -63,10 +64,38 @@ import linphonesw
 		}
 				
 		// Controls
-		let controlsView = ControlsView(showVideo: true)
+		let controlsView = ControlsView(showVideo: true, controlsViewModel: ConferenceWaitingRoomViewModel.sharedModel)
 		view.addSubview(controlsView)
 		controlsView.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
 		
+		// Layoout picker
+		let layoutPicker = CallControlButton(imageInset : UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),buttonTheme: VoipTheme.conf_waiting_room_layout_picker, onClickAction: {
+			ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value = ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value != true
+		})
+		view.addSubview(layoutPicker)
+		layoutPicker.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).alignParentRight(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+		
+		ConferenceWaitingRoomViewModel.sharedModel.joinLayout.readCurrentAndObserve { layout in
+			var icon = ""
+			switch (layout!) {
+			case .Grid: icon = "voip_conference_mosaic"; break
+			case .ActiveSpeaker: icon = "voip_conference_active_speaker"; break
+			case .Legacy: icon = "voip_conference_audio_only"; break
+			}
+			layoutPicker.applyTintedIcons(tintedIcons: [UIButton.State.normal.rawValue : TintableIcon(name: icon ,tintColor: LightDarkColor(.white,.white))])
+		}
+		
+		let layoutPickerView = ConferenceLayoutPickerView()
+		view.addSubview(layoutPickerView)
+		layoutPickerView.alignAbove(view:layoutPicker,withMargin:button_spacing).alignVerticalCenterWith(layoutPicker).done()
+		
+		ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.readCurrentAndObserve { show in
+			layoutPicker.isSelected = show == true
+			layoutPickerView.isHidden = show != true
+			if (show == true) {
+				self.view.bringSubviewToFront(layoutPickerView)
+			}
+		}
 		
 		// Form buttons
 		buttonsView.axis = .horizontal
@@ -86,25 +115,29 @@ import linphonesw
 					CallManager.instance().terminateCall(call: call.getCobject)
 				}
 			}
-			ConferenceWaitingRoomViewModel.shared.joinInProgress.value = false
+			ConferenceWaitingRoomViewModel.sharedModel.joinInProgress.value = false
 			PhoneMainView.instance().popView(self.compositeViewDescription())
 		}
 	
 		start.onClick {
-			ConferenceWaitingRoomViewModel.shared.joinInProgress.value = true
-			self.conferenceUrl.map{ CallManager.instance().startCall(addr: $0, isSas: false, isVideo: true, isConference: true) }
+			ConferenceWaitingRoomViewModel.sharedModel.joinInProgress.value = true
+			self.conferenceUrl.map{ CallManager.instance().startCall(addr: $0, isSas: false, isVideo: ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value!, isConference: true) }
 		}
 		
-		ConferenceWaitingRoomViewModel.shared.joinInProgress.readCurrentAndObserve { joining in
+		ConferenceWaitingRoomViewModel.sharedModel.joinInProgress.readCurrentAndObserve { joining in
 			self.start.isEnabled = joining != true
-			self.localVideo.isHidden = joining == true
+			//self.localVideo.isHidden = joining == true (UX question as video window goes black by the core, better black or hidden ?)
+			self.noVideoLabel.isHidden = joining == true
+			layoutPicker.isHidden = joining == true
 			if (joining == true) {
 				self.view.addSubview(self.conferenceJoinSpinner)
 				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
 				self.conferenceJoinSpinner.startRotation()
+				controlsView.isHidden = true
 			} else {
 				self.conferenceJoinSpinner.stopRotation()
 				self.conferenceJoinSpinner.removeFromSuperview()
+				controlsView.isHidden = false
 			}
 		}
 		
@@ -126,11 +159,22 @@ import linphonesw
 			Core.get().videoPreviewEnabled = true
 		}
 		
+		self.view.addSubview(noVideoLabel)
+		noVideoLabel.center().done()
+		
+		ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.readCurrentAndObserve { videoEnabled in
+			Core.get().videoPreviewEnabled = videoEnabled == true
+			self.localVideo.isHidden = videoEnabled != true
+			self.switchCamera.isHidden = videoEnabled != true
+			self.noVideoLabel.isHidden = videoEnabled == true
+		}
+				
+		
 		// Audio Routes
 		audioRoutesView = AudioRoutesView()
 		view.addSubview(audioRoutesView!)
 		audioRoutesView!.alignBottomWith(otherView: controlsView).done()
-		ControlsViewModel.shared.audioRoutesSelected.readCurrentAndObserve { (audioRoutesSelected) in
+		ConferenceWaitingRoomViewModel.sharedModel.audioRoutesSelected.readCurrentAndObserve { (audioRoutesSelected) in
 			self.audioRoutesView!.isHidden = audioRoutesSelected != true
 		}
 		audioRoutesView!.alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
@@ -140,15 +184,17 @@ import linphonesw
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(true)
-		ControlsViewModel.shared.audioRoutesSelected.value = false
+		ConferenceWaitingRoomViewModel.sharedModel.audioRoutesSelected.value = false
+		ConferenceWaitingRoomViewModel.sharedModel.reset()
 		Core.get().nativePreviewWindow = localVideo
-		Core.get().videoPreviewEnabled = true
+		Core.get().videoPreviewEnabled = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		ControlsViewModel.shared.fullScreenMode.value = false
 		Core.get().nativePreviewWindow = nil
 		Core.get().videoPreviewEnabled = false
+		ConferenceWaitingRoomViewModel.sharedModel.joinInProgress.value = false
 		super.viewWillDisappear(animated)
 	}
 	

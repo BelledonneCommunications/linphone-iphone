@@ -684,6 +684,8 @@
 		C65A5D3F27216E3A005BA038 /* CallData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65A5D3E27216E3A005BA038 /* CallData.swift */; };
 		C65A5D45272196AE005BA038 /* OptionalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65A5D44272196AE005BA038 /* OptionalExtensions.swift */; };
 		C662D0A927EA2C5F00C02D4A /* ConferenceWaitingRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C662D0A827EA2C5F00C02D4A /* ConferenceWaitingRoomViewModel.swift */; };
+		C662D0AD27EB874E00C02D4A /* voip_conference_audio_only.png in Resources */ = {isa = PBXBuildFile; fileRef = C662D0AC27EB874E00C02D4A /* voip_conference_audio_only.png */; };
+		C662D0AF27EB894300C02D4A /* ConferenceLayoutPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C662D0AE27EB894300C02D4A /* ConferenceLayoutPickerView.swift */; };
 		C666756F264C925800A0273C /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
 		C6667571264C925B00A0273C /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
 		C66B03BB26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */; };
@@ -1854,6 +1856,8 @@
 		C65A5D3E27216E3A005BA038 /* CallData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallData.swift; sourceTree = "<group>"; };
 		C65A5D44272196AE005BA038 /* OptionalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalExtensions.swift; sourceTree = "<group>"; };
 		C662D0A827EA2C5F00C02D4A /* ConferenceWaitingRoomViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceWaitingRoomViewModel.swift; sourceTree = "<group>"; };
+		C662D0AC27EB874E00C02D4A /* voip_conference_audio_only.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_conference_audio_only.png; sourceTree = "<group>"; };
+		C662D0AE27EB894300C02D4A /* ConferenceLayoutPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConferenceLayoutPickerView.swift; path = Classes/Swift/Voip/Views/Fragments/ConferenceLayoutPickerView.swift; sourceTree = SOURCE_ROOT; };
 		C66B03BC26E8EB1A009B5EDC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatReplyBubbleView.xib; sourceTree = "<group>"; };
 		C66B03C126E8EB82009B5EDC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
 		C66B03C326E8EB87009B5EDC /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
@@ -2666,6 +2670,7 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				C662D0AC27EB874E00C02D4A /* voip_conference_audio_only.png */,
 				C6AF9225275F3D890087ACDE /* voip_conference_new_selected.png */,
 				C6AF921D275E51860087ACDE /* conference_schedule_calendar_default.png */,
 				C6AF9213275D67EB0087ACDE /* conference_schedule_time_default.png */,
@@ -3554,16 +3559,17 @@
 		C6EA2F492752237C008E60F8 /* Conference */ = {
 			isa = PBXGroup;
 			children = (
-				C6EA2F4C2754C691008E60F8 /* data */,
-				C6EA2F4B2754C683008E60F8 /* views */,
-				C6EA2F4D2754C69F008E60F8 /* models */,
+				C6EA2F4C2754C691008E60F8 /* Data */,
+				C6EA2F4B2754C683008E60F8 /* Views */,
+				C6EA2F4D2754C69F008E60F8 /* ViewModels */,
 			);
 			path = Conference;
 			sourceTree = "<group>";
 		};
-		C6EA2F4B2754C683008E60F8 /* views */ = {
+		C6EA2F4B2754C683008E60F8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C662D0AE27EB894300C02D4A /* ConferenceLayoutPickerView.swift */,
 				C690CCB0275764CD00609077 /* ConferenceSchedulingView.swift */,
 				C61E409A275A20A300CCE602 /* ConferenceSchedulingSummaryView.swift */,
 				C6AF920D275D38090087ACDE /* ScheduledConferencesView.swift */,
@@ -3572,27 +3578,27 @@
 				C6AF9229275F6BA10087ACDE /* ConferenceHistoryDetailsView.swift */,
 				C6AF9219275E2E010087ACDE /* ConferenceWaitingRoomFragment.swift */,
 			);
-			path = views;
+			path = Views;
 			sourceTree = "<group>";
 		};
-		C6EA2F4C2754C691008E60F8 /* data */ = {
+		C6EA2F4C2754C691008E60F8 /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				C6EA2F6A2754DDF9008E60F8 /* Duration.swift */,
 				C6EA2F622754DBBE008E60F8 /* TimeZoneData.swift */,
 				C6EA2F582754C91C008E60F8 /* ScheduledConferenceData.swift */,
 			);
-			path = data;
+			path = Data;
 			sourceTree = "<group>";
 		};
-		C6EA2F4D2754C69F008E60F8 /* models */ = {
+		C6EA2F4D2754C69F008E60F8 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				C6EA2F662754DC45008E60F8 /* ConferenceSchedulingViewModel.swift */,
 				C662D0A827EA2C5F00C02D4A /* ConferenceWaitingRoomViewModel.swift */,
+				C6EA2F662754DC45008E60F8 /* ConferenceSchedulingViewModel.swift */,
 				C6AF9217275E13790087ACDE /* ScheduledConferencesViewModel.swift */,
 			);
-			path = models;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		D326483415887D4400930C67 /* Utils */ = {
@@ -3978,6 +3984,7 @@
 				633FEF1F1D3CD55A0014B822 /* presence_online@2x.png in Resources */,
 				633FEE641D3CD5590014B822 /* footer_chat_disabled.png in Resources */,
 				633FEE9C1D3CD55A0014B822 /* numpad_0_default@2x.png in Resources */,
+				C662D0AD27EB874E00C02D4A /* voip_conference_audio_only.png in Resources */,
 				633FEE3C1D3CD5590014B822 /* contacts_all_default.png in Resources */,
 				633FEE171D3CD5590014B822 /* chat_send_disabled@2x.png in Resources */,
 				C61B1BF22667D075001A4E4A /* menu_security_default.png in Resources */,
@@ -5016,6 +5023,7 @@
 				D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */,
 				CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */,
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
+				C662D0AF27EB894300C02D4A /* ConferenceLayoutPickerView.swift in Sources */,
 				C6586149273E595700A0DBFC /* VoipExtraButtonsView.swift in Sources */,
 				633E41821D74259000320475 /* AssistantLinkView.m in Sources */,
 				C6710F5727229DEE00ED888F /* TextStyle.swift in Sources */,

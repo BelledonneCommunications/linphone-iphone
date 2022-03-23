@@ -95,6 +95,8 @@ import UIKit
 	static let conference_display_no_active_speaker = NSLocalizedString("No active speaker",comment:"")
 	static let conference_waiting_room_start_call = NSLocalizedString("Start",comment:"")
 	static let conference_waiting_room_cancel_call = NSLocalizedString("Cancel",comment:"")
+	static let conference_waiting_room_video_disabled = NSLocalizedString("Video is currently disabled",comment:"")
+
 	static let conference_scheduled = NSLocalizedString("Conferences",comment:"")
 	static let conference_too_many_participants_for_mosaic_layout = NSLocalizedString("You can't change conference layout as there is too many participants",comment:"")
 	static let conference_participant_paused = NSLocalizedString("(paused)",comment:"")

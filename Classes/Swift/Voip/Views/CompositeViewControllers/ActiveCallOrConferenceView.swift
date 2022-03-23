@@ -65,7 +65,7 @@ import linphonesw
 		
 		
 		// Controls
-		let controlsView = ControlsView(showVideo: true)
+		let controlsView = ControlsView(showVideo: true, controlsViewModel: ControlsViewModel.shared)
 		view.addSubview(controlsView)
 		controlsView.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
 		
@@ -315,7 +315,11 @@ import linphonesw
 				if (data?.isOutgoing.value == true || data?.isIncoming.value == true) {
 					PhoneMainView.instance().popView(self.compositeViewDescription())
 				} else {
-					PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())
+					if (data!.isCallingAConference()) {
+						PhoneMainView.instance().pop(toView: self.compositeViewDescription())
+					} else {
+						PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())
+					}
 				}
 			} else {
 					PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())

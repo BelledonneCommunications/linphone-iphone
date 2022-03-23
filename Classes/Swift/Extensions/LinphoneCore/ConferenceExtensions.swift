@@ -29,5 +29,6 @@ extension Conference : CustomStringConvertible {
 		}
 		return "<pointer:\(Unmanaged.passUnretained(self).toOpaque())>"
  }
+	
 }
 

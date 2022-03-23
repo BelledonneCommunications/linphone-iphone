@@ -274,7 +274,7 @@ import AVFoundation
 			}
 			if (isConference) {
 				lcallParams.videoEnabled = true
-				lcallParams.videoDirection = isVideo ? .SendRecv : .RecvOnly
+				lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
 			} else {
 				lcallParams.videoEnabled = isVideo
 			}
