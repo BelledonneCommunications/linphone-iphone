@@ -27,7 +27,7 @@ import linphonesw
 
 	let participantsListTableView = UITableView()
 	let conectionsListTableView = UITableView()
-	let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_participants_list)
+	let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_participants_list)
 	let datePicker = StyledDatePicker(pickerMode: .date, readOnly:true)
 	let timePicker = StyledDatePicker(pickerMode: .time, readOnly:true)
 
@@ -67,7 +67,6 @@ import linphonesw
 		contentView.addSubview(schedulingStack)
 		schedulingStack.alignParentTop(withMargin: 2*form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
 		
-
 		let scheduleForm = UIView()
 		schedulingStack.addArrangedSubview(scheduleForm)
 		scheduleForm.matchParentSideBorders().done()
@@ -93,15 +92,13 @@ import linphonesw
 		
 		let timeLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_time)
 		rightColumn.addSubview(timeLabel)
-		timeLabel.alignParentLeft().alignUnder(view: datePicker,withMargin: form_margin).done()
+		timeLabel.alignParentLeft().alignParentTop(withMargin: form_margin).done()
 		
 		rightColumn.addSubview(timePicker)
 		timePicker.alignParentLeft().alignUnder(view: timeLabel,withMargin: form_margin).matchParentSideBorders().done()
 	
-
 		rightColumn.wrapContentY().done()
 
-	
 		scheduleForm.wrapContentY().done()
 		
 		// Participants
@@ -120,10 +117,9 @@ import linphonesw
 		}
 		participantsListTableView.separatorStyle = .singleLine
 		participantsListTableView.separatorColor = VoipTheme.light_grey_color
-		
-		
-		
-		// Goto chat
+				
+		// Goto chat - v2
+		/*
 		let chatButton = FormButton(title: VoipTexts.conference_go_to_chat.uppercased(), backgroundStateColors: VoipTheme.primary_colors_background)
 		contentView.addSubview(chatButton)
 		chatButton.onClick {
@@ -132,13 +128,18 @@ import linphonesw
 		}
 		
 		chatButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).done()
-		
+		 */
+		 
 	}
 	
 	
 	// Objc - bridge, as can't access easily to the view model.
 	@objc func setCallLog(callLog:OpaquePointer) {
-		// TODO when available : create view model from the conference that should be retreivable via call log
+		let log = CallLog.getSwiftObject(cObject: callLog)
+		if let conferenceInfo = log.conferenceInfo {
+			self.conferenceData = ScheduledConferenceData(conferenceInfo: conferenceInfo)
+		}
+		//self.callLog = log
 	}
 	
 	
