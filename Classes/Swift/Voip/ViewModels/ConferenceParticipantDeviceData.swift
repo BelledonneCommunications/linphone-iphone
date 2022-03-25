@@ -92,7 +92,7 @@ class ConferenceParticipantDeviceData  {
 	
 	func setVideoView(view:UIView) {
 		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice)")
-		view.contentMode = .scaleAspectFit
+		view.contentMode = .scaleAspectFill
 		if (isMe) {
 			core.usePreviewWindow(yesno: false)
 			core.nativePreviewWindow = view

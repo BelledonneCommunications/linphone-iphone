@@ -145,7 +145,7 @@ import linphonesw
 		// localVideo view
 		localVideo.layer.cornerRadius = center_view_corner_radius
 		localVideo.clipsToBounds = true
-		localVideo.contentMode = .scaleAspectFit
+		localVideo.contentMode = .scaleAspectFill
 		localVideo.backgroundColor = .black
 		self.view.addSubview(localVideo)
 		localVideo.matchParentSideBorders(insetedByDx: content_inset).alignAbove(view:buttonsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).alignUnder(view: subject,withMargin: common_margin).done()
