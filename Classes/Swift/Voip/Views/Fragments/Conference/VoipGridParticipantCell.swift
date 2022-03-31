@@ -42,11 +42,13 @@ class VoipGridParticipantCell: UICollectionViewCell {
 	var participantData: ConferenceParticipantDeviceData? = nil {
 		didSet {
 			if let data = participantData {
+				data.isInConference.clearObservers()
 				data.isInConference.readCurrentAndObserve { (isIn) in
 					self.updateBackground()
 					self.pause.isHidden = isIn == true
 					self.pauseLabel.isHidden = self.pause.isHidden
 				}
+				data.videoEnabled.clearObservers()
 				data.videoEnabled.readCurrentAndObserve { (videoEnabled) in
 					self.updateBackground()
 					if (videoEnabled == true) {
@@ -67,6 +69,7 @@ class VoipGridParticipantCell: UICollectionViewCell {
 						self.displayName.text = displayName
 					}
 				}
+				data.activeSpeaker.clearObservers()
 				data.activeSpeaker.readCurrentAndObserve { (active) in
 					if (active == true) {
 						self.layer.borderWidth = 2
