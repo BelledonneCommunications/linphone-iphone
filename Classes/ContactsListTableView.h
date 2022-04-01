@@ -28,9 +28,9 @@
   @private
 	OrderedDictionary *addressBookMap;
 }
-@property(nonatomic) BOOL ongoing;
+@property(atomic) BOOL reloadMagicSearch;
 - (void)loadData;
-- (void)loadSearchedData;
+- (void)loadDataWithFilter:(NSString *)filter;
 - (void)removeAllContacts;
 
 @end

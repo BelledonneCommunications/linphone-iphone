@@ -119,8 +119,8 @@
 	_contact = acontact;
 	_emptyLabel.hidden = (_contact != NULL);
 	_avatarImage.hidden = !_emptyLabel.hidden;
-	_deleteButton.hidden = !_emptyLabel.hidden;
-	_editButton.hidden = !_emptyLabel.hidden;
+	_deleteButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdap];
+	_editButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdap];
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];

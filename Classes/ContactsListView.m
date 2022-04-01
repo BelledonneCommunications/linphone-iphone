@@ -17,15 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#import "linphoneapp-Swift.h"
 #import "PhoneMainView.h"
 
 @implementation ContactSelection
 
 static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
 static NSString *sAddAddress = nil;
-static NSString *sSipFilter = nil;
-static BOOL sEnableEmailFilter = FALSE;
-static NSString *sNameOrEmailFilter;
+static BOOL bSipFilterEnabled = FALSE;
 static BOOL addAddressFromOthers = FALSE;
 
 + (void)setSelectionMode:(ContactSelectionMode)selectionMode {
@@ -45,28 +44,12 @@ static BOOL addAddressFromOthers = FALSE;
 	return sAddAddress;
 }
 
-+ (void)setSipFilter:(NSString *)domain {
-	sSipFilter = domain;
++ (void)enableSipFilter:(BOOL)enabled {
+	bSipFilterEnabled = enabled;
 }
 
-+ (NSString *)getSipFilter {
-	return sSipFilter;
-}
-
-+ (void)enableEmailFilter:(BOOL)enable {
-	sEnableEmailFilter = enable;
-}
-
-+ (BOOL)emailFilterEnabled {
-	return sEnableEmailFilter;
-}
-
-+ (void)setNameOrEmailFilter:(NSString *)fuzzyName {
-	sNameOrEmailFilter = fuzzyName;
-}
-
-+ (NSString *)getNameOrEmailFilter {
-	return sNameOrEmailFilter;
++ (BOOL)getSipFilterEnabled {
+	return bSipFilterEnabled;
 }
 
 @end
@@ -105,12 +88,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
+	NSLog(@"Debuglog viewDidLoad");
 	[super viewDidLoad];
+	_searchBar.text = [MagicSearchSingleton.instance currentFilter];
 	tableController.tableView.accessibilityIdentifier = @"Contacts table";
+	
+	if (![[PhoneMainView.instance  getPreviousViewName] isEqualToString:@"ContactDetailsView"]) {
+		_searchBar.text = @"";
+	}
 	[self changeView:ContactsAll];
-	/*if ([tableController totalNumberOfItems] == 0) {
-		[self changeView:ContactsAll];
-	 }*/
+	
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
 								   initWithTarget:self
 								   action:@selector(dismissKeyboards)];
@@ -120,8 +107,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+	
+	NSLog(@"Debuglog viewWillAppear");
 	[super viewWillAppear:animated];
-	[ContactSelection setNameOrEmailFilter:@""];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 
 	int y = _searchBar.frame.origin.y + _searchBar.frame.size.height;
@@ -143,9 +131,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 		self.linphoneButton.hidden = TRUE;
 		self.selectedButtonImage.hidden = TRUE;
 	}
+	
+	[[NSNotificationCenter defaultCenter]
+	 addObserver:self
+	 selector:@selector(onMagicSearchStarted:)
+	 name:kLinphoneMagicSearchStarted
+	 object:nil];
+	[[NSNotificationCenter defaultCenter]
+	 addObserver:self
+	 selector:@selector(onMagicSearchFinished:)
+	 name:kLinphoneMagicSearchFinished
+	 object:nil];
+}
+
+- (void)onMagicSearchStarted:(NSNotification *)k {
+	_loadingView.hidden = FALSE;
+}
+- (void)onMagicSearchFinished:(NSNotification *)k {
+	_loadingView.hidden = TRUE;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+	NSLog(@"Debuglog viewDidAppear");
 	[super viewDidAppear:animated];
 	if (![FastAddressBook isAuthorized]) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Address book", nil)
@@ -182,6 +189,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	self.view = NULL;
 	[self.tableController removeAllContacts];
 }
@@ -189,25 +197,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)changeView:(ContactsCategory)view {
+	NSLog(@"Debuglog changeView");
 	CGRect frame = _selectedButtonImage.frame;
 	if (view == ContactsAll && !allButton.selected) {
 		//REQUIRED TO RELOAD WITH FILTER
 		[LinphoneManager.instance setContactsUpdated:TRUE];
 		frame.origin.x = allButton.frame.origin.x;
-		[ContactSelection setSipFilter:nil];
-		[ContactSelection enableEmailFilter:FALSE];
+		[ContactSelection enableSipFilter:FALSE];
 		allButton.selected = TRUE;
 		linphoneButton.selected = FALSE;
-		[tableController loadData];
+		[tableController setReloadMagicSearch:TRUE];
+		[tableController loadDataWithFilter: _searchBar.text];
 	} else if (view == ContactsLinphone && !linphoneButton.selected) {
 		//REQUIRED TO RELOAD WITH FILTER
 		[LinphoneManager.instance setContactsUpdated:TRUE];
 		frame.origin.x = linphoneButton.frame.origin.x;
-		[ContactSelection setSipFilter:LinphoneManager.instance.contactFilter];
-		[ContactSelection enableEmailFilter:FALSE];
+		[ContactSelection enableSipFilter:TRUE];
 		linphoneButton.selected = TRUE;
 		allButton.selected = FALSE;
-		[tableController loadData];
+		[tableController setReloadMagicSearch:TRUE];
+		[tableController loadDataWithFilter: _searchBar.text];
 	}
 	_selectedButtonImage.frame = frame;
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"]) {
@@ -217,7 +226,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)refreshButtons {
 	[addButton setHidden:FALSE];
-	[self changeView:[ContactSelection getSipFilter] ? ContactsLinphone : ContactsAll];
+	[self changeView:[ContactSelection getSipFilterEnabled] ? ContactsLinphone : ContactsAll];
 }
 
 #pragma mark - Action Functions
@@ -263,9 +272,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	searchBar.text = @"";
-	[self searchBar:searchBar textDidChange:@""];
 	[LinphoneManager.instance setContactsUpdated:TRUE];
-	[tableController loadData];
+	[self searchBar:searchBar textDidChange:@""];
+	
 	[searchBar resignFirstResponder];
 }
 
@@ -278,14 +287,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - searchBar delegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-	// display searchtext in UPPERCASE
-	// searchBar.text = [searchText uppercaseString];
-	[ContactSelection setNameOrEmailFilter:searchText];
-	if (searchText.length == 0) {
-		[LinphoneManager.instance setContactsUpdated:TRUE];
-		[tableController loadData];
-	} else {
-		[tableController loadSearchedData];
+	NSLog(@"Debuglog textdidchange");
+	if (![searchText isEqualToString:[MagicSearchSingleton.instance currentFilter]]) {
+		if (searchText.length == 0) {
+			[LinphoneManager.instance setContactsUpdated:TRUE];
+		}
+		[tableController loadDataWithFilter:searchText];
 	}
 }
 

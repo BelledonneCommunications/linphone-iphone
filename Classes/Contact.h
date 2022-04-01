@@ -35,6 +35,7 @@
 @property(nonatomic, strong) NSMutableArray *sipAddresses;
 @property(nonatomic, strong) NSMutableArray *emails;
 @property(nonatomic, strong) NSMutableArray *phones;
+@property BOOL createdFromLdap;
 @property BOOL added;
 
 - (void)setAvatar:(UIImage *)avatar;

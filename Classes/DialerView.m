@@ -390,9 +390,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddContactClick:(id)event {
 	[ContactSelection setSelectionMode:ContactSelectionModeEdit];
 	[ContactSelection setAddAddress:[_addressField text]];
-	[ContactSelection setSipFilter:nil];
-	[ContactSelection setNameOrEmailFilter:nil];
-	[ContactSelection enableEmailFilter:FALSE];
+	[ContactSelection enableSipFilter:FALSE];
 	[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
 }
 

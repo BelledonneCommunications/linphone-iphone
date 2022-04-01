@@ -194,10 +194,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		normSip = [normSip hasPrefix:@"sip:"] ? [normSip substringFromIndex:4] : normSip;
 		[ContactSelection setAddAddress:normSip];
 		[ContactSelection setSelectionMode:ContactSelectionModeEdit];
-
-		[ContactSelection setSipFilter:nil];
-		[ContactSelection enableEmailFilter:FALSE];
-		[ContactSelection setNameOrEmailFilter:nil];
+		[ContactSelection enableSipFilter:FALSE];
 		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
 		ms_free(lAddress);
 	}

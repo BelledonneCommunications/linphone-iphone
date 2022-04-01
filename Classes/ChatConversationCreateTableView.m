@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#import "linphoneapp-Swift.h"
 #import "ChatConversationCreateTableView.h"
 #import "UIChatCreateCell.h"
 #import "LinphoneManager.h"
@@ -28,14 +29,18 @@
 @property(nonatomic, strong) NSMutableArray *addresses;
 @property(nonatomic, strong) NSMutableArray *phoneOrAddr;
 @property(nonatomic, strong) NSMutableArray *addressesCached;
+@property(readonly, nonatomic) NSMutableDictionary *ldapContactAddressBookMap;
+
 @end
 
 @implementation ChatConversationCreateTableView
 
 - (void)viewWillAppear:(BOOL)animated {
+	if (!_ldapContactAddressBookMap) {
+		_ldapContactAddressBookMap = [NSMutableDictionary dictionary];
+	}
 	[super viewWillAppear:animated];
 
-	_magicSearch = linphone_core_create_magic_search(LC);
 	int y = _contactsGroup.count > 0
 		? _collectionView.frame.origin.y + _collectionView.frame.size.height
 		: _searchBar.frame.origin.y + _searchBar.frame.size.height;
@@ -53,6 +58,18 @@
 	_addresses = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
 	_phoneOrAddr = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
     _addressesCached = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
+	
+	[[NSNotificationCenter defaultCenter]
+	 addObserver:self
+	 selector:@selector(onChatMagicSearchStarted:)
+	 name:kLinphoneMagicSearchStarted
+	 object:nil];
+	[[NSNotificationCenter defaultCenter]
+	 addObserver:self
+	 selector:@selector(onChatMagicSearchFinished:)
+	 name:kLinphoneMagicSearchFinished
+	 object:nil];
+	
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
@@ -64,32 +81,31 @@
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
+	
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	_notFirstTime = FALSE;
-	linphone_magic_search_unref(_magicSearch);
-	_magicSearch = NULL;
 }
 
-- (void) loadData {
-	[self reloadDataWithFilter:_searchBar.text];
+- (void)onChatMagicSearchStarted:(NSNotification *)k {
+	_loadingView.hidden = FALSE;
+}
+- (void)onChatMagicSearchFinished:(NSNotification *)k {
+	[self buildChatContactTable];
+	_loadingView.hidden = TRUE;
 }
 
-- (void)reloadDataWithFilter:(NSString *)filter {
-	[_addresses removeAllObjects];
-	[_phoneOrAddr removeAllObjects];
-    [_addressesCached removeAllObjects];
-
-	if (!_magicSearch)
-		return;
-
-	bctbx_list_t *results = linphone_magic_search_get_contact_list_from_filter(_magicSearch, filter.UTF8String, _allFilter ? "" : "*");
+- (void) buildChatContactTable {
+	[_ldapContactAddressBookMap removeAllObjects];
+	bctbx_list_t *results = [MagicSearchSingleton.instance getLastSearchResults];
 	while (results) {
+		
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
+		 
 		const char *phoneNumber = NULL;
-		
 		Contact *contact = nil;
 		char *uri = nil;
 		NSString *address = nil;
@@ -99,10 +115,10 @@
 			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
 		}
 		
-		if (!addr || (!contact && linphone_search_result_get_friend(result))) {
+		const LinphoneFriend* friend = linphone_search_result_get_friend(result);
+		if (!addr || (!contact && friend)) {
 			phoneNumber = linphone_search_result_get_phone_number(result);
 			if (!phoneNumber) {
-				results = results->next;
 				continue;
 			}
 			
@@ -111,13 +127,17 @@
 				const char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
 				if (!normalizedPhoneNumber) {
 					// get invalid phone number, continue
-					results = results->next;
 					continue;
 				}
 				addr = linphone_account_normalize_sip_uri(account, normalizedPhoneNumber);
 				uri = linphone_address_as_string_uri_only(addr);
 				address = [NSString stringWithUTF8String:uri];
+				
+				contact = [[Contact alloc] initWithFriend:friend];
+				[contact setCreatedFromLdap:TRUE];
+				[_ldapContactAddressBookMap setObject:contact forKey:address];
 			}
+			
 		}
 
 		if (!addr) {
@@ -125,16 +145,34 @@
 			continue;
 		}
 
-        ms_free(uri);
-        
+		ms_free(uri);
+		
 		[_addresses addObject:address];
 		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
-        [_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
-
+		[_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
+		
 		results = results->next;
 	}
-
+	_reloadMagicSearch = FALSE;
 	[self.tableView reloadData];
+}
+
+- (void) loadData {
+	[self reloadDataWithFilter:_searchBar.text];
+}
+
+- (void)reloadDataWithFilter:(NSString *)filter {
+	[_addresses removeAllObjects];
+	[_phoneOrAddr removeAllObjects];
+	[_addressesCached removeAllObjects];
+	_reloadMagicSearch = _reloadMagicSearch || [filter length]==0 || ![[MagicSearchSingleton.instance currentFilter] isEqualToString:filter];
+	[MagicSearchSingleton.instance setCurrentFilter:filter];
+	
+	if (_reloadMagicSearch) {
+		[MagicSearchSingleton.instance searchForContactsWithDomain:_allFilter ?  @"" : @"*" sourceFlags:LinphoneMagicSearchSourceAll clearCache:FALSE];
+	} else {
+		[self buildChatContactTable];
+	}
 }
 
 #pragma mark - TableView methods
@@ -160,6 +198,10 @@
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
 	NSString *phoneOrAddr = [_phoneOrAddr objectAtIndex:indexPath.row];
 	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:key]];
+	if (!contact) {
+		contact = [_ldapContactAddressBookMap objectForKey:key];
+	}
+	
     const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen);
@@ -173,7 +215,7 @@
     BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;
     BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
     cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
-	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
+	cell.displayNameLabel.text = [contact createdFromLdap] ? [contact displayName] : [FastAddressBook displayNameForAddress:addr];
 	char *str = linphone_address_as_string(addr);
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:str] : phoneOrAddr;
 	ms_free(str);
@@ -275,17 +317,11 @@
 	searchBar.showsCancelButton = (searchText.length > 0);
 	[self reloadDataWithFilter:searchText];
 	if ([searchText isEqualToString:@""]) {
-		if (_magicSearch)
-			linphone_magic_search_reset_search_cache(_magicSearch);
-		
 		[_searchBar resignFirstResponder];
 	}
 }
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text {
-	if (text.length < _searchBar.text.length && _magicSearch)
-		linphone_magic_search_reset_search_cache(_magicSearch);
-
 	return TRUE;
 }
 
@@ -302,9 +338,6 @@
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-	if (_magicSearch)
-		linphone_magic_search_reset_search_cache(_magicSearch);
-	
 	[searchBar resignFirstResponder];
 }
 
