@@ -34,39 +34,15 @@ typedef enum _ContactSelectionMode { ContactSelectionModeNone, ContactSelectionM
 + (NSString *)getAddAddress;
 /*!
  * Filters contacts by SIP domain.
- * @param domain SIP domain to filter. Use @"*" or nil to disable it.
+ * @param enabled  Wether SIP domain filter is enabled
  */
-+ (void)setSipFilter:(NSString *)domain;
++ (void)enableSipFilter:(BOOL)enabled;
 
 /*!
- * Weither contacts are filtered by SIP domain or not.
+ * Wether SIP domain filter is enabled
  * @return the filter used, or nil if none.
  */
-+ (NSString *)getSipFilter;
-
-/*!
- * Weither always keep contacts with an email address or not.
- * @param enable TRUE if you want to always keep contacts with an email.
- */
-+ (void)enableEmailFilter:(BOOL)enable;
-
-/*!
- * Weither always keep contacts with an email address or not.
- * @return TRUE if this behaviour is enabled.
- */
-+ (BOOL)emailFilterEnabled;
-
-/*!
- * Filters contacts by name and/or email fuzzy matching pattern.
- * @param fuzzyName fuzzy word to match. Use nil to disable it.
- */
-+ (void)setNameOrEmailFilter:(NSString *)fuzzyName;
-
-/*!
- * Weither contacts are filtered by name and/or email.
- * @return the filter used, or nil if none.
- */
-+ (NSString *)getNameOrEmailFilter;
++ (BOOL)getSipFilterEnabled;
 
 @end
 
@@ -80,6 +56,8 @@ typedef enum _ContactSelectionMode { ContactSelectionModeNone, ContactSelectionM
 @property(strong, nonatomic) IBOutlet UISearchBar *searchBar;
 @property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
+@property (weak, nonatomic) IBOutlet UILabel *loadingLabel;
+@property (weak, nonatomic) IBOutlet UIView *loadingView;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;

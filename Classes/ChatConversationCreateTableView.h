@@ -22,13 +22,14 @@
 @interface ChatConversationCreateTableView : UITableViewController <UISearchBarDelegate>
 @property(nonatomic) Boolean allFilter;
 @property(nonatomic) Boolean notFirstTime;
+@property(nonatomic) Boolean reloadMagicSearch;
 @property(nonatomic, strong) NSMutableArray *contactsGroup;
-@property(nonatomic) LinphoneMagicSearch *magicSearch;
 
 @property(weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIButton *controllerNextButton;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
+@property (weak, nonatomic) IBOutlet UIView *loadingView;
 
 @property(nonatomic) Boolean isForEditing;
 @property(nonatomic) Boolean isGroupChat;

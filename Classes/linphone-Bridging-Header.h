@@ -5,7 +5,7 @@
 
 
 #import <UIKit/UIkit.h>
-#import "FastAddressBook.h"
+#import "LinphoneManager.h"
 #import "Log.h"
 #import "AudioHelper.h"
 #import "ChatConversationTableView.h"

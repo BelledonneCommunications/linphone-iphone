@@ -80,6 +80,8 @@ NSString *const kLinphoneVoiceMessagePlayerEOF = @"LinphoneVoiceMessagePlayerEOF
 NSString *const kLinphoneVoiceMessagePlayerLostFocus = @"LinphoneVoiceMessagePlayerLostFocus";
 NSString *const kLinphoneConfStateChanged = @"kLinphoneConfStateChanged";
 NSString *const kLinphoneConfStateParticipantListChanged = @"kLinphoneConfStateParticipantListChanged";
+NSString *const kLinphoneMagicSearchStarted = @"LinphoneMagicSearchStarted";
+NSString *const kLinphoneMagicSearchFinished = @"LinphoneMagicSearchFinished";
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 
@@ -286,15 +288,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
-#pragma mark - AddressBookMap
-
-- (void) setLinphoneManagerAddressBookMap:(OrderedDictionary*) addressBook{
-	_linphoneManagerAddressBookMap = addressBook;
-}
-
-- (OrderedDictionary*) getLinphoneManagerAddressBookMap{
-	return _linphoneManagerAddressBookMap;
-}
+#pragma mark - Contacts Updated
 
 - (void) setContactsUpdated:(BOOL) updated{
 	_contactsUpdated = updated;

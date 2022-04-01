@@ -63,6 +63,8 @@ extern NSString *const kLinphoneVoiceMessagePlayerEOF;
 extern NSString *const kLinphoneVoiceMessagePlayerLostFocus;
 extern NSString *const kLinphoneConfStateParticipantListChanged;
 extern NSString *const kLinphoneConfStateChanged;
+extern NSString *const kLinphoneMagicSearchStarted;
+extern NSString *const kLinphoneMagicSearchFinished;
 
 
 extern NSString *const kLinphoneMsgNotificationAppGroupId;
@@ -177,9 +179,6 @@ typedef struct _LinphoneManagerSounds {
 + (BOOL)isMyself:(const LinphoneAddress *)addr;
 
 - (void)shouldPresentLinkPopup;
-
-- (void) setLinphoneManagerAddressBookMap:(OrderedDictionary*) addressBook;
-- (OrderedDictionary*) getLinphoneManagerAddressBookMap;
 
 - (void) setContactsUpdated:(BOOL) updated;
 - (BOOL) getContactsUpdated;

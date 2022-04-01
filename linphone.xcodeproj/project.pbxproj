@@ -628,6 +628,7 @@
 		63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */; };
 		63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
+		662553B427EDFB35007F67D8 /* MagicSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662553B327EDFB35007F67D8 /* MagicSearch.swift */; };
 		669B140827A1821F0012220A /* scroll_to_bottom_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 669B140727A1821F0012220A /* scroll_to_bottom_default.png */; };
 		669B140C27A29D140012220A /* FloatingScrollDownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669B140B27A29D140012220A /* FloatingScrollDownButton.swift */; };
 		6F3A2542B1FC7C128439D37C /* Pods_linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFCC14A580A05DEC78090273 /* Pods_linphone.framework */; };
@@ -1619,6 +1620,7 @@
 		63F1DF521BCE986A00EDED90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallConferenceCell.xib; sourceTree = "<group>"; };
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
+		662553B327EDFB35007F67D8 /* MagicSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearch.swift; sourceTree = "<group>"; };
 		669B140727A1821F0012220A /* scroll_to_bottom_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = scroll_to_bottom_default.png; sourceTree = "<group>"; };
 		669B140B27A29D140012220A /* FloatingScrollDownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingScrollDownButton.swift; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -2098,6 +2100,7 @@
 				D3549815158761D0000081D8 /* ContactsListTableView.m */,
 				D35497FB15875372000081D8 /* ContactsListView.h */,
 				D35497FC15875372000081D8 /* ContactsListView.m */,
+				662553B327EDFB35007F67D8 /* MagicSearch.swift */,
 				D38187C015FE342800C3EDCA /* ContactsListView.xib */,
 				631098471D4660580041F2B3 /* CountryListView.h */,
 				631098481D4660580041F2B3 /* CountryListView.m */,
@@ -4379,6 +4382,7 @@
 				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
+				662553B427EDFB35007F67D8 /* MagicSearch.swift in Sources */,
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				C64A854E2667B67200252AD2 /* EphemeralSettingsView.m in Sources */,
