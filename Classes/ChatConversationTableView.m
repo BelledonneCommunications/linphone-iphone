@@ -415,6 +415,10 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	
+	if (linphone_event_log_get_type(event) != LinphoneEventLogTypeConferenceChatMessage) {
+		return [UISwipeActionsConfiguration configurationWithActions:@[]];
+	}
+	
 	UIContextualAction *replyAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
 																		 title:NSLocalizedString(@"Reply", nil)
 																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
