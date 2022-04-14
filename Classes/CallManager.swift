@@ -682,7 +682,7 @@ import AVFoundation
 	
 	func addAllToConference() {
 		if (conference == nil) {
-			guard let cp = try?lc?.createConferenceParams() else {
+			guard let cp = try?lc?.createConferenceParams(conference: conference) else {
 				Log.directLog(BCTBX_LOG_ERROR, text: "Unable to create conference parameters")
 				return
 			}
