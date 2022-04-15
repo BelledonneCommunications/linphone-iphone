@@ -86,12 +86,16 @@ class ConferenceViewModel {
 				}
 			},
 			onParticipantDeviceLeft: { (conference: Conference, device: ParticipantDevice) in
-				Log.i("[Conference] onParticipantDeviceJoined Entered conference")
-				self.isConferenceLocallyPaused.value = true
+				if (conference.isMe(uri: device.address!)) {
+					Log.i("[Conference] Left conference")
+					self.isConferenceLocallyPaused.value = true
+				}
 			},
 			onParticipantDeviceJoined: { (conference: Conference, device: ParticipantDevice) in
-				Log.i("[Conference] onParticipantDeviceJoined Entered conference")
-				self.isConferenceLocallyPaused.value = false
+				if (conference.isMe(uri: device.address!)) {
+					Log.i("[Conference] Joined conference")
+					self.isConferenceLocallyPaused.value = false
+				}
 			},
 			onStateChanged: { (conference: Conference, state: Conference.State) in
 				Log.i("[Conference] State changed: \(state)")
