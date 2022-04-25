@@ -192,9 +192,14 @@ class CallData  {
 	
 	func togglePause() {
 		if (isCallPaused()) {
-			try?call.resume()
+			CallsViewModel.shared.callsData.value?.forEach {
+				if ($0.canCallBePaused()) {
+					CallManager.instance().setHeld(call: $0.call, hold: true)
+				}
+			}
+			CallManager.instance().setHeld(call: call, hold: false)
 		} else {
-			try?call.pause()
+			CallManager.instance().setHeld(call: call, hold: true)
 		}
 		isPaused.value = isCallPaused()
 	}
