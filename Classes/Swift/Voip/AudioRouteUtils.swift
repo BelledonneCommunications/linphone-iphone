@@ -85,7 +85,7 @@ import linphonesw
 			Log.i("[Audio Route Helper] Headphones/headset device is able to record audio, also change input audio device")
 			applyAudioRouteChange(call:call,types: [AudioDeviceType.Headphones, AudioDeviceType.Headset], output:false)
 		}
-		default: break
+		default: applyAudioRouteChange(call:call,types: [AudioDeviceType.Microphone], output:false)
 		}
 	}
 	
