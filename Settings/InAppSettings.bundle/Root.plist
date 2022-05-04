@@ -145,6 +145,16 @@
 			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>contacts_menu</string>
+			<key>File</key>
+			<string>Contacts</string>
+			<key>Title</key>
+			<string>Contacts</string>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+		</dict>
+		<dict>
 			<key>File</key>
 			<string>Advanced</string>
 			<key>Title</key>
