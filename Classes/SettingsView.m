@@ -592,7 +592,33 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 			[specifier.specifierDict setValue:name forKey:kIASKTitle];
 		}
 	}
-
+	
+	if ([specifier.key hasPrefix:@"ldap_"]) {
+		if (linphone_core_ldap_available(LC)) {
+			const bctbx_list_t *ldaps = linphone_core_get_ldap_list(LC);
+			int index = [specifier.key substringFromIndex:@"ldap_".length].intValue - 1;
+			if (index < bctbx_list_size(ldaps)) {
+				const LinphoneLdapParams *ldapParams = linphone_ldap_get_params(bctbx_list_nth_data(ldaps, index));
+				
+				NSString *name = [NSString
+								  stringWithUTF8String:linphone_ldap_params_get_server(ldapParams)];
+				[specifier.specifierDict setValue:name forKey:kIASKTitle];
+			}
+		}
+	}
+	
+	
+	if ([[specifier key] isEqualToString:@"ldap_auth_method"]) {
+		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+		NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+		[titles removeObject:@"TLS"];
+		[dict setObject:titles forKey:@"Titles"];
+		NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+		[values removeObject:@"tls"];
+		[dict setObject:values forKey:@"Values"];
+		return [[IASKSpecifier alloc] initWithSpecifier:dict];
+	}
+	
 	return specifier;
 }
 
@@ -605,10 +631,17 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%lu", i]];
 	}
 
+	const MSList *ldaps = linphone_core_get_ldap_list(LC);
+	for (size_t i = bctbx_list_size(ldaps) + 1; i <= 5; i++) {
+		[hiddenKeys addObject:[NSString stringWithFormat:@"ldap_%lu", i]];
+	}
 	if (!linphone_core_sip_transport_supported(LC, LinphoneTransportTls)) {
 		[hiddenKeys addObject:@"media_encryption_preference"];
 	}
 
+	if (!linphone_core_ldap_available(LC)) {
+		[hiddenKeys addObject:@"contacts_menu"];
+	}
 #ifndef DEBUG
 	[hiddenKeys addObject:@"debug_actions_group"];
 	[hiddenKeys addObject:@"release_button"];
@@ -743,6 +776,17 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	[[_settingsController tableView] reloadData];
 }
 
+-(void)recomputeLdapLabelsAndSync {
+	// it's a bit violent... but IASK is not designed to dynamically change subviews' name
+	_settingsController.hiddenKeys = [self findHiddenKeys];
+	[_settingsController.settingsReader indexPathForKey:@"ldap_1"]; // force refresh ldap server name display
+	[_settingsController.settingsReader indexPathForKey:@"ldap_2"]; // force refresh ldap server name display
+	[_settingsController.settingsReader indexPathForKey:@"ldap_3"]; // force refresh ldap server name display
+	[_settingsController.settingsReader indexPathForKey:@"ldap_4"]; // force refresh ldap server name display
+	[_settingsController.settingsReader indexPathForKey:@"ldap_5"]; // force refresh ldap server name display
+	[[_settingsController tableView] reloadData];
+}
+
 #pragma mark - IASKSettingsDelegate Functions
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
@@ -754,10 +798,15 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 
 	// going to account: fill account specific info
 	if ([sender.file isEqualToString:@"Account"]) {
-		LOGI(@"Going editting account %@", sender.title);
+		LOGI(@"Going editing account %@", sender.title);
 		[settingsStore transformAccountToKeys:sender.title];
-		// coming back to default: if we were in account, we must synchronize account now
-	} else if ([sender.file isEqualToString:@"Root"]) {
+	} else if ([sender.file isEqualToString:@"Contacts"]) {
+		[settingsStore synchronize];
+		[self recomputeLdapLabelsAndSync];
+	} else if ([sender.file isEqualToString:@"LDAP"]) {
+		LOGI(@"Going editing LDAP config %@", sender.title);
+		[settingsStore transformLdapToKeys:sender.title];
+	} else if ([sender.file isEqualToString:@"Root"]) { // coming back to default: if we were in account, we must synchronize account now
 		[settingsStore synchronize];
 		[self recomputeAccountLabelsAndSync];
 	}
@@ -987,6 +1036,32 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[self presentViewController:errView animated:YES completion:nil];
 	} else if ([key isEqual:@"send_db_button"]) {
 		 [self sendEmailWithPrivacyAttachments];
+	} else if ([key isEqual:@"new_ldap_button"]) {
+		if (bctbx_list_size(linphone_core_get_ldap_list(LC)) < 5 ) {
+			linphone_core_add_ldap(LC, linphone_core_create_ldap(LC));
+			[self recomputeLdapLabelsAndSync];
+		}
+	} else if ([key isEqual:@"ldap_remove_button"]) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Warning", nil)
+																		 message:NSLocalizedString(@"Are you sure to want to remove your LDAP config?", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
+																 style:UIAlertActionStyleDefault
+															   handler:^(UIAlertAction * action) {
+																   [settingsStore removeLdap];
+																   [self recomputeLdapLabelsAndSync];
+																   [_settingsController.navigationController popViewControllerAnimated:NO];
+															   }];
+		
+		
+		[errView addAction:defaultAction];
+		[errView addAction:continueAction];
+		[self presentViewController:errView animated:YES completion:nil];
 	}
 }
 

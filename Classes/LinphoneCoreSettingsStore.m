@@ -257,6 +257,87 @@
 	}
 }
 
+
+- (void)transformLdapToKeys:(NSString *)ldap_server {
+	const MSList *ldaps = linphone_core_get_ldap_list(LC);
+	while (ldap_server && ldaps &&
+		   strcmp(ldap_server.UTF8String,
+				  linphone_ldap_params_get_server(linphone_ldap_get_params(ldaps->data))) != 0) {
+		ldaps = ldaps->next;
+	}
+	LinphoneLdap *ldap = NULL;
+
+	// default values
+	{
+		[self setBool:YES forKey:@"ldap_enabled"];
+		[self setObject:@"" forKey:@"ldap_server"];
+		[self setObject:@"" forKey:@"ldap_bind_dn"];
+		[self setObject:@"" forKey:@"ldap_password"];
+		[self setObject:@"simple" forKey:@"ldap_auth_method"];
+		[self setBool:YES forKey:@"ldap_tls_enabled"];
+		[self setObject:@"default" forKey:@"ldap_certificates_verification_mode"];
+		[self setObject:@"" forKey:@"ldap_filter"];
+		[self setInteger:50 forKey:@"ldap_max_results"];
+		[self setInteger:5 forKey:@"ldap_timeout"];
+		[self setInteger:500 forKey:@"ldap_delay"];
+		[self setInteger:3 forKey:@"ldap_min_chars"];
+		[self setObject:@"" forKey:@"ldap_name_attribute"];
+		[self setObject:@"" forKey:@"ldap_sip_attribute"];
+		[self setObject:@"" forKey:@"ldap_sip_domain"];
+		[self setBool:NO forKey:@"ldap_logs_enabled"];
+	}
+	
+	if (ldaps) {
+		ldap = ldaps->data;
+		LinphoneLdapParams const *ldapParams = linphone_ldap_get_params(ldap);
+		
+		int idx = (int)bctbx_list_index(linphone_core_get_ldap_list(LC), ldap);
+		[self setInteger:idx forKey:@"current_ldap_index"];
+		
+		[self setBool:linphone_ldap_params_get_enabled(ldapParams) forKey:@"ldap_enabled"];
+		[self setCString:linphone_ldap_params_get_server(ldapParams) forKey:@"ldap_server"];
+		[self setCString:linphone_ldap_params_get_bind_dn(ldapParams) forKey:@"ldap_bind_dn"];
+		[self setCString:linphone_ldap_params_get_password(ldapParams) forKey:@"ldap_password"];
+		[self setBool:linphone_ldap_params_tls_enabled(ldapParams) forKey:@"ldap_tls_enabled"];
+		
+		switch (linphone_ldap_params_get_auth_method(ldapParams)) {
+			case LinphoneLdapAuthMethodSimple:
+				[self setObject:@"simple" forKey:@"ldap_auth_method"];
+				break;
+			case LinphoneLdapAuthMethodAnonymous:
+				[self setObject:@"anonymous" forKey:@"ldap_auth_method"];
+				break;
+		}
+		
+		switch (linphone_ldap_params_get_server_certificates_verification_mode(ldapParams)) {
+			case LinphoneLdapCertVerificationDefault:
+				[self setObject:@"default" forKey:@"ldap_certificates_verification_mode"];
+				break;
+			case LinphoneLdapCertVerificationEnabled:
+				[self setObject:@"enabled" forKey:@"ldap_certificates_verification_mode"];
+				break;
+			case LinphoneLdapCertVerificationDisabled:
+				[self setObject:@"disabled" forKey:@"ldap_certificates_verification_mode"];
+				break;
+		}
+		
+		[self setCString:linphone_ldap_params_get_base_object(ldapParams) forKey:@"ldap_base_object"];
+		[self setCString:linphone_ldap_params_get_filter(ldapParams) forKey:@"ldap_filter"];
+		[self setInteger:linphone_ldap_params_get_max_results(ldapParams) forKey:@"ldap_max_results"];
+		[self setInteger:linphone_ldap_params_get_timeout(ldapParams) forKey:@"ldap_timeout"];
+		[self setInteger:linphone_ldap_params_get_delay(ldapParams) forKey:@"ldap_delay"];
+		[self setInteger:linphone_ldap_params_get_min_chars(ldapParams) forKey:@"ldap_min_chars"];
+		
+		
+		[self setCString:linphone_ldap_params_get_name_attribute(ldapParams) forKey:@"ldap_name_attribute"];
+		[self setCString:linphone_ldap_params_get_sip_attribute(ldapParams) forKey:@"ldap_sip_attribute"];
+		[self setCString:linphone_ldap_params_get_sip_domain(ldapParams) forKey:@"ldap_sip_domain"];
+		
+		bool ldapLogsEnabled = linphone_ldap_params_get_debug_level(ldapParams) == LinphoneLdapDebugLevelVerbose;
+		[self setBool:ldapLogsEnabled forKey:@"ldap_logs_enabled"];
+	}
+}
+
 - (void)transformLinphoneCoreToKeys {
 	LinphoneManager *lm = LinphoneManager.instance;
 
@@ -423,6 +504,11 @@
 			[self setCString:"" forKey:@"tunnel_address_preference"];
 			[self setInteger:443 forKey:@"tunnel_port_preference"];
 		}
+	}
+	
+	// contacts section
+	if (linphone_core_ldap_available(LC)) {
+		[self transformLdapToKeys:nil];
 	}
 
 	// advanced section
@@ -687,6 +773,71 @@
 	}
 }
 
+- (void)synchronizeLdap {
+	LOGI(@"LDAP config changed, synchronizing.");
+	
+	LinphoneLdap*ldap = bctbx_list_nth_data(linphone_core_get_ldap_list(LC), [self integerForKey:@"current_ldap_index"]);
+	if (!ldap) {
+		return;
+	}
+	
+	if ([self stringForKey:@"ldap_base_object"].length == 0) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", nil)
+																		 message:@"LDAPResearch base must not be empty"
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+		return;
+	}
+	
+	LinphoneLdapParams *newLdapParams = linphone_ldap_params_clone(linphone_ldap_get_params(ldap));
+	
+	// Connexion parameters
+	linphone_ldap_params_set_enabled(newLdapParams, [self boolForKey:@"ldap_enabled"]);
+	linphone_ldap_params_set_server(newLdapParams, [self stringForKey:@"ldap_server"].UTF8String);
+	linphone_ldap_params_set_bind_dn(newLdapParams, [self stringForKey:@"ldap_bind_dn"].UTF8String);
+	linphone_ldap_params_set_password(newLdapParams, [self stringForKey:@"ldap_password"].UTF8String);
+	
+	LinphoneLdapAuthMethod authMethod = [[self stringForKey:@"ldap_verification_method"] isEqualToString:@"simple"] ? LinphoneLdapAuthMethodSimple : LinphoneLdapAuthMethodAnonymous;
+	linphone_ldap_params_set_auth_method(newLdapParams, authMethod);
+	linphone_ldap_params_enable_tls(newLdapParams, [self boolForKey:@"ldap_tls_enabled"]);
+	
+	
+	LinphoneLdapCertVerificationMode certVerifMode = LinphoneLdapCertVerificationDefault;
+	NSString *certVerifModeStr = [self stringForKey:@"ldap_certificates_verification_mode"];
+	if ([certVerifModeStr isEqualToString:@"enabled"])
+		certVerifMode = LinphoneLdapCertVerificationEnabled;
+	else if ([certVerifModeStr isEqualToString:@"disabled"])
+		certVerifMode = LinphoneLdapCertVerificationEnabled;
+	linphone_ldap_params_set_server_certificates_verification_mode(newLdapParams, certVerifMode);
+	
+	// Research parameters
+	linphone_ldap_params_set_base_object(newLdapParams, [self stringForKey:@"ldap_base_object"].UTF8String);
+	linphone_ldap_params_set_filter(newLdapParams, [self stringForKey:@"ldap_filter"].UTF8String);
+	linphone_ldap_params_set_max_results(newLdapParams, [self integerForKey:@"ldap_max_results"]);
+	linphone_ldap_params_set_timeout(newLdapParams, [self integerForKey:@"ldap_timeout"]);
+	linphone_ldap_params_set_delay(newLdapParams, [self integerForKey:@"ldap_delay"]);
+	linphone_ldap_params_set_min_chars(newLdapParams, [self integerForKey:@"ldap_min_chars"]);
+	
+	
+	
+	// Analysis parameters
+	linphone_ldap_params_set_name_attribute(newLdapParams, [self stringForKey:@"ldap_name_attributes"].UTF8String);
+	linphone_ldap_params_set_sip_attribute(newLdapParams, [self stringForKey:@"ldap_sip_attributes"].UTF8String);
+	linphone_ldap_params_set_sip_domain(newLdapParams, [self stringForKey:@"ldap_sip_domain"].UTF8String);
+	
+	// Miscellaneous parameters
+	LinphoneLdapDebugLevel debugLevel = [self boolForKey:@"ldap_logs_enabled"] ? LinphoneLdapDebugLevelVerbose : LinphoneLdapDebugLevelOff;
+	linphone_ldap_params_set_debug_level(newLdapParams, debugLevel);
+	
+	linphone_ldap_set_params(ldap, newLdapParams);
+}
+
 - (BOOL)synchronize {
 	@try {
 		LinphoneManager *lm = LinphoneManager.instance;
@@ -705,7 +856,7 @@
 
 		if (account_changed)
 			[self synchronizeAccounts];
-
+		
 		bool enableVideo = [self boolForKey:@"enable_video_preference"];
 		linphone_core_enable_video_capture(LC, enableVideo);
 		linphone_core_enable_video_display(LC, enableVideo);
@@ -911,6 +1062,19 @@
 			linphone_tunnel_set_mode(tunnel, mode);
 		}
 
+		// contacts section
+
+		
+		BOOL ldap_changed = NO;
+		for (NSString *key in self->changedDict) {
+			if ([key hasPrefix:@"ldap_"] && [self valueChangedForKey:key]) {
+				ldap_changed = YES;
+				break;
+			}
+		}
+		if (ldap_changed)
+			[self synchronizeLdap];
+		
 		// advanced section
 		BOOL animations = [self boolForKey:@"animations_preference"];
 		[lm lpConfigSetInt:animations forKey:@"animations_preference"];
@@ -1010,6 +1174,13 @@
 			linphone_core_set_default_account(LC, (LinphoneAccount *)(linphone_core_get_account_list(LC)->data));
 		}
 	}
+	[self transformLinphoneCoreToKeys];
+}
+
+- (void)removeLdap {
+	LinphoneLdap *ldap = bctbx_list_nth_data(linphone_core_get_ldap_list(LC),
+													  [self integerForKey:@"current_ldap_index"]);
+	linphone_core_remove_ldap(LC, ldap);
 	[self transformLinphoneCoreToKeys];
 }
 @end

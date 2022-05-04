@@ -22,8 +22,8 @@
 #import "PhoneMainView.h"
 #import "SVProgressHUD.h"
 #import "ShareViewController.h"
+#import "linphoneapp-Swift.h"
 #import <UIKit/UIKit.h>
-
 
 
 @implementation ImagePickerView

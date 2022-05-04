@@ -30,6 +30,8 @@
 
 - (void)transformLinphoneCoreToKeys;
 - (void)transformAccountToKeys:(NSString *)username;
+- (void)transformLdapToKeys:(NSString *)ldap_server;
 - (void)removeAccount;
+- (void)removeLdap;
 
 @end
