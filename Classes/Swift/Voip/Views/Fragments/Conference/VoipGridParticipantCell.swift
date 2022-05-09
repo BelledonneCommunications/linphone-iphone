@@ -47,14 +47,18 @@ class VoipGridParticipantCell: UICollectionViewCell {
 					self.updateBackground()
 					self.pause.isHidden = isIn == true
 					self.pauseLabel.isHidden = self.pause.isHidden
+					self.videoView.isHidden = data.videoEnabled.value != true
+					self.switchCamera.isHidden = data.videoEnabled.value != true || !data.isSwitchCameraAvailable()
 				}
 				data.videoEnabled.clearObservers()
 				data.videoEnabled.readCurrentAndObserve { (videoEnabled) in
 					self.updateBackground()
 					if (videoEnabled == true) {
+						self.videoView.isHidden = false
 						data.setVideoView(view: self.videoView)
 						self.avatar.isHidden = true
 					} else {
+						self.videoView.isHidden = true
 						self.avatar.isHidden = false
 					}
 					self.switchCamera.isHidden = videoEnabled != true || !data.isSwitchCameraAvailable()
