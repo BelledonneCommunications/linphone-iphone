@@ -66,7 +66,7 @@ class ConferenceLayoutPickerView: UIStackView {
 		ConferenceWaitingRoomViewModel.sharedModel.joinLayout.readCurrentAndObserve { layout in
 			grid.isSelected = layout == .Grid
 			activeSpeaker.isSelected = layout == .ActiveSpeaker
-			audioOnly.isSelected = layout == .Grid
+			audioOnly.isSelected = false // Todo when doing auioonly layout == .Grid
 		}
 		
 		let padding2 = UIView()
