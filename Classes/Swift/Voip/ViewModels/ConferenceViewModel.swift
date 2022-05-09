@@ -194,7 +194,7 @@ class ConferenceViewModel {
 				ControlsViewModel.shared.updateUI()
 			}
 			Core.get().micEnabled = ConferenceWaitingRoomViewModel.sharedModel.isMicrophoneMuted.value != true
-			conference.layout = ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value!
+			changeLayout(layout: ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value!)
 			updateConferenceLayout(conference: conference)
 		}
 		
@@ -239,19 +239,25 @@ class ConferenceViewModel {
 	
 	func changeLayout(layout: ConferenceLayout) {
 		Log.i("[Conference] Trying to change conference layout to $layout")
-		if let conference = conference.value {
-			conference.layout = layout
-			updateConferenceLayout(conference: conference)
+		if let conference = conference.value, let call = conference.call, let params = try?call.core?.createCallParams(call: call) {
+			params.videoEnabled = true // TODO AUdioLonly layout != ConferenceDisplayMode.AUDIO_ONLY
+			params.conferenceVideoLayout = layout
+			try?call.update(params: params)
+			conferenceDisplayMode.value = layout
+			let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
+			conferenceParticipantDevices.value = list
 		} else {
-			Log.e("[Conference] Conference is null in ConferenceViewModel")
+			Log.e("[Conference] Conference or Call Or Call Params is null in ConferenceViewModel")
 		}
 	}
 	
 	private func updateConferenceLayout(conference: Conference) {
-		conferenceDisplayMode.value = conference.layout == .Legacy ? .Grid : conference.layout
-		let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
-		conferenceParticipantDevices.value = list
-		Log.i("[Conference] Conference current layout is: \(conference.layout)")
+		if let call = conference.call, let params = call.params {
+			conferenceDisplayMode.value = params.conferenceVideoLayout
+			let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
+			conferenceParticipantDevices.value = list
+			Log.i("[Conference] Conference current layout is: \(conferenceDisplayMode.value)")
+		}
 	}
 	
 	

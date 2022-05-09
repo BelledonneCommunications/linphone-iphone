@@ -80,7 +80,7 @@ import linphonesw
 			switch (layout!) {
 			case .Grid: icon = "voip_conference_mosaic"; break
 			case .ActiveSpeaker: icon = "voip_conference_active_speaker"; break
-			case .Legacy: icon = "voip_conference_audio_only"; break
+			// Todo audio only case .Legacy: icon = "voip_conference_audio_only"; break
 			}
 			layoutPicker.applyTintedIcons(tintedIcons: [UIButton.State.normal.rawValue : TintableIcon(name: icon ,tintColor: LightDarkColor(.white,.white))])
 		}

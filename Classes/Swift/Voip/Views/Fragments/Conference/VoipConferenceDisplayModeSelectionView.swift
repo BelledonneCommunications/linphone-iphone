@@ -54,14 +54,14 @@ import linphonesw
 		cell.selectionStyle = .none
 		if (indexPath.row == 0) {
 			cell.setOption(title: VoipTexts.conference_display_mode_mosaic, onSelectAction:  {
-				ConferenceViewModel.shared.conference.value?.layout = .Grid
+				ConferenceViewModel.shared.changeLayout(layout: .Grid)
 				ConferenceViewModel.shared.conferenceDisplayMode.value = .Grid
 			}, image:(UIImage(named: "voip_conference_mosaic")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
 			cell.isUserInteractionEnabled = ConferenceViewModel.shared.conferenceParticipantDevices.value!.count <= ConferenceViewModel.shared.maxParticipantsForMosaicLayout
 		}
 		if (indexPath.row == 1) {
 			cell.setOption(title: VoipTexts.conference_display_mode_active_speaker, onSelectAction:  {
-				ConferenceViewModel.shared.conference.value?.layout = .ActiveSpeaker
+				ConferenceViewModel.shared.changeLayout(layout: .ActiveSpeaker)
 				ConferenceViewModel.shared.conferenceDisplayMode.value = .ActiveSpeaker
 			}, image:(UIImage(named: "voip_conference_active_speaker")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
 			cell.isUserInteractionEnabled = true
