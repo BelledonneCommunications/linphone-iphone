@@ -136,22 +136,24 @@ class ControlsViewModel {
 	}
 	
 	func toggleVideo() {
-		if let conference = core.conference, conference.isIn {
-			if let currentCall = core.currentCall, let params = try?core.createCallParams(call: currentCall) {
-				params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly
-				try?currentCall.update(params: params)
-			}
-		} else if let currentCall = core.currentCall {
-			let state = currentCall.state
-			if (state == Call.State.End || state == Call.State.Released || state == Call.State.Error) {
-				return
-			}
-			isVideoUpdateInProgress.value = true
-			if let params = try?core.createCallParams(call: currentCall) {
-				params.videoEnabled = !(currentCall.currentParams?.videoEnabled == true)
-				try?currentCall.update(params: params)
-				if (params.videoEnabled) {
-					currentCall.requestNotifyNextVideoFrameDecoded()
+		if let currentCall = core.currentCall {
+			if (currentCall.conference != nil) {
+				if let params = try?core.createCallParams(call: currentCall) {
+					params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly
+					try?currentCall.update(params: params)
+				}
+			} else {
+				let state = currentCall.state
+				if (state == Call.State.End || state == Call.State.Released || state == Call.State.Error) {
+					return
+				}
+				isVideoUpdateInProgress.value = true
+				if let params = try?core.createCallParams(call: currentCall) {
+					params.videoEnabled = !(currentCall.currentParams?.videoEnabled == true)
+					try?currentCall.update(params: params)
+					if (params.videoEnabled) {
+						currentCall.requestNotifyNextVideoFrameDecoded()
+					}
 				}
 			}
 		}
