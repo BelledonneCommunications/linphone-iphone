@@ -42,17 +42,23 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 	var participantData: ConferenceParticipantDeviceData? = nil {
 		didSet {
 			if let data = participantData {
+				data.isInConference.clearObservers()
 				data.isInConference.readCurrentAndObserve { (isIn) in
 					self.updateBackground()
 					self.pause.isHidden = isIn == true
 					self.pauseLabel.isHidden = self.pause.isHidden
+					self.videoView.isHidden = data.videoEnabled.value != true
+					self.switchCamera.isHidden = data.videoEnabled.value != true || !data.isSwitchCameraAvailable()
 				}
+				data.videoEnabled.clearObservers()
 				data.videoEnabled.readCurrentAndObserve { (videoEnabled) in
 					self.updateBackground()
 					if (videoEnabled == true) {
+						self.videoView.isHidden = false
 						data.setVideoView(view: self.videoView)
 						self.avatar.isHidden = true
 					} else {
+						self.videoView.isHidden = true
 						self.avatar.isHidden = false
 					}
 					self.switchCamera.isHidden = videoEnabled != true || !data.isSwitchCameraAvailable()
@@ -61,6 +67,14 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 					avatar.fillFromAddress(address: $0)
 					if let displayName = $0.addressBookEnhancedDisplayName() {
 						self.displayName.text = displayName
+					}
+				}
+				data.activeSpeaker.clearObservers()
+				data.activeSpeaker.readCurrentAndObserve { (active) in
+					if (active == true) {
+						self.layer.borderWidth = 2
+					} else {
+						self.layer.borderWidth = 0
 					}
 				}
 			}
@@ -85,6 +99,7 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 		super.init(frame:.zero)
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
+		layer.borderColor = VoipTheme.primary_color.cgColor
 		
 		contentView.addSubview(videoView)
 		videoView.matchParentDimmensions().done()
@@ -113,6 +128,7 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 		pauseLabel.toRightOf(displayName).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 
 		contentView.matchParentDimmensions().done()
+		makeHeightMatchWidth().done()
 	}
 	
 	required init?(coder: NSCoder) {

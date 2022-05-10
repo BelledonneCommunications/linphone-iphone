@@ -39,6 +39,14 @@ extension UIView {
 		return self
 	}
 	
+	
+	func makeHeightMatchWidth() -> UIView {
+		snp.makeConstraints { (make) in
+			make.height.equalTo(snp.width)
+		}
+		return self
+	}
+	
 	func size(w:CGFloat,h:CGFloat) -> UIView {
 		snp.makeConstraints { (make) in
 			make.width.equalTo(w)

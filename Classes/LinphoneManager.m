@@ -495,6 +495,11 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 				   linphone_account_set_params(account, newAccountParams);
 			   }
 		   }
+		   
+		   if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0 && !linphone_account_params_rtp_bundle_enabled(newAccountParams)) {
+			   linphone_account_params_enable_rtp_bundle(newAccountParams, true);
+			   linphone_account_set_params(account,newAccountParams);
+		   }
 		 
 		   linphone_account_params_unref(newAccountParams);
 		   accounts = accounts->next;
@@ -1197,6 +1202,8 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCoreUpdate
 	 object:LinphoneManager.instance
 	 userInfo:dict];
+
+	
 }
 
 static BOOL libStarted = FALSE;

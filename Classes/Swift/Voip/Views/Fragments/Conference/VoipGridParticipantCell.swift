@@ -84,7 +84,7 @@ class VoipGridParticipantCell: UICollectionViewCell {
 			}
 		}
 	}
-	
+
 	func updateBackground() {
 		if let data = participantData  {
 			if (data.isInConference.value != true) {
