@@ -39,7 +39,7 @@ import linphonesw
 		var found = false
 		
 		core.audioDevices.forEach { (audioDevice) in
-			Log.i("[Audio Route Helper] cdes [\(audioDevice.deviceName)] [\(audioDevice.type)] [\(audioDevice.capabilities)] ")
+			Log.i("[Audio Route Helper] registered coe audio devices are : [\(audioDevice.deviceName)] [\(audioDevice.type)] [\(audioDevice.capabilities)] ")
 		}
 
 		core.audioDevices.forEach { (audioDevice) in
