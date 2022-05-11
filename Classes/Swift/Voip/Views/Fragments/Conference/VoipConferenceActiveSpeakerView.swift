@@ -46,7 +46,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let activeSpeakerVideoView = UIView()
 	let activeSpeakerAvatar = Avatar(diameter: CGFloat(Avatar.diameter_for_call_views), color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
 	let activeSpeakerDisplayName = StyledLabel(VoipTheme.call_remote_name)
-	var activeSpeakerMonitorTimer : Timer? = nil
 
 	var grid : UICollectionView
 	
@@ -60,7 +59,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
 				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
-					self.grid.reloadData()
+					self.reloadData()
 				}
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
@@ -73,33 +72,28 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					}
 				}
 				Core.get().nativeVideoWindow = self.activeSpeakerVideoView
-				activeSpeakerMonitorTimer?.invalidate()
-				activeSpeakerMonitorTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-					var thereIsAnActiveSpeaker = false
-					model.conferenceParticipantDevices.value?.forEach { (data) in
-						if (data.activeSpeaker.value == true) {
-							thereIsAnActiveSpeaker = true
-							data.participantDevice.address.map {
-								self.activeSpeakerAvatar.isHidden = false
-								self.activeSpeakerAvatar.fillFromAddress(address: $0)
-								self.activeSpeakerDisplayName.text = $0.addressBookEnhancedDisplayName()
-							}
-							self.activeSpeakerVideoView.isHidden = data.videoEnabled.value != true
-							return
-						}
+				self.activeSpeakerAvatar.isHidden = true
+				self.activeSpeakerVideoView.isHidden = true
+				self.activeSpeakerDisplayName.text = VoipTexts.conference_display_no_active_speaker
+				conferenceViewModel?.speakingParticipant.readCurrentAndObserve { speakingParticipant in
+					speakingParticipant?.participantDevice.address.map {
+						self.activeSpeakerAvatar.isHidden = false
+						self.activeSpeakerAvatar.fillFromAddress(address: $0)
+						self.activeSpeakerDisplayName.text = $0.addressBookEnhancedDisplayName()
 					}
-					if (!thereIsAnActiveSpeaker) {
-						self.activeSpeakerAvatar.isHidden = true
-						self.activeSpeakerVideoView.isHidden = true
-						self.activeSpeakerDisplayName.text = VoipTexts.conference_display_no_active_speaker
-					}
+					self.activeSpeakerVideoView.isHidden = speakingParticipant?.videoEnabled.value != true
 				}
-			} else {
-				activeSpeakerMonitorTimer?.invalidate()
 			}
-			self.grid.reloadData()
+			self.reloadData()
 			
 		}
+	}
+	
+	func reloadData() {
+		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .ActiveSpeaker) {
+			return
+		}
+		self.grid.reloadData()
 	}
 			
 	init() {

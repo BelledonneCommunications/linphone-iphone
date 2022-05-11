@@ -60,6 +60,7 @@ class ConferenceViewModel {
 				if (count > self.maxParticipantsForMosaicLayout) {
 					Log.w("[Conference] \(conference) More than \(self.maxParticipantsForMosaicLayout) participants \(count), forcing active speaker layout")
 					self.conferenceDisplayMode.value = .ActiveSpeaker
+					self.changeLayout(layout: .ActiveSpeaker)
 				}
 			},
 			onParticipantRemoved: {(conference: Conference, participant: Participant) in

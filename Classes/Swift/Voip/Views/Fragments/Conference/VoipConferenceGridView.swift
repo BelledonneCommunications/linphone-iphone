@@ -174,6 +174,9 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	// UICollectionView related delegates
 	
 	func reloadData() {
+		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
+			return
+		}
 		computeCellSize()
 		self.grid.reloadData()
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -183,6 +186,12 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				self.grid.removeConstraints().width(width).height(height).center().done()
 			}
 		}
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+		let gcell = (cell as! VoipGridParticipantCell)
+		gcell.participantData?.participantDevice.nativeVideoWindowId = nil
+		gcell.participantData?.clearObservers()
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
