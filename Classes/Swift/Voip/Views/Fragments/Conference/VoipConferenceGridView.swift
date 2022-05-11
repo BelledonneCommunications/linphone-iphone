@@ -175,6 +175,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	
 	func reloadData() {
 		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
+			self.grid.reloadData()
 			return
 		}
 		computeCellSize()
@@ -205,6 +206,9 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
+			return 0
+		}
 		guard let participantsCount = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
 			return .zero
 		}

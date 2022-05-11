@@ -90,9 +90,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	}
 	
 	func reloadData() {
-		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .ActiveSpeaker) {
-			return
-		}
 		self.grid.reloadData()
 	}
 			
@@ -212,12 +209,21 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				self.addSubview(fullScreenMutableView)
 				fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 			}
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				self.reloadData()
+			}
 		}
 		
 	}
 	
 	
 	// UICollectionView related delegates
+	
+	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+		let gcell = (cell as! VoipActiveSpeakerParticipantCell)
+		gcell.participantData?.participantDevice.nativeVideoWindowId = nil
+		gcell.participantData?.clearObservers()
+	}
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
 	   return inter_cell
@@ -230,6 +236,9 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .ActiveSpeaker) {
+			return 0
+		}
 		guard let participantsCount = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
 			return .zero
 		}

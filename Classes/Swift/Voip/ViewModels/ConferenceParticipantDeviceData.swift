@@ -97,7 +97,7 @@ class ConferenceParticipantDeviceData  {
 			core.usePreviewWindow(yesno: false)
 			core.nativePreviewWindow = view
 		} else {
-			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passUnretained(view).toOpaque())
 		}
 	}
 }
