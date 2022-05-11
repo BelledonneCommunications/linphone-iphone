@@ -151,7 +151,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		}
 		
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden) {
+			if (self.isHidden || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
 				return
 			}
 			self.gridContainer.removeConstraints().done()
@@ -189,11 +189,6 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		}
 	}
 	
-	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-		let gcell = (cell as! VoipGridParticipantCell)
-		gcell.participantData?.participantDevice.nativeVideoWindowId = nil
-		gcell.participantData?.clearObservers()
-	}
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
 	   return inter_cell

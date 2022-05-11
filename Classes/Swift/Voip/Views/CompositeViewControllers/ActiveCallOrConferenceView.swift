@@ -122,8 +122,9 @@ import linphonesw
 				self.currentCallView!.isHidden = true
 				self.extraButtonsView.isHidden = true
 				self.conferencePausedView?.isHidden = true
-				self.conferenceGridView!.isHidden = false
-				self.conferenceActiveSpeakerView?.isHidden = true
+				let conferenceMode = ConferenceViewModel.shared.conferenceDisplayMode.value
+				self.conferenceGridView!.isHidden = conferenceMode != .Grid
+				self.conferenceActiveSpeakerView?.isHidden = conferenceMode != .ActiveSpeaker
 				self.conferenceGridView?.conferenceViewModel = ConferenceViewModel.shared
 			} else {
 				self.conferenceGridView?.isHidden = true

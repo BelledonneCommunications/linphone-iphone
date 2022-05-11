@@ -219,11 +219,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	
 	// UICollectionView related delegates
 	
-	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-		let gcell = (cell as! VoipActiveSpeakerParticipantCell)
-		gcell.participantData?.participantDevice.nativeVideoWindowId = nil
-		gcell.participantData?.clearObservers()
-	}
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
 	   return inter_cell
