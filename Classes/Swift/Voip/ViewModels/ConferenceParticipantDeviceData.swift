@@ -28,6 +28,8 @@ class ConferenceParticipantDeviceData  {
 	let videoEnabled = MutableLiveData<Bool>()
 	let activeSpeaker = MutableLiveData<Bool>()
 	let isInConference = MutableLiveData<Bool>()
+	private var videoView: UIView? = nil
+
 	var core : Core { get { Core.get() } }
 
 	private var participantDeviceDelegate :  ParticipantDeviceDelegate?
@@ -42,6 +44,7 @@ class ConferenceParticipantDeviceData  {
 			}, onConferenceJoined: { (participantDevice) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice)  has joined the conference")
 				self.isInConference.value = true
+				self.setVideoView(view: self.videoView)
 			}, onConferenceLeft: { (participantDevice) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice)  has left the conference")
 				self.isInConference.value = false
@@ -55,6 +58,9 @@ class ConferenceParticipantDeviceData  {
 				if (streamType == StreamType.Video) {
 					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video availability changed to \(available)")
 					self.videoEnabled.value = available
+					if (available) {
+						self.setVideoView(view: self.videoView)
+					}
 				}
 			}
 		
@@ -90,14 +96,15 @@ class ConferenceParticipantDeviceData  {
 		return isMe && Core.get().showSwitchCameraButton()
 	}
 	
-	func setVideoView(view:UIView) {
+	func setVideoView(view:UIView?) {
+		self.videoView = view
 		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice)")
-		view.contentMode = .scaleAspectFill
+		view?.contentMode = .scaleAspectFill
 		if (isMe) {
 			core.usePreviewWindow(yesno: false)
 			core.nativePreviewWindow = view
 		} else {
-			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passUnretained(view).toOpaque())
+			participantDevice.nativeVideoWindowId = view != nil  ? UnsafeMutableRawPointer(Unmanaged.passUnretained(view!).toOpaque()) : nil
 		}
 	}
 }
