@@ -174,6 +174,9 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	// UICollectionView related delegates
 	
 	func reloadData() {
+		conferenceViewModel?.conferenceParticipantDevices.value?.forEach {
+			$0.clearObservers()
+		}		
 		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
 			self.grid.reloadData()
 			return

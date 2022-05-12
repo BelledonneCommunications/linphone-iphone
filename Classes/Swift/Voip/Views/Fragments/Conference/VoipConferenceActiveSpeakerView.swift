@@ -90,6 +90,9 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	}
 	
 	func reloadData() {
+		conferenceViewModel?.conferenceParticipantDevices.value?.forEach {
+			$0.clearObservers()
+		}
 		self.grid.reloadData()
 	}
 			
