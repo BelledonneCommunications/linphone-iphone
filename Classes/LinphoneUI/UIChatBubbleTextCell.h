@@ -69,6 +69,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *replyTransferIcon;
 @property (weak, nonatomic) IBOutlet UILabel *replyTransferLabel;
 @property (weak, nonatomic) IBOutlet UIView *photoCellContentView;
+@property UIView *icsBubbleView;
 
 
 @property(nonatomic) BOOL isFirst;

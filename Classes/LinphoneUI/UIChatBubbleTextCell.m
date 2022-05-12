@@ -30,7 +30,6 @@
 
 @implementation UIChatBubbleTextCell
 
-ICSBubbleView *icsBubbleView;
 
 
 #pragma mark - Lifecycle Functions
@@ -47,10 +46,10 @@ ICSBubbleView *icsBubbleView;
 			UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:arrayOfViews.count - 1]);
 			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 			[self addSubview:sub];
-			icsBubbleView = [[ICSBubbleView alloc] init];
-			icsBubbleView.frame = CGRectMake(_messageText.frame.origin.x, _messageText.frame.origin.y+25, CONFERENCE_INVITATION_WIDTH-80, CONFERENCE_INVITATION_HEIGHT-20);
-			[self.innerView addSubview:icsBubbleView];
-			[icsBubbleView setLayoutConstraintsWithView:self.backgroundColorImage];
+			self.icsBubbleView = [[ICSBubbleView alloc] init];
+			self.icsBubbleView.frame = CGRectMake(_messageText.frame.origin.x, _messageText.frame.origin.y+25, CONFERENCE_INVITATION_WIDTH-80, CONFERENCE_INVITATION_HEIGHT-20);
+			[self.innerView addSubview:self.icsBubbleView];
+			[(ICSBubbleView*)self.icsBubbleView setLayoutConstraintsWithView:self.backgroundColorImage];
 
 		}
 	}
@@ -287,11 +286,11 @@ ICSBubbleView *icsBubbleView;
 	// ICS for conference invitations
 	
 	if ([ICSBubbleView isConferenceInvitationMessageWithCmessage:self.message]) {
-		[icsBubbleView setFromChatMessageWithCmessage:self.message];
-		icsBubbleView.hidden = false;
+		[(ICSBubbleView*)self.icsBubbleView setFromChatMessageWithCmessage:self.message];
+		self.icsBubbleView.hidden = false;
 		_messageText.hidden = true;
 	} else {
-		icsBubbleView.hidden = true;
+		self.icsBubbleView.hidden = true;
 		_messageText.hidden = false;
 	}
 	
