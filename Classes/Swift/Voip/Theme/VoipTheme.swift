@@ -388,6 +388,11 @@ class VoipTheme { // Names & values replicated from Android
 		UIButton.State.selected.rawValue : TintableIcon(name: "voip_info",tintColor: LightDarkColor(primary_color,primary_color)),
 	   ]
 	
+	static let conference_create_button = [
+		UIButton.State.normal.rawValue : TintableIcon(name: "voip_conference_new",tintColor:  LightDarkColor(voip_dark_gray,voip_dark_gray)),
+		UIButton.State.highlighted.rawValue : TintableIcon(name: "voip_conference_new",tintColor: LightDarkColor(primary_color,primary_color)),
+	   ]
+	
 }
 
 

@@ -26,42 +26,58 @@ class ScheduledConferencesCell: UITableViewCell {
 	
 	let corner_radius  = 7.0
 	let border_width = 2.0
+	static let button_size = 40
 	
+	let clockIcon = UIImageView(image: UIImage(named: "conference_schedule_time_default"))
 	let timeDuration = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let organiser = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let subject = StyledLabel(VoipTheme.conference_invite_subject_font)
+	let participantsIcon = UIImageView(image: UIImage(named: "conference_schedule_participants_default"))
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let infoConf = UIButton()
 	
-	let descriptionTitle = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_description_title)
-	let descriptionValue = StyledLabel(VoipTheme.conference_scheduling_font)
-	let urlTitle = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_address_title)
-	let urlAndCopy = UIView()
+	let descriptionTitle = StyledLabel(VoipTheme.conference_invite_desc_font, VoipTexts.conference_description_title)
+	let descriptionValue = StyledLabel(VoipTheme.conference_invite_desc_font)
+	let urlTitle = StyledLabel(VoipTheme.conference_invite_desc_font, VoipTexts.conference_schedule_address_title)
 	let urlValue = StyledLabel(VoipTheme.conference_scheduling_font)
-	let copyLink  = CallControlButton(buttonTheme: VoipTheme.scheduled_conference_action("voip_copy"))
-	let joinEditDelete = UIView()
+	let copyLink  = CallControlButton(width:button_size,height:button_size,buttonTheme: VoipTheme.scheduled_conference_action("voip_copy"))
 	let joinConf = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
-	let deleteConf = CallControlButton(buttonTheme: VoipTheme.scheduled_conference_action("voip_delete"))
-	let editConf = CallControlButton(buttonTheme: VoipTheme.scheduled_conference_action("voip_edit"))
-	
+	let deleteConf = CallControlButton(width:button_size,height:button_size,buttonTheme: VoipTheme.scheduled_conference_action("voip_delete"))
+	let editConf = CallControlButton(width:button_size,height:button_size,buttonTheme: VoipTheme.scheduled_conference_action("voip_edit"))
+	var owningTableView : UITableView? = nil
+	let joinEditDelete = UIStackView()
+	let expandedRows = UIStackView()
+
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
 			if let data = conferenceData {
-				timeDuration.text = "\(data.time) ( \(data.duration) )"
-				timeDuration.addIndicatorIcon(iconName: "conference_schedule_time_default", trailing: false)
+				timeDuration.text = "\(data.time.value)"+(data.duration.value != nil ? " ( \(data.duration.value) )" : "")
 				organiser.text = VoipTexts.conference_schedule_organizer+data.organizer.value!
 				subject.text = data.subject.value!
 				descriptionValue.text = data.description.value!
 				urlValue.text = data.address.value!
 				data.expanded.readCurrentAndObserve { expanded in
 					self.contentView.layer.borderWidth = expanded == true ? 2.0 : 0.0
-					self.descriptionTitle.isHidden = expanded != true
-					self.descriptionValue.isHidden = expanded != true
-					self.urlAndCopy.isHidden = expanded != true
-					self.joinEditDelete.isHidden = expanded != true
+					self.descriptionTitle.isHidden = expanded != true || self.descriptionValue.text?.count == 0
+					self.descriptionValue.isHidden = expanded != true  || self.descriptionValue.text?.count == 0
 					self.infoConf.isSelected = expanded == true
 					self.participants.text = expanded == true ? data.participantsExpanded.value : data.participantsShort.value
-					self.participants.addIndicatorIcon(iconName: "conference_schedule_participants_default", trailing: false)
+					self.participants.numberOfLines = expanded == true ? 6 : 2
+					self.expandedRows.isHidden = expanded != true
+					self.joinEditDelete.isHidden = expanded != true
+					if let myAddress = Core.get().defaultAccount?.params?.identityAddress {
+						self.editConf.isHidden = expanded != true || data.conferenceInfo.organizer?.weakEqual(address2: myAddress) != true
+					} else {
+						self.editConf.isHidden = true
+					}
+					self.participants.removeConstraints().alignUnder(view: self.subject,withMargin: 15).toRightOf(self.participantsIcon,withLeftMargin:10).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+					self.joinEditDelete.removeConstraints().alignUnder(view: self.expandedRows,withMargin: 15).alignParentRight(withMargin: 10).done()
+					if (expanded == true) {
+						self.joinEditDelete.alignParentBottom(withMargin: 10).done()
+					} else {
+						self.participants.alignParentBottom(withMargin: 10).done()
+					}
+
 				}
 			}
 		}
@@ -75,48 +91,90 @@ class ScheduledConferencesCell: UITableViewCell {
 		contentView.backgroundColor = VoipTheme.header_background_color
 		contentView.layer.borderColor = VoipTheme.primary_color.cgColor
 		
-		let rows = UIStackView()
-		rows.axis = .vertical
-		rows.addArrangedSubview(timeDuration)
-		rows.addArrangedSubview(subject)
+		
+		contentView.addSubview(clockIcon)
+		clockIcon.alignParentTop(withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
 
-		let participantsAndInfos = UIView()
-		participantsAndInfos.addSubview(participants)
-		participants.alignParentLeft().done()
-		participantsAndInfos.addSubview(infoConf)
-		infoConf.toRightOf(participants).done()
-		rows.addArrangedSubview(participantsAndInfos)
-		infoConf.applyTintedIcons(tintedIcons: VoipTheme.conference_info_button)
+		contentView.addSubview(timeDuration)
+		timeDuration.alignParentTop(withMargin: 15).toRightOf(clockIcon,withLeftMargin:10).alignHorizontalCenterWith(clockIcon).done()
+		
+		contentView.addSubview(organiser)
+		organiser.alignParentTop(withMargin: 15).toRightOf(timeDuration, withLeftMargin:10).alignParentRight(withMargin:10).alignHorizontalCenterWith(clockIcon).done()
+		
+		contentView.addSubview(subject)
+		subject.alignUnder(view: timeDuration,withMargin: 15).alignParentLeft(withMargin: 10).done()
+		
+		contentView.addSubview(participantsIcon)
+		participantsIcon.alignUnder(view: subject,withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
+		
 		infoConf.onClick {
 			self.conferenceData?.toggleExpand()
+			self.owningTableView?.reloadData()
 		}
-		
-		rows.addArrangedSubview(descriptionTitle)
-		rows.addArrangedSubview(descriptionValue)
+		contentView.addSubview(infoConf)
+		infoConf.imageView?.contentMode = .scaleAspectFit
+		infoConf.alignUnder(view: subject,withMargin: 15).square(30).alignParentRight(withMargin: 10).alignHorizontalCenterWith(participantsIcon).done()
+		infoConf.applyTintedIcons(tintedIcons: VoipTheme.conference_info_button)
 
-		rows.addArrangedSubview(urlTitle)
-		urlAndCopy.addSubview(urlValue)
+				
+		contentView.addSubview(participants)
+		participants.alignUnder(view: subject,withMargin: 15).toRightOf(participantsIcon,withLeftMargin:10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
+		
+		expandedRows.axis = .vertical
+		expandedRows.spacing = 10
+		contentView.addSubview(expandedRows)
+		expandedRows.alignUnder(view: participants,withMargin: 15).matchParentSideBorders(insetedByDx:10).done()
+
+		expandedRows.addArrangedSubview(descriptionTitle)
+		expandedRows.addArrangedSubview(descriptionValue)
+		
+		expandedRows.addArrangedSubview(urlTitle)
+		let urlAndCopy = UIStackView()
+		urlAndCopy.addArrangedSubview(urlValue)
 		urlValue.backgroundColor = .white
+		self.urlValue.isEnabled = false
 		urlValue.alignParentLeft().done()
-		urlAndCopy.addSubview(copyLink)
-		copyLink.toLeftOf(urlValue).done()
-		rows.addArrangedSubview(urlAndCopy)
-
-		joinEditDelete.addSubview(joinConf)
-		joinEditDelete.addSubview(editConf)
-		joinEditDelete.addSubview(deleteConf)
-		deleteConf.alignParentRight().done()
-		editConf.toLeftOf(deleteConf).done()
-		joinConf.toLeftOf(deleteConf).done()
-		
-		joinConf.onClick {
-			/*
-			 ConferenceWaitingRoomFragment *view = VIEW(ConferenceWaitingRoomFragment);
-			 [PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomFragment.compositeViewDescription];
-			 [view setDetailsWithSubject:@"Sujet de la conférence" url:@"toto"];
-			 return;			 
-			 */
+		urlAndCopy.addArrangedSubview(copyLink)
+		copyLink.toRightOf(urlValue,withLeftMargin: 10).done()
+		expandedRows.addArrangedSubview(urlAndCopy)
+		copyLink.onClick {
+			UIPasteboard.general.string = self.conferenceData?.address.value!
+			VoipDialog.toast(message: VoipTexts.conference_schedule_address_copied_to_clipboard)
 		}
+		
+		joinEditDelete.axis = .horizontal
+		joinEditDelete.spacing = 10
+		joinEditDelete.distribution = .equalSpacing
+
+		contentView.addSubview(joinEditDelete)
+		joinEditDelete.alignUnder(view: expandedRows,withMargin: 15).alignParentRight(withMargin: 10).done()
+
+		
+		joinEditDelete.addArrangedSubview(joinConf)
+		joinConf.width(150).done()
+		joinConf.onClick {
+			let view : ConferenceWaitingRoomFragment = self.VIEW(ConferenceWaitingRoomFragment.compositeViewDescription())
+			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+			view.setDetails(subject: (self.conferenceData?.subject.value)!, url: (self.conferenceData?.address.value)!)
+		}
+		
+		joinEditDelete.addArrangedSubview(editConf)
+		editConf.onClick {
+			// TODO
+		}
+		
+		joinEditDelete.addArrangedSubview(deleteConf)
+		deleteConf.onClick {
+			let delete = ButtonAttributes(text:VoipTexts.conference_info_confirm_removal_delete, action: {
+				Core.get().deleteConferenceInformation(conferenceInfo: self.conferenceData!.conferenceInfo)
+				ScheduledConferencesViewModel.shared.computeConferenceInfoList()
+				self.owningTableView?.reloadData()
+			}, isDestructive:false)
+			let cancel = ButtonAttributes(text:VoipTexts.cancel, action: {}, isDestructive:true)
+			VoipDialog(message:VoipTexts.conference_info_confirm_removal, givenButtons:  [cancel,delete]).show()
+		}
+				
+
 	}
 	
 	required init?(coder: NSCoder) {

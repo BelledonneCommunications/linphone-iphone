@@ -22,7 +22,7 @@ import UIKit
 import Foundation
 import linphonesw
 
-@objc class ScheduledConferencesView:  BackNextNavigationView, UICompositeViewDelegate, UITableViewDataSource {
+@objc class ScheduledConferencesView:  BackNextNavigationView, UICompositeViewDelegate, UITableViewDataSource, UITableViewDelegate {
 	
 	let conferenceListView = UITableView()
 	let noConference = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_no_schedule)
@@ -37,17 +37,20 @@ import linphonesw
 			backAction: {
 				PhoneMainView.instance().popView(self.compositeViewDescription())
 			},nextAction: {
+				PhoneMainView.instance().changeCurrentView(ConferenceSchedulingView.compositeDescription)
 			},
-			nextActionEnableCondition: MutableLiveData(false),
+			nextActionEnableCondition: MutableLiveData(true),
 			title:VoipTexts.conference_scheduled)
-		super.nextButton.isHidden = true
+
+		super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.conference_create_button)
 	
-	
-		contentView.addSubview(conferenceListView)
-		conferenceListView.isScrollEnabled = false
+		self.view.addSubview(conferenceListView)
+		conferenceListView.isScrollEnabled = true
 		conferenceListView.dataSource = self
+		conferenceListView.delegate = self
 		conferenceListView.register(ScheduledConferencesCell.self, forCellReuseIdentifier: "ScheduledConferencesCell")
 		conferenceListView.allowsSelection = false
+		conferenceListView.rowHeight = UITableView.automaticDimension
 		if #available(iOS 15.0, *) {
 			conferenceListView.allowsFocus = false
 		}
@@ -56,7 +59,6 @@ import linphonesw
 		
 		view.addSubview(noConference)
 		noConference.center().done()
-
 		
 	}
 		
@@ -66,21 +68,22 @@ import linphonesw
 		super.viewWillAppear(animated)
 		self.conferenceListView.reloadData()
 		self.conferenceListView.removeConstraints().done()
-		self.conferenceListView.matchParentSideBorders().alignUnder(view: super.topBar,withMargin: self.form_margin).alignParentBottom().done()
+		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: super.topBar,withMargin: self.form_margin).alignParentBottom().done()
 		noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
 	}
 		
 	// TableView datasource delegate
 		
 	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys)
+		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys.sorted().reversed())
 		let day = daysArray[section]
-		return TimestampUtils.dateToString(date: day)
+		return TimestampUtils.dateLongToString(date: day)
 	}
 	
 	func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
 		guard let header = view as? UITableViewHeaderFooterView else { return }
 		header.textLabel?.applyStyle(VoipTheme.conference_invite_title_font)
+		header.textLabel?.matchParentSideBorders().done()
 	}
 	
 	func numberOfSections(in tableView: UITableView) -> Int {
@@ -88,19 +91,30 @@ import linphonesw
 	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys)
+		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys.sorted().reversed())
 		let day = daysArray[section]
 		return ScheduledConferencesViewModel.shared.daySplitted[day]!.count
 	}
 	
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys.sorted().reversed())
+		let day = daysArray[indexPath.section]
+		guard let data = ScheduledConferencesViewModel.shared.daySplitted[day]?[indexPath.row] else {
+			return UITableView.automaticDimension
+		}
+		return data.expanded.value! ? UITableView.automaticDimension : 100
+	}
+	
+	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell:ScheduledConferencesCell = tableView.dequeueReusableCell(withIdentifier: "ScheduledConferencesCell") as! ScheduledConferencesCell
-		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys)
+		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys.sorted().reversed())
 		let day = daysArray[indexPath.section]
 		guard let data = ScheduledConferencesViewModel.shared.daySplitted[day]?[indexPath.row] else {
 			return cell
 		}
 		cell.conferenceData = data
+		cell.owningTableView = tableView
 		return cell
 	}
 	

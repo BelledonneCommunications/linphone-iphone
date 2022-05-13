@@ -53,6 +53,13 @@ class TimestampUtils {
 		return dateFormatter.string(from: date)
 	}
 	
+	static func dateLongToString(date:Date) -> String {
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateStyle = .long
+		dateFormatter.timeStyle = .none
+		return dateFormatter.string(from: date)
+	}
+	
 	static func timeToString(date:Date) -> String {
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateStyle = .none

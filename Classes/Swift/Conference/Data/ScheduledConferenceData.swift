@@ -55,7 +55,7 @@ class ScheduledConferenceData {
 		durationFormatter.unitsStyle = .positional
 		durationFormatter.allowedUnits = [.minute, .second ]
 		durationFormatter.zeroFormattingBehavior = [ .pad ]
-		duration.value = durationFormatter.string(from: TimeInterval(conferenceInfo.duration))
+		duration.value = conferenceInfo.duration > 0 ? durationFormatter.string(from: TimeInterval(conferenceInfo.duration)) : nil
 		
 		organizer.value = conferenceInfo.organizer?.addressBookEnhancedDisplayName()
 		

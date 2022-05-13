@@ -104,7 +104,8 @@ import UIKit
 	static let conference_schedule_organizer = NSLocalizedString("Organizer:",comment:"")
 	static let conference_go_to_chat = NSLocalizedString("Conference's chat room",comment:"")
 	static let conference_creation_failed = NSLocalizedString("Failed to create conference",comment:"")
-
+	static let conference_info_confirm_removal = NSLocalizedString("Do you really want to delete this conference?",comment:"")
+	static let conference_info_confirm_removal_delete = NSLocalizedString("Delete",comment:"")
 	
 	// Call Stats
 	

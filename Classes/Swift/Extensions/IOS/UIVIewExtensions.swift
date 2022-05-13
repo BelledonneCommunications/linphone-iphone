@@ -308,6 +308,12 @@ extension UIView {
 		return self
 	}
 	
+	func toLeftOf(_ view:UIView, withRightMargin:CGFloat) -> UIView {
+		snp.makeConstraints { (make) in
+			make.right.equalTo(view.snp.left).offset(-withRightMargin)
+		}
+		return self
+	}
 	
 	func centerX(withDx:Int = 0) -> UIView {
 		snp.makeConstraints { (make) in

@@ -86,16 +86,25 @@ class VoipDialog : UIView{
 	}
 	
 	func show() {
-		rootVC()?.view.addSubview(self)
+		VoipDialog.rootVC()?.view.addSubview(self)
 		matchParentDimmensions().done()
 	}
 	
-	private func rootVC() -> UIViewController? {
+	private static func rootVC() -> UIViewController? {
 		return UIApplication.getTopMostViewController()
 	}
 	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
+	}
+	
+	static func toast(message:String, timeout:CGFloat = 1.5) {
+		let alertDisapperTimeInSeconds = 2.0
+		let alert = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
+		rootVC()?.present(alert, animated: true)
+		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + alertDisapperTimeInSeconds) {
+		  alert.dismiss(animated: true)
+		}
 	}
 	
 }
