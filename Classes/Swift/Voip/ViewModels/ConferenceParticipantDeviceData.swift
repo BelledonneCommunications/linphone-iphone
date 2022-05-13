@@ -28,7 +28,6 @@ class ConferenceParticipantDeviceData  {
 	let videoEnabled = MutableLiveData<Bool>()
 	let activeSpeaker = MutableLiveData<Bool>()
 	let isInConference = MutableLiveData<Bool>()
-	private var videoView: UIView? = nil
 
 	var core : Core { get { Core.get() } }
 
@@ -39,17 +38,16 @@ class ConferenceParticipantDeviceData  {
 		self.participantDevice = participantDevice
 		participantDeviceDelegate = ParticipantDeviceDelegateStub(
 			onIsSpeakingChanged: { (participantDevice, isSpeaking) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice ) isspeaking = \(isSpeaking)")
+				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) isspeaking = \(isSpeaking)")
 				self.activeSpeaker.value = isSpeaking
 			}, onConferenceJoined: { (participantDevice) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice)  has joined the conference")
+				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly())  has joined the conference")
 				self.isInConference.value = true
-				self.setVideoView(view: self.videoView)
 			}, onConferenceLeft: { (participantDevice) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice)  has left the conference")
+				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly())  has left the conference")
 				self.isInConference.value = false
 			}, onStreamCapabilityChanged: { (participantDevice, direction, streamType) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice) video stream direction changed: \(direction)")
+				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) video stream direction changed: \(direction)")
 				self.videoEnabled.value = direction == MediaDirection.SendOnly || direction == MediaDirection.SendRecv
 				if (streamType == StreamType.Video) {
 					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video capability changed to \(direction)")
@@ -58,9 +56,6 @@ class ConferenceParticipantDeviceData  {
 				if (streamType == StreamType.Video) {
 					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video availability changed to \(available)")
 					self.videoEnabled.value = available
-					if (available) {
-						self.setVideoView(view: self.videoView)
-					}
 				}
 			}
 		
@@ -96,15 +91,14 @@ class ConferenceParticipantDeviceData  {
 		return isMe && Core.get().showSwitchCameraButton()
 	}
 	
-	func setVideoView(view:UIView?) {
-		self.videoView = view
+	func setVideoView(view:UIView) {
 		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice.address?.asStringUriOnly())")
-		view?.contentMode = .scaleAspectFill
+		view.contentMode = .scaleAspectFill
 		if (isMe) {
 			core.usePreviewWindow(yesno: false)
 			core.nativePreviewWindow = view
 		} else {
-			participantDevice.nativeVideoWindowId = view != nil  ? UnsafeMutableRawPointer(Unmanaged.passUnretained(view!).toOpaque()) : nil
+			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
 		}
 	}
 }

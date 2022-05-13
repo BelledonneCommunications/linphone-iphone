@@ -85,7 +85,6 @@
 - (UIInterfaceOrientation)currentOrientation;
 - (void)clearCache:(NSArray *)exclude;
 - (IBAction)onRightSwipe:(id)sender;
-- (void) removeCallViewFromCache;
 
 
 @end

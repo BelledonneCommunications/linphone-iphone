@@ -74,6 +74,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 		layout.minimumInteritemSpacing = 0
 		layout.minimumLineSpacing = 0
+		layout.estimatedItemSize = .zero
 		grid = UICollectionView(frame:.zero, collectionViewLayout: layout)
 		
 		super.init(frame: .zero)

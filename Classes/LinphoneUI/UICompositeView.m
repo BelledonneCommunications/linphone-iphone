@@ -305,13 +305,6 @@
 	return nil;
 }
 
--(void) removeCallViewFromCache {
-	for (NSString *key in [viewControllerCache allKeys]) {
-		if ([key isEqualToString:ActiveCallOrConferenceView.compositeViewDescription.name]) {
-			[viewControllerCache removeObjectForKey:key];
-		}
-	}
-}
 
 - (void)clearCache:(NSArray *)exclude {
 	for (NSString *key in [viewControllerCache allKeys]) {

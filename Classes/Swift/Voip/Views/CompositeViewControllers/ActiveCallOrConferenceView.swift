@@ -310,7 +310,6 @@ import linphonesw
 	func updateNavigation() {
 		if (Core.get().callsNb == 0) {
 			PhoneMainView.instance().popView(self.compositeViewDescription())
-			PhoneMainView.instance().mainViewController.removeCallFromCache()
 		} else {
 			if let data = CallsViewModel.shared.currentCallData.value {
 				if (data?.isOutgoing.value == true || data?.isIncoming.value == true) {

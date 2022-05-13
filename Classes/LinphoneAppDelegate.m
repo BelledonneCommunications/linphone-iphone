@@ -321,7 +321,7 @@
         return NO;
     }
 
-	VIEW(ActiveCallOrConferenceView); // to get created and all observers added
+	[PhoneMainView.instance.mainViewController getCachedController:ActiveCallOrConferenceView.compositeViewDescription.name]; // This will create the single instance of the ActiveCallOrConferenceView including listeneres
 	
 	return YES;
 }
