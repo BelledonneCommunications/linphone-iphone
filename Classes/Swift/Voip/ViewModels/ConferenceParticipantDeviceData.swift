@@ -98,7 +98,7 @@ class ConferenceParticipantDeviceData  {
 	
 	func setVideoView(view:UIView?) {
 		self.videoView = view
-		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice)")
+		Log.i("[Conference Participant Device] Setting textureView \(view) for participant \(participantDevice.address?.asStringUriOnly())")
 		view?.contentMode = .scaleAspectFill
 		if (isMe) {
 			core.usePreviewWindow(yesno: false)
