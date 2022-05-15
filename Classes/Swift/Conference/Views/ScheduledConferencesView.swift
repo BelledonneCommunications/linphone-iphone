@@ -37,9 +37,10 @@ import linphonesw
 			backAction: {
 				PhoneMainView.instance().popView(self.compositeViewDescription())
 			},nextAction: {
+				ConferenceSchedulingViewModel.shared.reset()
 				PhoneMainView.instance().changeCurrentView(ConferenceSchedulingView.compositeDescription)
 			},
-			nextActionEnableCondition: MutableLiveData(true),
+			nextActionEnableCondition: MutableLiveData(),
 			title:VoipTexts.conference_scheduled)
 
 		super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.conference_create_button)
@@ -70,6 +71,7 @@ import linphonesw
 		self.conferenceListView.removeConstraints().done()
 		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: super.topBar,withMargin: self.form_margin).alignParentBottom().done()
 		noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
+		super.nextButton.isEnabled = Core.get().defaultAccount != nil
 	}
 		
 	// TableView datasource delegate

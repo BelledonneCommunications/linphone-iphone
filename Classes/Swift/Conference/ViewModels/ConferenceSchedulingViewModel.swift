@@ -215,7 +215,7 @@ class ConferenceSchedulingViewModel  {
 			if (scheduleForLater.value == true) {
 				let timestamp = getConferenceStartTimestamp()
 				conferenceInfo.dateTime = time_t(timestamp)
-				scheduledDuration.value.map {conferenceInfo.duration = UInt($0) }
+				scheduledDuration.value.map { conferenceInfo.duration = UInt(ConferenceSchedulingViewModel.durationList[$0].value) }
 			}
 			conferenceScheduler?.info = conferenceInfo // Will trigger the conference creation automatically
 
@@ -232,8 +232,11 @@ class ConferenceSchedulingViewModel  {
 	
 
 	private func getConferenceStartTimestamp() -> Double {
-		return scheduleForLater.value == true ? scheduledDate.value!.timeIntervalSince1970 + scheduledTime.value!.timeIntervalSince1970 : Date().timeIntervalSince1970
-		
+		return scheduleForLater.value == true ?
+			scheduledDate.value!.timeIntervalSince1970 +
+			scheduledTime.value!.timeIntervalSince1970 - Calendar.current.startOfDay(for:  scheduledTime.value!).timeIntervalSince1970 +
+		Double(ConferenceSchedulingViewModel.timeZones[scheduledTimeZone.value!].timeZone.secondsFromGMT()-TimeZone.current.secondsFromGMT())
+		: Date().timeIntervalSince1970
 	}
 	
 	

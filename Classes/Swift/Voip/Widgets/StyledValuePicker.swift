@@ -27,16 +27,20 @@ class StyledValuePicker: UIView {
 	// layout constants
 	let chevron_margin = 10.0
 	let form_input_height = 38.0
+	let dropDown = DropDown()
 
 	
 	let formattedLabel = StyledLabel(VoipTheme.conference_scheduling_font)
 	var pickerMode:UIDatePicker.Mode = .date
+	var options : [String]
 	
 	required init?(coder: NSCoder) {
+		self.options = []
 		super.init(coder: coder)
 	}
 	
 	init (liveIndex:MutableLiveData<Int>, options:[String], readOnly:Bool = false) {
+		self.options = options
 		super.init(frame: .zero)
 
 		formattedLabel.isUserInteractionEnabled = false
@@ -65,7 +69,6 @@ class StyledValuePicker: UIView {
 		DropDown.appearance().selectionBackgroundColor = VoipTheme.light_grey_color
 		DropDown.appearance().cellHeight = form_input_height
 		
-		let dropDown = DropDown()
 		dropDown.anchorView = self
 		dropDown.bottomOffset = CGPoint(x: 0, y:(dropDown.anchorView?.plainView.bounds.height)!)
 		dropDown.dataSource = options
@@ -80,21 +83,21 @@ class StyledValuePicker: UIView {
 		}
 	
 		onClick {
-			dropDown.show()
+			self.dropDown.show()
 		}
 		
 		height(form_input_height).done()
 		
 		liveIndex.readCurrentAndObserve { (value) in
-			dropDown.selectRow(value!)
+			self.dropDown.selectRow(value!)
 		}
 		isUserInteractionEnabled = !readOnly
-
-		
 		
    }
 	
-	
-
+	func setIndex(index: Int) {
+		self.dropDown.selectRow(index)
+		formattedLabel.text = "  "+options[index]
+	}
 
 }

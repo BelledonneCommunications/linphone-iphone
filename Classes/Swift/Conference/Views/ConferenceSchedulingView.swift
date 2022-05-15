@@ -24,11 +24,17 @@ import linphonesw
 
 @objc class ConferenceSchedulingView:  BackNextNavigationView, UICompositeViewDelegate {
 	
-	let viewModel = ConferenceSchedulingViewModel.shared
 	
 	static let compositeDescription = UICompositeViewDescription(ConferenceSchedulingView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
+	
+	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date)
+	let timeZoneValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}))
+	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}))
+	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledTime,pickerMode: .time)
+	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description)
+
 	
 	override func viewDidLoad() {
 		
@@ -38,7 +44,7 @@ import linphonesw
 			},nextAction: {
 				self.gotoParticipantsListSelection()
 			},
-			nextActionEnableCondition: viewModel.continueEnabled,
+			nextActionEnableCondition: ConferenceSchedulingViewModel.shared.continueEnabled,
 			title:VoipTexts.conference_schedule_title)
 	
 		let subjectLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_subject_title)
@@ -46,7 +52,7 @@ import linphonesw
 		contentView.addSubview(subjectLabel)
 		subjectLabel.alignParentLeft(withMargin: form_margin).alignParentTop().done()
 		
-		let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: viewModel.subject,maxLines:1)
+		let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: ConferenceSchedulingViewModel.shared.subject,maxLines:1)
 		contentView.addSubview(subjectInput)
 		subjectInput.alignUnder(view: subjectLabel,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).height(form_input_height).done()
 		
@@ -60,7 +66,7 @@ import linphonesw
 		schedulingStack.addArrangedSubview(scheduleForLater)
 		scheduleForLater.matchParentSideBorders().height(schdule_for_later_height).done()
 
-		let laterSwitch = StyledSwitch(liveValue: viewModel.scheduleForLater)
+		let laterSwitch = StyledSwitch(liveValue: ConferenceSchedulingViewModel.shared.scheduleForLater)
 		scheduleForLater.addSubview(laterSwitch)
 		laterSwitch.alignParentTop(withMargin: form_margin*2.5).alignParentLeft(withMargin: form_margin).centerY().done()
 		
@@ -72,7 +78,7 @@ import linphonesw
 		let scheduleForm = UIView()
 		schedulingStack.addArrangedSubview(scheduleForm)
 		scheduleForm.matchParentSideBorders().done()
-		viewModel.scheduleForLater.readCurrentAndObserve { (forLater) in scheduleForm.isHidden = forLater != true }
+		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in scheduleForm.isHidden = forLater != true }
 		
 		// Left column (Date & Time)
 		let leftColumn = UIView()
@@ -84,7 +90,6 @@ import linphonesw
 		leftColumn.addSubview(dateLabel)
 		dateLabel.alignParentLeft().alignParentTop(withMargin: form_margin).done()
 		
-		let datePicker = StyledDatePicker(liveValue: viewModel.scheduledDate,pickerMode: .date)
 		leftColumn.addSubview(datePicker)
 		datePicker.alignParentLeft().alignUnder(view: dateLabel,withMargin: form_margin).matchParentSideBorders().done()
 		
@@ -93,7 +98,6 @@ import linphonesw
 		leftColumn.addSubview(timeLabel)
 		timeLabel.alignParentLeft().alignUnder(view: datePicker,withMargin: form_margin).done()
 		
-		let timePicker = StyledDatePicker(liveValue: viewModel.scheduledTime,pickerMode: .time)
 		leftColumn.addSubview(timePicker)
 		timePicker.alignParentLeft().alignUnder(view: timeLabel,withMargin: form_margin).matchParentSideBorders().done()
 	
@@ -109,7 +113,6 @@ import linphonesw
 		rightColumn.addSubview(durationLabel)
 		durationLabel.alignParentLeft().alignParentTop(withMargin: form_margin).done()
 		
-		let durationValue = StyledValuePicker(liveIndex: viewModel.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}))
 		rightColumn.addSubview(durationValue)
 		durationValue.alignParentLeft().alignUnder(view: durationLabel,withMargin: form_margin).matchParentSideBorders().done()
 		
@@ -117,7 +120,6 @@ import linphonesw
 		rightColumn.addSubview(timeZoneLabel)
 		timeZoneLabel.alignParentLeft().alignUnder(view: durationValue,withMargin: form_margin).done()
 		
-		let timeZoneValue = StyledValuePicker(liveIndex: viewModel.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}))
 		rightColumn.addSubview(timeZoneValue)
 		timeZoneValue.alignParentLeft().alignUnder(view: timeZoneLabel,withMargin: form_margin).matchParentSideBorders().done()
 	
@@ -128,7 +130,6 @@ import linphonesw
 		scheduleForm.addSubview(descriptionLabel)
 		descriptionLabel.alignUnder(view: leftColumn,withMargin: form_margin).alignUnder(view: rightColumn,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
 		
-		let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: viewModel.description)
 		descriptionInput.textContainer.maximumNumberOfLines = 5
 		descriptionInput.textContainer.lineBreakMode = .byWordWrapping
 		scheduleForm.addSubview(descriptionInput)
@@ -137,7 +138,7 @@ import linphonesw
 		scheduleForm.wrapContentY().done()
 		
 		// Sending methods
-		let viaChatSwitch = StyledCheckBox(liveValue: viewModel.sendInviteViaChat)
+		let viaChatSwitch = StyledCheckBox(liveValue: ConferenceSchedulingViewModel.shared.sendInviteViaChat)
 		contentView.addSubview(viaChatSwitch)
 		viaChatSwitch.alignParentLeft(withMargin: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).done()
 		
@@ -145,7 +146,7 @@ import linphonesw
 		contentView.addSubview(viaChatLabel)
 		viaChatLabel.toRightOf(viaChatSwitch,withLeftMargin: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).alignHorizontalCenterWith(viaChatSwitch).done()
 		
-		let viaMailSwitch = StyledCheckBox(liveValue: viewModel.sendInviteViaEmail)
+		let viaMailSwitch = StyledCheckBox(liveValue: ConferenceSchedulingViewModel.shared.sendInviteViaEmail)
 		contentView.addSubview(viaMailSwitch)
 		viaMailSwitch.alignParentLeft(withMargin: form_margin).alignUnder(view: viaChatSwitch,withMargin: 2*form_margin).done()
 		
@@ -167,7 +168,7 @@ import linphonesw
 		unencryptedIcon.contentMode = .scaleAspectFit
 		encryptCombo.addArrangedSubview(unencryptedIcon)
 
-		let encryptSwitch = StyledSwitch(liveValue: viewModel.isEncrypted)
+		let encryptSwitch = StyledSwitch(liveValue: ConferenceSchedulingViewModel.shared.isEncrypted)
 		encryptCombo.addArrangedSubview(encryptSwitch)
 		encryptSwitch.centerY().alignParentTop(withMargin: form_margin).done()
 		
@@ -188,9 +189,19 @@ import linphonesw
 						
 	}
 	
+	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDate
+		timeZoneValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledTimeZone.value!)
+		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
+		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledTime
+		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
+	}
+	
 	func gotoParticipantsListSelection() {
 		let view: ChatConversationCreateView = self.VIEW(ChatConversationCreateView.compositeViewDescription());
-		let addresses =  viewModel.selectedAddresses.value!.map { (address) in String(address.asStringUriOnly()) }
+		let addresses =  ConferenceSchedulingViewModel.shared.selectedAddresses.value!.map { (address) in String(address.asStringUriOnly()) }
 		view.tableController.contactsGroup = (addresses as NSArray).mutableCopy() as? NSMutableArray
 		view.isForEditing = false
 		view.isForVoipConference = true
@@ -201,6 +212,6 @@ import linphonesw
 	}
 	
 	@objc func resetViewModel() {
-		viewModel.reset()
+		ConferenceSchedulingViewModel.shared.reset()
 	}
 }

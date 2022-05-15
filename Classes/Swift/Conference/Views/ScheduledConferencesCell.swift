@@ -107,7 +107,8 @@ class ScheduledConferencesCell: UITableViewCell {
 		contentView.addSubview(participantsIcon)
 		participantsIcon.alignUnder(view: subject,withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
 		
-		infoConf.onClick {
+		//infoConf.onClick {
+		contentView.onClick {
 			self.conferenceData?.toggleExpand()
 			self.owningTableView?.reloadData()
 		}
@@ -161,6 +162,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		joinEditDelete.addArrangedSubview(editConf)
 		editConf.onClick {
 			// TODO
+			VoipDialog.toast(message: "not available yet")
 		}
 		
 		joinEditDelete.addArrangedSubview(deleteConf)
