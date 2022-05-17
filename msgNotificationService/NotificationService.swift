@@ -64,6 +64,21 @@ class NotificationService: UNNotificationServiceExtension {
 			createCore()
 			NotificationService.log.message(message: "received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 
+			
+			let defaults = UserDefaults.init(suiteName: APP_GROUP_ID)
+			if let chatroomsPushStatus = defaults?.dictionary(forKey: "chatroomsPushStatus") {
+				let aps = bestAttemptContent.userInfo["aps"] as? NSDictionary
+				let alert = aps?["alert"] as? NSDictionary
+				let fromAddresses = alert?["loc-args"] as? [String]
+				
+				if let from = fromAddresses?.first {
+					if ((chatroomsPushStatus[from] as? String) == "disabled") {
+						NotificationService.log.message(message: "message comes from a muted chatroom, ignore it")
+						contentHandler(UNNotificationContent())
+					}
+				}
+			}
+			
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
 				NotificationService.log.message(message: "fetch chat room for invite, addr: \(chatRoomInviteAddr)")
 				let chatRoom = lc!.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)

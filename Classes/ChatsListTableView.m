@@ -231,7 +231,9 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 			}
 		}
 		[ftdToDelete cancel];
-
+		
+		// Re-enable push notification after deleting the chatroom, in order to get the notification if we are re-invited, or for secure 1-to-1 chatrooms.
+		[LinphoneManager setChatroomPushEnabled:chatRoom withPushEnabled:TRUE];
 		linphone_core_delete_chat_room(LC, chatRoom);
 		chatRooms = chatRooms->next;
 	}

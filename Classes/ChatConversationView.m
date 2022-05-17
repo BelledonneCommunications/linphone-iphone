@@ -1721,13 +1721,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	}
 }
 
--(BOOL) isConversationMuted {
-	return FALSE; // TODO
-}
--(void) toggleMuteConversation {
-	// TODO
-}
-
 -(void) showAddressAndIdentityPopup {
 	
 	char *localAddress = linphone_address_as_string(linphone_chat_room_get_local_address(_chatRoom));
@@ -1799,7 +1792,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
 	if ((!isEncrypted && indexPath.row == 1) || (isEncrypted && indexPath.row == 3)) {
-		[self toggleMuteConversation];
+		[LinphoneManager setChatroomPushEnabled:_chatRoom withPushEnabled:![LinphoneManager getChatroomPushEnabled:_chatRoom]];
+		[_popupMenu reloadData];
 	}
 	
 	if ((!isEncrypted && indexPath.row == 2) || (isEncrypted && indexPath.row == 4)) {
@@ -1865,12 +1859,12 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	}
 	
 	if ((isEncrypted && indexPath.row == 3) || (!isEncrypted && indexPath.row == 1)) {
-		if ([self isConversationMuted]) {
+		if ([LinphoneManager getChatroomPushEnabled:_chatRoom]) {
 			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_off.png"] newSize:CGSizeMake(20, 25)];
-			cell.textLabel.text = NSLocalizedString(@"NOT IMPLEMENTED",nil);
+			cell.textLabel.text = NSLocalizedString(@"Mute notifications",nil);
 		} else {
 			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_on.png"] newSize:CGSizeMake(20, 25)];
-			cell.textLabel.text = NSLocalizedString(@"NOT IMPLEMENTED",nil);
+			cell.textLabel.text = NSLocalizedString(@"Un-mute notifications",nil);
 		}
 	}
 	

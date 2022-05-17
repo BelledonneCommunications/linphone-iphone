@@ -192,6 +192,8 @@ typedef struct _LinphoneManagerSounds {
 - (BOOL)isCTCallCenterExist;
 - (void) checkLocalNetworkPermission;
 
++ (BOOL) getChatroomPushEnabled:(LinphoneChatRoom *)chatroom;
++ (void) setChatroomPushEnabled:(LinphoneChatRoom *)chatroom withPushEnabled:(BOOL)enabled;
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;

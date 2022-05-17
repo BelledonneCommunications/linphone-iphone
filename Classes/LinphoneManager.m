@@ -2303,6 +2303,31 @@ void linphone_iphone_conference_state_changed(LinphoneCore *lc, LinphoneConferen
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfStateChanged object:nil userInfo:dict];
 }
 
++ (BOOL) getChatroomPushEnabled:(LinphoneChatRoom *)chatroom {
+	bool currently_enabled = true;
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	NSDictionary *chatroomsPushStatus = [defaults dictionaryForKey:@"chatroomsPushStatus"];
+	if (chatroomsPushStatus != nil && chatroom) {
+		char *uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(chatroom));
+		NSString* pushStatus = [chatroomsPushStatus objectForKey:[NSString stringWithUTF8String:uri]];
+		currently_enabled = (pushStatus == nil) || [pushStatus isEqualToString:@"enabled"];
+		ms_free(uri);
+	}
+	return currently_enabled;
+}
 
++ (void) setChatroomPushEnabled:(LinphoneChatRoom *)chatroom withPushEnabled:(BOOL)enabled {
+	if (!chatroom) return;
+	
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	NSMutableDictionary *chatroomsPushStatus = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"chatroomsPushStatus"]];
+	if (chatroomsPushStatus == nil) chatroomsPushStatus = [[NSMutableDictionary dictionary] init];
+	
+	char *uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(chatroom));
+	[chatroomsPushStatus setValue:(enabled ? @"enabled" : @"disabled") forKey:[NSString stringWithUTF8String:uri]];
+	ms_free(uri);
+	
+	[defaults setObject:chatroomsPushStatus forKey:@"chatroomsPushStatus"];
+}
 
 @end
