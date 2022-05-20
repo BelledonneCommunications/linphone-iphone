@@ -202,6 +202,10 @@ import AVFoundation
 			callParams.recordFile = writablePath
 			
 			
+			if let chatView : ChatConversationView = PhoneMainView.instance().VIEW(ChatConversationView.compositeViewDescription()), chatView.isVoiceRecording {
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "Voice recording in progress, stopping it befoce accepting the call.")
+				chatView.stopVoiceRecording()
+			}
 			try call.acceptWithParams(params: callParams)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "accept call failed \(error)")

@@ -159,4 +159,6 @@
 
 -(void) initiateReplyViewForMessage:(LinphoneChatMessage *)message;
 
+-(void) stopVoiceRecording;
+
 @end
