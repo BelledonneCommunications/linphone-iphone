@@ -384,7 +384,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
 	[_pictureButton setEnabled:fileSharingEnabled];
 
-	[self callUpdateEvent:nil];
+	[self updateSuperposedButtons];
+	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
+	
 	PhoneMainView.instance.currentRoom = _chatRoom;
 	if (isOneToOne) {
 		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
