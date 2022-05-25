@@ -240,6 +240,9 @@
 "Connection failed because authentication is missing or invalid for %@@%@.\nYou can provide password again, or check your account configuration in the settings." = "La connexion a échoué car l'authentification est manquante ou non valide pour %1$@@%2$@.\nVous pouvez saisir à nouveau le mot de passe, ou vérifier la configuration de votre compte dans les paramètres.";
 "Connection failure" = "Échec de connexion";
 "Connection in progress" = "Connexion en cours";
+"Help us translate Linphone" = "Contribuer aux traductions";
+"Some features require a Linphone account, such as group messaging or ephemeral messaging.\n\nThese features are hidden when you register with a third party SIP account.\n\nTo enable it in a commercial project, please contact us." = "Certaines fonctionnalités avancées comme les messages de groupe ou les messages éphémères nécessitent un compte Linphone.\n\nElles seront masquées dans l'application si vous configurez un compte SIP tiers.\n\nSi vous souhaitez les activer pour un projet professionnel, contactez-nous. ";
+"I understand" = "J'ai compris";
 
 /* ICE has established a connection through a relay */
 "Relay connection" = "Connexion relayée";
