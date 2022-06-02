@@ -9,7 +9,22 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
+		
 	
+## [4.6.3] - 2021-02-06
+
+### Added
+- New "Contacts" menu in the settings, which allows the use of LDAP configurations
+- Using new MagicSearch API to improve contacts list performances, and search contacts using LDAP if appropriate
+
+### Changed
+- Update linphone SDK to 5.1.41
+
+### Fixed
+- Prevent read-only 1-1 chat room
+- Small quality of life fixes for voice recording messages
+- Display bug when changing audio device
+
 	
 ## [4.6.2] - 2021-07-03
 
