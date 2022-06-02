@@ -1651,6 +1651,8 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 
 -(BOOL) canAdminEphemeral:(LinphoneChatRoom *)cr {
+	if (!cr) return FALSE;
+	
 	// If ephemeral mode is DeviceManaged, then we don't need to check anything else
 	return	(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeDeviceManaged)
 	||	( linphone_chat_room_has_capability(cr, LinphoneChatRoomCapabilitiesEphemeral) && linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeAdminManaged && linphone_participant_is_admin(linphone_chat_room_get_me(cr)));
@@ -1694,7 +1696,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (_chatRoom && [self canAdminEphemeral:_chatRoom]) ? 3 : 2;
+	return [self canAdminEphemeral:_chatRoom] ? 3 : 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
