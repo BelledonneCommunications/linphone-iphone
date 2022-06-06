@@ -98,13 +98,13 @@
 }
 
 - (void) buildChatContactTable {
-	[_ldapContactAddressBookMap removeAllObjects];
+	
 	bctbx_list_t *results = [MagicSearchSingleton.instance getLastSearchResults];
 	while (results) {
 		
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
-		 
+		
 		const char *phoneNumber = NULL;
 		Contact *contact = nil;
 		char *uri = nil;
@@ -119,6 +119,7 @@
 		if (!addr || (!contact && friend)) {
 			phoneNumber = linphone_search_result_get_phone_number(result);
 			if (!phoneNumber) {
+				results = results->next;
 				continue;
 			}
 			
@@ -127,6 +128,7 @@
 				const char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
 				if (!normalizedPhoneNumber) {
 					// get invalid phone number, continue
+					results = results->next;
 					continue;
 				}
 				addr = linphone_account_normalize_sip_uri(account, normalizedPhoneNumber);
@@ -139,12 +141,12 @@
 			}
 			
 		}
-
+		
 		if (!addr) {
 			results = results->next;
 			continue;
 		}
-
+		
 		ms_free(uri);
 		
 		[_addresses addObject:address];
@@ -153,9 +155,10 @@
 		
 		results = results->next;
 	}
-	_reloadMagicSearch = FALSE;
 	[self.tableView reloadData];
+	_reloadMagicSearch = FALSE;
 }
+
 
 - (void) loadData {
 	[self reloadDataWithFilter:_searchBar.text];
@@ -165,6 +168,9 @@
 	[_addresses removeAllObjects];
 	[_phoneOrAddr removeAllObjects];
 	[_addressesCached removeAllObjects];
+	[_ldapContactAddressBookMap removeAllObjects];
+	[self.tableView reloadData];
+	
 	_reloadMagicSearch = _reloadMagicSearch || [filter length]==0 || ![[MagicSearchSingleton.instance currentFilter] isEqualToString:filter];
 	[MagicSearchSingleton.instance setCurrentFilter:filter];
 	
