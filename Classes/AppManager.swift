@@ -49,6 +49,8 @@ enum NetworkType: Int {
 		filePath = filePath.appending(address.isEmpty ? "unknow" : address)
 		let now = Date()
 		let dateFormat = DateFormatter()
+        // Force en_US translation.
+        dateFormat.locale = Locale(identifier: "en_US")
 		dateFormat.dateFormat = "E-d-MMM-yyyy-HH-mm-ss"
 		let date = dateFormat.string(from: now)
 		

@@ -509,6 +509,8 @@
     //splitString: first element is the 'recording' prefix, last element is the date with the "E-d-MMM-yyyy-HH-mm-ss" format.
     NSString *name = [[splitString subarrayWithRange:NSMakeRange(1, [splitString count] -2)] componentsJoinedByString:@""];
     NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    // Force en_US translation.
+    format.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
     [format setDateFormat:@"E-d-MMM-yyyy-HH-mm-ss"];
     NSString *dateWithMkv = [splitString objectAtIndex:[splitString count]-1]; //this will be in the form "E-d-MMM-yyyy-HH-mm-ss.mkv", we have to delete the extension
     NSDate *date = [format dateFromString:[dateWithMkv substringToIndex:[dateWithMkv length] - 4]];
