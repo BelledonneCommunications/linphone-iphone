@@ -10,6 +10,45 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+		
+## [4.6.4] - 2021-08-06
+### Changed
+- Update linphone SDK to 5.1.42
+
+### Fixed
+- Prevent possible application freeze and crash when creating a new chatroom, depending on the phone's contacts.
+	
+## [4.6.3] - 2021-02-06
+
+### Added
+- New "Contacts" menu in the settings, which allows the use of LDAP configurations
+- Using new MagicSearch API to improve contacts list performances, and search contacts using LDAP if appropriate
+
+### Changed
+- Update linphone SDK to 5.1.41
+
+### Fixed
+- Prevent read-only 1-1 chat room
+- Small quality of life fixes for voice recording messages
+- Display bug when changing audio device
+
+	
+## [4.6.2] - 2021-07-03
+
+### Fixed
+- Bug preventing the activation of the phone speaker during calls
+- Bug with "reply" feature in chatrooms
+- Bug causing IMDNs to be missing in some chatrooms
+- Update linphone SDK to 5.1.7
+	
+## [4.6.1] - 2021-04-03
+
+### Fixed
+- Crash in chatroom info view after entering background and re-entering foreground
+- Crash in local call conferences when pausing/resuming
+- Hard to see text (written in black) on dark mode
+- Removed duplicate push authorization request pop up on install
+
 ## [4.6.0] - 2021-31-02
 
 ### Added
