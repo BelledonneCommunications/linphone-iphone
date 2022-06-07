@@ -93,91 +93,90 @@
 	_loadingView.hidden = FALSE;
 }
 - (void)onChatMagicSearchFinished:(NSNotification *)k {
-	@synchronized(self) {
-		[self buildChatContactTable];
-		_loadingView.hidden = TRUE;
-	}
+	[self buildChatContactTable];
+	_loadingView.hidden = TRUE;
 }
 
 - (void) buildChatContactTable {
-		bctbx_list_t *results = [MagicSearchSingleton.instance getLastSearchResults];
-		while (results) {
-			
-			LinphoneSearchResult *result = results->data;
-			const LinphoneAddress *addr = linphone_search_result_get_address(result);
-			
-			const char *phoneNumber = NULL;
-			Contact *contact = nil;
-			char *uri = nil;
-			NSString *address = nil;
-			if (addr) {
-				uri = linphone_address_as_string_uri_only(addr);
-				address = [NSString stringWithUTF8String:uri];
-				contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
-			}
-			
-			const LinphoneFriend* friend = linphone_search_result_get_friend(result);
-			if (!addr || (!contact && friend)) {
-				phoneNumber = linphone_search_result_get_phone_number(result);
-				if (!phoneNumber) {
-					results = results->next;
-					continue;
-				}
-				
-				LinphoneAccount *account = linphone_core_get_default_account(LC);
-				if (account) {
-					const char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
-					if (!normalizedPhoneNumber) {
-						// get invalid phone number, continue
-						results = results->next;
-						continue;
-					}
-					addr = linphone_account_normalize_sip_uri(account, normalizedPhoneNumber);
-					uri = linphone_address_as_string_uri_only(addr);
-					address = [NSString stringWithUTF8String:uri];
-					
-					contact = [[Contact alloc] initWithFriend:friend];
-					[contact setCreatedFromLdap:TRUE];
-					[_ldapContactAddressBookMap setObject:contact forKey:address];
-				}
-				
-			}
-			
-			if (!addr) {
+	
+	bctbx_list_t *results = [MagicSearchSingleton.instance getLastSearchResults];
+	while (results) {
+		
+		LinphoneSearchResult *result = results->data;
+		const LinphoneAddress *addr = linphone_search_result_get_address(result);
+		
+		const char *phoneNumber = NULL;
+		Contact *contact = nil;
+		char *uri = nil;
+		NSString *address = nil;
+		if (addr) {
+			uri = linphone_address_as_string_uri_only(addr);
+			address = [NSString stringWithUTF8String:uri];
+			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
+		}
+		
+		const LinphoneFriend* friend = linphone_search_result_get_friend(result);
+		if (!addr || (!contact && friend)) {
+			phoneNumber = linphone_search_result_get_phone_number(result);
+			if (!phoneNumber) {
 				results = results->next;
 				continue;
 			}
 			
-			ms_free(uri);
+			LinphoneAccount *account = linphone_core_get_default_account(LC);
+			if (account) {
+				const char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
+				if (!normalizedPhoneNumber) {
+					// get invalid phone number, continue
+					results = results->next;
+					continue;
+				}
+				addr = linphone_account_normalize_sip_uri(account, normalizedPhoneNumber);
+				uri = linphone_address_as_string_uri_only(addr);
+				address = [NSString stringWithUTF8String:uri];
+				
+				contact = [[Contact alloc] initWithFriend:friend];
+				[contact setCreatedFromLdap:TRUE];
+				[_ldapContactAddressBookMap setObject:contact forKey:address];
+			}
 			
-			[_addresses addObject:address];
-			[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
-			[_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
-			
-			results = results->next;
 		}
-		_reloadMagicSearch = FALSE;
-		[self.tableView reloadData];
+		
+		if (!addr) {
+			results = results->next;
+			continue;
+		}
+		
+		ms_free(uri);
+		
+		[_addresses addObject:address];
+		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
+		[_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
+		
+		results = results->next;
+	}
+	[self.tableView reloadData];
+	_reloadMagicSearch = FALSE;
 }
+
 
 - (void) loadData {
 	[self reloadDataWithFilter:_searchBar.text];
 }
 
 - (void)reloadDataWithFilter:(NSString *)filter {
-	@synchronized(self) {
-		[_addresses removeAllObjects];
-		[_phoneOrAddr removeAllObjects];
-		[_addressesCached removeAllObjects];
-		[_ldapContactAddressBookMap removeAllObjects];
-		_reloadMagicSearch = _reloadMagicSearch || [filter length]==0 || ![[MagicSearchSingleton.instance currentFilter] isEqualToString:filter];
-		[MagicSearchSingleton.instance setCurrentFilter:filter];
-		
-		if (_reloadMagicSearch) {
-			[MagicSearchSingleton.instance searchForContactsWithDomain:_allFilter ?  @"" : @"*" sourceFlags:LinphoneMagicSearchSourceAll clearCache:FALSE];
-		} else {
-			[self buildChatContactTable];
-		}
+	[_addresses removeAllObjects];
+	[_phoneOrAddr removeAllObjects];
+	[_addressesCached removeAllObjects];
+	[_ldapContactAddressBookMap removeAllObjects];
+	
+	_reloadMagicSearch = _reloadMagicSearch || [filter length]==0 || ![[MagicSearchSingleton.instance currentFilter] isEqualToString:filter];
+	[MagicSearchSingleton.instance setCurrentFilter:filter];
+	
+	if (_reloadMagicSearch) {
+		[MagicSearchSingleton.instance searchForContactsWithDomain:_allFilter ?  @"" : @"*" sourceFlags:LinphoneMagicSearchSourceAll clearCache:FALSE];
+	} else {
+		[self buildChatContactTable];
 	}
 }
 
