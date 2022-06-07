@@ -169,6 +169,7 @@
 	[_phoneOrAddr removeAllObjects];
 	[_addressesCached removeAllObjects];
 	[_ldapContactAddressBookMap removeAllObjects];
+	[self.tableView reloadData];
 	
 	_reloadMagicSearch = _reloadMagicSearch || [filter length]==0 || ![[MagicSearchSingleton.instance currentFilter] isEqualToString:filter];
 	[MagicSearchSingleton.instance setCurrentFilter:filter];
