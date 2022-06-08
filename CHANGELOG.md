@@ -9,7 +9,13 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-		
+			
+## [4.6.4] - 2021-08-06
+### Changed
+- Update linphone SDK to 5.1.42
+
+### Fixed
+- Prevent possible application freeze and crash when creating a new chatroom, depending on the phone's contacts.
 	
 ## [4.6.3] - 2021-02-06
 
