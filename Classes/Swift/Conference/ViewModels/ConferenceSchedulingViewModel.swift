@@ -167,6 +167,9 @@ class ConferenceSchedulingViewModel  {
 		}.first
 		
 		continueEnabled.value = false
+    
+    selectedAddresses.value = []
+    
 	}
 	
 	
@@ -190,23 +193,11 @@ class ConferenceSchedulingViewModel  {
 		
 		do {
 			conferenceCreationInProgress.value = true
-			guard let localAddress = core.defaultAccount?.params?.identityAddress else {
+			guard let localAccount = core.defaultAccount, let localAddress = localAccount.params?.identityAddress else {
 				Log.e("[Conference Creation] Couldn't get local address from default account!")
 				return
 			}
-			
-			/*
-			// TODO: Temporary workaround for chat room, to be removed once we can get matching chat room from conference
-			let chatRoomParams = try core.createDefaultChatRoomParams()
-			chatRoomParams.backend = ChatRoomBackend.FlexisipChat
-			chatRoomParams.groupEnabled = true
-			chatRoomParams.subject = subject.value!
-			let chatRoom = try core.createChatRoom(params: chatRoomParams, localAddr: localAddress, participants: selectedAddresses.value!)
-			Log.i("[Conference Creation] Creating chat room with same subject [\(subject.value)] & participants as for conference")
-			chatRoom.addDelegate(delegate: chatRooomDelegate!)
-			// END OF TODO
-*/
-			
+		
 			let conferenceInfo = try Factory.Instance.createConferenceInfo()
 			conferenceInfo.organizer = localAddress
 			subject.value.map { conferenceInfo.subject = $0}
@@ -217,6 +208,7 @@ class ConferenceSchedulingViewModel  {
 				conferenceInfo.dateTime = time_t(timestamp)
 				scheduledDuration.value.map { conferenceInfo.duration = UInt(ConferenceSchedulingViewModel.durationList[$0].value) }
 			}
+      conferenceScheduler?.account = localAccount
 			conferenceScheduler?.info = conferenceInfo // Will trigger the conference creation automatically
 
 		} catch {

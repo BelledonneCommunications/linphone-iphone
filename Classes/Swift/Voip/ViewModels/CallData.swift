@@ -90,7 +90,7 @@ class CallData  {
 		let conference = call.conference
 		isInRemoteConference.value = conference != nil || isCallingAConference()
 		if (conference != nil) {
-			remoteConferenceSubject.value = conference?.subject != nil && (conference?.subject.count)! > 0 ?  conference!.subject : VoipTexts.conference_default_title
+			remoteConferenceSubject.value = ConferenceViewModel.getConferenceSubject(conference: conference!)
 		}
 		isOutgoing.value = isOutGoing()
 		isIncoming.value = isInComing()

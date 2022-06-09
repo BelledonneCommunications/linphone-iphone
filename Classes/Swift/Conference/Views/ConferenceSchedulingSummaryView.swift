@@ -140,7 +140,7 @@ import SVProgressHUD
 		contentView.addSubview(viaChatLabel)
 		viaChatLabel.matchParentSideBorders(insetedByDx: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).done()
 		ConferenceSchedulingViewModel.shared.sendInviteViaChat.readCurrentAndObserve { (sendChat) in
-			viaChatLabel.isHidden = sendChat != true
+      viaChatLabel.isHidden = sendChat != true || ConferenceSchedulingViewModel.shared.scheduleForLater.value != true
 		}
 			
 		// Participants
@@ -173,8 +173,8 @@ import SVProgressHUD
 		let createButton = FormButton(backgroundStateColors: VoipTheme.primary_colors_background)
 		contentView.addSubview(createButton)
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { _ in
-			createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule.uppercased() : VoipTexts.conference_schedule_create.uppercased()
-			createButton.addSidePadding()
+			createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+      createButton.addSidePadding()
 		}
 		
 		ConferenceSchedulingViewModel.shared.conferenceCreationInProgress.observe { progress in
@@ -211,8 +211,9 @@ import SVProgressHUD
 				}
 			}
 		}
-		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { _ in
-			createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule.uppercased() : VoipTexts.conference_schedule_create.uppercased()
+		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (later) in
+			createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+      viaChatLabel.isHidden = later != true || ConferenceSchedulingViewModel.shared.sendInviteViaChat.value != true
 			createButton.addSidePadding()
 		}
 		

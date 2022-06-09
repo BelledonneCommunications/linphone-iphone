@@ -45,7 +45,7 @@ import linphonesw
 				self.gotoParticipantsListSelection()
 			},
 			nextActionEnableCondition: ConferenceSchedulingViewModel.shared.continueEnabled,
-			title:VoipTexts.conference_schedule_title)
+			title:VoipTexts.conference_group_call_title)
 	
 		let subjectLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_subject_title)
 		subjectLabel.addIndicatorIcon(iconName: "voip_mandatory")
@@ -78,7 +78,6 @@ import linphonesw
 		let scheduleForm = UIView()
 		schedulingStack.addArrangedSubview(scheduleForm)
 		scheduleForm.matchParentSideBorders().done()
-		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in scheduleForm.isHidden = forLater != true }
 		
 		// Left column (Date & Time)
 		let leftColumn = UIView()
@@ -146,6 +145,8 @@ import linphonesw
 		contentView.addSubview(viaChatLabel)
 		viaChatLabel.toRightOf(viaChatSwitch,withLeftMargin: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).alignHorizontalCenterWith(viaChatSwitch).done()
 		
+    /* Hidden as in Android 9.6.2022
+     
 		let viaMailSwitch = StyledCheckBox(liveValue: ConferenceSchedulingViewModel.shared.sendInviteViaEmail)
 		contentView.addSubview(viaMailSwitch)
 		viaMailSwitch.alignParentLeft(withMargin: form_margin).alignUnder(view: viaChatSwitch,withMargin: 2*form_margin).done()
@@ -153,7 +154,6 @@ import linphonesw
 		let viaMailLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_email)
 		contentView.addSubview(viaMailLabel)
 		viaMailLabel.toRightOf(viaMailSwitch,withLeftMargin: form_margin).alignUnder(view: viaChatLabel,withMargin: 2*form_margin).alignHorizontalCenterWith(viaMailSwitch).done()
-
 		
 		// Encryption
 		let encryptLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_encryption)
@@ -175,17 +175,27 @@ import linphonesw
 		let encryptedIcon = UIImageView(image: UIImage(named: "security_toggle_icon_green"))
 		encryptedIcon.contentMode = .scaleAspectFit
 		encryptCombo.addArrangedSubview(encryptedIcon)
-				
+
+    */
 		
 		// Mandatory label
 		
 		let mandatoryLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_mandatory_field)
 		mandatoryLabel.addIndicatorIcon(iconName: "voip_mandatory", trailing: false)
 		contentView.addSubview(mandatoryLabel)
-		mandatoryLabel.alignUnder(view: encryptCombo,withMargin: 4*form_margin).centerX().matchParentSideBorders().done()
+		mandatoryLabel.alignUnder(view: viaChatSwitch,withMargin: 2*form_margin).centerX().matchParentSideBorders().done()
 		mandatoryLabel.textAlignment = .center
 		
 		mandatoryLabel.alignParentBottom().done()
+    
+    // Schedule for later observer
+    ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in
+      scheduleForm.isHidden = forLater != true
+      super.titleLabel.text = forLater == true ? VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
+      viaChatSwitch.isHidden = forLater != true
+      viaChatLabel.isHidden = forLater != true
+    }
+
 						
 	}
 	

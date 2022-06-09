@@ -37,16 +37,20 @@ class ConferenceViewModel {
 	let conferenceCreationPending = MutableLiveData<Bool>()
 	let conferenceParticipants = MutableLiveData<[ConferenceParticipantData]>()
 	let conferenceParticipantDevices = MutableLiveData<[ConferenceParticipantDeviceData]>()
-	let conferenceDisplayMode = MutableLiveData<ConferenceLayout>()
+	let conferenceDisplayMode = MutableLiveData<ConferenceDisplayMode>()
 	
 	let isRecording = MutableLiveData<Bool>()
 	let isRemotelyRecorded = MutableLiveData<Bool>()
 	
-	let participantAdminStatusChangedEvent = MutableLiveData<ConferenceParticipantData>()
-	
 	let maxParticipantsForMosaicLayout = ConfigManager.instance().lpConfigIntForKey(key: "max_conf_part_mosaic_layout",defaultValue: 6)
 	
 	let speakingParticipant = MutableLiveData<ConferenceParticipantDeviceData>()
+	
+	let participantAdminStatusChangedEvent = MutableLiveData<ConferenceParticipantData>()
+	
+	let firstToJoinEvent = MutableLiveData<Bool>()
+	
+	let allParticipantsLeftEvent = MutableLiveData<Bool>()
 	
 	private var conferenceDelegate :  ConferenceDelegateStub?
 	private var coreDelegate :  CoreDelegateStub?
@@ -66,6 +70,9 @@ class ConferenceViewModel {
 			onParticipantRemoved: {(conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) \(participant) Participant removed")
 				self.updateParticipantsList(conference)
+				if (self.conferenceParticipants.value?.count == 0) {
+					self.allParticipantsLeftEvent.value = true
+				}
 			},
 			onParticipantDeviceAdded: {(conference: Conference, participantDevice: ParticipantDevice) in
 				Log.i("[Conference] \(conference) Participant device \(participantDevice) added")
@@ -100,7 +107,7 @@ class ConferenceViewModel {
 			},
 			onStateChanged: { (conference: Conference, state: Conference.State) in
 				Log.i("[Conference] State changed: \(state)")
-				self.isVideoConference.value = conference.currentParams?.isVideoEnabled
+				self.isVideoConference.value = conference.currentParams?.videoEnabled
 				if (state == .Created) {
 					self.configureConference(conference)
 					self.conferenceCreationPending.value = false
@@ -141,8 +148,6 @@ class ConferenceViewModel {
 		Core.get().addDelegate(delegate: coreDelegate!)
 		conferenceParticipants.value = []
 		conferenceParticipantDevices.value = []
-		conferenceDisplayMode.value = .Grid
-		subject.value = VoipTexts.conference_default_title
 		
 		if let conference = core.conference != nil ? core.conference : core.currentCall?.conference {
 			Log.i("[Conference] Found an existing conference: \(conference) in state \(conference.state)")
@@ -182,42 +187,30 @@ class ConferenceViewModel {
 	
 	func initConference(_ conference: Conference) {
 		conferenceExists.value = true
+		
 		self.conference.value = conference
 		conference.addDelegate(delegate: self.conferenceDelegate!)
+		
 		isRecording.value = conference.isRecording
+		subject.value = ConferenceViewModel.getConferenceSubject(conference: conference)
+		
 		updateConferenceLayout(conference: conference)
-		
-		if let call = core.currentCall, CallManager.getAppData(call: call.getCobject!)?.isConference == true { // Apply waiting room preference
-			if (ConferenceWaitingRoomViewModel.sharedModel.isSpeakerSelected.value == true) {
-				ControlsViewModel.shared.forceSpeakerAudioRoute()
-			} else {
-				ControlsViewModel.shared.forceEarpieceAudioRoute()
-				ControlsViewModel.shared.updateUI()
-			}
-			Core.get().micEnabled = ConferenceWaitingRoomViewModel.sharedModel.isMicrophoneMuted.value != true
-			changeLayout(layout: ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value!)
-			updateConferenceLayout(conference: conference)
-		}
-		
 	}
 	
 	func configureConference(_ conference: Conference) {
 		self.updateParticipantsList(conference)
+		if (conferenceParticipants.value?.count == 0) {
+			firstToJoinEvent.value = true
+		}
 		self.updateParticipantsDevicesList(conference)
 		
 		isConferenceLocallyPaused.value = !conference.isIn
 		self.isMeAdmin.value = conference.me?.isAdmin == true
 		isVideoConference.value = conference.currentParams?.videoEnabled == true
 		
-		self.subject.value =   conference.subject.isEmpty ? (
-			conference.me?.isFocus == true ? (
-				VoipTexts.conference_local_title
-			) : (
-				VoipTexts.conference_default_title
-			)
-		) : (
-			conference.subject
-		)
+		subject.value = ConferenceViewModel.getConferenceSubject(conference: conference)
+		updateConferenceLayout(conference: conference)
+		
 	}
 	
 	
@@ -238,12 +231,13 @@ class ConferenceViewModel {
 	}
 	
 	
-	func changeLayout(layout: ConferenceLayout) {
+	func changeLayout(layout: ConferenceDisplayMode) {
 		Log.i("[Conference] Trying to change conference layout to $layout")
 		if let conference = conference.value, let call = conference.call, let params = try?call.core?.createCallParams(call: call) {
-			params.videoEnabled = true // TODO AUdioLonly layout != ConferenceDisplayMode.AUDIO_ONLY
-			params.conferenceVideoLayout = layout
+			params.videoEnabled = layout != .AudioOnly
+			params.conferenceVideoLayout = layout == ConferenceDisplayMode.Grid ? .Grid : .ActiveSpeaker
 			try?call.update(params: params)
+			
 			conferenceDisplayMode.value = layout
 			let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
 			conferenceParticipantDevices.value = list
@@ -254,7 +248,7 @@ class ConferenceViewModel {
 	
 	private func updateConferenceLayout(conference: Conference) {
 		if let call = conference.call, let params = call.params {
-			conferenceDisplayMode.value = params.conferenceVideoLayout
+			conferenceDisplayMode.value = !params.videoEnabled ? ConferenceDisplayMode.AudioOnly :  params.conferenceVideoLayout == .Grid ? .Grid : .ActiveSpeaker
 			let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
 			conferenceParticipantDevices.value = list
 			Log.i("[Conference] Conference current layout is: \(conferenceDisplayMode.value)")
@@ -275,7 +269,7 @@ class ConferenceViewModel {
 		conferenceParticipantDevices.value = []
 	}
 	
-		
+	
 	private func updateParticipantsList(_ conference: Conference) {
 		self.conferenceParticipants.value?.forEach{ $0.destroy()}
 		var participants :[ConferenceParticipantData] = []
@@ -370,7 +364,7 @@ class ConferenceViewModel {
 		return devices
 	}
 	
-
+	
 	func togglePlayPause () {
 		if (isConferenceLocallyPaused.value == true) {
 			resumeConference()
@@ -412,6 +406,25 @@ class ConferenceViewModel {
 		}
 	}
 	
+	static func getConferenceSubject(conference:Conference) -> String? {
+		if (conference.subject.count > 0) {
+			return conference.subject
+		} else {
+			let conferenceInfo = Core.get().findConferenceInformationFromUri(uri: conference.conferenceAddress!)
+			if (conferenceInfo != nil) {
+				return conferenceInfo?.subject
+			} else {
+				if (conference.me?.isFocus == true) {
+					return VoipTexts.conference_local_title
+				} else {
+					return VoipTexts.conference_default_title
+					
+				}
+			}
+		}
+	}
+	
+	
 }
 
 @objc class ConferenceViewModelBridge : NSObject {	
@@ -425,12 +438,15 @@ class ConferenceViewModel {
 }
 
 
-
-
-
 enum FlexDirection {
 	case ROW
 	case ROW_REVERSE
 	case COLUMN
 	case COLUMN_REVERSE
+}
+
+enum ConferenceDisplayMode {
+	case Grid
+	case ActiveSpeaker
+	case AudioOnly
 }
