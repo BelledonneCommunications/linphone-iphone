@@ -39,7 +39,7 @@ import linphonesw
 		super.init(title: VoipTexts.call_action_calls_list)
 		
 		// New Call
-		let newCall = CallControlButton(width: buttons_size,height: buttons_size, buttonTheme: VoipTheme.call_add, onClickAction: {
+		let newCall = CallControlButton(width: buttons_size,height: buttons_size, imageInset:UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10), buttonTheme: VoipTheme.call_add, onClickAction: {
 			let view: DialerView = self.VIEW(DialerView.compositeViewDescription());
 			view.setAddress("")
 			CallManager.instance().nextCallIsTransfer = false
