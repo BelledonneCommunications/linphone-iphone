@@ -213,11 +213,9 @@ class VoipTheme { // Names & values replicated from Android
 	
 	static let call_record = ButtonTheme(
 		tintableStateIcons:[
-			UIButton.State.normal.rawValue : TintableIcon(name: "voip_call_record",tintColor: LightDarkColor(voip_gray_blue_color,voip_gray_blue_color)),
-			UIButton.State.selected.rawValue : TintableIcon(name: "voip_call_record",tintColor: LightDarkColor(.white,.white)),
-			UIButton.State.highlighted.rawValue : TintableIcon(name: "voip_call_record",tintColor: LightDarkColor(primary_color,primary_color)),
+			UIButton.State.normal.rawValue : TintableIcon(name: "voip_call_record",tintColor: LightDarkColor(.white,.white)),
 		],
-		backgroundStateColors: button_call_recording_background)
+		backgroundStateColors: button_toggle_background)
 	
 	static let call_pause = ButtonTheme(
 		tintableStateIcons:[
