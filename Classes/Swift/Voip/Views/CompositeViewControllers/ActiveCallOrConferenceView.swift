@@ -328,7 +328,7 @@ import linphonesw
 				if (data?.isOutgoing.value == true || data?.isIncoming.value == true) {
 					PhoneMainView.instance().popView(self.compositeViewDescription())
 				} else {
-					if (data!.isCallingAConference()) {
+					if (data!.isInRemoteConference.value == true) {
 						PhoneMainView.instance().pop(toView: self.compositeViewDescription())
 					} else {
 						PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())

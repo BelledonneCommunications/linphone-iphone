@@ -111,9 +111,9 @@ import UIKit
 	static let conference_info_confirm_removal_delete = NSLocalizedString("Delete",comment:"")
 	static let conference_last_user = NSLocalizedString("All other participants have left the group call",comment:"")
 	static let conference_first_to_join = NSLocalizedString("You're the first to join the group call",comment:"")
+	static let conference_incoming_title = NSLocalizedString("Incoming group call",comment:"")
+	static let conference_participants_title = NSLocalizedString("%d participants",comment:"")
 
-	
-	
 	
 	// Call Stats
 	

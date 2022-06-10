@@ -206,6 +206,15 @@ import AVFoundation
 				Log.directLog(BCTBX_LOG_MESSAGE, text: "Voice recording in progress, stopping it befoce accepting the call.")
 				chatView.stopVoiceRecording()
 			}
+			
+			if (call.callLog?.wasConference() == true) {
+				// Prevent incoming group call to start in audio only layout
+				// Do the same as the conference waiting room
+				callParams.videoEnabled = true
+				callParams.videoDirection = Core.get().videoActivationPolicy?.automaticallyInitiate == true ?  .SendRecv : .RecvOnly
+				Log.i("[Context] Enabling video on call params to prevent audio-only layout when answering")
+			}
+			
 			try call.acceptWithParams(params: callParams)
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "accept call failed \(error)")
@@ -430,6 +439,11 @@ import AVFoundation
 			CallManager.instance().endCallkit = false
 		}
 	}
+	
+	func isConferenceCall(call:Call) -> Bool {
+		let remoteAddress = call.remoteAddress?.asStringUriOnly()
+		return remoteAddress?.contains("focus") == true || remoteAddress?.contains("audiovideo") == true
+	}
 
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
@@ -452,9 +466,31 @@ import AVFoundation
 
 			switch cstate {
 				case .IncomingReceived:
-					let addr = call.remoteAddress;
-					let displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknown"
+					let addr = call.remoteAddress
+					var displayName = ""
+					let isConference = isConferenceCall(call: call)
+					let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
+					if (isConference) {
+						if (isEarlyConference) {
+							displayName = VoipTexts.conference_incoming_title
+						} else {
+							displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
+						}
+					} else {
+						displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknown"
+					}
+				
 					if (CallManager.callKitEnabled()) {
+						if (isEarlyConference) {
+							CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
+								let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+								if (uuid != nil) {
+									displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
+									CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+								}
+							}
+						}
+						
 						let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
 						if (uuid != nil) {
 							// Tha app is now registered, updated the call already existed.

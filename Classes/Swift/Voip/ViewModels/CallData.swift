@@ -32,6 +32,11 @@ class CallData  {
 	let isRemotelyRecorded = MutableLiveData<Bool>()
 	let isInRemoteConference = MutableLiveData<Bool>()
 	let remoteConferenceSubject = MutableLiveData<String>()
+	let isConferenceCall = MediatorLiveData<Bool>()
+	let conferenceParticipants = MutableLiveData<[Address]>()
+	let conferenceParticipantsCountLabel = MutableLiveData<String>()
+	let callKitConferenceLabel = MutableLiveData<String>()
+
 	let isOutgoing = MutableLiveData<Bool>()
 	let isIncoming = MutableLiveData<Bool>()
 	let callState = MutableLiveData<Call.State>()
@@ -58,6 +63,14 @@ class CallData  {
 			}
 		)
 		call.addDelegate(delegate: callDelegate!)
+		
+		remoteConferenceSubject.readCurrentAndObserve { _ in
+			self.isConferenceCall.value = self.remoteConferenceSubject.value?.count ?? 0 > 0  || self.conferenceParticipants.value?.count ?? 0 > 0
+		}
+		conferenceParticipants.readCurrentAndObserve { _ in
+			self.isConferenceCall.value = self.remoteConferenceSubject.value?.count ?? 0 > 0  || self.conferenceParticipants.value?.count ?? 0 > 0
+		}
+		
 		update()
 	}
 	
@@ -86,13 +99,12 @@ class CallData  {
 		isPaused.value = isCallPaused()
 		isRemotelyPaused.value = isCallRemotelyPaused()
 		canBePaused.value = canCallBePaused()
-		let conference = call.conference
-		isInRemoteConference.value = conference != nil || isCallingAConference()
-		if (conference != nil) {
-			remoteConferenceSubject.value = ConferenceViewModel.getConferenceSubject(conference: conference!)
-		}
+		
+		updateConferenceInfo()
+
 		isOutgoing.value = isOutGoing()
 		isIncoming.value = isInComing()
+		
 		if (call.mediaInProgress()) {
 			DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
 				self.update()
@@ -103,6 +115,43 @@ class CallData  {
 		callState.value = call.state		
 	}
 	
+	private func updateConferenceInfo() {
+		let conference = call.conference
+		isInRemoteConference.value = conference != nil
+		if (conference != nil) {
+			Log.d("[Call] Found conference attached to call")
+			remoteConferenceSubject.value = ConferenceViewModel.getConferenceSubject(conference: conference!)
+			Log.d("[Call] Found conference related to this call with subject \(remoteConferenceSubject.value)")
+			var participantsList:[Address] = []
+			conference?.participantList.forEach {
+				$0.address.map {participantsList.append($0)}
+			}
+			conferenceParticipants.value = participantsList
+			conferenceParticipantsCountLabel.value = VoipTexts.conference_participants_title.replacingOccurrences(of:"%d",with:String(participantsList.count))
+		} else {
+			if let conferenceAddress = getConferenceAddress(call: call), let conferenceInfo =  Core.get().findConferenceInformationFromUri(uri:conferenceAddress) {
+				Log.d("[Call] Found matching conference info with subject: \(conferenceInfo.subject)")
+				remoteConferenceSubject.value = conferenceInfo.subject
+				var participantsList:[Address] = []
+				conferenceInfo.participants.forEach {
+					participantsList.append($0)
+				}
+				// Add organizer if not in participants list
+				if let organizer = conferenceInfo.organizer {
+					if (participantsList.filter { $0.weakEqual(address2: organizer) }.first == nil) {
+						participantsList.insert(organizer, at:0)
+					}
+					conferenceParticipants.value = participantsList
+					conferenceParticipantsCountLabel.value = VoipTexts.conference_participants_title.replacingOccurrences(of:"%d",with:String(participantsList.count))
+				}
+			}
+		}
+	}
+	
+	func getConferenceAddress(call: Call) -> Address? {
+		let remoteContact = call.remoteContact
+		return call.dir == .Incoming ? (remoteContact != nil ? Core.get().interpretUrl(url: remoteContact) : nil) : call.remoteAddress
+	}
 	
 	func sendDTMF(dtmf:String) {
 		enteredDTMF.value = enteredDTMF.value! + dtmf
@@ -150,8 +199,5 @@ class CallData  {
 		isPaused.value = isCallPaused()
 	}
 	
-	func isCallingAConference() -> Bool {
-		return CallManager.getAppData(call: call.getCobject!)?.isConference == true
-	}
-	
+
 }
