@@ -349,6 +349,14 @@ import AVFoundation
 	}
 	
 	func setHeld(call: Call, hold: Bool) {
+		
+		#if targetEnvironment(simulator)
+		if (hold) {
+			try?call.pause()
+		} else {
+			try?call.resume()
+		}
+		#else
 		let callid = call.callLog?.callId ?? ""
 		let uuid = providerDelegate.uuids["\(callid)"]
 		if (uuid == nil) {
@@ -358,6 +366,7 @@ import AVFoundation
 		let setHeldAction = CXSetHeldCallAction(call: uuid!, onHold: hold)
 		let transaction = CXTransaction(action: setHeldAction)
 		requestTransaction(transaction, action: "setHeld")
+		#endif
 	}
 
 	@objc func setHeldOtherCalls(exceptCallid: String) {

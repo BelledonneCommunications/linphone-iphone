@@ -59,7 +59,6 @@ class CallData  {
 		)
 		call.addDelegate(delegate: callDelegate!)
 		update()
-		initChatRoom()
 	}
 	
 	
@@ -104,59 +103,6 @@ class CallData  {
 		callState.value = call.state		
 	}
 	
-	private func initChatRoom() {
-		
-		return // V1 work around
-		
-		let localSipUri = Core.get().defaultAccount?.params?.identityAddress?.asStringUriOnly()
-		let remoteSipUri = call.remoteAddress?.asStringUriOnly()
-		let conference = call.conference
-
-		
-		guard
-			let localSipUri = Core.get().defaultAccount?.params?.identityAddress?.asStringUriOnly(),
-			let remoteSipUri = call.remoteAddress?.asStringUriOnly(),
-			let localAddress = try?Factory.Instance.createAddress(addr: localSipUri),
-			let remoteSipAddress = try?Factory.Instance.createAddress(addr: remoteSipUri)
-		else {
-			Log.e("[Call] Failed to get either local \(localSipUri.orNil) or remote \(remoteSipUri.orNil) SIP address!")
-			return
-		}
-		do {
-			if let conferenceInfo = Core.get().findConferenceInformationFromUri(uri: call.remoteAddress!), let params = try?Core.get().createDefaultChatRoomParams() {
-				params.subject = conferenceInfo.subject
-				params.backend = ChatRoomBackend.FlexisipChat
-				params.groupEnabled = true
-				chatRoom = Core.get().searchChatRoom(params: params, localAddr: localAddress, remoteAddr: nil, participants: conferenceInfo.participants)
-			} else {
-				chatRoom = Core.get().searchChatRoom(params: nil, localAddr: localAddress, remoteAddr: remoteSipAddress, participants: [])
-				if (chatRoom == nil) {
-					chatRoom = Core.get().searchChatRoom(params: nil, localAddr: localAddress, remoteAddr: nil, participants: [remoteSipAddress])
-				}
-			}
-			
-			if (chatRoom == nil) {
-				let chatRoomParams = try Core.get().createDefaultChatRoomParams()
-				if let conferenceInfo = Core.get().findConferenceInformationFromUri(uri: call.remoteAddress!) {
-					Log.w("[Call] Failed to find existing chat room with same subject & participants, creating it")
-					chatRoomParams.backend = ChatRoomBackend.FlexisipChat
-					chatRoomParams.groupEnabled = true
-					chatRoomParams.subject = conferenceInfo.subject
-					chatRoom = try?Core.get().createChatRoom(params: chatRoomParams, localAddr: localAddress, participants: conferenceInfo.participants)
-				} else {
-					Log.w("[Call] Failed to find existing chat room with same participants, creating it")
-					// TODO: configure chat room params
-					chatRoom = try?Core.get().createChatRoom(params: chatRoomParams, localAddr: localAddress, participants: [remoteSipAddress])
-				}
-			}
-			
-			if (chatRoom == nil) {
-				Log.e("[Call] Failed to create a chat room for local address \(localSipUri) and remote address \(remoteSipUri)!")
-			}
-		} catch {
-			Log.e("[Call] Exception caught initiating a chat room for local address \(localSipUri) and remote address \(remoteSipUri) Error : \(error)!")
-		}
-	}
 	
 	func sendDTMF(dtmf:String) {
 		enteredDTMF.value = enteredDTMF.value! + dtmf

@@ -37,7 +37,7 @@ import UIKit
 	static let call_error_incompatible_media_params = NSLocalizedString("Incompatible media parameters",comment:"")
 	static let call_error_network_unreachable = NSLocalizedString("Network is unreachable",comment:"")
 	static let call_error_io_error = NSLocalizedString("Service unavailable or network error",comment:"")
-	static let call_error_server_timeout = NSLocalizedString("Server timeout",comment:"")
+	static let call_error_server_timeout = NSLocalizedString("Server error, please try again later.",comment:"")
 	static let call_error_temporarily_unavailable = NSLocalizedString("Temporarily unavailable",comment:"")
 	static let call_error_generic = NSLocalizedString("Error: %s",comment:"")
 	static let call_video_update_requested_dialog = NSLocalizedString("Correspondent would like to turn the video on",comment:"")
@@ -109,6 +109,11 @@ import UIKit
 	static let conference_creation_failed = NSLocalizedString("Failed to create conference",comment:"")
 	static let conference_info_confirm_removal = NSLocalizedString("Do you really want to delete this conference?",comment:"")
 	static let conference_info_confirm_removal_delete = NSLocalizedString("Delete",comment:"")
+	static let conference_last_user = NSLocalizedString("All other participants have left the group call",comment:"")
+	static let conference_first_to_join = NSLocalizedString("You're the first to join the group call",comment:"")
+
+	
+	
 	
 	// Call Stats
 	

@@ -276,7 +276,20 @@ import linphonesw
 			self.audioRoutesView!.isHidden = audioRoutesSelected != true
 		}
 		audioRoutesView!.alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
-						
+		
+		// First/Last to join conference :
+		
+		ConferenceViewModel.shared.allParticipantsLeftEvent.observe { (allLeft) in
+			if (allLeft == true) {
+				VoipDialog.toast(message: VoipTexts.conference_last_user)
+			}
+		}
+		ConferenceViewModel.shared.firstToJoinEvent.observe { (first) in
+			if (first == true) {
+				VoipDialog.toast(message: VoipTexts.conference_first_to_join)
+			}
+		}
+								
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

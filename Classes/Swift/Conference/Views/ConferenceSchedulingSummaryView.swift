@@ -140,7 +140,7 @@ import SVProgressHUD
 		contentView.addSubview(viaChatLabel)
 		viaChatLabel.matchParentSideBorders(insetedByDx: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).done()
 		ConferenceSchedulingViewModel.shared.sendInviteViaChat.readCurrentAndObserve { (sendChat) in
-      viaChatLabel.isHidden = sendChat != true || ConferenceSchedulingViewModel.shared.scheduleForLater.value != true
+      viaChatLabel.isHidden = sendChat != true || ConferenceSchedulingViewModel.shared.scheduleForLater.value != true
 		}
 			
 		// Participants
@@ -191,10 +191,6 @@ import SVProgressHUD
 			enableCreationTimeOut = false
 			if (ConferenceSchedulingViewModel.shared.scheduleForLater.value == true) {
 				PhoneMainView.instance().pop(toView:ScheduledConferencesView.compositeDescription)
-			} else {
-				let view: ConferenceWaitingRoomFragment = self.VIEW(ConferenceWaitingRoomFragment.compositeViewDescription());
-				PhoneMainView.instance().pop(toView:view.compositeViewDescription())
-				view.setDetails(subject: pair!.second!, url: pair!.first!)
 			}
 		}
 		ConferenceSchedulingViewModel.shared.onErrorEvent.observe { error in
