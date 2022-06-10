@@ -39,7 +39,7 @@ class ConferenceWaitingRoomViewModel: ControlsViewModel {
 	}
 	
 	func reset() {
-		joinLayout.value = .Grid
+		joinLayout.value = .ActiveSpeaker // TODO add setting
 		joinInProgress.value = false
 		isMicrophoneMuted.value = !micAuthorized()
 		isMuteMicrophoneEnabled.value = true

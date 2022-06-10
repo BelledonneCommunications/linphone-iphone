@@ -30,6 +30,7 @@ class VoipGridParticipantCell: UICollectionViewCell {
 	static let avatar_size =  80.0
 	let switch_camera_button_margins = 8.0
 	let switch_camera_button_size = 30
+	let pause_label_left_margin = 5
 
 
 	let videoView = UIView()
@@ -129,7 +130,7 @@ class VoipGridParticipantCell: UICollectionViewCell {
 		displayName.alignParentLeft(withMargin:ActiveCallView.bottom_displayname_margin_left).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 	
 		contentView.addSubview(pauseLabel)
-		pauseLabel.toRightOf(displayName).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
+		pauseLabel.toRightOf(displayName,withLeftMargin: pause_label_left_margin).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 
 		contentView.matchParentDimmensions().done()
 	}

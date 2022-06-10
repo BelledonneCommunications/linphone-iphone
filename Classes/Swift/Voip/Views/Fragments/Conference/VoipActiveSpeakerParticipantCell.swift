@@ -124,8 +124,9 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 		contentView.addSubview(displayName)
 		displayName.matchParentSideBorders(insetedByDx:ActiveCallView.bottom_displayname_margin_left).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 	
-		contentView.addSubview(pauseLabel)
-		pauseLabel.toRightOf(displayName).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
+		// Paused label commented out (Android 10.06.2022)
+		// contentView.addSubview(pauseLabel)
+		//pauseLabel.toRightOf(displayName).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 
 		contentView.matchParentDimmensions().done()
 		makeHeightMatchWidth().done()
