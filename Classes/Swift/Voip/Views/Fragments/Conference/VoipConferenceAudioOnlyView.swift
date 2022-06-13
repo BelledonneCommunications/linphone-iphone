@@ -23,10 +23,10 @@ import Foundation
 import SnapKit
 import linphonesw
 
-class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class VoipConferenceAudioOnlyView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 	
 	// Layout constants :
-	let inter_cell = 10.0
+	let inter_cell = 5.0
 	let record_pause_button_margin = 10.0
 	let duration_margin_top = 4.0
 	let record_pause_button_size = 40
@@ -125,7 +125,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		})
 		pauseCallButtons.append(pauseCall)
 		recordPauseView.addArrangedSubview(pauseCall)
-								   
+									 
 		upperSection.addArrangedSubview(recordPauseView)
 		
 		headerView.addArrangedSubview(upperSection)
@@ -137,7 +137,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		// CollectionView
 		grid.dataSource = self
 		grid.delegate = self
-		grid.register(VoipGridParticipantCell.self, forCellWithReuseIdentifier: "VoipGridParticipantCell")
+		grid.register(VoipAudioOnlyParticipantCell.self, forCellWithReuseIdentifier: "VoipAudioOnlyParticipantCell")
 		grid.backgroundColor = .clear
 		grid.isScrollEnabled = false
 		addSubview(gridContainer)
@@ -149,30 +149,6 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	
 		headerView.matchParentSideBorders().alignParentTop().done()
 				
-		
-		// Full screen video togggle
-		gridContainer.onClick {
-			ControlsViewModel.shared.toggleFullScreen()
-		}
-		
-		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
-				return
-			}
-			self.gridContainer.removeConstraints().done()
-			if (fullScreen == true) {
-				self.gridContainer.removeFromSuperview()
-				PhoneMainView.instance().mainViewController.view?.addSubview(self.gridContainer)
-				self.gridContainer.matchParentDimmensions().center().done()
-			} else {
-				self.gridContainer.removeFromSuperview()
-				self.addSubview(self.gridContainer)
-				self.gridContainer.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
-			}
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-				self.reloadData()
-			}
-		}
 	}
 	
 	
@@ -181,25 +157,17 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	func reloadData() {
 		conferenceViewModel?.conferenceParticipantDevices.value?.forEach {
 			$0.clearObservers()
-		}		
+		}
 		if (self.isHidden) {
 			self.grid.reloadData()
 			return
 		}
-		computeCellSize()
 		self.grid.reloadData()
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-			let width:CGFloat = CGFloat(self.columnCount) * self.cellSize.width + (CGFloat(self.columnCount)-1.0)*self.inter_cell
-			let height:CGFloat = CGFloat(self.rowCount) * self.cellSize.height + (CGFloat(self.rowCount)-1.0)*self.inter_cell
-			if (width > 0) {
-				self.grid.removeConstraints().width(width).height(height).center().done()
-			}
-		}
 	}
 	
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-	   return inter_cell
+		 return inter_cell
 	}
 
 	func collectionView(_ collectionView: UICollectionView, layout
@@ -219,7 +187,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell:VoipGridParticipantCell = collectionView.dequeueReusableCell(withReuseIdentifier: "VoipGridParticipantCell", for: indexPath) as! VoipGridParticipantCell
+		let cell:VoipAudioOnlyParticipantCell = collectionView.dequeueReusableCell(withReuseIdentifier: "VoipAudioOnlyParticipantCell", for: indexPath) as! VoipAudioOnlyParticipantCell
 		guard let participantData = conferenceViewModel?.conferenceParticipantDevices.value?[indexPath.row] else {
 			return cell
 		}
@@ -227,44 +195,17 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		return cell
 	}
 	
-	let placement = [[1, 2, 3, 4, 5, 6], [1, 1, 2, 2, 3,3], [1, 1, 1, 2, 2, 2],  [1, 1, 1, 1, 2, 2],  [1, 1, 1, 1, 1, 2],  [1, 1, 1, 1, 1, 1]]
-	var cellSize: CGSize = .zero
-	var columnCount: Int = 0
-	var rowCount: Int = 0
-	
-	func computeCellSize() {
-		let participantsCount = self.collectionView(self.grid, numberOfItemsInSection: 0)
-		if (participantsCount == 0) {
-			return
-		}
-		let availableSize = gridContainer.frame.size
-		var maxSize = 0.0
-		for rowCount in 1...participantsCount {
-			let neededColumns = placement[rowCount-1][participantsCount-1]
-			let candidateWidth = availableSize.width / CGFloat(neededColumns) - CGFloat((neededColumns-1) * Int(inter_cell))
-			let candidateHeight = availableSize.height / CGFloat(rowCount) - CGFloat((rowCount - 1) * Int(inter_cell))
-			let candidateSize = min(candidateWidth,candidateHeight)
-			if (candidateSize > maxSize) {
-				self.columnCount = neededColumns
-				self.rowCount = rowCount
-				maxSize = candidateSize
-			}
-			Log.i("neededColumns \(neededColumns) rowCount \(rowCount) availableSize \(availableSize) participantsCount \(participantsCount) candidateWidth \(candidateWidth) candidateHeight \(candidateHeight) candidateSize \(candidateSize) maxSize \(maxSize)")
-		}
-				
-		cellSize =  CGSize(width: maxSize ,height: maxSize)
-	}
-	
 	func collectionView(_ collectionView: UICollectionView,
 						layout collectionViewLayout: UICollectionViewLayout,
 						sizeForItemAt indexPath: IndexPath) -> CGSize {
 		
-		guard let _ = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
+		guard let participantsCount:Int = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
 			return .zero
 		}
 		
-		return cellSize
+		return participantsCount == 1 ? CGSize(width:collectionView.frame.size.width,height:VoipAudioOnlyParticipantCell.cell_height) :  CGSize(width:collectionView.frame.size.width / 2.0 - inter_cell / 2.0,height:VoipAudioOnlyParticipantCell.cell_height)
 	}
+	
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")

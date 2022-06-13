@@ -39,9 +39,7 @@ extension Address {
 	}
 	
 	func addressBookEnhancedDisplayName() -> String?  {
-		if (username == Core.get().defaultAccount?.contactAddress?.username) {
-			return VoipTexts.me
-		} else if let contact = FastAddressBook.getContactWith(getCobject) {
+		if let contact = FastAddressBook.getContactWith(getCobject) {
 			return contact.displayName
 		} else if (!displayName.isEmpty) {
 			return displayName

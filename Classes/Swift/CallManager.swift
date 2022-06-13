@@ -286,9 +286,13 @@ import AVFoundation
 				lcallParams.mediaEncryption = .ZRTP
 			}
 			if (isConference) {
-				lcallParams.videoEnabled = true
-				lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
-				lcallParams.conferenceVideoLayout = ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value!
+				if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
+					lcallParams.videoEnabled = true
+					lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
+					lcallParams.conferenceVideoLayout = ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! == .Grid ? .Grid : .ActiveSpeaker
+				} else {
+					lcallParams.videoEnabled = false
+				}
 			} else {
 				lcallParams.videoEnabled = isVideo
 			}

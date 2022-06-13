@@ -23,7 +23,6 @@ import UIKit
 @objc class VoipTexts : NSObject { // From android key names. Added intentionnally with NSLocalizedString calls for each key, so it can be picked up by translation system (Weblate or Xcode).
 	
 	static let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as! String
-	static let me = NSLocalizedString("Me",comment:"")
 
 	// Calls
 	static let call_incoming_title = NSLocalizedString("Incoming Call",comment:"")
@@ -95,6 +94,7 @@ import UIKit
 	static let conference_invite_participants_count = NSLocalizedString("%d participants",comment:"")
 	static let conference_display_mode_mosaic = NSLocalizedString("Mosaic mode",comment:"")
 	static let conference_display_mode_active_speaker = NSLocalizedString("Active speaker mode",comment:"")
+	static let conference_display_mode_audio_only = NSLocalizedString("Audio only mode",comment:"")
 	static let conference_display_no_active_speaker = NSLocalizedString("No active speaker",comment:"")
 	static let conference_waiting_room_start_call = NSLocalizedString("Start",comment:"")
 	static let conference_waiting_room_cancel_call = NSLocalizedString("Cancel",comment:"")

@@ -27,7 +27,7 @@ class VoipTheme { // Names & values replicated from Android
 	static let voip_light_gray = UIColor(hex:"#D0D8DE")
 	static let voip_dark_gray = UIColor(hex:"#4B5964")
 	static let voip_gray = UIColor(hex:"#96A5B1")
-	static let voip_gray_background = UIColor(hex:"#D8D8D8")
+	static let voip_gray_background = UIColor(hex:"#AFAFAF")
 	static let voip_call_record_background = UIColor(hex:"#EBEBEB")
 	static let voip_calls_list_inactive_background = UIColor(hex:"#F0F1F2")
 	static let voip_translucent_popup_background = UIColor(hex:"#A64B5964")
@@ -115,6 +115,8 @@ class VoipTheme { // Names & values replicated from Android
 	static let conference_participant_sip_uri_font = TextStyle(fgColor: LightDarkColor(primary_color,primary_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 12.0)
 	static let conference_participant_name_font_grid = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 15.0)
 	static let conference_participant_name_font_as = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 12.0)
+	static let conference_participant_name_font_audio_only = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName, size: 14.0)
+
 	static let conference_mode_title = TextStyle(fgColor: LightDarkColor(dark_grey_color,dark_grey_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 17.0)
 	static let conference_mode_title_selected = conference_mode_title.boldEd()
 	static let conference_scheduling_font = TextStyle(fgColor: voipTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 17.0)

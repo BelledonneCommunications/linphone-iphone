@@ -33,6 +33,8 @@ import linphonesw
 	var currentCallView : ActiveCallView? = nil
 	var conferenceGridView: VoipConferenceGridView? = nil
 	var conferenceActiveSpeakerView: VoipConferenceActiveSpeakerView? = nil
+	var conferenceAudioOnlyView: VoipConferenceAudioOnlyView? = nil
+
 	let conferenceJoinSpinner = RotatingSpinner()
 
 
@@ -116,18 +118,17 @@ import linphonesw
 		fullScreenMutableContainerView.addSubview(conferenceGridView!)
 		conferenceGridView?.matchParentDimmensions().done()
 		conferenceGridView?.isHidden = true
-		ConferenceViewModel.shared.conferenceExists.readCurrentAndObserve { (isInConference) in
+		ConferenceViewModel.shared.conferenceExists.readCurrentAndObserve { (exists) in
 			self.updateNavigation()
-			if (isInConference == true) { 
+			if (exists == true) {
 				self.currentCallView!.isHidden = true
 				self.extraButtonsView.isHidden = true
 				self.conferencePausedView?.isHidden = true
-				let conferenceMode = ConferenceViewModel.shared.conferenceDisplayMode.value
-				self.conferenceGridView!.isHidden = conferenceMode != .Grid
-				self.conferenceActiveSpeakerView?.isHidden = conferenceMode != .ActiveSpeaker
-				self.conferenceGridView?.conferenceViewModel = ConferenceViewModel.shared
+				self.displaySelectedConferenceLayout()
 			} else {
 				self.conferenceGridView?.isHidden = true
+				self.conferenceActiveSpeakerView?.isHidden = true
+				self.conferenceActiveSpeakerView?.isHidden = true
 			}
 		}
 		
@@ -148,20 +149,18 @@ import linphonesw
 		conferenceActiveSpeakerView?.matchParentDimmensions().done()
 		conferenceActiveSpeakerView?.isHidden = true
 		
-		// Conference mode switching
+		
+		// Conference audio only
+		conferenceAudioOnlyView = VoipConferenceAudioOnlyView()
+		fullScreenMutableContainerView.addSubview(conferenceAudioOnlyView!)
+		conferenceAudioOnlyView?.matchParentDimmensions().done()
+		conferenceAudioOnlyView?.isHidden = true
+				
 
 		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { (conferenceMode) in
 			if (ConferenceViewModel.shared.conferenceExists.value == true) {
-				self.conferenceGridView!.isHidden = conferenceMode != .Grid
-				self.conferenceActiveSpeakerView!.isHidden = conferenceMode != .ActiveSpeaker
-				self.conferenceActiveSpeakerView?.conferenceViewModel = ConferenceViewModel.shared
-			} else {
-				self.conferenceActiveSpeakerView?.isHidden = true
+				self.displaySelectedConferenceLayout()
 			}
-		}
-		
-		ConferenceViewModel.shared.conferenceExists.readCurrentAndObserve { (isInConference) in
-			self.updateNavigation()
 		}
 		
 		// Calls List
@@ -189,9 +188,8 @@ import linphonesw
 			self.view.addSubview(self.dismissableView!)
 			self.dismissableView?.matchParentDimmensions().done()
 			let activeDisplayMode =  ConferenceViewModel.shared.conferenceDisplayMode.value!
-			let indexPath = IndexPath(row: activeDisplayMode == .Grid ? 0 : 1, section: 0)
+			let indexPath = IndexPath(row: activeDisplayMode == .Grid ? 0 :  activeDisplayMode == .ActiveSpeaker ? 1 : 2, section: 0)
 			(self.dismissableView as! VoipConferenceDisplayModeSelectionView).optionsListView.selectRow(at:indexPath, animated: true, scrollPosition: .bottom)
-
 		}
 		
 		// Shading mask, everything before will be shaded upon displaying of the mask
@@ -290,6 +288,22 @@ import linphonesw
 			}
 		}
 								
+	}
+	
+	func displaySelectedConferenceLayout() {
+		let conferenceMode = ConferenceViewModel.shared.conferenceDisplayMode.value
+		self.conferenceGridView!.isHidden = conferenceMode != .Grid
+		self.conferenceActiveSpeakerView!.isHidden = conferenceMode != .ActiveSpeaker
+		self.conferenceAudioOnlyView!.isHidden = conferenceMode != .AudioOnly
+		if (conferenceMode == .Grid) {
+			self.conferenceGridView?.conferenceViewModel = ConferenceViewModel.shared
+		}
+		if (conferenceMode == .AudioOnly) {
+			self.conferenceAudioOnlyView?.conferenceViewModel = ConferenceViewModel.shared
+		}
+		if (conferenceMode == .ActiveSpeaker) {
+			self.conferenceActiveSpeakerView?.conferenceViewModel = ConferenceViewModel.shared
+		}
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

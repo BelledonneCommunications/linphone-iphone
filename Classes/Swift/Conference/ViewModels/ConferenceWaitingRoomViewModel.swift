@@ -28,7 +28,7 @@ class ConferenceWaitingRoomViewModel: ControlsViewModel {
 	static let sharedModel = ConferenceWaitingRoomViewModel()
 
 	
-	let joinLayout = MutableLiveData<ConferenceLayout>()
+	let joinLayout = MutableLiveData<ConferenceDisplayMode>()
 	let joinInProgress = MutableLiveData<Bool>(false)
 	let showLayoutPicker = MutableLiveData<Bool>()
 	
@@ -39,12 +39,12 @@ class ConferenceWaitingRoomViewModel: ControlsViewModel {
 	}
 	
 	func reset() {
-		joinLayout.value = .ActiveSpeaker // TODO add setting
+		joinLayout.value = Core.get().defaultConferenceLayout == .Grid ? .Grid : .ActiveSpeaker
 		joinInProgress.value = false
 		isMicrophoneMuted.value = !micAuthorized()
 		isMuteMicrophoneEnabled.value = true
 		isSpeakerSelected.value = true
-		isVideoEnabled.value = true
+		isVideoEnabled.value = false
 		isVideoAvailable.value = core.videoCaptureEnabled
 		showLayoutPicker.value = false
 	}

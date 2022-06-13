@@ -46,7 +46,7 @@ import linphonesw
 	// TableView datasource delegate
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return 2
+		return 3
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -66,6 +66,14 @@ import linphonesw
 			}, image:(UIImage(named: "voip_conference_active_speaker")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
 			cell.isUserInteractionEnabled = true
 		}
+		
+		if (indexPath.row == 2) {
+			cell.setOption(title: VoipTexts.conference_display_mode_audio_only, onSelectAction:  {
+				ConferenceViewModel.shared.changeLayout(layout: .AudioOnly)
+				ConferenceViewModel.shared.conferenceDisplayMode.value = .AudioOnly
+			}, image:(UIImage(named: "voip_conference_audio_only")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
+			cell.isUserInteractionEnabled = true
+		}
 	
 		cell.separatorInset = .zero
 		cell.selectionStyle = .none
@@ -78,9 +86,15 @@ import linphonesw
 		cell.isSelected = true
 		if (indexPath.row == 0) {
 			tableView.deselectRow(at: IndexPath(row: 1, section: 0), animated: false)
+			tableView.deselectRow(at: IndexPath(row: 2, section: 0), animated: false)
 		}
 		if (indexPath.row == 1) {
 			tableView.deselectRow(at: IndexPath(row: 0, section: 0), animated: false)
+			tableView.deselectRow(at: IndexPath(row: 2, section: 0), animated: false)
+		}
+		if (indexPath.row == 2) {
+			tableView.deselectRow(at: IndexPath(row: 0, section: 0), animated: false)
+			tableView.deselectRow(at: IndexPath(row: 1, section: 0), animated: false)
 		}
 	}
 	
