@@ -827,6 +827,8 @@
 		C6D1E42427595988008EB388 /* security_toggle_icon_grey.png in Resources */ = {isa = PBXBuildFile; fileRef = C6D1E42227595987008EB388 /* security_toggle_icon_grey.png */; };
 		C6D1E42527595988008EB388 /* security_toggle_icon_green.png in Resources */ = {isa = PBXBuildFile; fileRef = C6D1E42327595988008EB388 /* security_toggle_icon_green.png */; };
 		C6D1EC4A274D212B0091881C /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = C6D1EC49274D212B0091881C /* UICamSwitch.m */; };
+		C6D446C928572876005C67B7 /* VoipConferenceAudioOnlyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D446C828572876005C67B7 /* VoipConferenceAudioOnlyView.swift */; };
+		C6D446CB28572897005C67B7 /* VoipAudioOnlyParticipantCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D446CA28572897005C67B7 /* VoipAudioOnlyParticipantCell.swift */; };
 		C6D52B45274648E500904660 /* VoipGridParticipantCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D52B44274648E500904660 /* VoipGridParticipantCell.swift */; };
 		C6DA657C261C950C0020CB43 /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA657B261C950C0020CB43 /* VFSUtil.swift */; };
 		C6DB1DE22757E35F00A22704 /* StyledTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DB1DE12757E35F00A22704 /* StyledTextView.swift */; };
@@ -2001,6 +2003,8 @@
 		C6D1E42327595988008EB388 /* security_toggle_icon_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = security_toggle_icon_green.png; sourceTree = "<group>"; };
 		C6D1EC48274D212A0091881C /* UICamSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICamSwitch.h; sourceTree = "<group>"; };
 		C6D1EC49274D212B0091881C /* UICamSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICamSwitch.m; sourceTree = "<group>"; };
+		C6D446C828572876005C67B7 /* VoipConferenceAudioOnlyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipConferenceAudioOnlyView.swift; sourceTree = "<group>"; };
+		C6D446CA28572897005C67B7 /* VoipAudioOnlyParticipantCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipAudioOnlyParticipantCell.swift; sourceTree = "<group>"; };
 		C6D52B44274648E500904660 /* VoipGridParticipantCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipGridParticipantCell.swift; sourceTree = "<group>"; };
 		C6DA657B261C950C0020CB43 /* VFSUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VFSUtil.swift; sourceTree = "<group>"; };
 		C6DB1DE12757E35F00A22704 /* StyledTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StyledTextView.swift; sourceTree = "<group>"; };
@@ -3547,6 +3551,8 @@
 		C6D52B4727481D3F00904660 /* Conference */ = {
 			isa = PBXGroup;
 			children = (
+				C6D446C828572876005C67B7 /* VoipConferenceAudioOnlyView.swift */,
+				C6D446CA28572897005C67B7 /* VoipAudioOnlyParticipantCell.swift */,
 				C6C98CE0274568F700059B55 /* VoipConferenceGridView.swift */,
 				C6D52B44274648E500904660 /* VoipGridParticipantCell.swift */,
 				C6B04D66274BD61200F70559 /* VoipConferenceActiveSpeakerView.swift */,
@@ -4996,6 +5002,7 @@
 				C6C98CCE27438A3F00059B55 /* DismissableView.swift in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
+				C6D446C928572876005C67B7 /* VoipConferenceAudioOnlyView.swift in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				C60D265C272AA0BD006238BB /* UIImageExtensions.swift in Sources */,
 				C6D09F3D273EE467003C2173 /* BouncingCounter.swift in Sources */,
@@ -5109,6 +5116,7 @@
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
 				6381DA7D1C1AD5EA00DF3BBD /* UIBouncingView.m in Sources */,
 				C6C98CDD274547C500059B55 /* ParticipantExtensions.swift in Sources */,
+				C6D446CB28572897005C67B7 /* VoipAudioOnlyParticipantCell.swift in Sources */,
 				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 				C6F2D505273BB3BB0071BA52 /* UIApplication+Extension.swift in Sources */,
 				C65A5D3F27216E3A005BA038 /* CallData.swift in Sources */,
@@ -5685,7 +5693,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.156+f3dd1fe\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.199+1355eaf\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5812,7 +5820,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.156+f3dd1fe\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.199+1355eaf\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -5938,7 +5946,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.156+f3dd1fe\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.199+1355eaf\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
@@ -6063,7 +6071,7 @@
 					"-DENABLE_QRCODE=TRUE",
 					"-DENABLE_SMS_INVITE=TRUE",
 					"$(inherited)",
-					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.156+f3dd1fe\\\"",
+					"-DLINPHONE_SDK_VERSION=\\\"5.2.0-alpha.199+1355eaf\\\"",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
