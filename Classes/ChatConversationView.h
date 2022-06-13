@@ -56,6 +56,7 @@
     UIConfirmationDialog *securityDialog;
     UIRefreshControl *refreshControl;
 	BOOL isOneToOne;
+	BOOL isEncrypted;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;

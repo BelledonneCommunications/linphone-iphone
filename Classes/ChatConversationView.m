@@ -116,6 +116,7 @@
 		_chatRoomCbs = NULL;
         securityDialog = NULL;
 		isOneToOne = TRUE;
+		isEncrypted = FALSE;
 		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -330,6 +331,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (peerAddr) {
 		_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
 		isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+		isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
 	}
 	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
@@ -407,10 +409,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self update];
     [self shareFile];
 	
-	if (![ChatConversationView isBasicChatRoom:_chatRoom]) {
-		[self setupPopupMenu];
-		_ephemeralndicator.hidden = !linphone_chat_room_ephemeral_enabled(_chatRoom);
-	}
+	[self setupPopupMenu];
+	_ephemeralndicator.hidden = !linphone_chat_room_ephemeral_enabled(_chatRoom);
     [self handlePendingTransferIfAny];
 
 }
@@ -421,6 +421,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(room);
 	return capabilities & LinphoneChatRoomCapabilitiesBasic;
 }
+
+-(BOOL) isEncryptedChatRoom:(LinphoneChatRoom *)room {
+	if (!room)
+		return true;
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(room);
+	return capabilities & LinphoneChatRoomCapabilitiesBasic;
+}
+
 
 
 - (void)configureMessageField {
@@ -480,6 +488,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         if (peerAddr) {
             _chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
 			isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+			isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
         }
         [self configureForRoom:self.editing];
         if (_chatRoom && _markAsRead) {
@@ -654,8 +663,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_backToCallButton update];
 	_infoButton.hidden = (isOneToOne|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
-	_toggleMenuButton.hidden =  [ChatConversationView isBasicChatRoom:_chatRoom] || _tableController.tableView.isEditing;
-	_tableController.editButton.hidden = _tableController.editButton.hidden || ![ChatConversationView isBasicChatRoom:_chatRoom];
+	_toggleMenuButton.hidden = _tableController.isEditing;
 }
 
 - (void)updateParticipantLabel {
@@ -814,16 +822,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LOGI(@"onDeleteClick");
 	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete the selected messages?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
-		cancelMessage:nil
-		confirmMessage:nil
-		onCancelClick:^() {
-		  [self onEditionChangeClick:nil];
-		}
-		onConfirmationClick:^() {
-		  [_tableController removeSelectionUsing:nil];
-		  [_tableController loadData];
-		  [self onEditionChangeClick:nil];
-		}];
+							cancelMessage:nil
+						   confirmMessage:nil
+							onCancelClick:^() {
+		[self onEditionChangeClick:nil];
+	}
+					  onConfirmationClick:^() {
+		[_tableController removeSelectionUsing:nil];
+		_tableController.editButton.hidden = true;
+		[_tableController loadData];
+		[self onEditionChangeClick:nil];
+	}];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
@@ -870,7 +879,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 }
 
-- (IBAction)onInfoClick:(id)sender {
+- (void)displayGroupInfo {
 	NSMutableArray *contactsArray = [[NSMutableArray alloc] init];
 	NSMutableArray *admins = [[NSMutableArray alloc] init];
 	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
@@ -895,6 +904,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	view.room = _chatRoom;
 	view.peerAddress = _peerAddress;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (IBAction)onInfoClick:(id)sender {
+	[self displayGroupInfo];
 }
 
 #pragma mark ChatRoomDelegate
@@ -1651,16 +1664,69 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 // Popup menu
+-(void) addOrGoToContact:(const LinphoneAddress *)contactAddress {
+	Contact *contact = [FastAddressBook getContactWithAddress:contactAddress];
+	
+	if (contact) {
+		ContactDetailsView *view = VIEW(ContactDetailsView);
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		[ContactSelection setSelectionMode:ContactSelectionModeNone];
+		[view setContact:contact];
+	} else {
+		char *lAddress = linphone_address_as_string_uri_only(contactAddress);
+		if (lAddress != NULL) {
+			NSString *normSip = [NSString stringWithUTF8String:lAddress];
+			normSip = [normSip hasPrefix:@"sip:"] ? [normSip substringFromIndex:4] : normSip;
+			normSip = [normSip hasPrefix:@"sips:"] ? [normSip substringFromIndex:5] : normSip;
+			[ContactSelection setAddAddress:normSip];
+			[ContactSelection setSelectionMode:ContactSelectionModeEdit];
+			[ContactSelection enableSipFilter:FALSE];
+			[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
+			ms_free(lAddress);
+		}
+	}
+}
 
+-(BOOL) isConversationMuted {
+	return FALSE; // TODO
+}
+-(void) toggleMuteConversation {
+	// TODO
+}
 
--(BOOL) canAdminEphemeral:(LinphoneChatRoom *)cr {
+-(void) showAddressAndIdentityPopup {
+	
+	char *localAddress = linphone_address_as_string(linphone_chat_room_get_local_address(_chatRoom));
+	char *peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(_chatRoom));
+	NSString *infoMsg = [NSString stringWithFormat:@"Chat room id:\n%s\nLocal account:\n%s", peerAddress, localAddress];
+	ms_free(localAddress);
+	ms_free(peerAddress);
+	
+	UIAlertController *popupView =
+	[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Chatroom debug infos", nil)
+										message:infoMsg
+								 preferredStyle:UIAlertControllerStyleAlert];
+	
+	UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Copy to clipboard", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction *action) {
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		pasteboard.string = infoMsg;
+	}];
+	
+	[popupView addAction:defaultAction];
+	[self presentViewController:popupView animated:YES completion:nil];
+	
+}
+
+-(BOOL) canAdminEphemeral:(const LinphoneChatRoom *)cr {
 	if (!cr) return FALSE;
+	if ([ChatConversationView isBasicChatRoom:_chatRoom]) return FALSE;
 	
 	// If ephemeral mode is DeviceManaged, then we don't need to check anything else
 	return	(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeDeviceManaged)
 	||	( linphone_chat_room_has_capability(cr, LinphoneChatRoomCapabilitiesEphemeral) && linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeAdminManaged && linphone_participant_is_admin(linphone_chat_room_get_me(cr)));
 }
-
 
 - (void) setupPopupMenu {
 	_popupMenu.dataSource = self;
@@ -1678,19 +1744,38 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self onToggleMenu:nil];
+	BOOL isEncrypted = ![ChatConversationView isBasicChatRoom:_chatRoom];
+	
 	if (indexPath.row == 0) {
+		if (isOneToOne) {
+			[self addOrGoToContact:linphone_chat_room_get_peer_address(_chatRoom)];
+		} else {
+			[self displayGroupInfo];
+		}
+	}
+	
+	if (isEncrypted && indexPath.row == 1) {
 		[self goToDeviceListView];
 	}
-	if (indexPath.row == 1) {
+	
+	BOOL canEphemeral = [self canAdminEphemeral:_chatRoom];
+	if (canEphemeral && indexPath.row == 2) {
+		EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
+		view.room = _chatRoom;
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	}
+	if ((!isEncrypted && indexPath.row == 1) || (isEncrypted && indexPath.row == 3)) {
+		[self toggleMuteConversation];
+	}
+	
+	if ((!isEncrypted && indexPath.row == 2) || (isEncrypted && indexPath.row == 4)) {
 		[_tableController onEditClick:nil];
 		[self onEditionChangeClick:nil];
 	}
-	if ([self canAdminEphemeral:_chatRoom]) {
-		if (indexPath.row == 2) {
-			EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
-			view.room = _chatRoom;
-			[PhoneMainView.instance popToView:view.compositeViewDescription];
-		}
+	
+	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4)||(canEphemeral && indexPath.row == 5)))
+		|| (!isEncrypted && indexPath.row == 3)) {
+		[self showAddressAndIdentityPopup];
 	}
 }
 
@@ -1699,27 +1784,73 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self canAdminEphemeral:_chatRoom] ? 3 : 2;
+	int nbRows = 3;
+	
+	if ([LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"] == 1) // DEBOGUE == ALL
+		++nbRows;
+	
+	if (!isEncrypted)
+		return nbRows;
+	else
+		++nbRows;
+	
+	if ([self canAdminEphemeral:_chatRoom])
+		++nbRows;
+	
+	return nbRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
 	
 	if (indexPath.row == 0) {
+		if (isOneToOne) {
+			Contact *contact = [FastAddressBook getContactWithAddress:linphone_chat_room_get_peer_address(_chatRoom)];
+			if (contact == nil) {
+				cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"contact_add_default.png"] newSize:CGSizeMake(20, 25)];
+				cell.textLabel.text = NSLocalizedString(@"Add to contacts",nil);
+			} else {
+				cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"contacts_all_default.png"] newSize:CGSizeMake(20, 25)];
+				cell.textLabel.text = NSLocalizedString(@"Go to contact",nil);
+			}
+		} else {
+			cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"chat_group_informations.png"] newSize:CGSizeMake(20, 25)];
+			cell.textLabel.text = NSLocalizedString(@"Group infos",nil);
+		}
+	}
+	
+	if (isEncrypted && indexPath.row == 1) {
 		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_security_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Conversation's devices",nil);
 	}
-	if (indexPath.row == 1) {
+	
+	bool canEphemeral = [self canAdminEphemeral:_chatRoom];
+	if (canEphemeral && indexPath.row == 2) {
+		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
+	}
+	
+	if ((isEncrypted && indexPath.row == 3) || (!isEncrypted && indexPath.row == 1)) {
+		if ([self isConversationMuted]) {
+			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_off.png"] newSize:CGSizeMake(20, 25)];
+			cell.textLabel.text = NSLocalizedString(@"NOT IMPLEMENTED",nil);
+		} else {
+			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_on.png"] newSize:CGSizeMake(20, 25)];
+			cell.textLabel.text = NSLocalizedString(@"NOT IMPLEMENTED",nil);
+		}
+	}
+	
+	if ((isEncrypted && indexPath.row == 4) || (!isEncrypted && indexPath.row == 2)) {
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
 	}
 	
-	if ([self canAdminEphemeral:_chatRoom]) {
-		if (indexPath.row == 2) {
-			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
-			cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
-		}
+	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4)||(canEphemeral && indexPath.row == 5)))
+		|| (!isEncrypted && indexPath.row == 3)) {
+		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"chat_group_informations.png"] newSize:CGSizeMake(20, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Show address and identity",nil);
 	}
+	
 	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 	return cell;
 }
@@ -1729,9 +1860,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		[_popupMenu selectRowAtIndexPath:nil animated:false scrollPosition:UITableViewScrollPositionNone];
 }
 
-
-// Voice redcording
-
+// Voice recording
 
 - (IBAction)onVrDelete:(id)sender {
 	[self cancelVoiceRecording];
