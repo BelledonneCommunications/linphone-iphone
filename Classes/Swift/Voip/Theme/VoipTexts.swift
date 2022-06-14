@@ -113,7 +113,9 @@ import UIKit
 	static let conference_first_to_join = NSLocalizedString("You're the first to join the group call",comment:"")
 	static let conference_incoming_title = NSLocalizedString("Incoming group call",comment:"")
 	static let conference_participants_title = NSLocalizedString("%d participants",comment:"")
-
+	@objc static let conference_start_group_call_dialog_message = NSLocalizedString("Do you want to start a group call?\nEveryone in this group will receive a call to join the meeting.",comment:"")
+	@objc static let conference_start_group_call_dialog_ok_button = NSLocalizedString("START",comment:"")
+	
 	
 	// Call Stats
 	

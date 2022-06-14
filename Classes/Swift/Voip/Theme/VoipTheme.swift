@@ -20,12 +20,12 @@
 import Foundation
 import UIKit
 
-class VoipTheme { // Names & values replicated from Android
+@objc class VoipTheme : NSObject { // Names & values replicated from Android
 	
 	// Voip Colors
 	static let voip_gray_blue_color = UIColor(hex:"#798791")
 	static let voip_light_gray = UIColor(hex:"#D0D8DE")
-	static let voip_dark_gray = UIColor(hex:"#4B5964")
+	@objc static let voip_dark_gray = UIColor(hex:"#4B5964")
 	static let voip_gray = UIColor(hex:"#96A5B1")
 	static let voip_gray_background = UIColor(hex:"#AFAFAF")
 	static let voip_call_record_background = UIColor(hex:"#EBEBEB")

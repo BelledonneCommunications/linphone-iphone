@@ -20,6 +20,7 @@
 
 import Foundation
 import linphonesw
+import linphone
 import AVFoundation
 
 class ConferenceViewModel {
@@ -54,6 +55,8 @@ class ConferenceViewModel {
 	
 	private var conferenceDelegate :  ConferenceDelegateStub?
 	private var coreDelegate :  CoreDelegateStub?
+	
+	var conferenceScheduler:ConferenceScheduler? = nil
 	
 	init ()  {
 		conferenceDelegate = ConferenceDelegateStub(
@@ -427,7 +430,8 @@ class ConferenceViewModel {
 	
 }
 
-@objc class ConferenceViewModelBridge : NSObject {	
+@objc class ConferenceViewModelBridge : NSObject {
+	
 	@objc static func updateParticipantsList(addresses:[String]) {
 		do {
 			try ConferenceViewModel.shared.updateParticipants(addresses: addresses.map { try Factory.Instance.createAddress(addr: $0)} )
@@ -435,6 +439,25 @@ class ConferenceViewModel {
 			Log.e("[ParticipantsListView] unable to update participants list \(error)")
 		}
 	}
+	
+	
+	@objc static func startGroupCall(cChatRoom: OpaquePointer ) {
+		let core = Core.get()
+		let chatRoom = ChatRoom.getSwiftObject(cObject: cChatRoom)
+		guard let localAddress = chatRoom.localAddress?.clone() else {
+			Log.e("[Group Call] Couldn't get local address from default account!")
+			return
+		}
+		localAddress.clean() // Remove GRUU
+		ConferenceViewModel.shared.conferenceScheduler = try?Core.get().createConferenceScheduler()
+		let conferenceInfo = try?Factory.Instance.createConferenceInfo()
+		conferenceInfo?.participants = chatRoom.participants.map {$0.address!}
+		conferenceInfo?.organizer = localAddress
+		conferenceInfo?.subject = chatRoom.subject
+		ConferenceViewModel.shared.conferenceScheduler?.account = core.accountList.filter { $0.params?.identityAddress?.weakEqual(address2: localAddress) == true}.first
+		ConferenceViewModel.shared.conferenceScheduler?.info = conferenceInfo // Will trigger the conference creation automatically
+	}
+	
 }
 
 

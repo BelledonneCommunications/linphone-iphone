@@ -196,6 +196,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_vrInnerView.layer.masksToBounds = YES;
 	_vrWaveMaskPlayer.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_L"]]; // rgba(1,88,7,0.2);
 	_showVoiceRecorderView = false;
+	_callButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
 	
 }
 
@@ -638,12 +639,32 @@ static UICompositeViewDescription *compositeDescription = nil;
 					 }];
 }
 
+- (BOOL) groupCallAvailable {
+	if (isOneToOne || !_backToCallButton.hidden || _tableController.tableView.isEditing)
+		return false;
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	if (!account)
+		return false;
+	const LinphoneAccountParams *params = linphone_account_get_params(account);
+	if (!params)
+		return false;
+	return linphone_account_params_get_audio_video_conference_factory_address(params) != nil || linphone_account_params_get_conference_factory_uri(params) != nil;
+	
+}
+
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	_infoButton.hidden = (isOneToOne|| !_backToCallButton.hidden || _tableController.tableView.isEditing);
-	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
+	_callButton.hidden = !_backToCallButton.hidden || _tableController.tableView.isEditing;
 	_toggleMenuButton.hidden =  [self isBasicChatRoom] || _tableController.tableView.isEditing;
 	_tableController.editButton.hidden = _tableController.editButton.hidden || ![self isBasicChatRoom];
+	
+	// Group call :
+	if (self.groupCallAvailable ) {
+		[_callButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
+		_callButton.hidden = false;
+	} else {
+		[_callButton setImage:[UIImage imageNamed:@"call_alt_start_default"] forState:UIControlStateNormal];
+	}
 }
 
 - (void)updateParticipantLabel {
@@ -841,7 +862,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 	LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 	const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
-	[LinphoneManager.instance call:addr];
+	
+	if (self.groupCallAvailable) {
+		UIConfirmationDialog *d = [UIConfirmationDialog ShowWithMessage:VoipTexts.conference_start_group_call_dialog_message
+															cancelMessage:nil
+														 confirmMessage:VoipTexts.conference_start_group_call_dialog_ok_button
+															onCancelClick:^() {}
+													onConfirmationClick:^() {
+			[ConferenceViewModelBridge startGroupCallWithCChatRoom:_chatRoom];
+		}];
+		d.groupCallImage.hidden = NO;
+		[d.groupCallImage setImageNamed:@"voip_conference_new" tintColor:UIColor.whiteColor];
+		[d setSpecialColor];
+		[d setWhiteCancel];
+	} else
+		[LinphoneManager.instance call:addr];
 }
 
 - (IBAction)onListSwipe:(id)sender {
@@ -1655,14 +1690,17 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self onToggleMenu:nil];
 	if (indexPath.row == 0) {
-		[self goToDeviceListView];
+		[self onInfoClick:nil];
 	}
 	if (indexPath.row == 1) {
+		[self goToDeviceListView];
+	}
+	if (indexPath.row == 2) {
 		[_tableController onEditClick:nil];
 		[self onEditionChangeClick:nil];
 	}
 	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom]) {
-		if (indexPath.row == 2) {
+		if (indexPath.row == 3) {
 			EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
 			view.room = _chatRoom;
 			[PhoneMainView.instance popToView:view.compositeViewDescription];
@@ -1675,22 +1713,27 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom] ? 3 : 2;
+	return [ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom] ? 4 : 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
 	
 	if (indexPath.row == 0) {
+		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"chat_group_informations.png"] newSize:CGSizeMake(25, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Group infos",nil);
+	}
+	
+	if (indexPath.row == 1) {
 		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_security_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Conversation's devices",nil);
 	}
-	if (indexPath.row == 1) {
+	if (indexPath.row == 2) {
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
 	}
 	if ([ConfigManager.instance lpConfigBoolForKeyWithKey:@"ephemeral_feature" defaultValue:false] && [self canAdminEphemeral:_chatRoom]) {
-		if (indexPath.row == 2) {
+		if (indexPath.row == 3) {
 			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
 			cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
 		}

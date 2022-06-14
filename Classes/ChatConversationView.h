@@ -80,7 +80,6 @@
 @property(nonatomic, strong) IBOutlet UIButton *pictureButton;
 @property(weak, nonatomic) IBOutlet UIButton *callButton;
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
-@property (weak, nonatomic) IBOutlet UIButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 @property NSMutableArray <NSNumber *> *qualitySettingsArray;
 @property (weak, nonatomic) IBOutlet UICollectionView *imagesCollectionView;

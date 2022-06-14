@@ -56,7 +56,7 @@ class ConferenceSchedulingViewModel  {
 	
 	let selectedAddresses = MutableLiveData<[Address]>([])
 	
-	private let conferenceScheduler = try? Core.get().createConferenceScheduler()
+	private var conferenceScheduler: ConferenceScheduler? = nil
 	
 	
 	private var hour: Int = 0
@@ -112,11 +112,7 @@ class ConferenceSchedulingViewModel  {
 				self.conferenceCreationCompletedEvent.value = Pair(conferenceAddress.asStringUriOnly(),self.conferenceScheduler?.info?.subject)
 			}
 		)
-		
-		
-		conferenceScheduler?.addDelegate(delegate: conferenceSchedulerDelegate!)
-		
-		
+				
 		chatRooomDelegate = ChatRoomDelegateStub(
 			onStateChanged : { (room: ChatRoom, state: ChatRoom.State) -> Void in
 				if (state == ChatRoom.State.Created) {
@@ -182,8 +178,7 @@ class ConferenceSchedulingViewModel  {
 	func gotoChatRoom() {
 		
 	}
-	
-	
+		
 	func createConference() {
 		
 		if (selectedAddresses.value?.count == 0) {
@@ -197,6 +192,9 @@ class ConferenceSchedulingViewModel  {
 				Log.e("[Conference Creation] Couldn't get local address from default account!")
 				return
 			}
+			
+			conferenceScheduler = try? Core.get().createConferenceScheduler()
+			conferenceScheduler?.addDelegate(delegate: conferenceSchedulerDelegate!)
 		
 			let conferenceInfo = try Factory.Instance.createConferenceInfo()
 			conferenceInfo.organizer = localAddress

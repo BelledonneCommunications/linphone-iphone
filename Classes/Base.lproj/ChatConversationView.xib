@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,7 +21,6 @@
                 <outlet property="ephemeralndicator" destination="LN7-ci-kNn" id="hqU-98-qkJ"/>
                 <outlet property="imagesCollectionView" destination="JGQ-p2-HCX" id="6dt-1f-jpa"/>
                 <outlet property="imagesView" destination="3qd-ys-t2L" id="f9L-FU-PMI"/>
-                <outlet property="infoButton" destination="Vqb-Un-4xv" id="pa1-Iz-5QQ"/>
                 <outlet property="landscapeView" destination="VoU-7Q-fgp" id="iRJ-sh-thF"/>
                 <outlet property="listSwipeGestureRecognizer" destination="dzw-n4-l9i" id="JVP-Vl-lIa"/>
                 <outlet property="listTapGestureRecognizer" destination="tkk-Tm-A7C" id="gqU-iJ-RGm"/>
@@ -183,22 +182,6 @@
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="eP5-bU-LEA"/>
-                                    </connections>
-                                </button>
-                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vqb-Un-4xv" userLabel="infoButton" customClass="UIInterfaceStyleButton">
-                                    <rect key="frame" x="248" y="0.0" width="83" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Select all"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="chat_group_informations.png">
-                                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </state>
-                                    <state key="disabled" image="select_all_disabled.png"/>
-                                    <state key="selected" image="select_all_default.png"/>
-                                    <state key="highlighted" backgroundImage="color_E.png"/>
-                                    <connections>
-                                        <action selector="onInfoClick:" destination="-1" eventType="touchUpInside" id="VfD-K7-V15"/>
                                     </connections>
                                 </button>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" fixedFrame="YES" text="addresses" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ncq-Zc-X6j" userLabel="participantsLabel">

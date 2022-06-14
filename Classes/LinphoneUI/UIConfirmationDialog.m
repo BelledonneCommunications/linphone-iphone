@@ -19,6 +19,7 @@
 
 #import "UIConfirmationDialog.h"
 #import "PhoneMainView.h"
+#import "linphoneapp-Swift.h""
 
 @implementation UIConfirmationDialog
 + (UIConfirmationDialog *)initDialog:(NSString *)cancel
@@ -95,6 +96,12 @@
 	[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_L.png"]] CGColor];
 	_cancelButton.layer.borderColor =
 	[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
+}
+
+-(void) setWhiteCancel {
+	[_cancelButton setBackgroundImage:nil forState:UIControlStateNormal];
+	[_cancelButton setBackgroundColor:UIColor.whiteColor];
+	[_cancelButton setTitleColor:VoipTheme.voip_dark_gray forState:UIControlStateNormal];
 }
 
 - (IBAction)onCancelClick:(id)sender {
