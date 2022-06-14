@@ -89,10 +89,10 @@ import linphonesw
 			self.currentCallView!.isHidden = currentCallData == nil || ConferenceViewModel.shared.conferenceExists.value == true
 			self.currentCallView!.callData = currentCallData != nil ? currentCallData! : nil
 			currentCallData??.isRemotelyPaused.readCurrentAndObserve { remotelyPaused in
-				self.callPausedByRemoteView?.isHidden = remotelyPaused != true
+				self.callPausedByRemoteView?.isHidden = remotelyPaused != true || ConferenceViewModel.shared.conferenceExists.value == true
 			}
 			currentCallData??.isPaused.readCurrentAndObserve { locallyPaused in
-				self.callPausedByLocalView?.isHidden = locallyPaused != true
+				self.callPausedByLocalView?.isHidden = locallyPaused != true || ConferenceViewModel.shared.conferenceExists.value == true
 			}
 			if (currentCallData == nil) {
 				self.callPausedByRemoteView?.isHidden = true
