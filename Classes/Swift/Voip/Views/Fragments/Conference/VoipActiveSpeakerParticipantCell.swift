@@ -27,7 +27,7 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 	
 	// Layout Constants
 	let corner_radius = 20.0
-	static let avatar_size =  80.0
+	static let avatar_size =  50.0
 	let switch_camera_button_margins = 8.0
 	let switch_camera_button_size = 30
 	static let mute_size = 25
@@ -35,7 +35,7 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 
 
 	let videoView = UIView()
-	let avatar = Avatar(diameter:VoipGridParticipantCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_medium)
+	let avatar = Avatar(diameter:VoipActiveSpeakerParticipantCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_medium)
 	let pause = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_as)
@@ -112,13 +112,13 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 		videoView.matchParentDimmensions().done()
 		
 		contentView.addSubview(avatar)
-		avatar.size(w: VoipGridParticipantCell.avatar_size, h: VoipGridParticipantCell.avatar_size).center().done()
+		avatar.size(w: VoipActiveSpeakerParticipantCell.avatar_size, h: VoipActiveSpeakerParticipantCell.avatar_size).center().done()
 		
 		contentView.addSubview(pause)
-		pause.layer.cornerRadius = VoipGridParticipantCell.avatar_size/2
+		pause.layer.cornerRadius = VoipActiveSpeakerParticipantCell.avatar_size/2
 		pause.clipsToBounds = true
 		pause.backgroundColor = VoipTheme.voip_gray
-		pause.size(w: VoipGridParticipantCell.avatar_size, h: VoipGridParticipantCell.avatar_size).center().done()
+		pause.size(w: VoipActiveSpeakerParticipantCell.avatar_size, h: VoipActiveSpeakerParticipantCell.avatar_size).center().done()
 		
 		contentView.addSubview(switchCamera)
 		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()

@@ -31,7 +31,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let duration_margin_top = 4.0
 	let record_pause_button_size = 40
 	let record_pause_button_inset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
-	let grid_height = 150.0
+	let grid_height = 100.0
 	let cell_width = 100.0
 
 	
