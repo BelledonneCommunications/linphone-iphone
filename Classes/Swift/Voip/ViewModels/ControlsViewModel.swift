@@ -85,6 +85,9 @@ class ControlsViewModel {
 			UIDevice.current.isProximityMonitoringEnabled = enabled == true
 		}
 		updateUI()
+		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { _ in
+			self.updateVideoAvailable()
+		}
 	}
 	
 	private func setAudioRoutes(_ call:Call,_ state:Call.State) {
@@ -189,8 +192,12 @@ class ControlsViewModel {
 	
 	private func updateVideoAvailable() {
 		let currentCall = core.currentCall
-		isVideoAvailable.value = (core.videoCaptureEnabled || core.videoPreviewEnabled) &&
-		((currentCall != nil && currentCall?.mediaInProgress() != true) || core.conference?.isIn == true)
+		isVideoAvailable.value =
+			(core.videoCaptureEnabled || core.videoPreviewEnabled) &&
+			currentCall?.state != .Paused &&
+			currentCall?.state != .PausedByRemote &&
+		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true)) &&
+		(ConferenceViewModel.shared.conferenceExists.value != true || ConferenceViewModel.shared.conferenceDisplayMode.value != .AudioOnly)
 	}
 	
 	private func updateVideoEnabled() {
