@@ -97,6 +97,12 @@ import linphonesw
 			}
 			self.extraButtonsView.isHidden = true
 			self.conferencePausedView?.isHidden = true
+			if (ConferenceViewModel.shared.conferenceExists.value != true) {
+				self.conferenceGridView?.isHidden = true
+				self.conferenceActiveSpeakerView?.isHidden = true
+				self.conferenceAudioOnlyView?.isHidden = true
+			}
+			
 		}
 	
 		currentCallView!.matchParentDimmensions().done()
