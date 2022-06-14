@@ -385,13 +385,13 @@ import linphonesw
 	}
 	
 	func goToChat() {
-		guard
+		/*guard
 			let chatRoom = CallsViewModel.shared.currentCallData.value??.chatRoom
 		else {
 			Log.w("[Call] Failed to find existing chat room associated to call")
 				return
-		}
-		PhoneMainView.instance().go(to: chatRoom.getCobject)
+		}*/
+		PhoneMainView.instance().changeCurrentView(ChatsListView.compositeViewDescription())
 		
 	}
 	
