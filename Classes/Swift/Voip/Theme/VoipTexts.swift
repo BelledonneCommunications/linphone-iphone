@@ -115,6 +115,10 @@ import UIKit
 	static let conference_participants_title = NSLocalizedString("%d participants",comment:"")
 	@objc static let conference_start_group_call_dialog_message = NSLocalizedString("Do you want to start a group call?\nEveryone in this group will receive a call to join the meeting.",comment:"")
 	@objc static let conference_start_group_call_dialog_ok_button = NSLocalizedString("START",comment:"")
+	static let conference_edit_error = NSLocalizedString("Unable to edit conference this time, date is invalid",comment:"")
+	static let conference_schedule_info_created = NSLocalizedString("Meeting has been scheduled",comment:"")
+	static let conference_info_removed = NSLocalizedString("Meeting info has been deleted",comment:"")
+
 	
 	
 	// Call Stats

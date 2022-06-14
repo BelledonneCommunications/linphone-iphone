@@ -65,6 +65,7 @@ class ConferenceSchedulingViewModel  {
 	private var chatRooomDelegate : ChatRoomDelegate? = nil
 	private var conferenceSchedulerDelegate : ConferenceSchedulerDelegateStub? = nil
 	
+	var existingConfInfo:ConferenceInfo? = nil
 	
 	init () {
 		
@@ -161,10 +162,10 @@ class ConferenceSchedulingViewModel  {
 		scheduledDuration.value = ConferenceSchedulingViewModel.durationList.indices.filter {
 			ConferenceSchedulingViewModel.durationList[$0].value == 60
 		}.first
-		
 		continueEnabled.value = false
-    
     selectedAddresses.value = []
+		existingConfInfo = nil
+		description.value = ""
     
 	}
 	
@@ -196,7 +197,10 @@ class ConferenceSchedulingViewModel  {
 			conferenceScheduler = try? Core.get().createConferenceScheduler()
 			conferenceScheduler?.addDelegate(delegate: conferenceSchedulerDelegate!)
 		
-			let conferenceInfo = try Factory.Instance.createConferenceInfo()
+			guard let conferenceInfo = existingConfInfo != nil ? existingConfInfo : try Factory.Instance.createConferenceInfo() else {
+				Log.e("[Conference Creation/Update] Failed, unable to get conf info.")
+				return
+			}
 			conferenceInfo.organizer = localAddress
 			subject.value.map { conferenceInfo.subject = $0}
 			description.value.map { conferenceInfo.description = $0}
@@ -208,6 +212,7 @@ class ConferenceSchedulingViewModel  {
 			}
       conferenceScheduler?.account = localAccount
 			conferenceScheduler?.info = conferenceInfo // Will trigger the conference creation automatically
+			existingConfInfo = conferenceInfo
 
 		} catch {
 			Log.e("[Conference Creation] Failed \(error)")

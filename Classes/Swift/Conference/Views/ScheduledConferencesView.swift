@@ -56,7 +56,7 @@ import linphonesw
 			conferenceListView.allowsFocus = false
 		}
 		conferenceListView.separatorStyle = .singleLine
-		conferenceListView.separatorColor = VoipTheme.light_grey_color
+		conferenceListView.separatorColor = .white
 		
 		view.addSubview(noConference)
 		noConference.center().done()

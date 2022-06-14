@@ -34,6 +34,7 @@ import SVProgressHUD
 	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}), readOnly:true)
 	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledTime,pickerMode: .time, readOnly:true)
 	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description, readOnly:true)
+	let createButton = FormButton(backgroundStateColors: VoipTheme.primary_colors_background)
 
 
 	static let compositeDescription = UICompositeViewDescription(ConferenceSchedulingSummaryView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
@@ -170,11 +171,10 @@ import SVProgressHUD
 		}
 		
 		// Create / Schedule
-		let createButton = FormButton(backgroundStateColors: VoipTheme.primary_colors_background)
 		contentView.addSubview(createButton)
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { _ in
-			createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
-      createButton.addSidePadding()
+			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+			self.createButton.addSidePadding()
 		}
 		
 		ConferenceSchedulingViewModel.shared.conferenceCreationInProgress.observe { progress in
@@ -191,6 +191,8 @@ import SVProgressHUD
 			enableCreationTimeOut = false
 			if (ConferenceSchedulingViewModel.shared.scheduleForLater.value == true) {
 				PhoneMainView.instance().pop(toView:ScheduledConferencesView.compositeDescription)
+				VoipDialog.toast(message: VoipTexts.conference_schedule_info_created)
+				
 			}
 		}
 		ConferenceSchedulingViewModel.shared.onErrorEvent.observe { error in
@@ -208,9 +210,9 @@ import SVProgressHUD
 			}
 		}
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (later) in
-			createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
       viaChatLabel.isHidden = later != true || ConferenceSchedulingViewModel.shared.sendInviteViaChat.value != true
-			createButton.addSidePadding()
+			self.createButton.addSidePadding()
 		}
 		
 		createButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).done()
@@ -223,6 +225,7 @@ import SVProgressHUD
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
 		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledTime
 		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
+		createButton.addSidePadding()
 		super.viewWillAppear(animated)
 	}
 		

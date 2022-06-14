@@ -24,7 +24,7 @@ import UIKit
 extension UIButton {
 	func addSidePadding(p:CGFloat = 10) {
 		if let w = titleLabel?.textWidth {
-			width(w+p).done()
+			width(w+2*p).done()
 		}
 	}
 	

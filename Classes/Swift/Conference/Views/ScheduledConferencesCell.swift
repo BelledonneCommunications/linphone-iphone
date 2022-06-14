@@ -161,8 +161,27 @@ class ScheduledConferencesCell: UITableViewCell {
 		
 		joinEditDelete.addArrangedSubview(editConf)
 		editConf.onClick {
-			// TODO
-			VoipDialog.toast(message: "not available yet")
+			guard let confData = self.conferenceData else {
+				Log.e("Invalid conference date, unable to edit")
+				VoipDialog.toast(message: VoipTexts.conference_edit_error)
+				return
+			}
+			let infoDate = Date(timeIntervalSince1970: Double(confData.conferenceInfo.dateTime))
+			ConferenceSchedulingViewModel.shared.reset()
+			ConferenceSchedulingViewModel.shared.scheduledDate.value = infoDate
+			ConferenceSchedulingViewModel.shared.scheduledTime.value = Date(timeIntervalSince1970: infoDate.timeIntervalSince1970 - Calendar.current.startOfDay(for:  infoDate).timeIntervalSince1970)
+			ConferenceSchedulingViewModel.shared.description.value = confData.description.value
+			ConferenceSchedulingViewModel.shared.subject.value = confData.subject.value
+			ConferenceSchedulingViewModel.shared.scheduledDuration.value = ConferenceSchedulingViewModel.durationList.firstIndex(where: {$0.value == confData.conferenceInfo.duration})
+			ConferenceSchedulingViewModel.shared.scheduleForLater.value = true
+			ConferenceSchedulingViewModel.shared.selectedAddresses.value = []
+			confData.conferenceInfo.participants.forEach {
+				ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append($0)
+			}
+			ConferenceSchedulingViewModel.shared.existingConfInfo = confData.conferenceInfo
+			// TOODO TimeZone (as Android 14.6.2022) ConferenceSchedulingViewModel.shared.scheduledTimeZone.value = self.conferenceData?.timezone
+			let view : ConferenceSchedulingView = self.VIEW(ConferenceSchedulingView.compositeViewDescription())
+			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 		}
 		
 		joinEditDelete.addArrangedSubview(deleteConf)
@@ -171,12 +190,12 @@ class ScheduledConferencesCell: UITableViewCell {
 				Core.get().deleteConferenceInformation(conferenceInfo: self.conferenceData!.conferenceInfo)
 				ScheduledConferencesViewModel.shared.computeConferenceInfoList()
 				self.owningTableView?.reloadData()
+				VoipDialog.toast(message: VoipTexts.conference_info_removed)
 			}, isDestructive:false)
 			let cancel = ButtonAttributes(text:VoipTexts.cancel, action: {}, isDestructive:true)
 			VoipDialog(message:VoipTexts.conference_info_confirm_removal, givenButtons:  [cancel,delete]).show()
 		}
 				
-
 	}
 	
 	required init?(coder: NSCoder) {

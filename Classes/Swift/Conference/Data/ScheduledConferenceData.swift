@@ -25,28 +25,27 @@ import linphonesw
 class ScheduledConferenceData {
 	
 	let conferenceInfo: ConferenceInfo
-    let expanded = MutableLiveData<Bool>()
-
-    let address = MutableLiveData<String>()
-    let subject = MutableLiveData<String>()
-    let description = MutableLiveData<String>()
-    let time = MutableLiveData<String>()
-    let date = MutableLiveData<String>()
-    let duration = MutableLiveData<String>()
-    let organizer = MutableLiveData<String>()
-    let participantsShort = MutableLiveData<String>()
-    let participantsExpanded = MutableLiveData<String>()
-		let rawDate : Date
+	let expanded = MutableLiveData<Bool>()
+	let address = MutableLiveData<String>()
+	let subject = MutableLiveData<String>()
+	let description = MutableLiveData<String>()
+	let time = MutableLiveData<String>()
+	let date = MutableLiveData<String>()
+	let duration = MutableLiveData<String>()
+	let organizer = MutableLiveData<String>()
+	let participantsShort = MutableLiveData<String>()
+	let participantsExpanded = MutableLiveData<String>()
+	let rawDate : Date
 	
-
-    init (conferenceInfo: ConferenceInfo) {
+	
+	init (conferenceInfo: ConferenceInfo) {
 		self.conferenceInfo = conferenceInfo
-        expanded.value = false
-
-        address.value = conferenceInfo.uri?.asStringUriOnly()
-        subject.value = conferenceInfo.subject
-        description.value = conferenceInfo.description
-
+		expanded.value = false
+		
+		address.value = conferenceInfo.uri?.asStringUriOnly()
+		subject.value = conferenceInfo.subject
+		description.value = conferenceInfo.description
+		
 		time.value = TimestampUtils.timeToString(unixTimestamp: Double(conferenceInfo.dateTime))
 		date.value = TimestampUtils.toString(unixTimestamp:Double(conferenceInfo.dateTime), onlyDate:true, shortDate:false)
 		rawDate = Date(timeIntervalSince1970:TimeInterval(conferenceInfo.dateTime))
@@ -59,17 +58,17 @@ class ScheduledConferenceData {
 		
 		organizer.value = conferenceInfo.organizer?.addressBookEnhancedDisplayName()
 		
-        computeParticipantsLists()
-    }
-
-    func destroy() {
-    }
-
-    func toggleExpand() {
-        expanded.value = expanded.value == false
-    }
-
-    private func computeParticipantsLists() {
+		computeParticipantsLists()
+	}
+	
+	func destroy() {
+	}
+	
+	func toggleExpand() {
+		expanded.value = expanded.value == false
+	}
+	
+	private func computeParticipantsLists() {
 		participantsShort.value = conferenceInfo.participants.map {(participant) in
 			String(describing: participant.addressBookEnhancedDisplayName())
 		}.joined(separator: ", ")
@@ -77,7 +76,7 @@ class ScheduledConferenceData {
 		participantsExpanded.value = conferenceInfo.participants.map {(participant) in
 			String(describing: participant.addressBookEnhancedDisplayName())+" ("+String(describing: participant.asStringUriOnly())+")"
 		}.joined(separator: "\n")
-    }
+	}
 	
 	func gotoAssociatedChat() {
 		
