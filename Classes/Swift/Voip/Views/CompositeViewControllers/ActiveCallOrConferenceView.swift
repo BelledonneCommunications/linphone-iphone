@@ -28,6 +28,8 @@ import linphonesw
 	let content_inset = 12.0
 	
 	var callPausedByRemoteView : PausedCallOrConferenceView? = nil
+	var callPausedByLocalView : PausedCallOrConferenceView? = nil
+
 	var conferencePausedView : PausedCallOrConferenceView? = nil
 
 	var currentCallView : ActiveCallView? = nil
@@ -89,8 +91,13 @@ import linphonesw
 			currentCallData??.isRemotelyPaused.readCurrentAndObserve { remotelyPaused in
 				self.callPausedByRemoteView?.isHidden = remotelyPaused != true
 			}
+			currentCallData??.isPaused.readCurrentAndObserve { locallyPaused in
+				self.callPausedByLocalView?.isHidden = locallyPaused != true
+			}
 			if (currentCallData == nil) {
 				self.callPausedByRemoteView?.isHidden = true
+				self.callPausedByLocalView?.isHidden = true
+
 			} else {
 				currentCallData??.isIncoming.readCurrentAndObserve { _ in self.updateNavigation() }
 				currentCallData??.isOutgoing.readCurrentAndObserve { _ in self.updateNavigation() }
@@ -113,11 +120,25 @@ import linphonesw
 		callPausedByRemoteView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		callPausedByRemoteView?.isHidden = true
 		
+		// Paused by local (Call)
+		callPausedByLocalView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.call_locally_paused_title,subTitleText: VoipTexts.call_locally_paused_subtitle)
+		view.addSubview(callPausedByLocalView!)
+		callPausedByLocalView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+		callPausedByLocalView?.isHidden = true
+		callPausedByLocalView?.onClick {
+			CallsViewModel.shared.currentCallData.value??.togglePause()
+		}
+		
+		
+		
 		// Conference paused
-		conferencePausedView = PausedCallOrConferenceView(iconName: "voip_conference_paused_big",titleText: VoipTexts.conference_paused_title,subTitleText: VoipTexts.conference_paused_subtitle)
+		conferencePausedView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.conference_paused_title,subTitleText: VoipTexts.conference_paused_subtitle)
 		view.addSubview(conferencePausedView!)
 		conferencePausedView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		conferencePausedView?.isHidden = true
+		conferencePausedView?.onClick {
+			ConferenceViewModel.shared.togglePlayPause()
+		}
 		
 		// Conference grid
 		conferenceGridView = VoipConferenceGridView()
@@ -161,13 +182,16 @@ import linphonesw
 		fullScreenMutableContainerView.addSubview(conferenceAudioOnlyView!)
 		conferenceAudioOnlyView?.matchParentDimmensions().done()
 		conferenceAudioOnlyView?.isHidden = true
-				
 
 		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { (conferenceMode) in
 			if (ConferenceViewModel.shared.conferenceExists.value == true) {
 				self.displaySelectedConferenceLayout()
 			}
 		}
+		ConferenceViewModel.shared.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
+			self.conferencePausedView?.isHidden = paused != true || ConferenceViewModel.shared.conferenceExists.value != true
+		}
+		
 		
 		// Calls List
 		ControlsViewModel.shared.goToCallsListEvent.observe { (_) in

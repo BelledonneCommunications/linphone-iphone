@@ -56,7 +56,9 @@ import UIKit
 	static let call_context_action_hangup = NSLocalizedString("Terminate call",comment:"")
 	static let call_remote_recording = NSLocalizedString("This call is being recorded.",comment:"")
 	static let call_remotely_paused_title = NSLocalizedString("Call has been paused by remote.",comment:"")
-	
+	static let call_locally_paused_title = NSLocalizedString("You have paused the call.",comment:"")
+	static let call_locally_paused_subtitle = NSLocalizedString("Click on play button to resume it.",comment:"")
+
 	// Conference
 	static let conference_schedule_title = NSLocalizedString("Schedule a meeting",comment:"")
   static let conference_group_call_title = NSLocalizedString("Start a group call",comment:"")
