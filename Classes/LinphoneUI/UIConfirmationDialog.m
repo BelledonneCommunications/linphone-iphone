@@ -102,6 +102,7 @@
 	[_cancelButton setBackgroundImage:nil forState:UIControlStateNormal];
 	[_cancelButton setBackgroundColor:UIColor.whiteColor];
 	[_cancelButton setTitleColor:VoipTheme.voip_dark_gray forState:UIControlStateNormal];
+	_cancelButton.layer.borderColor = UIColor.whiteColor.CGColor;
 }
 
 - (IBAction)onCancelClick:(id)sender {

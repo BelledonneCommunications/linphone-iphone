@@ -660,7 +660,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	// Group call :
 	if (self.groupCallAvailable ) {
-		[_callButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
+		[_callButton setImage: [LinphoneUtils resizeImage:[UIImage imageNamed:@"voip_conference_new"] newSize:CGSizeMake(50, 50)] forState:UIControlStateNormal];
 		_callButton.hidden = false;
 	} else {
 		[_callButton setImage:[UIImage imageNamed:@"call_alt_start_default"] forState:UIControlStateNormal];
