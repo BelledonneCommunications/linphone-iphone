@@ -36,7 +36,7 @@ class ScheduledConferenceData {
     let organizer = MutableLiveData<String>()
     let participantsShort = MutableLiveData<String>()
     let participantsExpanded = MutableLiveData<String>()
-	let rawDate : Date
+		let rawDate : Date
 	
 
     init (conferenceInfo: ConferenceInfo) {

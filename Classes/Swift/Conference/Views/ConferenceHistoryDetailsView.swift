@@ -26,8 +26,12 @@ import linphonesw
 	
 
 	let participantsListTableView = UITableView()
+	let organizerTableView = UITableView()
+
 	let conectionsListTableView = UITableView()
 	let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_participants_list)
+	let organiserLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_organizer)
+
 	let datePicker = StyledDatePicker(pickerMode: .date, readOnly:true)
 	let timePicker = StyledDatePicker(pickerMode: .time, readOnly:true)
 
@@ -38,7 +42,7 @@ import linphonesw
 				self.participantsListTableView.reloadData()
 				self.participantsListTableView.removeConstraints().done()
 				self.participantsListTableView.matchParentSideBorders().alignUnder(view: participantsLabel,withMargin: self.form_margin).done()
-				self.participantsListTableView.height(Double(data.conferenceInfo.participants.count) * VoipParticipantCell.cell_height).done()
+				self.participantsListTableView.height(Double(data.conferenceInfo.participants.count) * VoipParticipantCell.cell_height).alignParentBottom().done()
 				datePicker.liveValue = MutableLiveData(conferenceData!.rawDate)
 				timePicker.liveValue = MutableLiveData(conferenceData!.rawDate)
 			}
@@ -71,7 +75,7 @@ import linphonesw
 		schedulingStack.addArrangedSubview(scheduleForm)
 		scheduleForm.matchParentSideBorders().done()
 		
-		// Left column (Date & Time)
+		// Left column (Date)
 		let leftColumn = UIView()
 		scheduleForm.addSubview(leftColumn)
 		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft(withMargin: form_margin).alignParentTop(withMargin: form_margin).done()
@@ -85,7 +89,7 @@ import linphonesw
 		
 		leftColumn.wrapContentY().done()
 
-		// Right column (Duration & Timezone)
+		// Right column (Time)
 		let rightColumn = UIView()
 		scheduleForm.addSubview(rightColumn)
 		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight(withMargin: form_margin).alignParentTop().done()
@@ -98,13 +102,32 @@ import linphonesw
 		timePicker.alignParentLeft().alignUnder(view: timeLabel,withMargin: form_margin).matchParentSideBorders().done()
 	
 		rightColumn.wrapContentY().done()
-
 		scheduleForm.wrapContentY().done()
+		
+		// Organiser
+		
+		organiserLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+		contentView.addSubview(organiserLabel)
+		organiserLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: schedulingStack,withMargin: form_margin*2).done()
+		organiserLabel.textAlignment = .left
+		
+		contentView.addSubview(organizerTableView)
+		organizerTableView.isScrollEnabled = false
+		organizerTableView.dataSource = self
+		organizerTableView.register(VoipParticipantCell.self, forCellReuseIdentifier: "VoipParticipantCellSSchedule")
+		organizerTableView.allowsSelection = false
+		if #available(iOS 15.0, *) {
+			organizerTableView.allowsFocus = false
+		}
+		organizerTableView.separatorStyle = .singleLine
+		organizerTableView.separatorColor = VoipTheme.light_grey_color
+		organizerTableView.tag = 1;
+		organizerTableView.matchParentSideBorders().height(VoipParticipantCell.cell_height).alignUnder(view: organiserLabel,withMargin: form_margin).done()
 		
 		// Participants
 		participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(participantsLabel)
-		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: schedulingStack,withMargin: form_margin*2).done()
+		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: organizerTableView,withMargin: form_margin).done()
 		participantsLabel.textAlignment = .left
 		
 		contentView.addSubview(participantsListTableView)
@@ -139,7 +162,6 @@ import linphonesw
 		if let conferenceInfo = log.conferenceInfo {
 			self.conferenceData = ScheduledConferenceData(conferenceInfo: conferenceInfo)
 		}
-		//self.callLog = log
 	}
 	
 	
@@ -148,7 +170,7 @@ import linphonesw
 		guard let data = conferenceData else {
 			return 0
 		}
-		return data.conferenceInfo.participants.count
+		return tableView.tag == 1 ? 1 : data.conferenceInfo.participants.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -157,7 +179,7 @@ import linphonesw
 			return cell
 		}
 		cell.selectionStyle = .none
-		cell.scheduleConfParticipantAddress = data.conferenceInfo.participants[indexPath.row]
+		cell.scheduleConfParticipantAddress = tableView.tag == 1 ?  data.conferenceInfo.participants.filter {$0.weakEqual(address2: data.conferenceInfo.organizer!)}.first  : data.conferenceInfo.participants[indexPath.row]
 		cell.limeBadge.isHidden = true
 		return cell
 	}
