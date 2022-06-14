@@ -29,6 +29,7 @@ import linphonesw
 	let top_bar_height = 66.0
 	let navigation_buttons_padding = 18.0
 	let content_margin_top = 20
+	let side_buttons_margin = 5
 	
 	// User by subviews
 	let form_margin = 10.0
@@ -58,11 +59,11 @@ import linphonesw
 		topBar.alignParentTop().height(top_bar_height).matchParentSideBorders().done()
 		
 		topBar.addSubview(backButton)
-		backButton.alignParentLeft().matchParentHeight().done()
+		backButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
 		backButton.onClickAction = backAction
 		
 		topBar.addSubview(nextButton)
-		nextButton.alignParentRight().matchParentHeight().done()
+		nextButton.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
 		nextButton.onClickAction = nextAction
 		nextActionEnableCondition.readCurrentAndObserve { (enableNext) in
 			self.nextButton.isEnabled = enableNext == true

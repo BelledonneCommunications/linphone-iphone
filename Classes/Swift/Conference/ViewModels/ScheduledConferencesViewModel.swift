@@ -50,7 +50,7 @@ class ScheduledConferencesViewModel  {
 		conferences.value!.removeAll()
 		let now = Date().timeIntervalSince1970 // Linphone uses time_t in seconds
 		let oneHourAgo = now - 3600 // Show all conferences from 1 hour ago and forward
-		core.getConferenceInformationListAfterTime(time: time_t(oneHourAgo)).forEach { conferenceInfo in
+		core.getConferenceInformationListAfterTime(time: time_t(oneHourAgo)).filter{$0.duration != 0}.forEach { conferenceInfo in
 			conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
 		}
 		
