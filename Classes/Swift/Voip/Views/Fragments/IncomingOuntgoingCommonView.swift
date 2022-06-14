@@ -43,7 +43,7 @@ import linphonesw
 
 	var callData: CallData? = nil {
 		didSet {
-			duration.call = callData?.call
+			duration.call = callData?.call.dir == .Incoming ? callData?.call : nil
 			callData?.call.remoteAddress.map {
 				avatar.fillFromAddress(address: $0)
 				displayName.text = $0.addressBookEnhancedDisplayName()

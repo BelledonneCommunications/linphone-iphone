@@ -35,7 +35,7 @@ class CallTimer : StyledLabel  {
 	
 	var conference:Conference? = nil {
 		didSet {
-			if (self.call != nil) {
+			if (self.conference != nil) {
 				self.format()
 			}
 		}
@@ -51,8 +51,16 @@ class CallTimer : StyledLabel  {
 		formatter.unitsStyle = .positional
 		formatter.allowedUnits = [.minute, .second ]
 		formatter.zeroFormattingBehavior = [ .pad ]
+		let startDate = Date()
 		Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-			self.format()
+			if (self.call != nil || self.conference != nil) {
+				self.format()
+			} else {
+				let elapsedTime = Date().timeIntervalSince(startDate)
+				self.formatter.string(from: elapsedTime).map {
+					self.text = $0.hasPrefix("0:") ? "0" + $0 : $0
+				}
+			}
 		}
 		minWidth(min_width).done()
 
