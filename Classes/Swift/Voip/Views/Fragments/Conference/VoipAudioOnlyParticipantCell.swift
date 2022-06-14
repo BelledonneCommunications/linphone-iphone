@@ -28,14 +28,14 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 	// Layout Constants
 	static let cell_height = 80.0
 	static let avatar_size =  40.0
-	static let mute_size =  30.0
+	static let mute_size =  30
 	let corner_radius = 6.7
 	let common_margin = 10.0
 
 	
 	let avatar = Avatar(diameter:VoipCallCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_small)
 	let paused = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
-	let muted = UIImageView(image: UIImage(named: "voip_micro_off")?.tinted(with: .white))
+	let muted = MicMuted(VoipAudioOnlyParticipantCell.mute_size)
 
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_as)
 	
@@ -97,11 +97,7 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 		displayName.numberOfLines = 3
 		
 		contentView.addSubview(muted)
-		muted.layer.cornerRadius = VoipAudioOnlyParticipantCell.avatar_size/2
-		muted.clipsToBounds = true
-		muted.backgroundColor = VoipTheme.voip_dark_gray
-		muted.size(w: VoipAudioOnlyParticipantCell.mute_size, h: VoipAudioOnlyParticipantCell.mute_size).alignParentRight(withMargin: common_margin).toRightOf(displayName,withLeftMargin: common_margin).centerY().done()
-						
+		muted.alignParentRight(withMargin: common_margin).toRightOf(displayName,withLeftMargin: common_margin).centerY().done()
 	}
 	
 	required init?(coder: NSCoder) {

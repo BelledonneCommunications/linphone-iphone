@@ -30,6 +30,8 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 	static let avatar_size =  80.0
 	let switch_camera_button_margins = 8.0
 	let switch_camera_button_size = 30
+	static let mute_size = 25
+	let mute_margin = 5
 
 
 	let videoView = UIView()
@@ -38,6 +40,7 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_as)
 	let pauseLabel = StyledLabel(VoipTheme.conference_participant_name_font_as,VoipTexts.conference_participant_paused)
+	let muted = MicMuted(VoipActiveSpeakerParticipantCell.mute_size)
 
 	var participantData: ConferenceParticipantDeviceData? = nil {
 		didSet {
@@ -76,6 +79,10 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 					} else {
 						self.layer.borderWidth = 0
 					}
+				}
+				data.micMuted.clearObservers()
+				data.micMuted.readCurrentAndObserve { (muted) in
+					self.muted.isHidden = muted != true
 				}
 			}
 		}
@@ -124,12 +131,16 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 		contentView.addSubview(displayName)
 		displayName.matchParentSideBorders(insetedByDx:ActiveCallView.bottom_displayname_margin_left).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 	
-		// Paused label commented out (Android 10.06.2022)
+		// Paused label commented out as in Android 10.06.2022
 		// contentView.addSubview(pauseLabel)
 		//pauseLabel.toRightOf(displayName).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 
+		contentView.addSubview(muted)
+		muted.alignParentLeft(withMargin: mute_margin).alignParentTop(withMargin:mute_margin).done()
+		
 		contentView.matchParentDimmensions().done()
 		makeHeightMatchWidth().done()
+		
 	}
 	
 	required init?(coder: NSCoder) {

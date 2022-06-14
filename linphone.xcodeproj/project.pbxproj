@@ -674,6 +674,7 @@
 		C6277DA8274BF1CE00406FB9 /* voip_radio_on.png in Resources */ = {isa = PBXBuildFile; fileRef = C6277DA6274BF1CD00406FB9 /* voip_radio_on.png */; };
 		C6277DA9274BF1CE00406FB9 /* voip_radio_off.png in Resources */ = {isa = PBXBuildFile; fileRef = C6277DA7274BF1CD00406FB9 /* voip_radio_off.png */; };
 		C6278497273C21E1002FAA29 /* LocalVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6278496273C21E1002FAA29 /* LocalVideoView.swift */; };
+		C63F70B52858927E0066163B /* MicMuted.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F70B42858927E0066163B /* MicMuted.swift */; };
 		C64A854E2667B67200252AD2 /* EphemeralSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C64A854D2667B67200252AD2 /* EphemeralSettingsView.m */; };
 		C64A85502667B67A00252AD2 /* EphemeralSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C64A854F2667B67A00252AD2 /* EphemeralSettingsView.xib */; };
 		C64A85522667B74100252AD2 /* ephemeral_messages_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C64A85512667B74100252AD2 /* ephemeral_messages_default.png */; };
@@ -1847,6 +1848,7 @@
 		C6277DA6274BF1CD00406FB9 /* voip_radio_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_radio_on.png; sourceTree = "<group>"; };
 		C6277DA7274BF1CD00406FB9 /* voip_radio_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_radio_off.png; sourceTree = "<group>"; };
 		C6278496273C21E1002FAA29 /* LocalVideoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalVideoView.swift; sourceTree = "<group>"; };
+		C63F70B42858927E0066163B /* MicMuted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicMuted.swift; sourceTree = "<group>"; };
 		C64A854C2667B66900252AD2 /* EphemeralSettingsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EphemeralSettingsView.h; sourceTree = "<group>"; };
 		C64A854D2667B67200252AD2 /* EphemeralSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EphemeralSettingsView.m; sourceTree = "<group>"; };
 		C64A854F2667B67A00252AD2 /* EphemeralSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EphemeralSettingsView.xib; sourceTree = "<group>"; };
@@ -3558,6 +3560,7 @@
 				C6B04D66274BD61200F70559 /* VoipConferenceActiveSpeakerView.swift */,
 				C6B04D68274BD6A100F70559 /* VoipActiveSpeakerParticipantCell.swift */,
 				C67C97B0274FB4C10074A0D8 /* VoipConferenceDisplayModeSelectionView.swift */,
+				C63F70B42858927E0066163B /* MicMuted.swift */,
 			);
 			path = Conference;
 			sourceTree = "<group>";
@@ -5010,6 +5013,7 @@
 				63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */,
 				633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */,
 				63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */,
+				C63F70B52858927E0066163B /* MicMuted.swift in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */,
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */,

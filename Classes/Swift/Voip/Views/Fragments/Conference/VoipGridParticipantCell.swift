@@ -31,6 +31,8 @@ class VoipGridParticipantCell: UICollectionViewCell {
 	let switch_camera_button_margins = 8.0
 	let switch_camera_button_size = 30
 	let pause_label_left_margin = 5
+	static let mute_size = 25
+	let mute_margin = 5
 
 
 	let videoView = UIView()
@@ -39,6 +41,7 @@ class VoipGridParticipantCell: UICollectionViewCell {
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_grid)
 	let pauseLabel = StyledLabel(VoipTheme.conference_participant_name_font_grid,VoipTexts.conference_participant_paused)
+	let muted = MicMuted(VoipActiveSpeakerParticipantCell.mute_size)
 
 	var participantData: ConferenceParticipantDeviceData? = nil {
 		didSet {
@@ -81,6 +84,10 @@ class VoipGridParticipantCell: UICollectionViewCell {
 					} else {
 						self.layer.borderWidth = 0
 					}
+				}
+				data.micMuted.clearObservers()
+				data.micMuted.readCurrentAndObserve { (muted) in
+					self.muted.isHidden = muted != true
 				}
 			}
 		}
@@ -132,6 +139,9 @@ class VoipGridParticipantCell: UICollectionViewCell {
 		contentView.addSubview(pauseLabel)
 		pauseLabel.toRightOf(displayName,withLeftMargin: pause_label_left_margin).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 
+		contentView.addSubview(muted)
+		muted.alignParentLeft(withMargin: mute_margin).alignParentTop(withMargin:mute_margin).done()
+		
 		contentView.matchParentDimmensions().done()
 	}
 	
