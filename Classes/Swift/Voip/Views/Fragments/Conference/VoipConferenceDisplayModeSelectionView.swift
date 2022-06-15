@@ -34,16 +34,21 @@ import linphonesw
 		super.init(title: VoipTexts.call_action_change_conf_layout)
 		
 		super.contentView.addSubview(optionsListView)
-		optionsListView.matchParentDimmensions().done()
+		optionsListView.alignParentTop().height(3*ConferenceDisplayModeSelectionCell.cell_height).matchParentSideBorders().done()
 		optionsListView.dataSource = self
 		optionsListView.delegate = self
 		optionsListView.register(ConferenceDisplayModeSelectionCell.self, forCellReuseIdentifier: "ConferenceDisplayModeSelectionCell")
 		optionsListView.separatorStyle = .singleLine
 		optionsListView.separatorColor = VoipTheme.light_grey_color
 		optionsListView.isScrollEnabled = false
+		super.contentView.backgroundColor = .white
 	}
 	
 	// TableView datasource delegate
+	
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		return ConferenceDisplayModeSelectionCell.cell_height
+	}
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		return 3
@@ -85,23 +90,19 @@ import linphonesw
 		cell.onSelectAction?()
 		cell.isSelected = true
 		if (indexPath.row == 0) {
-			tableView.deselectRow(at: IndexPath(row: 1, section: 0), animated: false)
-			tableView.deselectRow(at: IndexPath(row: 2, section: 0), animated: false)
+			(tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as! ConferenceDisplayModeSelectionCell).isSelected = false
+			(tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! ConferenceDisplayModeSelectionCell).isSelected = false
 		}
 		if (indexPath.row == 1) {
-			tableView.deselectRow(at: IndexPath(row: 0, section: 0), animated: false)
-			tableView.deselectRow(at: IndexPath(row: 2, section: 0), animated: false)
+			(tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ConferenceDisplayModeSelectionCell).isSelected = false
+			(tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as! ConferenceDisplayModeSelectionCell).isSelected = false
 		}
 		if (indexPath.row == 2) {
-			tableView.deselectRow(at: IndexPath(row: 0, section: 0), animated: false)
-			tableView.deselectRow(at: IndexPath(row: 1, section: 0), animated: false)
+			(tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! ConferenceDisplayModeSelectionCell).isSelected = false
+			(tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as! ConferenceDisplayModeSelectionCell).isSelected = false
 		}
 	}
 	
-	func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-		let cell = tableView.cellForRow(at: indexPath) as! ConferenceDisplayModeSelectionCell
-		cell.isSelected = false
-	}
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -111,7 +112,7 @@ import linphonesw
 
 class ConferenceDisplayModeSelectionCell : UITableViewCell {
 	
-	let cell_height = 60.0
+	static let cell_height = 60.0
 	let icon_size = 40.0
 	let side_margins = 20.0
 	
@@ -137,7 +138,7 @@ class ConferenceDisplayModeSelectionCell : UITableViewCell {
 	
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		contentView.height(cell_height).matchParentSideBorders().done()
+		contentView.height(ConferenceDisplayModeSelectionCell.cell_height).matchParentSideBorders().done()
 		contentView.addSubview(radio)
 		radio.alignParentLeft(withMargin: side_margins).centerY().done()
 		contentView.addSubview(label)
