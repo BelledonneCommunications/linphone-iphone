@@ -103,7 +103,7 @@
 												  }]];
 	}
 	
-	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Conferences", nil)
+	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:VoipTexts.conference_scheduled
 															   image:[UIImage imageNamed:@"voip_conference_new.png"]
 															tapBlock:^() {
 															  [PhoneMainView.instance
