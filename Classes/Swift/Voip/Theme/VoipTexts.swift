@@ -134,7 +134,8 @@ import UIKit
 	@objc static let conference_waiting_room_video_disabled = NSLocalizedString("Video is currently disabled",comment:"")
 	@objc static let dialog_accept = NSLocalizedString("Accept",comment:"")
 	@objc static let dialog_decline = NSLocalizedString("Decline",comment:"")
-	
+	@objc static let conference_empty =  NSLocalizedString("You are currently alone in this group call",comment:"")
+
 	// FROM ANDROID END
 	
 	

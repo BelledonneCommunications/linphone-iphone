@@ -26,8 +26,10 @@ import linphonesw
 	
 	// Layout constants
 	
-	
 	let participantsListTableView =  UITableView()
+	let noParticipantsLabel = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_empty)
+
+	
 	
 	var callsDataObserver : MutableLiveDataOnChangeClosure<[CallData]>? = nil
 	
@@ -63,6 +65,10 @@ import linphonesw
 		ConferenceViewModel.shared.isMeAdmin.readCurrentAndObserve { (meAdmin) in
 			edit.isHidden = meAdmin != true
 		}
+		
+		super.contentView.addSubview(noParticipantsLabel)
+		noParticipantsLabel.center().done()
+		noParticipantsLabel.isHidden =  ConferenceViewModel.shared.conferenceParticipants.value?.count ?? 0 > 0
 			
 	}
 
