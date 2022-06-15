@@ -99,10 +99,9 @@ class VoipDialog : UIView{
 	}
 	
 	static func toast(message:String, timeout:CGFloat = 1.5) {
-		let alertDisapperTimeInSeconds = 2.0
 		let alert = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
 		rootVC()?.present(alert, animated: true)
-		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + alertDisapperTimeInSeconds) {
+		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + timeout) {
 		  alert.dismiss(animated: true)
 		}
 	}
