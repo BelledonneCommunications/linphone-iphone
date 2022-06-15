@@ -25,7 +25,11 @@
 }
 
 @property(nonatomic, assign) BOOL missedFilter;
+@property(nonatomic, assign) BOOL confFilter;
+
 
 @property(strong, nonatomic) NSMutableDictionary *sections;
 @property(strong, nonatomic) NSMutableArray *sortedDays;
+
+- (void)removeFIlters;
 @end

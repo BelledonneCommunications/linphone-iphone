@@ -631,6 +631,13 @@
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
+	
+	const LinphoneConferenceInfo * ci = linphone_core_find_conference_information_from_uri(LC, (LinphoneAddress *)addr);
+	if (ci != nil)  {
+		label.text = [NSString stringWithUTF8String:linphone_conference_info_get_subject(ci)];
+		return;
+	}
+	
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
@@ -640,6 +647,14 @@
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr withAddressLabel:(UILabel*)addressLabel{
+	
+	const LinphoneConferenceInfo * ci = linphone_core_find_conference_information_from_uri(LC, (LinphoneAddress *)addr);
+	if (ci != nil)  {
+		label.text = [NSString stringWithUTF8String:linphone_conference_info_get_subject(ci)];
+		addressLabel.text = NSLocalizedString(@"Conference",nil);
+		return;
+	}
+	
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
 	NSString *tmpAddress = nil;
 	char *uri = linphone_address_as_string_uri_only(addr);

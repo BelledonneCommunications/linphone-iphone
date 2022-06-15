@@ -67,6 +67,22 @@
 	bctbx_log(BCTBX_LOG_DOMAIN, level, "%s", [text cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
++(void)d:(NSString *)text {
+	[Log directLog:BCTBX_LOG_DEBUG text:text];
+}
++(void)i:(NSString *)text {
+	[Log directLog:BCTBX_LOG_MESSAGE text:text];
+}
++(void)w:(NSString *)text {
+	[Log directLog:BCTBX_LOG_WARNING text:text];
+}
++(void)e:(NSString *)text {
+	[Log directLog:BCTBX_LOG_ERROR text:text];
+}
++(void)f:(NSString *)text {
+	[Log directLog:BCTBX_LOG_FATAL text:text];
+}
+
 #pragma mark - Logs Functions callbacks
 
 void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {

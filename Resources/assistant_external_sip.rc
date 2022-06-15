@@ -11,6 +11,7 @@
 		<entry name="reg_sendregister" overwrite="true">1</entry>
 		<entry name="refkey" overwrite="true"></entry>
 		<entry name="realm" overwrite="true"></entry>
+		<entry name="rtp_bundle" overwrite="true">0</entry>
 	</section>
 
 

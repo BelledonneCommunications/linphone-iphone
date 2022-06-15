@@ -12,8 +12,5 @@
 #import "Contact.h"
 
 #import "UIToggleButton.h"
-#import "UISpeakerButton.h"
-#import "UIBluetoothButton.h"
-#import "UIMutedMicroButton.h"
 
 #import "UIChatBubbleTextCell.h"

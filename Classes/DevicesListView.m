@@ -150,7 +150,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_tableView reloadData];
 		} else {
 			const LinphoneAddress *addr = linphone_participant_device_get_address(entry->device);
-			[CallManager.instance startCallWithAddr:(LinphoneAddress *)addr isSas:TRUE];
+			[CallManager.instance startCallWithAddr:(LinphoneAddress *)addr isSas:TRUE isVideo:false isConference:false];
 		}
 	} else {
 		bctbx_list_t *devices = linphone_participant_get_devices(entry->participant);

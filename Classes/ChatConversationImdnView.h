@@ -24,6 +24,7 @@
 
 #import "UICompositeView.h"
 #import "UIRoundBorderedButton.h"
+#import "UIChatBubbleTextCell.h"
 
 @interface ChatConversationImdnView : UIViewController <UICompositeViewDelegate, UITableViewDelegate, UITableViewDataSource>
 {

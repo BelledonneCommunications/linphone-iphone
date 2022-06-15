@@ -86,4 +86,5 @@
 - (void)clearCache:(NSArray *)exclude;
 - (IBAction)onRightSwipe:(id)sender;
 
+
 @end

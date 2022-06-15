@@ -32,7 +32,6 @@
 #import "LinphoneCoreSettingsStore.h"
 #import "LinphoneAppDelegate.h"
 #import "LinphoneManager.h"
-#import "Utils/AudioHelper.h"
 #import "Utils/FileTransferDelegate.h"
 
 #include "linphone/factory.h"
@@ -482,6 +481,20 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 				   linphone_account_set_params(account, newAccountParams);
 			   }
 		   }
+		   if (!linphone_account_params_get_audio_video_conference_factory_address(newAccountParams) && strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
+			   NSString *uri = [self lpConfigStringForKey:@"default_audio_video_conference_factory_uri" withDefault:@"sip:videoconference-factory2@sip.linphone.org"];
+			   LinphoneAddress *a = linphone_factory_create_address(linphone_factory_get(), uri.UTF8String);
+			   if (a) {
+				   linphone_account_params_set_audio_video_conference_factory_address(newAccountParams, a);
+				   linphone_account_set_params(account, newAccountParams);
+			   }
+		   }
+		   
+		   if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0 && !linphone_account_params_rtp_bundle_enabled(newAccountParams)) {
+			   linphone_account_params_enable_rtp_bundle(newAccountParams, true);
+			   linphone_account_set_params(account,newAccountParams);
+		   }
+		 
 		   linphone_account_params_unref(newAccountParams);
 		   accounts = accounts->next;
 	   }
@@ -848,7 +861,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	if ((linphone_core_get_max_size_for_auto_download_incoming_files(LC) > -1) && linphone_chat_message_get_file_transfer_information(msg))
 		hasFile = TRUE;
 
-	if (!linphone_chat_message_is_file_transfer(msg) && !linphone_chat_message_is_text(msg) && !hasFile)
+	if (!linphone_chat_message_is_file_transfer(msg) && !linphone_chat_message_is_text(msg) && !hasFile  && ![ICSBubbleView isConferenceInvitationMessageWithCmessage:msg])
 		return;
     
 	if (hasFile) {
@@ -1183,6 +1196,8 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCoreUpdate
 	 object:LinphoneManager.instance
 	 userInfo:dict];
+
+	
 }
 
 static BOOL libStarted = FALSE;
@@ -1869,7 +1884,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	[self checkLocalNetworkPermission];
 	// For OutgoingCall, show CallOutgoingView
-	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE];
+	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE isVideo:false isConference:false];
 }
 
 #pragma mark - Misc Functions

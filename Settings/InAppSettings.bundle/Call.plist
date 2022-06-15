@@ -18,6 +18,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Notify and get notified when call is recorded</string>
+			<key>Key</key>
+			<string>record_aware</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Send inband DTMFs</string>
 			<key>Key</key>
 			<string>rfc_dtmf_preference</string>

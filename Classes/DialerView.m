@@ -21,6 +21,8 @@
 
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "linphoneapp-Swift.h"
+
 
 @implementation DialerView
 
@@ -143,6 +145,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_videoCameraSwitch setHidden:FALSE];
 		}
 	}
+	[_addContactButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
+	_addContactButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	_addContactButton.enabled = true;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -170,11 +175,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_padView.hidden = !IPAD && UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 	if (linphone_core_get_calls_nb(LC)) {
 		_backButton.hidden = FALSE;
-		_addContactButton.hidden = TRUE;
 	} else {
 		_backButton.hidden = TRUE;
-		_addContactButton.hidden = FALSE;
 	}
+	_addContactButton.hidden = FALSE;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -388,24 +392,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick:(id)event {
-	[ContactSelection setSelectionMode:ContactSelectionModeEdit];
-	[ContactSelection setAddAddress:[_addressField text]];
-	[ContactSelection enableSipFilter:FALSE];
-	[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
+	ConferenceSchedulingView *view = VIEW(ConferenceSchedulingView);
+	[view resetViewModel];
+	[PhoneMainView.instance changeCurrentView:ConferenceSchedulingView.compositeViewDescription];
 }
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance popToView:CallView.compositeViewDescription];
+	[PhoneMainView.instance popToView:ActiveCallOrConferenceView.compositeViewDescription];
 }
 
 - (IBAction)onAddressChange:(id)sender {
 	if ([self displayDebugPopup:_addressField.text]) {
 		_addressField.text = @"";
 	}
-	_addContactButton.enabled = _backspaceButton.enabled = ([[_addressField text] length] > 0);
-    if ([_addressField.text length] == 0) {
-        [self.view endEditing:YES];
-    }
 }
 
 - (IBAction)onBackspaceClick:(id)sender {

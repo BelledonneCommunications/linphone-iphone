@@ -149,7 +149,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
 	func parseMessage(message: PushNotificationMessage) -> MsgData? {
-		let content = message.isText ? message.textContent : "🗻"
+		let content = message.isIcalendar ? NSLocalizedString("You are invited to a conference", comment: "") :  message.isText ? message.textContent : "🗻"
 		let fromAddr = message.fromAddr?.username
 		let callId = message.callId
 		let localUri = message.localAddr?.asStringUriOnly()

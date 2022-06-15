@@ -22,15 +22,18 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
+
 
 @implementation HistoryListTableView
 
-@synthesize missedFilter;
+@synthesize missedFilter,confFilter;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initHistoryTableViewController {
 	missedFilter = false;
+	confFilter = false;
 }
 
 - (id)init {
@@ -102,8 +105,29 @@
 		return;
 	}
 	missedFilter = amissedFilter;
+	if (missedFilter) {
+		confFilter = false;
+	}
 	[self loadData];
 }
+
+- (void)setConfFilter:(BOOL)aconfFilter {
+	if (confFilter == aconfFilter) {
+		return;
+	}
+	confFilter = aconfFilter;
+	if (confFilter) {
+		missedFilter = false;
+	}
+	[self loadData];
+}
+
+- (void)removeFIlters {
+	confFilter = false;
+	missedFilter = false;
+	[self loadData];
+}
+
 
 #pragma mark - UITableViewDataSource Functions
 
@@ -129,7 +153,8 @@
 	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
-		if (!missedFilter || linphone_call_log_get_status(log) == LinphoneCallMissed) {
+		BOOL keepIt = (!missedFilter || linphone_call_log_get_status(log) == LinphoneCallMissed) && (!confFilter||linphone_call_log_was_conference(log)) ;
+		if (keepIt) {
 			NSDate *startDate = [self
 				dateAtBeginningOfDayForDate:[NSDate
 												dateWithTimeIntervalSince1970:linphone_call_log_get_start_date(log)]];
@@ -143,7 +168,7 @@
 
 			// if this contact was already the previous entry, do not add it twice
 			LinphoneCallLog *prev = [eventsOnThisDay lastObject] ? [[eventsOnThisDay lastObject] pointerValue] : NULL;
-			if (prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
+			if (!linphone_call_log_was_conference(log) && prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
 													linphone_call_log_get_remote_address(log))) {
 				bctbx_list_t *list = linphone_call_log_get_user_data(prev);
 				list = bctbx_list_append(list, linphone_call_log_ref(log));
@@ -241,8 +266,15 @@
 				UIHistoryCell *cell = (UIHistoryCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
 				[cell onDetails:self];
 			} else {
-				const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-				[LinphoneManager.instance call:addr];
+				if (linphone_call_log_was_conference(callLog)) {
+					LinphoneConferenceInfo *confInfo = linphone_call_log_get_conference_info(callLog);
+					ConferenceWaitingRoomFragment *view = VIEW(ConferenceWaitingRoomFragment);
+					[view setDetailsWithSubject:[NSString stringWithUTF8String:linphone_conference_info_get_subject(confInfo)] url:[NSString stringWithUTF8String:linphone_address_as_string(linphone_conference_info_get_uri(confInfo))]];
+					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomFragment.compositeViewDescription];
+				} else {
+					const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+					[LinphoneManager.instance call:addr];
+				}
 			}
 		}
 	}

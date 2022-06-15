@@ -27,6 +27,7 @@
 #import "ShopView.h"
 #import "LinphoneManager.h"
 #import "RecordingsListView.h"
+#import "linphoneapp-Swift.h"
 
 @implementation SideMenuEntry
 
@@ -101,6 +102,15 @@
 														changeCurrentView:ShopView.compositeViewDescription];
 												  }]];
 	}
+	
+	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:VoipTexts.conference_scheduled
+															   image:[UIImage imageNamed:@"voip_conference_new.png"]
+															tapBlock:^() {
+															  [PhoneMainView.instance
+																  changeCurrentView:ScheduledConferencesView.compositeViewDescription];
+
+															}]];
+	
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
                                                                image:[UIImage imageNamed:@"menu_about.png"]
 															tapBlock:^() {

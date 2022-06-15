@@ -21,6 +21,7 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @implementation UIHistoryCell
 
@@ -59,10 +60,16 @@
 	if (callLog != NULL) {
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
 		if (linphone_call_log_get_call_id(callLog) != NULL) {
-			// Go to History details view
-			[view setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
+			if (linphone_call_log_was_conference(callLog)) {
+				ConferenceHistoryDetailsView *view = VIEW(ConferenceHistoryDetailsView);
+				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+				[view setCallLogWithCallLog:callLog];
+			} else {
+				// Go to History details view
+				[view setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
+				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+			}
 		}
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
 
@@ -80,32 +87,39 @@
 		LOGW(@"Cannot update history cell: null callLog");
 		return;
 	}
-
+	
 	// Set up the cell...
-	const LinphoneAddress *addr;
-	UIImage *image;
-	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
-		if (linphone_call_log_get_status(callLog) != LinphoneCallMissed) {
-			image = [UIImage imageNamed:@"call_status_incoming.png"];
-		} else {
-			image = [UIImage imageNamed:@"call_status_missed.png"];
-		}
-		addr = linphone_call_log_get_from_address(callLog);
+	if (linphone_call_log_was_conference(callLog)) {
+		const char *subject = linphone_conference_info_get_subject(linphone_call_log_get_conference_info(callLog));
+		displayNameLabel.text = [NSString stringWithFormat:@"%s",subject];
+		[_avatarImage setImage:[UIImage imageNamed:@"voip_multiple_contacts_avatar"]];
+		_stateImage.hidden = true;
 	} else {
-		image = [UIImage imageNamed:@"call_status_outgoing.png"];
-		addr = linphone_call_log_get_to_address(callLog);
-	}
-	_stateImage.image = image;
-
-	[ContactDisplay setDisplayNameLabel:displayNameLabel forAddress:addr];
-
-	size_t count = bctbx_list_size(linphone_call_log_get_user_data(callLog)) + 1;
-	if (count > 1) {
-		displayNameLabel.text =
+		_stateImage.hidden = false;
+		const LinphoneAddress *addr;
+		UIImage *image;
+		if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
+			if (linphone_call_log_get_status(callLog) != LinphoneCallMissed) {
+				image = [UIImage imageNamed:@"call_status_incoming.png"];
+			} else {
+				image = [UIImage imageNamed:@"call_status_missed.png"];
+			}
+			addr = linphone_call_log_get_from_address(callLog);
+		} else {
+			image = [UIImage imageNamed:@"call_status_outgoing.png"];
+			addr = linphone_call_log_get_to_address(callLog);
+		}
+		_stateImage.image = image;
+		[ContactDisplay setDisplayNameLabel:displayNameLabel forAddress:addr];
+		
+		size_t count = bctbx_list_size(linphone_call_log_get_user_data(callLog)) + 1;
+		if (count > 1) {
+			displayNameLabel.text =
 			[displayNameLabel.text stringByAppendingString:[NSString stringWithFormat:@" (%lu)", count]];
+		}
+		
+		[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 	}
-
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 }
 
 - (void)setEditing:(BOOL)editing {

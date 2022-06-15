@@ -138,6 +138,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_addContactButton.hidden = YES;
 		return;
 	}
+	
 	_emptyLabel.hidden = YES;
 
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);

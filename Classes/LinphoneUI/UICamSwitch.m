@@ -34,6 +34,10 @@ INIT_WITH_COMMON_CF {
 #pragma mark -
 
 - (void)touchUp:(id)sender {
+	[UICamSwitch switchCamera];
+}
+
++ (void) switchCamera {
 	const char *currentCamId = (char *)linphone_core_get_video_device(LC);
 	const char **cameras = linphone_core_get_video_devices(LC);
 	const char *newCamId = NULL;
@@ -50,10 +54,6 @@ INIT_WITH_COMMON_CF {
 	if (newCamId) {
 		LOGI(@"Switching from [%s] to [%s]", currentCamId, newCamId);
 		linphone_core_set_video_device(LC, newCamId);
-		LinphoneCall *call = linphone_core_get_current_call(LC);
-		if (call != NULL) {
-			linphone_call_update(call, NULL);
-		}
 	}
 }
 

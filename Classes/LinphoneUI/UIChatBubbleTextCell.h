@@ -29,6 +29,9 @@
 #define IMAGE_DEFAULT_MARGIN 5
 #define VOICE_RECORDING_PLAYER_HEIGHT 60
 #define VOICE_RECORDING_PLAYER_WIDTH 300
+#define CONFERENCE_INVITATION_HEIGHT 210
+#define CONFERENCE_INVITATION_WIDTH 300
+
 
 
 @interface UIChatBubbleTextCell : UITableViewCell <UIDocumentPickerDelegate, UITableViewDataSource,UITableViewDelegate>
@@ -66,6 +69,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *replyTransferIcon;
 @property (weak, nonatomic) IBOutlet UILabel *replyTransferLabel;
 @property (weak, nonatomic) IBOutlet UIView *photoCellContentView;
+@property UIView *icsBubbleView;
 
 
 @property(nonatomic) BOOL isFirst;

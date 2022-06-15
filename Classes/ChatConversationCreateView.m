@@ -20,6 +20,7 @@
 #import "ChatConversationCreateView.h"
 #import "PhoneMainView.h"
 #import "UIChatCreateCollectionViewCell.h"
+#import "linphoneapp-Swift.h"
 
 @implementation ChatConversationCreateView
 
@@ -81,6 +82,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 		frame.origin.x = _linphoneButton.frame.origin.x;
 		_allButton.frame = frame;
 	}
+	
+	
+	if (_isForVoipConference) {
+		_switchView.hidden = true;
+		_chiffreOptionView.hidden = true;
+		_voipTitle.hidden = false;
+		if (_isForOngoingVoipConference) {
+			[_nextButton setImage:[UIImage imageNamed:@"valid_default"] forState:UIControlStateNormal];
+		} else {
+			[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
+		}
+	} else {
+		_voipTitle.hidden = true;
+		[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
+	}
+	
 }
 
 - (void)viewUpdateEvent:(NSNotification *)notif {
@@ -153,11 +170,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onNextClick:(id)sender {
-	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
-	view.contacts = _tableController.contactsGroup;
-	view.create = !_isForEditing;
-    view.encrypted = _isEncrypted;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	if (_isForVoipConference) {
+		if (_isForOngoingVoipConference) {
+			[PhoneMainView.instance changeCurrentView:VIEW(ActiveCallOrConferenceView).compositeViewDescription];
+			[ConferenceViewModelBridge updateParticipantsListWithAddresses:_tableController.contactsGroup];
+		} else {
+			[PhoneMainView.instance changeCurrentView:VIEW(ConferenceSchedulingSummaryView).compositeViewDescription];
+			[VIEW(ConferenceSchedulingSummaryView) setParticipantsWithAddresses:_tableController.contactsGroup];
+		}
+	} else {
+		ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+		view.contacts = _tableController.contactsGroup;
+		view.create = !_isForEditing;
+    	view.encrypted = _isEncrypted;
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	}
 }
 
 - (IBAction)onChiffreClick:(id)sender {

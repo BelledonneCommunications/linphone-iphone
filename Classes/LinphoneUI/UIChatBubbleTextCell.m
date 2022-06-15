@@ -29,6 +29,8 @@
 
 @implementation UIChatBubbleTextCell
 
+
+
 #pragma mark - Lifecycle Functions
 
 
@@ -43,6 +45,11 @@
 			UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:arrayOfViews.count - 1]);
 			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 			[self addSubview:sub];
+			self.icsBubbleView = [[ICSBubbleView alloc] init];
+			self.icsBubbleView.frame = CGRectMake(_messageText.frame.origin.x, _messageText.frame.origin.y+25, CONFERENCE_INVITATION_WIDTH-80, CONFERENCE_INVITATION_HEIGHT-20);
+			[self.innerView addSubview:self.icsBubbleView];
+			[(ICSBubbleView*)self.icsBubbleView setLayoutConstraintsWithView:self.backgroundColorImage];
+
 		}
 	}
 	
@@ -275,6 +282,18 @@
 			_replyView.view.hidden = true;
 	}
 	
+	// ICS for conference invitations
+	
+	if ([ICSBubbleView isConferenceInvitationMessageWithCmessage:self.message]) {
+		[(ICSBubbleView*)self.icsBubbleView setFromChatMessageWithCmessage:self.message];
+		self.icsBubbleView.hidden = false;
+		_messageText.hidden = true;
+	} else {
+		self.icsBubbleView.hidden = true;
+		_messageText.hidden = false;
+	}
+	
+	
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -470,6 +489,11 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 }
 
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText {
+	
+	if ([ICSBubbleView isConferenceInvitationMessageWithCmessage:chat]) {
+		return  CGSizeMake(CONFERENCE_INVITATION_WIDTH, CONFERENCE_INVITATION_HEIGHT);
+	}
+	
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
     static UIFont *messageFont = nil;
 
