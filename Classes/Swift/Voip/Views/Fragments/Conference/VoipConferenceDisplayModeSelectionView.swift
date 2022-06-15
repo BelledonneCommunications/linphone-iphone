@@ -138,7 +138,7 @@ class ConferenceDisplayModeSelectionCell : UITableViewCell {
 	
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		contentView.height(ConferenceDisplayModeSelectionCell.cell_height).matchParentSideBorders().done()
+		contentView.matchParentDimmensions().done()
 		contentView.addSubview(radio)
 		radio.alignParentLeft(withMargin: side_margins).centerY().done()
 		contentView.addSubview(label)
