@@ -40,6 +40,7 @@
 @property (weak, nonatomic) IBOutlet UIView *switchView;
 @property (weak, nonatomic) IBOutlet UIImageView *chiffreImage;
 @property (weak, nonatomic) IBOutlet UIButton *chiffreButton;
+@property (weak, nonatomic) IBOutlet UIView *topBar;
 
 @property(nonatomic) Boolean isForEditing;
 @property(nonatomic) Boolean isGroupChat;

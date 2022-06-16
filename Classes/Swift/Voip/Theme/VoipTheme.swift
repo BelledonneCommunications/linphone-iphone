@@ -48,7 +48,7 @@ import UIKit
 	static let primary_dark_color = UIColor(hex:"#e65000")
 	static let green_color = UIColor(hex:"#96c11f")
 	static let dark_green_color = UIColor(hex:"#7d9f21")
-	static let toolbar_color = UIColor(hex:"#e1e1e1")
+	@objc static let toolbar_color = UIColor(hex:"#e1e1e1")
 	static let form_field_gray_background = UIColor(hex:"#F7F7F7")
 	static let light_grey_color = UIColor(hex:"#c4c4c4")
 	static let header_background_color = UIColor(hex:"#f3f3f3")

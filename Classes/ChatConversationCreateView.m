@@ -61,7 +61,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
-	_isForEditing = FALSE; 
+	_isForEditing = FALSE;
+	_voipTitle.text = VoipTexts.call_action_participants_list;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -93,9 +95,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		} else {
 			[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
 		}
+		_topBar.backgroundColor = VoipTheme.toolbar_color;
 	} else {
 		_voipTitle.hidden = true;
 		[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
+		_topBar.backgroundColor = UIColor.secondarySystemBackgroundColor;
 	}
 	
 }
@@ -163,10 +167,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onBackClick:(id)sender {
 	[_tableController.contactsGroup removeAllObjects];
-	if (_tableController.isForEditing)
-		[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
-	else
-		[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+	if (_isForVoipConference) {
+		[PhoneMainView.instance popToView:ConferenceSchedulingView.compositeViewDescription];
+	} else {
+		if (_tableController.isForEditing)
+			[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
+		else
+			[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+	}
 }
 
 - (IBAction)onNextClick:(id)sender {

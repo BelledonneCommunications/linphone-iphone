@@ -21,7 +21,9 @@
                 <outlet property="selectedButtonImage" destination="ibu-Ra-oZO" id="jvl-ay-cfh"/>
                 <outlet property="switchView" destination="d5Q-XR-FNz" id="Xeo-ZG-6cr"/>
                 <outlet property="tableController" destination="4" id="18"/>
+                <outlet property="topBar" destination="7" id="svd-IV-RZN"/>
                 <outlet property="view" destination="5" id="14"/>
+                <outlet property="voipTitle" destination="Cwe-p4-hji" id="NLX-Og-4HS"/>
                 <outlet property="waitView" destination="Ztm-hK-aBp" id="qYh-M5-heN"/>
             </connections>
         </placeholder>
@@ -145,6 +147,13 @@
                                         </button>
                                     </subviews>
                                 </view>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cwe-p4-hji" userLabel="voipTitle">
+                                    <rect key="frame" x="82" y="0.0" width="249" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rBc-dQ-eIj" userLabel="nextButton" customClass="UIInterfaceStyleButton">
                                     <rect key="frame" x="331" y="0.0" width="83" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
