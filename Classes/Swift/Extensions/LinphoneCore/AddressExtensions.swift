@@ -52,4 +52,11 @@ extension Address {
 		return  FastAddressBook.getContactWith(getCobject)
 	}
 	
+	func isMe() -> Bool {
+		guard let accountAddress = Core.get().defaultAccount?.params?.identityAddress else {
+			return false
+		}
+		return weakEqual(address2: accountAddress)
+	}
+	
 }
