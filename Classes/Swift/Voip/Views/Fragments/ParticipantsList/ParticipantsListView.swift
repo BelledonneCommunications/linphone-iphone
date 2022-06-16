@@ -25,10 +25,10 @@ import linphonesw
 @objc class ParticipantsListView: DismissableView, UITableViewDataSource {
 	
 	// Layout constants
+	let side_margin = 10.0
 	
 	let participantsListTableView =  UITableView()
 	let noParticipantsLabel = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_empty)
-
 	
 	
 	var callsDataObserver : MutableLiveDataOnChangeClosure<[CallData]>? = nil
@@ -67,8 +67,9 @@ import linphonesw
 		}
 		
 		super.contentView.addSubview(noParticipantsLabel)
-		noParticipantsLabel.center().done()
+		noParticipantsLabel.center().matchParentSideBorders(insetedByDx: side_margin).done()
 		noParticipantsLabel.isHidden =  ConferenceViewModel.shared.conferenceParticipants.value?.count ?? 0 > 0
+		noParticipantsLabel.numberOfLines = 2
 			
 	}
 
