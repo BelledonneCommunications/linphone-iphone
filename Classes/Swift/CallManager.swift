@@ -519,6 +519,20 @@ import AVFoundation
 		let remoteAddress = call.remoteAddress?.asStringUriOnly()
 		return remoteAddress?.contains("focus") == true || remoteAddress?.contains("audiovideo") == true
 	}
+	
+	func incomingDisplayName(call:Call) -> String {
+		let isConference = isConferenceCall(call: call)
+		let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
+		if (isConference) {
+			if (isEarlyConference) {
+				return VoipTexts.conference_incoming_title
+			} else {
+				return "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
+			}
+		} else {
+			return FastAddressBook.displayName(for: call.remoteAddress?.getCobject) ?? "Unknown"
+		}
+	}
 
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
@@ -542,20 +556,11 @@ import AVFoundation
 			switch cstate {
 				case .IncomingReceived:
 					let addr = call.remoteAddress
-					var displayName = ""
-					let isConference = isConferenceCall(call: call)
-					let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
-					if (isConference) {
-						if (isEarlyConference) {
-							displayName = VoipTexts.conference_incoming_title
-						} else {
-							displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
-						}
-					} else {
-						displayName = FastAddressBook.displayName(for: addr?.getCobject) ?? "Unknown"
-					}
+				var displayName = incomingDisplayName(call: call)
 				
 					if (CallManager.callKitEnabled()) {
+						let isConference = isConferenceCall(call: call)
+						let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
 						if (isEarlyConference) {
 							CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
 								let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
@@ -627,7 +632,9 @@ import AVFoundation
 				case .End,
 					 .Error:
 					var displayName = "Unknown"
-					if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
+					if (call.dir == .Incoming) {
+						displayName = incomingDisplayName(call: call)
+					} else if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
 						displayName = contactName
 					}
 					
