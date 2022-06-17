@@ -42,8 +42,14 @@ class VoipExtraButtonsView: UIStackView {
 		
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
+				
+		let background = UIView()
+		background.backgroundColor = VoipTheme.voipExtraButtonsBackgroundColor.get()
+		addSubview(background)
+		background.layer.cornerRadius = corner_radius
+		background.clipsToBounds = true
+		background.matchParentDimmensions().done()
 		
-		backgroundColor = VoipTheme.voipExtraButtonsBackgroundColor.get()
 		height(height).done()
 		
 		let row1 = UIStackView()
