@@ -42,7 +42,6 @@ class ScheduledConferencesViewModel  {
 			}
 			
 		)
-		
 		computeConferenceInfoList()
 	}
 

@@ -29,10 +29,10 @@ import SVProgressHUD
 	
 	let participantsListTableView = UITableView()
 	
-	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date, readOnly:true)
+	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .date, readOnly:true)
 	let timeZoneValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}), readOnly:true)
 	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}), readOnly:true)
-	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledTime,pickerMode: .time, readOnly:true)
+	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .time, readOnly:true)
 	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description, readOnly:true)
 	let createButton = FormButton(backgroundStateColors: VoipTheme.primary_colors_background)
 
@@ -220,10 +220,10 @@ import SVProgressHUD
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
-		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDate
+		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
 		timeZoneValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledTimeZone.value!)
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
-		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledTime
+		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
 		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
 		createButton.addSidePadding()
 		super.viewWillAppear(animated)

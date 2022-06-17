@@ -31,8 +31,7 @@ class ConferenceSchedulingViewModel  {
 	let description = MutableLiveData<String>()
 	
 	let scheduleForLater = MutableLiveData<Bool>()
-	let scheduledDate = MutableLiveData<Date>()
-	let scheduledTime = MutableLiveData<Date>()
+	let scheduledDateTime = MutableLiveData<Date>()
 	
 	var scheduledTimeZone = MutableLiveData<Int>()
 	static let timeZones: [TimeZoneData] = computeTimeZonesList()
@@ -134,10 +133,7 @@ class ConferenceSchedulingViewModel  {
 		scheduleForLater.observe { _ in
 			self.continueEnabled.value = self.allMandatoryFieldsFilled()
 		}
-		scheduledDate.observe { _ in
-			self.continueEnabled.value = self.allMandatoryFieldsFilled()
-		}
-		scheduledTime.observe { _ in
+		scheduledDateTime.observe { _ in
 			self.continueEnabled.value = self.allMandatoryFieldsFilled()
 		}
 		
@@ -151,9 +147,7 @@ class ConferenceSchedulingViewModel  {
 		isEncrypted.value = false
 		sendInviteViaChat.value = true
 		sendInviteViaEmail.value = false
-		let now = Date()
-		scheduledTime.value = Calendar.current.date(from: Calendar.current.dateComponents([.hour, .minute, .second], from: now))
-		scheduledDate.value = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: now))
+		scheduledDateTime.value = Date()
 		
 		scheduledTimeZone.value = ConferenceSchedulingViewModel.timeZones.indices.filter {
 			ConferenceSchedulingViewModel.timeZones[$0].timeZone.identifier == NSTimeZone.default.identifier
@@ -222,14 +216,13 @@ class ConferenceSchedulingViewModel  {
 	
 	
 	private func allMandatoryFieldsFilled() -> Bool {
-		return subject.value != nil && subject.value!.count > 0 && (scheduleForLater.value != true || (scheduledDate.value != nil && scheduledTime.value != nil));
+		return subject.value != nil && subject.value!.count > 0 && (scheduleForLater.value != true || scheduledDateTime.value != nil);
 	}
 	
 
 	private func getConferenceStartTimestamp() -> Double {
 		return scheduleForLater.value == true ?
-			scheduledDate.value!.timeIntervalSince1970 +
-			scheduledTime.value!.timeIntervalSince1970 - Calendar.current.startOfDay(for:  scheduledTime.value!).timeIntervalSince1970 +
+			scheduledDateTime.value!.timeIntervalSince1970 +
 		Double(ConferenceSchedulingViewModel.timeZones[scheduledTimeZone.value!].timeZone.secondsFromGMT()-TimeZone.current.secondsFromGMT())
 		: Date().timeIntervalSince1970
 	}

@@ -168,8 +168,7 @@ class ScheduledConferencesCell: UITableViewCell {
 			}
 			let infoDate = Date(timeIntervalSince1970: Double(confData.conferenceInfo.dateTime))
 			ConferenceSchedulingViewModel.shared.reset()
-			ConferenceSchedulingViewModel.shared.scheduledDate.value = infoDate
-			ConferenceSchedulingViewModel.shared.scheduledTime.value = Date(timeIntervalSince1970: infoDate.timeIntervalSince1970 - Calendar.current.startOfDay(for:  infoDate).timeIntervalSince1970)
+			ConferenceSchedulingViewModel.shared.scheduledDateTime.value = infoDate
 			ConferenceSchedulingViewModel.shared.description.value = confData.description.value
 			ConferenceSchedulingViewModel.shared.subject.value = confData.subject.value
 			ConferenceSchedulingViewModel.shared.scheduledDuration.value = ConferenceSchedulingViewModel.durationList.firstIndex(where: {$0.value == confData.conferenceInfo.duration})
