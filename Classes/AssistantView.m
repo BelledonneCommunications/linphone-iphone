@@ -1584,10 +1584,11 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 				
 			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction * action) {}];
+																handler:^(UIAlertAction * action) {}];
 			
 			[errView addAction:defaultAction];
 			[self presentViewController:errView animated:YES completion:nil];
+			_waitView.hidden = TRUE;
 		} else {
 			linphone_core_set_provisioning_uri(LC,  [self addSchemeToProvisiionninUriIMissing:[self findTextField:ViewElement_URL].text].UTF8String);
 			[self resetLiblinphone:TRUE];
