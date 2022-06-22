@@ -514,11 +514,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	
 	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
-	if ([previous isEqualToString:@"ContactsListView"] || [previous isEqualToString:@"ImagePickerView"]) {
-		ContactsListView *view = VIEW(ContactsListView);
+	if ([previous isEqualToString:@"HistoryDetailsView"]) {
+		HistoryDetailsView *view = VIEW(HistoryDetailsView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
-		HistoryDetailsView *view = VIEW(HistoryDetailsView);
+		ContactsListView *view = VIEW(ContactsListView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
 }
