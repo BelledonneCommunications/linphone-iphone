@@ -100,13 +100,9 @@ import linphonesw
 	@objc func getLastSearchContacts() -> [Contact] {
 		if (needUpdateLastSearchContacts) {
 			lastSearchContacts = []
-			var addedContactNames : [String] = []
 			for res in magicSearch.lastSearch {
 				if let contact = searchAndAddMatchingContact(searchResult: res) {
-					if (!addedContactNames.contains(contact.displayName)) {
-						addedContactNames.append(contact.displayName)
-						lastSearchContacts.append(contact)
-					}
+					lastSearchContacts.append(contact)
 				}
 			}
 			needUpdateLastSearchContacts = false
