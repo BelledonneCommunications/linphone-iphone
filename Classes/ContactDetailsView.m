@@ -311,10 +311,13 @@
 		}
 	}
 	
+	if (self.contact != NULL && self.contact.createdFromLdap) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
+	}
+	_nameLabel.hidden = self.tableController.isEditing;
 	[self updateBackOrCancelButton];
-    
-	BOOL isEditing = !self.contact.createdFromLdap && _editButton.hidden;
-    [self recomputeTableViewSize:isEditing];
+	[self recomputeTableViewSize:self.tableController.isEditing];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
