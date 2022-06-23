@@ -296,6 +296,7 @@
 	[_editButton setImage:[UIImage imageNamed:@"valid_default.png"] forState:UIControlStateSelected];
 	
 	[self updateBackOrCancelButton];
+	[self recomputeTableViewSize:FALSE];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification*)notif {
@@ -312,7 +313,8 @@
 	
 	[self updateBackOrCancelButton];
     
-    [self recomputeTableViewSize:_editButton.hidden];
+	BOOL isEditing = !self.contact.createdFromLdap && _editButton.hidden;
+    [self recomputeTableViewSize:isEditing];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -408,10 +410,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)recomputeTableViewSize:(BOOL)editing {
     CGRect frame = _tableController.tableView.frame;
-    frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
     if ([self viewIsCurrentlyPortrait] && !editing) {
-        frame.origin.y += _nameLabel.frame.size.height;
-    }
+        frame.origin.y = _nameLabel.frame.origin.y + _nameLabel.frame.size.height;
+	} else {
+		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
+	}
     
     frame.size.height = _tableController.tableView.contentSize.height;
     _tableController.tableView.frame = frame;
