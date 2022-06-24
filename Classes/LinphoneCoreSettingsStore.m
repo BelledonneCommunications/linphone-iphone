@@ -805,7 +805,7 @@
 	linphone_ldap_params_set_bind_dn(newLdapParams, [self stringForKey:@"ldap_bind_dn"].UTF8String);
 	linphone_ldap_params_set_password(newLdapParams, [self stringForKey:@"ldap_password"].UTF8String);
 	
-	LinphoneLdapAuthMethod authMethod = [[self stringForKey:@"ldap_verification_method"] isEqualToString:@"simple"] ? LinphoneLdapAuthMethodSimple : LinphoneLdapAuthMethodAnonymous;
+	LinphoneLdapAuthMethod authMethod = [[self stringForKey:@"ldap_auth_method"] isEqualToString:@"simple"] ? LinphoneLdapAuthMethodSimple : LinphoneLdapAuthMethodAnonymous;
 	linphone_ldap_params_set_auth_method(newLdapParams, authMethod);
 	linphone_ldap_params_enable_tls(newLdapParams, [self boolForKey:@"ldap_tls_enabled"]);
 	
@@ -829,8 +829,8 @@
 	
 	
 	// Analysis parameters
-	linphone_ldap_params_set_name_attribute(newLdapParams, [self stringForKey:@"ldap_name_attributes"].UTF8String);
-	linphone_ldap_params_set_sip_attribute(newLdapParams, [self stringForKey:@"ldap_sip_attributes"].UTF8String);
+	linphone_ldap_params_set_name_attribute(newLdapParams, [self stringForKey:@"ldap_name_attribute"].UTF8String);
+	linphone_ldap_params_set_sip_attribute(newLdapParams, [self stringForKey:@"ldap_sip_attribute"].UTF8String);
 	linphone_ldap_params_set_sip_domain(newLdapParams, [self stringForKey:@"ldap_sip_domain"].UTF8String);
 	
 	// Miscellaneous parameters
