@@ -58,6 +58,11 @@ import linphonesw
 	
 	func searchAndAddMatchingContact(searchResult: SearchResult) -> Contact? {
 		if let friend = searchResult.friend {
+			if (searchResult.sourceFlags == MagicSearchSource.LdapServers.rawValue), let newContact = Contact(friend: friend.getCobject) {
+				// Contact comes from LDAP, creating a new one
+				newContact.createdFromLdap = true
+				return newContact
+			}
 			if let addr = friend.address, let foundContact = getContactFromAddr(addr: addr) {
 				return foundContact
 			}
@@ -65,11 +70,6 @@ import linphonesw
 				if let foundContact = getContactFromPhoneNb(phoneNb: phoneNb) {
 					return foundContact
 				}
-			}
-			// No contacts found (searchResult likely comes from LDAP), creating a new one
-			if let newContact = Contact(friend: friend.getCobject) {
-				newContact.createdFromLdap = true
-				return newContact
 			}
 		}
 		
