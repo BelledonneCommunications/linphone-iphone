@@ -284,6 +284,9 @@
 	if (IPAD && self.contact == NULL) {
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
+	} else if (self.contact != NULL && self.contact.createdFromLdap) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
 	}
 	PhoneMainView.instance.currentName = _nameLabel.text;
 	// Update presence for contact
