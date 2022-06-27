@@ -426,7 +426,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (!room)
 		return true;
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(room);
-	return capabilities & LinphoneChatRoomCapabilitiesBasic;
+	return capabilities & LinphoneChatRoomCapabilitiesEncrypted;
 }
 
 
@@ -1747,8 +1747,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 -(BOOL) canAdminEphemeral:(const LinphoneChatRoom *)cr {
-	if (!cr) return FALSE;
-	if ([ChatConversationView isBasicChatRoom:_chatRoom]) return FALSE;
+	if (!cr || !isEncrypted) return FALSE;
 	
 	// If ephemeral mode is DeviceManaged, then we don't need to check anything else
 	return	(linphone_chat_room_params_get_ephemeral_mode(linphone_chat_room_get_current_params(cr)) == LinphoneChatRoomEphemeralModeDeviceManaged)
@@ -1771,7 +1770,6 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self onToggleMenu:nil];
-	BOOL isEncrypted = ![ChatConversationView isBasicChatRoom:_chatRoom];
 	
 	if (indexPath.row == 0) {
 		if (isOneToOne) {
