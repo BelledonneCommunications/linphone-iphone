@@ -21,6 +21,7 @@
 import UIKit
 import Foundation
 import linphonesw
+import IQKeyboardManager
 
 @objc class ConferenceSchedulingView:  BackNextNavigationView, UICompositeViewDelegate {
 	
@@ -207,7 +208,14 @@ import linphonesw
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
 		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
 		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
+		IQKeyboardManager.shared().isEnabled = true
 	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		IQKeyboardManager.shared().isEnabled = false
+		super.viewWillDisappear(animated)
+	}
+	
 	
 	func gotoParticipantsListSelection() {
 		let view: ChatConversationCreateView = self.VIEW(ChatConversationCreateView.compositeViewDescription());
