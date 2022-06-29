@@ -134,7 +134,8 @@ import UIKit
 	@objc static let dialog_accept = NSLocalizedString("Accept",comment:"")
 	@objc static let dialog_decline = NSLocalizedString("Decline",comment:"")
 	@objc static let conference_empty = NSLocalizedString("You are currently alone in this group call",comment:"")
-	
+	@objc static let conference_admin_set = NSLocalizedString("%s is now admin",comment:"")
+	@objc static let conference_admin_unset = NSLocalizedString("%s is no longer admin",comment:"")
 	
 	
 	// FROM ANDROID END
