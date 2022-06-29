@@ -92,6 +92,7 @@ class ConferenceViewModel {
 				self.updateParticipantsList(conference)
 				if let participantData = self.conferenceParticipants.value?.filter ({$0.participant.address!.weakEqual(address2: participant.address!)}).first {
 					self.participantAdminStatusChangedEvent.value = participantData
+					self.notifyAdminStatusChanged(participantData: participantData)
 				} else {
 					Log.w("[Conference] Failed to find participant [\(participant.address!.asStringUriOnly())] in conferenceParticipants list")
 				}
@@ -163,6 +164,13 @@ class ConferenceViewModel {
 					conferenceCreationPending.value = true
 				}
 			}
+		}
+	}
+	
+	func notifyAdminStatusChanged(participantData:ConferenceParticipantData) {
+		if let participantName = participantData.participant.address?.addressBookEnhancedDisplayName() {
+			let message = (participantData.participant.isAdmin ?	VoipTexts.conference_admin_set : VoipTexts.conference_admin_unset).replacingOccurrences(of: "%s", with: participantName)
+			VoipDialog.toast(message: message)
 		}
 	}
 	
