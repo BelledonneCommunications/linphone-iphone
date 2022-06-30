@@ -110,15 +110,15 @@ import EventKitUI
 						event.title = self.conferenceData?.subject.value
 						event.startDate = self.conferenceData?.rawDate
 						if let duration = self.conferenceData?.conferenceInfo.duration, duration > 0 {
-							event.endDate = event.startDate.addingTimeInterval(TimeInterval(duration))
+							event.endDate = event.startDate.addingTimeInterval(TimeInterval(duration*60))
 						} else {
 							event.endDate = event.startDate.addingTimeInterval(TimeInterval(3600))
 						}
 						event.calendar = eventStore.defaultCalendarForNewEvents
-						self.conferenceData?.description.value.map {
-							event.notes = $0
+						if let description = self.conferenceData?.description.value, description.count > 0 {
+							event.notes = description + "\n\n"
 						}
-						event.notes = "\(event.notes)\n\n\(VoipTexts.call_action_participants_list):\n\(self.conferenceData?.participantsExpanded.value)"
+						event.notes = (event.notes != nil ? event.notes! : "") + "\(VoipTexts.call_action_participants_list):\n\(self.conferenceData?.participantsExpanded.value)"
 						if let urlString = self.conferenceData?.conferenceInfo.uri?.asStringUriOnly() {
 							event.url = URL(string:urlString)
 						}
