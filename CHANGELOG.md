@@ -9,7 +9,16 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-			
+				
+## [4.6.5] - 2021-30-06
+### Changed
+- Update linphone SDK to 5.1.46
+
+### Fixed
+- Application GUI would sometimes break after a fail remote provisioning
+- Various fixes in Contacts view and LDAP search
+- Fix possible crash when entering background
+ 			
 ## [4.6.4] - 2021-08-06
 ### Changed
 - Update linphone SDK to 5.1.42
