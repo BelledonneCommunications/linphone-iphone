@@ -20,8 +20,11 @@
 import UIKit
 import Foundation
 import linphonesw
+import EventKit
+import EventKitUI
 
-@objc class ICSBubbleView: UIView {
+@objc class ICSBubbleView: UIView, EKEventEditViewDelegate {
+	
 	
 	let corner_radius  = 7.0
 	let border_width = 2.0
@@ -43,7 +46,6 @@ import linphonesw
 	let join = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
 	let share = UIImageView(image:UIImage(named:"voip_export")?.tinted(with: VoipTheme.primaryTextColor.get()))
 	
-	var icsFile : String? = nil
 	
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
@@ -53,15 +55,15 @@ import linphonesw
 				participants.addIndicatorIcon(iconName: "conference_schedule_participants_default",padding : 0.0, y: -indicator_y, trailing: false)
 				date.text = " "+TimestampUtils.dateToString(date: data.rawDate)
 				date.addIndicatorIcon(iconName: "conference_schedule_calendar_default", padding: 0.0, y:-indicator_y, trailing:false)
-				timeDuration.text = " \(data.time.value) ( \(data.duration.value) )"
+				timeDuration.text = " \(data.time.value)" + (data.duration.value != nil ? " ( \(data.duration.value) )" : "")
 				timeDuration.addIndicatorIcon(iconName: "conference_schedule_time_default",padding : 0.0, y: -indicator_y, trailing: false)
-				descriptionTitle.isHidden = data.description.value == nil || data.description.value!.count == 0
-				descriptionValue.isHidden = descriptionTitle.isHidden
+				descriptionTitle.isHidden = true // data.description.value == nil || data.description.value!.count == 0
+				descriptionValue.isHidden = true // descriptionTitle.isHidden
 				descriptionValue.text = data.description.value
 			}
 		}
 	}
-
+	
 	init() {
 		super.init(frame:.zero)
 		
@@ -72,7 +74,7 @@ import linphonesw
 		let rows = UIStackView()
 		rows.axis = .vertical
 		rows.spacing = rows_spacing
-
+		
 		addSubview(rows)
 		
 		rows.addArrangedSubview(inviteTitle)
@@ -92,7 +94,7 @@ import linphonesw
 		joinShare.addArrangedSubview(join)
 		rows.matchParentSideBorders(insetedByDx: inner_padding).alignParentTop(withMargin: inner_padding).done()
 		joinShare.alignParentBottom(withMargin: inner_padding).width(join_share_width).alignParentRight(withMargin: inner_padding).done()
-	
+		
 		join.onClick {
 			let view : ConferenceWaitingRoomFragment = self.VIEW(ConferenceWaitingRoomFragment.compositeViewDescription())
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
@@ -100,10 +102,39 @@ import linphonesw
 		}
 		
 		share.onClick {
-			let ics = URL(string: "file://"+self.icsFile!)
-			UIApplication.shared.open(ics!)
+			let eventStore = EKEventStore()
+			eventStore.requestAccess( to: EKEntityType.event, completion:{(granted, error) in
+				DispatchQueue.main.async {
+					if (granted) && (error == nil) {
+						let event = EKEvent(eventStore: eventStore)
+						event.title = self.conferenceData?.subject.value
+						event.startDate = self.conferenceData?.rawDate
+						if let duration = self.conferenceData?.conferenceInfo.duration, duration > 0 {
+							event.endDate = event.startDate.addingTimeInterval(TimeInterval(duration))
+						} else {
+							event.endDate = event.startDate.addingTimeInterval(TimeInterval(3600))
+						}
+						event.calendar = eventStore.defaultCalendarForNewEvents
+						self.conferenceData?.description.value.map {
+							event.notes = $0
+						}
+						event.notes = "\(event.notes)\n\n\(VoipTexts.call_action_participants_list):\n\(self.conferenceData?.participantsExpanded.value)"
+						if let urlString = self.conferenceData?.conferenceInfo.uri?.asStringUriOnly() {
+							event.url = URL(string:urlString)
+						}
+						let addController = EKEventEditViewController()
+						addController.event = event
+						addController.eventStore = eventStore
+						PhoneMainView.instance().present(addController, animated: false)
+						addController.editViewDelegate = self;
+					} else {
+						VoipDialog.toast(message: VoipTexts.conference_unable_to_share_via_calendar)
+					}
+				}
+			})
 		}
 	}
+	
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -115,7 +146,6 @@ import linphonesw
 			if (content.isIcalendar) {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
 					self.conferenceData = ScheduledConferenceData(conferenceInfo: conferenceInfo)
-					self.icsFile = content.filePath
 				}
 			}
 		}
@@ -134,5 +164,10 @@ import linphonesw
 	@objc func setLayoutConstraints(view:UIView) {
 		matchDimensionsWith(view: view, insetedByDx: inner_padding).done()
 	}
+	
+	func eventEditViewController(_ controller: EKEventEditViewController, didCompleteWith action: EKEventEditViewAction) {
+		controller.dismiss(animated: true, completion: nil)
+	}
+	
 	
 }
