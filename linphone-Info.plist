@@ -98,6 +98,8 @@
 	<true/>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Use your BT headset</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Add Conference invitations to calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
 	<key>NSContactsUsageDescription</key>
