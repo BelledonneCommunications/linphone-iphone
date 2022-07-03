@@ -27,6 +27,7 @@ class StyledValuePicker: UIView {
 	// layout constants
 	let chevron_margin = 10.0
 	let form_input_height = 38.0
+	let dropdown_width = 250.0
 	let dropDown = DropDown()
 
 	
@@ -73,16 +74,18 @@ class StyledValuePicker: UIView {
 		dropDown.bottomOffset = CGPoint(x: 0, y:(dropDown.anchorView?.plainView.bounds.height)!)
 		dropDown.dataSource = options
 		dropDown.backgroundColor = .white
+		dropDown.width = dropdown_width
 		
 		dropDown.selectionAction = { [unowned self] (index: Int, item: String) in
 			liveIndex.value = index
 			dropDown.selectRow(at: index)
-			//dropDown.tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
 			formattedLabel.text = "  "+options[liveIndex.value!]
 			dropDown.hide()
 		}
-	
+
 		onClick {
+			self.dropDown.anchorView = self.superview
+			self.dropDown.tableView.scrollToRow(at: IndexPath(row: liveIndex.value!, section: 0), at: .top, animated: true) // Change visibility to public instead of fileprivate in DropDown.swift
 			self.dropDown.show()
 		}
 		
