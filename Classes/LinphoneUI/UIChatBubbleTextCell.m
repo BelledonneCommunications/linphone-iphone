@@ -851,7 +851,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	_messageActionsTitles = [[NSMutableArray alloc] init];
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
-
+	
+	[VIEW(ChatConversationView).messageField resignFirstResponder];
 	UIChatBubbleTextCell *thiz = self;
 	
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);

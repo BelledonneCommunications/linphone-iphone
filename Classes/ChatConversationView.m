@@ -2186,6 +2186,7 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 	_showReplyView = true;
 	[self updateFramesInclRecordingAndReplyView];
 	[self.tableController scrollToMessage:message];
+	[self.messageField becomeFirstResponder];
 }
 
 -(void) handlePendingTransferIfAny {
