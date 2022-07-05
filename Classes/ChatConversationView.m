@@ -781,7 +781,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance popCurrentView];
+	NSString *previousViewName = [PhoneMainView.instance getPreviousViewName];
+	if ([previousViewName isEqualToString:@"ContactDetailsView"]) {
+		ContactDetailsView *view = VIEW(ContactDetailsView);
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	} else {
+		ChatsListView *view = VIEW(ChatsListView);
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	}
 }
 
 - (IBAction)onEditClick:(id)event {
