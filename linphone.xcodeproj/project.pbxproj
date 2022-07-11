@@ -856,6 +856,8 @@
 		C6B4444526AAD0980076C517 /* file_audio_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6B4444026AAD0970076C517 /* file_audio_default.png */; };
 		C6B4444626AAD0980076C517 /* file_pdf_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6B4444126AAD0970076C517 /* file_pdf_default.png */; };
 		C6B4444826AADA530076C517 /* SwiftUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B4444726AADA530076C517 /* SwiftUtil.swift */; };
+		C6F55645287CC69F0056E213 /* voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */; };
+		C6F55647287CCFB70056E213 /* menu_voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
 		CF15F21F20E4F9A3008B1DE6 /* UIImageViewDeletable.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */; };
@@ -2027,6 +2029,8 @@
 		C6B4444026AAD0970076C517 /* file_audio_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_audio_default.png; sourceTree = "<group>"; };
 		C6B4444126AAD0970076C517 /* file_pdf_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_pdf_default.png; sourceTree = "<group>"; };
 		C6B4444726AADA530076C517 /* SwiftUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUtil.swift; sourceTree = "<group>"; };
+		C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_meeting_schedule.png; sourceTree = "<group>"; };
+		C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_voip_meeting_schedule.png; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsView.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
@@ -2660,6 +2664,8 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */,
+				C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */,
 				C63F72A4285A2F1B0066163B /* conference_schedule_calendar_default.png */,
 				C63F72AD285A2F1C0066163B /* conference_schedule_participants_default.png */,
 				C63F72A8285A2F1C0066163B /* conference_schedule_time_default.png */,
@@ -4297,6 +4303,7 @@
 				C63F72D9285A2F1E0066163B /* voip_earpiece.png in Resources */,
 				615A28362180720D0060F920 /* security_toogle_background_grey@2x.png in Resources */,
 				639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */,
+				C6F55645287CC69F0056E213 /* voip_meeting_schedule.png in Resources */,
 				633FEE961D3CD55A0014B822 /* micro_disabled.png in Resources */,
 				63AADBF61B6A0FF200AA16FD /* linphonerc-factory in Resources */,
 				C63F72C6285A2F1E0066163B /* voip_call_forward.png in Resources */,
@@ -4518,6 +4525,7 @@
 				633FEE0E1D3CD5590014B822 /* chat_attachment_over.png in Resources */,
 				633FEE7B1D3CD5590014B822 /* history_missed_default@2x.png in Resources */,
 				633FEEC71D3CD55A0014B822 /* numpad_5_over~ipad.png in Resources */,
+				C6F55647287CCFB70056E213 /* menu_voip_meeting_schedule.png in Resources */,
 				C63F72BF285A2F1D0066163B /* voip_call_header_paused.png in Resources */,
 				633FEEAA1D3CD55A0014B822 /* numpad_1~ipad@2x.png in Resources */,
 				633FEDEC1D3CD5590014B822 /* call_status_outgoing~ipad.png in Resources */,

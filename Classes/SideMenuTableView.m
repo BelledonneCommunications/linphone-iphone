@@ -104,7 +104,7 @@
 	}
 	
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:VoipTexts.conference_scheduled
-															   image:[UIImage imageNamed:@"voip_conference_new.png"]
+															   image:[UIImage imageNamed:@"menu_voip_meeting_schedule"]
 															tapBlock:^() {
 															  [PhoneMainView.instance
 																  changeCurrentView:ScheduledConferencesView.compositeViewDescription];
