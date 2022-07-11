@@ -379,10 +379,8 @@ class ConferenceViewModel {
 	func togglePlayPause () {
 		if (isConferenceLocallyPaused.value == true) {
 			resumeConference()
-			isConferenceLocallyPaused.value = false
 		} else {
 			pauseConference()
-			isConferenceLocallyPaused.value = true
 		}
 	}
 	
