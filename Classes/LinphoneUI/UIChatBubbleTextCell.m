@@ -851,7 +851,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	_messageActionsTitles = [[NSMutableArray alloc] init];
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
-
+	
+	[VIEW(ChatConversationView).messageField resignFirstResponder];
 	UIChatBubbleTextCell *thiz = self;
 	
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
@@ -896,7 +897,9 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
 	}];
 	
-	if (linphone_chat_message_is_outgoing(self.message) || linphone_chat_room_get_nb_participants(linphone_chat_message_get_chat_room(self.message)) > 1) {
+	LinphoneChatRoom *chatroom = linphone_chat_message_get_chat_room(self.message);
+	
+	if (linphone_chat_room_get_nb_participants(chatroom) > 1) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Infos", nil)];
 		[_messageActionsIcons addObject:@"menu_info"];
 		[_messageActionsBlocks addObject:^{
@@ -904,6 +907,31 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
 			view.msg = message;
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		}];
+	}
+
+	if (!linphone_chat_message_is_outgoing(self.message)
+		&& [FastAddressBook getContactWithAddress:linphone_chat_message_get_from_address(self.message)] == nil
+		&& !(linphone_chat_room_get_capabilities(chatroom) & LinphoneChatRoomCapabilitiesOneToOne) ) {
+		
+		LinphoneAddress *fromAddress = linphone_address_clone(linphone_chat_message_get_from_address(self.message));
+		[_messageActionsTitles addObject:NSLocalizedString(@"Add to contact", nil)];
+		[_messageActionsIcons addObject:@"contact_add_default"];
+		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
+			linphone_address_clean(fromAddress);
+			char *lAddress = linphone_address_as_string_uri_only(fromAddress);
+			if (lAddress != NULL) {
+				NSString *normSip = [NSString stringWithUTF8String:lAddress];
+				normSip = [normSip hasPrefix:@"sip:"] ? [normSip substringFromIndex:4] : normSip;
+				normSip = [normSip hasPrefix:@"sips:"] ? [normSip substringFromIndex:5] : normSip;
+				[ContactSelection setAddAddress:normSip];
+				[ContactSelection setSelectionMode:ContactSelectionModeEdit];
+				[ContactSelection enableSipFilter:FALSE];
+				[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
+				ms_free(lAddress);
+			}
+			linphone_address_unref(fromAddress);
 		}];
 	}
 	

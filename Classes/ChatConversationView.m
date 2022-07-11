@@ -781,7 +781,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance popCurrentView];
+	NSString *previousViewName = [PhoneMainView.instance getPreviousViewName];
+	if ([previousViewName isEqualToString:@"ContactDetailsView"]) {
+		ContactDetailsView *view = VIEW(ContactDetailsView);
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	} else {
+		ChatsListView *view = VIEW(ChatsListView);
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	}
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -1773,7 +1780,14 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	
 	if (indexPath.row == 0) {
 		if (isOneToOne) {
-			[self addOrGoToContact:linphone_chat_room_get_peer_address(_chatRoom)];
+			if  (isEncrypted) {
+				LinphoneAddress* contactAddress = linphone_address_clone(linphone_participant_get_address(bctbx_list_nth_data(linphone_chat_room_get_participants(_chatRoom), 0)));
+				linphone_address_clean(contactAddress);
+				[self addOrGoToContact:contactAddress];
+				linphone_address_unref(contactAddress);
+			} else {
+				[self addOrGoToContact:linphone_chat_room_get_peer_address(_chatRoom)];
+			}
 		} else {
 			[self displayGroupInfo];
 		}
@@ -1831,7 +1845,15 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	
 	if (indexPath.row == 0) {
 		if (isOneToOne) {
-			Contact *contact = [FastAddressBook getContactWithAddress:linphone_chat_room_get_peer_address(_chatRoom)];
+			Contact *contact;
+			if  (isEncrypted) {
+				LinphoneAddress * contactAddress = linphone_address_clone(linphone_participant_get_address(bctbx_list_nth_data(linphone_chat_room_get_participants(_chatRoom), 0)));
+				linphone_address_clean(contactAddress);
+				contact = [FastAddressBook getContactWithAddress:contactAddress];
+				linphone_address_unref(contactAddress);
+			} else {
+				contact = [FastAddressBook getContactWithAddress:linphone_chat_room_get_peer_address(_chatRoom)];
+			}
 			if (contact == nil) {
 				cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"contact_add_default.png"] newSize:CGSizeMake(20, 25)];
 				cell.textLabel.text = NSLocalizedString(@"Add to contacts",nil);
@@ -2186,6 +2208,7 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 	_showReplyView = true;
 	[self updateFramesInclRecordingAndReplyView];
 	[self.tableController scrollToMessage:message];
+	[self.messageField becomeFirstResponder];
 }
 
 -(void) handlePendingTransferIfAny {
