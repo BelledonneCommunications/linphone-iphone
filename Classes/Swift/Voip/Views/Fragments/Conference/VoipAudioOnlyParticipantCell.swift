@@ -36,40 +36,65 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 	let avatar = Avatar(diameter:VoipCallCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_small)
 	let paused = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 	let muted = MicMuted(VoipAudioOnlyParticipantCell.mute_size)
+	let joining = RotatingSpinner()
 
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_as)
 	
 	var participantData: ConferenceParticipantDeviceData? = nil {
 		didSet {
 			if let data = participantData {
-				self.displayName.text = ""
+				self.updateElements()
+				data.isJoining.clearObservers()
+				data.isJoining.observe { _ in
+					self.updateElements()
+				}
 				data.isInConference.clearObservers()
-				data.isInConference.readCurrentAndObserve { (isIn) in
-					self.avatar.isHidden = isIn != true
-					self.paused.isHidden = isIn == true
-					data.participantDevice.address.map {
-						self.avatar.fillFromAddress(address: $0)
-						if let displayName = $0.addressBookEnhancedDisplayName() {
-							self.displayName.text = displayName + (isIn == true ? "" : " \(VoipTexts.conference_participant_paused)")
-						}
+				data.isInConference.observe { _ in
+					self.updateElements()
+				}
+				data.participantDevice.address.map {
+					avatar.fillFromAddress(address: $0)
+					if let displayName = $0.addressBookEnhancedDisplayName() {
+						self.displayName.text = displayName
 					}
 				}
-				if (data.participantDevice.address == nil) {
-					avatar.isHidden = true
-				}
-				data.activeSpeaker.clearObservers()
-				data.activeSpeaker.readCurrentAndObserve { (active) in
-					if (active == true) {
-						self.layer.borderWidth = 2
-					} else {
-						self.layer.borderWidth = 0
-					}
+				data.isSpeaking.clearObservers()
+				data.isSpeaking.observe { _ in
+					self.updateElements(skipVideo: true)
 				}
 				data.micMuted.clearObservers()
-				data.micMuted.readCurrentAndObserve { (muted) in
-					self.muted.isHidden = muted != true
+				data.micMuted.observe { _ in
+					self.updateElements(skipVideo: true)
 				}
 			}
+		}
+	}
+	
+	func updateElements(skipVideo:Bool = false) {
+		if let data = participantData  {
+			
+			// Avatar
+			self.avatar.isHidden = data.isInConference.value != true && data.isJoining.value != true
+			
+			
+			// Pause
+			self.paused.isHidden = data.isInConference.value == true || data.isJoining.value == true
+			
+			// Border for active speaker
+			self.layer.borderWidth = data.isSpeaking.value == true ? 2 : 0
+			
+			// Joining indicator
+			if (data.isJoining.value == true) {
+				self.joining.isHidden = false
+				self.joining.startRotation()
+			} else {
+				self.joining.isHidden = true
+				self.joining.stopRotation()
+			}
+			
+			// Muted
+			self.muted.isHidden = data.micMuted.value != true
+			
 		}
 	}
 	
@@ -98,6 +123,10 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 		
 		contentView.addSubview(muted)
 		muted.alignParentRight(withMargin: common_margin).toRightOf(displayName,withLeftMargin: common_margin).centerY().done()
+		
+		contentView.addSubview(joining)
+		joining.alignParentRight(withMargin: common_margin).toRightOf(displayName,withLeftMargin: common_margin).centerY().done()
+		
 	}
 	
 	required init?(coder: NSCoder) {

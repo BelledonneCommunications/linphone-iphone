@@ -97,16 +97,16 @@ class ConferenceViewModel {
 					Log.w("[Conference] Failed to find participant [\(participant.address!.asStringUriOnly())] in conferenceParticipants list")
 				}
 			},
-			onParticipantDeviceLeft: { (conference: Conference, device: ParticipantDevice) in
+			onParticipantDeviceStateChanged: { (conference: Conference, device: ParticipantDevice, state: ParticipantDeviceState) in
 				if (conference.isMe(uri: device.address!)) {
-					Log.i("[Conference] Left conference")
-					self.isConferenceLocallyPaused.value = true
-				}
-			},
-			onParticipantDeviceJoined: { (conference: Conference, device: ParticipantDevice) in
-				if (conference.isMe(uri: device.address!)) {
-					Log.i("[Conference] Joined conference")
-					self.isConferenceLocallyPaused.value = false
+					if (state == .Present) {
+						Log.i("[Conference] Entered conference")
+						self.isConferenceLocallyPaused.value = false
+					}
+					if (state == .OnHold) {
+						Log.i("[Conference] Left conference")
+						self.isConferenceLocallyPaused.value = true
+					}
 				}
 			},
 			onStateChanged: { (conference: Conference, state: Conference.State) in

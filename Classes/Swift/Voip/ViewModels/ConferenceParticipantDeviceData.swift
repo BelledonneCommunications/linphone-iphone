@@ -26,10 +26,13 @@ class ConferenceParticipantDeviceData  {
 	let isMe:Bool
 	
 	let videoEnabled = MutableLiveData<Bool>()
-	let activeSpeaker = MutableLiveData<Bool>()
+	let isSpeaking = MutableLiveData<Bool>()
 	let micMuted = MutableLiveData<Bool>()
 	
 	let isInConference = MutableLiveData<Bool>()
+	
+	let isJoining = MutableLiveData<Bool>()
+	
 	
 	var core : Core { get { Core.get() } }
 	
@@ -41,19 +44,22 @@ class ConferenceParticipantDeviceData  {
 		participantDeviceDelegate = ParticipantDeviceDelegateStub(
 			onIsSpeakingChanged: { (participantDevice, isSpeaking) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) isspeaking = \(isSpeaking)")
-				self.activeSpeaker.value = isSpeaking
+				self.isSpeaking.value = isSpeaking
 			},
 			onIsMuted: { (participantDevice, isMuted) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) muted = \(isMuted)")
 				self.micMuted.value = isMuted
 			},
-			onConferenceJoined: { (participantDevice) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly())  has joined the conference")
-				self.isInConference.value = true
-			},
-			onConferenceLeft: { (participantDevice) in
-				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly())  has left the conference")
-				self.isInConference.value = false
+			onStateChanged: { (participantDevice, state) in
+				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) state has changed: \(state)")
+				if ([.Joining,.Alerting].contains(state)) {
+					self.isJoining.value = true
+				} else if (state == .OnHold) {
+					self.isInConference.value = false
+				} else if (state == .Present) {
+					self.isJoining.value = false
+					self.isInConference.value = true
+				}
 			},
 			onStreamCapabilityChanged: { (participantDevice, direction, streamType) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) video stream direction changed: \(direction)")
@@ -72,7 +78,7 @@ class ConferenceParticipantDeviceData  {
 		)
 		
 		participantDevice.addDelegate(delegate: participantDeviceDelegate!)
-		activeSpeaker.value = false
+		isSpeaking.value = false
 		micMuted.value = participantDevice.isMuted
 		
 		videoEnabled.value = participantDevice.getStreamAvailability(streamType: .Video)
@@ -90,7 +96,7 @@ class ConferenceParticipantDeviceData  {
 	func clearObservers() {
 		isInConference.clearObservers()
 		videoEnabled.clearObservers()
-		activeSpeaker.clearObservers()
+		isSpeaking.clearObservers()
 	}
 	
 	func switchCamera() {
