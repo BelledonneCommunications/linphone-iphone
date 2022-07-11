@@ -169,5 +169,17 @@ import EventKitUI
 		controller.dismiss(animated: true, completion: nil)
 	}
 	
+	@objc static func getSubjectFromContent(cmessage: OpaquePointer) -> String {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		var subject = ""
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					subject = conferenceInfo.subject
+				}
+			}
+		}
+		return subject
+	}
 	
 }

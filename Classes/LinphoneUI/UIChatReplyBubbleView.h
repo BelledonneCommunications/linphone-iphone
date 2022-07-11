@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UICollectionView *contentCollection;
 @property NSArray *dataContent;
 @property (weak, nonatomic) IBOutlet UILabel *originalMessageGone;
+@property (weak, nonatomic) IBOutlet UIImageView *icsIcon;
 
 -(void) configureForMessage:(LinphoneChatMessage *)message withDimissBlock:(void (^)(void))dismissBlock hideDismiss:(BOOL)hideDismiss withClickBlock:(void (^)(void))clickBlock;
 @end
