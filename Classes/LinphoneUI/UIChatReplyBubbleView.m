@@ -40,6 +40,7 @@
 
 -(void) viewDidLoad {
 	_contentCollection.dataSource = self;
+	[_icsIcon setImageNamed:@"voip_meeting_schedule" tintColor:VoipTheme.voip_dark_gray];
 	[_contentCollection registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"dataContent"];
 }
 
@@ -51,6 +52,7 @@
 		_contentCollection.hidden = true;
 		_senderName.hidden = true;
 		_originalMessageGone.hidden = false;
+		_icsIcon.hidden = true;
 		return;
 	}
 	if (hideDismiss) {
@@ -60,9 +62,12 @@
 	_originalMessageGone.hidden = true;
 	self.message = message;
 	self.dataContent = [self loadDataContent];
+	BOOL isIcal = [ICSBubbleView isConferenceInvitationMessageWithCmessage:message];
+	_icsIcon.hidden = !isIcal;
+
 	NSString *sender =  [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(message)];
 	_senderName.text = sender;
-	const char * text = linphone_chat_message_get_text_content(message);
+	const char * text = isIcal ? [ICSBubbleView getSubjectFromContentWithCmessage:message].UTF8String : linphone_chat_message_get_text_content(message);
 	if (text && strlen(text) == 0)
 		text = nil;
 	_textContent.text = text ? [NSString stringWithUTF8String:text] : @"";

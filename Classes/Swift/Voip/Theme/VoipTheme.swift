@@ -26,7 +26,7 @@ import UIKit
 	static let voip_gray_blue_color = UIColor(hex:"#798791")
 	static let voip_light_gray = UIColor(hex:"#D0D8DE")
 	@objc static let voip_dark_gray = UIColor(hex:"#4B5964")
-	static let voip_gray = UIColor(hex:"#96A5B1")
+	@objc static let voip_gray = UIColor(hex:"#96A5B1")
 	static let voip_gray_background = UIColor(hex:"#AFAFAF")
 	static let voip_call_record_background = UIColor(hex:"#EBEBEB")
 	static let voip_calls_list_inactive_background = UIColor(hex:"#F0F1F2")
