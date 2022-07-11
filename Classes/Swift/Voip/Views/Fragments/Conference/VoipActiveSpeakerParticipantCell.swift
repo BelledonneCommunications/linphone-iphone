@@ -32,39 +32,31 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 	let switch_camera_button_size = 30
 	static let mute_size = 25
 	let mute_margin = 5
-
-
+	
+	
 	let videoView = UIView()
 	let avatar = Avatar(diameter:VoipActiveSpeakerParticipantCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_medium)
 	let pause = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_as)
-	let pauseLabel = StyledLabel(VoipTheme.conference_participant_name_font_as,VoipTexts.conference_participant_paused)
 	let muted = MicMuted(VoipActiveSpeakerParticipantCell.mute_size)
-
+	let joining = RotatingSpinner()
+	
 	var participantData: ConferenceParticipantDeviceData? = nil {
 		didSet {
 			if let data = participantData {
+				self.updateElements()
+				data.isJoining.clearObservers()
+				data.isJoining.observe { _ in
+					self.updateElements()
+				}
 				data.isInConference.clearObservers()
-				data.isInConference.readCurrentAndObserve { (isIn) in
-					self.updateBackground()
-					self.pause.isHidden = isIn == true
-					self.pauseLabel.isHidden = self.pause.isHidden
-					self.videoView.isHidden = data.videoEnabled.value != true
-					self.switchCamera.isHidden = data.videoEnabled.value != true || !data.isSwitchCameraAvailable()
+				data.isInConference.observe { _ in
+					self.updateElements()
 				}
 				data.videoEnabled.clearObservers()
-				data.videoEnabled.readCurrentAndObserve { (videoEnabled) in
-					self.updateBackground()
-					if (videoEnabled == true) {
-						self.videoView.isHidden = false
-						data.setVideoView(view: self.videoView)
-						self.avatar.isHidden = true
-					} else {
-						self.videoView.isHidden = true
-						self.avatar.isHidden = false
-					}
-					self.switchCamera.isHidden = videoEnabled != true || !data.isSwitchCameraAvailable()
+				data.videoEnabled.observe { _ in
+					self.updateElements()
 				}
 				data.participantDevice.address.map {
 					avatar.fillFromAddress(address: $0)
@@ -72,32 +64,60 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 						self.displayName.text = displayName
 					}
 				}
-				data.activeSpeaker.clearObservers()
-				data.activeSpeaker.readCurrentAndObserve { (active) in
-					if (active == true) {
-						self.layer.borderWidth = 2
-					} else {
-						self.layer.borderWidth = 0
-					}
+				data.isSpeaking.clearObservers()
+				data.isSpeaking.observe { _ in
+					self.updateElements(skipVideo: true)
 				}
 				data.micMuted.clearObservers()
-				data.micMuted.readCurrentAndObserve { (muted) in
-					self.muted.isHidden = muted != true
+				data.micMuted.observe { _ in
+					self.updateElements(skipVideo: true)
 				}
 			}
 		}
 	}
 	
-	func updateBackground() {
+	func updateElements(skipVideo:Bool = false) {
 		if let data = participantData  {
-			if (data.isInConference.value != true) {
+			
+			// Background
+			if (data.isInConference.value != true && data.isJoining.value != true) {
 				self.contentView.backgroundColor = VoipTheme.voip_conference_participant_paused_background
 			} else if (data.videoEnabled.value == true) {
 				self.contentView.backgroundColor = .black
 			} else {
 				self.contentView.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
-
 			}
+			
+			// Avatar
+			self.avatar.isHidden = (data.isInConference.value != true && data.isJoining.value != true) || data.videoEnabled.value == true
+
+			// Video
+			if (!skipVideo) {
+				self.videoView.isHidden = data.isInConference.value != true || data.videoEnabled.value != true
+				if (!self.videoView.isHidden) {
+					data.setVideoView(view: self.videoView)
+				}
+				self.switchCamera.isHidden = self.videoView.isHidden || !data.isSwitchCameraAvailable()
+			}
+			
+			// Pause
+			self.pause.isHidden = data.isInConference.value == true || data.isJoining.value == true
+			
+			// Border for active speaker
+			self.layer.borderWidth = data.isSpeaking.value == true ? 2 : 0
+			
+			// Joining indicator
+			if (data.isJoining.value == true) {
+				self.joining.isHidden = false
+				self.joining.startRotation()
+			} else {
+				self.joining.isHidden = true
+				self.joining.stopRotation()
+			}
+			
+			// Muted
+			self.muted.isHidden = data.micMuted.value != true
+			
 		}
 	}
 	
@@ -130,13 +150,12 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 		
 		contentView.addSubview(displayName)
 		displayName.matchParentSideBorders(insetedByDx:ActiveCallView.bottom_displayname_margin_left).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
-	
-		// Paused label commented out as in Android 10.06.2022
-		// contentView.addSubview(pauseLabel)
-		//pauseLabel.toRightOf(displayName).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
-
+		
 		contentView.addSubview(muted)
 		muted.alignParentLeft(withMargin: mute_margin).alignParentTop(withMargin:mute_margin).done()
+		
+		contentView.addSubview(joining)
+		joining.square(VoipActiveSpeakerParticipantCell.mute_size).alignParentTop(withMargin: mute_margin).alignParentLeft(withMargin: mute_margin).done()
 		
 		contentView.matchParentDimmensions().done()
 		makeHeightMatchWidth().done()
