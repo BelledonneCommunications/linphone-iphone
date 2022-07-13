@@ -245,7 +245,7 @@ import linphonesw
 		ControlsViewModel.shared.hideExtraButtons.readCurrentAndObserve { (_) in
 			self.hideModalSubview(view: self.extraButtonsView)
 		}
-		self.view.onClick {
+		shadingMask.onClick {
 			if (!self.extraButtonsView.isHidden) {
 				self.hideModalSubview(view: self.extraButtonsView)
 			}
@@ -261,7 +261,11 @@ import linphonesw
 					self.numpadView?.removeFromSuperview()
 					self.shadingMask.isHidden = true
 				})
-			}
+            } else {
+                self.numpadView?.removeFromSuperview()
+                self.shadingMask.isHidden = true
+            }
+
 		}
 		
 		// Call stats
@@ -273,7 +277,11 @@ import linphonesw
 					self.currentCallStatsVew?.removeFromSuperview()
 					self.shadingMask.isHidden = true
 				})
-			}
+			} else {
+                self.currentCallStatsVew?.removeFromSuperview()
+                self.shadingMask.isHidden = true
+            }
+
 		}
 		
 		// Video activation dialog request
@@ -351,6 +359,8 @@ import linphonesw
 		participantsListView?.removeFromSuperview()
 		participantsListView = nil
 		
+        ControlsViewModel.shared.numpadVisible.value = false
+        ControlsViewModel.shared.callStatsVisible.value = false
 		ControlsViewModel.shared.fullScreenMode.value = false
 		super.viewWillDisappear(animated)
 	}
