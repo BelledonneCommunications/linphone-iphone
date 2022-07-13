@@ -25,6 +25,7 @@ import linphonesw
 	// Layout constants
 	let side_margins = 10.0
 	let margin_top = 100.0
+    let eneteredDtmf_size = 40.0
 	let button_size = 70
 	let button_vertical_space = 17.0
 	let button_horizontal_space = 14.0
@@ -44,6 +45,7 @@ import linphonesw
 
 		callData.callState.observe { state in
 			if (state == Call.State.End) {
+                //never happens
 				onDismissAction()
 			}
 		}
@@ -59,7 +61,7 @@ import linphonesw
 		
 		let eneteredDtmf = StyledLabel(VoipTheme.dtmf_label)
 		addSubview(eneteredDtmf)
-		_ = eneteredDtmf.matchParentSideBorders().alignUnder(view:hide,withMargin:side_margins)
+        eneteredDtmf.height(eneteredDtmf_size).matchParentSideBorders().alignUnder(view:hide,withMargin:side_margins).done()
 		callData.enteredDTMF.readCurrentAndObserve { (dtmfs) in
 			eneteredDtmf.text = dtmfs
 		}

@@ -42,7 +42,7 @@ class CallData  {
 	let callState = MutableLiveData<Call.State>()
 	let iFrameReceived = MutableLiveData(false)
 	let outgoingEarlyMedia =  MutableLiveData<Bool>()
-	let enteredDTMF = MutableLiveData(" ")
+	let enteredDTMF = MutableLiveData("")
 	
 	var chatRoom: ChatRoom? = nil
 	

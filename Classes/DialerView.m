@@ -175,10 +175,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_padView.hidden = !IPAD && UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 	if (linphone_core_get_calls_nb(LC)) {
 		_backButton.hidden = FALSE;
+        _addContactButton.hidden = TRUE;
 	} else {
 		_backButton.hidden = TRUE;
+        _addContactButton.hidden = FALSE;
 	}
-	_addContactButton.hidden = FALSE;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

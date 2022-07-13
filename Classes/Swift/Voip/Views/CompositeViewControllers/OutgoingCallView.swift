@@ -32,7 +32,7 @@ import linphonesw
 	var shadingMask = UIView()
 
 	
-	static let compositeDescription = UICompositeViewDescription(OutgoingCallView.self, statusBar: nil, tabBar: nil, sideMenu: nil, fullscreen: true, isLeftFragment: false,fragmentWith: nil)
+    static let compositeDescription = UICompositeViewDescription(OutgoingCallView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: nil, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return OutgoingCallView.compositeDescription }
 			
