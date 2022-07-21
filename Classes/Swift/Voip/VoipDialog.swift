@@ -91,18 +91,29 @@ class VoipDialog : UIView{
 	}
 	
 	private static func rootVC() -> UIViewController? {
-		return UIApplication.getTopMostViewController()
+		return PhoneMainView.instance().mainViewController
 	}
 	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
+	static var toastQueue: [String] = []
+	
 	static func toast(message:String, timeout:CGFloat = 1.5) {
+		if (toastQueue.count > 0) {
+			toastQueue.append(message)
+			return
+		}
 		let alert = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
 		rootVC()?.present(alert, animated: true)
 		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + timeout) {
-		  alert.dismiss(animated: true)
+			alert.dismiss(animated: true)
+			if (toastQueue.count > 0) {
+				let message = toastQueue.first
+				toastQueue.remove(at: 0)
+				self.toast(message: message!)
+			}
 		}
 	}
 	
