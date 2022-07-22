@@ -33,12 +33,14 @@ class PausedCallOrConferenceView: UIView {
 	var icon : UIImageView? = nil
 	let title = StyledLabel(VoipTheme.call_or_conference_title)
 	let subtitle = StyledLabel(VoipTheme.call_or_conference_subtitle)
+    
+    var onClickAction : (()->Void)? = nil
 	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
-	init (iconName:String, titleText:String, subTitleText:String? = nil) {
+	init (iconName:String, titleText:String, subTitleText:String? = nil, onClickAction :  (()->Void)? = nil) {
 		super.init(frame: .zero)
 		
 		backgroundColor = VoipTheme.voip_translucent_popup_background
@@ -64,6 +66,11 @@ class PausedCallOrConferenceView: UIView {
 		
 		self.addSubview(centeredView)
 		centeredView.center().matchParentSideBorders().wrapContentY().done()
+        
+        self.onClickAction = onClickAction
+        icon!.onClick {
+            self.onClickAction?()
+        }
 		
 	}
 	
