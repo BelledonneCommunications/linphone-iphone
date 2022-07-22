@@ -127,7 +127,7 @@ class ConferenceViewModel {
 				Log.i("[Conference] Participant [\(participantDevice.address!.asStringUriOnly())] is speaking = \(isSpeaking)")
 				if (isSpeaking) {
 					if let device = self.conferenceParticipantDevices.value?.filter ({
-						$0.participantDevice.address!.weakEqual(address2: participantDevice.address!)
+						$0.participantDevice.address!.weakEqual(address2: participantDevice.address!) && !$0.isMe // TODO: FIXME: remove, this is a temporary workaround to not have your name displayed above someone else video in active speaker layout when you talk
 					}).first {
 						self.speakingParticipant.value = device
 					} else {
@@ -319,6 +319,10 @@ class ConferenceViewModel {
 		conference.me?.devices.forEach { (device) in
 			Log.i("[Conference] \(conference) Participant device for myself found: \(device.name)  (\(device.address!.asStringUriOnly()))")
 			let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: true)
+			if (devices.count == 0) {
+					// TODO: FIXME: Temporary workaround when alone in a conference in active speaker layout
+					speakingParticipant.value = deviceData
+			}
 			devices.append(deviceData)
 		}
 		
