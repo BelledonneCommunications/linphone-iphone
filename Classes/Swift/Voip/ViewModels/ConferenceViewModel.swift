@@ -278,6 +278,7 @@ class ConferenceViewModel {
 		self.conferenceParticipantDevices.value?.forEach{ $0.destroy()}
 		conferenceParticipants.value = []
 		conferenceParticipantDevices.value = []
+		speakingParticipant.value = nil
 	}
 	
 	
@@ -316,6 +317,11 @@ class ConferenceViewModel {
 			}
 			
 		}
+		
+		if (devices.count > 0) {
+			speakingParticipant.value = devices.first
+		}
+		
 		conference.me?.devices.forEach { (device) in
 			Log.i("[Conference] \(conference) Participant device for myself found: \(device.name)  (\(device.address!.asStringUriOnly()))")
 			let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: true)
