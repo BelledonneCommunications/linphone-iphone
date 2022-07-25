@@ -35,6 +35,7 @@
 @property(weak, nonatomic) IBOutlet UIView *outcallView;
 
 - (IBAction)onSecurityClick:(id)sender;
+- (IBAction)onQualityClick:(id)sender;
 - (IBAction)onSideMenuClick:(id)sender;
 - (IBAction)onRegistrationStateClick:(id)sender;
 + (UIImage *)imageForState:(LinphoneRegistrationState)state;

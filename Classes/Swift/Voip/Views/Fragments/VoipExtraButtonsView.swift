@@ -60,12 +60,12 @@ class VoipExtraButtonsView: UIStackView {
 		
 		// First row
 		let numpad = VoipExtraButton(text: VoipTexts.call_action_numpad, buttonTheme: VoipTheme.call_action("voip_call_numpad"),onClickAction: {
-			ControlsViewModel.shared.numpadVisible.notifyAllObservers(with: true)
+            ControlsViewModel.shared.numpadVisible.value = true
 		})
 		row1.addArrangedSubview(numpad)
 		
 		let stats = VoipExtraButton(text: VoipTexts.call_action_statistics, buttonTheme: VoipTheme.call_action("voip_call_stats"),onClickAction: {
-			ControlsViewModel.shared.callStatsVisible.notifyAllObservers(with: true)
+			ControlsViewModel.shared.callStatsVisible.value = true
 		})
 		row1.addArrangedSubview(stats)
 		

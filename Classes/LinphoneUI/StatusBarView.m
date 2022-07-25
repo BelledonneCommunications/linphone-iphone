@@ -21,6 +21,7 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import <UserNotifications/UserNotifications.h>
+#import "linphoneapp-Swift.h"
 
 @implementation StatusBarView {
 
@@ -398,6 +399,11 @@
 			}
 		}
 	}
+}
+
+- (IBAction)onQualityClick:(id)sender {
+    CallStatsViewModel* stats = [[CallStatsViewModel alloc]init];
+    [stats toggleVisibility];
 }
 
 - (IBAction)onSideMenuClick:(id)sender {

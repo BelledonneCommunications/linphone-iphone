@@ -256,8 +256,7 @@ import linphonesw
 				self.numpadView?.removeFromSuperview()
 				self.shadingMask.isHidden = false
 				self.numpadView = NumpadView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0, onDismissAction: {
-					self.numpadView?.removeFromSuperview()
-					self.shadingMask.isHidden = true
+                    ControlsViewModel.shared.numpadVisible.value = false
 				})
             } else {
                 self.numpadView?.removeFromSuperview()
@@ -272,8 +271,7 @@ import linphonesw
 				self.currentCallStatsVew?.removeFromSuperview()
 				self.shadingMask.isHidden = false
 				self.currentCallStatsVew = CallStatsView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0,  onDismissAction: {
-					self.currentCallStatsVew?.removeFromSuperview()
-					self.shadingMask.isHidden = true
+                    ControlsViewModel.shared.callStatsVisible.value = false
 				})
 			} else {
                 self.currentCallStatsVew?.removeFromSuperview()
