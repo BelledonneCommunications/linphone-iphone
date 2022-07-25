@@ -271,3 +271,19 @@ class ControlsViewModel {
 	}
 	
 }
+
+@objc class CallStatsViewModel: NSObject {
+    
+    override init() {
+        super.init()
+    }
+    
+    @objc
+    func toggleVisibility() -> Void {
+        if (ControlsViewModel.shared.callStatsVisible.value == true) {
+            ControlsViewModel.shared.callStatsVisible.value = false
+        } else {
+            ControlsViewModel.shared.callStatsVisible.value = true
+        }
+    }
+}
