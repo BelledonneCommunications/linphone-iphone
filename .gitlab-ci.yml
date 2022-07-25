@@ -1,67 +1,26 @@
 variables:
-  workspace: linphone.xcworkspace
-  scheme: linphone
-  destination: "platform=iOS Simulator,name=iPhone 13 Pro,OS=15.5"
+  archive_scheme: linphone
   archive_path: linphone.xcarchive
   export_path: linphone-adhoc-ipa
   export_options_plist: linphone-adhoc.plist
-  
-stages:
-  - Build
-  - Test
-  - Archive
 
-before_script:
-  - ls
-  - pod install
+job-ios:
 
-Compile & Build:
-  stage: Build
+  stage: build
+  tags: [ "macmini-m1-xcode13" ]
+
   script:
-    - xcodebuild -workspace $workspace -scheme $scheme -UseModernBuildSystem=YES -destination $destination
-  tags:
-    - iOS-tag
-
-Feature Tests:
-  stage: Test
-  script:
-    - xcodebuild test -workspace $workspace -scheme $scheme -UseModernBuildSystem=YES -destination $destination| xcpretty --color
-  tags:
-    - iOS-tag
-
-Package Archive:
-  stage: Archive
-  script:
-  - xcodebuild clean -workspace $workspace -scheme $scheme
-  - xcodebuild archive -archivePath $archive_path -configuration Release -workspace $workspace -scheme $scheme -UseModernBuildSystem=YES -destination $destination
-  - xcodebuild -exportArchive -archivePath $archive_path -exportPath $export_path -exportOptionsPlist $export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination $destination
-tags:
-  - ioS-tag
-
-artifacts:
-  paths:
-    - $archive_path
-    - $export_path
-  when: always
-  expire_in: 1 week
+    - pod install --repo-update
+    - pwd
+    - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
+    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
+    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
 
 
-#job-ios:
-
-#  stage: build
-#  tags: [ "macmini-m1-xcode13" ]
-
-#    - pod install --repo-update
-#    - pwd
-#    - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
-#    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
-#    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
-
-
-#  artifacts:
-#    paths:
-#      - $archive_path
-#      - $export_path
-#    when: always
-#    expire_in: 1 week
+  artifacts:
+    paths:
+      - $archive_path
+      - $export_path
+    when: always
+    expire_in: 1 week
 
