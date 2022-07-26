@@ -47,6 +47,10 @@ import linphonesw
 		return theMagicSearchSingleton!
 	}
 	
+	@objc static func destroyInstance() {
+		theMagicSearchSingleton = nil
+	}
+	
 	
 	func getContactFromAddr(addr: Address) -> Contact? {
 		return LinphoneManager.instance().fastAddressBook.addressBookMap.object(forKey: addr.asStringUriOnly() as Any) as? Contact
