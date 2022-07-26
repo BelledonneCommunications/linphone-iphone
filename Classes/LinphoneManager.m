@@ -637,6 +637,11 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 		if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff)
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
 	});
+	
+	if (state == LinphoneGlobalOn) {
+		// reload friends
+		[self.fastAddressBook fetchContactsInBackGroundThread];
+	}
 }
 
 - (void)globalStateChangedNotificationHandler:(NSNotification *)notif {
@@ -1488,8 +1493,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 - (void)resetLinphoneCore {
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
-	// reload friends
-	[self.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 static int comp_call_id(const LinphoneCall *call, const char *callid) {
