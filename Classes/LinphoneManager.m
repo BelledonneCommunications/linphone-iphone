@@ -1449,6 +1449,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 - (void)destroyLinphoneCore {
 	// just in case
 	[self removeCTCallCenterCb];
+	[MagicSearchSingleton destroyInstance];
 
 	if (theLinphoneCore != nil) { // just in case application terminate before linphone core initialization
 
