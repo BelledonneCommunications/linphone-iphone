@@ -625,7 +625,16 @@ import AVFoundation
 							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
 							CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
 						} else {
-							CallManager.instance().referedToCall = callId
+							if CallManager.instance().isConferenceCall(call: call) {
+								let uuid = UUID()
+								let callInfo = CallInfo.newOutgoingCallInfo(addr: call.remoteAddress!, isSas: call.params?.mediaEncryption == .ZRTP, displayName: VoipTexts.conference_default_title, isVideo: call.params?.videoEnabled == true, isConference:true)
+								CallManager.instance().providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+								CallManager.instance().providerDelegate.uuids.updateValue(uuid, forKey: "")
+								CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid)
+								Core.get().activateAudioSession(actived: true)
+							} else {
+								CallManager.instance().referedToCall = callId
+							}
 						}
 					}
 					break
