@@ -213,8 +213,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(applicationWillEnterBackground)
+										   selector:@selector(applicationDidEnterBackground)
 											   name:UIApplicationDidEnterBackgroundNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(applicationWillEnterForeground)
+											   name:UIApplicationWillEnterForegroundNotification
 											 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(keyboardWillShow:)
@@ -343,7 +347,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-- (void)applicationWillEnterBackground{
+- (void)applicationDidEnterBackground{
 	if (!_preservePendingActions)
 		[self cancelVoiceRecording];
 	else if (_isVoiceRecording)
@@ -351,8 +355,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (!_preservePendingActions)
 		[self closePendingReply];
 	[self stopAllPlays];
-
+	_chatRoom = nil;
+	[_messageField resignFirstResponder];
 }
+
+- (void)applicationWillEnterForeground{
+	if (_chatRoom == nil) {
+		if (linphone_core_get_calls_nb(LC) == 0)
+			[SVProgressHUD show];
+		else
+			[self onLinphoneCoreReady:nil];
+	}
+}
+
 
 
 - (void)configureForRoom:(BOOL)editing {
@@ -483,7 +498,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 // reload the chatroom after the core starts
 - (void)onLinphoneCoreReady:(NSNotification *)notif {
-    if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
+  //  if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
+	if (linphone_core_get_global_state(LC) == LinphoneGlobalOn) {
         LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
         if (peerAddr) {
             _chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
@@ -499,6 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             [ChatConversationView markAsRead:_chatRoom];
         }
         _markAsRead = TRUE;
+		[SVProgressHUD dismiss];
     }
 }
 
