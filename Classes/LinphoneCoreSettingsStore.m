@@ -670,9 +670,7 @@
 		linphone_nat_policy_set_stun_server(policy, stun_preference.UTF8String);
 		linphone_account_params_set_nat_policy(newAccountParams, policy);
 
-		if ([prefix length] > 0) {
-			linphone_account_params_set_international_prefix(newAccountParams, [prefix UTF8String]);
-		}
+		linphone_account_params_set_international_prefix(newAccountParams, [prefix UTF8String]);
 
 		if ([self objectForKey:@"account_substitute_+_by_00_preference"]) {
 			bool substitute_plus_by_00 = [self boolForKey:@"account_substitute_+_by_00_preference"];
