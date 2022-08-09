@@ -66,7 +66,10 @@
 													changeCurrentView:AssistantView.compositeViewDescription];
 											  }]];
 	BOOL mustLink = ([LinphoneManager.instance lpConfigIntForKey:@"must_link_account_time"] > 0);
-	BOOL hasAccount = linphone_core_get_account_list(LC) != NULL;
+	
+	MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+	BOOL hasAccount = accounts != NULL;
+	bctbx_free(accounts);
 	if (mustLink && hasAccount) {
 		[_sideMenuEntries
 			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Link my account", nil)
@@ -127,9 +130,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (section == 0) {
+		
 		BOOL hasDefault = (linphone_core_get_default_account(LC) != NULL);
 		// default account is shown in the header already
-		size_t count = bctbx_list_size(linphone_core_get_account_list(LC));
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		size_t count = bctbx_list_size(accounts);
+		bctbx_free(accounts);
 		return MAX(0, (int)count - (hasDefault ? 1 : 0));
 	} else {
 		return [_sideMenuEntries count];
@@ -142,12 +148,14 @@
 	// isLcInitialized called here because this is called when going in bg after LC destroy
 	if (indexPath.section == 0 && [LinphoneManager isLcInitialized]) {
 		// do not display default account here, it is already in header view
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
 		int idx =
 			linphone_core_get_default_account(LC)
-				? bctbx_list_index(linphone_core_get_account_list(LC), linphone_core_get_default_account(LC))
+				? bctbx_list_index(accounts, linphone_core_get_default_account(LC))
 				: HUGE_VAL;
-		LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
+		LinphoneAccount *account = bctbx_list_nth_data(accounts,
 														 (int)indexPath.row + (idx <= indexPath.row ? 1 : 0));
+		bctbx_free(accounts);
 		if (account) {
 			cell.textLabel.text = [NSString stringWithUTF8String:linphone_account_params_get_identity(linphone_account_get_params(account))];
 			cell.imageView.image = [StatusBarView imageForState:linphone_account_get_state(account)];

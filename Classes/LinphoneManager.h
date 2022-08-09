@@ -174,6 +174,7 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)silentPushFailed:(NSTimer*)timer;
 
+- (MSList *) createAccountsNotHiddenList; // needs to be unref
 - (void)removeAllAccounts;
 
 + (BOOL)isMyself:(const LinphoneAddress *)addr;

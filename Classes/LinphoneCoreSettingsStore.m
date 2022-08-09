@@ -141,7 +141,9 @@
 }
 
 - (void)transformAccountToKeys:(NSString *)username {
-	const MSList *accountList = linphone_core_get_account_list(LC);
+	//const MSList *accountList = linphone_core_get_account_list(LC);
+	MSList *accountListToBeFreed = [LinphoneManager.instance createAccountsNotHiddenList];
+	MSList *accountList = accountListToBeFreed;
 	while (username && accountList &&
 		   strcmp(username.UTF8String,
 				  linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(accountList->data)))) != 0) {
@@ -234,9 +236,11 @@
 				[self setCString:linphone_auth_info_get_algorithm(ai) forKey:@"ha1_algo_preference"];
 			}
 
+			MSList *accountsList = [LinphoneManager.instance createAccountsNotHiddenList];
 			int idx = (int)bctbx_list_index(linphone_core_get_account_list(LC), account);
 			[self setInteger:idx forKey:@"current_proxy_config_preference"];
-
+			bctbx_list_free(accountsList);
+			
 			int expires = linphone_account_params_get_expires(accountParams);
 			[self setInteger:expires forKey:@"account_expire_preference"];
 
@@ -255,6 +259,7 @@
 			[self setBool:dial_escape_plus forKey:@"account_substitute_+_by_00_preference"];
 		}
 	}
+	bctbx_list_free(accountListToBeFreed);
 }
 
 
@@ -343,15 +348,17 @@
 
 	// root section
 	{
-		const bctbx_list_t *accounts = linphone_core_get_account_list(LC);
-		size_t count = bctbx_list_size(accounts);
-		for (size_t i = 1; i <= count; i++, accounts = accounts->next) {
+		MSList *accountsListToBeFreed = [lm createAccountsNotHiddenList];
+		MSList *accountsList = accountsListToBeFreed;
+		size_t count = bctbx_list_size(accountsList);
+		for (size_t i = 1; i <= count; i++, accountsList = accountsList->next) {
 			NSString *key = [NSString stringWithFormat:@"menu_account_%lu", i];
-			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			LinphoneAccount *account = (LinphoneAccount *)accountsList->data;
 			[self setCString:linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)))
 					  forKey:key];
 		}
-
+		bctbx_free(accountsListToBeFreed);
+		
 		[self setBool:linphone_core_video_display_enabled(LC) forKey:@"enable_video_preference"];
 		[self setBool:[LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]
 			   forKey:@"enable_auto_answer_preference"];
@@ -625,9 +632,11 @@
 
 			linphone_address_set_transport(proxy_addr, type);
 		}
-
-		account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
+		
+		MSList *accountList= [LinphoneManager.instance createAccountsNotHiddenList];
+		account = bctbx_list_nth_data(accountList,
 									   [self integerForKey:@"current_proxy_config_preference"]);
+		bctbx_free(accountList);
 		
 		// if account was deleted, it is not present anymore
 		if (account == NULL)
@@ -1094,7 +1103,9 @@
 			NSString *rls_uri = [lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
 			LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
 			const char *rls_domain = linphone_address_get_domain(rls_addr);
-			const MSList *accounts = linphone_core_get_account_list(LC);
+			
+			MSList *accountListToBeFreed = [LinphoneManager.instance createAccountsNotHiddenList];
+			const MSList *accounts = accountListToBeFreed;
 			if (!accounts) // Enable it if no proxy config for first launch of app
 				[self setInteger:1 forKey:@"use_rls_presence"];
 			else {
@@ -1108,6 +1119,7 @@
 				}
 			}
 			linphone_address_unref(rls_addr);
+			bctbx_free(accountListToBeFreed);
 		}
 
 		[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
@@ -1149,8 +1161,11 @@
 }
 
 - (void)removeAccount {
-	LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
+	
+	MSList *accountList = [LinphoneManager.instance createAccountsNotHiddenList];
+	LinphoneAccount *account = bctbx_list_nth_data(accountList,
 													  [self integerForKey:@"current_proxy_config_preference"]);
+	
 	
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
@@ -1172,11 +1187,12 @@
 
 	if (isDefault) {
 		// if we removed the default proxy config, set another one instead
-		if (linphone_core_get_account_list(LC) != NULL) {
-			linphone_core_set_default_account(LC, (LinphoneAccount *)(linphone_core_get_account_list(LC)->data));
+		if (accountList != NULL) {
+			linphone_core_set_default_account(LC, (LinphoneAccount *)(accountList->data));
 		}
 	}
 	[self transformLinphoneCoreToKeys];
+	bctbx_free(accountList);
 }
 
 - (void)removeLdap {

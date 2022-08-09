@@ -2214,6 +2214,23 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 #pragma mark -
 
+- (MSList *) createAccountsNotHiddenList {
+	MSList *list = NULL;
+	const MSList *accounts = linphone_core_get_account_list(LC);
+	while (accounts) {
+		const char *isHidden = linphone_account_get_custom_param(accounts->data, "hidden");
+		if (isHidden == NULL || strcmp(linphone_account_get_custom_param(accounts->data, "hidden"), "1") != 0) {
+			if (!list) {
+				list = bctbx_list_new(accounts->data);
+			} else {
+				bctbx_list_append(list, accounts->data);
+			}
+		}
+		accounts = accounts->next;
+	}
+	return list;
+}
+
 - (void)removeAllAccounts {
 	linphone_core_clear_accounts(LC);
 	linphone_core_clear_all_auth_info(LC);

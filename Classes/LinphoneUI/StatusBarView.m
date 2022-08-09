@@ -193,11 +193,13 @@
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (account == NULL) {
 		state = LinphoneRegistrationNone;
-		if (linphone_core_get_account_list(LC) != NULL) {
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		if (accounts != NULL) {
 			message = NSLocalizedString(@"No default account", nil);
 		} else {
 			message = NSLocalizedString(@"No account configured", nil);
 		}
+		bctbx_free(accounts);
 
 	} else {
 		state = linphone_account_get_state(account);
@@ -408,10 +410,15 @@
 - (IBAction)onRegistrationStateClick:(id)sender {
 	if (linphone_core_get_default_account(LC)) {
 		linphone_core_refresh_registers(LC);
-	} else if (linphone_core_get_account_list(LC)) {
-		[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
 	} else {
-		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
+		
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		if (accounts) {
+			[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
+		} else {
+			[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
+		}
+		bctbx_free(accounts);
 	}
 }
 

@@ -127,7 +127,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (!mustRestoreView) {
 		new_account = NULL;
-		number_of_accounts_before = bctbx_list_size(linphone_core_get_account_list(LC));
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		number_of_accounts_before = bctbx_list_size(accounts);
+		bctbx_free(accounts);
 		[self resetTextFields];
 		[self changeView:_welcomeView back:FALSE animation:FALSE];
 	}
@@ -1011,10 +1013,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
 											  forKey:@"must_link_account_time"];
 			[LinphoneManager.instance configurePushProviderForAccounts];
-			if (number_of_accounts_before < bctbx_list_size(linphone_core_get_account_list(LC))) {
+			
+			MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+			if (number_of_accounts_before < bctbx_list_size(accounts)) {
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
 			}
+			bctbx_free(accounts);
 			
 			_waitView.hidden = true;
 			if (nextView == nil) {

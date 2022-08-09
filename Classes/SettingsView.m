@@ -445,8 +445,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	linphone_account_creator_set_password(creator, _tmpPwd.UTF8String);
 	[settingsStore setObject:_tmpPwd forKey:@"account_mandatory_password_preference"];
 	
+	MSList *accountList = [LinphoneManager.instance createAccountsNotHiddenList];
 	LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
 													  [settingsStore integerForKey:@"current_proxy_config_preference"]);
+	bctbx_free(accountList);
+	
 	if (account != NULL) {
 		const LinphoneAuthInfo *auth = linphone_account_find_auth_info(account);
 		if (auth) {
@@ -583,7 +586,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}
 
 	if ([specifier.key hasPrefix:@"menu_account_"]) {
-		const bctbx_list_t *accounts = linphone_core_get_account_list(LC);
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
 		int index = [specifier.key substringFromIndex:@"menu_account_".length].intValue - 1;
 		if (index < bctbx_list_size(accounts)) {
 			LinphoneAccount *account = (LinphoneAccount *)bctbx_list_nth_data(accounts, index);
@@ -591,6 +594,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 				stringWithUTF8String:linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)))];
 			[specifier.specifierDict setValue:name forKey:kIASKTitle];
 		}
+		bctbx_free(accounts);
 	}
 	
 	if ([specifier.key hasPrefix:@"ldap_"]) {
@@ -625,12 +629,12 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 - (NSSet *)findHiddenKeys {
 	LinphoneManager *lm = LinphoneManager.instance;
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
-
-	const MSList *accounts = linphone_core_get_account_list(LC);
+	
+	MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
 	for (size_t i = bctbx_list_size(accounts) + 1; i <= 5; i++) {
 		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%lu", i]];
 	}
-
+	bctbx_free(accounts);
 	const MSList *ldaps = linphone_core_get_ldap_list(LC);
 	for (size_t i = bctbx_list_size(ldaps) + 1; i <= 5; i++) {
 		[hiddenKeys addObject:[NSString stringWithFormat:@"ldap_%lu", i]];
@@ -901,8 +905,11 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																   if (pwd && ![pwd isEqualToString:@""]) {
 																	   if ([pwd isEqualToString:conf_pwd]) {
 																		   _tmpPwd = pwd;
-																		   LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
-																													[settingsStore integerForKey:@"current_proxy_config_preference"]);
+																		   
+																		   MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+																		   LinphoneAccount *account = bctbx_list_nth_data(accounts,
+																														  [settingsStore integerForKey:@"current_proxy_config_preference"]);
+																		   bctbx_free(accounts);
 																		   const LinphoneAuthInfo *ai = linphone_account_find_auth_info(account);
 																   
 																		   LinphoneAccountCreator *account_creator = linphone_account_creator_new(
