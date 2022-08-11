@@ -59,7 +59,7 @@
 
 + (BOOL)isSipURI:(NSString *)address;
 + (BOOL)isSipAddress:(CNLabeledValue<CNInstantMessageAddress *> *)sipAddr;
-+ (NSString *)normalizeSipURI:(NSString *)address;
++ (NSString *)normalizeSipURI:(NSString *)address use_prefix:(BOOL)use_prefix;
 
 + (NSString *)localizedLabel:(NSString *)label;
 - (void)registerAddrsFor:(Contact *)contact;

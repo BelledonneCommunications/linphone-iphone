@@ -50,7 +50,7 @@
 		normAddr = linphone_account_normalize_phone_number(account,
 																_addressLabel.text.UTF8String);
 	}
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
+	LinphoneAddress *addr = linphone_core_interpret_url_2(LC, normAddr, true);
 	_chatButton.enabled = _callButton.enabled = _encryptedChatButton.enabled = (addr != NULL);
 
 	_chatButton.accessibilityLabel =
@@ -103,7 +103,7 @@
 		normAddr = linphone_account_normalize_phone_number(account,
 																_addressLabel.text.UTF8String);
 	}
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
+	LinphoneAddress *addr = linphone_core_interpret_url_2(LC, normAddr, true);
 
 	// Test presence
 	Contact *contact = [FastAddressBook getContactWithAddress:(addr)];

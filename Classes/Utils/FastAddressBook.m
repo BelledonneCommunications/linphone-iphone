@@ -76,7 +76,7 @@
 	Contact *contact = nil;
 	if (address) {
 		char *uri = linphone_address_as_string_uri_only(address);
-		NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:uri]];
+		NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:uri] use_prefix:TRUE];
 		contact = [FastAddressBook getContact:normalizedSipAddress];
 		ms_free(uri);
 
@@ -128,10 +128,10 @@
 	return FALSE;
 }
 
-+ (NSString *)normalizeSipURI:(NSString *)address {
++ (NSString *)normalizeSipURI:(NSString *)address use_prefix:(BOOL)use_prefix {
 	// replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace
 	NSString *normalizedSipAddress = nil;
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, [address UTF8String]);
+	LinphoneAddress *addr = linphone_core_interpret_url_2(LC, [address UTF8String], use_prefix);
 	if (addr != NULL) {
 		linphone_address_clean(addr);
 		char *tmp = linphone_address_as_string(addr);
@@ -247,7 +247,7 @@
 
 	for (NSString *phone in mContact.phones) {
 		char *normalizedPhone = account? linphone_account_normalize_phone_number(account, phone.UTF8String) : nil;
-		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
+		NSString *name = [FastAddressBook normalizeSipURI:(normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone) use_prefix:TRUE];
 		if (phone != NULL)
 			[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
 
@@ -256,7 +256,7 @@
 	}
 
 	for (NSString *sip in mContact.sipAddresses)
-		[_addressBookMap setObject:mContact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
+		[_addressBookMap setObject:mContact forKey:([FastAddressBook normalizeSipURI:sip use_prefix:TRUE] ?: sip)];
 }
 
 #pragma mark - Tools
@@ -277,7 +277,7 @@
 
 	for (NSString *sip in contact.sipAddresses) {
 		// check domain
-		LinphoneAddress *address = linphone_core_interpret_url(LC, sip.UTF8String);
+		LinphoneAddress *address = linphone_core_interpret_url_2(LC, sip.UTF8String, true);
 		if (address) {
 			const char *dom = linphone_address_get_domain(address);
 			BOOL match = false;
@@ -296,7 +296,7 @@
 
 + (BOOL) isSipURIValid:(NSString*)addr {
 	NSString *domain = LinphoneManager.instance.contactFilter;
-	LinphoneAddress* address = linphone_core_interpret_url(LC, addr.UTF8String);
+	LinphoneAddress* address = linphone_core_interpret_url_2(LC, addr.UTF8String, true);
 	if (address) {
 		const char *dom = linphone_address_get_domain(address);
 		BOOL match = false;
@@ -377,12 +377,12 @@
 			[LinphoneManager.instance setContactsUpdated:TRUE];
 			if([contact.sipAddresses count] > 0){
 				for (NSString *sip in contact.sipAddresses) {
-					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
+					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:sip use_prefix:TRUE] ?: sip)];
 				}
 			}
 			if([contact.phones count] > 0){
 				for (NSString *phone in contact.phones) {
-					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:phone] ?: phone)];
+					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:phone use_prefix:TRUE] ?: phone)];
 				}
 			}
 			BOOL success = [store executeSaveRequest:saveRequest error:nil];
@@ -556,7 +556,7 @@
 	LinphoneAccount *account = linphone_core_get_default_account(LC);
 	for (NSString *phone in contact.phones) {
 		char *normalizedPhone = account? linphone_account_normalize_phone_number(account, phone.UTF8String) : nil;
-		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
+		NSString *name = [FastAddressBook normalizeSipURI:(normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone) use_prefix:TRUE];
 		if (phone != NULL) {
 			if ([FastAddressBook isSipURI:displayNames[name]]) {
 				LOGD(@"removed %s from userdefaults addressBook", ((NSString *)displayNames[name]).UTF8String);
@@ -590,7 +590,7 @@
 		}
 		linphone_address_unref(addr);
 	} else {
-		telAddr = [FastAddressBook normalizeSipURI:uri];
+		telAddr = [FastAddressBook normalizeSipURI:uri use_prefix:TRUE];
 	}
 
 	if (telAddr) {
@@ -611,7 +611,7 @@
 
 		NSString *contact = [NSString stringWithUTF8String:str];
 		ms_free(str);
-		NSString *sipAddr = [FastAddressBook normalizeSipURI:contact];
+		NSString *sipAddr = [FastAddressBook normalizeSipURI:contact use_prefix:TRUE];
 
 		if (sipAddr != nil && [displayNames objectForKey:sipAddr] == nil) {
 			[displayNames setObject:displayName forKey:sipAddr];

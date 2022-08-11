@@ -200,7 +200,7 @@
 		LinphoneAddress *addr = NULL;
 		if ([LinphoneManager.instance
 			 lpConfigBoolForKey:@"contact_display_username_only"] &&
-			(addr = linphone_core_interpret_url(LC, [value UTF8String]))) {
+			(addr = linphone_core_interpret_url_2(LC, [value UTF8String], YES))) {
 			value =
 			[NSString stringWithCString:linphone_address_get_username(addr)
 							   encoding:[NSString defaultCStringEncoding]];

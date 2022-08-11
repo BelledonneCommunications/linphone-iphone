@@ -171,6 +171,7 @@
 		[self setInteger:-1 forKey:@"account_expire_preference"];
 		[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 		[self setCString:"" forKey:@"account_prefix_preference"];
+		[self setBool:YES forKey:@"apply_international_prefix_for_calls_and_chats"];
 		[self setBool:NO forKey:@"account_substitute_+_by_00_preference"];
 		[self setBool:NO forKey:@"account_ice_preference"];
 		[self setCString:"" forKey:@"account_stun_preference"];
@@ -186,7 +187,7 @@
 
 			const LinphoneAddress *identity_addr = linphone_account_params_get_identity_address(accountParams);
 			const char *server_addr = linphone_account_params_get_server_addr(accountParams);
-			LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
+			LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, server_addr, [CallManager.instance applyInternationalPrefix]);
 			if (identity_addr && proxy_addr) {
 				int port = linphone_address_get_port(proxy_addr);
 
@@ -256,6 +257,8 @@
 		{
 			const char *dial_prefix = linphone_account_params_get_international_prefix(accountParams);
 			[self setCString:dial_prefix forKey:@"account_prefix_preference"];
+			BOOL apply_prefix = linphone_account_params_get_use_international_prefix_for_calls_and_chats(accountParams);
+			[self setBool:apply_prefix forKey:@"apply_international_prefix_for_calls_and_chats"];
 			BOOL dial_escape_plus = linphone_account_params_get_dial_escape_plus_enabled(accountParams);
 			[self setBool:dial_escape_plus forKey:@"account_substitute_+_by_00_preference"];
 		}
@@ -612,6 +615,7 @@
 		int expire = [self integerForKey:@"account_expire_preference"];
 		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
+		BOOL use_prefix = [self boolForKey:@"apply_international_prefix_for_calls_and_chats"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
 
 		if ((!proxyAddress || [proxyAddress length] < 1) && domain) {
@@ -622,7 +626,7 @@
 			proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
 		}
 
-		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxyAddress.UTF8String);
+		LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, proxyAddress.UTF8String, use_prefix);
 
 		if (proxy_addr) {
 			LinphoneTransportType type = LinphoneTransportUdp;
@@ -681,7 +685,7 @@
 		linphone_account_params_set_nat_policy(newAccountParams, policy);
 
 		linphone_account_params_set_international_prefix(newAccountParams, [prefix UTF8String]);
-
+		linphone_account_params_set_use_international_prefix_for_calls_and_chats(newAccountParams, use_prefix);
 		if ([self objectForKey:@"account_substitute_+_by_00_preference"]) {
 			bool substitute_plus_by_00 = [self boolForKey:@"account_substitute_+_by_00_preference"];
 			linphone_account_params_set_dial_escape_plus_enabled(newAccountParams, substitute_plus_by_00);
@@ -721,7 +725,7 @@
 		}
 
 		char *identity = linphone_address_as_string(linphoneAddress);
-		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
+		LinphoneAddress *from = linphone_core_interpret_url_2(LC, identity, [CallManager.instance applyInternationalPrefix]);
 		ms_free(identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;

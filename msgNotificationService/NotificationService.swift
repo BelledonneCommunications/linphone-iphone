@@ -242,7 +242,12 @@ class NotificationService: UNNotificationServiceExtension {
 				return nil
 			}
 
-			if let simpleAddr = lc?.interpretUrl(url: sipAddr) {
+			var usePrefix = true;
+			if let account = lc?.defaultAccount, let params = account.params {
+				usePrefix = params.useInternationalPrefixForCallsAndChats
+			}
+			
+			if let simpleAddr = lc?.interpretUrl(url: sipAddr, applyInternationalPrefix: usePrefix) {
 				simpleAddr.clean()
 				let nomalSipaddr = simpleAddr.asString()
 				if let displayName = addressBook?[nomalSipaddr] as? String {

@@ -102,7 +102,7 @@
     }
     
     for (NSString *sipAddr in _contact.sipAddresses) {
-        LinphoneAddress *addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
+        LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sipAddr.UTF8String, true);
         if (addr) {
             linphone_friend_add_address(_contact.friend, addr);
             linphone_address_destroy(addr);
@@ -146,7 +146,7 @@
 }
 
 - (void)addCurrentContactContactField:(NSString *)address {
-	LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, address.UTF8String);
+	LinphoneAddress *linphoneAddress = linphone_core_interpret_url_2(LC, address.UTF8String, true);
 	NSString *username =
 		linphoneAddress ? [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)] : address;
 
@@ -597,7 +597,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[store unifiedContactWithIdentifier:contactToCheck.identifier keysToFetch:keysToFetch error:nil] mutableCopy];
 	if(mCNContact == NULL){
 		for(NSString *address in contactToCheck.sipAddresses){
-			NSString *name = [FastAddressBook normalizeSipURI:address];
+			NSString *name = [FastAddressBook normalizeSipURI:address use_prefix:TRUE];
 			if([LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:name]){
 				return TRUE;
 			}

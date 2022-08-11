@@ -70,7 +70,7 @@
 		  linphone_friend_set_ref_key(_friend, key);
 		  linphone_friend_set_name(_friend, [NSString stringWithFormat:@"%@%@", _firstName ? _firstName : @"", _lastName ? [_firstName ? @" " : @"" stringByAppendingString:_lastName] : @""] .UTF8String);
 		  for (NSString *sipAddr in _sipAddresses) {
-			  LinphoneAddress *addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
+			  LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sipAddr.UTF8String, true);
 			  if (addr) {
 				  linphone_address_set_display_name(addr, [self displayName].UTF8String);
 				  linphone_friend_add_address(_friend, addr);
@@ -287,7 +287,7 @@
            	[_person setValue:tmpSipAddresses forKey:CNContactInstantMessageAddressesKey];
 			ret = TRUE;
 		} else {
-			LinphoneAddress *addr = linphone_core_interpret_url(LC, sip.UTF8String) ?: linphone_address_new(sip.UTF8String);
+			LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sip.UTF8String, true) ?: linphone_address_new(sip.UTF8String);
 			if (!addr)
 				return FALSE;
 
@@ -370,7 +370,7 @@
 		}
 		ret = TRUE;
 	} else {
-		LinphoneAddress *addr = linphone_core_interpret_url(LC, ((NSString *)_sipAddresses[index]).UTF8String);
+		LinphoneAddress *addr = linphone_core_interpret_url_2(LC, ((NSString *)_sipAddresses[index]).UTF8String, true);
 		if (!addr)
 			return FALSE;
 
@@ -465,7 +465,7 @@
 		linphone_friend_set_ref_key(_friend, key);
 		linphone_friend_set_name(_friend, [NSString stringWithFormat:@"%@%@", _firstName ? _firstName : @"", _lastName ? [_firstName ? @" " : @"" stringByAppendingString:_lastName] : @""] .UTF8String);
 		for (NSString *sipAddr in _sipAddresses) {
-			LinphoneAddress *addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
+			LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sipAddr.UTF8String, true);
 			if (addr) {
 				linphone_address_set_display_name(addr, [self displayName].UTF8String);
 				linphone_friend_add_address(_friend, addr);

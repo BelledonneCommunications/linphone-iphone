@@ -112,7 +112,7 @@
 		if (addr) {
 			uri = linphone_address_as_string_uri_only(addr);
 			address = [NSString stringWithUTF8String:uri];
-			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address]];
+			contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:address use_prefix:[CallManager.instance applyInternationalPrefix]]];
 		}
 		
 		const LinphoneFriend* friend = linphone_search_result_get_friend(result);
@@ -203,7 +203,7 @@
 
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
 	NSString *phoneOrAddr = [_phoneOrAddr objectAtIndex:indexPath.row];
-	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:key]];
+	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:key use_prefix:[CallManager.instance applyInternationalPrefix]]];
 	if (!contact) {
 		contact = [_ldapContactAddressBookMap objectForKey:key];
 	}

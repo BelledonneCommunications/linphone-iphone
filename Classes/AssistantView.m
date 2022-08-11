@@ -707,7 +707,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAccount *default_account = linphone_core_create_account(LC, default_account_params);
 	const char *identity = linphone_account_params_get_identity(linphone_account_get_params(default_account));
 	if (identity) {
-		LinphoneAddress *default_addr = linphone_core_interpret_url(LC, identity);
+		LinphoneAddress *default_addr = linphone_core_interpret_url_2(LC, identity, false);
 		if (default_addr) {
 			const char *domain = linphone_address_get_domain(default_addr);
 			const char *username = linphone_address_get_username(default_addr);

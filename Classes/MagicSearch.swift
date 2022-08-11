@@ -56,7 +56,7 @@ import linphonesw
 		return LinphoneManager.instance().fastAddressBook.addressBookMap.object(forKey: addr.asStringUriOnly() as Any) as? Contact
 	}
 	func getContactFromPhoneNb(phoneNb: String) -> Contact? {
-		let contactKey =  FastAddressBook.localizedLabel(FastAddressBook.normalizeSipURI( lc?.defaultAccount?.normalizePhoneNumber(username: phoneNb) ?? phoneNb))
+		let contactKey =  FastAddressBook.localizedLabel(FastAddressBook.normalizeSipURI(lc?.defaultAccount?.normalizePhoneNumber(username: phoneNb) ?? phoneNb, use_prefix: true))
 		return LinphoneManager.instance().fastAddressBook.addressBookMap.object(forKey: contactKey as Any) as? Contact
 	}
 	

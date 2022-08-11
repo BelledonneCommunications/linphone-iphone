@@ -792,8 +792,12 @@ import AVFoundation
 		}
 	}
 	
-	
-	
+	@objc func applyInternationalPrefix() -> Bool {
+		if let account = lc?.defaultAccount, let params = account.params {
+			return params.useInternationalPrefixForCallsAndChats
+		}
+		return true; // Legacy behavior
+	}
 }
 
 
