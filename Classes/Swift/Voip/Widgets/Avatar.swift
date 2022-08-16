@@ -19,10 +19,13 @@
 
 import Foundation
 import linphonesw
+import SnapKit
 
 class Avatar : UIImageView {
 	
 	static let diameter_for_call_views = 191
+	static let diameter_for_call_views_land = 130
+
 	
 	required init?(coder: NSCoder) {
 		initialsLabel =  StyledLabel(VoipTheme.call_generated_avatar_large)
@@ -31,10 +34,9 @@ class Avatar : UIImageView {
 	
 	let initialsLabel: StyledLabel
 	
-	init (diameter: CGFloat, color:LightDarkColor,textStyle:TextStyle) {
+	init (color:LightDarkColor,textStyle:TextStyle) {
 		initialsLabel =  StyledLabel(textStyle)
 		super.init(frame: .zero)
-		layer.cornerRadius = diameter/2.0
 		clipsToBounds = true
 		self.backgroundColor = color.get()
 		addSubview(initialsLabel)
@@ -56,7 +58,10 @@ class Avatar : UIImageView {
 		}
 	}
 		
-	
+	override func layoutSubviews() {
+		super.layoutSubviews()
+		layer.cornerRadius = self.frame.width / 2.0
+	}
 	
 }
 

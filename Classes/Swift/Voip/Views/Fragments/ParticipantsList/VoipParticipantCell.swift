@@ -37,7 +37,7 @@ class VoipParticipantCell: UITableViewCell {
 	let lime_badge_offset = -10.0
 
 
-	let avatar = Avatar(diameter:VoipCallCell.avatar_size,color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
+	let avatar = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
 	let limeBadge = UIImageView(image: UIImage(named: "security_toggle_icon_green"))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font)
 	let sipAddress = StyledLabel(VoipTheme.conference_participant_sip_uri_font)
@@ -122,8 +122,6 @@ class VoipParticipantCell: UITableViewCell {
 	
 		contentView.addSubview(isAdminView)
 		isAdminView.height(check_box_size).toLeftOf(removePart!).centerY().done()
-
-		
 		
 	}
 	

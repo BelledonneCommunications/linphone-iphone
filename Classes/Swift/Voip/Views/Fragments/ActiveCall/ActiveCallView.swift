@@ -48,7 +48,7 @@ class ActiveCallView: UIView { // = currentCall
 	let remotelyRecordedIndicator =  RemotelyRecordingView(height: ActiveCallView.remote_recording_height,text: VoipTexts.call_remote_recording)
 	
 	let centerSection = UIView()
-	let avatar = Avatar(diameter: CGFloat(Avatar.diameter_for_call_views), color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
+	let avatar = Avatar(color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
 	let displayNameBottom = StyledLabel(VoipTheme.call_remote_name)
 	var recordCallButtons : [CallControlButton] = []
 	var pauseCallButtons :  [CallControlButton] = []
@@ -178,7 +178,6 @@ class ActiveCallView: UIView { // = currentCall
 		
 		// Avatar
 		centerSection.addSubview(avatar)
-		avatar.square(Avatar.diameter_for_call_views).center().done()
 		
 		// Remote Video Display
 		centerSection.addSubview(remoteVideo)
@@ -227,7 +226,18 @@ class ActiveCallView: UIView { // = currentCall
 				
 		addSubview(stack)
 		stack.matchParentDimmensions().done()
-				
+	
+		layoutRotatableElements()
+	}
+	
+	func layoutRotatableElements() {
+		avatar.removeConstraints().done()
+		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
+			avatar.square(Avatar.diameter_for_call_views_land).center().done()
+		} else {
+			avatar.square(Avatar.diameter_for_call_views).center().done()
+
+		}
 	}
 	
 	required init?(coder: NSCoder) {

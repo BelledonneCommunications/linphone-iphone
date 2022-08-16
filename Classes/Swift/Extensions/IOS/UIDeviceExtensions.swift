@@ -48,10 +48,10 @@ extension UIDevice {
 	}
 	
 	static func notchHeight() -> CGFloat {
-		guard #available(iOS 11.0, *), let topPadding = UIApplication.shared.keyWindow?.safeAreaInsets.top else {
+		guard #available(iOS 11.0, *), let topPadding = UIApplication.shared.keyWindow?.safeAreaInsets.top, let sidePadding =  UIApplication.shared.keyWindow?.safeAreaInsets.left else {
 			return 0
 		}
-		return topPadding
+		return [.landscapeRight,.landscapeLeft].contains(UIDevice.current.orientation) ? sidePadding : topPadding
 	}
 	
 }

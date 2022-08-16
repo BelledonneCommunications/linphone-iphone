@@ -223,9 +223,7 @@ class ControlsViewModel {
 	}
 	
 	func toggleFullScreen() {
-		if (isVideoEnabled.value == true)  {
-			fullScreenMode.value = fullScreenMode.value != true
-		}
+		fullScreenMode.value = fullScreenMode.value != true
 	}
 	
 	func toggleMuteMicrophone() {

@@ -39,10 +39,25 @@ extension UIView {
 		return self
 	}
 	
+	func squareMax(_ size:Int) -> UIView {
+		snp.makeConstraints { (make) in
+			make.height.lessThanOrEqualTo(size).priority(.high)
+			make.width.equalTo(snp.height).priority(.high)
+		}
+		return self
+	}
+	
 	
 	func makeHeightMatchWidth() -> UIView {
 		snp.makeConstraints { (make) in
 			make.height.equalTo(snp.width)
+		}
+		return self
+	}
+	
+	func makeWidthMatchHeight() -> UIView {
+		snp.makeConstraints { (make) in
+			make.width.equalTo(snp.height)
 		}
 		return self
 	}
@@ -118,6 +133,16 @@ extension UIView {
 		snp.makeConstraints { (make) in
 			make.left.top.equalToSuperview().offset(insetedByDx)
 			make.right.bottom.equalToSuperview().offset(-insetedByDx)
+		}
+		return self
+	}
+	
+	func matchParentDimmensions(insetedBy:UIEdgeInsets) -> UIView {
+		snp.makeConstraints { (make) in
+			make.left.equalToSuperview().offset(insetedBy.left)
+			make.top.equalToSuperview().offset(insetedBy.top)
+			make.right.equalToSuperview().offset(-insetedBy.right)
+			make.bottom.equalToSuperview().offset(-insetedBy.bottom)
 		}
 		return self
 	}
@@ -258,12 +283,26 @@ extension UIView {
 		return self
 	}
 	
+	func updateAlignParentLeft(withMargin:CGFloat = 0.0) -> UIView {
+		snp.updateConstraints { (make) in
+			make.left.equalToSuperview().offset(withMargin)
+		}
+		return self
+	}
+	
 	func alignParentLeft(withMargin:Int) -> UIView {
 		return alignParentLeft(withMargin:CGFloat(withMargin))
 	}
 	
 	func alignParentRight(withMargin:Int = 0) -> UIView {
 		snp.makeConstraints { (make) in
+			make.right.equalToSuperview().offset(-withMargin).priorityRequired()
+		}
+		return self
+	}
+	
+	func updateAlignParentRight(withMargin:CGFloat = 0) -> UIView {
+		snp.updateConstraints { (make) in
 			make.right.equalToSuperview().offset(-withMargin)
 		}
 		return self
