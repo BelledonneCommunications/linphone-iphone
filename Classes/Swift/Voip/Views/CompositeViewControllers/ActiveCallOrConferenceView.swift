@@ -25,7 +25,7 @@ import linphonesw
 @objc class ActiveCallOrConferenceView: UIViewController, UICompositeViewDelegate { // Replaces CallView
 	
 	// Layout constants
-	let content_inset = 12.0
+	static let content_inset = 12.0
 	
 	var callPausedByRemoteView : PausedCallOrConferenceView? = nil
 	var callPausedByLocalView : PausedCallOrConferenceView? = nil
@@ -49,7 +49,8 @@ import linphonesw
 	@objc var participantsListView :  ParticipantsListView? = nil
 	
 	var audioRoutesView : AudioRoutesView? = nil
-
+	let fullScreenMutableContainerView = UIView()
+	let controlsView = ControlsView(showVideo: true, controlsViewModel: ControlsViewModel.shared)
 	
 	static let compositeDescription = UICompositeViewDescription(ActiveCallOrConferenceView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: nil, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -69,16 +70,13 @@ import linphonesw
 		
 		
 		// Controls
-		let controlsView = ControlsView(showVideo: true, controlsViewModel: ControlsViewModel.shared)
 		view.addSubview(controlsView)
 		controlsView.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
-		
-	
+
 		// Container view
-		let fullScreenMutableContainerView = UIView()
 		fullScreenMutableContainerView.backgroundColor = .clear
 		self.view.addSubview(fullScreenMutableContainerView)
-		fullScreenMutableContainerView.matchParentSideBorders(insetedByDx: content_inset).matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+		fullScreenMutableContainerView.alignParentLeft(withMargin: ActiveCallOrConferenceView.content_inset).alignParentRight(withMargin: ActiveCallOrConferenceView.content_inset).matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 	
 		// Current (Single) Call (VoipCallView)
 		currentCallView = ActiveCallView()
@@ -159,7 +157,7 @@ import linphonesw
 		
 		ConferenceViewModel.shared.conferenceCreationPending.readCurrentAndObserve { isCreationPending in
 			if (ConferenceViewModel.shared.conferenceExists.value == true && isCreationPending == true) {
-				fullScreenMutableContainerView.addSubview(self.conferenceJoinSpinner)
+				self.fullScreenMutableContainerView.addSubview(self.conferenceJoinSpinner)
 				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
 				self.conferenceJoinSpinner.startRotation()
 			} else {
@@ -239,7 +237,7 @@ import linphonesw
 		boucingCounter.dataSource = CallsViewModel.shared.chatAndCallsCount
 		
 		view.addSubview(extraButtonsView)
-		extraButtonsView.matchParentSideBorders(insetedByDx: content_inset).alignParentBottom(withMargin:SharedLayoutConstants.bottom_margin_notch_clearance).done()
+		extraButtonsView.matchParentSideBorders(insetedByDx: ActiveCallOrConferenceView.content_inset).alignParentBottom(withMargin:SharedLayoutConstants.bottom_margin_notch_clearance).done()
 		ControlsViewModel.shared.hideExtraButtons.readCurrentAndObserve { (_) in
 			self.hideModalSubview(view: self.extraButtonsView)
 		}
@@ -321,8 +319,8 @@ import linphonesw
 				VoipDialog.toast(message: VoipTexts.conference_first_to_join)
 			}
 		}
-								
-	}
+		
+	} // viewDidLoad
 	
 	func displaySelectedConferenceLayout() {
 		let conferenceMode = ConferenceViewModel.shared.conferenceDisplayMode.value
@@ -355,8 +353,8 @@ import linphonesw
 		participantsListView?.removeFromSuperview()
 		participantsListView = nil
 		
-        ControlsViewModel.shared.numpadVisible.value = false
-        ControlsViewModel.shared.callStatsVisible.value = false
+		ControlsViewModel.shared.numpadVisible.value = false
+		ControlsViewModel.shared.callStatsVisible.value = false
 		ControlsViewModel.shared.fullScreenMode.value = false
 		super.viewWillDisappear(animated)
 	}
@@ -399,6 +397,20 @@ import linphonesw
 		}*/
 		PhoneMainView.instance().changeCurrentView(ChatsListView.compositeViewDescription())
 		
+	}
+	
+	
+	func layoutRotatableElements() {
+		let leftMargin = UIDevice.current.orientation == .landscapeLeft && UIDevice.hasNotch() ? UIApplication.shared.keyWindow!.safeAreaInsets.left : ActiveCallOrConferenceView.content_inset
+		let rightMargin = UIDevice.current.orientation == .landscapeRight && UIDevice.hasNotch() ? UIApplication.shared.keyWindow!.safeAreaInsets.right : ActiveCallOrConferenceView.content_inset
+		fullScreenMutableContainerView.updateAlignParentLeft(withMargin: leftMargin).updateAlignParentRight(withMargin: rightMargin).done()
+	}
+	
+	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+		super.didRotate(from: fromInterfaceOrientation)
+		self.layoutRotatableElements()
+		self.conferenceActiveSpeakerView?.layoutRotatableElements()
+		self.currentCallView?.layoutRotatableElements()
 	}
 	
 	

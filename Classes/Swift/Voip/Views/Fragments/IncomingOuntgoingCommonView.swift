@@ -37,7 +37,7 @@ import linphonesw
 	
 	let spinner = RotatingSpinner()
 	let duration = CallTimer(nil, VoipTheme.call_header_subtitle)
-	let avatar = Avatar(diameter: CGFloat(Avatar.diameter_for_call_views),color:VoipTheme.voipParticipantBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
+	let avatar = Avatar(color:VoipTheme.voipParticipantBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
 	let displayName = StyledLabel(VoipTheme.call_header_title)
 	let sipAddress = StyledLabel(VoipTheme.call_header_subtitle)
 
@@ -70,15 +70,28 @@ import linphonesw
 		// Center : Avatar + Display name + SIP Address
 		let centerSection = UIView()
 		centerSection.addSubview(avatar)
-		avatar.square(Avatar.diameter_for_call_views).center().done()
 		centerSection.addSubview(displayName)
 		displayName.height(IncomingOutgoingCommonView.display_name_height).matchParentSideBorders().alignUnder(view:avatar,withMargin:IncomingOutgoingCommonView.display_name_margin_top).done()
 		centerSection.addSubview(sipAddress)
 		sipAddress.height(IncomingOutgoingCommonView.sip_address_height).matchParentSideBorders().alignUnder(view:displayName,withMargin:IncomingOutgoingCommonView.sip_address_margin_top).done()
 		self.view.addSubview(centerSection)
 		centerSection.matchParentSideBorders().center().done()
-
 		
+		layoutRotatableElements()
+	}
+	
+	func layoutRotatableElements() {
+		avatar.removeConstraints().done()
+		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
+			avatar.square(Avatar.diameter_for_call_views_land).center().done()
+		} else {
+			avatar.square(Avatar.diameter_for_call_views).center().done()
+		}
+	}
+	
+	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+		super.didRotate(from: fromInterfaceOrientation)
+		self.layoutRotatableElements()
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

@@ -44,11 +44,12 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	
 	let activeSpeakerView = UIView()
 	let activeSpeakerVideoView = UIView()
-	let activeSpeakerAvatar = Avatar(diameter: CGFloat(Avatar.diameter_for_call_views), color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
+	let activeSpeakerAvatar = Avatar(color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
 	let activeSpeakerDisplayName = StyledLabel(VoipTheme.call_remote_name)
 
 	var grid : UICollectionView
-	
+	let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+	var fullScreenOpaqueMasqForNotchedDevices =  UIView()
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
@@ -98,7 +99,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 			
 	init() {
 		
-		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 		layout.minimumInteritemSpacing = 0
 		layout.minimumLineSpacing = 0
 		layout.scrollDirection = .horizontal
@@ -160,22 +160,20 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		remotelyRecording.matchParentSideBorders().alignUnder(view:upperSection, withMargin:ActiveCallView.remote_recording_margin_top).height(CGFloat(ActiveCallView.remote_recording_height)).done()
 		
 		
-		// Container view that can toggle full screen by ckick
+		// Container view that can toggle full screen by single tap
 		let fullScreenMutableView = UIView()
 		addSubview(fullScreenMutableView)
 		fullScreenMutableView.backgroundColor =  VoipTheme.voipBackgroundColor.get()
 		fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
-
+		fullScreenOpaqueMasqForNotchedDevices.backgroundColor = fullScreenMutableView.backgroundColor
 		
 		// Active speaker
 		fullScreenMutableView.addSubview(activeSpeakerView)
 		activeSpeakerView.layer.cornerRadius = ActiveCallView.center_view_corner_radius
 		activeSpeakerView.clipsToBounds = true
 		activeSpeakerView.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
-		activeSpeakerView.matchParentSideBorders().alignParentTop().done()
 				
 		activeSpeakerView.addSubview(activeSpeakerAvatar)
-		activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
 		
 		activeSpeakerView.addSubview(activeSpeakerVideoView)
 		activeSpeakerVideoView.matchParentDimmensions().done()
@@ -190,9 +188,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		grid.backgroundColor = .clear
 		grid.isScrollEnabled = true
 		fullScreenMutableView.addSubview(grid)
-				
-		grid.matchParentSideBorders().height(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
-		
+						
 		// Full screen video togggle
 		activeSpeakerView.onClick {
 			ControlsViewModel.shared.toggleFullScreen()
@@ -203,12 +199,18 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				return
 			}
 			fullScreenMutableView.removeConstraints().done()
+			fullScreenMutableView.removeFromSuperview()
+			self.fullScreenOpaqueMasqForNotchedDevices.removeFromSuperview()
 			if (fullScreen == true) {
-				fullScreenMutableView.removeFromSuperview()
-				PhoneMainView.instance().mainViewController.view?.addSubview(fullScreenMutableView)
-				fullScreenMutableView.matchParentDimmensions().done()
+				self.fullScreenOpaqueMasqForNotchedDevices.addSubview(fullScreenMutableView)
+				PhoneMainView.instance().mainViewController.view?.addSubview(self.fullScreenOpaqueMasqForNotchedDevices)
+				self.fullScreenOpaqueMasqForNotchedDevices.matchParentDimmensions().done()
+				if (UIDevice.hasNotch()) {
+					fullScreenMutableView.matchParentDimmensions(insetedBy:UIApplication.shared.keyWindow!.safeAreaInsets).done()
+				} else {
+					fullScreenMutableView.matchParentDimmensions().done()
+				}
 			} else {
-				fullScreenMutableView.removeFromSuperview()
 				self.addSubview(fullScreenMutableView)
 				fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 			}
@@ -217,11 +219,36 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 			}
 		}
 		
+		//Rotation
+		layoutRotatableElements()
+		
 	}
 	
+	// Rotations
+	
+	func layoutRotatableElements() {
+		grid.removeConstraints().done()
+		activeSpeakerView.removeConstraints().done()
+		activeSpeakerAvatar.removeConstraints().done()
+		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
+			activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: ActiveCallOrConferenceView.content_inset).done()
+			if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
+				let superView = grid.superview
+				grid.removeFromSuperview()
+				superView?.addSubview(grid)
+			}
+			grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignParentBottom().alignParentRight().done()
+			layout.scrollDirection = .vertical
+			activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
+		} else {
+			activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
+			activeSpeakerView.matchParentSideBorders().alignParentTop().done()
+			grid.matchParentSideBorders().height(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+			layout.scrollDirection = .horizontal
+		}
+	}
 	
 	// UICollectionView related delegates
-	
 	
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
 	   return inter_cell

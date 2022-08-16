@@ -33,7 +33,7 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 	let common_margin = 10.0
 
 	
-	let avatar = Avatar(diameter:VoipCallCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_small)
+	let avatar = Avatar(color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_small)
 	let paused = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 	let muted = MicMuted(VoipAudioOnlyParticipantCell.mute_size)
 	let joining = RotatingSpinner()

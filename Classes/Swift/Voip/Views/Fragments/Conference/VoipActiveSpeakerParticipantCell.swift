@@ -35,7 +35,7 @@ class VoipActiveSpeakerParticipantCell: UICollectionViewCell {
 	
 	
 	let videoView = UIView()
-	let avatar = Avatar(diameter:VoipActiveSpeakerParticipantCell.avatar_size,color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_medium)
+	let avatar = Avatar(color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_medium)
 	let pause = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let displayName = StyledLabel(VoipTheme.conference_participant_name_font_as)

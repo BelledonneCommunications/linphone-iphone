@@ -36,7 +36,7 @@ class VoipCallCell: UITableViewCell {
 	
 	var onMenuClickAction : (()->Void) = {}
 	let callStatusIcon = UIImageView()
-	let avatar = Avatar(diameter:VoipCallCell.avatar_size,color:LightDarkColor(VoipTheme.voip_contact_avatar_calls_list,VoipTheme.voip_contact_avatar_calls_list), textStyle: VoipTheme.call_generated_avatar_small)
+	let avatar = Avatar(color:LightDarkColor(VoipTheme.voip_contact_avatar_calls_list,VoipTheme.voip_contact_avatar_calls_list), textStyle: VoipTheme.call_generated_avatar_small)
 	let displayName = StyledLabel(VoipTheme.call_list_active_name_font)
 	let sipAddress = StyledLabel(VoipTheme.call_list_active_sip_uri_font)
 	var menuButton : CallControlButton? = nil

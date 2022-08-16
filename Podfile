@@ -26,7 +26,7 @@ target 'linphone' do
 
   # Pods for linphone
 	pod 'SVProgressHUD'
-	pod 'SnapKit'
+	pod 'SnapKit', '~> 5.6.0'
         pod 'DropDown'
         pod 'IQKeyboardManager'
 	all_pods
