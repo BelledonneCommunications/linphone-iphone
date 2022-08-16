@@ -26,12 +26,13 @@ import linphonesw
 	
 	// Layout constants
 	let common_margin = 17.0
-	let switch_camera_button_size = 50
+	let switch_camera_button_size = 35
 	let switch_camera_button_margins = 7.0
 	let content_inset = 12.0
 	let button_spacing = 15.0
 	let center_view_corner_radius = 20.0
 	let button_width = 150
+	let layout_picker_inset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 
 	
 	var audioRoutesView : AudioRoutesView? = nil
@@ -47,6 +48,11 @@ import linphonesw
 
 	var conferenceUrl : String? = nil
 	let conferenceSubject = MutableLiveData<String>()
+	
+	let controlsView = ControlsView(showVideo: true, controlsViewModel: ConferenceWaitingRoomViewModel.sharedModel)
+	var layoutPicker : CallControlButton? = nil
+	let layoutPickerView = ConferenceLayoutPickerView(orientation: UIDevice.current.orientation)
+
 
 	static let compositeDescription = UICompositeViewDescription(ConferenceWaitingRoomFragment.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: nil, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -64,16 +70,15 @@ import linphonesw
 		}
 				
 		// Controls
-		let controlsView = ControlsView(showVideo: true, controlsViewModel: ConferenceWaitingRoomViewModel.sharedModel)
 		view.addSubview(controlsView)
 		controlsView.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
 		
 		// Layoout picker
-		let layoutPicker = CallControlButton(imageInset : UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),buttonTheme: VoipTheme.conf_waiting_room_layout_picker, onClickAction: {
+		layoutPicker = CallControlButton(imageInset : layout_picker_inset,buttonTheme: VoipTheme.conf_waiting_room_layout_picker, onClickAction: {
 			ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value = ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value != true
 		})
-		view.addSubview(layoutPicker)
-		layoutPicker.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).alignParentRight(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+		view.addSubview(layoutPicker!)
+		layoutPicker!.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).alignParentRight(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		
 		ConferenceWaitingRoomViewModel.sharedModel.joinLayout.readCurrentAndObserve { layout in
 			var icon = ""
@@ -85,18 +90,22 @@ import linphonesw
 				ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value = false
 				break
 			}
-			layoutPicker.applyTintedIcons(tintedIcons: [UIButton.State.normal.rawValue : TintableIcon(name: icon ,tintColor: LightDarkColor(.white,.white))])
+			self.layoutPicker?.applyTintedIcons(tintedIcons: [UIButton.State.normal.rawValue : TintableIcon(name: icon ,tintColor: LightDarkColor(.white,.white))])
 		}
 		
-		let layoutPickerView = ConferenceLayoutPickerView()
+		ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.observe { video in
+			if (video == true && ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value == .AudioOnly) {
+				ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value = .ActiveSpeaker
+			}
+		}
+		
 		view.addSubview(layoutPickerView)
-		layoutPickerView.alignAbove(view:layoutPicker,withMargin:button_spacing).alignVerticalCenterWith(layoutPicker).done()
 		
 		ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.readCurrentAndObserve { show in
-			layoutPicker.isSelected = show == true
-			layoutPickerView.isHidden = show != true
+			self.layoutPicker?.isSelected = show == true
+			self.layoutPickerView.isHidden = show != true
 			if (show == true) {
-				self.view.bringSubviewToFront(layoutPickerView)
+				self.view.bringSubviewToFront(self.layoutPickerView)
 			}
 		}
 		
@@ -131,16 +140,16 @@ import linphonesw
 			self.start.isEnabled = joining != true
 			//self.localVideo.isHidden = joining == true (UX question as video window goes black by the core, better black or hidden ?)
 			self.noVideoLabel.isHidden = joining == true
-			layoutPicker.isHidden = joining == true
+			self.layoutPicker?.isHidden = joining == true
 			if (joining == true) {
 				self.view.addSubview(self.conferenceJoinSpinner)
 				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
 				self.conferenceJoinSpinner.startRotation()
-				controlsView.isHidden = true
+				self.controlsView.isHidden = true
 			} else {
 				self.conferenceJoinSpinner.stopRotation()
 				self.conferenceJoinSpinner.removeFromSuperview()
-				controlsView.isHidden = false
+				self.controlsView.isHidden = false
 			}
 		}
 		
@@ -151,9 +160,7 @@ import linphonesw
 		localVideo.contentMode = .scaleAspectFill
 		localVideo.backgroundColor = .black
 		self.view.addSubview(localVideo)
-		localVideo.matchParentSideBorders(insetedByDx: content_inset).alignAbove(view:buttonsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).alignUnder(view: subject,withMargin: common_margin).done()
 		localVideo.addSubview(switchCamera)
-		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
 		switchCamera.contentMode = .scaleAspectFit
 		switchCamera.onClick {
 			Core.get().videoPreviewEnabled = false
@@ -182,7 +189,32 @@ import linphonesw
 		}
 		audioRoutesView!.alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
 			
-						
+	
+		layoutRotatableElements()
+		
+	}
+	
+	func layoutRotatableElements() {
+		layoutPickerView.removeConstraints().done()
+		localVideo.removeConstraints().done()
+		switchCamera.removeConstraints().done()
+		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
+			layoutPickerView.alignAbove(view:layoutPicker!,withMargin:button_spacing).alignVerticalCenterWith(layoutPicker!).done()
+			localVideo.matchParentSideBorders().alignParentBottom().alignParentTop().done()
+			localVideo.layer.cornerRadius = 0
+			switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins + (UIDevice.hasNotch() && UIDevice.current.orientation == .landscapeRight ? 30.0 : 0.0)).square(switch_camera_button_size).done()
+		} else {
+			layoutPickerView.alignAbove(view:layoutPicker!,withMargin:button_spacing).alignVerticalCenterWith(layoutPicker!).done()
+			localVideo.matchParentSideBorders(insetedByDx: content_inset).alignAbove(view:buttonsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).alignUnder(view: subject,withMargin: common_margin).done()
+			localVideo.layer.cornerRadius = center_view_corner_radius
+			switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
+		}
+		view.sendSubviewToBack(localVideo)
+	}
+	
+	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+		super.didRotate(from: fromInterfaceOrientation)
+		self.layoutRotatableElements()
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

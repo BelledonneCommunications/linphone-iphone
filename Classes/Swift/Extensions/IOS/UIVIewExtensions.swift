@@ -273,6 +273,12 @@ extension UIView {
 		return alignParentRight(withMargin:Int(withMargin))
 	}
 	
+	func alignRightWith(_ view:UIView) -> UIView {
+		snp.makeConstraints { (make) in
+			make.right.equalTo(view.snp.right)
+		}
+		return self
+	}
 	
 	func toRightOf(_ view:UIView, withLeftMargin:Int = 0) -> UIView {
 		snp.makeConstraints { (make) in
@@ -359,6 +365,22 @@ extension UIView {
 		})
 		subviews.last?.snp.makeConstraints({ make in
 			make.right.equalToSuperview()
+		})
+		return self
+	}
+	
+	func wrapContent(inset:UIEdgeInsets) -> UIView {
+		subviews.first?.snp.makeConstraints({ make in
+			make.left.equalToSuperview().offset(inset.left)
+		})
+		subviews.last?.snp.makeConstraints({ make in
+			make.right.equalToSuperview().offset(-inset.right)
+		})
+		subviews.first?.snp.makeConstraints({ make in
+			make.top.equalToSuperview().offset(inset.top)
+		})
+		subviews.last?.snp.makeConstraints({ make in
+			make.bottom.equalToSuperview().offset(-inset.bottom)
 		})
 		return self
 	}
