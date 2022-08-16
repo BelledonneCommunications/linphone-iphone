@@ -168,7 +168,7 @@
 		return;
 	}
 
-	if (_messageText && ![LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message]) {
+	if (_messageText && ![LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message] && ![ICSBubbleView isConferenceInvitationMessageWithCmessage:self.message]) {
 		[_messageText setHidden:FALSE];
 		/* We need to use an attributed string here so that data detector don't mess
 		 * with the text style. See http://stackoverflow.com/a/20669356 */
