@@ -65,6 +65,7 @@ class LocalVideoView: UIView {
 		addSubview(switchCamera)
 		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
 		switchCamera.contentMode = .scaleAspectFit
+		contentMode = .scaleAspectFill
 		
 		switchCamera.onClick {
 			Core.get().toggleCamera()
