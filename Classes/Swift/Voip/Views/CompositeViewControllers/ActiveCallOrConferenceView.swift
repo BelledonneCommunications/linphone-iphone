@@ -121,21 +121,20 @@ import linphonesw
 		// Paused by local (Call)
 		callPausedByLocalView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.call_locally_paused_title,subTitleText: VoipTexts.call_locally_paused_subtitle, onClickAction: {
             CallsViewModel.shared.currentCallData.value??.togglePause()
-        })
+		})
 		view.addSubview(callPausedByLocalView!)
 		callPausedByLocalView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		callPausedByLocalView?.isHidden = true
 
 		
 		// Conference paused
-		conferencePausedView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.conference_paused_title,subTitleText: VoipTexts.conference_paused_subtitle)
+		conferencePausedView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.conference_paused_title,subTitleText: VoipTexts.conference_paused_subtitle, onClickAction: {
+			ConferenceViewModel.shared.togglePlayPause()
+		})
 		view.addSubview(conferencePausedView!)
 		conferencePausedView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		conferencePausedView?.isHidden = true
-		conferencePausedView?.onClick {
-			ConferenceViewModel.shared.togglePlayPause()
-		}
-		
+	
 		// Conference grid
 		conferenceGridView = VoipConferenceGridView()
 		fullScreenMutableContainerView.addSubview(conferenceGridView!)
