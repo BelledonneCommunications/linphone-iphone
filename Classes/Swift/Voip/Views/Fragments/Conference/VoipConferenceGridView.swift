@@ -142,7 +142,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		grid.isScrollEnabled = false
 		addSubview(gridContainer)
 		gridContainer.addSubview(grid)
-		gridContainer.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		gridContainer.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
 		
 		gridContainer.matchParentSideBorders(insetedByDx: inter_cell).alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom(withMargin: inter_cell).done()
 		grid.matchParentDimmensions().done()
@@ -164,10 +164,12 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				self.gridContainer.removeFromSuperview()
 				PhoneMainView.instance().mainViewController.view?.addSubview(self.gridContainer)
 				self.gridContainer.matchParentDimmensions().center().done()
+				self.gridContainer.backgroundColor = .black
 			} else {
 				self.gridContainer.removeFromSuperview()
 				self.addSubview(self.gridContainer)
 				self.gridContainer.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
+				self.gridContainer.backgroundColor = VoipTheme.voipBackgroundColor.get()
 			}
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 				self.reloadData()

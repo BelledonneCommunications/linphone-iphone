@@ -31,8 +31,7 @@ class VoipCallCell: UITableViewCell {
 	static let avatar_size =  45.0
 	let avatar_left_margin = 40.0
 	let texts_left_margin = 20.0
-	let side_menu_icon_size =  80.0
-
+	let side_menu_icon_size =  70.0
 	
 	var onMenuClickAction : (()->Void) = {}
 	let callStatusIcon = UIImageView()
@@ -86,11 +85,11 @@ class VoipCallCell: UITableViewCell {
 		contentView.addSubview(nameAddress)
 		nameAddress.toRightOf(avatar,withLeftMargin:texts_left_margin).wrapContentY().centerY().done()
 		
-		menuButton = CallControlButton(buttonTheme: VoipTheme.voip_call_list_active_menu, onClickAction: {
+		menuButton = CallControlButton(width:Int(side_menu_icon_size), height:Int(side_menu_icon_size),  buttonTheme: VoipTheme.voip_call_list_active_menu, onClickAction: {
 			self.owningCallsListView?.toggleMenu(forCell: self)
 		})
-		contentView.addSubview(menuButton!)
-		menuButton!.size(w: side_menu_icon_size, h: side_menu_icon_size).alignParentRight().centerY().done()
+		addSubview(menuButton!)
+		menuButton!.alignParentRight().centerY().done()
 		
 	}
 	

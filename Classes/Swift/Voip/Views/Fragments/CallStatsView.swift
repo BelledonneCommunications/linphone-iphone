@@ -28,13 +28,13 @@ import linphonesw
 	let corner_radius = 20.0
 	let audio_video_margin = 20
 	
-	init(superView:UIView, callData:CallData, marginTop:CGFloat, onDismissAction : @escaping ()->Void) {
+	init(superView:UIView, callData:CallData, marginTop:CGFloat, above:UIView, onDismissAction : @escaping ()->Void) {
 		super.init(frame:.zero)
 		backgroundColor = VoipTheme.voip_translucent_popup_background
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
 		superView.addSubview(self)
-		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignParentBottom().done()
+		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignAbove(view: above,withMargin: SharedLayoutConstants.buttons_bottom_margin).done()
 		
 		callData.callState.observe { state in
 			if (state == Call.State.End) {

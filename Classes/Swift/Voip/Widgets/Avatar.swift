@@ -46,7 +46,7 @@ class Avatar : UIImageView {
 	
 	func fillFromAddress(address:Address, isGroup:Bool = false) {
 		if (isGroup) {
-			self.image = UIImage(named:"voip_multiple_contacts_avatar")?.withPadding(padding: 50)
+			self.image = UIImage(named:"voip_multiple_contacts_avatar")
 			initialsLabel.isHidden = true
 		} else if let image = address.contact()?.avatar() {
 			self.image = image
