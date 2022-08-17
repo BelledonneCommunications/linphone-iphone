@@ -196,7 +196,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_vrInnerView.layer.masksToBounds = YES;
 	_vrWaveMaskPlayer.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_L"]]; // rgba(1,88,7,0.2);
 	_showVoiceRecorderView = false;
-	
+	_toggleMenuButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	_toggleRecord.imageView.contentMode = UIViewContentModeScaleAspectFit;
 }
 
 - (void)refreshData {
