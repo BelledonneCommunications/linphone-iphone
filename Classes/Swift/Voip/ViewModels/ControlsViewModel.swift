@@ -207,7 +207,7 @@ class ControlsViewModel {
 	
 	func updateMicState() {
 		isMicrophoneMuted.value = !micAuthorized() || !core.micEnabled
-		isMuteMicrophoneEnabled.value = core.currentCall != nil || core.conference?.isIn == true
+		isMuteMicrophoneEnabled.value = CallsViewModel.shared.currentCallData.value??.call != nil
 	}
 	
 	func micAuthorized() -> Bool {

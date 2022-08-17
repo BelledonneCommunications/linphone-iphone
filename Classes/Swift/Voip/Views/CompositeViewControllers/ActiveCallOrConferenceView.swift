@@ -29,17 +29,17 @@ import linphonesw
 	
 	var callPausedByRemoteView : PausedCallOrConferenceView? = nil
 	var callPausedByLocalView : PausedCallOrConferenceView? = nil
-
+	
 	var conferencePausedView : PausedCallOrConferenceView? = nil
-
+	
 	var currentCallView : ActiveCallView? = nil
 	var conferenceGridView: VoipConferenceGridView? = nil
 	var conferenceActiveSpeakerView: VoipConferenceActiveSpeakerView? = nil
 	var conferenceAudioOnlyView: VoipConferenceAudioOnlyView? = nil
-
+	
 	let conferenceJoinSpinner = RotatingSpinner()
-
-
+	
+	
 	let extraButtonsView = VoipExtraButtonsView()
 	var numpadView : NumpadView? = nil
 	var currentCallStatsVew : CallStatsView? = nil
@@ -72,12 +72,12 @@ import linphonesw
 		// Controls
 		view.addSubview(controlsView)
 		controlsView.alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
-
+		
 		// Container view
 		fullScreenMutableContainerView.backgroundColor = .clear
 		self.view.addSubview(fullScreenMutableContainerView)
 		fullScreenMutableContainerView.alignParentLeft(withMargin: ActiveCallOrConferenceView.content_inset).alignParentRight(withMargin: ActiveCallOrConferenceView.content_inset).matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
-	
+		
 		// Current (Single) Call (VoipCallView)
 		currentCallView = ActiveCallView()
 		currentCallView!.isHidden = true
@@ -95,7 +95,7 @@ import linphonesw
 			if (currentCallData == nil) {
 				self.callPausedByRemoteView?.isHidden = true
 				self.callPausedByLocalView?.isHidden = true
-
+				
 			} else {
 				currentCallData??.isIncoming.readCurrentAndObserve { _ in self.updateNavigation() }
 				currentCallData??.isOutgoing.readCurrentAndObserve { _ in self.updateNavigation() }
@@ -109,7 +109,7 @@ import linphonesw
 			}
 			
 		}
-	
+		
 		currentCallView!.matchParentDimmensions().done()
 		
 		// Paused by remote (Call)
@@ -120,12 +120,12 @@ import linphonesw
 		
 		// Paused by local (Call)
 		callPausedByLocalView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.call_locally_paused_title,subTitleText: VoipTexts.call_locally_paused_subtitle, onClickAction: {
-            CallsViewModel.shared.currentCallData.value??.togglePause()
+			CallsViewModel.shared.currentCallData.value??.togglePause()
 		})
 		view.addSubview(callPausedByLocalView!)
 		callPausedByLocalView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		callPausedByLocalView?.isHidden = true
-
+		
 		
 		// Conference paused
 		conferencePausedView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.conference_paused_title,subTitleText: VoipTexts.conference_paused_subtitle, onClickAction: {
@@ -134,7 +134,7 @@ import linphonesw
 		view.addSubview(conferencePausedView!)
 		conferencePausedView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		conferencePausedView?.isHidden = true
-	
+		
 		// Conference grid
 		conferenceGridView = VoipConferenceGridView()
 		fullScreenMutableContainerView.addSubview(conferenceGridView!)
@@ -177,7 +177,7 @@ import linphonesw
 		fullScreenMutableContainerView.addSubview(conferenceAudioOnlyView!)
 		conferenceAudioOnlyView?.matchParentDimmensions().done()
 		conferenceAudioOnlyView?.isHidden = true
-
+		
 		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { (conferenceMode) in
 			if (ConferenceViewModel.shared.conferenceExists.value == true) {
 				self.displaySelectedConferenceLayout()
@@ -230,7 +230,7 @@ import linphonesw
 		})
 		view.addSubview(showextraButtons)
 		showextraButtons.alignParentRight(withMargin:SharedLayoutConstants.margin_call_view_side_controls_buttons).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
-
+		
 		let boucingCounter = BouncingCounter(inButton:showextraButtons)
 		view.addSubview(boucingCounter)
 		boucingCounter.dataSource = CallsViewModel.shared.chatAndCallsCount
@@ -252,14 +252,14 @@ import linphonesw
 			if (visible == true && CallsViewModel.shared.currentCallData.value != nil ) {
 				self.numpadView?.removeFromSuperview()
 				self.shadingMask.isHidden = false
-				self.numpadView = NumpadView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0, onDismissAction: {
-                    ControlsViewModel.shared.numpadVisible.value = false
+				self.numpadView = NumpadView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0, above:self.controlsView, onDismissAction: {
+					ControlsViewModel.shared.numpadVisible.value = false
 				})
-            } else {
-                self.numpadView?.removeFromSuperview()
-                self.shadingMask.isHidden = true
-            }
-
+			} else {
+				self.numpadView?.removeFromSuperview()
+				self.shadingMask.isHidden = true
+			}
+			
 		}
 		
 		// Call stats
@@ -267,14 +267,13 @@ import linphonesw
 			if (visible == true && CallsViewModel.shared.currentCallData.value != nil ) {
 				self.currentCallStatsVew?.removeFromSuperview()
 				self.shadingMask.isHidden = false
-				self.currentCallStatsVew = CallStatsView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0,  onDismissAction: {
-                    ControlsViewModel.shared.callStatsVisible.value = false
+				self.currentCallStatsVew = CallStatsView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0, above:self.controlsView, onDismissAction: {
+					ControlsViewModel.shared.callStatsVisible.value = false
 				})
 			} else {
-                self.currentCallStatsVew?.removeFromSuperview()
-                self.shadingMask.isHidden = true
-            }
-
+				self.currentCallStatsVew?.removeFromSuperview()
+				self.shadingMask.isHidden = true
+			}
 		}
 		
 		// Video activation dialog request
@@ -382,18 +381,18 @@ import linphonesw
 					}
 				}
 			} else {
-					PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())
+				PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())
 			}
 		}
 	}
 	
 	func goToChat() {
 		/*guard
-			let chatRoom = CallsViewModel.shared.currentCallData.value??.chatRoom
-		else {
-			Log.w("[Call] Failed to find existing chat room associated to call")
-				return
-		}*/
+		 let chatRoom = CallsViewModel.shared.currentCallData.value??.chatRoom
+		 else {
+		 Log.w("[Call] Failed to find existing chat room associated to call")
+		 return
+		 }*/
 		PhoneMainView.instance().changeCurrentView(ChatsListView.compositeViewDescription())
 		
 	}

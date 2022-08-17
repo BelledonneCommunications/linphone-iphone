@@ -61,7 +61,7 @@ import linphonesw
 		showNumPad = CallControlButton(imageInset:UIEdgeInsets(top: numpad_icon_padding, left: numpad_icon_padding, bottom: numpad_icon_padding, right: numpad_icon_padding), buttonTheme: VoipTheme.call_numpad, onClickAction: {
 			self.numpadView?.removeFromSuperview()
 			self.shadingMask.isHidden = false
-			self.numpadView = NumpadView(superView: self.view,callData: self.callData!, marginTop: 0.0, onDismissAction: {
+			self.numpadView = NumpadView(superView: self.view,callData: self.callData!, marginTop: 0.0,above:controlsView, onDismissAction: {
 				self.numpadView?.removeFromSuperview()
 				self.shadingMask.isHidden = true
 			})

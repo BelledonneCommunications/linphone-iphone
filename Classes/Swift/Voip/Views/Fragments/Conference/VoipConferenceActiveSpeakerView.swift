@@ -163,7 +163,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		// Container view that can toggle full screen by single tap
 		let fullScreenMutableView = UIView()
 		addSubview(fullScreenMutableView)
-		fullScreenMutableView.backgroundColor =  VoipTheme.voipBackgroundColor.get()
+		fullScreenMutableView.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
 		fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 		fullScreenOpaqueMasqForNotchedDevices.backgroundColor = fullScreenMutableView.backgroundColor
 		
@@ -202,6 +202,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 			fullScreenMutableView.removeFromSuperview()
 			self.fullScreenOpaqueMasqForNotchedDevices.removeFromSuperview()
 			if (fullScreen == true) {
+				fullScreenMutableView.backgroundColor = .black
+				self.fullScreenOpaqueMasqForNotchedDevices.backgroundColor = .black
 				self.fullScreenOpaqueMasqForNotchedDevices.addSubview(fullScreenMutableView)
 				PhoneMainView.instance().mainViewController.view?.addSubview(self.fullScreenOpaqueMasqForNotchedDevices)
 				self.fullScreenOpaqueMasqForNotchedDevices.matchParentDimmensions().done()
@@ -211,6 +213,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					fullScreenMutableView.matchParentDimmensions().done()
 				}
 			} else {
+				fullScreenMutableView.backgroundColor = VoipTheme.voipBackgroundColor.get()
 				self.addSubview(fullScreenMutableView)
 				fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 			}
