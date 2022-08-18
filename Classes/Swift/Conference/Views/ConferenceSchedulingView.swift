@@ -133,19 +133,22 @@ import IQKeyboardManager
 		descriptionInput.textContainer.maximumNumberOfLines = 5
 		descriptionInput.textContainer.lineBreakMode = .byWordWrapping
 		scheduleForm.addSubview(descriptionInput)
-		descriptionInput.alignUnder(view: descriptionLabel,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).height(description_height).alignParentBottom(withMargin: form_margin*2).done()
-
-		scheduleForm.wrapContentY().done()
+		descriptionInput.alignUnder(view: descriptionLabel,withMargin: 2*form_margin).matchParentSideBorders(insetedByDx: form_margin).height(description_height).done()
 		
 		// Sending methods
+		
+		let viaChatView = UIView()
+		scheduleForm.addSubview(viaChatView)
+		viaChatView.alignUnder(view: descriptionInput,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).alignParentBottom(withMargin: form_margin*4).done()
+
 		let viaChatSwitch = StyledCheckBox(liveValue: ConferenceSchedulingViewModel.shared.sendInviteViaChat)
-		contentView.addSubview(viaChatSwitch)
-		viaChatSwitch.alignParentLeft(withMargin: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).done()
+		viaChatView.addSubview(viaChatSwitch)
+		viaChatSwitch.alignParentLeft().done()
 		
 		let viaChatLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_chat)
-		contentView.addSubview(viaChatLabel)
-		viaChatLabel.toRightOf(viaChatSwitch,withLeftMargin: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).alignHorizontalCenterWith(viaChatSwitch).done()
-		
+		viaChatView.addSubview(viaChatLabel)
+		viaChatLabel.toRightOf(viaChatSwitch,withLeftMargin: form_margin).alignHorizontalCenterWith(viaChatSwitch).done()
+
     /* Hidden as in Android 9.6.2022
      
 		let viaMailSwitch = StyledCheckBox(liveValue: ConferenceSchedulingViewModel.shared.sendInviteViaEmail)
@@ -184,17 +187,18 @@ import IQKeyboardManager
 		let mandatoryLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_mandatory_field)
 		mandatoryLabel.addIndicatorIcon(iconName: "voip_mandatory", trailing: false)
 		contentView.addSubview(mandatoryLabel)
-		mandatoryLabel.alignUnder(view: viaChatSwitch,withMargin: 2*form_margin).centerX().matchParentSideBorders().done()
 		mandatoryLabel.textAlignment = .center
 		
-		mandatoryLabel.alignParentBottom().done()
+		let lastView = UIView()
+		contentView.addSubview(lastView)
+		lastView.alignUnder(view: mandatoryLabel).alignParentBottom().done()
     
     // Schedule for later observer
     ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in
       scheduleForm.isHidden = forLater != true
       super.titleLabel.text = forLater == true ? VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
-      viaChatSwitch.isHidden = forLater != true
-      viaChatLabel.isHidden = forLater != true
+			mandatoryLabel.removeConstraints().done()
+			mandatoryLabel.alignUnder(view: forLater == true ? scheduleForm : scheduleForLater,withMargin: 2*self.form_margin).centerX().matchParentSideBorders().done()
     }
 
 						

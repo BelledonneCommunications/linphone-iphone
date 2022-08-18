@@ -84,7 +84,7 @@ import SVProgressHUD
 		// Left column (Date & Time)
 		let leftColumn = UIView()
 		scheduleForm.addSubview(leftColumn)
-		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft(withMargin: form_margin).alignParentTop(withMargin: form_margin).done()
+		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft().alignParentTop(withMargin: form_margin).done()
 		
 		let dateLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_date)
 		leftColumn.addSubview(dateLabel)
@@ -106,7 +106,7 @@ import SVProgressHUD
 		// Right column (Duration & Timezone)
 		let rightColumn = UIView()
 		scheduleForm.addSubview(rightColumn)
-		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight(withMargin: form_margin).alignParentTop().done()
+		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight().alignParentTop().done()
 		
 		let durationLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_duration)
 		rightColumn.addSubview(durationLabel)
@@ -127,12 +127,12 @@ import SVProgressHUD
 		// Description
 		let descriptionLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_description_title)
 		scheduleForm.addSubview(descriptionLabel)
-		descriptionLabel.alignUnder(view: leftColumn,withMargin: form_margin).alignUnder(view: rightColumn,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
+		descriptionLabel.alignUnder(view: leftColumn,withMargin: form_margin).alignUnder(view: rightColumn,withMargin: form_margin).matchParentSideBorders().done()
 		
 		descriptionInput.textContainer.maximumNumberOfLines = 5
 		descriptionInput.textContainer.lineBreakMode = .byWordWrapping
 		scheduleForm.addSubview(descriptionInput)
-		descriptionInput.alignUnder(view: descriptionLabel,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).height(description_height).alignParentBottom(withMargin: form_margin*2).done()
+		descriptionInput.alignUnder(view: descriptionLabel,withMargin: form_margin).matchParentSideBorders().height(description_height).alignParentBottom(withMargin: form_margin*2).done()
 
 		scheduleForm.wrapContentY().done()
 		
@@ -140,16 +140,17 @@ import SVProgressHUD
 		let viaChatLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_chat_summary)
 		contentView.addSubview(viaChatLabel)
 		viaChatLabel.matchParentSideBorders(insetedByDx: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).done()
+		viaChatLabel.numberOfLines = 2
 		ConferenceSchedulingViewModel.shared.sendInviteViaChat.readCurrentAndObserve { (sendChat) in
       viaChatLabel.isHidden = sendChat != true || ConferenceSchedulingViewModel.shared.scheduleForLater.value != true
 		}
 			
 		// Participants
-		let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_participants_list)
+		let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_participants_list)
 		participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(participantsLabel)
 		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin*2).done()
-		participantsLabel.textAlignment = .center
+		participantsLabel.textAlignment = .left
 		
 		
 		contentView.addSubview(participantsListTableView)
