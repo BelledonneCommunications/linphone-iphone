@@ -64,7 +64,8 @@ static UILinphoneAudioPlayer *player;
         NSArray *parsedRecording = [LinphoneUtils parseRecordingName:_recording];
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
         [dateFormat setDateFormat:@"HH:mm:ss"];
-        _nameLabel.text = [[[parsedRecording objectAtIndex:0] stringByAppendingString:@" @ "] stringByAppendingString:[dateFormat stringFromDate:[parsedRecording objectAtIndex:1]]];
+			   NSString *b = [[parsedRecording objectAtIndex:0] containsString:@"conf-id"] ? NSLocalizedString(@"Meeting", nil) : [parsedRecording objectAtIndex:0];
+        _nameLabel.text = [[b stringByAppendingString:@" @ "] stringByAppendingString:[dateFormat stringFromDate:[parsedRecording objectAtIndex:1]]];
     }
 }
 
