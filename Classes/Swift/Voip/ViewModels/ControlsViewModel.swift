@@ -270,18 +270,15 @@ class ControlsViewModel {
 	
 }
 
-@objc class CallStatsViewModel: NSObject {
-    
-    override init() {
-        super.init()
-    }
-    
-    @objc
-    func toggleVisibility() -> Void {
-        if (ControlsViewModel.shared.callStatsVisible.value == true) {
-            ControlsViewModel.shared.callStatsVisible.value = false
-        } else {
-            ControlsViewModel.shared.callStatsVisible.value = true
-        }
-    }
+@objc class ControlsViewModelBridge: NSObject {
+	@objc static func showParticipants() {
+		ControlsViewModel.shared.goToConferenceParticipantsListEvent.value = true
+	}
+	@objc static func toggleStatsVisibility() -> Void {
+			if (ControlsViewModel.shared.callStatsVisible.value == true) {
+					ControlsViewModel.shared.callStatsVisible.value = false
+			} else {
+					ControlsViewModel.shared.callStatsVisible.value = true
+			}
+	}
 }

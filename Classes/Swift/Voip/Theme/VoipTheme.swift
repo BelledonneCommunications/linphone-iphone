@@ -111,8 +111,8 @@ import UIKit
 	
 	
 	static let conference_participant_admin_label = TextStyle(fgColor: primarySubtextLightColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 13.0)
-	static let conference_participant_name_font = TextStyle(fgColor: LightDarkColor(dark_grey_color,dark_grey_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 18.0)
-	static let conference_participant_sip_uri_font = TextStyle(fgColor: LightDarkColor(primary_color,primary_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 12.0)
+	static let conference_participant_name_font = TextStyle(fgColor: LightDarkColor(dark_grey_color,dark_grey_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)
+	static let conference_participant_sip_uri_font = TextStyle(fgColor: LightDarkColor(primary_color,primary_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 12.0)
 	static let conference_participant_name_font_grid = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 15.0)
 	static let conference_participant_name_font_as = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 12.0)
 	static let conference_participant_name_font_audio_only = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName, size: 14.0)

@@ -404,8 +404,7 @@
 }
 
 - (IBAction)onQualityClick:(id)sender {
-    CallStatsViewModel* stats = [[CallStatsViewModel alloc]init];
-    [stats toggleVisibility];
+	[ControlsViewModelBridge toggleStatsVisibility];
 }
 
 - (IBAction)onSideMenuClick:(id)sender {
