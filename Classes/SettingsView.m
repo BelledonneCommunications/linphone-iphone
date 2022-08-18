@@ -555,11 +555,12 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 			return [[IASKSpecifier alloc] initWithSpecifier:dict];
 		}
 	} else {
-		if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
+		BOOL pq_available = linphone_core_get_post_quantum_available();
+		if ([[specifier key] isEqualToString:pq_available ? @"media_encryption_preference_pq_enabled" : @"media_encryption_preference"]) {
 			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
 			if (!linphone_core_media_encryption_supported(LC, LinphoneMediaEncryptionZRTP)) {
 				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-				[titles removeObject:@"ZRTP"];
+				[titles removeObject:pq_available ? @"ZRTP" : @"ZRTP Post Quantum"];
 				[dict setObject:titles forKey:@"Titles"];
 				NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
 				[values removeObject:@"ZRTP"];
@@ -641,6 +642,13 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}
 	if (!linphone_core_sip_transport_supported(LC, LinphoneTransportTls)) {
 		[hiddenKeys addObject:@"media_encryption_preference"];
+		[hiddenKeys addObject:@"media_encryption_preference_pq_enabled"];
+	} else {
+		if (linphone_core_get_post_quantum_available()) {
+			[hiddenKeys addObject:@"media_encryption_preference"];
+		} else {
+			[hiddenKeys addObject:@"media_encryption_preference_pq_enabled"];
+		}
 	}
 
 	if (!linphone_core_ldap_available(LC)) {

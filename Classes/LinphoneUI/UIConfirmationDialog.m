@@ -48,6 +48,9 @@
     [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
     dialog.cancelButton.layer.borderColor =
     [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
+	if (linphone_core_get_post_quantum_available()) {
+		[dialog.securityImage setImage:[UIImage imageNamed:@"post_quantum_secure.png"]];
+	}
     return dialog;
 }
 

@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 @implementation LinphoneCoreSettingsStore
 
 - (id)init {
@@ -493,7 +494,7 @@
 				val = "None";
 				break;
 		}
-		[self setCString:val forKey:@"media_encryption_preference"];
+		[self setCString:val forKey:linphone_core_get_post_quantum_available() ? @"media_encryption_preference_pq_enabled" : @"media_encryption_preference"];
 		[self setInteger:linphone_core_get_upload_bandwidth(LC) forKey:@"upload_bandwidth_preference"];
 		[self setInteger:linphone_core_get_download_bandwidth(LC) forKey:@"download_bandwidth_preference"];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(LC) forKey:@"adaptive_rate_control_preference"];
@@ -1027,7 +1028,7 @@
 		[LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&videoMinPort maxPort:&videoMaxPort];
 		linphone_core_set_video_port_range(LC, videoMinPort, videoMaxPort);
 
-		NSString *menc = [self stringForKey:@"media_encryption_preference"];
+		NSString *menc = [self stringForKey:linphone_core_get_post_quantum_available() ? @"media_encryption_preference_pq_enabled" : @"media_encryption_preference"];
 		if (menc && [menc compare:@"SRTP"] == NSOrderedSame)
 			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
 		else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)

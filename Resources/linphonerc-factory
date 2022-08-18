@@ -31,6 +31,7 @@ accept_early_media=0
 [sip]
 deliver_imdn=1
 linphone_specs=groupchat,lime
+zrtp_key_agreements_suites=MS_ZRTP_KEY_AGREEMENT_K255_KYB512
 
 [misc]
 version_check_url_root=https://linphone.org/releases
