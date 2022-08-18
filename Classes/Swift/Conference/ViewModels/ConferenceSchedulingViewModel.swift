@@ -79,7 +79,7 @@ class ConferenceSchedulingViewModel  {
 					}
 					self.address.value = conferenceAddress
 					
-					if (self.sendInviteViaChat.value == true) {
+					if (self.scheduleForLater.value == true && self.sendInviteViaChat.value == true) {
 						// Send conference info even when conf is not scheduled for later
 						// as the conference server doesn't invite participants automatically
 						if let chatRoomParams = try?self.core.createDefaultChatRoomParams() {
