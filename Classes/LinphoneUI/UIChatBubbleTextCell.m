@@ -46,10 +46,8 @@
 			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 			[self addSubview:sub];
 			self.icsBubbleView = [[ICSBubbleView alloc] init];
-			self.icsBubbleView.frame = CGRectMake(_messageText.frame.origin.x, _messageText.frame.origin.y+25, CONFERENCE_INVITATION_WIDTH-80, CONFERENCE_INVITATION_HEIGHT-20);
 			[self.innerView addSubview:self.icsBubbleView];
 			[(ICSBubbleView*)self.icsBubbleView setLayoutConstraintsWithView:self.backgroundColorImage];
-
 		}
 	}
 	
@@ -491,7 +489,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 + (CGSize)ViewHeightForMessageText:(LinphoneChatMessage *)chat withWidth:(int)width textForImdn:(NSString *)imdnText {
 	
 	if ([ICSBubbleView isConferenceInvitationMessageWithCmessage:chat]) {
-		return  CGSizeMake(CONFERENCE_INVITATION_WIDTH, CONFERENCE_INVITATION_HEIGHT);
+		return  CGSizeMake(CONFERENCE_INVITATION_WIDTH, CONFERENCE_INVITATION_HEIGHT+[ICSBubbleView getDescriptionHeightFromContentWithCmessage:chat]);
 	}
 	
     NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
@@ -791,6 +789,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 		_replyTransferIcon.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
 		_replyTransferLabel.hidden = ! linphone_chat_message_is_reply(_message) && !linphone_chat_message_is_forward(_message);
+		[(ICSBubbleView*)self.icsBubbleView updateTopLayoutConstraintsWithView:self.backgroundColorImage replyOrForward:linphone_chat_message_is_reply(_message)||linphone_chat_message_is_forward(_message)];
+
 		
 		if (linphone_chat_message_is_reply(_message)) {
 			CGRect replyFrame = CGRectMake(10, _replyTransferLabel.frame.origin.y+_replyTransferLabel.frame.size.height+5,MAX(self.contactDateLabel.frame.size.width-20,180), REPLY_CHAT_BUBBLE_HEIGHT);
@@ -870,7 +870,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	}
 	
 
-	if (linphone_chat_message_get_utf8_text(message)) {
+	if (linphone_chat_message_get_utf8_text(message) && ![ICSBubbleView isConferenceInvitationMessageWithCmessage:message]) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Copy text", nil)];
 		[_messageActionsIcons addObject:@"menu_copy_text_default"];
 		[_messageActionsBlocks addObject:^{
@@ -958,7 +958,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	int cellHeight = 45;
 	int numberOfItems = (int) _messageActionsTitles.count;
 	CGRect screenRect = UIScreen.mainScreen.bounds;
-	int menuHeight = numberOfItems * cellHeight + 15;
+	int menuHeight = numberOfItems * cellHeight;
 	
 	CGRect frame = CGRectMake(
 							  linphone_chat_message_is_outgoing(self.message) ? screenRect.size.width - width - 10 : 10,

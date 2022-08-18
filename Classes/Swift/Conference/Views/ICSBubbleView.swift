@@ -30,11 +30,11 @@ import EventKitUI
 	let border_width = 2.0
 	let rows_spacing = 6.0
 	let inner_padding = 8.0
+	let forward_reply_title_height = 10.0
 	let indicator_y = 3.0
 	let share_size = 25
 	let join_share_width = 150.0
-	
-	
+		
 	let inviteTitle = StyledLabel(VoipTheme.conference_invite_title_font, VoipTexts.conference_invite_title)
 	let subject = StyledLabel(VoipTheme.conference_invite_subject_font)
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
@@ -45,20 +45,19 @@ import EventKitUI
 	let joinShare = UIStackView()
 	let join = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
 	let share = UIImageView(image:UIImage(named:"voip_export")?.tinted(with: VoipTheme.primaryTextColor.get()))
-	
-	
+		
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
 			if let data = conferenceData {
 				subject.text = data.subject.value
 				participants.text = VoipTexts.conference_invite_participants_count.replacingOccurrences(of: "%d", with: String(data.conferenceInfo.participants.count+1))
 				participants.addIndicatorIcon(iconName: "conference_schedule_participants_default",padding : 0.0, y: -indicator_y, trailing: false)
-				date.text = " "+TimestampUtils.dateToString(date: data.rawDate)
+				date.text = TimestampUtils.dateToString(date: data.rawDate)
 				date.addIndicatorIcon(iconName: "conference_schedule_calendar_default", padding: 0.0, y:-indicator_y, trailing:false)
-				timeDuration.text = " \(data.time.value)" + (data.duration.value != nil ? " ( \(data.duration.value) )" : "")
+				timeDuration.text = "\(data.time.value)" + (data.duration.value != nil ? " ( \(data.duration.value) )" : "")
 				timeDuration.addIndicatorIcon(iconName: "conference_schedule_time_default",padding : 0.0, y: -indicator_y, trailing: false)
-				descriptionTitle.isHidden = true // data.description.value == nil || data.description.value!.count == 0
-				descriptionValue.isHidden = true // descriptionTitle.isHidden
+				descriptionTitle.isHidden = data.description.value == nil || data.description.value!.count == 0
+				descriptionValue.isHidden = descriptionTitle.isHidden
 				descriptionValue.text = data.description.value
 			}
 		}
@@ -84,6 +83,8 @@ import EventKitUI
 		rows.addArrangedSubview(timeDuration)
 		rows.addArrangedSubview(descriptionTitle)
 		rows.addArrangedSubview(descriptionValue)
+		
+		descriptionValue.numberOfLines = 5
 		
 		
 		addSubview(joinShare)
@@ -162,7 +163,11 @@ import EventKitUI
 	}
 	
 	@objc func setLayoutConstraints(view:UIView) {
-		matchDimensionsWith(view: view, insetedByDx: inner_padding).done()
+		matchBordersWith(view: view, insetedByDx: inner_padding).done()
+	}
+	
+	@objc func updateTopLayoutConstraints(view:UIView, replyOrForward: Bool) {
+		updateTopBorderWith(view: view, inset: inner_padding + (replyOrForward ? forward_reply_title_height : 0.0)).done()
 	}
 	
 	func eventEditViewController(_ controller: EKEventEditViewController, didCompleteWith action: EKEventEditViewAction) {
@@ -180,6 +185,25 @@ import EventKitUI
 			}
 		}
 		return subject
+	}
+	
+	@objc static func getDescriptionHeightFromContent(cmessage: OpaquePointer) -> CGFloat {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		var height = 0.0
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					let description = NSString(string: conferenceInfo.description)
+					if (description.length > 0) {
+						let dummyTitle = StyledLabel(VoipTheme.conference_invite_desc_title_font, VoipTexts.conference_description_title)
+						let dummyLabel = StyledLabel(VoipTheme.conference_invite_desc_font)
+						let rect = CGSize(width: CGFloat(CONFERENCE_INVITATION_WIDTH-80), height: CGFloat.greatestFiniteMagnitude)
+						height = dummyTitle.intrinsicContentSize.height + description.boundingRect(with: rect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: dummyLabel.font!], context: nil).height
+					}
+				}
+			}
+		}
+		return height
 	}
 	
 }
