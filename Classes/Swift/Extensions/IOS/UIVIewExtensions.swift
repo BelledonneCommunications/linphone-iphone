@@ -147,10 +147,17 @@ extension UIView {
 		return self
 	}
 	
-	func matchDimensionsWith(view:UIView, insetedByDx:CGFloat = 0) -> UIView {
+	func matchBordersWith(view:UIView, insetedByDx:CGFloat = 0) -> UIView {
 		snp.makeConstraints { (make) in
 			make.left.top.equalTo(view).offset(insetedByDx)
 			make.right.bottom.equalTo(view).offset(-insetedByDx)
+		}
+		return self
+	}
+	
+	func updateTopBorderWith(view:UIView, inset:CGFloat = 0) -> UIView {
+		snp.updateConstraints { (make) in
+			make.top.equalTo(view).offset(inset)
 		}
 		return self
 	}
