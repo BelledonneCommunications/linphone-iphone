@@ -52,9 +52,14 @@ class Avatar : UIImageView {
 			self.image = image
 			initialsLabel.isHidden = true
 		} else {
-			self.image = nil
-			initialsLabel.text = address.initials()
-			initialsLabel.isHidden = false
+			if (Core.get().defaultAccount?.isPhoneNumber(username: address.username) == true) {
+				self.image = UIImage(named:"avatar")?.tinted(with: .white)
+				initialsLabel.isHidden = true
+			} else {
+				self.image = nil
+				initialsLabel.text = address.initials()
+				initialsLabel.isHidden = false
+			}
 		}
 	}
 		
