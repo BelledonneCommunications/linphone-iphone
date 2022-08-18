@@ -25,10 +25,20 @@ class StyledTextView: UITextView, UITextViewDelegate {
 	var style:TextStyle?
 	var liveValue: MutableLiveData<String>? = nil
 	var maxLines:Int
-
+	var isEditing = false
+	
 	required init?(coder: NSCoder) {
 		maxLines = 0
 		super.init(coder: coder)
+	}
+	
+	override var text: String?{
+		didSet{
+			textColor = text?.count ?? 0 > 0 && text != placeholder ? style?.fgColor.get().withAlphaComponent(1.0) : style?.fgColor.get().withAlphaComponent(0.5)
+			if !isEditing && text == "" {
+				showPlaceHolder()
+			}
+		}
 	}
 	
 	init (_ style:TextStyle, placeHolder:String? = nil, liveValue: MutableLiveData<String>, readOnly:Bool = false, maxLines:Int = 999) {
@@ -54,17 +64,19 @@ class StyledTextView: UITextView, UITextViewDelegate {
 			textColor = textColor?.withAlphaComponent(0.5)
 		}
 		isUserInteractionEnabled = !readOnly
-   }
-		
+	}
+	
 	func textViewDidBeginEditing(_ textView: UITextView) {
+		isEditing = true
 		if text == placeholder {
 			placeholder = textView.text
 			text = ""
 			textColor = style?.fgColor.get().withAlphaComponent(1.0)
 		}
 	}
-
+	
 	func textViewDidEndEditing(_ textView: UITextView) {
+		isEditing = false
 		if text == "" {
 			showPlaceHolder()
 		}

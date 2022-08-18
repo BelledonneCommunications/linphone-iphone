@@ -50,9 +50,9 @@ extension UILabel {
 	func addIndicatorIcon(iconName:String,  padding:CGFloat = 5.0, y:CGFloat = 4.0, trailing: Bool = true) {
 		let imageAttachment = NSTextAttachment()
 		imageAttachment.image = UIImage(named:iconName)
-		imageAttachment.bounds = CGRect(x: 5.0, y: y , width: font.lineHeight - 2*padding, height: font.lineHeight - 2*padding)
+		imageAttachment.bounds = CGRect(x: 0.0, y: y , width: font.lineHeight - 2*padding, height: font.lineHeight - 2*padding)
 		let iconString = NSMutableAttributedString(attachment: imageAttachment)
-		let textXtring = NSMutableAttributedString(string: text != nil ? text! : "")
+		let textXtring = NSMutableAttributedString(string: text != nil ? (!trailing ? " " : "") + text! + (trailing ? " " : "") : "")
 		if (trailing) {
 			textXtring.append(iconString)
 			self.text = nil
