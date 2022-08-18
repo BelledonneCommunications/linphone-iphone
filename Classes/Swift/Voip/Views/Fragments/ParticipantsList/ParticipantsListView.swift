@@ -58,8 +58,9 @@ import linphonesw
 		participantsListTableView.separatorColor = .white
 	
 	
-		CallsViewModel.shared.callsData.readCurrentAndObserve{ (callsData) in
+		ConferenceViewModel.shared.conferenceParticipants.readCurrentAndObserve{ _ in
 			self.participantsListTableView.reloadData()
+			self.noParticipantsLabel.isHidden =  ConferenceViewModel.shared.conferenceParticipants.value?.count ?? 0 > 0
 		}
 		
 		ConferenceViewModel.shared.isMeAdmin.readCurrentAndObserve { (meAdmin) in

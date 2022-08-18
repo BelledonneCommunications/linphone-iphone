@@ -303,7 +303,7 @@ extension UIView {
 	
 	func alignParentRight(withMargin:Int = 0) -> UIView {
 		snp.makeConstraints { (make) in
-			make.right.equalToSuperview().offset(-withMargin).priorityRequired()
+			make.right.equalToSuperview().offset(-withMargin)
 		}
 		return self
 	}

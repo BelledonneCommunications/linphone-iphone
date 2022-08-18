@@ -168,7 +168,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)sender {
 	[_tableController.contactsGroup removeAllObjects];
 	if (_isForVoipConference) {
-		[PhoneMainView.instance popToView:ConferenceSchedulingView.compositeViewDescription];
+		if (_isForOngoingVoipConference) {
+			[PhoneMainView.instance changeCurrentView:VIEW(ActiveCallOrConferenceView).compositeViewDescription];
+			[ControlsViewModelBridge showParticipants];
+		} else {
+			[PhoneMainView.instance popToView:ConferenceSchedulingView.compositeViewDescription];
+		}
 	} else {
 		if (_tableController.isForEditing)
 			[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
