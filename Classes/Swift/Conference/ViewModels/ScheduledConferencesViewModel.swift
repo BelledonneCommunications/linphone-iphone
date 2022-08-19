@@ -31,6 +31,7 @@ class ScheduledConferencesViewModel  {
 	var conferences : MutableLiveData<[ScheduledConferenceData]> = MutableLiveData([])
 	var daySplitted : [Date : [ScheduledConferenceData]] = [:]
 	var coreDelegate: CoreDelegateStub?
+	var showTerminated = MutableLiveData(false)
 	
 	init () {
 		
@@ -48,10 +49,19 @@ class ScheduledConferencesViewModel  {
 	func computeConferenceInfoList() {
 		conferences.value!.removeAll()
 		let now = Date().timeIntervalSince1970 // Linphone uses time_t in seconds
-		let oneHourAgo = now - 3600 // Show all conferences from 1 hour ago and forward
-		core.getConferenceInformationListAfterTime(time: time_t(oneHourAgo)).filter{$0.duration != 0}.forEach { conferenceInfo in
-			conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
+		
+		if (showTerminated.value == true) {
+			core.conferenceInformationList.filter{$0.duration != 0 && (TimeInterval($0.dateTime) + TimeInterval($0.duration) < now)}.forEach { conferenceInfo in
+				conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
+			}
+		} else {
+			let twoHoursAgo = now - 7200 // Show all conferences from 2 hour ago and forward
+			core.getConferenceInformationListAfterTime(time: time_t(twoHoursAgo)).filter{$0.duration != 0}.forEach { conferenceInfo in
+				conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
+			}
 		}
+		
+		
 		
 		daySplitted = [:]
 		conferences.value!.forEach { (conferenceInfo) in

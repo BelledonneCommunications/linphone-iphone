@@ -128,14 +128,8 @@ import UIKit
 	static let conference_waiting_room_no_video_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 16.0)
 		
 	static let empty_list_font = TextStyle(fgColor: primaryTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 18.0)
+	static let conf_list_filter_button_font = TextStyle(fgColor: LightDarkColor(.black,.black), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 14.0)
 
-	
-	
-	
-	
-	
-	
-	
 	
 	// Buttons Background (State colors)
 	
@@ -202,6 +196,11 @@ import UIKit
 	static let button_call_context_menu_background =  [
 		UIButton.State.normal.rawValue : LightDarkColor(voip_gray,voip_gray),
 		UIButton.State.highlighted.rawValue : LightDarkColor(primary_color,primary_color),
+	]
+	
+	static let button_conference_list_filter =  [
+		UIButton.State.normal.rawValue : LightDarkColor(light_grey_color,light_grey_color),
+		UIButton.State.selected.rawValue : LightDarkColor(primary_color.withAlphaComponent(0.24),primary_color.withAlphaComponent(0.24)),
 	]
 	
 	// Buttons Icons (State colors) + Background colors
@@ -274,7 +273,8 @@ import UIKit
 		tintableStateIcons:[:],
 		backgroundStateColors: button_toggle_background_reverse)
 	
-	// AUdio routes
+	// AUuio routes
+	
 	static let route_bluetooth = ButtonTheme(
 		tintableStateIcons:[
 			UIButton.State.normal.rawValue : TintableIcon(name: "voip_bluetooth",tintColor: LightDarkColor(.white,.white)),

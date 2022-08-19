@@ -97,6 +97,7 @@ import UIKit
 	@objc static let conference_last_user = NSLocalizedString("All other participants have left the group call",comment:"")
 	@objc static let conference_local_title = NSLocalizedString("Local group call",comment:"")
 	@objc static let conference_no_schedule = NSLocalizedString("No scheduled meeting yet.",comment:"")
+	@objc static let conference_no_terminated_schedule = NSLocalizedString("No terminated meeting yet.",comment:"")	
 	@objc static let conference_participant_paused = NSLocalizedString("(paused)",comment:"")
 	@objc static let conference_participants_title = NSLocalizedString("Participants (%d)",comment:"")
 	@objc static let conference_paused_subtitle = NSLocalizedString("Click on play button to join it back.",comment:"")
@@ -136,8 +137,9 @@ import UIKit
 	@objc static let conference_empty = NSLocalizedString("You are currently alone in this group call",comment:"")
 	@objc static let conference_admin_set = NSLocalizedString("%s is now admin",comment:"")
 	@objc static let conference_admin_unset = NSLocalizedString("%s is no longer admin",comment:"")
-	
-	
+	@objc static let conference_scheduled_terminated_filter = NSLocalizedString("Terminated",comment:"")
+	@objc static let conference_scheduled_future_filter = NSLocalizedString("Scheduled",comment:"")
+
 	// FROM ANDROID END
 	
 	

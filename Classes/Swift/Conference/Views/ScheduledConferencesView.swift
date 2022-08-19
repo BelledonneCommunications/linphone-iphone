@@ -23,9 +23,10 @@ import Foundation
 import linphonesw
 
 @objc class ScheduledConferencesView:  BackNextNavigationView, UICompositeViewDelegate, UITableViewDataSource, UITableViewDelegate {
-	
+			
 	let conferenceListView = UITableView()
 	let noConference = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_no_schedule)
+	let filters = UIStackView()
 
 	static let compositeDescription = UICompositeViewDescription(ScheduledConferencesView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -44,8 +45,39 @@ import linphonesw
 			title:VoipTexts.conference_scheduled)
 
 		super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.conference_create_button)
-	
+		
+		// Filter buttons
+		let showTerminated = getFilterButton(title: VoipTexts.conference_scheduled_terminated_filter)
+		showTerminated.onClick {
+			ScheduledConferencesViewModel.shared.showTerminated.value = true
+		}
+		filters.addArrangedSubview(showTerminated)
+		
+		let showScheduled = getFilterButton(title: VoipTexts.conference_scheduled_future_filter)
+		showScheduled.onClick {
+			ScheduledConferencesViewModel.shared.showTerminated.value = false
+			
+		}
+		filters.addArrangedSubview(showScheduled)
+		
+		ScheduledConferencesViewModel.shared.showTerminated.readCurrentAndObserve { it in
+			showTerminated.isSelected = it == true
+			showScheduled.isSelected = it != true
+			self.noConference.text = it != true ? VoipTexts.conference_no_schedule : VoipTexts.conference_no_terminated_schedule
+			ScheduledConferencesViewModel.shared.computeConferenceInfoList()
+			self.conferenceListView.reloadData()
+			self.noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
+		}
+		
+		self.view.addSubview(filters)
+		filters.spacing = 10
+		filters.alignParentLeft(withMargin: 10).alignUnder(view: super.topBar,withMargin: self.form_margin).done()
+
+		
+		// Conference list
+		
 		self.view.addSubview(conferenceListView)
+		conferenceListView.alignUnder(view: filters).done()
 		conferenceListView.isScrollEnabled = true
 		conferenceListView.dataSource = self
 		conferenceListView.delegate = self
@@ -62,6 +94,20 @@ import linphonesw
 		noConference.center().done()
 		
 	}
+	
+	func getFilterButton(title:String) -> UIButton {
+		let filter_button_height = 35.0
+		let button = ButtonWithStateBackgrounds(backgroundStateColors: VoipTheme.button_conference_list_filter)
+		button.setTitle(title, for: .normal)
+		button.setTitleColor(.black, for: .normal)
+		button.setTitleColor(VoipTheme.primary_color, for: .selected)
+		button.height(filter_button_height).done()
+		button.layer.cornerRadius = filter_button_height / 2
+		button.clipsToBounds = true
+		button.applyTitleStyle(VoipTheme.conf_list_filter_button_font)
+		button.addSidePadding()
+		return button
+	}
 		
 
 	override func viewWillAppear(_ animated: Bool) {
@@ -69,7 +115,7 @@ import linphonesw
 		super.viewWillAppear(animated)
 		self.conferenceListView.reloadData()
 		self.conferenceListView.removeConstraints().done()
-		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: super.topBar,withMargin: self.form_margin).alignParentBottom().done()
+		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: filters,withMargin: self.form_margin).alignParentBottom().done()
 		noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
 		super.nextButton.isEnabled = Core.get().defaultAccount != nil
 	}
