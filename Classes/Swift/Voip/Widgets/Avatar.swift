@@ -62,6 +62,11 @@ class Avatar : UIImageView {
 			}
 		}
 	}
+	
+	func showAsAvatarIcon() {
+		self.image = UIImage(named:"avatar")?.tinted(with: .white)
+		initialsLabel.isHidden = true
+	}
 		
 	override func layoutSubviews() {
 		super.layoutSubviews()

@@ -85,6 +85,9 @@ class ConferenceParticipantDeviceData  {
 		
 		isInConference.value = participantDevice.isInConference
 		let videoCapability = participantDevice.getStreamCapability(streamType: .Video)
+		
+		isJoining.value = [.Joining,.Alerting].contains(participantDevice.state)
+		
 		Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())], is in conf? \(isInConference.value), is video enabled? \(videoEnabled.value) \(videoCapability)")
 	}
 	
@@ -97,6 +100,8 @@ class ConferenceParticipantDeviceData  {
 		isInConference.clearObservers()
 		videoEnabled.clearObservers()
 		isSpeaking.clearObservers()
+		isJoining.clearObservers()
+		micMuted.clearObservers()
 	}
 	
 	func switchCamera() {

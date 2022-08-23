@@ -39,19 +39,24 @@ class ConferenceViewModel {
 	let conferenceParticipants = MutableLiveData<[ConferenceParticipantData]>()
 	let conferenceParticipantDevices = MutableLiveData<[ConferenceParticipantDeviceData]>()
 	let conferenceDisplayMode = MutableLiveData<ConferenceDisplayMode>()
+	let activeSpeakerConferenceParticipantDevices = MutableLiveData<[ConferenceParticipantDeviceData]>()
 	
 	let isRecording = MutableLiveData<Bool>()
 	let isRemotelyRecorded = MutableLiveData<Bool>()
 	
 	let maxParticipantsForMosaicLayout = ConfigManager.instance().lpConfigIntForKey(key: "max_conf_part_mosaic_layout",defaultValue: 6)
 	
+	let moreThanTwoParticipants = MutableLiveData<Bool>()
+	
 	let speakingParticipant = MutableLiveData<ConferenceParticipantDeviceData>()
+	
+	let meParticipant = MutableLiveData<ConferenceParticipantDeviceData>()
 	
 	let participantAdminStatusChangedEvent = MutableLiveData<ConferenceParticipantData>()
 	
-	let firstToJoinEvent = MutableLiveData<Bool>()
+	let firstToJoinEvent = MutableLiveData(false)
 	
-	let allParticipantsLeftEvent = MutableLiveData<Bool>()
+	let allParticipantsLeftEvent = MutableLiveData(false)
 	
 	private var conferenceDelegate :  ConferenceDelegateStub?
 	private var coreDelegate :  CoreDelegateStub?
@@ -80,7 +85,6 @@ class ConferenceViewModel {
 			onParticipantDeviceAdded: {(conference: Conference, participantDevice: ParticipantDevice) in
 				Log.i("[Conference] \(conference) Participant device \(participantDevice) added")
 				self.addParticipantDevice(device: participantDevice)
-				
 			},
 			onParticipantDeviceRemoved: { (conference: Conference, participantDevice: ParticipantDevice) in
 				Log.i("[Conference] \(conference) Participant device \(participantDevice) removed")
@@ -165,6 +169,7 @@ class ConferenceViewModel {
 				}
 			}
 		}
+		
 	}
 	
 	func notifyAdminStatusChanged(participantData:ConferenceParticipantData) {
@@ -214,7 +219,7 @@ class ConferenceViewModel {
 			firstToJoinEvent.value = true
 		}
 		self.updateParticipantsDevicesList(conference)
-		
+	
 		isConferenceLocallyPaused.value = !conference.isIn
 		self.isMeAdmin.value = conference.me?.isAdmin == true
 		isVideoConference.value = conference.currentParams?.videoEnabled == true
@@ -276,8 +281,11 @@ class ConferenceViewModel {
 		
 		self.conferenceParticipants.value?.forEach{ $0.destroy()}
 		self.conferenceParticipantDevices.value?.forEach{ $0.destroy()}
+		conferenceParticipants.clearObservers()
 		conferenceParticipants.value = []
+		conferenceParticipantDevices.clearObservers()
 		conferenceParticipantDevices.value = []
+		meParticipant.value = nil
 	}
 	
 	
@@ -319,11 +327,8 @@ class ConferenceViewModel {
 		conference.me?.devices.forEach { (device) in
 			Log.i("[Conference] \(conference) Participant device for myself found: \(device.name)  (\(device.address!.asStringUriOnly()))")
 			let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: true)
-			if (devices.count == 0) {
-					// TODO: FIXME: Temporary workaround when alone in a conference in active speaker layout
-					speakingParticipant.value = deviceData
-			}
 			devices.append(deviceData)
+			meParticipant.value = deviceData
 		}
 		
 		
@@ -356,6 +361,10 @@ class ConferenceViewModel {
 		let devices = conferenceParticipantDevices.value?.filter {
 			$0.participantDevice.address?.asStringUriOnly() != device.address?.asStringUriOnly()
 		}
+		conferenceParticipantDevices.value?.filter {
+			$0.participantDevice.address?.asStringUriOnly() == device.address?.asStringUriOnly()
+		}.first?.destroy()
+		
 		if (devices?.count == conferenceParticipantDevices.value?.count) {
 			Log.e("[Conference] Failed to remove participant device: \(device.name) (\((device.address?.asStringUriOnly()).orNil)")
 		} else {
