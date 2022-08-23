@@ -33,8 +33,10 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let record_pause_button_inset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
 	let grid_height = 100.0
 	let cell_width = 100.0
-
-	
+	let switch_camera_button_size = 35
+	let switch_camera_button_margins = 7.0
+		
+	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let subjectLabel = StyledLabel(VoipTheme.call_display_name_duration)
 	let duration = CallTimer(nil, VoipTheme.call_display_name_duration)
 	
@@ -48,19 +50,59 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let activeSpeakerDisplayName = StyledLabel(VoipTheme.call_remote_name)
 
 	var grid : UICollectionView
+	var meGrid : UICollectionView
+
 	let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 	var fullScreenOpaqueMasqForNotchedDevices =  UIView()
+	let conferenceJoinSpinner = RotatingSpinner()
+
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
 			if let model = conferenceViewModel {
+				self.setJoininngSpeakerState(enabled: true)
+				self.activeSpeakerAvatar.showAsAvatarIcon()
 				model.subject.readCurrentAndObserve { (subject) in
 					self.subjectLabel.text = subject
 				}
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
-				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
+				model.conferenceParticipantDevices.readCurrentAndObserve { value in
+					model.activeSpeakerConferenceParticipantDevices.value = Array((value!.dropFirst()))
+				}
+				model.activeSpeakerConferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
+					let otherSpeakersCount = model.activeSpeakerConferenceParticipantDevices.value!.count
+					self.switchCamera.isHidden = true
+					if (otherSpeakersCount == 0) {
+						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+						self.layoutRotatableElements()
+						self.meGrid.isHidden = true
+						self.grid.isHidden = true
+						model.meParticipant.value?.videoEnabled.readCurrentAndObserve { video in
+							self.switchCamera.isHidden = video != true
+							self.fillActiveSpeakerSpace(data: model.meParticipant.value,video: video == true)
+						}
+					} else if (otherSpeakersCount == 1) {
+						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+						if let data =  model.activeSpeakerConferenceParticipantDevices.value!.first {
+							data.videoEnabled.readCurrentAndObserve { video in
+								self.fillActiveSpeakerSpace(data: data,video: video == true)
+							}
+						}
+						self.layoutRotatableElements()
+						self.meGrid.isHidden = false
+						self.grid.isHidden = true
+					} else if (otherSpeakersCount == 2) {
+						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+						self.meGrid.isHidden = false
+						self.grid.isHidden = false
+						self.layoutRotatableElements()
+					} else {
+						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+						self.meGrid.isHidden = false
+						self.grid.isHidden = false
+					}
 				}
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
@@ -73,16 +115,10 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					}
 				}
 				Core.get().nativeVideoWindow = self.activeSpeakerVideoView
-				self.activeSpeakerAvatar.isHidden = true
-				self.activeSpeakerVideoView.isHidden = true
-				self.activeSpeakerDisplayName.text = VoipTexts.conference_display_no_active_speaker
-				conferenceViewModel?.speakingParticipant.readCurrentAndObserve { speakingParticipant in
-					speakingParticipant?.participantDevice.address.map {
-						self.activeSpeakerAvatar.isHidden = false
-						self.activeSpeakerAvatar.fillFromAddress(address: $0)
-						self.activeSpeakerDisplayName.text = $0.addressBookEnhancedDisplayName()
+				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
+					if (model.activeSpeakerConferenceParticipantDevices.value!.count > 1) {
+						self.fillActiveSpeakerSpace(data: speakingParticipant,video: speakingParticipant?.videoEnabled.value == true)
 					}
-					self.activeSpeakerVideoView.isHidden = speakingParticipant?.videoEnabled.value != true
 				}
 			}
 			self.reloadData()
@@ -90,11 +126,36 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		}
 	}
 	
+	func setJoininngSpeakerState(enabled: Bool) {
+		if (!enabled) {
+			self.conferenceJoinSpinner.isHidden = true
+			self.conferenceJoinSpinner.stopRotation()
+		} else {
+			self.conferenceJoinSpinner.isHidden = false
+			self.conferenceJoinSpinner.startRotation()
+		}
+	}
+	
+	func fillActiveSpeakerSpace(data: ConferenceParticipantDeviceData?, video: Bool) {
+		data?.isJoining.readCurrentAndObserve { joining in
+			self.setJoininngSpeakerState(enabled: joining == true || data?.participantDevice.address == nil)
+		}
+		if let address = data?.participantDevice.address {
+			self.activeSpeakerAvatar.fillFromAddress(address: address)
+			self.activeSpeakerDisplayName.text = address.addressBookEnhancedDisplayName()
+		} else {
+			self.activeSpeakerAvatar.showAsAvatarIcon()
+			self.activeSpeakerDisplayName.text = nil
+		}
+		self.activeSpeakerVideoView.isHidden = !video
+	}
+	
 	func reloadData() {
-		conferenceViewModel?.conferenceParticipantDevices.value?.forEach {
+		conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value?.forEach {
 			$0.clearObservers()
 		}
 		self.grid.reloadData()
+		self.meGrid.reloadData()
 	}
 			
 	init() {
@@ -104,6 +165,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		layout.scrollDirection = .horizontal
 		layout.itemSize = CGSize(width:cell_width, height:grid_height)
 		grid = UICollectionView(frame:.zero, collectionViewLayout: layout)
+		
+		let meLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+		meLayout.scrollDirection = .horizontal
+		meLayout.minimumInteritemSpacing = 0
+		meLayout.minimumLineSpacing = 0
+		meLayout.itemSize = CGSize(width:cell_width, height:grid_height)
+		meGrid = UICollectionView(frame:.zero, collectionViewLayout: meLayout)
 		
 		super.init(frame: .zero)
 		
@@ -177,17 +245,40 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		
 		activeSpeakerView.addSubview(activeSpeakerVideoView)
 		activeSpeakerVideoView.matchParentDimmensions().done()
+		
+		activeSpeakerView.addSubview(switchCamera)
+		switchCamera.contentMode = .scaleAspectFit
+		switchCamera.onClick {
+			Core.get().videoPreviewEnabled = false
+			Core.get().toggleCamera()
+			Core.get().nativePreviewWindow = self.activeSpeakerVideoView
+			Core.get().videoPreviewEnabled = true
+		}
+		
+		activeSpeakerView.addSubview(conferenceJoinSpinner)
+		conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
 
+		
+		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
+		
 		activeSpeakerView.addSubview(activeSpeakerDisplayName)
 		activeSpeakerDisplayName.alignParentLeft(withMargin:ActiveCallView.bottom_displayname_margin_left).alignParentRight().alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 		
-		// CollectionView
+		// CollectionViews
 		grid.dataSource = self
 		grid.delegate = self
 		grid.register(VoipActiveSpeakerParticipantCell.self, forCellWithReuseIdentifier: "VoipActiveSpeakerParticipantCell")
 		grid.backgroundColor = .clear
 		grid.isScrollEnabled = true
 		fullScreenMutableView.addSubview(grid)
+		
+		meGrid.dataSource = self
+		meGrid.delegate = self
+		meGrid.register(VoipActiveSpeakerParticipantCell.self, forCellWithReuseIdentifier: "VoipActiveSpeakerParticipantCell")
+		meGrid.backgroundColor = .clear
+		meGrid.isScrollEnabled = false
+		fullScreenMutableView.addSubview(meGrid)
+		
 						
 		// Full screen video togggle
 		activeSpeakerView.onClick {
@@ -217,6 +308,9 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				self.addSubview(fullScreenMutableView)
 				fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 			}
+			UIView.animate(withDuration: 0.3, animations: {
+					self.layoutIfNeeded()
+			})
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 				self.reloadData()
 			}
@@ -224,31 +318,68 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		
 		//Rotation
 		layoutRotatableElements()
-		
+	
 	}
 	
 	// Rotations
 	
+	func bounceGrids() {
+		let superView = grid.superview
+		grid.removeFromSuperview()
+		meGrid.removeFromSuperview()
+		superView?.addSubview(grid)
+		superView?.addSubview(meGrid)
+	}
+	
 	func layoutRotatableElements() {
 		grid.removeConstraints().done()
+		meGrid.removeConstraints().done()
 		activeSpeakerView.removeConstraints().done()
 		activeSpeakerAvatar.removeConstraints().done()
+		let otherParticipantsCount = conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value!.count
 		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
-			activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: ActiveCallOrConferenceView.content_inset).done()
-			if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
-				let superView = grid.superview
-				grid.removeFromSuperview()
-				superView?.addSubview(grid)
+			if (otherParticipantsCount == 0) {
+				activeSpeakerView.matchParentDimmensions().done()
+				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
+				if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
+					bounceGrids()
+				}
+			} else if (otherParticipantsCount == 1) {
+				activeSpeakerView.matchParentDimmensions().done()
+				if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
+					bounceGrids()
+				}
+				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
+				meGrid.alignParentRight(withMargin: ActiveCallView.center_view_margin_top).height(grid_height).width(grid_height).alignParentBottom(withMargin: ActiveCallView.center_view_margin_top).done()
+			} else {
+				activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: ActiveCallOrConferenceView.content_inset).done()
+				if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
+					bounceGrids()
+				}
+				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignParentRight().done()
+				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignUnder(view: meGrid, withMargin: ActiveCallOrConferenceView.content_inset).alignParentBottom().alignParentRight().done()
+				layout.scrollDirection = .vertical
+				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 			}
-			grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignParentBottom().alignParentRight().done()
-			layout.scrollDirection = .vertical
-			activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 		} else {
-			activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
-			activeSpeakerView.matchParentSideBorders().alignParentTop().done()
-			grid.matchParentSideBorders().height(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
-			layout.scrollDirection = .horizontal
+			if (otherParticipantsCount == 0) {
+				activeSpeakerView.matchParentDimmensions().done()
+				activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
+			} else if (otherParticipantsCount == 1) {
+				activeSpeakerView.matchParentDimmensions().done()
+				activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
+				meGrid.alignParentRight(withMargin: ActiveCallView.center_view_margin_top).height(grid_height).width(grid_height).alignParentBottom(withMargin: ActiveCallView.center_view_margin_top).done()
+			} else {
+				activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
+				activeSpeakerView.matchParentSideBorders().alignParentTop().done()
+				meGrid.alignParentLeft().height(grid_height).width(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				grid.toRightOf(meGrid,withLeftMargin: ActiveCallOrConferenceView.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				layout.scrollDirection = .horizontal
+			}
 		}
+		UIView.animate(withDuration: 0.3, animations: {
+				self.layoutIfNeeded()
+		})
 	}
 	
 	// UICollectionView related delegates
@@ -267,7 +398,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		if (self.isHidden || conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .ActiveSpeaker) {
 			return 0
 		}
-		guard let participantsCount = conferenceViewModel?.conferenceParticipantDevices.value?.count else {
+		guard let participantsCount = collectionView == meGrid ? (conferenceViewModel?.meParticipant.value != nil ? 1 : 0) : conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value?.count else {
 			return .zero
 		}
 		return participantsCount
@@ -275,7 +406,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell:VoipActiveSpeakerParticipantCell = collectionView.dequeueReusableCell(withReuseIdentifier: "VoipActiveSpeakerParticipantCell", for: indexPath) as! VoipActiveSpeakerParticipantCell
-		guard let participantData = conferenceViewModel?.conferenceParticipantDevices.value?[indexPath.row] else {
+		guard let participantData =  collectionView == meGrid ? conferenceViewModel?.meParticipant.value : conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value?[indexPath.row] else {
 			return cell
 		}
 		cell.participantData = participantData
