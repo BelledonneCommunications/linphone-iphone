@@ -402,6 +402,7 @@ import linphonesw
 		let leftMargin = UIDevice.current.orientation == .landscapeLeft && UIDevice.hasNotch() ? UIApplication.shared.keyWindow!.safeAreaInsets.left : ActiveCallOrConferenceView.content_inset
 		let rightMargin = UIDevice.current.orientation == .landscapeRight && UIDevice.hasNotch() ? UIApplication.shared.keyWindow!.safeAreaInsets.right : ActiveCallOrConferenceView.content_inset
 		fullScreenMutableContainerView.updateAlignParentLeft(withMargin: leftMargin).updateAlignParentRight(withMargin: rightMargin).done()
+		controlsView.updateAlignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).centerX().done()
 	}
 	
 	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
