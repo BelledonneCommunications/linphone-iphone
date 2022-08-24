@@ -21,7 +21,9 @@
 import Foundation
 
 class SharedLayoutConstants {
-	static let buttons_bottom_margin = UIDevice.hasNotch() ? 30 : 15
+	static var buttons_bottom_margin : Int  {
+		get { UIDevice.hasNotch() && UIDevice.current.orientation == .portrait ? 30 : 15 }
+	}
 	static let margin_call_view_side_controls_buttons = 12
 	static let bottom_margin_notch_clearance = UIDevice.hasNotch() ? 30.0 : 0.0
 

@@ -254,8 +254,19 @@ extension UIView {
 		return self
 	}
 	
+	func updateAlignParentBottom(withMargin:CGFloat = 0.0) -> UIView {
+		snp.updateConstraints { (make) in
+			make.bottom.equalToSuperview().offset(-withMargin)
+		}
+		return self
+	}
+	
 	func alignParentBottom(withMargin:Int) -> UIView {
 		return alignParentBottom(withMargin:CGFloat(withMargin))
+	}
+	
+	func updateAlignParentBottom(withMargin:Int) -> UIView {
+		return updateAlignParentBottom(withMargin:CGFloat(withMargin))
 	}
 	
 	func alignAbove(view:UIView, withMargin:CGFloat = 0.0) -> UIView {
