@@ -2207,7 +2207,7 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 														  onCancelClick:^() {}
 													onConfirmationClick:^() {
 			linphone_chat_message_send(linphone_chat_room_create_forward_message(_chatRoom, message));
-			
+			linphone_chat_message_unref(message);
 		}];
 		d.forwardImage.hidden = NO;
 		[d setSpecialColor];
