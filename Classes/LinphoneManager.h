@@ -65,6 +65,7 @@ extern NSString *const kLinphoneConfStateParticipantListChanged;
 extern NSString *const kLinphoneConfStateChanged;
 extern NSString *const kLinphoneMagicSearchStarted;
 extern NSString *const kLinphoneMagicSearchFinished;
+extern NSString *const kLinphoneMagicSearchMoreAvailable;
 
 
 extern NSString *const kLinphoneMsgNotificationAppGroupId;

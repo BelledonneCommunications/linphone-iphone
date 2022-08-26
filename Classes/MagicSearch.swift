@@ -34,6 +34,7 @@ import linphonesw
 			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchFinished), object: self)
 		}, onLdapHaveMoreResults: { (magicSearch: MagicSearch, ldap: Ldap) in
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Ldap have more result")
+			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchMoreAvailable), object: self)
 		})
 		
 		magicSearch.addDelegate(delegate: magicSearchDelegate!)

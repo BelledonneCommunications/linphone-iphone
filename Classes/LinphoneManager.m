@@ -81,6 +81,7 @@ NSString *const kLinphoneConfStateChanged = @"kLinphoneConfStateChanged";
 NSString *const kLinphoneConfStateParticipantListChanged = @"kLinphoneConfStateParticipantListChanged";
 NSString *const kLinphoneMagicSearchStarted = @"LinphoneMagicSearchStarted";
 NSString *const kLinphoneMagicSearchFinished = @"LinphoneMagicSearchFinished";
+NSString *const kLinphoneMagicSearchMoreAvailable = @"LinphoneMagicSearchMoreAvailable";
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 
@@ -1422,6 +1423,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	[ConfigManager.instance setDbWithDb:_configDb];
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
+	[MagicSearchSingleton.instance setupCernLdapWithLc:[LinphoneManager getLc]]; // CERN
 	
 	[LinphoneManager.instance startLinphoneCore];
 
