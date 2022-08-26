@@ -12,6 +12,7 @@
             <connections>
                 <outlet property="addButton" destination="6" id="91"/>
                 <outlet property="allButton" destination="4" id="27"/>
+                <outlet property="ldapMoreResultsLabel" destination="cDH-mL-cHP" id="3d9-gp-Hog"/>
                 <outlet property="linphoneButton" destination="5" id="31"/>
                 <outlet property="loadingLabel" destination="qSa-Ba-dq9" id="CPa-pO-OQD"/>
                 <outlet property="loadingView" destination="CM2-Aq-Q3g" id="uie-SJ-TKf"/>
@@ -179,6 +180,14 @@
                                 <outlet property="delegate" destination="TJG-JZ-YRR" id="V1N-gI-U4J"/>
                             </connections>
                         </tableView>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="More results are available, refine search to see them" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cDH-mL-cHP" userLabel="ldapMoreResultsLabel">
+                            <rect key="frame" x="8" y="110" width="359" height="18"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No contact found in your address book" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JR3-k7-gVP" userLabel="emptyTableLabel">
                             <rect key="frame" x="0.0" y="110" width="375" height="449"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -187,7 +196,7 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view hidden="YES" contentMode="scaleToFill" id="CM2-Aq-Q3g">
+                        <view hidden="YES" alpha="0.80000000000000004" contentMode="scaleToFill" id="CM2-Aq-Q3g">
                             <rect key="frame" x="0.0" y="110" width="375" height="449"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -209,7 +218,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="6.5217391304347831" y="142.29910714285714"/>
+            <point key="canvasLocation" x="5.7971014492753632" y="141.96428571428569"/>
         </view>
         <tableViewController id="TJG-JZ-YRR" userLabel="tableController" customClass="ContactsListTableView">
             <connections>

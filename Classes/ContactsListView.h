@@ -58,6 +58,7 @@ typedef enum _ContactSelectionMode { ContactSelectionModeNone, ContactSelectionM
 @property (weak, nonatomic) IBOutlet UIInterfaceStyleButton *toggleSelectionButton;
 @property (weak, nonatomic) IBOutlet UILabel *loadingLabel;
 @property (weak, nonatomic) IBOutlet UIView *loadingView;
+@property (weak, nonatomic) IBOutlet UILabel *ldapMoreResultsLabel;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;
