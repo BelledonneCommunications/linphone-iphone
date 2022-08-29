@@ -1423,7 +1423,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	[ConfigManager.instance setDbWithDb:_configDb];
 	[CallManager.instance setCoreWithCore:theLinphoneCore];
-	[MagicSearchSingleton.instance setupCernLdapWithLc:[LinphoneManager getLc]]; // CERN
 	
 	[LinphoneManager.instance startLinphoneCore];
 
