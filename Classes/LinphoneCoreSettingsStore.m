@@ -187,7 +187,7 @@
 
 			const LinphoneAddress *identity_addr = linphone_account_params_get_identity_address(accountParams);
 			const char *server_addr = linphone_account_params_get_server_addr(accountParams);
-			LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, server_addr, [CallManager.instance applyInternationalPrefix]);
+			LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, server_addr, false);
 			if (identity_addr && proxy_addr) {
 				int port = linphone_address_get_port(proxy_addr);
 
@@ -626,7 +626,7 @@
 			proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
 		}
 
-		LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, proxyAddress.UTF8String, use_prefix);
+		LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, proxyAddress.UTF8String, false);
 
 		if (proxy_addr) {
 			LinphoneTransportType type = LinphoneTransportUdp;
@@ -725,7 +725,7 @@
 		}
 
 		char *identity = linphone_address_as_string(linphoneAddress);
-		LinphoneAddress *from = linphone_core_interpret_url_2(LC, identity, [CallManager.instance applyInternationalPrefix]);
+		LinphoneAddress *from = linphone_core_interpret_url_2(LC, identity, false);
 		ms_free(identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
