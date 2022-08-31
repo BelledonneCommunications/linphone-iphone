@@ -155,6 +155,7 @@
 	customView.frame = self.view.frame;
 	customView.tag = 999;
 	[self.view addSubview:customView];
+    self.view.backgroundColor = [UIColor darkGrayColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -605,7 +606,7 @@
 	if (self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
 		tabFrame.origin.x = 0;
 		if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
-			tabFrame.origin.y = viewFrame.size.height - tabFrame.size.height;
+			tabFrame.origin.y = viewFrame.size.height - tabFrame.size.height - self.view.safeAreaInsets.bottom;
 		} else {
 			tabFrame.origin.y = origin;
 			tabFrame.size.height = viewFrame.size.height - tabFrame.origin.y;
