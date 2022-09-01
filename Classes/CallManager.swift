@@ -771,7 +771,6 @@ import AVFoundation
 			return false
 		}
 		let result =  isInConference() && (getConference()?.currentParams?.isVideoEnabled == true || core.currentCall?.currentParams?.videoEnabled == true)
-		NSLog("cdes \(result) \(core.currentCall?.currentParams?.videoEnabled)")
 		return result
 	}
 	
