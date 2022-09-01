@@ -82,6 +82,7 @@ NSString *const kLinphoneConfStateChanged = @"kLinphoneConfStateChanged";
 NSString *const kLinphoneConfStateParticipantListChanged = @"kLinphoneConfStateParticipantListChanged";
 NSString *const kLinphoneMagicSearchStarted = @"LinphoneMagicSearchStarted";
 NSString *const kLinphoneMagicSearchFinished = @"LinphoneMagicSearchFinished";
+NSString *const kLinphoneMagicSearchMoreAvailable = @"LinphoneMagicSearchMoreAvailable";
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 
@@ -624,6 +625,11 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 		if (theLinphoneCore && linphone_core_get_global_state(theLinphoneCore) != LinphoneGlobalOff)
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
 	});
+	
+	if (state == LinphoneGlobalOn) {
+		// reload friends
+		[self.fastAddressBook fetchContactsInBackGroundThread];
+	}
 }
 
 - (void)globalStateChangedNotificationHandler:(NSNotification *)notif {
@@ -1444,6 +1450,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 - (void)destroyLinphoneCore {
 	// just in case
 	[self removeCTCallCenterCb];
+	[MagicSearchSingleton destroyInstance];
 
 	if (theLinphoneCore != nil) { // just in case application terminate before linphone core initialization
 
@@ -1473,8 +1480,6 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 - (void)resetLinphoneCore {
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
-	// reload friends
-	[self.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 static int comp_call_id(const LinphoneCall *call, const char *callid) {

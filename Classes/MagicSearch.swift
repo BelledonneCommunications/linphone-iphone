@@ -34,6 +34,7 @@ import linphonesw
 			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchFinished), object: self)
 		}, onLdapHaveMoreResults: { (magicSearch: MagicSearch, ldap: Ldap) in
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Ldap have more result")
+			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchMoreAvailable), object: self)
 		})
 		
 		magicSearch.addDelegate(delegate: magicSearchDelegate!)
@@ -47,6 +48,10 @@ import linphonesw
 		return theMagicSearchSingleton!
 	}
 	
+	@objc static func destroyInstance() {
+		theMagicSearchSingleton = nil
+	}
+	
 	
 	func getContactFromAddr(addr: Address) -> Contact? {
 		return LinphoneManager.instance().fastAddressBook.addressBookMap.object(forKey: addr.asStringUriOnly() as Any) as? Contact
@@ -58,6 +63,11 @@ import linphonesw
 	
 	func searchAndAddMatchingContact(searchResult: SearchResult) -> Contact? {
 		if let friend = searchResult.friend {
+			if (searchResult.sourceFlags == MagicSearchSource.LdapServers.rawValue), let newContact = Contact(friend: friend.getCobject) {
+				// Contact comes from LDAP, creating a new one
+				newContact.createdFromLdap = true
+				return newContact
+			}
 			if let addr = friend.address, let foundContact = getContactFromAddr(addr: addr) {
 				return foundContact
 			}
@@ -65,11 +75,6 @@ import linphonesw
 				if let foundContact = getContactFromPhoneNb(phoneNb: phoneNb) {
 					return foundContact
 				}
-			}
-			// No contacts found (searchResult likely comes from LDAP), creating a new one
-			if let newContact = Contact(friend: friend.getCobject) {
-				newContact.createdFromLdap = true
-				return newContact
 			}
 		}
 		

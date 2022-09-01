@@ -284,6 +284,9 @@
 	if (IPAD && self.contact == NULL) {
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
+	} else if (self.contact != NULL && self.contact.createdFromLdap) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
 	}
 	PhoneMainView.instance.currentName = _nameLabel.text;
 	// Update presence for contact
@@ -296,6 +299,7 @@
 	[_editButton setImage:[UIImage imageNamed:@"valid_default.png"] forState:UIControlStateSelected];
 	
 	[self updateBackOrCancelButton];
+	[self recomputeTableViewSize:FALSE];
 }
 
 - (void)deviceOrientationDidChange:(NSNotification*)notif {
@@ -310,9 +314,13 @@
 		}
 	}
 	
+	if (self.contact != NULL && self.contact.createdFromLdap) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
+	}
+	_nameLabel.hidden = self.tableController.isEditing;
 	[self updateBackOrCancelButton];
-    
-    [self recomputeTableViewSize:_editButton.hidden];
+	[self recomputeTableViewSize:self.tableController.isEditing];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -408,10 +416,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)recomputeTableViewSize:(BOOL)editing {
     CGRect frame = _tableController.tableView.frame;
-    frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
     if ([self viewIsCurrentlyPortrait] && !editing) {
-        frame.origin.y += _nameLabel.frame.size.height;
-    }
+        frame.origin.y = _nameLabel.frame.origin.y + _nameLabel.frame.size.height;
+	} else {
+		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
+	}
     
     frame.size.height = _tableController.tableView.contentSize.height;
     _tableController.tableView.frame = frame;

@@ -142,6 +142,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	 selector:@selector(onMagicSearchFinished:)
 	 name:kLinphoneMagicSearchFinished
 	 object:nil];
+	[[NSNotificationCenter defaultCenter]
+	 addObserver:self
+	 selector:@selector(onMagicSearchMoreAvailable:)
+	 name:kLinphoneMagicSearchMoreAvailable
+	 object:nil];
 }
 
 - (void)onMagicSearchStarted:(NSNotification *)k {
@@ -149,6 +154,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 - (void)onMagicSearchFinished:(NSNotification *)k {
 	_loadingView.hidden = TRUE;
+}
+- (void)onMagicSearchMoreAvailable:(NSNotification *)k {
+	_ldapMoreResultsLabel.hidden = FALSE;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -292,6 +300,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (searchText.length == 0) {
 			[LinphoneManager.instance setContactsUpdated:TRUE];
 		}
+		_ldapMoreResultsLabel.hidden = TRUE;
 		[tableController loadDataWithFilter:searchText];
 	}
 }
