@@ -9,7 +9,17 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-				
+								
+## [4.6.6] - 2021-01-09
+### Changed
+- Update linphone SDK to 5.1.57
+
+### Fixed
+- Fix bug that could cause video quality to be worse than it should
+- Fix possible crash when receiving an incoming call
+- Fix crash when no account is marked as being the "default" one
+- Various fixes in Contacts view and LDAP search
+
 ## [4.6.5] - 2021-30-06
 ### Changed
 - Update linphone SDK to 5.1.46
