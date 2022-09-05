@@ -794,9 +794,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		// if we're showing the compose message, update it position
 		if (![_composeLabel isHidden]) {
-			CGRect frame = [_composeLabel frame];
+			CGRect frame = [_composeIndicatorView frame];
 			frame.origin.y -= diff;
-			[_composeLabel setFrame:frame];
+			[_composeIndicatorView setFrame:frame];
 		}
 	}
 }
