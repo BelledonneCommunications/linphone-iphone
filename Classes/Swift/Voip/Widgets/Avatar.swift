@@ -25,7 +25,8 @@ class Avatar : UIImageView {
 	
 	static let diameter_for_call_views = 191
 	static let diameter_for_call_views_land = 130
-
+	static let groupAvatar = UIImage(named:"voip_multiple_contacts_avatar")
+	static let singleAvatar = UIImage(named:"avatar")?.tinted(with: .white)
 	
 	required init?(coder: NSCoder) {
 		initialsLabel =  StyledLabel(VoipTheme.call_generated_avatar_large)
@@ -46,14 +47,14 @@ class Avatar : UIImageView {
 	
 	func fillFromAddress(address:Address, isGroup:Bool = false) {
 		if (isGroup) {
-			self.image = UIImage(named:"voip_multiple_contacts_avatar")
+			self.image = Avatar.groupAvatar
 			initialsLabel.isHidden = true
 		} else if let image = address.contact()?.avatar() {
 			self.image = image
 			initialsLabel.isHidden = true
 		} else {
 			if (Core.get().defaultAccount?.isPhoneNumber(username: address.username) == true) {
-				self.image = UIImage(named:"avatar")?.tinted(with: .white)
+				self.image = Avatar.singleAvatar
 				initialsLabel.isHidden = true
 			} else {
 				self.image = nil
@@ -64,7 +65,7 @@ class Avatar : UIImageView {
 	}
 	
 	func showAsAvatarIcon() {
-		self.image = UIImage(named:"avatar")?.tinted(with: .white)
+		self.image = Avatar.singleAvatar
 		initialsLabel.isHidden = true
 	}
 		
