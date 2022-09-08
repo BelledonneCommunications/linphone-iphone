@@ -46,6 +46,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	
 	let activeSpeakerView = UIView()
 	let activeSpeakerVideoView = UIView()
+	let activeSpeakerVideoViewAlone = UIView()
 	let activeSpeakerAvatar = Avatar(color:VoipTheme.voipBackgroundColor, textStyle: VoipTheme.call_generated_avatar_large)
 	let activeSpeakerDisplayName = StyledLabel(VoipTheme.call_remote_name)
 
@@ -75,16 +76,15 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					let otherSpeakersCount = model.activeSpeakerConferenceParticipantDevices.value!.count
 					self.switchCamera.isHidden = true
 					if (otherSpeakersCount == 0) {
-						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+						Core.get().nativePreviewWindow = self.activeSpeakerVideoViewAlone
 						self.layoutRotatableElements()
 						self.meGrid.isHidden = true
 						self.grid.isHidden = true
 						model.meParticipant.value?.videoEnabled.readCurrentAndObserve { video in
 							self.switchCamera.isHidden = video != true
-							self.fillActiveSpeakerSpace(data: model.meParticipant.value,video: video == true)
+							self.fillActiveSpeakerSpace(data: model.meParticipant.value,video: video == true, alone:true)
 						}
 					} else if (otherSpeakersCount == 1) {
-						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
 						if let data =  model.activeSpeakerConferenceParticipantDevices.value!.first {
 							data.videoEnabled.readCurrentAndObserve { video in
 								self.fillActiveSpeakerSpace(data: data,video: video == true)
@@ -94,12 +94,12 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						self.meGrid.isHidden = false
 						self.grid.isHidden = true
 					} else if (otherSpeakersCount == 2) {
-						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
 						self.meGrid.isHidden = false
 						self.grid.isHidden = false
 						self.layoutRotatableElements()
 					} else {
-						Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+						self.activeSpeakerVideoView.isHidden = false
+						self.activeSpeakerVideoViewAlone.isHidden = true
 						self.meGrid.isHidden = false
 						self.grid.isHidden = false
 					}
@@ -114,7 +114,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						$0.isSelected = selected == true
 					}
 				}
-				Core.get().nativeVideoWindow = self.activeSpeakerVideoView
 				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
 					if (model.activeSpeakerConferenceParticipantDevices.value!.count > 1) {
 						self.fillActiveSpeakerSpace(data: speakingParticipant,video: speakingParticipant?.videoEnabled.value == true)
@@ -136,7 +135,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		}
 	}
 	
-	func fillActiveSpeakerSpace(data: ConferenceParticipantDeviceData?, video: Bool) {
+	func fillActiveSpeakerSpace(data: ConferenceParticipantDeviceData?, video: Bool, alone: Bool = false) {
 		data?.isJoining.readCurrentAndObserve { joining in
 			self.setJoininngSpeakerState(enabled: joining == true || data?.participantDevice.address == nil)
 		}
@@ -147,7 +146,15 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 			self.activeSpeakerAvatar.showAsAvatarIcon()
 			self.activeSpeakerDisplayName.text = nil
 		}
-		self.activeSpeakerVideoView.isHidden = !video
+		if (video) {
+			if (alone) {
+				Core.get().nativePreviewWindow = self.activeSpeakerVideoViewAlone
+			} else {
+				Core.get().nativeVideoWindow = self.activeSpeakerVideoView
+			}
+		}
+		self.activeSpeakerVideoView.isHidden = !video || alone
+		self.activeSpeakerVideoViewAlone.isHidden = !video || !alone
 	}
 	
 	func reloadData() {
@@ -245,14 +252,15 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		
 		activeSpeakerView.addSubview(activeSpeakerVideoView)
 		activeSpeakerVideoView.matchParentDimmensions().done()
-		
+		activeSpeakerVideoView.contentMode = .scaleAspectFill
+		activeSpeakerView.addSubview(activeSpeakerVideoViewAlone)
+		activeSpeakerVideoViewAlone.matchParentDimmensions().done()
+		activeSpeakerVideoViewAlone.contentMode = .scaleAspectFill
+
 		activeSpeakerView.addSubview(switchCamera)
 		switchCamera.contentMode = .scaleAspectFit
 		switchCamera.onClick {
-			Core.get().videoPreviewEnabled = false
 			Core.get().toggleCamera()
-			Core.get().nativePreviewWindow = self.activeSpeakerVideoView
-			Core.get().videoPreviewEnabled = true
 		}
 		
 		activeSpeakerView.addSubview(conferenceJoinSpinner)
