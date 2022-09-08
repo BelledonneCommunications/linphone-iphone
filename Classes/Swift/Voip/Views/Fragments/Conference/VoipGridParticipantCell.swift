@@ -152,8 +152,8 @@ class VoipGridParticipantCell: UICollectionViewCell {
 		}
 		
 		contentView.addSubview(displayName)
-		displayName.alignParentLeft(withMargin:ActiveCallView.bottom_displayname_margin_left).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
-	
+		displayName.alignParentLeft(withMargin:ActiveCallView.bottom_displayname_margin_left).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).alignParentRight().done()
+
 		contentView.addSubview(pauseLabel)
 		pauseLabel.toRightOf(displayName,withLeftMargin: pause_label_left_margin).alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
 
