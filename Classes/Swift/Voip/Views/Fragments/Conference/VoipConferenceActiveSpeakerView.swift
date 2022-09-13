@@ -39,6 +39,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
 	let subjectLabel = StyledLabel(VoipTheme.call_display_name_duration)
 	let duration = CallTimer(nil, VoipTheme.call_display_name_duration)
+	let muted = MicMuted(VoipActiveSpeakerParticipantCell.mute_size)
+
 	
 	let remotelyRecording =  RemotelyRecordingView(height: ActiveCallView.remote_recording_height,text: VoipTexts.call_remote_recording)
 	var recordCallButtons : [CallControlButton] = []
@@ -84,10 +86,16 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 							self.switchCamera.isHidden = video != true
 							self.fillActiveSpeakerSpace(data: model.meParticipant.value,video: video == true, alone:true)
 						}
+						model.meParticipant.value?.micMuted.readCurrentAndObserve { muted in
+							self.muted.isHidden = muted != true
+						}
 					} else if (otherSpeakersCount == 1) {
 						if let data =  model.activeSpeakerConferenceParticipantDevices.value!.first {
 							data.videoEnabled.readCurrentAndObserve { video in
 								self.fillActiveSpeakerSpace(data: data,video: video == true)
+							}
+							data.micMuted.readCurrentAndObserve { muted in
+								self.muted.isHidden = muted != true
 							}
 						}
 						self.layoutRotatableElements()
@@ -117,6 +125,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
 					if (model.activeSpeakerConferenceParticipantDevices.value!.count > 1) {
 						self.fillActiveSpeakerSpace(data: speakingParticipant,video: speakingParticipant?.videoEnabled.value == true)
+						self.muted.isHidden = true
 					}
 				}
 			}
@@ -263,10 +272,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 			Core.get().toggleCamera()
 		}
 		
+		activeSpeakerView.addSubview(muted)
+		muted.isHidden = true
+		muted.alignParentLeft(withMargin: switch_camera_button_margins).alignParentTop(withMargin:switch_camera_button_margins).done()
+		
 		activeSpeakerView.addSubview(conferenceJoinSpinner)
 		conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
 
-		
 		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
 		
 		activeSpeakerView.addSubview(activeSpeakerDisplayName)
