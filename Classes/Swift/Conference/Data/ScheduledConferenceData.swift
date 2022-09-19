@@ -36,10 +36,13 @@ class ScheduledConferenceData {
 	let participantsShort = MutableLiveData<String>()
 	let participantsExpanded = MutableLiveData<String>()
 	let rawDate : Date
+	let isConferenceCancelled = MutableLiveData(false)
+	let canEdit = MutableLiveData(false)
+	let isFinished : Bool
 	
-	
-	init (conferenceInfo: ConferenceInfo) {
+	init (conferenceInfo: ConferenceInfo, isFinished: Bool = false) {
 		self.conferenceInfo = conferenceInfo
+		self.isFinished = isFinished
 		expanded.value = false
 		
 		address.value = conferenceInfo.uri?.asStringUriOnly()
@@ -59,6 +62,18 @@ class ScheduledConferenceData {
 		organizer.value = conferenceInfo.organizer?.addressBookEnhancedDisplayName()
 		
 		computeParticipantsLists()
+		
+		isConferenceCancelled.value = conferenceInfo.state == .Cancelled
+		
+		if let organizerAddress = conferenceInfo.organizer {
+			let localAccount = Core.get().accountList.filter { account in
+				account.params?.identityAddress != nil && organizerAddress.weakEqual(address2: account.params!.identityAddress!)
+			}.first
+			canEdit.value = localAccount != nil
+		} else {
+			canEdit.value = false
+			Log.e("[Scheduled Conference] No organizer SIP URI found for: \(conferenceInfo.uri?.asStringUriOnly())")
+		}
 	}
 	
 	func destroy() {

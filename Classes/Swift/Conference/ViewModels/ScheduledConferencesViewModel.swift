@@ -38,7 +38,7 @@ class ScheduledConferencesViewModel  {
 		coreDelegate = CoreDelegateStub(
 			onConferenceInfoReceived: { (core, conferenceInfo) in
 				Log.i("[Scheduled Conferences] New conference info received")
-				self.conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
+				self.conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo,isFinished: false))
 				self.conferences.notifyValue()
 			}
 			
@@ -52,12 +52,12 @@ class ScheduledConferencesViewModel  {
 		
 		if (showTerminated.value == true) {
 			core.conferenceInformationList.filter{$0.duration != 0 && (TimeInterval($0.dateTime) + TimeInterval($0.duration) < now)}.forEach { conferenceInfo in
-				conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
+				conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo,isFinished: true))
 			}
 		} else {
 			let twoHoursAgo = now - 7200 // Show all conferences from 2 hour ago and forward
 			core.getConferenceInformationListAfterTime(time: time_t(twoHoursAgo)).filter{$0.duration != 0}.forEach { conferenceInfo in
-				conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo))
+				conferences.value!.append(ScheduledConferenceData(conferenceInfo: conferenceInfo,isFinished: false))
 			}
 		}
 		

@@ -32,6 +32,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	let timeDuration = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let organiser = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let subject = StyledLabel(VoipTheme.conference_invite_subject_font)
+	let cancelledLabel = StyledLabel(VoipTheme.conference_cancelled_title_font)
 	let participantsIcon = UIImageView(image: UIImage(named: "conference_schedule_participants_default"))
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let infoConf = UIButton()
@@ -54,9 +55,19 @@ class ScheduledConferencesCell: UITableViewCell {
 				timeDuration.text = "\(data.time.value)"+(data.duration.value != nil ? " ( \(data.duration.value) )" : "")
 				organiser.text = VoipTexts.conference_schedule_organizer+data.organizer.value!
 				subject.text = data.subject.value!
+				cancelledLabel.text = data.isConferenceCancelled.value == true ? ( data.canEdit.value == true ? VoipTexts.conference_scheduled_cancelled_by_me:  VoipTexts.conference_scheduled_cancelled_by_organizer)  : nil
+				cancelledLabel.isHidden = data.isConferenceCancelled.value != true
 				descriptionValue.text = data.description.value!
 				urlValue.text = data.address.value!
+				self.joinConf.isHidden =  data.isConferenceCancelled.value == true
+				self.editConf.isHidden = data.canEdit.value != true || data.isConferenceCancelled.value == true
+				self.urlTitle.isHidden = data.isConferenceCancelled.value == true
+				self.urlValue.isHidden = data.isConferenceCancelled.value == true
+				self.copyLink.isHidden = data.isConferenceCancelled.value == true
 				data.expanded.readCurrentAndObserve { expanded in
+					self.contentView.backgroundColor =
+							data.conferenceInfo.state == .Cancelled ? VoipTheme.voip_conference_cancelled_bg_color :
+					data.isFinished ? VoipTheme.backgroundColor3.get() :  VoipTheme.backgroundColor4.get()
 					self.contentView.layer.borderWidth = expanded == true ? 2.0 : 0.0
 					self.descriptionTitle.isHidden = expanded != true || self.descriptionValue.text?.count == 0
 					self.descriptionValue.isHidden = expanded != true  || self.descriptionValue.text?.count == 0
@@ -101,9 +112,15 @@ class ScheduledConferencesCell: UITableViewCell {
 		contentView.addSubview(organiser)
 		organiser.alignParentTop(withMargin: 15).toRightOf(timeDuration, withLeftMargin:10).alignParentRight(withMargin:10).alignHorizontalCenterWith(clockIcon).done()
 		
-		contentView.addSubview(subject)
-		subject.alignUnder(view: timeDuration,withMargin: 15).alignParentLeft(withMargin: 10).done()
 		
+		let subjectCancel = UIStackView()
+		subjectCancel.axis = .vertical
+		contentView.addSubview(subjectCancel)
+		subjectCancel.alignUnder(view: timeDuration,withMargin: 15).alignParentLeft(withMargin: 10).done()
+
+		subjectCancel.addArrangedSubview(cancelledLabel)
+		subjectCancel.addArrangedSubview(subject)
+
 		contentView.addSubview(participantsIcon)
 		participantsIcon.alignUnder(view: subject,withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
 		
