@@ -376,8 +376,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
 					bounceGrids()
 				}
-				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignParentRight().done()
-				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignUnder(view: meGrid, withMargin: ActiveCallOrConferenceView.content_inset).alignParentBottom().alignParentRight().done()
+				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentBottom().alignParentRight().done()
+				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignAbove(view: meGrid, withMargin: ActiveCallOrConferenceView.content_inset).alignParentRight().done()
 				layout.scrollDirection = .vertical
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 			}
