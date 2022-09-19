@@ -83,9 +83,9 @@ class ConferenceSchedulingViewModel  {
 						// Send conference info even when conf is not scheduled for later
 						// as the conference server doesn't invite participants automatically
 						if let chatRoomParams = try?self.core.createDefaultChatRoomParams() {
-							chatRoomParams.backend = ChatRoomBackend.FlexisipChat
+							chatRoomParams.encryptionEnabled = self.isEndToEndEncryptedChatAvailable()
 							chatRoomParams.groupEnabled = false
-							chatRoomParams.encryptionEnabled = true
+							chatRoomParams.backend = chatRoomParams.encryptionEnabled ? .FlexisipChat : .Basic
 							chatRoomParams.subject = self.subject.value!
 							scheduler.sendInvitations(chatRoomParams: chatRoomParams)
 						}
@@ -139,6 +139,13 @@ class ConferenceSchedulingViewModel  {
 		
 		
 	}
+	
+	func isEndToEndEncryptedChatAvailable() -> Bool {
+		let core = Core.get()
+		return core.limeX3DhEnabled &&
+		((core.limeX3DhServerUrl != nil && core.limeX3DhServerUrl.count > 0) || core.defaultAccount?.params?.limeServerUrl != nil) &&
+					 core.defaultAccount?.params?.conferenceFactoryUri != nil
+	 }
 	
 	func reset() {
 		
