@@ -268,8 +268,10 @@
 			} else {
 				if (linphone_call_log_was_conference(callLog)) {
 					LinphoneConferenceInfo *confInfo = linphone_call_log_get_conference_info(callLog);
-					if (linphone_conference_info_get_state(confInfo) == LinphoneConferenceInfoStateCancelled)
+					if (linphone_conference_info_get_state(confInfo) == LinphoneConferenceInfoStateCancelled) {
+						[ConferenceViewModelBridge showCancelledMeetingWithCConferenceInfo:confInfo];
 						return;
+					}
 					ConferenceWaitingRoomFragment *view = VIEW(ConferenceWaitingRoomFragment);
 					[view setDetailsWithSubject:[NSString stringWithUTF8String:linphone_conference_info_get_subject(confInfo)] url:[NSString stringWithUTF8String:linphone_address_as_string(linphone_conference_info_get_uri(confInfo))]];
 					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomFragment.compositeViewDescription];

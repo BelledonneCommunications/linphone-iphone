@@ -483,6 +483,21 @@ class ConferenceViewModel {
 		ConferenceViewModel.shared.conferenceScheduler?.info = conferenceInfo // Will trigger the conference creation automatically
 	}
 	
+	@objc static func showCancelledMeeting(cConferenceInfo: OpaquePointer) {
+		let core = Core.get()
+		var message = VoipTexts.conference_scheduled_cancelled_by_organizer
+		let conferenceInfo = ConferenceInfo.getSwiftObject(cObject: cConferenceInfo)
+		if let organizerAddress = conferenceInfo.organizer {
+			let localAccount = Core.get().accountList.filter { account in
+				account.params?.identityAddress != nil && organizerAddress.weakEqual(address2: account.params!.identityAddress!)
+			}.first
+			if (localAccount != nil) {
+				message = VoipTexts.conference_scheduled_cancelled_by_me
+			}
+		}
+		VoipDialog.toast(message: message)
+	}
+	
 }
 
 
