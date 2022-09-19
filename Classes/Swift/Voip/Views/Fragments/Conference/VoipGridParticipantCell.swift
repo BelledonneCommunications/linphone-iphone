@@ -87,7 +87,7 @@ class VoipGridParticipantCell: UICollectionViewCell {
 			} else if (data.videoEnabled.value == true) {
 				self.contentView.backgroundColor = .black
 			} else {
-				self.contentView.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
+				self.contentView.backgroundColor = data.isMe ? VoipTheme.voipParticipantMeBackgroundColor.get() :  VoipTheme.voipParticipantBackgroundColor.get()
 			}
 			
 			// Avatar
