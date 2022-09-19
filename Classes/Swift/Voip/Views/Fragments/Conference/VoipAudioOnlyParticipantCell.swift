@@ -73,6 +73,9 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 	func updateElements(skipVideo:Bool = false) {
 		if let data = participantData  {
 			
+			// background
+			contentView.backgroundColor = data.isMe ? VoipTheme.voipParticipantMeBackgroundColor.get() :  VoipTheme.voipParticipantBackgroundColor.get()
+			
 			// Avatar
 			self.avatar.isHidden = data.isInConference.value != true && data.isJoining.value != true
 			
@@ -105,7 +108,7 @@ class VoipAudioOnlyParticipantCell: UICollectionViewCell {
 		
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
-		contentView.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
+
 		layer.borderColor = VoipTheme.primary_color.cgColor
 	
 		contentView.addSubview(avatar)
