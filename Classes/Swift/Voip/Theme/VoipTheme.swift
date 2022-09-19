@@ -55,7 +55,12 @@ import UIKit
 	static let dark_grey_color = UIColor(hex:"#444444")
 	static let voip_conference_invite_out = UIColor(hex:"ffeee5")
 	static let voip_conference_invite_in = header_background_color
+	static let voip_conference_updated = UIColor(hex:"#EFAE00")
+	static let  voip_conference_cancelled_bg_color = UIColor(hex:"#FFE6E6")
+	static let  voip_dark_color5 = UIColor(hex:"#353B3F")
 
+	
+	
 	
 	// Light / Dark variations
 	static let voipBackgroundColor = LightDarkColor(voip_gray_blue_color,voip_dark_color)
@@ -72,9 +77,9 @@ import UIKit
 	static let voipFormDisabledFieldBackgroundColor = LightDarkColor(header_background_color,voip_dark_color4)
 	static let primarySubtextLightColor = LightDarkColor(light_grey_color,toolbar_color)
 	static let primaryTextColor = LightDarkColor(dark_grey_color,.white)
+	static let backgroundColor3 = LightDarkColor(voip_light_gray,voip_dark_color5)
+	static let backgroundColor4 = LightDarkColor(header_background_color,voip_dark_color5)
 
-	
-	
 	
 	
 	// Text styles
@@ -125,6 +130,9 @@ import UIKit
 	static let conference_invite_desc_title_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)
 	static let conference_invite_subject_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)
 	static let conference_invite_title_font = TextStyle(fgColor: LightDarkColor(dark_grey_color,dark_grey_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 16.0)
+	static let conference_cancelled_title_font = TextStyle(fgColor: LightDarkColor(.red,.red), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 16.0)
+	static let conference_updated_title_font = TextStyle(fgColor: LightDarkColor(voip_conference_updated,voip_conference_updated), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 16.0)
+
 	static let conference_preview_subject_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 24.0)
 	static let conference_waiting_room_no_video_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 16.0)
 		

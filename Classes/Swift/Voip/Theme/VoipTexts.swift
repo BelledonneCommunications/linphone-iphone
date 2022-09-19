@@ -94,6 +94,8 @@ import UIKit
 	@objc static let conference_invite_join = NSLocalizedString("Join",comment:"")
 	@objc static let conference_invite_participants_count = NSLocalizedString("%d participants",comment:"")
 	@objc static let conference_invite_title = NSLocalizedString("Meeting invite:",comment:"")
+	@objc static let conference_update_title = NSLocalizedString("Meeting has been updated:",comment:"")
+	@objc static let conference_cancel_title = NSLocalizedString("Meeting has been cancelled:",comment:"")
 	@objc static let conference_last_user = NSLocalizedString("All other participants have left the group call",comment:"")
 	@objc static let conference_local_title = NSLocalizedString("Local group call",comment:"")
 	@objc static let conference_no_schedule = NSLocalizedString("No scheduled meeting yet.",comment:"")
@@ -139,6 +141,8 @@ import UIKit
 	@objc static let conference_admin_unset = NSLocalizedString("%s is no longer admin",comment:"")
 	@objc static let conference_scheduled_terminated_filter = NSLocalizedString("Terminated",comment:"")
 	@objc static let conference_scheduled_future_filter = NSLocalizedString("Scheduled",comment:"")
+	@objc static let conference_scheduled_cancelled_by_me = NSLocalizedString("You have cancelled the conference",comment:"")
+	@objc static let conference_scheduled_cancelled_by_organizer = NSLocalizedString("Conference has been cancelled by organizer",comment:"")
 
 	// FROM ANDROID END
 	

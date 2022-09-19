@@ -36,6 +36,9 @@ import EventKitUI
 	let join_share_width = 150.0
 		
 	let inviteTitle = StyledLabel(VoipTheme.conference_invite_title_font, VoipTexts.conference_invite_title)
+	let inviteCancelled = StyledLabel(VoipTheme.conference_cancelled_title_font, VoipTexts.conference_cancel_title)
+	let inviteUpdated = StyledLabel(VoipTheme.conference_updated_title_font, VoipTexts.conference_update_title)
+
 	let subject = StyledLabel(VoipTheme.conference_invite_subject_font)
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let date = StyledLabel(VoipTheme.conference_invite_desc_font)
@@ -59,6 +62,10 @@ import EventKitUI
 				descriptionTitle.isHidden = data.description.value == nil || data.description.value!.count == 0
 				descriptionValue.isHidden = descriptionTitle.isHidden
 				descriptionValue.text = data.description.value
+				inviteTitle.isHidden = [.Cancelled,.Updated].contains(data.conferenceInfo.state)
+				inviteCancelled.isHidden = data.conferenceInfo.state != .Cancelled
+				inviteUpdated.isHidden = data.conferenceInfo.state != .Updated
+				join.isEnabled = data.isConferenceCancelled.value != true
 			}
 		}
 	}
@@ -77,6 +84,8 @@ import EventKitUI
 		addSubview(rows)
 		
 		rows.addArrangedSubview(inviteTitle)
+		rows.addArrangedSubview(inviteCancelled)
+		rows.addArrangedSubview(inviteUpdated)
 		rows.addArrangedSubview(subject)
 		rows.addArrangedSubview(participants)
 		rows.addArrangedSubview(date)
