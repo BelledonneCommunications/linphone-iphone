@@ -9,7 +9,11 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-								
+														
+## [4.6.7] - 2021-01-09
+### Changed
+- Update linphone SDK to 5.1.57
+		
 ## [4.6.6] - 2021-01-09
 ### Changed
 - Update linphone SDK to 5.1.57
