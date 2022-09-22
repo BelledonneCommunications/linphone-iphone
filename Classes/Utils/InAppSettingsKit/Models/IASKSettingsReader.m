@@ -160,7 +160,7 @@ hiddenKeys = _hiddenKeys;
 	for (NSArray *specifiers in _dataSource) {
 		for (id sp in specifiers) {
 			if ([sp isKindOfClass:[IASKSpecifier class]]) {
-				if ([[sp key] isEqualToString:key]) {
+				if ([[(IASKSpecifier*)sp key] isEqualToString:key]) {
 					return sp;
 				}
 			}

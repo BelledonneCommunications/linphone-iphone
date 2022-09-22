@@ -29,4 +29,10 @@ extension UILabel {
 		let labelSize = myText.boundingRect(with: rect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: myFont], context: nil)
 		return ceil(labelSize.width)
 	}
+	
+	func addSidePadding(p:CGFloat = 5.0) {
+		if let w = textWidth {
+			width(w+2*p).done()
+		}
+	}
 }
