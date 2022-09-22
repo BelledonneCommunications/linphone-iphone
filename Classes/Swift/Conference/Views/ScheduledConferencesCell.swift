@@ -202,16 +202,23 @@ class ScheduledConferencesCell: UITableViewCell {
 		
 		joinEditDelete.addArrangedSubview(deleteConf)
 		deleteConf.onClick {
-			let delete = ButtonAttributes(text:VoipTexts.conference_info_confirm_removal_delete, action: {
-				Core.get().deleteConferenceInformation(conferenceInfo: self.conferenceData!.conferenceInfo)
-				ScheduledConferencesViewModel.shared.computeConferenceInfoList()
-				self.owningTableView?.reloadData()
-				VoipDialog.toast(message: VoipTexts.conference_info_removed)
-			}, isDestructive:false)
-			let cancel = ButtonAttributes(text:VoipTexts.cancel, action: {}, isDestructive:true)
-			VoipDialog(message:VoipTexts.conference_info_confirm_removal, givenButtons:  [cancel,delete]).show()
+			self.askConfirmationTodeleteEntry()
 		}
-				
+	}
+	
+	func askConfirmationTodeleteEntry() {
+		let delete = ButtonAttributes(text:VoipTexts.conference_info_confirm_removal_delete, action: {
+			self.deleteEntry()
+			VoipDialog.toast(message: VoipTexts.conference_info_removed)
+		}, isDestructive:false)
+		let cancel = ButtonAttributes(text:VoipTexts.cancel, action: {}, isDestructive:true)
+		VoipDialog(message:VoipTexts.conference_info_confirm_removal, givenButtons:  [cancel,delete]).show()
+	}
+	
+	func deleteEntry() {
+		Core.get().deleteConferenceInformation(conferenceInfo: self.conferenceData!.conferenceInfo)
+		ScheduledConferencesViewModel.shared.computeConferenceInfoList()
+		self.owningTableView?.reloadData()
 	}
 	
 	required init?(coder: NSCoder) {

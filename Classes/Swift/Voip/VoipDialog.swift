@@ -25,12 +25,12 @@ class VoipDialog : UIView{
 	// Layout constants
 	let center_corner_radius = 7.0
 	let title_margin_top = 20
+	let title_margin_sides = 10.0
 	let button_margin = 20.0
 	let button_width = 135.0
 	let button_height = 40.0
 	let button_radius = 3.0
 	let button_spacing = 15.0
-
 	let center_view_sides_margin = 13.0
 
 	
@@ -49,7 +49,7 @@ class VoipDialog : UIView{
 		
 		title.numberOfLines = 0
 		centerView.addSubview(title)
-		title.alignParentTop(withMargin:title_margin_top).matchParentSideBorders().done()
+		title.alignParentTop(withMargin:title_margin_top).matchParentSideBorders(insetedByDx: title_margin_sides).done()
 		title.text = message
 		
 		let buttonsView = UIStackView()

@@ -167,4 +167,12 @@ import linphonesw
 	}
 	
 	
+	
+	func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+			if editingStyle == .delete {
+				let cell = tableView.cellForRow(at: indexPath) as! ScheduledConferencesCell
+				cell.askConfirmationTodeleteEntry()
+			}
+	}
+	
 }
