@@ -222,10 +222,10 @@ import linphonesw
 		let selectedCount = ScheduledConferencesViewModel.shared.conferences.value?.filter{$0.selectedForDeletion.value == true}.count ?? 0
 		let delete = ButtonAttributes(text:VoipTexts.conference_info_confirm_removal_delete, action: {
 			ScheduledConferencesViewModel.shared.conferences.value?.forEach   {
-				Core.get().deleteConferenceInformation(conferenceInfo: $0.conferenceInfo)
-				ScheduledConferencesViewModel.shared.computeConferenceInfoList()
-				self.conferenceListView.reloadData()
+				$0.deleteConference()
 			}
+			ScheduledConferencesViewModel.shared.computeConferenceInfoList()
+			self.conferenceListView.reloadData()
 			VoipDialog.toast(message: selectedCount == 1 ? VoipTexts.conference_info_removed : VoipTexts.conference_infos_removed)
 			ScheduledConferencesViewModel.shared.editionEnabled.value = false
 		}, isDestructive:false)

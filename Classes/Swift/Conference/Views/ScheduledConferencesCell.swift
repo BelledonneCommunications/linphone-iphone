@@ -226,7 +226,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	}
 	
 	func deleteEntry() {
-		Core.get().deleteConferenceInformation(conferenceInfo: self.conferenceData!.conferenceInfo)
+		self.conferenceData?.deleteConference()
 		ScheduledConferencesViewModel.shared.computeConferenceInfoList()
 		self.owningTableView?.reloadData()
 	}

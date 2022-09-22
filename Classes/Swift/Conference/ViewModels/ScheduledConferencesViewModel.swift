@@ -33,6 +33,8 @@ class ScheduledConferencesViewModel  {
 	var coreDelegate: CoreDelegateStub?
 	var showTerminated = MutableLiveData(false)
 	let editionEnabled = MutableLiveData(false)
+	let conferenceScheduler = try? Core.get().createConferenceScheduler()
+
 	
 	init () {
 		

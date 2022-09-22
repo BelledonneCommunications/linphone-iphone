@@ -40,7 +40,7 @@ class ScheduledConferenceData {
 	let canEdit = MutableLiveData(false)
 	let isFinished : Bool
 	let selectedForDeletion = MutableLiveData(false)
-
+	
 	
 	init (conferenceInfo: ConferenceInfo, isFinished: Bool = false) {
 		self.conferenceInfo = conferenceInfo
@@ -97,5 +97,12 @@ class ScheduledConferenceData {
 	
 	func gotoAssociatedChat() {
 		
+	}
+	func deleteConference() {
+		if (conferenceInfo.state != .Cancelled && canEdit.value == true) {
+			Log.i("[Scheduled Conferences] Cancelling conference \(conferenceInfo.subject)")
+			ScheduledConferencesViewModel.shared.conferenceScheduler?.cancelConference(conferenceInfo: conferenceInfo)
+		}
+		Core.get().deleteConferenceInformation(conferenceInfo: conferenceInfo)
 	}
 }
