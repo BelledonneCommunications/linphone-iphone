@@ -1796,7 +1796,14 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self onToggleMenu:nil];
 	
-	if (indexPath.row == 0) {
+	int firstIndex = isOneToOne ? 0 : 1;
+	
+	if (!isOneToOne && indexPath.row == 0) { //Schedule meeting
+		[ConferenceViewModelBridge scheduleFromGroupChatWithCChatRoom:_chatRoom];
+		[PhoneMainView.instance popToView:ConferenceSchedulingView.compositeViewDescription];
+	}
+
+	if (indexPath.row == firstIndex) {
 		if (isOneToOne) {
 			if  (isEncrypted) {
 				LinphoneAddress* contactAddress = linphone_address_clone(linphone_participant_get_address(bctbx_list_nth_data(linphone_chat_room_get_participants(_chatRoom), 0)));
@@ -1811,28 +1818,28 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		}
 	}
 	
-	if (isEncrypted && indexPath.row == 1) {
+	if (isEncrypted && indexPath.row == 1+firstIndex) {
 		[self goToDeviceListView];
 	}
 	
 	BOOL canEphemeral = [self canAdminEphemeral:_chatRoom];
-	if (canEphemeral && indexPath.row == 2) {
+	if (canEphemeral && indexPath.row == 2+firstIndex) {
 		EphemeralSettingsView *view = VIEW(EphemeralSettingsView);
 		view.room = _chatRoom;
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
-	if ((!isEncrypted && indexPath.row == 1) || (isEncrypted && indexPath.row == 3)) {
+	if ((!isEncrypted && indexPath.row == 1+firstIndex) || (isEncrypted && indexPath.row == 3+firstIndex)) {
 		[LinphoneManager setChatroomPushEnabled:_chatRoom withPushEnabled:![LinphoneManager getChatroomPushEnabled:_chatRoom]];
 		[_popupMenu reloadData];
 	}
 	
-	if ((!isEncrypted && indexPath.row == 2) || (isEncrypted && indexPath.row == 4)) {
+	if ((!isEncrypted && indexPath.row == 2+firstIndex) || (isEncrypted && indexPath.row == 4+firstIndex)) {
 		[_tableController onEditClick:nil];
 		[self onEditionChangeClick:nil];
 	}
 	
-	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4)||(canEphemeral && indexPath.row == 5)))
-		|| (!isEncrypted && indexPath.row == 3)) {
+	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4+firstIndex)||(canEphemeral && indexPath.row == 5+firstIndex)))
+		|| (!isEncrypted && indexPath.row == 3+firstIndex)) {
 		[self showAddressAndIdentityPopup];
 	}
 }
@@ -1855,13 +1862,23 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	if ([self canAdminEphemeral:_chatRoom])
 		++nbRows;
 	
+	if (!isOneToOne) // schedule meeting
+		++nbRows;
+	
 	return nbRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
 	
-	if (indexPath.row == 0) {
+	int firstIndex = isOneToOne ? 0 : 1;
+	
+	if (!isOneToOne && indexPath.row == 0) {
+		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_voip_meeting_schedule"] newSize:CGSizeMake(25, 25)];
+		cell.textLabel.text = NSLocalizedString(@"Schedule a meeting",nil);
+	}
+	
+	if (indexPath.row == firstIndex) {
 		if (isOneToOne) {
 			Contact *contact;
 			if  (isEncrypted) {
@@ -1885,18 +1902,18 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		}
 	}
 	
-	if (isEncrypted && indexPath.row == 1) {
+	if (isEncrypted && indexPath.row == 1+firstIndex) {
 		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_security_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Conversation's devices",nil);
 	}
 	
 	bool canEphemeral = [self canAdminEphemeral:_chatRoom];
-	if (canEphemeral && indexPath.row == 2) {
+	if (canEphemeral && indexPath.row == 2+firstIndex) {
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
 	}
 	
-	if ((isEncrypted && indexPath.row == 3) || (!isEncrypted && indexPath.row == 1)) {
+	if ((isEncrypted && indexPath.row == 3+firstIndex) || (!isEncrypted && indexPath.row == 1+firstIndex)) {
 		if ([LinphoneManager getChatroomPushEnabled:_chatRoom]) {
 			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_off.png"] newSize:CGSizeMake(20, 25)];
 			cell.textLabel.text = NSLocalizedString(@"Mute notifications",nil);
@@ -1906,13 +1923,13 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 		}
 	}
 	
-	if ((isEncrypted && indexPath.row == 4) || (!isEncrypted && indexPath.row == 2)) {
+	if ((isEncrypted && indexPath.row == 4+firstIndex) || (!isEncrypted && indexPath.row == 2+firstIndex)) {
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
 	}
 	
-	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4)||(canEphemeral && indexPath.row == 5)))
-		|| (!isEncrypted && indexPath.row == 3)) {
+	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4+firstIndex)||(canEphemeral && indexPath.row == 5+firstIndex)))
+		|| (!isEncrypted && indexPath.row == 3+firstIndex)) {
 		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"chat_group_informations.png"] newSize:CGSizeMake(25, 25)];
 		cell.textLabel.text = NSLocalizedString(@"Show address and identity",nil);
 	}

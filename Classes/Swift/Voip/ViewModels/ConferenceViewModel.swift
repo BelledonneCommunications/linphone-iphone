@@ -492,6 +492,14 @@ class ConferenceViewModel {
 		VoipDialog.toast(message: message)
 	}
 	
+	@objc static func scheduleFromGroupChat(cChatRoom: OpaquePointer ) {
+		ConferenceSchedulingViewModel.shared.reset()
+		ChatRoom.getSwiftObject(cObject: cChatRoom).participants.forEach {
+			ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append($0.address!)
+		}
+		ConferenceSchedulingViewModel.shared.scheduleForLater.value = true
+	}
+	
 }
 
 
