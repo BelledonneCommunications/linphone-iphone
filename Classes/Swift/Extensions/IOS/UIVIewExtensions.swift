@@ -446,8 +446,8 @@ extension UIView {
 		// to avoid the unused variable warning
 	}
 	
-	// Onclick
-	
+	// Single click
+
 	class TapGestureRecognizer: UITapGestureRecognizer {
 		var action : (()->Void)? = nil
 	}
@@ -463,6 +463,22 @@ extension UIView {
 		
 	}
 	@objc func handleTap(_ sender: TapGestureRecognizer) {
+		sender.action!()
+	}
+	
+	// Long click
+	class LongPressGestureRecognizer: UILongPressGestureRecognizer {
+		var action : (()->Void)? = nil
+	}
+	func onLongClick(action : @escaping ()->Void ){
+		let tap = LongPressGestureRecognizer(target: self , action: #selector(self.handleLongClick(_:)))
+		tap.action = action
+		tap.cancelsTouchesInView = false
+		self.addGestureRecognizer(tap)
+		self.isUserInteractionEnabled = true
+		
+	}
+	@objc func handleLongClick(_ sender: LongPressGestureRecognizer) {
 		sender.action!()
 	}
 	

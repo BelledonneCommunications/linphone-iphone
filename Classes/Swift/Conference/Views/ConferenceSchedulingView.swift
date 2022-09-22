@@ -141,7 +141,8 @@ import IQKeyboardManager
 		scheduleForm.addSubview(viaChatView)
 		viaChatView.alignUnder(view: descriptionInput,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).alignParentBottom(withMargin: form_margin*4).done()
 
-		let viaChatSwitch = StyledCheckBox(liveValue: ConferenceSchedulingViewModel.shared.sendInviteViaChat)
+		let viaChatSwitch = StyledCheckBox()
+		viaChatSwitch.liveValue = ConferenceSchedulingViewModel.shared.sendInviteViaChat
 		viaChatView.addSubview(viaChatSwitch)
 		viaChatSwitch.alignParentLeft().done()
 		

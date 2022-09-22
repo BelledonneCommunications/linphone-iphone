@@ -90,7 +90,10 @@ import UIKit
 	@objc static let conference_group_call_title = NSLocalizedString("Start a group call",comment:"")
 	@objc static let conference_incoming_title = NSLocalizedString("Incoming group call",comment:"")
 	@objc static let conference_info_confirm_removal = NSLocalizedString("Do you really want to delete this meeting?",comment:"")
+	@objc static let conference_infos_confirm_removal = NSLocalizedString("Do you really want to delete these meetings?",comment:"")
 	@objc static let conference_info_removed = NSLocalizedString("Meeting info has been deleted",comment:"")
+	@objc static let conference_infos_removed = NSLocalizedString("Meeting infos have been deleted",comment:"")
+
 	@objc static let conference_invite_join = NSLocalizedString("Join",comment:"")
 	@objc static let conference_invite_participants_count = NSLocalizedString("%d participants",comment:"")
 	@objc static let conference_invite_title = NSLocalizedString("Meeting invite:",comment:"")

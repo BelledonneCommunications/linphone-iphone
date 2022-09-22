@@ -27,6 +27,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	let corner_radius  = 7.0
 	let border_width = 2.0
 	static let button_size = 40
+	let delete_checkbox_margin = 5
 	
 	let clockIcon = UIImageView(image: UIImage(named: "conference_schedule_time_default"))
 	let timeDuration = StyledLabel(VoipTheme.conference_invite_desc_font)
@@ -48,6 +49,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	var owningTableView : UITableView? = nil
 	let joinEditDelete = UIStackView()
 	let expandedRows = UIStackView()
+	let selectionCheckBox = StyledCheckBox()
 
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
@@ -88,7 +90,7 @@ class ScheduledConferencesCell: UITableViewCell {
 					} else {
 						self.participants.alignParentBottom(withMargin: 10).done()
 					}
-
+					self.selectionCheckBox.liveValue = data.selectedForDeletion
 				}
 			}
 		}
@@ -105,7 +107,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		
 		contentView.addSubview(clockIcon)
 		clockIcon.alignParentTop(withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
-
+		
 		contentView.addSubview(timeDuration)
 		timeDuration.alignParentTop(withMargin: 15).toRightOf(clockIcon,withLeftMargin:10).alignHorizontalCenterWith(clockIcon).done()
 		
@@ -117,10 +119,10 @@ class ScheduledConferencesCell: UITableViewCell {
 		subjectCancel.axis = .vertical
 		contentView.addSubview(subjectCancel)
 		subjectCancel.alignUnder(view: timeDuration,withMargin: 15).alignParentLeft(withMargin: 10).done()
-
+		
 		subjectCancel.addArrangedSubview(cancelledLabel)
 		subjectCancel.addArrangedSubview(subject)
-
+		
 		contentView.addSubview(participantsIcon)
 		participantsIcon.alignUnder(view: subject,withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
 		
@@ -133,8 +135,8 @@ class ScheduledConferencesCell: UITableViewCell {
 		infoConf.imageView?.contentMode = .scaleAspectFit
 		infoConf.alignUnder(view: subject,withMargin: 15).square(30).alignParentRight(withMargin: 10).alignHorizontalCenterWith(participantsIcon).done()
 		infoConf.applyTintedIcons(tintedIcons: VoipTheme.conference_info_button)
-
-				
+		
+		
 		contentView.addSubview(participants)
 		participants.alignUnder(view: subject,withMargin: 15).toRightOf(participantsIcon,withLeftMargin:10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
 		
@@ -142,7 +144,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		expandedRows.spacing = 10
 		contentView.addSubview(expandedRows)
 		expandedRows.alignUnder(view: participants,withMargin: 15).matchParentSideBorders(insetedByDx:10).done()
-
+		
 		expandedRows.addArrangedSubview(descriptionTitle)
 		expandedRows.addArrangedSubview(descriptionValue)
 		
@@ -163,10 +165,10 @@ class ScheduledConferencesCell: UITableViewCell {
 		joinEditDelete.axis = .horizontal
 		joinEditDelete.spacing = 10
 		joinEditDelete.distribution = .equalSpacing
-
+		
 		contentView.addSubview(joinEditDelete)
 		joinEditDelete.alignUnder(view: expandedRows,withMargin: 15).alignParentRight(withMargin: 10).done()
-
+		
 		
 		joinEditDelete.addArrangedSubview(joinConf)
 		joinConf.width(150).done()
@@ -203,6 +205,14 @@ class ScheduledConferencesCell: UITableViewCell {
 		joinEditDelete.addArrangedSubview(deleteConf)
 		deleteConf.onClick {
 			self.askConfirmationTodeleteEntry()
+		}
+		contentView.addSubview(selectionCheckBox)
+		selectionCheckBox.alignParentRight(withMargin: delete_checkbox_margin).alignUnder(view:organiser, withMargin: delete_checkbox_margin).done()
+		ScheduledConferencesViewModel.shared.editionEnabled.readCurrentAndObserve { editing in
+			self.selectionCheckBox.isHidden = editing != true
+		}
+		onLongClick {
+			ScheduledConferencesViewModel.shared.editionEnabled.value = true
 		}
 	}
 	
