@@ -27,6 +27,7 @@ import linphonesw
 	let conferenceListView = UITableView()
 	let noConference = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_no_schedule)
 	let filters = UIStackView()
+	let selectAllButton = CallControlButton(buttonTheme:VoipTheme.nav_button("deselect_all"))
 
 	static let compositeDescription = UICompositeViewDescription(ScheduledConferencesView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -36,15 +37,27 @@ import linphonesw
 		
 		super.viewDidLoad(
 			backAction: {
-				PhoneMainView.instance().popView(self.compositeViewDescription())
+				if (ScheduledConferencesViewModel.shared.editionEnabled.value == true) {
+					ScheduledConferencesViewModel.shared.editionEnabled.value  = false
+				} else {
+					PhoneMainView.instance().popView(self.compositeViewDescription())
+				}
 			},nextAction: {
-				ConferenceSchedulingViewModel.shared.reset()
-				PhoneMainView.instance().changeCurrentView(ConferenceSchedulingView.compositeDescription)
+				if (ScheduledConferencesViewModel.shared.editionEnabled.value == true) {
+					self.deleteSelection()
+				} else {
+					ConferenceSchedulingViewModel.shared.reset()
+					PhoneMainView.instance().changeCurrentView(ConferenceSchedulingView.compositeDescription)
+				}
 			},
 			nextActionEnableCondition: MutableLiveData(),
 			title:VoipTexts.conference_scheduled)
-
-		super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.conference_create_button)
+		
+		// Select all
+		selectAllButton.setImage(UIImage(named: "deselect_all"), for: .selected)
+		selectAllButton.setImage(UIImage(named: "select_all_default"), for: .normal)
+		topBar.addSubview(selectAllButton)
+		selectAllButton.toLeftOf(nextButton,withRightMargin: CGFloat(side_buttons_margin)).matchParentHeight().done()
 		
 		// Filter buttons
 		let showTerminated = getFilterButton(title: VoipTexts.conference_scheduled_terminated_filter)
@@ -93,6 +106,29 @@ import linphonesw
 		view.addSubview(noConference)
 		noConference.center().done()
 		
+		ScheduledConferencesViewModel.shared.editionEnabled.readCurrentAndObserve { editing in
+			if (editing == true) {
+				self.selectAllButton.isSelected = false
+				self.selectAllButton.isHidden = false
+				super.nextButton.setImage(UIImage(named: "delete_default"), for: .normal)
+				super.nextButton.setImage(UIImage(named: "delete_disabled"), for: .disabled)
+				super.nextButton.setImage(UIImage(named: "delete_default"), for: .highlighted)
+				super.backButton.setImage(UIImage(named: "cancel_edit_default"), for: .normal)
+				self.nextButton.isEnabled = ScheduledConferencesViewModel.shared.conferences.value?.filter{$0.selectedForDeletion.value == true}.count ?? 0 > 0
+			} else {
+				self.selectAllButton.isHidden = true
+				ScheduledConferencesViewModel.shared.conferences.value?.forEach {$0.selectedForDeletion.value = false}
+				super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.conference_create_button)
+				super.backButton.setImage(UIImage(named: "back_default"), for: .normal)
+				self.nextButton.isEnabled = true
+			}
+		}
+		
+		self.selectAllButton.onClick {
+			let selectIt = !self.selectAllButton.isSelected
+			ScheduledConferencesViewModel.shared.conferences.value?.forEach {$0.selectedForDeletion.value = selectIt}
+		}
+		
 	}
 	
 	func getFilterButton(title:String) -> UIButton {
@@ -118,6 +154,7 @@ import linphonesw
 		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: filters,withMargin: self.form_margin).alignParentBottom().done()
 		noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
 		super.nextButton.isEnabled = Core.get().defaultAccount != nil
+		ScheduledConferencesViewModel.shared.editionEnabled.value = false
 	}
 		
 	// TableView datasource delegate
@@ -163,6 +200,12 @@ import linphonesw
 		}
 		cell.conferenceData = data
 		cell.owningTableView = tableView
+		data.selectedForDeletion.readCurrentAndObserve { selected in
+			let selectedCount = ScheduledConferencesViewModel.shared.conferences.value?.filter{$0.selectedForDeletion.value == true}.count ?? 0
+			let totalCount = ScheduledConferencesViewModel.shared.conferences.value?.count ?? 0
+			self.nextButton.isEnabled = selectedCount > 0
+			self.selectAllButton.isSelected = selectedCount == totalCount
+		}
 		return cell
 	}
 	
@@ -173,6 +216,22 @@ import linphonesw
 				let cell = tableView.cellForRow(at: indexPath) as! ScheduledConferencesCell
 				cell.askConfirmationTodeleteEntry()
 			}
+	}
+	
+	func deleteSelection () {
+		let selectedCount = ScheduledConferencesViewModel.shared.conferences.value?.filter{$0.selectedForDeletion.value == true}.count ?? 0
+		let delete = ButtonAttributes(text:VoipTexts.conference_info_confirm_removal_delete, action: {
+			ScheduledConferencesViewModel.shared.conferences.value?.forEach   {
+				Core.get().deleteConferenceInformation(conferenceInfo: $0.conferenceInfo)
+				ScheduledConferencesViewModel.shared.computeConferenceInfoList()
+				self.conferenceListView.reloadData()
+			}
+			VoipDialog.toast(message: selectedCount == 1 ? VoipTexts.conference_info_removed : VoipTexts.conference_infos_removed)
+			ScheduledConferencesViewModel.shared.editionEnabled.value = false
+		}, isDestructive:false)
+		let cancel = ButtonAttributes(text:VoipTexts.cancel, action: {}, isDestructive:true)
+		VoipDialog(message:selectedCount == 1 ? VoipTexts.conference_info_confirm_removal : VoipTexts.conference_infos_confirm_removal, givenButtons:  [cancel,delete]).show()
+		
 	}
 	
 }

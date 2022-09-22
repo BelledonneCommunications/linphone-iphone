@@ -32,6 +32,7 @@ class ScheduledConferencesViewModel  {
 	var daySplitted : [Date : [ScheduledConferenceData]] = [:]
 	var coreDelegate: CoreDelegateStub?
 	var showTerminated = MutableLiveData(false)
+	let editionEnabled = MutableLiveData(false)
 	
 	init () {
 		

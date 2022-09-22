@@ -27,27 +27,27 @@ class StyledCheckBox: UIButton {
 	// layout constants
 	let button_size = 25.0
 
+	var liveValue : MutableLiveData<Bool>? = nil {
+		didSet {
+			liveValue?.readCurrentAndObserve { (value) in
+				self.isSelected = value!
+			}
+		}
+	}
 	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
-	init (liveValue:MutableLiveData<Bool>) {
+	init () {
 		super.init(frame: .zero)
 		setBackgroundImage(UIImage(named:"voip_checkbox_unchecked")/*?.tinted(with: VoipTheme.light_grey_color)*/,for: .normal) // tinting not working with those icons
 		setBackgroundImage(UIImage(named:"voip_checkbox_checked")/*?.tinted(with: VoipTheme.primary_color)*/,for: .selected)
 		onClick {
-			liveValue.value = !liveValue.value!
-			self.isSelected = liveValue.value!
+			self.liveValue?.value = self.liveValue?.value != true
+			self.isSelected = self.liveValue?.value == true
 		}
-		
-		size(w: button_size,h: button_size).done()
-		
-		liveValue.readCurrentAndObserve { (value) in
-			self.isSelected = value!
-		}
-		
-		
+		size(w: button_size,h: button_size).done()		
    }
 
 

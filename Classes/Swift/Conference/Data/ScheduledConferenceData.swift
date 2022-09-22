@@ -39,6 +39,8 @@ class ScheduledConferenceData {
 	let isConferenceCancelled = MutableLiveData(false)
 	let canEdit = MutableLiveData(false)
 	let isFinished : Bool
+	let selectedForDeletion = MutableLiveData(false)
+
 	
 	init (conferenceInfo: ConferenceInfo, isFinished: Bool = false) {
 		self.conferenceInfo = conferenceInfo
