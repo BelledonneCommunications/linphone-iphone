@@ -146,7 +146,7 @@
 }
 
 + (BOOL)isAuthorized {
-  return [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+	return ![LinphoneManager.instance lpConfigBoolForKey:@"fetch_native_contacts"] || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
 }
 
 - (FastAddressBook *)init {
@@ -172,62 +172,80 @@
 	return self;
 }
 
+- (void) loadLinphoneFriends {
+	// load Linphone friends
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	while (lists) {
+		LinphoneFriendList *fl = lists->data;
+		const MSList *friends = linphone_friend_list_get_friends(fl);
+		while (friends) {
+			LinphoneFriend *f = friends->data;
+			// only append friends that are not native contacts (already added
+			// above)
+			if (linphone_friend_get_ref_key(f) == NULL) {
+				Contact *contact = [[Contact alloc] initWithFriend:f];
+				[self registerAddrsFor:contact];
+			}
+			friends = friends->next;
+		}
+		linphone_friend_list_update_subscriptions(fl);
+		lists = lists->next;
+	}
+	[self dumpContactsDisplayNamesToUserDefaults];
+	
+	[NSNotificationCenter.defaultCenter
+		postNotificationName:kLinphoneAddressBookUpdate
+		object:self];
+}
+
 - (void) fetchContactsInBackGroundThread{
 	[_addressBookMap removeAllObjects];
 	_addressBookMap = [NSMutableDictionary dictionary];
-	CNEntityType entityType = CNEntityTypeContacts;
-	[store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
-		BOOL success = FALSE;
-		if(granted){
-			LOGD(@"CNContactStore authorization granted");
-			
-			NSError *contactError;
-			CNContactStore* store = [[CNContactStore alloc] init];
-			[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];
-			NSArray *keysToFetch = @[
-									 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-									 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
-									 CNContactPostalAddressesKey, CNContactIdentifierKey,
-									 CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
-									 CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey
-									 ];
-			CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
-			
-			success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact *__nonnull contact, BOOL *__nonnull stop) {
-				if (contactError) {
-				  NSLog(@"error fetching contacts %@",
-						contactError);
-				} else {
-					Contact *newContact = [[Contact alloc] initWithCNContact:contact];
-					[self registerAddrsFor:newContact];
-				}
-			}];
-		}
-
-		// load Linphone friends
-		const MSList *lists = linphone_core_get_friends_lists(LC);
-		while (lists) {
-			LinphoneFriendList *fl = lists->data;
-			const MSList *friends = linphone_friend_list_get_friends(fl);
-			while (friends) {
-				LinphoneFriend *f = friends->data;
-				// only append friends that are not native contacts (already added
-				// above)
-				if (linphone_friend_get_ref_key(f) == NULL) {
-					Contact *contact = [[Contact alloc] initWithFriend:f];
-					[self registerAddrsFor:contact];
-				}
-				friends = friends->next;
+	
+	LinphoneFriend *testFriend = linphone_core_create_friend(LC);
+	linphone_friend_set_name(testFriend, "Moi Maisentest");
+	linphone_friend_set_native_uri(testFriend, "sip:pouetpouet@sip.linphone.org");
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	LinphoneFriendList *fl = lists->data;
+	linphone_friend_list_add_friend(fl, testFriend);
+	const MSList *friends = linphone_friend_list_get_friends(fl);
+	
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"fetch_native_contacts"]) {
+		CNEntityType entityType = CNEntityTypeContacts;
+		[store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
+			BOOL success = FALSE;
+			if(granted){
+				LOGD(@"CNContactStore authorization granted");
+				
+				NSError *contactError;
+				CNContactStore* store = [[CNContactStore alloc] init];
+				[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];
+				NSArray *keysToFetch = @[
+					CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+					CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
+					CNContactPostalAddressesKey, CNContactIdentifierKey,
+					CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
+					CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey
+				];
+				CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
+				
+				success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact *__nonnull contact, BOOL *__nonnull stop) {
+					if (contactError) {
+						NSLog(@"error fetching contacts %@",
+							  contactError);
+					} else {
+						Contact *newContact = [[Contact alloc] initWithCNContact:contact];
+						[self registerAddrsFor:newContact];
+					}
+				}];
 			}
-			linphone_friend_list_update_subscriptions(fl);
-			lists = lists->next;
-		}
-		[self dumpContactsDisplayNamesToUserDefaults];
-
-		[NSNotificationCenter.defaultCenter
-		 postNotificationName:kLinphoneAddressBookUpdate
-		 object:self];
-	}];
+			[self loadLinphoneFriends];
+		}];
+	} else {
+		[self loadLinphoneFriends];
+	}
+	
+	
 }
 
 -(void) updateAddressBook:(NSNotification*) notif {
