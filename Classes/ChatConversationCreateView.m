@@ -85,6 +85,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_allButton.frame = frame;
 	}
 	
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"only_secure_chatrooms"]) {
+		_chiffreOptionView.hidden = true;
+		_isEncrypted = true;
+		_tableController.isEncrypted = true;
+	}
 	
 	if (_isForVoipConference) {
 		_switchView.hidden = true;
@@ -116,14 +121,14 @@ static UICompositeViewDescription *compositeDescription = nil;
         frame.origin.x = self.view.frame.size.width * 0.192;
     }
     _chiffreOptionView.frame = frame;
-    _isEncrypted = FALSE;
+	_isEncrypted = [LinphoneManager.instance lpConfigBoolForKey:@"only_secure_chatrooms"]; // false by default
     CGRect buttonFrame = _chiffreButton.frame;
-    _tableController.isEncrypted = _isEncrypted;
 
-    // no encrypted by default
-    buttonFrame.origin.x = 2;
-    [_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
-    _chiffreButton.frame = buttonFrame;
+	if (!_isEncrypted) {
+		buttonFrame.origin.x = 2;
+		[_chiffreImage setImage:[UIImage imageNamed:@"security_toogle_background_grey.png"]];
+		_chiffreButton.frame = buttonFrame;
+	}
 
 	_waitView.hidden = YES;
 	_backButton.hidden = IPAD;
