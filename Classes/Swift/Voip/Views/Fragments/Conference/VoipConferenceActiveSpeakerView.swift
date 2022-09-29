@@ -110,6 +110,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						self.activeSpeakerVideoViewAlone.isHidden = true
 						self.meGrid.isHidden = false
 						self.grid.isHidden = false
+						self.layoutRotatableElements()
 					}
 				}
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
