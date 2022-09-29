@@ -50,7 +50,7 @@ import linphonesw
 	}
 	
 	
-	static let compositeDescription = UICompositeViewDescription(ConferenceHistoryDetailsView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
+	static let compositeDescription = UICompositeViewDescription(ConferenceHistoryDetailsView.self, statusBar: StatusBarView.self, tabBar: TabBarView.classForCoder(), sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: HistoryListView.classForCoder())
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
@@ -65,6 +65,7 @@ import linphonesw
 			title:"")
 		super.nextButton.isHidden = true
 		
+		super.backButton.isHidden = UIDevice.ipad()
 		
 		let schedulingStack = UIStackView()
 		schedulingStack.axis = .vertical
