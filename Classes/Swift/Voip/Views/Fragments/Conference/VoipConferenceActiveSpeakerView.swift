@@ -125,8 +125,10 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				}
 				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
 					if (model.activeSpeakerConferenceParticipantDevices.value!.count > 1) {
-						self.fillActiveSpeakerSpace(data: speakingParticipant,video: speakingParticipant?.videoEnabled.value == true)
-						self.muted.isHidden = true
+						speakingParticipant?.videoEnabled.readCurrentAndObserve { video in
+							self.fillActiveSpeakerSpace(data: speakingParticipant,video: video == true)
+							self.muted.isHidden = true
+						}
 					}
 				}
 			}

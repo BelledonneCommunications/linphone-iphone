@@ -142,6 +142,7 @@ class ControlsViewModel {
 		if let currentCall = core.currentCall {
 			if (currentCall.conference != nil) {
 				if let params = try?core.createCallParams(call: currentCall) {
+					isVideoUpdateInProgress.value = true
 					params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly
 					try?currentCall.update(params: params)
 				}
