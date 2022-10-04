@@ -277,6 +277,7 @@
 					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomFragment.compositeViewDescription];
 				} else {
 					const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+					[tableView deselectRowAtIndexPath:indexPath animated:NO];
 					[LinphoneManager.instance call:addr];
 				}
 			}

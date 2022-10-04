@@ -25,19 +25,16 @@ class CallTimer : StyledLabel  {
 	let min_width = 50.0
 	
 	let formatter = DateComponentsFormatter()
+	var startDate = Date()
 	var call:Call? = nil {
 		didSet {
-			if (self.call != nil) {
-				self.format()
-			}
+			self.format()
 		}
 	}
 	
 	var conference:Conference? = nil {
 		didSet {
-			if (self.conference != nil) {
-				self.format()
-			}
+			self.format()
 		}
 	}
 	
@@ -51,28 +48,24 @@ class CallTimer : StyledLabel  {
 		formatter.unitsStyle = .positional
 		formatter.allowedUnits = [.minute, .second ]
 		formatter.zeroFormattingBehavior = [ .pad ]
-		let startDate = Date()
 		Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+			var elapsedTime: TimeInterval = 0
 			if (self.call != nil || self.conference != nil) {
-				self.format()
-			} else {
-				let elapsedTime = Date().timeIntervalSince(startDate)
-				self.formatter.string(from: elapsedTime).map {
-					self.text = $0.hasPrefix("0:") ? "0" + $0 : $0
-				}
+				elapsedTime = Date().timeIntervalSince(self.startDate)
+			}
+			self.formatter.string(from: elapsedTime).map {
+				self.text = $0.hasPrefix("0:") ? "0" + $0 : $0
 			}
 		}
 		minWidth(min_width).done()
 
 	}
+
 	
 	func format() {
 		guard let duration = self.call != nil ? self.call!.duration : self.conference != nil ? self.conference!.duration: nil else {
 			return
 		}
-		formatter.string(from: TimeInterval(duration)).map {
-			self.text = $0.hasPrefix("0:") ? "0" + $0 : $0
-		}
+		startDate = Date().advanced(by: -TimeInterval(duration))
 	}
-	
 }

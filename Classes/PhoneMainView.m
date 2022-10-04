@@ -172,6 +172,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	volumeView.userInteractionEnabled = false;
 
 	[self.view addSubview:mainViewController.view];
+	self.view.accessibilityIdentifier = @"phone_view";
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -720,6 +721,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 	
 	[errView addAction:defaultAction];
 	[self presentViewController:errView animated:YES completion:nil];
+    errView.view.accessibilityIdentifier = @"call_failed_error_view";
+    errView.view.subviews.firstObject.accessibilityIdentifier = @"call_failed_error_view";
+    errView.actions.firstObject.accessibilityIdentifier = @"call_failed_error_view_action";
 }
 
 - (void)addInhibitedEvent:(id)event {

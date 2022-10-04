@@ -33,8 +33,8 @@ class PausedCallOrConferenceView: UIView {
 	var icon : UIImageView? = nil
 	let title = StyledLabel(VoipTheme.call_or_conference_title)
 	let subtitle = StyledLabel(VoipTheme.call_or_conference_subtitle)
-	
-	var onClickAction : (()->Void)? = nil
+    
+    var onClickAction : (()->Void)? = nil
 	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
@@ -44,6 +44,8 @@ class PausedCallOrConferenceView: UIView {
 		super.init(frame: .zero)
 		
 		backgroundColor = VoipTheme.voip_translucent_popup_background
+        accessibilityIdentifier = "paused_call_view"
+        accessibilityViewIsModal = true
 		
 		let centeredView = UIView()
 		icon = UIImageView(image: UIImage(named:iconName)?.withPadding(padding: icon_padding))
@@ -53,7 +55,8 @@ class PausedCallOrConferenceView: UIView {
 		icon!.contentMode = .scaleAspectFit
 		centeredView.addSubview(icon!)
 		icon!.square(icon_size).centerX().done()
-		
+        icon?.accessibilityIdentifier = "paused_call_view_icon"
+
 		title.numberOfLines = 0
 		centeredView.addSubview(title)
 		title.alignUnder(view:icon!, withMargin:title_margin_top).matchParentSideBorders().done()
@@ -66,6 +69,11 @@ class PausedCallOrConferenceView: UIView {
 		
 		self.addSubview(centeredView)
 		centeredView.center().matchParentSideBorders().wrapContentY().done()
+        
+        self.onClickAction = onClickAction
+        icon!.onClick {
+            self.onClickAction?()
+        }
 		
 		self.onClickAction = onClickAction
 		icon!.onClick {

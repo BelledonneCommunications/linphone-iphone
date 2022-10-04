@@ -54,7 +54,7 @@ class RemotelyRecordingView: UIView {
 		addSubview(icon)
 		icon.square(height).toLeftOf(label).done()
 		
-		isHidden = true 
+		isHidden = true
 		
 	}
 	

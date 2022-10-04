@@ -43,7 +43,8 @@ import linphonesw
 
 	var callData: CallData? = nil {
 		didSet {
-			duration.call = callData?.call.dir == .Incoming ? callData?.call : nil
+			//duration.call = callData?.call.dir == .Incoming ? callData?.call : nil
+			duration.call = callData?.call
 			callData?.call.remoteAddress.map {
 				avatar.fillFromAddress(address: $0)
 				displayName.text = $0.addressBookEnhancedDisplayName()
@@ -56,9 +57,11 @@ import linphonesw
 		super.viewDidLoad()
 				
 		view.backgroundColor = VoipTheme.voipBackgroundColor.get()
+        view.accessibilityIdentifier = "IO_call_view"
 		
 		view.addSubview(spinner)
 		spinner.square(IncomingOutgoingCommonView.spinner_size).matchParentSideBorders().alignParentTop(withMargin:IncomingOutgoingCommonView.spinner_margin_top + UIDevice.notchHeight()).done()
+        spinner.accessibilityIdentifier = "IO_call_view_spinner"
 		
 		let callType = StyledLabel(VoipTheme.call_header_title,forCallType) 
 		view.addSubview(callType)
@@ -66,16 +69,19 @@ import linphonesw
 				
 		self.view.addSubview(duration)
 		duration.matchParentSideBorders().alignUnder(view:callType,withMargin:IncomingOutgoingCommonView.duration_margin_top).done()
+        duration.accessibilityIdentifier = "IO_call_view_duration"
 		
 		// Center : Avatar + Display name + SIP Address
 		let centerSection = UIView()
 		centerSection.addSubview(avatar)
+		avatar.square(Avatar.diameter_for_call_views).center().done()
 		centerSection.addSubview(displayName)
 		displayName.height(IncomingOutgoingCommonView.display_name_height).matchParentSideBorders().alignUnder(view:avatar,withMargin:IncomingOutgoingCommonView.display_name_margin_top).done()
 		centerSection.addSubview(sipAddress)
 		sipAddress.height(IncomingOutgoingCommonView.sip_address_height).matchParentSideBorders().alignUnder(view:displayName,withMargin:IncomingOutgoingCommonView.sip_address_margin_top).done()
 		self.view.addSubview(centerSection)
-		centerSection.matchParentSideBorders().center().done()
+		centerSection.matchParentDimmensions().center().done()
+
 		
 		layoutRotatableElements()
 	}
@@ -101,6 +107,7 @@ import linphonesw
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		spinner.stopRotation()
+		duration.call = nil
 		super.viewWillDisappear(animated)
 	}
 	

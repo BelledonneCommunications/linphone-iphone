@@ -81,7 +81,7 @@ class ActiveCallView: UIView { // = currentCall
 				}
 			}
 			callData?.isRemotelyRecorded.readCurrentAndObserve { (remotelyRecorded) in
-				self.centerSection.removeConstraints().matchParentSideBorders().alignUnder(view:remotelyRecorded == true ? self.remotelyRecordedIndicator : self.upperSection ,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
+                self.centerSection.removeConstraints().matchParentSideBorders().alignUnder(view:remotelyRecorded == true ? self.remotelyRecordedIndicator : self.upperSection ,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 				self.setNeedsLayout()
 			}
 			
@@ -117,6 +117,7 @@ class ActiveCallView: UIView { // = currentCall
 		
 		displayNameDurationSipAddress.addSubview(duration)
 		duration.toRightOf(displayNameTop).alignParentRight().done()
+        duration.accessibilityIdentifier = "active_call_upper_section_duration"
 		
 		displayNameDurationSipAddress.addSubview(sipAddress)
 		sipAddress.matchParentSideBorders().alignUnder(view: displayNameTop,withMargin:sip_address_margin_top).done()
@@ -138,6 +139,8 @@ class ActiveCallView: UIView { // = currentCall
 		})
 		recordCallButtons.append(recordCall)
 		recordPauseView.addArrangedSubview(recordCall)
+        recordCall.accessibilityIdentifier = "active_call_upper_section_record"
+        recordCall.accessibilityLabel = "Record Call"
 		
 		// Pause (with video)
 		var pauseCall = CallControlButton(width: record_pause_button_size, height: record_pause_button_size, imageInset:record_pause_button_inset, buttonTheme: VoipTheme.call_pause, onClickAction: {
@@ -146,6 +149,8 @@ class ActiveCallView: UIView { // = currentCall
 		pauseCallButtons.append(pauseCall)
 		recordPauseView.addArrangedSubview(pauseCall)
 		upperSection.addArrangedSubview(recordPauseView)
+        pauseCall.accessibilityIdentifier = "active_call_upper_section_pause"
+        pauseCall.accessibilityLabel = "Pause Call"
 
 		
 		stack.addArrangedSubview(upperSection)
@@ -153,12 +158,13 @@ class ActiveCallView: UIView { // = currentCall
 		
 		
 		stack.addArrangedSubview(remotelyRecordedIndicator)
-		remotelyRecordedIndicator.matchParentSideBorders().height(CGFloat(ActiveCallView.remote_recording_height)).done()
-
+        remotelyRecordedIndicator.matchParentSideBorders().height(CGFloat(ActiveCallView.remote_recording_height)).done()
+        
 		// Center Section : Avatar + video + record/pause buttons + videos
 		centerSection.layer.cornerRadius = ActiveCallView.center_view_corner_radius
 		centerSection.clipsToBounds = true
 		centerSection.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
+        //centerSection.removeConstraints().matchParentSideBorders().alignUnder(view: remotelyRecordedIndicator, withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 		
 		// Record (w/o video)
 		recordCall = CallControlButton(width: record_pause_button_size, height: record_pause_button_size, imageInset:record_pause_button_inset, buttonTheme: VoipTheme.call_record, onClickAction: {
@@ -167,6 +173,8 @@ class ActiveCallView: UIView { // = currentCall
 		recordCallButtons.append(recordCall)
 		centerSection.addSubview(recordCall)
 		recordCall.alignParentLeft(withMargin:record_pause_button_margin).alignParentTop(withMargin:record_pause_button_margin).done()
+        recordCall.accessibilityIdentifier = "active_call_center_section_record"
+        recordCall.accessibilityLabel = "Record Call"
 		
 		// Pause (w/o video)
 		pauseCall = CallControlButton(width: record_pause_button_size, height: record_pause_button_size, imageInset:record_pause_button_inset, buttonTheme: VoipTheme.call_pause, onClickAction: {
@@ -175,9 +183,12 @@ class ActiveCallView: UIView { // = currentCall
 		pauseCallButtons.append(pauseCall)
 		centerSection.addSubview(pauseCall)
 		pauseCall.alignParentRight(withMargin:record_pause_button_margin).alignParentTop(withMargin:record_pause_button_margin).done()
+        pauseCall.accessibilityIdentifier = "active_call_center_section_pause"
+        pauseCall.accessibilityLabel = "Pause Call"
 		
 		// Avatar
 		centerSection.addSubview(avatar)
+		avatar.square(Avatar.diameter_for_call_views).center().done()
 		
 		// Remote Video Display
 		centerSection.addSubview(remoteVideo)

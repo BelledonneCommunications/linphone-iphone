@@ -1,26 +1,55 @@
 variables:
-  archive_scheme: linphone
-  archive_path: linphone.xcarchive
-  export_path: linphone-adhoc-ipa
-  export_options_plist: linphone-adhoc.plist
+  workspace: linphone.xcworkspace
+  scheme: linphone
+  destination: name=iPhone 13 Pro
+  testResult_path: derivedData/Logs/Test
+  
+stages:
+  - Build
+  - UITests
 
-job-ios:
+before_script:
+  - pod install
+  - pwd
+  - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
 
-  stage: build
-  tags: [ "macmini-m1-xcode13" ]
-
-  script:
+Compile & Build:
+  stage: Build
+  tags: ["macmini-m1-xcode13"]
+  before_script:
     - pod install --repo-update
     - pwd
     - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
-    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
-    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
-
+    - xcrun simctl shutdown "$destination" && xcrun simctl erase "$destination"
+  script:
+    - xcodebuild -workspace $workspace -scheme $scheme -UseModernBuildSystem=YES -destination "$destination" -derivedDataPath derivedData
+  after_script: []
 
   artifacts:
     paths:
-      - $archive_path
-      - $export_path
+      - derivedData/Build
     when: always
-    expire_in: 1 week
+    expire_in: 2 hour
 
+
+
+after_script:
+  - ${TRAINER_EXE} -p $testResult_path/*.xcresult -o $testResult_path/
+  - ${XCPARSE_EXE} attachments $testResult_path/*.xcresult results --uti public.image
+  - mv $testResult_path/*.xcresult results && mv derivedData/logs.txt results
+
+Call Views:
+  stage: UITests
+  tags: ["macmini-m1-xcode13"]
+  dependencies: ["Compile & Build"]
+  script:
+    - xcodebuild test -workspace $workspace -scheme $scheme -sdk iphonesimulator -destination "$destination" -UseModernBuildSystem=YES -testPlan Default -derivedDataPath derivedData | tee derivedData/logs.txt
+
+  artifacts:
+    paths:
+      - results/*
+    when: always
+    reports:
+      junit:
+        - $testResult_path/*.xml
+    expire_in: 4 week

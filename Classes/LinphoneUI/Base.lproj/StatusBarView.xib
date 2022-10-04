@@ -34,8 +34,8 @@
                         <button opaque="NO" tag="6" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27" userLabel="callSecurityButton">
                             <rect key="frame" x="332" y="0.0" width="24" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <bool key="isElement" value="NO"/>
+                            <accessibility key="accessibilityConfiguration" identifier="status_bar_incall_security">
+                                <bool key="isElement" value="YES"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <state key="normal" image="security_ok.png">
@@ -52,6 +52,7 @@
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SKk-s0-5HE" userLabel="callQualityButton">
                             <rect key="frame" x="0.0" y="0.0" width="42" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" identifier="status_bar_incall_quality"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <state key="normal" image="call_quality_indicator_4.png">
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -61,6 +62,7 @@
                             </connections>
                         </button>
                     </subviews>
+                    <accessibility key="accessibilityConfiguration" identifier="status_bar_incall_security"/>
                 </view>
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lfO-I4-PXi" userLabel="outcallView">
                     <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
@@ -69,7 +71,9 @@
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yg7-rx-XVv" userLabel="sideMenuButton">
                             <rect key="frame" x="0.0" y="0.0" width="42" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Side menu button"/>
+                            <accessibility key="accessibilityConfiguration" identifier="side_menu_button" label="Side menu button">
+                                <accessibilityTraits key="traits" button="YES"/>
+                            </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <state key="normal" image="menu.png">
                                 <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -93,7 +97,7 @@
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mhg-P6-RfU" userLabel="registrationState" customClass="UIIconButton">
                     <rect key="frame" x="46" y="0.0" width="194" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Registration state"/>
+                    <accessibility key="accessibilityConfiguration" identifier="status_bar_registration_state" label="Registration state"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <inset key="titleEdgeInsets" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="Registered" image="led_disconnected.png">

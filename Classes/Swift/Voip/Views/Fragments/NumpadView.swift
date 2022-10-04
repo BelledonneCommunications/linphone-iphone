@@ -41,7 +41,9 @@ import linphonesw
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
 		superView.addSubview(self)
-		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignAbove(view: above,withMargin: SharedLayoutConstants.buttons_bottom_margin).done()
+		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignParentBottom().done()
+        accessibilityIdentifier = "call_numpad_view"
+        accessibilityViewIsModal = true
 
 		callData.callState.observe { state in
 			if (state == Call.State.End) {
@@ -56,6 +58,8 @@ import linphonesw
 		})
 		addSubview(hide)
 		hide.alignParentRight(withMargin: side_margins).alignParentTop(withMargin: side_margins).done()
+        hide.accessibilityIdentifier = "call_numpad_view_hide"
+        hide.accessibilityLabel = "Hide"
 	
 		// DTMF History :
 		
@@ -65,6 +69,7 @@ import linphonesw
 		callData.enteredDTMF.readCurrentAndObserve { (dtmfs) in
 			eneteredDtmf.text = dtmfs
 		}
+        eneteredDtmf.accessibilityIdentifier = "call_numpad_view_text_field"
 		
 		// Digit buttons
 		
@@ -86,6 +91,7 @@ import linphonesw
 					callData.sendDTMF(dtmf: "\(subkey)")
 				})
 				newRow.addArrangedSubview(digit)
+                digit.accessibilityIdentifier = "call_numpad_view_digit_\(subkey)"
 			}
 		}
 	}

@@ -43,13 +43,17 @@ import linphonesw
 		})
 		view.addSubview(accept)
 		accept.centerX(withDx: buttons_distance_from_center_x).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
-		
+        accept.accessibilityIdentifier = "I_call_view_accept"
+        accept.accessibilityLabel = "Accept"
+        
 		// Decline
 		let decline = CallControlButton(width: CallControlButton.hungup_width, imageInset:IncomingOutgoingCommonView.answer_decline_inset,  buttonTheme: VoipTheme.call_terminate, onClickAction: {
 			self.callData.map { CallManager.instance().terminateCall(call: $0.call.getCobject)}
 		})
 		view.addSubview(decline)
 		decline.centerX(withDx: -buttons_distance_from_center_x).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+        decline.accessibilityIdentifier = "I_call_view_decline"
+        decline.accessibilityLabel = "Decline"
 	}
 	
 	@objc override func setCall(call:OpaquePointer) {

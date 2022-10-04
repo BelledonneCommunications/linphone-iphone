@@ -60,6 +60,7 @@ import linphonesw
 		super.viewDidLoad()
 		
 		view.backgroundColor = VoipTheme.voipBackgroundColor.get()
+        view.accessibilityIdentifier = "active_call_view"
 		
 		// Hangup
 		let hangup = CallControlButton(width: 65, imageInset:IncomingOutgoingCommonView.answer_decline_inset, buttonTheme: VoipTheme.call_terminate, onClickAction: {
@@ -67,6 +68,8 @@ import linphonesw
 		})
 		view.addSubview(hangup)
 		hangup.alignParentLeft(withMargin:SharedLayoutConstants.margin_call_view_side_controls_buttons).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+        hangup.accessibilityIdentifier = "active_call_view_hangup"
+        hangup.accessibilityLabel = "Hangup"
 		
 		
 		// Controls
@@ -119,9 +122,9 @@ import linphonesw
 		callPausedByRemoteView?.isHidden = true
 		
 		// Paused by local (Call)
-		callPausedByLocalView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.call_locally_paused_title,subTitleText: VoipTexts.call_locally_paused_subtitle, onClickAction: {
-			CallsViewModel.shared.currentCallData.value??.togglePause()
-		})
+        callPausedByLocalView = PausedCallOrConferenceView(iconName: "voip_conference_play_big",titleText: VoipTexts.call_locally_paused_title,subTitleText: VoipTexts.call_locally_paused_subtitle, onClickAction: {
+            CallsViewModel.shared.currentCallData.value??.togglePause()
+        })
 		view.addSubview(callPausedByLocalView!)
 		callPausedByLocalView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		callPausedByLocalView?.isHidden = true
@@ -222,6 +225,7 @@ import linphonesw
 		shadingMask.isHidden = true
 		self.view.addSubview(shadingMask)
 		shadingMask.matchParentDimmensions().done()
+        shadingMask.accessibilityIdentifier = "active_call_view_shading_mask"
 		
 		// Extra Buttons
 		let showextraButtons = CallControlButton(imageInset:IncomingOutgoingCommonView.answer_decline_inset, buttonTheme: VoipTheme.call_more, onClickAction: {
@@ -230,7 +234,9 @@ import linphonesw
 		})
 		view.addSubview(showextraButtons)
 		showextraButtons.alignParentRight(withMargin:SharedLayoutConstants.margin_call_view_side_controls_buttons).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
-		
+        showextraButtons.accessibilityIdentifier = "active_call_view_extra_buttons"
+        showextraButtons.accessibilityLabel = "More actions"
+
 		let boucingCounter = BouncingCounter(inButton:showextraButtons)
 		view.addSubview(boucingCounter)
 		boucingCounter.dataSource = CallsViewModel.shared.chatAndCallsCount
@@ -255,11 +261,10 @@ import linphonesw
 				self.numpadView = NumpadView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0, above:self.controlsView, onDismissAction: {
 					ControlsViewModel.shared.numpadVisible.value = false
 				})
-			} else {
-				self.numpadView?.removeFromSuperview()
-				self.shadingMask.isHidden = true
-			}
-			
+            } else {
+                self.numpadView?.removeFromSuperview()
+                self.shadingMask.isHidden = true
+            }
 		}
 		
 		// Call stats
@@ -270,18 +275,21 @@ import linphonesw
 				self.currentCallStatsVew = CallStatsView(superView: self.view,callData:  CallsViewModel.shared.currentCallData.value!!,marginTop:self.currentCallView?.centerSection.frame.origin.y ?? 0.0, above:self.controlsView, onDismissAction: {
 					ControlsViewModel.shared.callStatsVisible.value = false
 				})
-			} else {
-				self.currentCallStatsVew?.removeFromSuperview()
-				self.shadingMask.isHidden = true
-			}
+            } else {
+                self.currentCallStatsVew?.removeFromSuperview()
+                self.shadingMask.isHidden = true
+            }
 		}
 		
-		// Video activation dialog request
+		// Video and Microphone activation dialog request
 		CallsViewModel.shared.callUpdateEvent.observe { (call) in
 			let core = Core.get()
 			if (call?.state == .StreamsRunning) {
 				self.videoAcceptDialog?.removeFromSuperview()
 				self.videoAcceptDialog = nil
+				if (!ControlsViewModel.shared.micAuthorized() && !ControlsViewModel.shared.microphoneAsking) {
+					ControlsViewModel.shared.askMicrophoneAccess()
+				}
 			} else if (call?.state == .UpdatedByRemote) {
 				if (core.videoCaptureEnabled || core.videoDisplayEnabled) {
 					if (call?.currentParams?.videoEnabled != call?.remoteParams?.videoEnabled) {
@@ -351,8 +359,8 @@ import linphonesw
 		participantsListView?.removeFromSuperview()
 		participantsListView = nil
 		
-		ControlsViewModel.shared.numpadVisible.value = false
-		ControlsViewModel.shared.callStatsVisible.value = false
+        ControlsViewModel.shared.numpadVisible.value = false
+        ControlsViewModel.shared.callStatsVisible.value = false
 		ControlsViewModel.shared.fullScreenMode.value = false
 		super.viewWillDisappear(animated)
 	}

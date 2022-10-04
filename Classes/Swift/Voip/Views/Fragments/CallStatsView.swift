@@ -20,7 +20,8 @@
 import Foundation
 import linphonesw
 
-@objc class CallStatsView: UIView {
+
+@objc class CallStatsView: UIView{
 	
 	// Layout constants
 	let side_margins = 10.0
@@ -34,38 +35,44 @@ import linphonesw
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
 		superView.addSubview(self)
-		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignAbove(view: above,withMargin: SharedLayoutConstants.buttons_bottom_margin).done()
+		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignParentBottom().done()
+        accessibilityIdentifier = "call_stats_view"
+        accessibilityViewIsModal = true
 		
 		callData.callState.observe { state in
 			if (state == Call.State.End) {
 				onDismissAction()
 			}
 		}
-		
+        
+		// Hide call stats button
 		let hide = CallControlButton(buttonTheme: VoipTheme.voip_cancel_light, onClickAction: {
 			onDismissAction()
 		})
 		addSubview(hide)
 		hide.alignParentRight(withMargin: side_margins).alignParentTop(withMargin: side_margins).done()
+        hide.accessibilityIdentifier = "call_stats_view_hide"
+        hide.accessibilityLabel = "Hide"
 
-		
+		// Audio Stats Title
 		let model = CallStatisticsData(call: callData.call)
 		let audioTitle = StyledLabel(VoipTheme.call_stats_font_title,NSLocalizedString("Audio", comment: ""))
 		addSubview(audioTitle)
 		audioTitle.matchParentSideBorders().alignParentTop(withMargin: margin_top).done()
-
+        
+        // Audio Stats Corp
 		let audioStats = StyledLabel(VoipTheme.call_stats_font)
-		
 		audioStats.numberOfLines = 0
 		addSubview(audioStats)
 		audioStats.matchParentSideBorders().alignUnder(view: audioTitle).done()
 		
+        // Video Stats Title
 		let videoTitle = StyledLabel(VoipTheme.call_stats_font_title,NSLocalizedString("Video", comment: ""))
 		addSubview(videoTitle)
 		videoTitle.alignUnder(view: audioStats, withMargin:audio_video_margin).matchParentSideBorders().done()
 		
+        // Video Stats Corp
 		let videoStats = StyledLabel(VoipTheme.call_stats_font)
-		
 		videoStats.numberOfLines = 0
 		addSubview(videoStats)
 		videoStats.matchParentSideBorders().alignUnder(view: videoTitle).done()

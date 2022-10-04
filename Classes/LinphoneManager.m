@@ -1118,6 +1118,14 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 	}
 }
 
+- (void)setDnsServer {
+	NSString *dns_server_ip = [self lpConfigStringForKey:@"dns_server_ip"];
+	if ([dns_server_ip isEqualToString:@""]) {dns_server_ip = NULL;}
+	bctbx_list_t *dns_server_list = dns_server_ip?bctbx_list_new((void *)[dns_server_ip UTF8String]):NULL;
+	linphone_core_set_dns_servers_app(LC, dns_server_list);
+	bctbx_list_free(dns_server_list);
+}
+
 #pragma mark -
 
 // scheduling loop
@@ -1247,6 +1255,8 @@ static BOOL libStarted = FALSE;
 		// go directly to bg mode
 		[self enterBackgroundMode];
 	}
+	
+	
 }
 
 void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
@@ -1436,6 +1446,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 	[self migrationAllPost];
+	
+	linphone_core_enable_record_aware(theLinphoneCore, true); //force record aware enable
 
 	/* Use the rootca from framework, which is already set*/
 	//linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
@@ -1453,6 +1465,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	/*call iterate once immediately in order to initiate background connections with sip server or remote provisioning
 	 * grab, if any */
+	[self setDnsServer]; //configure DNS if custom DNS server is set
 	[self iterate];
 }
 
@@ -1684,6 +1697,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	/*IOS specific*/
 	[AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
+	 completionHandler:^(BOOL granted){
+		}];
+	[AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio
 	 completionHandler:^(BOOL granted){
 		}];
 

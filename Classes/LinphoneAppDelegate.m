@@ -52,7 +52,7 @@
 	if (self != nil) {
 		startedInBackground = FALSE;
 	}
-    _onlyPortrait = FALSE;
+	_onlyPortrait = FALSE;
 	return self;
 	[[UIApplication sharedApplication] setDelegate:self];
 }

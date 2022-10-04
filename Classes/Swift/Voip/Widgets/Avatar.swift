@@ -42,6 +42,8 @@ class Avatar : UIImageView {
 		self.backgroundColor = color.get()
 		addSubview(initialsLabel)
 		_ = initialsLabel.matchParentSideBorders().matchParentHeight()
+        accessibilityLabel = "Avatar"
+        isAccessibilityElement = true
 	}
 	
 	

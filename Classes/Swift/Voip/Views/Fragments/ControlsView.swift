@@ -43,6 +43,8 @@ class ControlsView: UIStackView {
 		controlsViewModel.isMuteMicrophoneEnabled.readCurrentAndObserve { (enabled) in
 			mute.isEnabled = enabled == true
 		}
+        mute.accessibilityIdentifier = "call_control_view_mute"
+        mute.accessibilityLabel = "Mute"
 		
 		// Speaker
 		let speaker = CallControlButton(buttonTheme: VoipTheme.call_speaker, onClickAction: {
@@ -52,6 +54,8 @@ class ControlsView: UIStackView {
 		controlsViewModel.isSpeakerSelected.readCurrentAndObserve { (selected) in
 			speaker.isSelected = selected == true
 		}
+        speaker.accessibilityIdentifier = "call_control_view_speaker"
+        speaker.accessibilityLabel = "Speaker"
 		
 		// Audio routes
 		let routes = CallControlButton(buttonTheme: VoipTheme.call_audio_route, onClickAction: {
@@ -93,6 +97,8 @@ class ControlsView: UIStackView {
 			controlsViewModel.isVideoUpdateInProgress.readCurrentAndObserve { (updateInProgress) in
 				video.isEnabled = updateInProgress != true && controlsViewModel.isVideoAvailable.value == true
 			}
+            video.accessibilityIdentifier = "call_control_view_video"
+            video.accessibilityLabel = "Video"
 
 		}
 		

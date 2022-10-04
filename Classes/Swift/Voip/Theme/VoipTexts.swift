@@ -152,6 +152,8 @@ import UIKit
 	
 	// Added in iOS
 	static let camera_required_for_video = NSLocalizedString("Camera use is not Authorized for &appName;. This permission is required to activate Video.",comment:"").replacingOccurrences(of: "&appName;", with: appName)
+	static let microphone_non_authorized_warning = NSLocalizedString("Warning : Microphone access is not Authorized for &appName;. To enable access, tap Settings and turn on Microphone, this will end your call",comment:"").replacingOccurrences(of: "&appName;", with: appName)
+	static let system_app_settings = NSLocalizedString("SETTINGS",comment:"")
 	static let conference_edit_error = NSLocalizedString("Unable to edit conference this time, date is invalid",comment:"")
 	static let ok =  NSLocalizedString("ok",comment:"")
 	static let conference_info_confirm_removal_delete = NSLocalizedString("DELETE",comment:"")

@@ -47,7 +47,8 @@ import IQKeyboardManager
 			},
 			nextActionEnableCondition: ConferenceSchedulingViewModel.shared.continueEnabled,
 			title:VoipTexts.conference_group_call_title)
-	
+		view.accessibilityIdentifier = "start_group_call_view"
+		
 		let subjectLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_subject_title)
 		subjectLabel.addIndicatorIcon(iconName: "voip_mandatory")
 		contentView.addSubview(subjectLabel)

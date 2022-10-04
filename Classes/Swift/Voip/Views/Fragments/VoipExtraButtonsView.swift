@@ -39,9 +39,10 @@ class VoipExtraButtonsView: UIStackView {
 		axis = .vertical
 		distribution = .fillEqually
 		alignment = .center
-		
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
+        accessibilityIdentifier = "active_call_extra_buttons_view"
+        accessibilityViewIsModal = true
 				
 		let background = UIView()
 		background.backgroundColor = VoipTheme.voipExtraButtonsBackgroundColor.get()
@@ -60,19 +61,22 @@ class VoipExtraButtonsView: UIStackView {
 		
 		// First row
 		let numpad = VoipExtraButton(text: VoipTexts.call_action_numpad, buttonTheme: VoipTheme.call_action("voip_call_numpad"),onClickAction: {
-            ControlsViewModel.shared.numpadVisible.value = true
+			ControlsViewModel.shared.numpadVisible.value = true
 		})
 		row1.addArrangedSubview(numpad)
+        numpad.accessibilityIdentifier = "active_call_extra_buttons_numpad"
 		
 		let stats = VoipExtraButton(text: VoipTexts.call_action_statistics, buttonTheme: VoipTheme.call_action("voip_call_stats"),onClickAction: {
 			ControlsViewModel.shared.callStatsVisible.value = true
 		})
 		row1.addArrangedSubview(stats)
+        stats.accessibilityIdentifier = "active_call_extra_buttons_stats"
 		
 		let chats = VoipExtraButton(text: VoipTexts.call_action_chat, buttonTheme: VoipTheme.call_action("voip_call_chat"),withbBoucinCounterDataSource:CallsViewModel.shared.currentCallUnreadChatMessageCount,  onClickAction: {
 			ControlsViewModel.shared.goToChatEvent.notifyAllObservers(with: true)
 		})
 		row1.addArrangedSubview(chats)
+        chats.accessibilityIdentifier = "active_call_extra_buttons_chats"
 			
 		addArrangedSubview(row1)
 		row1.matchParentSideBorders().done()
@@ -91,12 +95,13 @@ class VoipExtraButtonsView: UIStackView {
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 		})
 		row2.addArrangedSubview(transfer)
+        transfer.accessibilityIdentifier = "active_call_extra_buttons_transfer"
 		
 		let participants = VoipExtraButton(text: VoipTexts.call_action_participants_list, buttonTheme: VoipTheme.call_action("voip_call_participants"),onClickAction: {
 			ControlsViewModel.shared.goToConferenceParticipantsListEvent.notifyAllObservers(with: true)
 		})
 		row2.addArrangedSubview(participants)
-		
+        participants.accessibilityIdentifier = "active_call_extra_buttons_participants"
 		
 		let addcall = VoipExtraButton(text: VoipTexts.call_action_add_call, buttonTheme: VoipTheme.call_action("voip_call_add"),onClickAction: {
 			let view: DialerView = self.VIEW(DialerView.compositeViewDescription());
@@ -105,17 +110,19 @@ class VoipExtraButtonsView: UIStackView {
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 		})
 		row2.addArrangedSubview(addcall)
-		
+        addcall.accessibilityIdentifier = "active_call_extra_buttons_add_call"
 		
 		let layoutselect = VoipExtraButton(text: VoipTexts.call_action_change_conf_layout, buttonTheme: VoipTheme.call_action("voip_conference_mosaic"),onClickAction: {
 			ControlsViewModel.shared.goToConferenceLayoutSettings.notifyAllObservers(with: true)
 		})
 		row2.addArrangedSubview(layoutselect)
+        layoutselect.accessibilityIdentifier = "active_call_extra_buttons_layout_select"
 			
 		let calls = VoipExtraButton(text: VoipTexts.call_action_calls_list, buttonTheme: VoipTheme.call_action("voip_calls_list"), withbBoucinCounterDataSource: CallsViewModel.shared.inactiveCallsCount, onClickAction: {
 			ControlsViewModel.shared.goToCallsListEvent.notifyAllObservers(with: true)
 		})
 		row2.addArrangedSubview(calls)
+        calls.accessibilityIdentifier = "active_call_extra_buttons_calls"
 		
 		addArrangedSubview(row2)
 		row2.matchParentSideBorders().done()

@@ -37,6 +37,7 @@ import linphonesw
 	
 	init() {
 		super.init(title: VoipTexts.call_action_calls_list)
+        accessibilityIdentifier = "calls_list_view"
 		
 		// New Call
 		let newCall = CallControlButton(width: buttons_size,height: buttons_size, imageInset:UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10), buttonTheme: VoipTheme.call_add, onClickAction: {

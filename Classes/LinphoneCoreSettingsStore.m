@@ -407,7 +407,6 @@
 	{
 		
 		[self setBool:[lm lpConfigBoolForKey:@"use_device_ringtone"] forKey:@"use_device_ringtone"];
-		[self setBool:linphone_core_is_record_aware_enabled(LC) forKey:@"record_aware"];
 
 		[self setBool:linphone_core_get_use_info_for_dtmf(LC) forKey:@"sipinfo_dtmf_preference"];
 		[self setBool:linphone_core_get_use_rfc2833_for_dtmf(LC) forKey:@"rfc_dtmf_preference"];
@@ -490,6 +489,7 @@
 		[self setInteger:linphone_core_get_upload_bandwidth(LC) forKey:@"upload_bandwidth_preference"];
 		[self setInteger:linphone_core_get_download_bandwidth(LC) forKey:@"download_bandwidth_preference"];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(LC) forKey:@"adaptive_rate_control_preference"];
+		[self setObject:[lm lpConfigStringForKey:@"dns_server_ip"] forKey:@"dns_server_preference"];
 	}
 
 	// tunnel section
@@ -934,8 +934,6 @@
 		[lm lpConfigSetBool:[self boolForKey:@"use_device_ringtone"] forKey:@"use_device_ringtone"];
 		[ProviderDelegate resetSharedProviderConfiguration];
 
-		linphone_core_set_record_aware_enabled(LC, [self boolForKey:@"record_aware"]);
-
 		linphone_core_set_use_info_for_dtmf(LC, [self boolForKey:@"sipinfo_dtmf_preference"]);
 		linphone_core_set_inc_timeout(LC, [self integerForKey:@"incoming_call_timeout_preference"]);
 		linphone_core_set_in_call_timeout(LC, [self integerForKey:@"in_call_timeout_preference"]);
@@ -1033,6 +1031,12 @@
 		}
 
 		linphone_core_enable_adaptive_rate_control(LC, [self boolForKey:@"adaptive_rate_control_preference"]);
+		
+		if ([self stringForKey:@"dns_server_preference"] != [lm lpConfigStringForKey:@"dns_server_ip"]) {
+			[lm lpConfigSetString:[self stringForKey:@"dns_server_preference"] forKey:@"dns_server_ip"];
+			[lm setDnsServer];
+		}
+		
 
 		// tunnel section
 		if (linphone_core_tunnel_available()) {

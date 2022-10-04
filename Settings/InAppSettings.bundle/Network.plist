@@ -166,6 +166,22 @@
 		</dict>
 		<dict>
 			<key>Key</key>
+			<string>dns_server_preference</string>
+			<key>Title</key>
+			<string>DNS Server</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Key</key>
 			<string>adaptive_rate_control_group</string>
 			<key>Title</key>
 			<string>Adaptive rate control</string>

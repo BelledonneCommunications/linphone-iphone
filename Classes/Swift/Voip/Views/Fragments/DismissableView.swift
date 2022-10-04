@@ -44,6 +44,7 @@ class DismissableView:  UIView {
 		})
 		headerView.addSubview(dismiss!)
 		dismiss?.alignParentRight(withMargin: dismiss_right_margin).centerY().done()
+        dismiss?.accessibilityIdentifier = "dismissable_view_close"
 		
 		let title = StyledLabel(VoipTheme.calls_list_header_font,title)
 		headerView.addSubview(title)

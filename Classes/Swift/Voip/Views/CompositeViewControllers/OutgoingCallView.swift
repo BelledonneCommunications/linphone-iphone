@@ -45,6 +45,8 @@ import linphonesw
 		})
 		view.addSubview(cancelCall)
 		cancelCall.alignParentLeft(withMargin:SharedLayoutConstants.margin_call_view_side_controls_buttons).alignParentBottom(withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
+        cancelCall.accessibilityIdentifier = "O_call_view_cancel"
+        cancelCall.accessibilityLabel = "Cancel"
 		
 		// Controls
 		let controlsView = ControlsView(showVideo: false, controlsViewModel: ControlsViewModel.shared)

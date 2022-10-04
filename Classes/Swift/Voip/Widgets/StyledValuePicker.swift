@@ -85,7 +85,7 @@ class StyledValuePicker: UIView {
 
 		onClick {
 			self.dropDown.anchorView = self.superview
-			self.dropDown.tableView.scrollToRow(at: IndexPath(row: liveIndex.value!, section: 0), at: .top, animated: true) // Change visibility to public instead of fileprivate in DropDown.swift
+			/*self.dropDown.tableView.scrollToRow(at: IndexPath(row: liveIndex.value!, section: 0), at: .top, animated: true) // Change visibility to public instead of fileprivate in DropDown.swift*/
 			self.dropDown.show()
 		}
 		

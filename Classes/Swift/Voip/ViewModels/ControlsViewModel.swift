@@ -229,15 +229,22 @@ class ControlsViewModel {
 	
 	func toggleMuteMicrophone() {
 		if (!micAuthorized()) {
-			AVAudioSession.sharedInstance().requestRecordPermission { granted in
-				if granted {
-					self.core.micEnabled = !self.core.micEnabled
-					self.updateMicState()
-				}
-			}
+			askMicrophoneAccess()
 		}
 		core.micEnabled = !core.micEnabled
 		updateMicState()
+	}
+	
+	var microphoneAsking = false
+	func askMicrophoneAccess() {
+		microphoneAsking = true
+		let settings = ButtonAttributes(text:VoipTexts.system_app_settings, action: {
+			self.microphoneAsking = false
+			try! self.core.terminateAllCalls()
+			UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+		}, isDestructive:false)
+		let cancel = ButtonAttributes(text:VoipTexts.cancel, action: {self.microphoneAsking = false}, isDestructive:true)
+		VoipDialog(message:VoipTexts.microphone_non_authorized_warning, givenButtons:  [cancel,settings]).show()
 	}
 	
 	func forceEarpieceAudioRoute() {
@@ -271,15 +278,12 @@ class ControlsViewModel {
 	
 }
 
+
 @objc class ControlsViewModelBridge: NSObject {
 	@objc static func showParticipants() {
 		ControlsViewModel.shared.goToConferenceParticipantsListEvent.value = true
 	}
-	@objc static func toggleStatsVisibility() -> Void {
-			if (ControlsViewModel.shared.callStatsVisible.value == true) {
-					ControlsViewModel.shared.callStatsVisible.value = false
-			} else {
-					ControlsViewModel.shared.callStatsVisible.value = true
-			}
+	@objc static func toggleStatsVisibility() {
+		ControlsViewModel.shared.callStatsVisible.value = !(ControlsViewModel.shared.callStatsVisible.value ?? false)
 	}
 }

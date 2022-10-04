@@ -190,7 +190,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)setupGSMInteraction;
 - (BOOL)isCTCallCenterExist;
-- (void) checkLocalNetworkPermission;
+- (void)checkLocalNetworkPermission;
+- (void)setDnsServer;
 
 
 @property (readonly) BOOL isTesting;
@@ -214,5 +215,6 @@ typedef struct _LinphoneManagerSounds {
 @property(strong, nonatomic) OrderedDictionary *linphoneManagerAddressBookMap;
 @property (nonatomic, assign) BOOL contactsUpdated;
 @property UIImage *avatar;
+@property NSString *customCoreDNS;
 
 @end

@@ -405,10 +405,12 @@
 	[ControlsViewModelBridge toggleStatsVisibility];
 }
 
+
 - (IBAction)onSideMenuClick:(id)sender {
 	UICompositeView *cvc = PhoneMainView.instance.mainViewController;
 	[cvc hideSideMenu:(cvc.sideMenuView.frame.origin.x == 0)];
 }
+
 
 - (IBAction)onRegistrationStateClick:(id)sender {
 	if (linphone_core_get_default_account(LC)) {
