@@ -123,3 +123,4 @@
 @end
 
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState);
+void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);

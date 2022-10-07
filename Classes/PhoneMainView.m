@@ -884,6 +884,7 @@ static RootViewManager *rootViewManagerInstance = nil;
     
     LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
     linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
+	linphone_chat_room_cbs_set_conference_joined(cbs, main_view_chat_room_conference_joined);
     linphone_chat_room_add_callbacks(room, cbs);
     
     return room;
@@ -908,24 +909,25 @@ static RootViewManager *rootViewManagerInstance = nil;
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
+void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	PhoneMainView *view = PhoneMainView.instance;
+	LOGI(@"Chat room [%p] conference joined.", cr);
+	linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
+	[view goToChatRoom:cr];
+	if (!IPAD)
+		return;
+	
+	if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription)
+		return;
+	
+	ChatsListView *mainView = VIEW(ChatsListView);
+	[mainView.tableController loadData];
+	[mainView.tableController selectFirstRow];
+}
+
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	PhoneMainView *view = PhoneMainView.instance;
 	switch (newState) {
-		case LinphoneChatRoomStateCreated: {
-			LOGI(@"Chat room [%p] created on server.", cr);
-			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
-			[view goToChatRoom:cr];
-			if (!IPAD)
-				break;
-
-			if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription)
-				break;
-
-			ChatsListView *mainView = VIEW(ChatsListView);
-			[mainView.tableController loadData];
-			[mainView.tableController selectFirstRow];
-			break;
-		}
 		case LinphoneChatRoomStateCreationFailed:
 			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
