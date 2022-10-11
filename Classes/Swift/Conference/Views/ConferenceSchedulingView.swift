@@ -198,12 +198,14 @@ import IQKeyboardManager
     // Schedule for later observer
     ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in
       scheduleForm.isHidden = forLater != true
-      super.titleLabel.text = forLater == true ? VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
+			super.titleLabel.text = forLater == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit :  VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
 			mandatoryLabel.removeConstraints().done()
 			mandatoryLabel.alignUnder(view: forLater == true ? scheduleForm : scheduleForLater,withMargin: 2*self.form_margin).centerX().matchParentSideBorders().done()
     }
+		ConferenceSchedulingViewModel.shared.existingConfInfo.readCurrentAndObserve { (confInfo) in
+			super.titleLabel.text = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit :  VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
+		}
 
-						
 	}
 	
 	

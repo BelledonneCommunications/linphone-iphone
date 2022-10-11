@@ -196,7 +196,7 @@ class ScheduledConferencesCell: UITableViewCell {
 			confData.conferenceInfo.participants.forEach {
 				ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append($0)
 			}
-			ConferenceSchedulingViewModel.shared.existingConfInfo = confData.conferenceInfo
+			ConferenceSchedulingViewModel.shared.existingConfInfo.value = confData.conferenceInfo
 			// TOODO TimeZone (as Android 14.6.2022) ConferenceSchedulingViewModel.shared.scheduledTimeZone.value = self.conferenceData?.timezone
 			let view : ConferenceSchedulingView = self.VIEW(ConferenceSchedulingView.compositeViewDescription())
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())

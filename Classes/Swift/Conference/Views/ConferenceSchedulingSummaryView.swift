@@ -174,7 +174,11 @@ import SVProgressHUD
 		// Create / Schedule
 		contentView.addSubview(createButton)
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { _ in
-			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+			self.createButton.addSidePadding()
+		}
+		ConferenceSchedulingViewModel.shared.existingConfInfo.readCurrentAndObserve { _ in
+			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
 			self.createButton.addSidePadding()
 		}
 		
@@ -211,7 +215,7 @@ import SVProgressHUD
 			}
 		}
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (later) in
-			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
+			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
       viaChatLabel.isHidden = later != true || ConferenceSchedulingViewModel.shared.sendInviteViaChat.value != true
 			self.createButton.addSidePadding()
 		}

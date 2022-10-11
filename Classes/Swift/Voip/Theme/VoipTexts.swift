@@ -124,6 +124,7 @@ import UIKit
 	@objc static let conference_schedule_send_invite_chat_summary = NSLocalizedString("Invite will be sent out from my &appName; account",comment:"").replacingOccurrences(of: "&appName;", with: appName)
 	@objc static let conference_schedule_send_invite_email = NSLocalizedString("Send invite via email",comment:"")
 	@objc static let conference_schedule_start = NSLocalizedString("Schedule meeting",comment:"")
+	@objc static let conference_schedule_edit = NSLocalizedString("Edit meeting",comment:"")
 	@objc static let conference_schedule_subject_hint = NSLocalizedString("Meeting subject",comment:"")
 	@objc static let conference_schedule_subject_title = NSLocalizedString("Subject",comment:"")
 	@objc static let conference_schedule_summary = NSLocalizedString("Meeting info",comment:"")

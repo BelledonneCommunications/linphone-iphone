@@ -64,7 +64,7 @@ class ConferenceSchedulingViewModel  {
 	private var chatRooomDelegate : ChatRoomDelegate? = nil
 	private var conferenceSchedulerDelegate : ConferenceSchedulerDelegateStub? = nil
 	
-	var existingConfInfo:ConferenceInfo? = nil
+	var existingConfInfo:MutableLiveData<ConferenceInfo?> = MutableLiveData()
 	
 	init () {
 		
@@ -165,7 +165,7 @@ class ConferenceSchedulingViewModel  {
 		}.first
 		continueEnabled.value = false
     selectedAddresses.value = []
-		existingConfInfo = nil
+		existingConfInfo.value = nil
 		description.value = ""
     
 	}
@@ -198,7 +198,7 @@ class ConferenceSchedulingViewModel  {
 			conferenceScheduler = try? Core.get().createConferenceScheduler()
 			conferenceScheduler?.addDelegate(delegate: conferenceSchedulerDelegate!)
 		
-			guard let conferenceInfo = existingConfInfo != nil ? existingConfInfo : try Factory.Instance.createConferenceInfo() else {
+			guard let conferenceInfo = existingConfInfo.value != nil ? existingConfInfo.value??.clone() : try Factory.Instance.createConferenceInfo() else {
 				Log.e("[Conference Creation/Update] Failed, unable to get conf info.")
 				return
 			}
@@ -213,7 +213,7 @@ class ConferenceSchedulingViewModel  {
 			}
       conferenceScheduler?.account = localAccount
 			conferenceScheduler?.info = conferenceInfo // Will trigger the conference creation automatically
-			existingConfInfo = conferenceInfo
+			existingConfInfo.value = conferenceInfo
 
 		} catch {
 			Log.e("[Conference Creation] Failed \(error)")
