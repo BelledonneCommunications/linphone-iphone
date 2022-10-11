@@ -30,6 +30,9 @@ accept_early_media=0
 only_secure_chatrooms=0
 fetch_native_contacts=1
 
+[rtp]
+accept_any_encryption=1
+
 [sip]
 deliver_imdn=1
 linphone_specs=groupchat,lime
@@ -45,4 +48,7 @@ eq_location=mic
 
 [account_creator]
 backend=0
+
+[video]
+max_conference_size=vga
 
