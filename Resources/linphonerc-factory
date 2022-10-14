@@ -27,8 +27,8 @@ use_callkit=1
 
 accept_early_media=0
 
-only_secure_chatrooms=0
-fetch_native_contacts=1
+force_lime_chat_rooms=0
+enable_native_address_book=1
 
 [rtp]
 accept_any_encryption=1

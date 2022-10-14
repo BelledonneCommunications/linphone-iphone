@@ -85,7 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_allButton.frame = frame;
 	}
 	
-	if ([LinphoneManager.instance lpConfigBoolForKey:@"only_secure_chatrooms"]) {
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"]) {
 		_chiffreOptionView.hidden = true;
 		_isEncrypted = true;
 		_tableController.isEncrypted = true;
@@ -121,7 +121,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         frame.origin.x = self.view.frame.size.width * 0.192;
     }
     _chiffreOptionView.frame = frame;
-	_isEncrypted = [LinphoneManager.instance lpConfigBoolForKey:@"only_secure_chatrooms"]; // false by default
+	_isEncrypted = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"]; // false by default
     CGRect buttonFrame = _chiffreButton.frame;
 
 	if (!_isEncrypted) {

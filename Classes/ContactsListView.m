@@ -233,7 +233,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)refreshButtons {
-	[addButton setHidden:FALSE];
+	[addButton setHidden:![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]];
 	[self changeView:[ContactSelection getSipFilterEnabled] ? ContactsLinphone : ContactsAll];
 }
 
@@ -276,6 +276,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditionChangeClick:(id)sender {
 	allButton.hidden = linphoneButton.hidden = _selectedButtonImage.hidden = addButton.hidden =	self.tableController.isEditing;
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]) {
+		addButton.hidden = self.tableController.isEditing;
+	}
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {

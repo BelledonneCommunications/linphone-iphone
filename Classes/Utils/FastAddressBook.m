@@ -146,7 +146,7 @@
 }
 
 + (BOOL)isAuthorized {
-	return ![LinphoneManager.instance lpConfigBoolForKey:@"fetch_native_contacts"] || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+	return ![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"] || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
 }
 
 - (FastAddressBook *)init {
@@ -210,7 +210,7 @@
 	linphone_friend_list_add_friend(fl, testFriend);
 	const MSList *friends = linphone_friend_list_get_friends(fl);
 	
-	if ([LinphoneManager.instance lpConfigBoolForKey:@"fetch_native_contacts"]) {
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]) {
 		CNEntityType entityType = CNEntityTypeContacts;
 		[store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
 			BOOL success = FALSE;
