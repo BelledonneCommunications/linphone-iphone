@@ -90,6 +90,10 @@ class ScheduledConferenceData {
 			String(describing: participant.addressBookEnhancedDisplayName())
 		}.joined(separator: ", ")
 		
+		if (participantsShort.value?.count == 0) {
+			participantsShort.value = " "
+		}
+		
 		participantsExpanded.value = conferenceInfo.participants.map {(participant) in
 			String(describing: participant.addressBookEnhancedDisplayName())+" ("+String(describing: participant.asStringUriOnly())+")"
 		}.joined(separator: "\n")
@@ -101,8 +105,9 @@ class ScheduledConferenceData {
 	func deleteConference() {
 		if (conferenceInfo.state != .Cancelled && canEdit.value == true) {
 			Log.i("[Scheduled Conferences] Cancelling conference \(conferenceInfo.subject)")
-			ScheduledConferencesViewModel.shared.conferenceScheduler?.cancelConference(conferenceInfo: conferenceInfo)
+			try? Core.get().createConferenceScheduler().cancelConference(conferenceInfo: conferenceInfo)
+		} else {
+			Core.get().deleteConferenceInformation(conferenceInfo: conferenceInfo)
 		}
-		Core.get().deleteConferenceInformation(conferenceInfo: conferenceInfo)
 	}
 }

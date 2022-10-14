@@ -50,6 +50,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	let joinEditDelete = UIStackView()
 	let expandedRows = UIStackView()
 	let selectionCheckBox = StyledCheckBox()
+	let myContentView = UIView()
 
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
@@ -67,10 +68,10 @@ class ScheduledConferencesCell: UITableViewCell {
 				self.urlValue.isHidden = data.isConferenceCancelled.value == true
 				self.copyLink.isHidden = data.isConferenceCancelled.value == true
 				data.expanded.readCurrentAndObserve { expanded in
-					self.contentView.backgroundColor =
+					self.myContentView.backgroundColor =
 							data.conferenceInfo.state == .Cancelled ? VoipTheme.voip_conference_cancelled_bg_color :
 					data.isFinished ? VoipTheme.backgroundColor3.get() :  VoipTheme.backgroundColor4.get()
-					self.contentView.layer.borderWidth = expanded == true ? 2.0 : 0.0
+					self.myContentView.layer.borderWidth = expanded == true ? 2.0 : 0.0
 					self.descriptionTitle.isHidden = expanded != true || self.descriptionValue.text?.count == 0
 					self.descriptionValue.isHidden = expanded != true  || self.descriptionValue.text?.count == 0
 					self.infoConf.isSelected = expanded == true
@@ -79,7 +80,7 @@ class ScheduledConferencesCell: UITableViewCell {
 					self.expandedRows.isHidden = expanded != true
 					self.joinEditDelete.isHidden = expanded != true
 					if let myAddress = Core.get().defaultAccount?.params?.identityAddress {
-						self.editConf.isHidden = expanded != true || data.conferenceInfo.organizer?.weakEqual(address2: myAddress) != true
+						self.editConf.isHidden = expanded != true || data.conferenceInfo.organizer?.weakEqual(address2: myAddress) != true || data.conferenceInfo.state == .Cancelled
 					} else {
 						self.editConf.isHidden = true
 					}
@@ -99,31 +100,33 @@ class ScheduledConferencesCell: UITableViewCell {
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		
-		contentView.layer.cornerRadius = corner_radius
-		contentView.clipsToBounds = true
-		contentView.backgroundColor = VoipTheme.header_background_color
-		contentView.layer.borderColor = VoipTheme.primary_color.cgColor
+		contentView.addSubview(myContentView)
+
+		myContentView.layer.cornerRadius = corner_radius
+		myContentView.clipsToBounds = true
+		myContentView.backgroundColor = VoipTheme.header_background_color
+		myContentView.layer.borderColor = VoipTheme.primary_color.cgColor
+		myContentView.matchParentDimmensions(insetedBy: UIEdgeInsets(top: 5,left: 0,bottom: 5,right: 0)).done()
 		
-		
-		contentView.addSubview(clockIcon)
+		myContentView.addSubview(clockIcon)
 		clockIcon.alignParentTop(withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
 		
-		contentView.addSubview(timeDuration)
+		myContentView.addSubview(timeDuration)
 		timeDuration.alignParentTop(withMargin: 15).toRightOf(clockIcon,withLeftMargin:10).alignHorizontalCenterWith(clockIcon).done()
 		
-		contentView.addSubview(organiser)
+		myContentView.addSubview(organiser)
 		organiser.alignParentTop(withMargin: 15).toRightOf(timeDuration, withLeftMargin:10).alignParentRight(withMargin:10).alignHorizontalCenterWith(clockIcon).done()
 		
 		
 		let subjectCancel = UIStackView()
 		subjectCancel.axis = .vertical
-		contentView.addSubview(subjectCancel)
+		myContentView.addSubview(subjectCancel)
 		subjectCancel.alignUnder(view: timeDuration,withMargin: 15).alignParentLeft(withMargin: 10).done()
 		
 		subjectCancel.addArrangedSubview(cancelledLabel)
 		subjectCancel.addArrangedSubview(subject)
 		
-		contentView.addSubview(participantsIcon)
+		myContentView.addSubview(participantsIcon)
 		participantsIcon.alignUnder(view: subject,withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
 		
 		//infoConf.onClick {
@@ -131,18 +134,18 @@ class ScheduledConferencesCell: UITableViewCell {
 			self.conferenceData?.toggleExpand()
 			self.owningTableView?.reloadData()
 		}
-		contentView.addSubview(infoConf)
+		myContentView.addSubview(infoConf)
 		infoConf.imageView?.contentMode = .scaleAspectFit
 		infoConf.alignUnder(view: subject,withMargin: 15).square(30).alignParentRight(withMargin: 10).alignHorizontalCenterWith(participantsIcon).done()
 		infoConf.applyTintedIcons(tintedIcons: VoipTheme.conference_info_button)
 		
 		
-		contentView.addSubview(participants)
+		myContentView.addSubview(participants)
 		participants.alignUnder(view: subject,withMargin: 15).toRightOf(participantsIcon,withLeftMargin:10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
 		
 		expandedRows.axis = .vertical
 		expandedRows.spacing = 10
-		contentView.addSubview(expandedRows)
+		myContentView.addSubview(expandedRows)
 		expandedRows.alignUnder(view: participants,withMargin: 15).matchParentSideBorders(insetedByDx:10).done()
 		
 		expandedRows.addArrangedSubview(descriptionTitle)
@@ -166,7 +169,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		joinEditDelete.spacing = 10
 		joinEditDelete.distribution = .equalSpacing
 		
-		contentView.addSubview(joinEditDelete)
+		myContentView.addSubview(joinEditDelete)
 		joinEditDelete.alignUnder(view: expandedRows,withMargin: 15).alignParentRight(withMargin: 10).done()
 		
 		
@@ -206,7 +209,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		deleteConf.onClick {
 			self.askConfirmationTodeleteEntry()
 		}
-		contentView.addSubview(selectionCheckBox)
+		myContentView.addSubview(selectionCheckBox)
 		selectionCheckBox.alignParentRight(withMargin: delete_checkbox_margin).alignUnder(view:organiser, withMargin: delete_checkbox_margin).done()
 		ScheduledConferencesViewModel.shared.editionEnabled.readCurrentAndObserve { editing in
 			self.selectionCheckBox.isHidden = editing != true
