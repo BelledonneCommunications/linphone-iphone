@@ -89,6 +89,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_chiffreOptionView.hidden = true;
 		_isEncrypted = true;
 		_tableController.isEncrypted = true;
+		_allButton.hidden = true;
 	}
 	
 	if (_isForVoipConference) {

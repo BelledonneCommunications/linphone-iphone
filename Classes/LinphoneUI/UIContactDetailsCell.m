@@ -72,6 +72,8 @@
         ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
         self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
 		[self shouldHideEncryptedChatView:account && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(account)) && model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
+		
+		_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"];
 	}
 
 	if (addr) {

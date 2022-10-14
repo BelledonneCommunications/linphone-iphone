@@ -41,6 +41,7 @@
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 @property (weak, nonatomic) IBOutlet UIRoundedImageView *linphoneImage;
 @property (weak, nonatomic) IBOutlet UIView *optionsView;
+@property(weak, nonatomic) IBOutlet UIButton *chatButton;
 @property (weak, nonatomic) IBOutlet UIView *encryptedChatView;
 
 - (IBAction)onBackClick:(id)event;

@@ -68,6 +68,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_headerView addGestureRecognizer:headerTapGesture];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"];
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self update];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	_waitView.hidden = YES;
