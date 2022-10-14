@@ -91,6 +91,10 @@ class ScheduledConferenceData {
 			String(describing: participant.addressBookEnhancedDisplayName())
 		}.joined(separator: ", ")
 		
+		if (participantsShort.value?.count == 0) {
+			participantsShort.value = " "
+		}
+		
 		participantsExpanded.value = conferenceInfo.participants.map {(participant) in
 			String(describing: participant.addressBookEnhancedDisplayName())+" ("+String(describing: participant.asStringUriOnly())+")"
 		}.joined(separator: "\n")

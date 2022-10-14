@@ -182,12 +182,7 @@ import linphonesw
 	}
 	
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		let daysArray = Array(ScheduledConferencesViewModel.shared.daySplitted.keys.sorted().reversed())
-		let day = daysArray[indexPath.section]
-		guard let data = ScheduledConferencesViewModel.shared.daySplitted[day]?[indexPath.row] else {
-			return UITableView.automaticDimension
-		}
-		return data.expanded.value! ? UITableView.automaticDimension : 100
+		return UITableView.automaticDimension
 	}
 	
 	
