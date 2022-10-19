@@ -139,7 +139,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
 															  statusBar:StatusBarView.class
-																 tabBar:nil
+																tabBar:IPAD ? TabBarView.class :nil
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
 														 isLeftFragment:NO
@@ -214,61 +214,61 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(applicationDidEnterBackground)
-											   name:UIApplicationDidEnterBackgroundNotification
-											 object:nil];
+																				 selector:@selector(applicationDidEnterBackground)
+																						 name:UIApplicationDidEnterBackgroundNotification
+																					 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(applicationWillEnterForeground)
-											   name:UIApplicationWillEnterForegroundNotification
-											 object:nil];
+																				 selector:@selector(applicationWillEnterForeground)
+																						 name:UIApplicationWillEnterForegroundNotification
+																					 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(keyboardWillShow:)
-											   name:UIKeyboardWillShowNotification
-											 object:nil];
+																				 selector:@selector(keyboardWillShow:)
+																						 name:UIKeyboardWillShowNotification
+																					 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(keyboardWillHide:)
-											   name:UIKeyboardWillHideNotification
-											 object:nil];
+																				 selector:@selector(keyboardWillHide:)
+																						 name:UIKeyboardWillHideNotification
+																					 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(onMessageChange:)
-											   name:UITextViewTextDidChangeNotification
-											 object:nil];
+																				 selector:@selector(onMessageChange:)
+																						 name:UITextViewTextDidChangeNotification
+																					 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(callUpdateEvent:)
-											   name:kLinphoneCallUpdate
-											 object:nil];
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(onLinphoneCoreReady:)
-                                               name:kLinphoneGlobalStateUpdate
-                                             object:nil];
+																				 selector:@selector(callUpdateEvent:)
+																						 name:kLinphoneCallUpdate
+																					 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(onLinphoneCoreReady:)
+																						 name:kLinphoneGlobalStateUpdate
+																					 object:nil];
 	
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(endVoicePlayingIfDoingSO:)
-											   name:kLinphoneVoiceMessagePlayerLostFocus
-											 object:nil];
+																				 selector:@selector(endVoicePlayingIfDoingSO:)
+																						 name:kLinphoneVoiceMessagePlayerLostFocus
+																					 object:nil];
 	
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(endVoicePlayingIfDoingSO:)
-											   name:kLinphoneVoiceMessagePlayerEOF
-											 object:nil];
-    if ([_fileContext count] > 0) {
-        [UIView animateWithDuration:0
-                              delay:0
-                            options:UIViewAnimationOptionBeginFromCurrentState
-                         animations:^{
-                             // resizing imagesView
-                             CGRect imagesFrame = [_imagesView frame];
-                             imagesFrame.origin.y = [_messageView frame].origin.y - 120;
-                             imagesFrame.size.height = 120;
-                             [_imagesView setFrame:imagesFrame];
-                             // resizing chatTable
-                             CGRect tableViewFrame = [_tableController.tableView frame];
-                             tableViewFrame.size.height -= 120;
-                             [_tableController.tableView setFrame:tableViewFrame];
-							 [self updateFramesInclRecordingAndReplyView];
-                         }
-                         completion:nil];
-    }
+																				 selector:@selector(endVoicePlayingIfDoingSO:)
+																						 name:kLinphoneVoiceMessagePlayerEOF
+																					 object:nil];
+	if ([_fileContext count] > 0) {
+		[UIView animateWithDuration:0
+													delay:0
+												options:UIViewAnimationOptionBeginFromCurrentState
+										 animations:^{
+			// resizing imagesView
+			CGRect imagesFrame = [_imagesView frame];
+			imagesFrame.origin.y = [_messageView frame].origin.y - 120;
+			imagesFrame.size.height = 120;
+			[_imagesView setFrame:imagesFrame];
+			// resizing chatTable
+			CGRect tableViewFrame = [_tableController.tableView frame];
+			tableViewFrame.size.height -= 120;
+			[_tableController.tableView setFrame:tableViewFrame];
+			[self updateFramesInclRecordingAndReplyView];
+		}
+										 completion:nil];
+	}
 	[self configureForRoom:self.editing];
 	
 	// Resize the popup table depending on wether ephemeral messages are enabled or not.
@@ -278,12 +278,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	// Voice recording & Replies
 	_vrView.hidden = true;
-    _toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
+	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
 	_replyView.hidden = true;
 	_preservePendingActions = false;
 	
 	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
-
+	
+	[PhoneMainView.instance hideTabBar:!IPAD];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
