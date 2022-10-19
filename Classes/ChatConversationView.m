@@ -139,7 +139,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
 															  statusBar:StatusBarView.class
-																 tabBar:nil
+																tabBar:IPAD ? TabBarView.class :nil
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
 														 isLeftFragment:NO
@@ -274,12 +274,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	// Voice recording & Replies
 	_vrView.hidden = true;
-    _toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
+	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
 	_replyView.hidden = true;
 	_preservePendingActions = false;
 	
 	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
-
+	
+	[PhoneMainView.instance hideTabBar:!IPAD];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
