@@ -198,7 +198,7 @@ import linphonesw
 		data.selectedForDeletion.readCurrentAndObserve { selected in
 			let selectedCount = ScheduledConferencesViewModel.shared.conferences.value?.filter{$0.selectedForDeletion.value == true}.count ?? 0
 			let totalCount = ScheduledConferencesViewModel.shared.conferences.value?.count ?? 0
-			self.nextButton.isEnabled = selectedCount > 0
+			self.nextButton.isEnabled = ScheduledConferencesViewModel.shared.editionEnabled.value == false || selectedCount > 0
 			self.selectAllButton.isSelected = selectedCount == totalCount
 		}
 		return cell
