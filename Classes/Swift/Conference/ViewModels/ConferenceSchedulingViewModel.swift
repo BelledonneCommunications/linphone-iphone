@@ -82,11 +82,7 @@ class ConferenceSchedulingViewModel  {
 					if (self.scheduleForLater.value == true && self.sendInviteViaChat.value == true) {
 						// Send conference info even when conf is not scheduled for later
 						// as the conference server doesn't invite participants automatically
-						if let chatRoomParams = try?self.core.createDefaultChatRoomParams() {
-							chatRoomParams.encryptionEnabled = self.isEndToEndEncryptedChatAvailable()
-							chatRoomParams.groupEnabled = false
-							chatRoomParams.backend = chatRoomParams.encryptionEnabled ? .FlexisipChat : .Basic
-							chatRoomParams.subject = self.subject.value!
+						if let chatRoomParams = self.getConferenceInvitationsChatRoomParams() {
 							scheduler.sendInvitations(chatRoomParams: chatRoomParams)
 						}
 					} else {
@@ -243,6 +239,17 @@ class ConferenceSchedulingViewModel  {
 	
 	private static func computeDurationList() -> [Duration] {
 		return [Duration(value: 30, display: "30min"), Duration(value: 60, display: "1h"), Duration(value: 120, display: "2h")]
+	}
+	
+	func getConferenceInvitationsChatRoomParams() -> ChatRoomParams? {
+		if let chatRoomParams = try?self.core.createDefaultChatRoomParams() {
+			chatRoomParams.encryptionEnabled = self.isEndToEndEncryptedChatAvailable()
+			chatRoomParams.groupEnabled = false
+			chatRoomParams.backend = chatRoomParams.encryptionEnabled ? .FlexisipChat : .Basic
+			chatRoomParams.subject = self.subject.value!
+			return chatRoomParams
+		}
+		return nil
 	}
 	
 	
