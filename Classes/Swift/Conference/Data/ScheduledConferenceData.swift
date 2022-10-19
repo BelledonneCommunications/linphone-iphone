@@ -40,7 +40,8 @@ class ScheduledConferenceData {
 	let canEdit = MutableLiveData(false)
 	let isFinished : Bool
 	let selectedForDeletion = MutableLiveData(false)
-	
+	private var conferenceSchedulerDelegate : ConferenceSchedulerDelegateStub? = nil
+	private var conferenceScheduler : ConferenceScheduler? = nil
 	
 	init (conferenceInfo: ConferenceInfo, isFinished: Bool = false) {
 		self.conferenceInfo = conferenceInfo
@@ -102,10 +103,28 @@ class ScheduledConferenceData {
 	func gotoAssociatedChat() {
 		
 	}
+	
+	
+	
 	func deleteConference() {
+		conferenceSchedulerDelegate = ConferenceSchedulerDelegateStub(
+			onStateChanged: { scheduler, state in
+				Log.i("[Conference Deletion] Conference scheduler state is \(state)")
+				if (state == .Ready) {
+					if let chatRoomParams = ConferenceSchedulingViewModel.shared.getConferenceInvitationsChatRoomParams() {
+						scheduler.sendInvitations(chatRoomParams: chatRoomParams) // Send cancel ICS
+						Log.e("[Conference Deletion] sent cancel ICS.")
+					}
+				}
+			})
+		
 		if (conferenceInfo.state != .Cancelled && canEdit.value == true) {
 			Log.i("[Scheduled Conferences] Cancelling conference \(conferenceInfo.subject)")
-			try? Core.get().createConferenceScheduler().cancelConference(conferenceInfo: conferenceInfo)
+			self.conferenceScheduler = try? Core.get().createConferenceScheduler()
+			if (self.conferenceScheduler != nil) {
+				self.conferenceScheduler?.addDelegate(delegate: conferenceSchedulerDelegate!)
+				self.conferenceScheduler?.cancelConference(conferenceInfo: conferenceInfo)
+			}
 		} else {
 			Core.get().deleteConferenceInformation(conferenceInfo: conferenceInfo)
 		}
