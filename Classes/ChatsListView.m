@@ -117,6 +117,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)newChatCreate:(BOOL)isGroup {
     ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+		[view fragmentCompositeDescription];
     view.isForEditing = false;
     view.isGroupChat = isGroup;
     view.tableController.notFirstTime = FALSE;

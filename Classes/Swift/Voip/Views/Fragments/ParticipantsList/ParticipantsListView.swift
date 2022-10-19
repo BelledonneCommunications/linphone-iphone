@@ -103,7 +103,8 @@ import linphonesw
 	}
 	
 	func gotoParticipantsListSelection() {
-		let view: ChatConversationCreateView = self.VIEW(ChatConversationCreateView.compositeViewDescription());
+		let view: ChatConversationCreateView = self.VIEW(ChatConversationCreateView.compositeViewDescription())
+		view.unfragmentCompositeDescription()
 		let addresses =  ConferenceViewModel.shared.conferenceParticipants.value!.map { (data) in String(data.participant.address!.asStringUriOnly()) }
 		view.tableController.contactsGroup = (addresses as NSArray).mutableCopy() as? NSMutableArray
 		view.isForEditing = false

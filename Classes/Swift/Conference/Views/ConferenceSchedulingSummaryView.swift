@@ -238,6 +238,7 @@ import SVProgressHUD
 	
 	func goBackParticipantsListSelection() {
 		let view: ChatConversationCreateView = VIEW(ChatConversationCreateView.compositeViewDescription())
+		view.unfragmentCompositeDescription()
 		let addresses =  ConferenceSchedulingViewModel.shared.selectedAddresses.value!.map { (address) in String(address.asStringUriOnly()) }
 		view.tableController.contactsGroup = (addresses as NSArray).mutableCopy() as? NSMutableArray
 		view.tableController.notFirstTime = true

@@ -270,6 +270,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)sender {
 	if(_create) {
 		ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+		[view fragmentCompositeDescription];
 		view.tableController.contactsGroup = [_contacts mutableCopy];
 		view.tableController.notFirstTime = TRUE;
 		view.isForEditing = FALSE;
@@ -296,6 +297,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddClick:(id)sender {
 	if (_create || _imAdmin) {
 		ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+		[view fragmentCompositeDescription];
 		view.tableController.notFirstTime = TRUE;
 		view.isForEditing = !_create;
 		view.isGroupChat = TRUE;

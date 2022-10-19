@@ -352,6 +352,7 @@
 - (BOOL)handleShortcut:(UIApplicationShortcutItem *)shortcutItem {
     BOOL success = NO;
     if ([shortcutItem.type isEqualToString:@"linphone.phone.action.newMessage"]) {
+				[VIEW(ChatConversationCreateView) fragmentCompositeDescription];
         [PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
         success = YES;
     }

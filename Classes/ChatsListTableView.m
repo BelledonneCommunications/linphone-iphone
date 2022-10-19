@@ -125,6 +125,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"create_chat"];
 		} else if (![self selectFirstRow]) {
 			ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+			[view fragmentCompositeDescription];
 			view.tableController.notFirstTime = FALSE;
 			view.isForVoipConference = FALSE;
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];

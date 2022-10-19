@@ -55,6 +55,9 @@
 - (IBAction)onNextClick:(id)sender;
 - (IBAction)onChiffreClick:(id)sender;
 
+-(void) unfragmentCompositeDescription;
+-(void) fragmentCompositeDescription;
+
 @end
 
 #endif /* ChatConversationCreateView_h */
