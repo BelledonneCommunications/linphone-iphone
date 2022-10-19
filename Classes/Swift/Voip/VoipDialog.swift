@@ -107,7 +107,7 @@ class VoipDialog : UIView{
 		}
 		let rooVc = rootVC()
 		let alert = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
-		alert.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.tabBarView
+		alert.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.statusBarView
 		rooVc?.present(alert, animated: true)
 		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + timeout) {
 			alert.dismiss(animated: true)
