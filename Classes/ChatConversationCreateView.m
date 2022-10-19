@@ -45,6 +45,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
+-(void) unfragmentCompositeDescription {
+	compositeDescription.isLeftFragment = true;
+	compositeDescription.otherFragment = nil;
+}
+
+-(void) fragmentCompositeDescription {
+	compositeDescription.otherFragment = IPAD ? NSStringFromClass(ChatsListView.class) : nil;
+	compositeDescription.isLeftFragment = false;
+}
+
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
@@ -132,7 +143,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	_waitView.hidden = YES;
-	_backButton.hidden = IPAD;
+	_backButton.hidden = IPAD && !(_isForVoipConference||_isForOngoingVoipConference);
 	if(_tableController.contactsGroup.count == 0) {
 		if (!_isForEditing)
 			_nextButton.enabled = FALSE;
