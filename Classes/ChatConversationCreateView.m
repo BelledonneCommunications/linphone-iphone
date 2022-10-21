@@ -46,11 +46,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 -(void) unfragmentCompositeDescription {
+	if (!IPAD)
+		return;
 	compositeDescription.isLeftFragment = true;
 	compositeDescription.otherFragment = nil;
 }
 
 -(void) fragmentCompositeDescription {
+	if (!IPAD)
+		return;
 	compositeDescription.otherFragment = IPAD ? NSStringFromClass(ChatsListView.class) : nil;
 	compositeDescription.isLeftFragment = false;
 }
