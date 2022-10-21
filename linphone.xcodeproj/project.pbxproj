@@ -665,6 +665,7 @@
 		C622E3F226A81290004F5434 /* vr_off.png in Resources */ = {isa = PBXBuildFile; fileRef = C622E3EC26A8128F004F5434 /* vr_off.png */; };
 		C622E3F326A81290004F5434 /* vr_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = C622E3ED26A8128F004F5434 /* vr_pause.png */; };
 		C622E3F426A81290004F5434 /* vr_play.png in Resources */ = {isa = PBXBuildFile; fileRef = C622E3EE26A81290004F5434 /* vr_play.png */; };
+		C63D2F1529029536008F0F66 /* FileUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63D2F1429029536008F0F66 /* FileUtil.swift */; };
 		C63F720D285A24B10066163B /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F7197285A24B10066163B /* ConfigManager.swift */; };
 		C63F720E285A24B10066163B /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F7198285A24B10066163B /* CallManager.swift */; };
 		C63F720F285A24B10066163B /* ConferenceWaitingRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F719B285A24B10066163B /* ConferenceWaitingRoomViewModel.swift */; };
@@ -1836,6 +1837,7 @@
 		C622E3EC26A8128F004F5434 /* vr_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vr_off.png; sourceTree = "<group>"; };
 		C622E3ED26A8128F004F5434 /* vr_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vr_pause.png; sourceTree = "<group>"; };
 		C622E3EE26A81290004F5434 /* vr_play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vr_play.png; sourceTree = "<group>"; };
+		C63D2F1429029536008F0F66 /* FileUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileUtil.swift; sourceTree = "<group>"; };
 		C63F7197285A24B10066163B /* ConfigManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigManager.swift; sourceTree = "<group>"; };
 		C63F7198285A24B10066163B /* CallManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
 		C63F719B285A24B10066163B /* ConferenceWaitingRoomViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceWaitingRoomViewModel.swift; sourceTree = "<group>"; };
@@ -3349,6 +3351,7 @@
 		C63F7196285A24B10066163B /* Swift */ = {
 			isa = PBXGroup;
 			children = (
+				C63D2F1429029536008F0F66 /* FileUtil.swift */,
 				C6B4444726AADA530076C517 /* SwiftUtil.swift */,
 				C63F7197285A24B10066163B /* ConfigManager.swift */,
 				C63F7198285A24B10066163B /* CallManager.swift */,
@@ -5047,6 +5050,7 @@
 				C63F7229285A24B10066163B /* UIButtonExtensions.swift in Sources */,
 				C63F722B285A24B10066163B /* UIDeviceExtensions.swift in Sources */,
 				C63F724B285A24B10066163B /* VoipConferenceDisplayModeSelectionView.swift in Sources */,
+				C63D2F1529029536008F0F66 /* FileUtil.swift in Sources */,
 				CF7602E221086EB200749F76 /* RecordingsListTableView.m in Sources */,
 				C63F721E285A24B10066163B /* Pair.swift in Sources */,
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,

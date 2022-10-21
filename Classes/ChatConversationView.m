@@ -483,7 +483,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         //file shared from photo lib
         NSString *fileName = dict[@"url"];
         [_messageField setText:dict[@"message"]];
-		[self confirmShare:[self nsDataRead] url:nil fileName:fileName];
+				[self confirmShare:[self nsDataRead] url:nil fileName:fileName];
         [defaults removeObjectForKey:@"photoData"];
     } else if (dictFile) {
         NSString *fileName = dictFile[@"url"];

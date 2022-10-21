@@ -234,7 +234,8 @@
 								if (strcmp(cPath, "") != 0) {
 									NSString *tempPath = [NSString stringWithUTF8String:cPath];
 									NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-									filePath = [paths objectAtIndex:0];
+									filePath = [NSString stringWithFormat:@"%@/%s", [paths objectAtIndex:0],linphone_chat_message_get_message_id(super.message)];
+									[FileUtil ensureDirectoryExistsWithPath:filePath];
 									filePath = [filePath stringByAppendingPathComponent:name];
 									[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
 								}
@@ -300,7 +301,8 @@
 			if (strcmp(cPath, "") != 0) {
 				NSString *tempPath = [NSString stringWithUTF8String:cPath];
 				NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-				filePath = [paths objectAtIndex:0];
+				filePath = [NSString stringWithFormat:@"%@/%s", [paths objectAtIndex:0],linphone_chat_message_get_message_id(super.message)];
+				[FileUtil ensureDirectoryExistsWithPath:filePath];
 				filePath = [filePath stringByAppendingPathComponent:fileName];
 				[[NSFileManager defaultManager] moveItemAtPath:tempPath toPath:filePath error:nil];
 			}
