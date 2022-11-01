@@ -118,7 +118,6 @@ class ConferenceViewModel {
 				self.isVideoConference.value = conference.currentParams?.videoEnabled
 				if (state == .Created) {
 					self.configureConference(conference)
-					self.conferenceCreationPending.value = false
 				}
 				if (state == .TerminationPending) {
 					self.terminateConference(conference)
@@ -127,18 +126,18 @@ class ConferenceViewModel {
 			onSubjectChanged: { (conference: Conference, subject: String) in
 				self.subject.value = subject
 			},
-			onParticipantDeviceIsSpeakingChanged: { (conference: Conference, participantDevice: ParticipantDevice, isSpeaking:Bool) in
-				Log.i("[Conference] Participant [\(participantDevice.address!.asStringUriOnly())] is speaking = \(isSpeaking)")
-				if (isSpeaking) {
+			onActiveSpeakerParticipantDevice: { (conference: Conference, participantDevice: ParticipantDevice) in
+				Log.i("[Conference] Participant [\(participantDevice.address?.asStringUriOnly())] is currently being displayed as active speaker")
 					if let device = self.conferenceParticipantDevices.value?.filter ({
-						$0.participantDevice.address!.weakEqual(address2: participantDevice.address!) && !$0.isMe // TODO: FIXME: remove, this is a temporary workaround to not have your name displayed above someone else video in active speaker layout when you talk
+						$0.participantDevice.address!.weakEqual(address2: participantDevice.address!)
 					}).first {
-						self.speakingParticipant.value = device
+						if (device.participantDevice.address?.asString() != self.speakingParticipant.value?.participantDevice.address?.asString()) {
+							Log.i("[Conference] Found actively speaking participant device")
+							self.speakingParticipant.value = device
+						}
 					} else {
-						Log.w("[Conference] Participant device [\((participantDevice.address?.asStringUriOnly()).orNil)] is speaking but couldn't find it in devices list")
+						Log.w("[Conference] Participant device [\((participantDevice.address?.asStringUriOnly()).orNil)] is the active speaker but couldn't find it in devices list")
 					}
-					
-				}
 			}
 		)
 		
@@ -148,7 +147,10 @@ class ConferenceViewModel {
 				if (state == Conference.State.Instantiated) {
 					self.conferenceCreationPending.value = true
 					self.initConference(conference)
-					
+				} else if (state == Conference.State.Created) {
+					if (self.conferenceCreationPending.value == true) {
+						self.conferenceCreationPending.value = false
+					}
 				}
 			}
 		)
