@@ -21,9 +21,8 @@
 #import "ChatConversationCreateView.h"
 
 @interface UIChatCreateCollectionViewCell : UICollectionViewCell
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property  UILabel *nameLabel;
 @property (strong, nonatomic) ChatConversationCreateView *controller;
 @property (strong, nonatomic) NSString *uri;
-- (id)initWithName:(NSString *)identifier;
 - (void)onDelete;
 @end

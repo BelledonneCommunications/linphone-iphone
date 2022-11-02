@@ -69,7 +69,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self.view addGestureRecognizer:tap];
 	UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
 	layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-	layout.itemSize = CGSizeMake(100.0 , 50.0);
+	layout.estimatedItemSize =  UICollectionViewFlowLayoutAutomaticSize;
 	_collectionController.collectionView = _collectionView;
 	_collectionController = (ChatConversationCreateCollectionViewController *)[[UICollectionViewController alloc] initWithCollectionViewLayout:layout];
 	_collectionView.dataSource = self;
@@ -286,7 +286,7 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 	return NO;
 }
 
-#pragma mark - UICollectionViewDataSource
+#pragma mark - UICollectionViewDataSource & Delegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
 	return _tableController.contactsGroup.count;
 }
@@ -308,9 +308,10 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 		ms_free(phone);
 	} else
 		addr = linphone_address_new(uri.UTF8String);
-	cell = [cell initWithName:[FastAddressBook displayNameForAddress:addr]];
+	[cell.nameLabel setText:[FastAddressBook displayNameForAddress:addr]];
 	linphone_address_unref(addr);
 	return cell;
 }
+
 
 @end
