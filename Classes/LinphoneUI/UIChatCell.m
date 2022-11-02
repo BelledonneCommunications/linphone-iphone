@@ -21,6 +21,7 @@
 #import "PhoneMainView.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @implementation UIChatCell
 
@@ -38,6 +39,10 @@
 		[self addSubview:sub];
 	}
 	[_imdmIcon setHidden:TRUE];
+	_unreadCountView.backgroundColor = VoipTheme.primary_color;
+	_unreadCountView.layer.cornerRadius = 10;
+	_unreadCountView.clipsToBounds = true;
+	_unreadCountLabel.textAlignment = NSTextAlignmentCenter;
 	return self;
 }
 
