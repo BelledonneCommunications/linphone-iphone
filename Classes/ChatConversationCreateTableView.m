@@ -251,8 +251,6 @@
 
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	NSInteger index = 0;
-	_searchBar.text = @"";
-	[self searchBar:_searchBar textDidChange:@""];
 	if(cell.selectedImage.hidden) {
 		if(![_contactsGroup containsObject:cell.addressLabel.text]) {
 			[_contactsGroup addObject:cell.addressLabel.text];
