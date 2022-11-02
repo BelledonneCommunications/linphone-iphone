@@ -188,9 +188,10 @@ class ScheduledConferencesCell: UITableViewCell {
 				VoipDialog.toast(message: VoipTexts.conference_edit_error)
 				return
 			}
-			let infoDate = Date(timeIntervalSince1970: Double(confData.conferenceInfo.dateTime))
 			ConferenceSchedulingViewModel.shared.reset()
-			ConferenceSchedulingViewModel.shared.scheduledDateTime.value = infoDate
+			let seconds = confData.conferenceInfo.dateTime % 86400
+			ConferenceSchedulingViewModel.shared.scheduledDate.value = Date(timeIntervalSince1970:TimeInterval(confData.conferenceInfo.dateTime - seconds))
+			ConferenceSchedulingViewModel.shared.scheduledTime.value = Date(timeIntervalSince1970:TimeInterval(seconds))
 			ConferenceSchedulingViewModel.shared.description.value = confData.description.value
 			ConferenceSchedulingViewModel.shared.subject.value = confData.subject.value
 			ConferenceSchedulingViewModel.shared.scheduledDuration.value = ConferenceSchedulingViewModel.durationList.firstIndex(where: {$0.value == confData.conferenceInfo.duration})

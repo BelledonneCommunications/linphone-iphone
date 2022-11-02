@@ -30,10 +30,10 @@ import IQKeyboardManager
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
-	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .date)
+	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date)
 	let timeZoneValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}))
 	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}))
-	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .time)
+	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledTime,pickerMode: .time)
 	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description)
 	let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: ConferenceSchedulingViewModel.shared.subject,maxLines:1)
 
@@ -42,6 +42,7 @@ import IQKeyboardManager
 		
 		super.viewDidLoad(
 			backAction: {
+				ConferenceSchedulingViewModel.shared.reset()
 				PhoneMainView.instance().popView(self.compositeViewDescription())
 			},nextAction: {
 				self.gotoParticipantsListSelection()
@@ -211,10 +212,10 @@ import IQKeyboardManager
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
+		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDate
 		timeZoneValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledTimeZone.value!)
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
-		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
+		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledTime
 		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
 		IQKeyboardManager.shared().isEnabled = true
 	}

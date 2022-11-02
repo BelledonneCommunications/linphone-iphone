@@ -30,9 +30,13 @@ class StyledDatePicker: UIView {
 
 	var liveValue:MutableLiveData<Date>? {
 		didSet {
-			if let liveValue = liveValue {
-				datePicker.date = liveValue.value!
+			if let liveValue = liveValue?.value {
+				datePicker.date = liveValue
 				self.valueChanged(datePicker: datePicker)
+			} else {
+				formattedLabel.text = nil
+				var cal = Calendar.current
+				datePicker.date = pickerMode == .date ? Date() : cal.startOfDay(for: Date())
 			}
 		}
 		
