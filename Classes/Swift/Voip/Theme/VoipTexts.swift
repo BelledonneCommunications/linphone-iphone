@@ -126,6 +126,7 @@ import UIKit
 	@objc static let conference_schedule_start = NSLocalizedString("Schedule meeting",comment:"")
 	@objc static let conference_schedule_edit = NSLocalizedString("Edit meeting",comment:"")
 	@objc static let conference_schedule_subject_hint = NSLocalizedString("Meeting subject",comment:"")
+	@objc static let conference_group_call_subject_hint = NSLocalizedString("Group call subject",comment:"")
 	@objc static let conference_schedule_subject_title = NSLocalizedString("Subject",comment:"")
 	@objc static let conference_schedule_summary = NSLocalizedString("Meeting info",comment:"")
 	@objc static let conference_schedule_time = NSLocalizedString("Time",comment:"")

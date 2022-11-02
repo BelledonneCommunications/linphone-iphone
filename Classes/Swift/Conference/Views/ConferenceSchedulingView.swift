@@ -35,6 +35,7 @@ import IQKeyboardManager
 	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}))
 	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .time)
 	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description)
+	let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: ConferenceSchedulingViewModel.shared.subject,maxLines:1)
 
 	
 	override func viewDidLoad() {
@@ -53,7 +54,6 @@ import IQKeyboardManager
 		contentView.addSubview(subjectLabel)
 		subjectLabel.alignParentLeft(withMargin: form_margin).alignParentTop().done()
 		
-		let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: ConferenceSchedulingViewModel.shared.subject,maxLines:1)
 		contentView.addSubview(subjectInput)
 		subjectInput.alignUnder(view: subjectLabel,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).height(form_input_height).done()
 		
@@ -196,6 +196,7 @@ import IQKeyboardManager
     
     // Schedule for later observer
     ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in
+			self.subjectInput.setPlaceHolder(phText: forLater == true ? VoipTexts.conference_schedule_subject_hint : VoipTexts.conference_group_call_subject_hint)
       scheduleForm.isHidden = forLater != true
 			super.titleLabel.text = forLater == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit :  VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
 			mandatoryLabel.removeConstraints().done()

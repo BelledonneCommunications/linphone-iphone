@@ -41,6 +41,8 @@ class StyledTextView: UITextView, UITextViewDelegate {
 		}
 	}
 	
+
+	
 	init (_ style:TextStyle, placeHolder:String? = nil, liveValue: MutableLiveData<String>, readOnly:Bool = false, maxLines:Int = 999) {
 		self.maxLines = maxLines
 		self.style = style
@@ -90,6 +92,15 @@ class StyledTextView: UITextView, UITextViewDelegate {
 	func textViewDidChange(_ textView: UITextView) {
 		textView.removeTextUntilSatisfying(maxNumberOfLines: self.maxLines)
 		liveValue?.value = textView.text
+	}
+	
+	func setPlaceHolder(phText:String) {
+		if text == "" || text == placeholder {
+			self.placeholder = phText
+			showPlaceHolder()
+		} else {
+			self.placeholder = phText
+		}
 	}
 	
 }
