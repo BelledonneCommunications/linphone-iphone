@@ -1791,6 +1791,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	_popupMenu.layer.masksToBounds = false;
 	_toggleMenuButton.hidden = false;
 	_popupMenu.tableFooterView = [UIView new];
+	_popupMenu.separatorStyle = UITableViewCellSeparatorStyleNone;
 	[_popupMenu reloadData];
 }
 

@@ -970,7 +970,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	_popupMenu.scrollEnabled = false;
 	_popupMenu.dataSource = self;
 	_popupMenu.delegate = self;
-	
+	_popupMenu.separatorStyle = UITableViewCellSeparatorStyleNone;
+
 	_popupMenu.layer.masksToBounds = false;
 	
 	_popupMenu.layer.shadowColor = [UIColor darkGrayColor].CGColor;
