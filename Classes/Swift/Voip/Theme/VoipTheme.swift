@@ -88,7 +88,7 @@ import UIKit
 	static let call_header_subtitle = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 14.0)
 	static let call_generated_avatar_large = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .center, font: fontName+"-Regular", size: 53.0)
 	static let call_generated_avatar_medium = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .center, font: fontName+"-Regular", size: 27.0)
-	static let call_generated_avatar_small = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .center, font: fontName+"-Regular", size: 16.0)
+	static let call_generated_avatar_small = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .center, font: fontName+"-Bold", size: 25.0)
 
 	static let dtmf_label = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 30.0)
 	static let call_remote_name = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)

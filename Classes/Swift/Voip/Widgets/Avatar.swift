@@ -21,12 +21,12 @@ import Foundation
 import linphonesw
 import SnapKit
 
-class Avatar : UIImageView {
+class Avatar : UIView {
 	
 	static let diameter_for_call_views = 191
 	static let diameter_for_call_views_land = 130
 	static let groupAvatar = UIImage(named:"voip_multiple_contacts_avatar")
-	static let singleAvatar = UIImage(named:"avatar")?.tinted(with: .white)
+	static let singleAvatar = UIImage(named:"avatar")
 	
 	required init?(coder: NSCoder) {
 		initialsLabel =  StyledLabel(VoipTheme.call_generated_avatar_large)
@@ -34,39 +34,47 @@ class Avatar : UIImageView {
 	}
 	
 	let initialsLabel: StyledLabel
-	
+	let iconImageView = UIImageView()
+
 	init (color:LightDarkColor,textStyle:TextStyle) {
 		initialsLabel =  StyledLabel(textStyle)
 		super.init(frame: .zero)
 		clipsToBounds = true
 		self.backgroundColor = color.get()
 		addSubview(initialsLabel)
-		_ = initialsLabel.matchParentSideBorders().matchParentHeight()
+		addSubview(iconImageView)
+		iconImageView.backgroundColor = .white
+		initialsLabel.matchParentSideBorders().matchParentHeight().done()
+		iconImageView.matchParentDimmensions().done()
 	}
 	
 	
 	func fillFromAddress(address:Address, isGroup:Bool = false) {
 		if (isGroup) {
-			self.image = Avatar.groupAvatar
+			iconImageView.image = Avatar.groupAvatar
+			iconImageView.isHidden = false
 			initialsLabel.isHidden = true
 		} else if let image = address.contact()?.avatar() {
-			self.image = image
+			iconImageView.image = image
 			initialsLabel.isHidden = true
+			iconImageView.isHidden = false
 		} else {
 			if (Core.get().defaultAccount?.isPhoneNumber(username: address.username) == true) {
-				self.image = Avatar.singleAvatar
+				iconImageView.image = Avatar.singleAvatar
 				initialsLabel.isHidden = true
+				iconImageView.isHidden = false
 			} else {
-				self.image = nil
 				initialsLabel.text = address.initials()
 				initialsLabel.isHidden = false
+				iconImageView.isHidden = true
 			}
 		}
 	}
 	
 	func showAsAvatarIcon() {
-		self.image = Avatar.singleAvatar
+		iconImageView.image = Avatar.singleAvatar
 		initialsLabel.isHidden = true
+		iconImageView.isHidden = false
 	}
 		
 	override func layoutSubviews() {
