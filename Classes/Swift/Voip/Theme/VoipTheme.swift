@@ -106,6 +106,7 @@ import UIKit
 	static let call_stats_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 12.0)
 	static let call_stats_font_title = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 18.0)
 	static let calls_list_header_font = TextStyle(fgColor: voipTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 20.0)
+	static let navigation_header_font = TextStyle(fgColor: LightDarkColor(primary_color,primary_color), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .center, font: fontName+"-Bold", size: 27.0)
 
 	static let call_list_active_name_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 18.0)
 	static let call_list_active_sip_uri_font = TextStyle(fgColor: LightDarkColor(.white,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 12.0)
@@ -138,6 +139,8 @@ import UIKit
 		
 	static let empty_list_font = TextStyle(fgColor: primaryTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 18.0)
 	static let conf_list_filter_button_font = TextStyle(fgColor: LightDarkColor(.black,.black), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 14.0)
+	static let conference_list_subject_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 18.0)
+	static let conference_list_address_desc_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)
 
 	
 	// Buttons Background (State colors)

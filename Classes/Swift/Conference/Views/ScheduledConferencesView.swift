@@ -28,6 +28,7 @@ import linphonesw
 	let noConference = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_no_schedule)
 	let filters = UIStackView()
 	let selectAllButton = CallControlButton(buttonTheme:VoipTheme.nav_button("deselect_all"))
+	let separator = UIView()
 
 	static let compositeDescription = UICompositeViewDescription(ScheduledConferencesView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -52,6 +53,7 @@ import linphonesw
 			},
 			nextActionEnableCondition: MutableLiveData(),
 			title:VoipTexts.conference_scheduled)
+		super.titleLabel.applyStyle(VoipTheme.navigation_header_font)
 		
 		// Select all
 		selectAllButton.setImage(UIImage(named: "deselect_all"), for: .selected)
@@ -86,7 +88,10 @@ import linphonesw
 		filters.spacing = 10
 		filters.alignParentLeft(withMargin: 10).alignUnder(view: super.topBar,withMargin: self.form_margin).done()
 
-		
+		self.view.addSubview(separator)
+		separator.backgroundColor  = VoipTheme.voip_light_gray
+		separator.matchParentSideBorders().height(1).alignUnder(view: filters,withMargin: self.form_margin).done()
+
 		// Conference list
 		
 		self.view.addSubview(conferenceListView)
@@ -151,7 +156,7 @@ import linphonesw
 		super.viewWillAppear(animated)
 		self.conferenceListView.reloadData()
 		self.conferenceListView.removeConstraints().done()
-		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: filters,withMargin: self.form_margin).alignParentBottom().done()
+		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: separator).alignParentBottom().done()
 		noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
 		super.nextButton.isEnabled = Core.get().defaultAccount != nil
 		ScheduledConferencesViewModel.shared.editionEnabled.value = false

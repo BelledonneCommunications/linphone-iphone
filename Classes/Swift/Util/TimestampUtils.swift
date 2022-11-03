@@ -57,7 +57,10 @@ class TimestampUtils {
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateStyle = .long
 		dateFormatter.timeStyle = .none
-		return dateFormatter.string(from: date)
+		let dayFormatter = DateFormatter()
+		dayFormatter.dateFormat = "EEEE"
+		let day = dayFormatter.string(from: date)
+		return day.prefix(1).uppercased() + day.dropFirst()+" "+dateFormatter.string(from: date)
 	}
 	
 	static func timeToString(date:Date) -> String {

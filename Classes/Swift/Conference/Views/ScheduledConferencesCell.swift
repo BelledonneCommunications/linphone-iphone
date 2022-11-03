@@ -32,15 +32,15 @@ class ScheduledConferencesCell: UITableViewCell {
 	let clockIcon = UIImageView(image: UIImage(named: "conference_schedule_time_default"))
 	let timeDuration = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let organiser = StyledLabel(VoipTheme.conference_invite_desc_font)
-	let subject = StyledLabel(VoipTheme.conference_invite_subject_font)
+	let subject = StyledLabel(VoipTheme.conference_list_subject_font)
 	let cancelledLabel = StyledLabel(VoipTheme.conference_cancelled_title_font)
 	let participantsIcon = UIImageView(image: UIImage(named: "conference_schedule_participants_default"))
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let infoConf = UIButton()
 	
-	let descriptionTitle = StyledLabel(VoipTheme.conference_invite_desc_font, VoipTexts.conference_description_title)
-	let descriptionValue = StyledLabel(VoipTheme.conference_invite_desc_font)
-	let urlTitle = StyledLabel(VoipTheme.conference_invite_desc_font, VoipTexts.conference_schedule_address_title)
+	let descriptionTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_description_title)
+	let descriptionValue = StyledLabel(VoipTheme.conference_list_address_desc_font)
+	let urlTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_title)
 	let urlValue = StyledLabel(VoipTheme.conference_scheduling_font)
 	let copyLink  = CallControlButton(width:button_size,height:button_size,buttonTheme: VoipTheme.scheduled_conference_action("voip_copy"))
 	let joinConf = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
@@ -55,7 +55,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
 			if let data = conferenceData {
-				timeDuration.text = "\(data.time.value)"+(data.duration.value != nil ? " ( \(data.duration.value) )" : "")
+				timeDuration.text = "\(data.time.value)"+(data.duration.value != nil ? " (\(data.duration.value))" : "")
 				organiser.text = VoipTexts.conference_schedule_organizer+data.organizer.value!
 				subject.text = data.subject.value!
 				cancelledLabel.text = data.isConferenceCancelled.value == true ? ( data.canEdit.value == true ? VoipTexts.conference_scheduled_cancelled_by_me:  VoipTexts.conference_scheduled_cancelled_by_organizer)  : nil
@@ -84,8 +84,8 @@ class ScheduledConferencesCell: UITableViewCell {
 					} else {
 						self.editConf.isHidden = true
 					}
-					self.participants.removeConstraints().alignUnder(view: self.subject,withMargin: 15).toRightOf(self.participantsIcon,withLeftMargin:10).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
-					self.joinEditDelete.removeConstraints().alignUnder(view: self.expandedRows,withMargin: 15).alignParentRight(withMargin: 10).done()
+					self.participants.removeConstraints().alignUnder(view: self.subject,withMargin: 10).toRightOf(self.participantsIcon,withLeftMargin:10).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+					self.joinEditDelete.removeConstraints().alignUnder(view: self.expandedRows,withMargin: 10).alignParentRight(withMargin: 10).done()
 					if (expanded == true) {
 						self.joinEditDelete.alignParentBottom(withMargin: 10).done()
 					} else {
@@ -109,25 +109,25 @@ class ScheduledConferencesCell: UITableViewCell {
 		myContentView.matchParentDimmensions(insetedBy: UIEdgeInsets(top: 5,left: 0,bottom: 5,right: 0)).done()
 		
 		myContentView.addSubview(clockIcon)
-		clockIcon.alignParentTop(withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
+		clockIcon.alignParentTop(withMargin: 10).square(20).alignParentLeft(withMargin: 10).done()
 		
 		myContentView.addSubview(timeDuration)
-		timeDuration.alignParentTop(withMargin: 15).toRightOf(clockIcon,withLeftMargin:10).alignHorizontalCenterWith(clockIcon).done()
+		timeDuration.alignParentTop(withMargin: 10).toRightOf(clockIcon,withLeftMargin:10).alignHorizontalCenterWith(clockIcon).done()
 		
 		myContentView.addSubview(organiser)
-		organiser.alignParentTop(withMargin: 15).toRightOf(timeDuration, withLeftMargin:10).alignParentRight(withMargin:10).alignHorizontalCenterWith(clockIcon).done()
+		organiser.alignParentTop(withMargin: 10).toRightOf(timeDuration, withLeftMargin:10).alignParentRight(withMargin:10).alignHorizontalCenterWith(clockIcon).done()
 		
 		
 		let subjectCancel = UIStackView()
 		subjectCancel.axis = .vertical
 		myContentView.addSubview(subjectCancel)
-		subjectCancel.alignUnder(view: timeDuration,withMargin: 15).alignParentLeft(withMargin: 10).done()
+		subjectCancel.alignUnder(view: timeDuration,withMargin: 10).matchParentSideBorders(insetedByDx: 10.0).done()
 		
 		subjectCancel.addArrangedSubview(cancelledLabel)
 		subjectCancel.addArrangedSubview(subject)
 		
 		myContentView.addSubview(participantsIcon)
-		participantsIcon.alignUnder(view: subject,withMargin: 15).square(15).alignParentLeft(withMargin: 10).done()
+		participantsIcon.alignUnder(view: subject,withMargin: 5).square(25).alignParentLeft(withMargin: 10).done()
 		
 		//infoConf.onClick {
 		contentView.onClick {
@@ -136,12 +136,12 @@ class ScheduledConferencesCell: UITableViewCell {
 		}
 		myContentView.addSubview(infoConf)
 		infoConf.imageView?.contentMode = .scaleAspectFit
-		infoConf.alignUnder(view: subject,withMargin: 15).square(30).alignParentRight(withMargin: 10).alignHorizontalCenterWith(participantsIcon).done()
+		infoConf.alignUnder(view: subject,withMargin: 5).square(25).alignParentRight(withMargin: 10).done()
 		infoConf.applyTintedIcons(tintedIcons: VoipTheme.conference_info_button)
 		
 		
 		myContentView.addSubview(participants)
-		participants.alignUnder(view: subject,withMargin: 15).toRightOf(participantsIcon,withLeftMargin:10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
+		participants.alignUnder(view: subject,withMargin: 10).toRightOf(participantsIcon,withLeftMargin:10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
 		
 		expandedRows.axis = .vertical
 		expandedRows.spacing = 10
@@ -170,7 +170,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		joinEditDelete.distribution = .equalSpacing
 		
 		myContentView.addSubview(joinEditDelete)
-		joinEditDelete.alignUnder(view: expandedRows,withMargin: 15).alignParentRight(withMargin: 10).done()
+		joinEditDelete.alignUnder(view: expandedRows,withMargin: 10).alignParentRight(withMargin: 10).done()
 		
 		
 		joinEditDelete.addArrangedSubview(joinConf)

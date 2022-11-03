@@ -80,7 +80,7 @@ import UIKit
 	@objc static let chat_room_group_info_admin = NSLocalizedString("Admin",comment:"")
 	@objc static let conference_creation_failed = NSLocalizedString("Failed to create meeting",comment:"")
 	@objc static let conference_default_title = NSLocalizedString("Remote group call",comment:"")
-	@objc static let conference_description_title = NSLocalizedString("Description:",comment:"")
+	@objc static let conference_description_title = NSLocalizedString("Description",comment:"")
 	@objc static let conference_display_mode_active_speaker = NSLocalizedString("Active speaker mode",comment:"")
 	@objc static let conference_display_mode_audio_only = NSLocalizedString("Audio only mode",comment:"")
 	@objc static let conference_display_mode_mosaic = NSLocalizedString("Mosaic mode",comment:"")
