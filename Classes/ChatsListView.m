@@ -39,6 +39,10 @@
 										   selector:@selector(ephemeralDeleted:)
 											   name:kLinphoneEphemeralMessageDeletedInRoom
 											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(displayModeChanged)
+																						 name:kDisplayModeChanged
+																					 object:nil];
 	[_backToCallButton update];
 	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
@@ -68,6 +72,9 @@
 }
 
 
+- (void)displayModeChanged{
+	[self.tableController.tableView reloadData];
+}
 
 - (void)ephemeralDeleted:(NSNotification *)notif {
 	//LinphoneChatRoom *r =[[notif.userInfo objectForKey:@"room"] intValue];

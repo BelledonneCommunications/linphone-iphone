@@ -85,6 +85,7 @@
     [LinphoneManager.instance.fastAddressBook reloadFriends];
 	
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
+	
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -182,6 +183,11 @@
 		}
 		
 	}];
+	
+	if ([UIDeviceBridge switchedDisplayMode]) {
+		[AvatarBridge prepareIt];
+		[NSNotificationCenter.defaultCenter postNotificationName:kDisplayModeChanged object:nil];
+	}
 	
 }
 

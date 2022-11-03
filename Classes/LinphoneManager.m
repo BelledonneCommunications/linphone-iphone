@@ -82,6 +82,7 @@ NSString *const kLinphoneConfStateParticipantListChanged = @"kLinphoneConfStateP
 NSString *const kLinphoneMagicSearchStarted = @"LinphoneMagicSearchStarted";
 NSString *const kLinphoneMagicSearchFinished = @"LinphoneMagicSearchFinished";
 NSString *const kLinphoneMagicSearchMoreAvailable = @"LinphoneMagicSearchMoreAvailable";
+NSString *const kDisplayModeChanged = @"DisplayModeChanged";
 
 NSString *const kLinphoneMsgNotificationAppGroupId = @"group.org.linphone.phone.msgNotification";
 

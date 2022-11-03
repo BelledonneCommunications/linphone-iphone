@@ -87,13 +87,20 @@ class Avatar : UIView {
 
 @objc class AvatarBridge : NSObject { // Ugly work around to tap into the swift Avatars, until rest of the app is reworked in Swift.
 	static var shared : Avatar? = nil
-	static let size = 50.0
+	static let size = 50.0	
+	@objc static func prepareIt() {
+		if (shared != nil) {
+			shared?.removeFromSuperview()
+		}
+		shared = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
+		PhoneMainView.instance().mainViewController.view.addSubview(shared!)
+		PhoneMainView.instance().mainViewController.view.sendSubviewToBack(shared!)
+		shared?.bounds.size = CGSize(width: size, height: size)
+	}
+	
 	@objc static func imageForAddress(address:OpaquePointer) -> UIImage? {
 		if (shared == nil) {
-			shared = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
-			PhoneMainView.instance().mainViewController.view.addSubview(shared!)
-			PhoneMainView.instance().mainViewController.view.sendSubviewToBack(shared!)
-			shared?.bounds.size = CGSize(width: size, height: size)
+			prepareIt()
 		}
 		let sAddr = Address.getSwiftObject(cObject: address)
 		shared?.fillFromAddress(address: sAddr)
@@ -102,10 +109,7 @@ class Avatar : UIView {
 	
 	@objc static func imageForInitials(displayName:String) -> UIImage? {
 		if (shared == nil) {
-			shared = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
-			PhoneMainView.instance().mainViewController.view.addSubview(shared!)
-			PhoneMainView.instance().mainViewController.view.sendSubviewToBack(shared!)
-			shared?.bounds.size = CGSize(width: size, height: size)
+			prepareIt()
 		}
 		shared?.initialsLabel.text = Address.initials(displayName: displayName)
 		shared?.initialsLabel.isHidden = false

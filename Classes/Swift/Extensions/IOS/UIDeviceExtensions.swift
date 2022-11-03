@@ -54,4 +54,24 @@ extension UIDevice {
 		return [.landscapeRight,.landscapeLeft].contains(UIDevice.current.orientation) ? sidePadding : topPadding
 	}
 	
+	static func switchedDisplayMode() -> Bool {
+		let displayMode = UserDefaults.standard.string(forKey: "displayMode")
+		if #available(iOS 13.0, *) {
+			if UITraitCollection.current.userInterfaceStyle == .light {
+				UserDefaults.standard.set("light", forKey: "displayMode")
+			} else {
+				UserDefaults.standard.set("dark", forKey: "displayMode")
+			}
+		}
+		return displayMode != nil && displayMode != UserDefaults.standard.string(forKey: "displayMode")
+	}
+	
+}
+
+@objc class UIDeviceBridge : NSObject {
+	@available(iOS 12.0, *)
+	static let displayMode = MutableLiveData<UIUserInterfaceStyle>()
+	@objc static func switchedDisplayMode() -> Bool {
+		return UIDevice.switchedDisplayMode()
+	}
 }

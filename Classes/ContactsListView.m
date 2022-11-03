@@ -147,6 +147,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	 selector:@selector(onMagicSearchMoreAvailable:)
 	 name:kLinphoneMagicSearchMoreAvailable
 	 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(displayModeChanged)
+																						 name:kDisplayModeChanged
+																					 object:nil];
 }
 
 - (void)onMagicSearchStarted:(NSNotification *)k {
@@ -256,6 +260,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		[view newContact:[ContactSelection getAddAddress]];
 	}
+}
+
+- (void)displayModeChanged{
+	[self.tableController.tableView reloadData];
 }
 
 - (IBAction)onDeleteClick:(id)sender {

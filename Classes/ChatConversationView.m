@@ -370,8 +370,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-
-
 - (void)configureForRoom:(BOOL)editing {
 	if (!_chatRoom) {
 		_chatView.hidden = YES;

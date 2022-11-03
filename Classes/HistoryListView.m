@@ -67,10 +67,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// Fake event
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 	[_toggleSelectionButton setImage:[UIImage imageNamed:@"select_all_default.png"] forState:UIControlStateSelected];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(displayModeChanged)
+																						 name:kDisplayModeChanged
+																					 object:nil];
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
 	self.view = NULL;
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark -
@@ -98,6 +103,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_conferenceButton.selected = false;
 	}
 	_selectedButtonImage.frame = frame;
+}
+
+- (void)displayModeChanged{
+	[self.tableController.tableView reloadData];
 }
 
 #pragma m ~ark - Action Functions
