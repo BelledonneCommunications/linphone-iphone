@@ -160,7 +160,7 @@
 		/*first and last name only when editting */
 		return (self.tableView.isEditing) ? 1 : 0;
 	} else if (section == ContactSections_Sip) {
-		return _contact.createdFromLdap ? 0 : _contact.sipAddresses.count;
+		return _contact.createdFromLdapOrProvisioning ? 0 : _contact.sipAddresses.count;
 	} else if (section == ContactSections_Number) {
           return _contact.phones.count;
         } else if (section == ContactSections_Email) {
@@ -283,7 +283,7 @@
 		if (section == ContactSections_Number) {
 			text = NSLocalizedString(@"Phone numbers", nil);
 			addEntryName = NSLocalizedString(@"Add new phone number", nil);
-		} else if (section == ContactSections_Sip && !_contact.createdFromLdap) {
+		} else if (section == ContactSections_Sip && !_contact.createdFromLdapOrProvisioning) {
 			text = NSLocalizedString(@"SIP addresses", nil);
 			addEntryName = NSLocalizedString(@"Add new SIP address", nil);
 		} else if (section == ContactSections_Email &&

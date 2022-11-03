@@ -136,7 +136,7 @@
 				address = [NSString stringWithUTF8String:uri];
 				
 				contact = [[Contact alloc] initWithFriend:friend];
-				[contact setCreatedFromLdap:TRUE];
+				[contact setCreatedFromLdapOrProvisioning:TRUE];
 				[_ldapContactAddressBookMap setObject:contact forKey:address];
 			}
 			
@@ -221,7 +221,7 @@
     BOOL greyCellForEncryptedChat = _isEncrypted ? capabilities > 1 : TRUE;
     BOOL greyCellForGroupChat = _isGroupChat ? capabilities > 0 : TRUE;
     cell.userInteractionEnabled =  cell.greyView.hidden = greyCellForEncryptedChat && greyCellForGroupChat;
-	cell.displayNameLabel.text = [contact createdFromLdap] ? [contact displayName] : [FastAddressBook displayNameForAddress:addr];
+	cell.displayNameLabel.text = [contact createdFromLdapOrProvisioning] ? [contact displayName] : [FastAddressBook displayNameForAddress:addr];
 	char *str = linphone_address_as_string(addr);
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:str] : phoneOrAddr;
 	ms_free(str);

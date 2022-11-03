@@ -36,7 +36,7 @@
   _person = acncontact;
   _friend = afriend ? linphone_friend_ref(afriend) : NULL;
   _added = FALSE;
-  _createdFromLdap = FALSE;
+  _createdFromLdapOrProvisioning = FALSE;
   _phones = [[NSMutableArray alloc] init];
   _sipAddresses = [[NSMutableArray alloc] init];
   _emails = [[NSMutableArray alloc] init];

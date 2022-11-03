@@ -119,8 +119,8 @@
 	_contact = acontact;
 	_emptyLabel.hidden = (_contact != NULL);
 	_avatarImage.hidden = !_emptyLabel.hidden;
-	_deleteButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdap];
-	_editButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdap];
+	_deleteButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdapOrProvisioning];
+	_editButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdapOrProvisioning];
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
@@ -284,7 +284,7 @@
 	if (IPAD && self.contact == NULL) {
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
-	} else if (self.contact != NULL && self.contact.createdFromLdap) {
+	} else if (self.contact != NULL && self.contact.createdFromLdapOrProvisioning) {
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
 	}
@@ -314,7 +314,7 @@
 		}
 	}
 	
-	if (self.contact != NULL && self.contact.createdFromLdap) {
+	if (self.contact != NULL && self.contact.createdFromLdapOrProvisioning) {
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
 	}

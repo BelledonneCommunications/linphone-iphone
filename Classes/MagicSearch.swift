@@ -65,7 +65,7 @@ import linphonesw
 		if let friend = searchResult.friend {
 			if (searchResult.sourceFlags == MagicSearchSource.LdapServers.rawValue), let newContact = Contact(friend: friend.getCobject) {
 				// Contact comes from LDAP, creating a new one
-				newContact.createdFromLdap = true
+				newContact.createdFromLdapOrProvisioning = true
 				return newContact
 			}
 			if let addr = friend.address, let foundContact = getContactFromAddr(addr: addr) {
@@ -86,6 +86,11 @@ import linphonesw
 			return foundContact
 		}
 		
+		// Friend comes from provisioning
+		if let addr = searchResult.address, let friend = searchResult.friend, let newContact = Contact(friend: friend.getCobject) {
+			newContact.createdFromLdapOrProvisioning = true
+			return newContact
+		}
 		return nil
 	}
 	
