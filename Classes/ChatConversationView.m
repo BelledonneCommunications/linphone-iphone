@@ -1873,6 +1873,11 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
 	
+	if (!_chatRoom) {
+		// Workaround to avoid crash in background for release 4.7. This shouldn't happen though, so there may be a deeper issue not found yet
+		return cell;
+	}
+	
 	int firstIndex = isOneToOne ? 0 : 1;
 	
 	if (!isOneToOne && indexPath.row == 0) {
