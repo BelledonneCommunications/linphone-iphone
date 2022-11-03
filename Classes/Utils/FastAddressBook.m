@@ -34,7 +34,9 @@
 	@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
 		UIImage *retImage = [contact avatar];
 		if (retImage == nil) {
-			retImage = [UIImage imageNamed:@"avatar.png"];
+			retImage = contact.friend && linphone_friend_get_addresses(contact.friend) ?
+				[AvatarBridge imageForAddressWithAddress:linphone_friend_get_addresses(contact.friend)->data] :
+				[AvatarBridge imageForInitialsWithDisplayName:[contact displayName]];
 		}
 		if (retImage.size.width != retImage.size.height) {
 			retImage = [retImage squareCrop];
@@ -109,6 +111,7 @@
 			}
 		}
 	}
+
 	return contact;
 }
 

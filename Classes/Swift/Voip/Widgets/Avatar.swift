@@ -100,4 +100,17 @@ class Avatar : UIView {
 		return shared?.toImage()
 	}
 	
+	@objc static func imageForInitials(displayName:String) -> UIImage? {
+		if (shared == nil) {
+			shared = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
+			PhoneMainView.instance().mainViewController.view.addSubview(shared!)
+			PhoneMainView.instance().mainViewController.view.sendSubviewToBack(shared!)
+			shared?.bounds.size = CGSize(width: size, height: size)
+		}
+		shared?.initialsLabel.text = Address.initials(displayName: displayName)
+		shared?.initialsLabel.isHidden = false
+		shared?.iconImageView.isHidden = true
+		return shared?.toImage()
+	}
+	
 }
