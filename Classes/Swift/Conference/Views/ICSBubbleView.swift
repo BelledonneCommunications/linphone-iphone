@@ -196,6 +196,35 @@ import EventKitUI
 		return subject
 	}
 	
+	@objc static func getConferenceInfo(cmessage: OpaquePointer) -> OpaquePointer? {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		var result : OpaquePointer? = nil
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					result =  conferenceInfo.getCobject
+				}
+			}
+		}
+		return result
+	}
+	
+	@objc static func getConferenceSummary(cmessage: OpaquePointer) -> String? {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		var subject:String? = nil
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					subject = conferenceInfo.state == .New ? VoipTexts.conference_invite_title + conferenceInfo.subject :
+					conferenceInfo.state == .Updated ? VoipTexts.conference_update_title + conferenceInfo.subject :
+					VoipTexts.conference_cancel_title + conferenceInfo.subject
+				}
+			}
+		}
+		return subject
+	}
+	
+	
 	@objc static func getDescriptionHeightFromContent(cmessage: OpaquePointer) -> CGFloat {
 		let message = ChatMessage.getSwiftObject(cObject: cmessage)
 		var height = 0.0
