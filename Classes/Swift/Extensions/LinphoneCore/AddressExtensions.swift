@@ -31,7 +31,8 @@ extension Address {
 	}
 	
 	private func initials(displayName: String?) -> String?  { // Basic ImproveMe
-		return displayName?.components(separatedBy: " ")
+		let separator =  displayName?.contains(" ") == true ? " " : "."
+		return displayName?.components(separatedBy: separator)
 			.reduce("") {
 				($0.isEmpty ? "" : "\($0.first?.uppercased() ?? "")") +
 				($1.isEmpty ? "" : "\($1.first?.uppercased() ?? "")")

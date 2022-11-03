@@ -24,6 +24,7 @@
 #import "LinphoneManager.h"
 #import "ContactsListView.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @implementation FastAddressBook {
 	CNContactStore* store;
@@ -46,7 +47,11 @@
 	if ([LinphoneManager isMyself:addr] && [LinphoneUtils hasSelfAvatar]) {
 		return [LinphoneUtils selfAvatar];
 	}
-	return [FastAddressBook imageForContact:[FastAddressBook getContactWithAddress:addr]];
+	UIImage *contactImage =  [[FastAddressBook getContactWithAddress:addr] avatar];
+	if (contactImage)
+		return contactImage;
+	else
+		return [AvatarBridge imageForAddressWithAddress:addr];
 }
 
 + (UIImage *)imageForSecurityLevel:(LinphoneChatRoomSecurityLevel)level {

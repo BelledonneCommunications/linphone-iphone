@@ -84,3 +84,20 @@ class Avatar : UIView {
 	
 }
 
+
+@objc class AvatarBridge : NSObject { // Ugly work around to tap into the swift Avatars, until rest of the app is reworked in Swift.
+	static var shared : Avatar? = nil
+	static let size = 50.0
+	@objc static func imageForAddress(address:OpaquePointer) -> UIImage? {
+		if (shared == nil) {
+			shared = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.call_generated_avatar_small)
+			PhoneMainView.instance().mainViewController.view.addSubview(shared!)
+			PhoneMainView.instance().mainViewController.view.sendSubviewToBack(shared!)
+			shared?.bounds.size = CGSize(width: size, height: size)
+		}
+		let sAddr = Address.getSwiftObject(cObject: address)
+		shared?.fillFromAddress(address: sAddr)
+		return shared?.toImage()
+	}
+	
+}
