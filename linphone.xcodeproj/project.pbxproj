@@ -639,7 +639,6 @@
 		8CBD7BA320B6B80D00E5DCC0 /* ChatConversationImdnView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CBD7BA520B6B80D00E5DCC0 /* ChatConversationImdnView.xib */; };
 		8CBD7BA620B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CBD7BA820B6B82400E5DCC0 /* UIChatConversationInfoTableViewCell.xib */; };
 		8CBD7BA920B6B82A00E5DCC0 /* UIChatConversationImdnTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CBD7BAB20B6B82A00E5DCC0 /* UIChatConversationImdnTableViewCell.xib */; };
-		8CBD7BAC20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */; };
 		8CD99A1C20908C27008A7CDA /* callkit_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A1B20908C27008A7CDA /* callkit_logo@2x.png */; };
 		8CD99A372090A824008A7CDA /* splashscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A352090A823008A7CDA /* splashscreen@2x.png */; };
 		8CD99A382090A824008A7CDA /* splashscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A362090A824008A7CDA /* splashscreen.png */; };
@@ -842,6 +841,7 @@
 		C66B03BB26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */; };
 		C66B040A26EFDA55009B5EDC /* reply_cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = C66B040926EFDA54009B5EDC /* reply_cancel.png */; };
 		C66B040E26F095D1009B5EDC /* cancel_forward.png in Resources */ = {isa = PBXBuildFile; fileRef = C66B040D26F095CE009B5EDC /* cancel_forward.png */; };
+		C684F1FA2913D65500736775 /* SnapkitBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C684F1F92913D65500736775 /* SnapkitBridge.swift */; };
 		C6A1BB3526E8815400540D50 /* menu_info.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3126E8815300540D50 /* menu_info.png */; };
 		C6A1BB3626E8815400540D50 /* menu_forward_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3226E8815400540D50 /* menu_forward_default.png */; };
 		C6A1BB3726E8815400540D50 /* menu_copy_text_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */; };
@@ -1154,7 +1154,6 @@
 		6187B1D024B3272000D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatConversationImdnTableViewCell.strings; sourceTree = "<group>"; };
 		6187B1D124B3272000D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatConversationInfoTableViewCell.strings; sourceTree = "<group>"; };
 		6187B1D224B3272100D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatCreateCell.strings; sourceTree = "<group>"; };
-		6187B1D324B3272100D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIChatCreateCollectionViewCell.strings; sourceTree = "<group>"; };
 		6187B1D424B3272100D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UICompositeView.strings; sourceTree = "<group>"; };
 		6187B1D524B3272200D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = "hu.lproj/UICompositeView~ipad.strings"; sourceTree = "<group>"; };
 		6187B1D624B3272200D580FB /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/UIConfirmationDialog.strings; sourceTree = "<group>"; };
@@ -1773,7 +1772,6 @@
 		8CBD7BA420B6B80D00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ChatConversationImdnView.xib; sourceTree = "<group>"; };
 		8CBD7BA720B6B82400E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationInfoTableViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BAA20B6B82A00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationImdnTableViewCell.xib; sourceTree = "<group>"; };
-		8CBD7BAD20B6B82F00E5DCC0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCreateCollectionViewCell.xib; sourceTree = "<group>"; };
 		8CBD7BB120B6B86900E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		8CBD7BB220B6B86A00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
 		8CBD7BB720B6B86E00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatConversationInfoView.strings; sourceTree = "<group>"; };
@@ -1795,7 +1793,6 @@
 		8CBD7BC920B6B87B00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCell.strings; sourceTree = "<group>"; };
 		8CBD7BCA20B6B87D00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatConversationInfoTableViewCell.strings; sourceTree = "<group>"; };
 		8CBD7BCB20B6B87E00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatConversationImdnTableViewCell.strings; sourceTree = "<group>"; };
-		8CBD7BCC20B6B87E00E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCreateCollectionViewCell.strings; sourceTree = "<group>"; };
 		8CBD7BCD20B6B88000E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatCreateCell.strings; sourceTree = "<group>"; };
 		8CBD7BCE20B6B88100E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICompositeView.strings; sourceTree = "<group>"; };
 		8CBD7BCF20B6B88200E5DCC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/UICompositeView~ipad.strings"; sourceTree = "<group>"; };
@@ -2015,6 +2012,7 @@
 		C66B03C326E8EB87009B5EDC /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
 		C66B040926EFDA54009B5EDC /* reply_cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reply_cancel.png; sourceTree = "<group>"; };
 		C66B040D26F095CE009B5EDC /* cancel_forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel_forward.png; sourceTree = "<group>"; };
+		C684F1F92913D65500736775 /* SnapkitBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapkitBridge.swift; sourceTree = "<group>"; };
 		C6A1BB3126E8815300540D50 /* menu_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_info.png; sourceTree = "<group>"; };
 		C6A1BB3226E8815400540D50 /* menu_forward_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_forward_default.png; sourceTree = "<group>"; };
 		C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_copy_text_default.png; sourceTree = "<group>"; };
@@ -2478,7 +2476,6 @@
 				639E9CA81C0DB7F200019A75 /* UIChatCreateCell.xib */,
 				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
 				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
-				8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */,
 				8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */,
 				8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */,
 				8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */,
@@ -3442,6 +3439,7 @@
 		C63F71B3285A24B10066163B /* IOS */ = {
 			isa = PBXGroup;
 			children = (
+				C684F1F92913D65500736775 /* SnapkitBridge.swift */,
 				C63F71B4285A24B10066163B /* UIApplication+Extension.swift */,
 				C63F71B6285A24B10066163B /* UIVIewControllerExtensions.swift */,
 				C63F71B7285A24B10066163B /* UIImageExtensions.swift */,
@@ -4467,7 +4465,6 @@
 				24BFAAA3209B0630004F47A7 /* contacts_sip_selected.png in Resources */,
 				633FEE0D1D3CD5590014B822 /* chat_attachment_disabled@2x.png in Resources */,
 				639E9CA61C0DB7F200019A75 /* UIChatCreateCell.xib in Resources */,
-				8CBD7BAC20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib in Resources */,
 				633FEEA31D3CD55A0014B822 /* numpad_1_default.png in Resources */,
 				633FEEA51D3CD55A0014B822 /* numpad_1_over.png in Resources */,
 				633FEF2E1D3CD55A0014B822 /* route_speaker_default.png in Resources */,
@@ -5006,6 +5003,7 @@
 				8C9C5E0D1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m in Sources */,
 				631098491D4660580041F2B3 /* CountryListView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
+				C684F1FA2913D65500736775 /* SnapkitBridge.swift in Sources */,
 				C63F7228285A24B10066163B /* OptionalExtensions.swift in Sources */,
 				C63F7241285A24B10066163B /* ParticipantsListView.swift in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
@@ -5448,16 +5446,6 @@
 				6187B1D024B3272000D580FB /* hu */,
 			);
 			name = UIChatConversationImdnTableViewCell.xib;
-			sourceTree = "<group>";
-		};
-		8CBD7BAE20B6B82F00E5DCC0 /* UIChatCreateCollectionViewCell.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8CBD7BAD20B6B82F00E5DCC0 /* Base */,
-				8CBD7BCC20B6B87E00E5DCC0 /* fr */,
-				6187B1D324B3272100D580FB /* hu */,
-			);
-			name = UIChatCreateCollectionViewCell.xib;
 			sourceTree = "<group>";
 		};
 		C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */ = {
