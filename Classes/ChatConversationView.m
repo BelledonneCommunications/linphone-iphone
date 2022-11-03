@@ -1876,7 +1876,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	int firstIndex = isOneToOne ? 0 : 1;
 	
 	if (!isOneToOne && indexPath.row == 0) {
-		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_voip_meeting_schedule"] newSize:CGSizeMake(25, 25)];
+		cell.imageView.image = [UIImage imageNamed:@"menu_voip_meeting_schedule"];
 		cell.textLabel.text = NSLocalizedString(@"Schedule a meeting",nil);
 	}
 	
@@ -1892,51 +1892,56 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 				contact = [FastAddressBook getContactWithAddress:linphone_chat_room_get_peer_address(_chatRoom)];
 			}
 			if (contact == nil) {
-				cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"contact_add_default.png"] newSize:CGSizeMake(20, 25)];
+				cell.imageView.image = [UIImage imageNamed:@"contact_add_default.png"];
 				cell.textLabel.text = NSLocalizedString(@"Add to contacts",nil);
 			} else {
-				cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"contacts_all_default.png"] newSize:CGSizeMake(20, 25)];
+				cell.imageView.image = [UIImage imageNamed:@"contacts_all_default.png"];
 				cell.textLabel.text = NSLocalizedString(@"Go to contact",nil);
 			}
 		} else {
-			cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"chat_group_informations.png"] newSize:CGSizeMake(25, 25)];
+			cell.imageView.image = [UIImage imageNamed:@"chat_group_informations.png"];
 			cell.textLabel.text = NSLocalizedString(@"Group infos",nil);
 		}
 	}
 	
 	if (isEncrypted && indexPath.row == 1+firstIndex) {
-		cell.imageView.image = [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_security_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.imageView.image = [UIImage imageNamed:@"menu_security_default.png"];
 		cell.textLabel.text = NSLocalizedString(@"Conversation's devices",nil);
 	}
 	
 	bool canEphemeral = [self canAdminEphemeral:_chatRoom];
 	if (canEphemeral && indexPath.row == 2+firstIndex) {
-		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"ephemeral_messages_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.imageView.image =  [UIImage imageNamed:@"ephemeral_messages_default.png"];
 		cell.textLabel.text = NSLocalizedString(@"Ephemeral messages",nil);
 	}
 	
 	if ((isEncrypted && indexPath.row == 3+firstIndex) || (!isEncrypted && indexPath.row == 1+firstIndex)) {
 		if ([LinphoneManager getChatroomPushEnabled:_chatRoom]) {
-			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_off.png"] newSize:CGSizeMake(20, 25)];
+			cell.imageView.image = [UIImage imageNamed:@"menu_notifications_off.png"];
 			cell.textLabel.text = NSLocalizedString(@"Mute notifications",nil);
 		} else {
-			cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"menu_notifications_on.png"] newSize:CGSizeMake(20, 25)];
+			cell.imageView.image = [UIImage imageNamed:@"menu_notifications_on.png"];
 			cell.textLabel.text = NSLocalizedString(@"Un-mute notifications",nil);
 		}
 	}
 	
 	if ((isEncrypted && indexPath.row == 4+firstIndex) || (!isEncrypted && indexPath.row == 2+firstIndex)) {
-		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"delete_default.png"] newSize:CGSizeMake(20, 25)];
+		cell.imageView.image =  [UIImage imageNamed:@"delete_default.png"];
 		cell.textLabel.text = NSLocalizedString(@"Delete messages",nil);
 	}
 	
 	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4+firstIndex)||(canEphemeral && indexPath.row == 5+firstIndex)))
 		|| (!isEncrypted && indexPath.row == 3+firstIndex)) {
-		cell.imageView.image =  [LinphoneUtils resizeImage:[UIImage imageNamed:@"chat_group_informations.png"] newSize:CGSizeMake(25, 25)];
+		cell.imageView.image =  [UIImage imageNamed:@"chat_group_informations.png"];
 		cell.textLabel.text = NSLocalizedString(@"Show address and identity",nil);
 	}
 	
-	cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+	UIImageView * icon = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.frame.size.width-37, 7, 30, 30)];
+	icon.contentMode = UIViewContentModeScaleAspectFit;
+	icon.image =  cell.imageView.image;
+	[cell.contentView addSubview:icon];
+	cell.imageView.image = nil;
+	
 	return cell;
 }
 - (IBAction)onToggleMenu:(id)sender {
