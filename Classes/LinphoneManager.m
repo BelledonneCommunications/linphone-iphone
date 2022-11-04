@@ -1261,7 +1261,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		[LinphoneManager.instance lpConfigSetInt:0 forKey:@"must_link_account_time"];
 	} else {
 		LinphoneAccount *account = linphone_core_get_default_account(LC);
-		LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
+		LinphoneAccountParams const *accountParams = account ? linphone_account_get_params(account) : NULL;
 		if (account &&
 		    strcmp(linphone_account_params_get_domain(accountParams),
 			   [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
