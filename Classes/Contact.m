@@ -488,4 +488,23 @@
 	_friend = NULL;
 }
 
+- (NSMutableArray*)getSipAddressesWithoutDuplicatePhoneNumbers {
+	NSMutableArray* resAdresses = [[NSMutableArray alloc] init];
+	
+	for (NSString *address in _sipAddresses) {
+		LinphoneAddress *addr = linphone_core_interpret_url_2(LC, [address UTF8String], YES);
+		bool isFoundInPhones = false;
+		if (addr) {
+			for (NSString *phoneNb in _phones) {
+				if ([phoneNb isEqualToString:[NSString stringWithUTF8String:linphone_address_get_username(addr)]]) {
+					isFoundInPhones = true;
+					break;
+				}
+			}
+		}
+		if (!isFoundInPhones) [resAdresses addObject:address];
+	}
+	
+	return resAdresses;
+}
 @end

@@ -58,4 +58,6 @@
 - (BOOL)removeSipAddressAtIndex:(NSInteger)index;
 - (BOOL)removePhoneNumberAtIndex:(NSInteger)index;
 - (BOOL)removeEmailAtIndex:(NSInteger)index;
+
+- (NSMutableArray*)getSipAddressesWithoutDuplicatePhoneNumbers;
 @end

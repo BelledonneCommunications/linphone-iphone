@@ -192,6 +192,7 @@
 			// above)
 			if (linphone_friend_get_ref_key(f) == NULL) {
 				Contact *contact = [[Contact alloc] initWithFriend:f];
+				contact.createdFromLdapOrProvisioning = true;
 				[self registerAddrsFor:contact];
 			}
 			friends = friends->next;
@@ -209,14 +210,6 @@
 - (void) fetchContactsInBackGroundThread{
 	[_addressBookMap removeAllObjects];
 	_addressBookMap = [NSMutableDictionary dictionary];
-	
-	LinphoneFriend *testFriend = linphone_core_create_friend(LC);
-	linphone_friend_set_name(testFriend, "Moi Maisentest");
-	linphone_friend_set_native_uri(testFriend, "sip:pouetpouet@sip.linphone.org");
-	const MSList *lists = linphone_core_get_friends_lists(LC);
-	LinphoneFriendList *fl = lists->data;
-	linphone_friend_list_add_friend(fl, testFriend);
-	const MSList *friends = linphone_friend_list_get_friends(fl);
 	
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]) {
 		CNEntityType entityType = CNEntityTypeContacts;

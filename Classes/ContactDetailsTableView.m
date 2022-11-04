@@ -160,15 +160,15 @@
 		/*first and last name only when editting */
 		return (self.tableView.isEditing) ? 1 : 0;
 	} else if (section == ContactSections_Sip) {
-		return _contact.createdFromLdapOrProvisioning ? 0 : _contact.sipAddresses.count;
+		return [_contact getSipAddressesWithoutDuplicatePhoneNumbers].count;
 	} else if (section == ContactSections_Number) {
-          return _contact.phones.count;
-        } else if (section == ContactSections_Email) {
-          BOOL showEmails = [LinphoneManager.instance
-              lpConfigBoolForKey:@"show_contacts_emails_preference"];
-          return showEmails ? _contact.emails.count : 0;
-        }
-        return 0;
+		return _contact.phones.count;
+	} else if (section == ContactSections_Email) {
+		BOOL showEmails = [LinphoneManager.instance
+						   lpConfigBoolForKey:@"show_contacts_emails_preference"];
+		return showEmails ? _contact.emails.count : 0;
+	}
+	return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
