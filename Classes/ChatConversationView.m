@@ -285,6 +285,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_toggleRecord.enabled = linphone_core_get_calls_nb(LC) == 0;
 	
 	[PhoneMainView.instance hideTabBar:!IPAD];
+	[self createVoicePlayer];
+	[self createVoiceRecorder];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -375,7 +378,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_chatView.hidden = YES;
 		return;
 	}
-
+	
 	if (!_chatRoomCbs) {
 		_chatRoomCbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
 		linphone_chat_room_cbs_set_state_changed(_chatRoomCbs, on_chat_room_state_changed);
@@ -2216,7 +2219,7 @@ void on_shared_player_eof_reached(LinphonePlayer *p) {
 }
 
 -(void) stopAllPlays {
-	if (linphone_player_get_user_data(_sharedVoicePlayer)) {
+	if (_sharedVoicePlayer &&linphone_player_get_user_data(_sharedVoicePlayer)) {
 		NSDictionary* userInfo = @{@"path": [NSString stringWithUTF8String:linphone_player_get_user_data(_sharedVoicePlayer)]};
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneVoiceMessagePlayerLostFocus object:nil userInfo:userInfo];
 	}
