@@ -344,8 +344,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableController scrollToBottom:true];
     [self refreshImageDrawer];
 	[self stopAllPlays];
-    [self setIdleChatFrame];
-    [self keyboardWillHide:nil];
+	[self keyboardWillHide:nil];
 
 }
 
