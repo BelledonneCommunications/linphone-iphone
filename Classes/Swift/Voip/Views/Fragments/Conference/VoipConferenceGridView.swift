@@ -53,8 +53,15 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
 				model.conferenceParticipantDevices.clearObservers()
-				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
-					self.reloadData()
+				model.conferenceParticipantDevices.readCurrentAndObserve { (devices) in
+					if (devices!.count > model.maxParticipantsForMosaicLayout && model.conference.value?.currentParams?.videoEnabled == true && model.conferenceDisplayMode.value == .Grid) {
+						Log.w("[Conference] \(model.conference) More than \(model.maxParticipantsForMosaicLayout) participants \(devices!.count), forcing active speaker layout from Grid")
+						model.conferenceDisplayMode.value = .ActiveSpeaker
+						model.changeLayout(layout: .ActiveSpeaker)
+						VoipDialog.toast(message: VoipTexts.conference_too_many_participants_for_mosaic_layout)
+					} else {
+						self.reloadData()
+					}
 				}
 				model.isConferenceLocallyPaused.clearObservers()
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
@@ -183,7 +190,10 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	func reloadData() {
 		conferenceViewModel?.conferenceParticipantDevices.value?.forEach {
 			$0.clearObservers()
-		}		
+		}
+		if let participantCount = conferenceViewModel?.conferenceParticipantDevices.value!.count, participantCount > conferenceViewModel!.maxParticipantsForMosaicLayout {
+			return
+		}
 		if (self.isHidden) {
 			self.grid.reloadData()
 			return

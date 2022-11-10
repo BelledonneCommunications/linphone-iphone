@@ -68,12 +68,6 @@ class ConferenceViewModel {
 			onParticipantAdded: { (conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) Participant \(participant) added")
 				self.updateParticipantsList(conference)
-				let count = self.conferenceParticipantDevices.value!.count
-				if (count > self.maxParticipantsForMosaicLayout && conference.currentParams?.videoEnabled == true && conference.call?.currentParams?.conferenceVideoLayout == .Grid) {
-					Log.w("[Conference] \(conference) More than \(self.maxParticipantsForMosaicLayout) participants \(count), forcing active speaker layout from Grid")
-					self.conferenceDisplayMode.value = .ActiveSpeaker
-					self.changeLayout(layout: .ActiveSpeaker)
-				}
 			},
 			onParticipantRemoved: {(conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) \(participant) Participant removed")
