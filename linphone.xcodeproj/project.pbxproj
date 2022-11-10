@@ -857,6 +857,8 @@
 		C6B4444526AAD0980076C517 /* file_audio_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6B4444026AAD0970076C517 /* file_audio_default.png */; };
 		C6B4444626AAD0980076C517 /* file_pdf_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6B4444126AAD0970076C517 /* file_pdf_default.png */; };
 		C6B4444826AADA530076C517 /* SwiftUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B4444726AADA530076C517 /* SwiftUtil.swift */; };
+		C6E3E7EC291D642B00DDFC46 /* side_menu_voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6E3E7EB291D642B00DDFC46 /* side_menu_voip_meeting_schedule.png */; };
+		C6E3E7EE291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C6E3E7ED291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png */; };
 		C6F55645287CC69F0056E213 /* voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */; };
 		C6F55647287CCFB70056E213 /* menu_voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
@@ -2029,6 +2031,8 @@
 		C6B4444026AAD0970076C517 /* file_audio_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_audio_default.png; sourceTree = "<group>"; };
 		C6B4444126AAD0970076C517 /* file_pdf_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file_pdf_default.png; sourceTree = "<group>"; };
 		C6B4444726AADA530076C517 /* SwiftUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUtil.swift; sourceTree = "<group>"; };
+		C6E3E7EB291D642B00DDFC46 /* side_menu_voip_meeting_schedule.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = side_menu_voip_meeting_schedule.png; sourceTree = "<group>"; };
+		C6E3E7ED291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "side_menu_voip_meeting_schedule@2x.png"; sourceTree = "<group>"; };
 		C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voip_meeting_schedule.png; sourceTree = "<group>"; };
 		C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_voip_meeting_schedule.png; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
@@ -2663,6 +2667,8 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				C6E3E7ED291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png */,
+				C6E3E7EB291D642B00DDFC46 /* side_menu_voip_meeting_schedule.png */,
 				C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */,
 				C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */,
 				C63F72A4285A2F1B0066163B /* conference_schedule_calendar_default.png */,
@@ -4026,6 +4032,7 @@
 				633FEF371D3CD55A0014B822 /* routes_disabled@2x.png in Resources */,
 				C63F72D1285A2F1E0066163B /* voip_numpad_star.png in Resources */,
 				633FEE0F1D3CD5590014B822 /* chat_attachment_over@2x.png in Resources */,
+				C6E3E7EC291D642B00DDFC46 /* side_menu_voip_meeting_schedule.png in Resources */,
 				633FEF381D3CD55A0014B822 /* routes_selected.png in Resources */,
 				633FEE0B1D3CD5590014B822 /* chat_attachment_default@2x.png in Resources */,
 				633FEED41D3CD55A0014B822 /* numpad_7_default@2x.png in Resources */,
@@ -4156,6 +4163,7 @@
 				633FEF201D3CD55A0014B822 /* presence_unregistered.png in Resources */,
 				61586B8D217A173F0038AC45 /* menu_options.png in Resources */,
 				61AEBEC82191E48400F35E7F /* chevron_list_close@2x.png in Resources */,
+				C6E3E7EE291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png in Resources */,
 				633FEF341D3CD55A0014B822 /* routes_default.png in Resources */,
 				C63F72ED285A2F1E0066163B /* voip_merge_calls.png in Resources */,
 				633FEE061D3CD5590014B822 /* chat_add_default.png in Resources */,
