@@ -278,6 +278,10 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 			[self lpConfigSetString:@"conflate" forKey:@"handle_content_encoding" inSection:@"misc"];
 #endif
 		}
+        
+        if ([self lpConfigStringForKey:@"display_link_account_popup"] == nil) {
+            [self lpConfigSetBool:true forKey:@"display_link_account_popup"];
+        }
 
 		[self migrateFromUserPrefs];
 		[self loadAvatar];
@@ -1282,7 +1286,14 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 							 handler:^(UIAlertAction * action) {
 					[PhoneMainView.instance changeCurrentView:AssistantLinkView.compositeViewDescription];
 				}];
+                   
+            UIAlertAction* otherAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Never ask again", nil)
+                        style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction * action) {
+                [LinphoneManager.instance lpConfigSetBool:false forKey:@"display_link_account_popup"];
+            }];
 			defaultAction.accessibilityLabel = @"Later";
+            [errView addAction:otherAction];
 			[errView addAction:defaultAction];
 			[errView addAction:continueAction];
 			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
@@ -1301,7 +1312,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	NSDate *nextTime =
 		[NSDate dateWithTimeIntervalSince1970:[self lpConfigIntForKey:@"must_link_account_time" withDefault:1]];
 	NSDate *now = [NSDate date];
-	if (nextTime.timeIntervalSince1970 > 0 && [now earlierDate:nextTime] == nextTime) {
+    if (nextTime.timeIntervalSince1970 > 0 && [now earlierDate:nextTime] == nextTime && [LinphoneManager.instance lpConfigBoolForKey:@"display_link_account_popup"]) {
 		LinphoneAccount *account = linphone_core_get_default_account(LC);
 		if (account) {
 			const char *username = linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)));
