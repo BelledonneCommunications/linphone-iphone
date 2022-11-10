@@ -40,8 +40,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let subjectLabel = StyledLabel(VoipTheme.call_display_name_duration)
 	let duration = CallTimer(nil, VoipTheme.call_display_name_duration)
 	let muted = MicMuted(VoipActiveSpeakerParticipantCell.mute_size)
+	let pause = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 
-	
 	let remotelyRecording =  RemotelyRecordingView(height: ActiveCallView.remote_recording_height,text: VoipTexts.call_remote_recording)
 	var recordCallButtons : [CallControlButton] = []
 	var pauseCallButtons :  [CallControlButton] = []
@@ -89,6 +89,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						model.meParticipant.value?.micMuted.readCurrentAndObserve { muted in
 							self.muted.isHidden = muted != true
 						}
+						model.meParticipant.value?.isInConference.readCurrentAndObserve { isIn in
+							self.pause.isHidden = isIn == true
+							if (isIn != true) {
+								self.activeSpeakerVideoView.isHidden = true
+								self.activeSpeakerVideoViewAlone.isHidden = true
+							}
+						}
 					} else if (otherSpeakersCount == 1) {
 						if let data =  model.activeSpeakerConferenceParticipantDevices.value!.first {
 							data.videoEnabled.readCurrentAndObserve { video in
@@ -96,6 +103,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 							}
 							data.micMuted.readCurrentAndObserve { muted in
 								self.muted.isHidden = muted != true
+							}
+							data.isInConference.readCurrentAndObserve { isIn in
+								self.pause.isHidden = isIn == true || data.isJoining.value == true
+								if (isIn != true) {
+									self.activeSpeakerVideoView.isHidden = true
+									self.activeSpeakerVideoViewAlone.isHidden = true
+								}
 							}
 						}
 						self.layoutRotatableElements()
@@ -128,6 +142,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						speakingParticipant?.videoEnabled.readCurrentAndObserve { video in
 							self.fillActiveSpeakerSpace(data: speakingParticipant,video: video == true)
 							self.muted.isHidden = true
+						}
+						speakingParticipant?.isInConference.readCurrentAndObserve { isIn in
+							self.pause.isHidden = isIn == true
+							if (isIn != true) {
+								self.activeSpeakerVideoView.isHidden = true
+								self.activeSpeakerVideoViewAlone.isHidden = true
+							}
 						}
 					}
 				}
@@ -286,6 +307,12 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		
 		activeSpeakerView.addSubview(activeSpeakerDisplayName)
 		activeSpeakerDisplayName.alignParentLeft(withMargin:ActiveCallView.bottom_displayname_margin_left).alignParentRight().alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
+		
+		activeSpeakerAvatar.addSubview(pause)
+		pause.isHidden = true
+		pause.backgroundColor = activeSpeakerAvatar.backgroundColor
+		pause.matchParentDimmensions().done()
+		pause.contentMode = .scaleAspectFit
 		
 		// CollectionViews
 		grid.dataSource = self
