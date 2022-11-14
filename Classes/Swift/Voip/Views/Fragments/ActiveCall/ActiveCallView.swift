@@ -97,6 +97,7 @@ class ActiveCallView: UIView { // = currentCall
 				self.pauseCallButtons.first?.isHidden = video != true
 				self.recordCallButtons.last?.isHidden = video == true
 				self.pauseCallButtons.last?.isHidden = video == true
+				UIApplication.shared.isIdleTimerDisabled = video == true
 			}
 
 		}
