@@ -217,7 +217,7 @@ class ControlsViewModel {
 	
 	func isVideoCallOrConferenceActive() -> Bool {
 		if let currentCall = core.currentCall, let params = currentCall.params {
-			return params.videoEnabled && (currentCall.conference  == nil || params.videoDirection == MediaDirection.SendRecv)
+			return currentCall.state != .PausedByRemote &&  params.videoEnabled && (currentCall.conference  == nil || params.videoDirection == MediaDirection.SendRecv)
 		} else {
 			return false
 		}
