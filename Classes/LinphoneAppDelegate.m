@@ -131,7 +131,7 @@
 			const LinphoneCallParams *params =
 			linphone_call_get_current_params(call);
 			if (linphone_call_params_video_enabled(params)) {
-				linphone_call_enable_camera(call, [CallManager.instance backgroundContextCameraIsEnabled] || (linphone_call_get_call_log(call) && linphone_call_log_was_conference(linphone_call_get_call_log(call))));
+				linphone_call_enable_camera(call, [CallManager.instance backgroundContextCameraIsEnabled]);
 			}
 			[CallManager.instance setBackgroundContextCallWithCall:nil];
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
