@@ -21,6 +21,7 @@
 #import "PhoneMainView.h"
 
 #import "ChatConversationCreateView.h"
+#import "linphoneapp-Swift.h"
 @implementation ChatsListView
 
 #pragma mark - ViewController Functions
@@ -157,6 +158,11 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self newChatCreate:TRUE];
     if (IPAD)
         [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+}
+
+- (IBAction)onChatRoomSwiftClick:(id)event {
+    DetailChatRoomFragment *view = VIEW(DetailChatRoomFragment);
+    [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onAddClick:(id)event {

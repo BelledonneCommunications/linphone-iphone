@@ -942,6 +942,8 @@
 		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
 		D7DA18712A02598700FABA0D /* TextViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA18702A02598700FABA0D /* TextViewer.swift */; };
+		D7421D9E29228A5200290CAB /* DetailChatRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */; };
+		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		EA0007A62356008F003CC6BF /* msgNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EA3650DB2330D2E30001148A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5F25DB232BD3E200475F2E /* NotificationService.swift */; };
 		EA88A405242A6216007FEC61 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
@@ -2171,6 +2173,10 @@
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
 		D7DA18702A02598700FABA0D /* TextViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewer.swift; sourceTree = "<group>"; };
+		D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChatRoomFragment.swift; sourceTree = "<group>"; };
+		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
+		DF241FDC6C7431777AB3BD58 /* Pods-msgNotificationContent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationContent.debug.xcconfig"; path = "Target Support Files/Pods-msgNotificationContent/Pods-msgNotificationContent.debug.xcconfig"; sourceTree = "<group>"; };
+		E19FC645A566E91D4EEB9C8F /* Pods-msgNotificationService.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationService.distributionadhoc.xcconfig"; path = "Target Support Files/Pods-msgNotificationService/Pods-msgNotificationService.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = msgNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA5F25DB232BD3E200475F2E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		EA5F25DD232BD3E200475F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3369,6 +3375,7 @@
 				C63F720B285A24B10066163B /* ProviderDelegate.swift */,
 				C63F720C285A24B10066163B /* VFSUtil.swift */,
 				C63F71B1285A24B10066163B /* AppManager.swift */,
+				D7421D99292283AE00290CAB /* Chat */,
 				C63F7199285A24B10066163B /* Conference */,
 				C63F71AA285A24B10066163B /* Util */,
 				C63F71B2285A24B10066163B /* Extensions */,
@@ -3430,6 +3437,7 @@
 				C63F71AE285A24B10066163B /* Pair.swift */,
 				C63F71AF285A24B10066163B /* BackNextNavigationView.swift */,
 				C63F71B0285A24B10066163B /* TimestampUtils.swift */,
+				D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -3789,6 +3797,38 @@
 				D7DA18702A02598700FABA0D /* TextViewer.swift */,
 			);
 			path = Viewers;
+			sourceTree = "<group>";
+		};
+		D7421D99292283AE00290CAB /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				D7421D9A292283D300290CAB /* ViewModels */,
+				D7421D9B292283E100290CAB /* Data */,
+				D7421D9C292283ED00290CAB /* Views */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		D7421D9A292283D300290CAB /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		D7421D9B292283E100290CAB /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		D7421D9C292283ED00290CAB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		EA5F25DA232BD3E200475F2E /* msgNotificationService */ = {
@@ -5058,6 +5098,7 @@
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableView.m in Sources */,
 				63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */,
 				D3C6526715AC1A8F0092A874 /* UIContactDetailsCell.m in Sources */,
+				D7421D9E29228A5200290CAB /* DetailChatRoomFragment.swift in Sources */,
 				C63F7227285A24B10066163B /* UILabelExtensions.swift in Sources */,
 				631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */,
@@ -5075,6 +5116,7 @@
 				D3807FBF15C28940005BE9BC /* DCRoundSwitch.m in Sources */,
 				D3807FC115C28940005BE9BC /* DCRoundSwitchKnobLayer.m in Sources */,
 				61CCC3DF21933B580060EDEA /* UIDeviceCell.m in Sources */,
+				D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */,
 				C63F725D285A24B10066163B /* SharedLayoutConstants.swift in Sources */,
 				C63F7250285A24B10066163B /* CallStatsView.swift in Sources */,
 				6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */,
