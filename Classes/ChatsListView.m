@@ -160,6 +160,11 @@ static UICompositeViewDescription *compositeDescription = nil;
         [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
 }
 
+- (IBAction)onChatRoomSwiftClick:(id)event {
+    DetailChatRoomFragment *view = VIEW(DetailChatRoomFragment);
+    [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
 - (IBAction)onAddClick:(id)event {
 	[self newChatCreate:FALSE];
     if (IPAD)
