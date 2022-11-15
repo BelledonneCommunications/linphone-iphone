@@ -521,6 +521,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
 	linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
 	
+	if (strcmp(creatorDomain, "sip.linphone.org")==0) {
+		linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
+	}
+	
 	new_account = linphone_core_create_account(LC, accountParams);
 	linphone_account_params_unref(accountParams);
  
