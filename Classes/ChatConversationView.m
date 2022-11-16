@@ -1440,8 +1440,6 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	
 	bool isDisplayingBottomOfTable = [view.tableController.tableView indexPathsForVisibleRows].lastObject.row == [view.tableController totalNumberOfItems] - 1;
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-	
 	
 	if (isDisplayingBottomOfTable) {
 		[view.tableController scrollToBottom:TRUE];
