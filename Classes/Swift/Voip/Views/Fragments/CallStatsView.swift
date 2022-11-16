@@ -98,15 +98,15 @@ import linphonesw
 			}
 			videoStats.text = stats
 			
-			if let lc = model.call.core {
+			if let mediaEncryption = model.call.currentParams?.mediaEncryption {
 				stats = ""
-				switch (lc.mediaEncryption) {
+				switch (mediaEncryption) {
 				case MediaEncryption.None: stats += "\nNone"
 				case MediaEncryption.SRTP: stats += "\nSRTP"
 				case MediaEncryption.DTLS: stats += "\nDTLS"
 				case MediaEncryption.ZRTP:
 					if let callstats = model.call.audioStats {
-						stats += (model.call.audioStats?.isZrtpKeyAgreementAlgoPostQuantum ?? false) ?"\nZRTP" : "\nPost Quantum ZRTP"
+						stats += callstats.isZrtpKeyAgreementAlgoPostQuantum ? "\nPost Quantum ZRTP" : "\nZRTP"
 						stats += "\nCipher algorithm: \(callstats.zrtpCipherAlgo)"
 						stats += "\nKey agreement algorithm: \(callstats.zrtpKeyAgreementAlgo)"
 						stats += "\nHash algorithm: \(callstats.zrtpHashAlgo)"
