@@ -142,12 +142,11 @@
 
 - (void)addEventEntry:(LinphoneEventLog *)event {
 	[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
-    [totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+	[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
 	int pos = (int)eventList.count - 1;
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
 	[self.tableView beginUpdates];
 	[self.tableView insertRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView reloadData];
 	[self.tableView endUpdates];
 }
 
