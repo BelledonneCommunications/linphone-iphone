@@ -332,14 +332,9 @@
 					correspondantCode = [code substringToIndex:2];
 					myCode = [code substringFromIndex:2];
 				}
-				NSString *message =
-					[NSString stringWithFormat:NSLocalizedString(@"\nConfirmation security\n\n"
-                                                                 @"Say: %@\n"
-                                                                 @"Confirm that your interlocutor\n"
-																 @"says: %@",
-																 nil),
-											   myCode.uppercaseString, correspondantCode.uppercaseString];
-                
+				NSString *message = [NSString stringWithFormat:NSLocalizedString(@"\nCommunication security:\n\nTo raise the security level, you can check the following codes with your correspondent.\n\nSay:  %1$@\n\nYour correspondent must say:  %2$@", nil),
+				 myCode.uppercaseString, correspondantCode.uppercaseString];
+				
 				if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive &&
 					floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 					UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
@@ -371,14 +366,14 @@
                         UIFont *baseFont = [UIFont systemFontOfSize:21.0];
                         [attrString addAttribute:NSFontAttributeName value:baseFont range:NSMakeRange(0, length)];
                         UIFont *boldFont = [UIFont boldSystemFontOfSize:23.0];
-                        [attrString addAttribute:NSFontAttributeName value:boldFont range:[message rangeOfString:@"Confirmation security"]];
+                        [attrString addAttribute:NSFontAttributeName value:boldFont range:[message rangeOfString:@"Communication security"]];
                         UIColor *color = [UIColor colorWithRed:(150 / 255.0) green:(193 / 255.0) blue:(31 / 255.0) alpha:1.0];
                         [attrString addAttribute:NSForegroundColorAttributeName value:color range:[message rangeOfString:myCode.uppercaseString]];
                         [attrString addAttribute:NSForegroundColorAttributeName value:color range:[message rangeOfString:correspondantCode.uppercaseString]];
                         
 						securityDialog = [UIConfirmationDialog ShowWithAttributedMessage:attrString
-							cancelMessage:NSLocalizedString(@"DENY", nil)
-							confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+							cancelMessage:NSLocalizedString(@"Later", nil)
+							confirmMessage:NSLocalizedString(@"Correct", nil)
 							onCancelClick:^() {
 							  if (linphone_core_get_current_call(LC) == call) {
 								  linphone_call_set_authentication_token_verified(call, NO);
@@ -396,6 +391,7 @@
                         
                         securityDialog.securityImage.hidden = FALSE;
 						[securityDialog setSpecialColor];
+                        [securityDialog setWhiteCancel];
 					}
 				}
 			}
