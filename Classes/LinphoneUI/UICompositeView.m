@@ -339,6 +339,9 @@
 }
 
 - (IBAction)onRightSwipe:(id)sender {
+	if (linphone_core_get_calls_nb(LC) > 0) {
+		return;
+	}
 	[self hideSideMenu:NO];
 }
 
