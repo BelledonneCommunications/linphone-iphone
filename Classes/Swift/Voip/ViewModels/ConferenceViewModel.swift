@@ -243,11 +243,14 @@ class ConferenceViewModel {
 	}
 	
 	
-	func changeLayout(layout: ConferenceDisplayMode) {
+	func changeLayout(layout: ConferenceDisplayMode, sendVideo:Bool = false) {
 		Log.i("[Conference] Trying to change conference layout to $layout")
 		if let conference = conference.value, let call = conference.call, let params = try?call.core?.createCallParams(call: call) {
 			params.videoEnabled = layout != .AudioOnly
 			params.conferenceVideoLayout = layout == ConferenceDisplayMode.Grid ? .Grid : .ActiveSpeaker
+			if (sendVideo) {
+				params.videoDirection = .SendRecv
+			}
 			try?call.update(params: params)
 			
 			conferenceDisplayMode.value = layout

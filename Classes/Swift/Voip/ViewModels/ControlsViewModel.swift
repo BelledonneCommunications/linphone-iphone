@@ -141,7 +141,9 @@ class ControlsViewModel {
 	func toggleVideo() {
 		if let currentCall = core.currentCall {
 			if (currentCall.conference != nil) {
-				if let params = try?core.createCallParams(call: currentCall) {
+				if (ConferenceViewModel.shared.conferenceDisplayMode.value == .AudioOnly) {
+					ConferenceViewModel.shared.changeLayout(layout: .ActiveSpeaker, sendVideo:true)
+				} else if let params = try?core.createCallParams(call: currentCall) {
 					isVideoUpdateInProgress.value = true
 					params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly
 					try?currentCall.update(params: params)
@@ -197,8 +199,7 @@ class ControlsViewModel {
 			(core.videoCaptureEnabled || core.videoPreviewEnabled) &&
 			currentCall?.state != .Paused &&
 			currentCall?.state != .PausedByRemote &&
-		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true)) &&
-		(ConferenceViewModel.shared.conferenceExists.value != true || ConferenceViewModel.shared.conferenceDisplayMode.value != .AudioOnly)
+		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true))
 	}
 	
 	private func updateVideoEnabled() {
