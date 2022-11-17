@@ -675,8 +675,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 					 completion:^(BOOL finished) {
 						 _composeIndicatorView.hidden = !visible;
 					 }];
-    
-    [_tableController scrollToBottom:TRUE];
+    if (_tableController.tableView.contentOffset.y + newComposingFrame.size.height >= (_tableController.tableView.contentSize.height - _tableController.tableView.frame.size.height)) {
+        [_tableController scrollToBottom:TRUE];
+    }
 }
 
 - (BOOL) groupCallAvailable {
