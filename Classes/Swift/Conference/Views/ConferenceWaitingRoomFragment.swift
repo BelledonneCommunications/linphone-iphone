@@ -61,7 +61,6 @@ import linphonesw
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		view.backgroundColor = VoipTheme.voipBackgroundColor.get()
 		
 		view.addSubview(subject)
 		subject.centerX().alignParentTop(withMargin: common_margin).done()
@@ -191,6 +190,10 @@ import linphonesw
 			
 	
 		layoutRotatableElements()
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		}
 		
 	}
 	

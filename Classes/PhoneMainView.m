@@ -960,4 +960,8 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 	}
 }
 
+-(void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+	[UIDeviceBridge notifyDisplayModeSwitch];
+}
+
 @end

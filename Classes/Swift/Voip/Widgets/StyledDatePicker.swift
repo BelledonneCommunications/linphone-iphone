@@ -58,23 +58,29 @@ class StyledDatePicker: UIView {
 		datePicker.matchParentDimmensions().done()
 		
 		formattedLabel.isUserInteractionEnabled = false
-		formattedLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		addSubview(formattedLabel)
 		formattedLabel.matchParentDimmensions().done()
 		
-		let chevron = UIImageView(image: UIImage(named: "chevron_list_close"))
+		let chevron = UIImageView()
+		
+		
 		addSubview(chevron)
 		chevron.alignParentRight(withMargin: chevron_margin).centerY().done()
 		chevron.isHidden = readOnly
 		
-		setFormInputBackground(readOnly:readOnly)
 		height(form_input_height).done()
-	
-		if (readOnly) {
-			formattedLabel.textColor = formattedLabel.textColor.withAlphaComponent(0.5)
-		}
+		
 		isUserInteractionEnabled = !readOnly
 		self.liveValue = liveValue
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.setFormInputBackground(readOnly:readOnly)
+			self.formattedLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			chevron.image = UIImage(named: "chevron_list_close")?.tinted(with: VoipTheme.voipDrawableColor.get())
+			if (readOnly) {
+				self.formattedLabel.textColor = self.formattedLabel.textColor.withAlphaComponent(0.5)
+			}
+		}
 
    }
 

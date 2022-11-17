@@ -60,7 +60,6 @@ import IQKeyboardManager
 		
 		let schedulingStack = UIStackView()
 		schedulingStack.axis = .vertical
-		schedulingStack.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(schedulingStack)
 		schedulingStack.alignUnder(view: subjectInput,withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
 		
@@ -205,6 +204,11 @@ import IQKeyboardManager
     }
 		ConferenceSchedulingViewModel.shared.existingConfInfo.readCurrentAndObserve { (confInfo) in
 			super.titleLabel.text = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit :  VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
+		}
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			schedulingStack.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		}
 
 	}

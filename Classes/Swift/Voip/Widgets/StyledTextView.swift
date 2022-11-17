@@ -50,7 +50,6 @@ class StyledTextView: UITextView, UITextViewDelegate {
 		super.init(frame:.zero, textContainer: nil)
 		textContainer.maximumNumberOfLines = maxLines
 		applyStyle(style)
-		setFormInputBackground(readOnly:readOnly)
 		placeHolder.map {
 			self.placeholder = $0
 		}
@@ -66,6 +65,10 @@ class StyledTextView: UITextView, UITextViewDelegate {
 			textColor = textColor?.withAlphaComponent(0.5)
 		}
 		isUserInteractionEnabled = !readOnly
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.applyStyleColors(style)
+			self.setFormInputBackground(readOnly:readOnly)
+		}
 	}
 	
 	func textViewDidBeginEditing(_ textView: UITextView) {

@@ -45,7 +45,6 @@ class StyledValuePicker: UIView {
 		super.init(frame: .zero)
 
 		formattedLabel.isUserInteractionEnabled = false
-		formattedLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		liveIndex.value.map { formattedLabel.text =  "  "+options[$0] }
 
 		if (readOnly) {
@@ -55,25 +54,20 @@ class StyledValuePicker: UIView {
 		addSubview(formattedLabel)
 		formattedLabel.alignParentLeft().alignParentRight(withMargin: (readOnly ? chevron_margin : form_input_height)).matchParentHeight().done()
 		
-		let chevron = UIImageView(image: UIImage(named: "chevron_list_close"))
+		let chevron = UIImageView()
+		
 		addSubview(chevron)
 		chevron.alignParentRight(withMargin: chevron_margin).centerY().done()
 		chevron.isHidden = readOnly
 
-		setFormInputBackground(readOnly:readOnly)
-
 		
-		DropDown.appearance().textColor = VoipTheme.conference_scheduling_font.fgColor.get()
-		DropDown.appearance().selectedTextColor = VoipTheme.conference_scheduling_font.fgColor.get()
+		
 		DropDown.appearance().textFont = formattedLabel.font
-		DropDown.appearance().backgroundColor = .white
-		DropDown.appearance().selectionBackgroundColor = VoipTheme.light_grey_color
 		DropDown.appearance().cellHeight = form_input_height
 		
 		dropDown.anchorView = self
 		dropDown.bottomOffset = CGPoint(x: 0, y:(dropDown.anchorView?.plainView.bounds.height)!)
 		dropDown.dataSource = options
-		dropDown.backgroundColor = .white
 		dropDown.width = dropdown_width
 		
 		dropDown.selectionAction = { [unowned self] (index: Int, item: String) in
@@ -95,6 +89,17 @@ class StyledValuePicker: UIView {
 			self.dropDown.selectRow(value!)
 		}
 		isUserInteractionEnabled = !readOnly
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			chevron.image = UIImage(named: "chevron_list_close")?.tinted(with: VoipTheme.voipDrawableColor.get())
+			self.formattedLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			DropDown.appearance().textColor = VoipTheme.conference_scheduling_font.fgColor.get()
+			DropDown.appearance().selectedTextColor = VoipTheme.conference_scheduling_font.fgColor.get()
+			DropDown.appearance().backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			DropDown.appearance().selectionBackgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.dropDown.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.setFormInputBackground(readOnly:readOnly)
+		}
 		
    }
 	

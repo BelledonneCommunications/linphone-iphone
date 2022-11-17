@@ -90,6 +90,10 @@ static UICompositeViewDescription *compositeDescription = nil;
                                                selector:@selector(viewUpdateEvent:)
                                                    name:kLinphoneChatCreateViewChange
                                                  object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(displayModeChanged)
+																						 name:kDisplayModeChanged
+																					 object:nil];
 	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
 	_chiffreOptionView.hidden = !(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)));
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"]) {
@@ -98,6 +102,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		CGRect frame = _allButton.frame;
 		frame.origin.x = _linphoneButton.frame.origin.x;
 		_allButton.frame = frame;
+
 	}
 	
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"]) {
@@ -116,13 +121,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 		} else {
 			[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
 		}
-		_topBar.backgroundColor = VoipTheme.toolbar_color;
 	} else {
 		_voipTitle.hidden = true;
 		[_nextButton setImage:[UIImage imageNamed:@"next_default"] forState:UIControlStateNormal];
-		_topBar.backgroundColor = UIColor.secondarySystemBackgroundColor;
 	}
-	
+	[self displayModeChanged];
+}
+
+- (void)displayModeChanged{
+	[self.tableController.tableView reloadData];
+	if (_isForVoipConference) {
+		_topBar.backgroundColor = [VoipTheme.voipToolbarBackgroundColor get];
+		self.view.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
+		_tableController.tableView.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
+		_tableController.searchBar.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
+		_tableController.collectionView.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
+	} else {
+		_topBar.backgroundColor = UIColor.secondarySystemBackgroundColor;
+		self.view.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
+		_tableController.tableView.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
+		_tableController.searchBar.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
+		_tableController.collectionView.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
+	}
 }
 
 - (void)viewUpdateEvent:(NSNotification *)notif {
@@ -170,9 +190,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if (IPAD)
-        [NSNotificationCenter.defaultCenter removeObserver:self];
+	[super viewWillDisappear:animated];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - Chat room functions

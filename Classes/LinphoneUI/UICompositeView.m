@@ -305,6 +305,9 @@
 	return nil;
 }
 
+- (void)removeEntryFromCache:(NSString *)key {
+	[viewControllerCache removeObjectForKey:key];
+}
 
 - (void)clearCache:(NSArray *)exclude {
 	

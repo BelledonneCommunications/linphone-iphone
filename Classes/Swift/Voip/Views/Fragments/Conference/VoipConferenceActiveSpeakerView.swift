@@ -368,6 +368,15 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		
 		//Rotation
 		layoutRotatableElements()
+		
+		//Appearance
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			fullScreenMutableView.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
+			self.fullScreenOpaqueMasqForNotchedDevices.backgroundColor = fullScreenMutableView.backgroundColor
+			self.activeSpeakerView.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
+			self.pause.backgroundColor = self.activeSpeakerAvatar.backgroundColor
+			self.reloadData()
+		}
 	
 	}
 	

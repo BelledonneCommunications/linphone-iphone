@@ -148,7 +148,13 @@ class VoipConferenceAudioOnlyView: UIView, UICollectionViewDataSource, UICollect
 		grid.matchParentDimmensions().done()
 	
 		headerView.matchParentSideBorders().alignParentTop().done()
-				
+			
+		//Appearance
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.gridContainer.backgroundColor = VoipTheme.voipBackgroundColor.get()
+			self.reloadData()
+		}
+		
 	}
 	
 	

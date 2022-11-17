@@ -141,7 +141,6 @@ import SVProgressHUD
 			
 		// Participants
 		let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_participants_list)
-		participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(participantsLabel)
 		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin).done()
 		participantsLabel.textAlignment = .left
@@ -156,7 +155,7 @@ import SVProgressHUD
 			participantsListTableView.allowsFocus = false
 		}
 		participantsListTableView.separatorStyle = .singleLine
-		participantsListTableView.separatorColor = VoipTheme.light_grey_color
+		participantsListTableView.backgroundColor = .clear
 		
 		ConferenceSchedulingViewModel.shared.selectedAddresses.readCurrentAndObserve { (addresses) in
 			self.participantsListTableView.reloadData()
@@ -167,6 +166,7 @@ import SVProgressHUD
 		
 		// Create / Schedule
 		contentView.addSubview(createButton)
+		createButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).width(0).done()
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { _ in
 			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
 			self.createButton.addSidePadding()
@@ -219,8 +219,12 @@ import SVProgressHUD
 			self.createButton.addSidePadding()
 		}
 		
-		createButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).done()
-		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			self.participantsListTableView.separatorColor = VoipTheme.separatorColor.get()
+		}
+				
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

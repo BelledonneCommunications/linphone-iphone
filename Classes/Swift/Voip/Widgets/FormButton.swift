@@ -42,9 +42,11 @@ class FormButton : ButtonWithStateBackgrounds {
 		super.init(backgroundStateColors: backgroundStateColors)
 		layer.cornerRadius = button_radius
 		clipsToBounds = true
-		applyTitleStyle(bold ? VoipTheme.form_button_bold : VoipTheme.form_button_light)
 		height(button_height).done()
 		addSidePadding()
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.applyTitleStyle(bold ? VoipTheme.form_button_bold : VoipTheme.form_button_light)
+		}
 	}
 	
 	convenience init (title:String, backgroundStateColors: [UInt: LightDarkColor], bold:Bool = true, fixedSize:Bool = true) {

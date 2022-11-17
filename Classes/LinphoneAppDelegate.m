@@ -157,7 +157,9 @@
         [self handleShortcut:_shortcutItem];
         _shortcutItem = nil;
     }
-	
+
+#if TARGET_IPHONE_SIMULATOR
+#else
 	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
 																		completionHandler:^(BOOL granted, NSError *_Nullable error) {
 		if (error)
@@ -183,10 +185,15 @@
 		}
 		
 	}];
+#endif
+
 	
 	if ([UIDeviceBridge switchedDisplayMode]) {
 		[AvatarBridge prepareIt];
 		[NSNotificationCenter.defaultCenter postNotificationName:kDisplayModeChanged object:nil];
+		[PhoneMainView.instance.mainViewController removeEntryFromCache:ChatConversationCreateView.compositeViewDescription.name];
+		[PhoneMainView.instance.mainViewController changeView:PhoneMainView.instance.currentView];
+		[UIDeviceBridge notifyDisplayModeSwitch];
 	}
 	
 }

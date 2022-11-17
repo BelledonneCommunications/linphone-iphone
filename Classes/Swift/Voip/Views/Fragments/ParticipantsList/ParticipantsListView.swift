@@ -71,7 +71,12 @@ import linphonesw
 		noParticipantsLabel.center().matchParentSideBorders(insetedByDx: side_margin).done()
 		noParticipantsLabel.isHidden =  ConferenceViewModel.shared.conferenceParticipants.value?.count ?? 0 > 0
 		noParticipantsLabel.numberOfLines = 2
-			
+		self.participantsListTableView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.participantsListTableView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.participantsListTableView.reloadData()
+		}
 	}
 
 	

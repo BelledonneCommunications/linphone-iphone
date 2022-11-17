@@ -75,7 +75,9 @@ import EventKitUI
 		
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
-		backgroundColor = VoipTheme.voip_light_gray
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.backgroundColor = VoipTheme.chatBubbleBGColor.get()
+		}
 		
 		let rows = UIStackView()
 		rows.axis = .vertical

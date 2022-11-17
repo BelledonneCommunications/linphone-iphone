@@ -46,6 +46,10 @@ class Avatar : UIView {
 		iconImageView.backgroundColor = .white
 		initialsLabel.matchParentSideBorders().matchParentHeight().done()
 		iconImageView.matchParentDimmensions().done()
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.initialsLabel.applyStyle(textStyle)
+			self.backgroundColor = color.get()
+		}
 	}
 	
 	

@@ -59,7 +59,9 @@ import linphonesw
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		view.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		}
 		
 		// Hangup
 		let hangup = CallControlButton(width: 65, imageInset:IncomingOutgoingCommonView.answer_decline_inset, buttonTheme: VoipTheme.call_terminate, onClickAction: {
@@ -212,9 +214,6 @@ import linphonesw
 			self.dismissableView = VoipConferenceDisplayModeSelectionView()
 			self.view.addSubview(self.dismissableView!)
 			self.dismissableView?.matchParentDimmensions().done()
-			let activeDisplayMode =  ConferenceViewModel.shared.conferenceDisplayMode.value!
-			let indexPath = IndexPath(row: activeDisplayMode == .Grid ? 0 :  activeDisplayMode == .ActiveSpeaker ? 1 : 2, section: 0)
-			(self.dismissableView as! VoipConferenceDisplayModeSelectionView).optionsListView.selectRow(at:indexPath, animated: true, scrollPosition: .bottom)
 		}
 		
 		// Shading mask, everything before will be shaded upon displaying of the mask

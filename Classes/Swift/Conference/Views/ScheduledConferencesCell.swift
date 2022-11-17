@@ -29,12 +29,12 @@ class ScheduledConferencesCell: UITableViewCell {
 	static let button_size = 40
 	let delete_checkbox_margin = 5
 	
-	let clockIcon = UIImageView(image: UIImage(named: "conference_schedule_time_default"))
+	let clockIcon = UIImageView()
 	let timeDuration = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let organiser = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let subject = StyledLabel(VoipTheme.conference_list_subject_font)
 	let cancelledLabel = StyledLabel(VoipTheme.conference_cancelled_title_font)
-	let participantsIcon = UIImageView(image: UIImage(named: "conference_schedule_participants_default"))
+	let participantsIcon = UIImageView()
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let infoConf = UIButton()
 	
@@ -101,7 +101,8 @@ class ScheduledConferencesCell: UITableViewCell {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		
 		contentView.addSubview(myContentView)
-
+		contentView.backgroundColor = .clear
+		backgroundColor = .clear
 		myContentView.layer.cornerRadius = corner_radius
 		myContentView.clipsToBounds = true
 		myContentView.backgroundColor = VoipTheme.header_background_color
@@ -217,6 +218,10 @@ class ScheduledConferencesCell: UITableViewCell {
 		}
 		onLongClick {
 			ScheduledConferencesViewModel.shared.editionEnabled.value = true
+		}
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.clockIcon.image = UIImage(named: "conference_schedule_time_default")?.tinted(with: VoipTheme.voipDrawableColor.get())
+			self.participantsIcon.image = UIImage(named: "conference_schedule_participants_default")?.tinted(with: VoipTheme.voipDrawableColor.get())
 		}
 	}
 	

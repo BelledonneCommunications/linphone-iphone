@@ -69,9 +69,11 @@ extension UIDevice {
 }
 
 @objc class UIDeviceBridge : NSObject {
-	@available(iOS 12.0, *)
-	static let displayMode = MutableLiveData<UIUserInterfaceStyle>()
+	static let displayModeSwitched = MutableLiveData<Bool>()
 	@objc static func switchedDisplayMode() -> Bool {
 		return UIDevice.switchedDisplayMode()
+	}
+	@objc static func notifyDisplayModeSwitch() {
+		displayModeSwitched.notifyValue()
 	}
 }

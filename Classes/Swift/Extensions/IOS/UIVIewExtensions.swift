@@ -88,6 +88,13 @@ extension UIView {
 		return self
 	}
 	
+	func updateWidth(_ h:CGFloat) -> UIView {
+		snp.updateConstraints { (make) in
+			make.width.equalTo(h)
+		}
+		return self
+	}
+	
 	func width(_ h:Int) -> UIView {
 		return width(CGFloat(h))
 	}

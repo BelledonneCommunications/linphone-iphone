@@ -182,6 +182,13 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				self.reloadData()
 			}
 		}
+		
+		//Appearance
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.gridContainer.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
+			self.reloadData()
+		}
+		
 	}
 	
 	

@@ -35,9 +35,14 @@ struct TextStyle {
 
 
 extension UILabel {
-	func applyStyle(_ style:TextStyle) {
+	
+	func applyStyleColors(_ style:TextStyle) {
 		textColor = style.fgColor.get()
 		backgroundColor = style.bgColor.get()
+	}
+	
+	func applyStyle(_ style:TextStyle) {
+		applyStyleColors(style)
 		if (style.allCaps) {
 			text = self.text?.uppercased()
 			tag = 1
@@ -49,7 +54,7 @@ extension UILabel {
 	
 	func addIndicatorIcon(iconName:String,  padding:CGFloat = 5.0, y:CGFloat = 4.0, trailing: Bool = true) {
 		let imageAttachment = NSTextAttachment()
-		imageAttachment.image = UIImage(named:iconName)
+		imageAttachment.image = UIImage(named:iconName)?.tinted(with: VoipTheme.voipDrawableColor.get())
 		imageAttachment.bounds = CGRect(x: 0.0, y: y , width: font.lineHeight - 2*padding, height: font.lineHeight - 2*padding)
 		let iconString = NSMutableAttributedString(attachment: imageAttachment)
 		let textXtring = NSMutableAttributedString(string: text != nil ? (!trailing ? " " : "") + text! + (trailing ? " " : "") : "")
@@ -78,9 +83,14 @@ extension UIButton {
 }
 
 extension UITextView {
-	func applyStyle(_ style:TextStyle) {
+	
+	func applyStyleColors(_ style:TextStyle) {
 		textColor = style.fgColor.get()
 		backgroundColor = style.bgColor.get()
+	}
+	
+	func applyStyle(_ style:TextStyle) {
+		applyStyleColors(style)
 		if (style.allCaps) {
 			text = self.text?.uppercased()
 			tag = 1

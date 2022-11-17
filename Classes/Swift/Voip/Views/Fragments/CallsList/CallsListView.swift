@@ -80,7 +80,6 @@ import linphonesw
 			callsListTableView.allowsFocus = false
 		}
 		callsListTableView.separatorStyle = .singleLine
-		callsListTableView.separatorColor = .white
 		callsListTableView.onClick {
 			self.hideMenu()
 		}
@@ -89,6 +88,13 @@ import linphonesw
 		super.contentView.addSubview(menuView)
 		
 		menuView.isHidden = true
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			super.contentView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.callsListTableView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.callsListTableView.separatorColor = VoipTheme.separatorColor.get()
+			self.callsListTableView.reloadData()
+		}
 		
 	}
 	
