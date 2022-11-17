@@ -675,6 +675,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 					 completion:^(BOOL finished) {
 						 _composeIndicatorView.hidden = !visible;
 					 }];
+    
+    [_tableController scrollToBottom:TRUE];
 }
 
 - (BOOL) groupCallAvailable {
