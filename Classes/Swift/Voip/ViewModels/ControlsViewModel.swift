@@ -110,7 +110,7 @@ class ControlsViewModel {
 				}
 			}
 			
-			if (ConfigManager.instance().lpConfigBoolForKey(key: "route_audio_to_speaker_when_video_enabled",defaultValue:true) && call.currentParams?.videoEnabled == true) {
+			if (ConfigManager.instance().lpConfigBoolForKey(key: "route_audio_to_speaker_when_video_enabled",defaultValue:true) && call.currentParams?.videoEnabled == true && call.conference == nil) {
 				// Do not turn speaker on when video is enabled if headset or bluetooth is used
 				if (!AudioRouteUtils.isHeadsetAudioRouteAvailable() &&
 					!AudioRouteUtils.isBluetoothAudioRouteCurrentlyUsed(call: call)

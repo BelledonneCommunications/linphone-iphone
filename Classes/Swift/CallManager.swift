@@ -715,7 +715,7 @@ import AVFoundation
 
 			let readyForRoutechange = CallManager.instance().callkitAudioSessionActivated == nil || (CallManager.instance().callkitAudioSessionActivated == true)
 			if (readyForRoutechange && (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning)) {
-				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled()) {
+				if ((call.currentParams?.videoEnabled ?? false) && CallManager.instance().isReceiverEnabled() && call.conference == nil) {
 					CallManager.instance().changeRouteToSpeaker()
 				} else if (isBluetoothAvailable()) {
 					// Use bluetooth device by default if one is available
