@@ -374,7 +374,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		case LinphoneCallOutgoingInit:
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingProgress:
 		case LinphoneCallOutgoingRinging: {

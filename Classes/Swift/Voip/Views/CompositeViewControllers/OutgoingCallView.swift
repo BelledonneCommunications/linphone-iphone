@@ -84,6 +84,9 @@ import linphonesw
 	override func viewWillAppear(_ animated: Bool) {
 		ControlsViewModel.shared.audioRoutesSelected.value = false
 		super.viewWillAppear(animated)
+		if (Core.get().callsNb == 0) {
+			PhoneMainView.instance().popView(self.compositeViewDescription())
+		}
 	}
 	
 	@objc override func setCall(call:OpaquePointer) {

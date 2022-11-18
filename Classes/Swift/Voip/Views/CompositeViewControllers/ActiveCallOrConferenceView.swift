@@ -86,13 +86,16 @@ import linphonesw
 		fullScreenMutableContainerView.addSubview(currentCallView!)
 		CallsViewModel.shared.currentCallData.readCurrentAndObserve { (currentCallData) in
 			self.updateNavigation()
-			self.currentCallView!.isHidden = currentCallData == nil || ConferenceViewModel.shared.conferenceExists.value == true
-			self.currentCallView!.callData = currentCallData != nil ? currentCallData! : nil
+			let isConferenceCall = currentCallData??.call.conference != nil
+			self.currentCallView!.isHidden = isConferenceCall
+			if (!isConferenceCall) {
+				self.currentCallView!.callData = currentCallData != nil ? currentCallData! : nil
+			}
 			currentCallData??.isRemotelyPaused.readCurrentAndObserve { remotelyPaused in
-				self.callPausedByRemoteView?.isHidden = remotelyPaused != true || ConferenceViewModel.shared.conferenceExists.value == true
+				self.callPausedByRemoteView?.isHidden = remotelyPaused != true || isConferenceCall
 			}
 			currentCallData??.isPaused.readCurrentAndObserve { locallyPaused in
-				self.callPausedByLocalView?.isHidden = locallyPaused != true || ConferenceViewModel.shared.conferenceExists.value == true
+				self.callPausedByLocalView?.isHidden = locallyPaused != true || isConferenceCall
 			}
 			if (currentCallData == nil) {
 				self.callPausedByRemoteView?.isHidden = true
@@ -103,8 +106,9 @@ import linphonesw
 				currentCallData??.isOutgoing.readCurrentAndObserve { _ in self.updateNavigation() }
 			}
 			self.extraButtonsView.isHidden = true
-			self.conferencePausedView?.isHidden = true
-			if (ConferenceViewModel.shared.conferenceExists.value != true) {
+			self.conferencePausedView?.isHidden = currentCallData??.call.conference == nil || ConferenceViewModel.shared.isConferenceLocallyPaused.value != true
+			
+			if (isConferenceCall) {
 				self.conferenceGridView?.isHidden = true
 				self.conferenceActiveSpeakerView?.isHidden = true
 				self.conferenceAudioOnlyView?.isHidden = true
@@ -144,20 +148,22 @@ import linphonesw
 		conferenceGridView?.isHidden = true
 		ConferenceViewModel.shared.conferenceExists.readCurrentAndObserve { (exists) in
 			self.updateNavigation()
-			if (exists == true) {
+			let activeCallIsConference = CallsViewModel.shared.currentCallData.value??.call.conference != nil
+			if (activeCallIsConference) {
 				self.currentCallView!.isHidden = true
 				self.extraButtonsView.isHidden = true
-				self.conferencePausedView?.isHidden = true
+				self.conferencePausedView?.isHidden = ConferenceViewModel.shared.isConferenceLocallyPaused.value != true
 				self.displaySelectedConferenceLayout()
 			} else {
 				self.conferenceGridView?.isHidden = true
 				self.conferenceActiveSpeakerView?.isHidden = true
 				self.conferenceActiveSpeakerView?.isHidden = true
+				self.conferencePausedView?.isHidden = true
 			}
 		}
 		
 		ConferenceViewModel.shared.conferenceCreationPending.readCurrentAndObserve { isCreationPending in
-			if (ConferenceViewModel.shared.conferenceExists.value == true && isCreationPending == true) {
+			if (isCreationPending == true) {
 				self.fullScreenMutableContainerView.addSubview(self.conferenceJoinSpinner)
 				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
 				self.conferenceJoinSpinner.startRotation()
@@ -186,7 +192,7 @@ import linphonesw
 			}
 		}
 		ConferenceViewModel.shared.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
-			self.conferencePausedView?.isHidden = paused != true || ConferenceViewModel.shared.conferenceExists.value != true
+			self.conferencePausedView?.isHidden = paused != true
 		}
 		
 		
@@ -340,6 +346,7 @@ import linphonesw
 		extraButtonsView.refresh()
 		ControlsViewModel.shared.callStatsVisible.notifyValue()
 		CallsViewModel.shared.currentCallData.notifyValue()
+		ConferenceViewModel.shared.conferenceExists.notifyValue()
 		ControlsViewModel.shared.audioRoutesSelected.value = false
 		ControlsViewModel.shared.fullScreenMode.value = true
 	}

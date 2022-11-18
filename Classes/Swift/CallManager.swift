@@ -27,7 +27,7 @@ import AVFoundation
 @objc class CallAppData: NSObject {
 	@objc var batteryWarningShown = false
 	@objc var videoRequested = false /*set when user has requested for video*/
-	@objc var isConference = true
+	@objc var isConference = false
 
 }
 
