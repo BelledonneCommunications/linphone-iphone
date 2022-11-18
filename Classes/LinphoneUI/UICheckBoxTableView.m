@@ -91,8 +91,8 @@
 #pragma mark -
 
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath {
-	cell.selectionStyle = UITableViewCellSelectionStyleGray;
 	if ([self isEditing]) {
+		cell.selectionStyle = UITableViewCellSelectionStyleGray;
 		UIButton *checkBoxButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UIImage *image = nil;
 		if ([_selectedItems containsObject:indexPath]) {
