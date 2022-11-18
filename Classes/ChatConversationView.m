@@ -1938,7 +1938,7 @@ void on_chat_room_conference_alert(LinphoneChatRoom *cr, const LinphoneEventLog 
 	if ((isEncrypted && ((!canEphemeral && indexPath.row == 4+firstIndex)||(canEphemeral && indexPath.row == 5+firstIndex)))
 		|| (!isEncrypted && indexPath.row == 3+firstIndex)) {
 		cell.imageView.image =  [UIImage imageNamed:@"chat_group_informations.png"];
-		cell.textLabel.text = NSLocalizedString(@"Show address and identity",nil);
+		cell.textLabel.text = NSLocalizedString(@"Debug infos",nil);
 	}
 	
 	UIImageView * icon = [[UIImageView alloc] initWithFrame:CGRectMake(tableView.frame.size.width-37, 7, 30, 30)];
