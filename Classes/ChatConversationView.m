@@ -329,7 +329,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return;
 	}
 	composingVisible = !composingVisible;
-	[self setComposingVisible:!composingVisible withDelay:0];
 
 	// force offset recomputing
 	[_messageField refreshHeight];
@@ -338,7 +337,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
 		isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
 		isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
+		if (_chatRoom)
+			[self setComposingVisible:!composingVisible withDelay:0];
 	}
+
 	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
