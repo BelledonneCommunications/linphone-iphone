@@ -25,8 +25,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (strong, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *shareButton;
-
-
 @property(nonatomic, assign) __block NSString *recording;
 
 - (id)initWithIdentifier:(NSString*)identifier;

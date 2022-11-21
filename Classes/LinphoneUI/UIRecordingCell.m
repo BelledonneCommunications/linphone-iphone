@@ -90,7 +90,8 @@ static UILinphoneAudioPlayer *player;
 }
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
+	if (!VIEW(RecordingsListView).tableController.isEditing)
+		self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)updateFrame {
@@ -105,10 +106,11 @@ static UILinphoneAudioPlayer *player;
 
 -(void)setSelected:(BOOL)selected animated:(BOOL)animated{
     [super setSelected:selected animated:animated];
-    _toolbar.hidden = !selected;
-    if (!selected) {
-        return;
-    }
+	
+	if (!selected || (selected && VIEW(RecordingsListView).tableController.isEditing)) {
+		_toolbar.hidden = true;
+		return;
+	}
 	if (player && [player isCreated]) {
 		[player close];
 	}
@@ -122,6 +124,7 @@ static UILinphoneAudioPlayer *player;
     player.view.frame = _playerView.frame;
     player.view.bounds = _playerView.bounds;
     [player open];
+	_toolbar.hidden = false;
 }
 
 - (void)onShareButtonPressed {

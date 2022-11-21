@@ -147,8 +147,6 @@
     NSString *recordingPath = subAr[indexPath.row];
     [cell setRecording:recordingPath];
     [super accessoryForCell:cell atPath:indexPath];
-    //accessoryForCell set it to gray but we don't want it
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell updateFrame];
 	cell.contentView.userInteractionEnabled = false;
     return cell;

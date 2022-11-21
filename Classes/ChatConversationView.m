@@ -329,7 +329,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return;
 	}
 	composingVisible = !composingVisible;
-	[self setComposingVisible:!composingVisible withDelay:0];
 
 	// force offset recomputing
 	[_messageField refreshHeight];
@@ -338,7 +337,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
 		isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
 		isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
+		if (_chatRoom)
+			[self setComposingVisible:!composingVisible withDelay:0];
 	}
+
 	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
@@ -792,9 +794,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		// if we're showing the compose message, update it position
 		if (![_composeLabel isHidden]) {
-			CGRect frame = [_composeLabel frame];
+			CGRect frame = [_composeIndicatorView frame];
 			frame.origin.y -= diff;
-			[_composeLabel setFrame:frame];
+			[_composeIndicatorView setFrame:frame];
 		}
 	}
 }
