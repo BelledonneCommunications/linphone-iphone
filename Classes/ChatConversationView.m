@@ -335,19 +335,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
 	if (peerAddr) {
 		_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
-		isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
-		isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
-		if (_chatRoom)
+		if (_chatRoom) {
+			isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+			isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
 			[self setComposingVisible:!composingVisible withDelay:0];
+			[self configureForRoom:true];
+			[_tableController scrollToBottom:true];
+		}
 	}
 
-	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
-	[_tableController scrollToBottom:true];
-    [self refreshImageDrawer];
+	[self refreshImageDrawer];
 	[self stopAllPlays];
 	[self keyboardWillHide:nil];
-
 }
 
 #pragma mark -
@@ -501,25 +501,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 // reload the chatroom after the core starts
 - (void)onLinphoneCoreReady:(NSNotification *)notif {
-  //  if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
 	if (linphone_core_get_global_state(LC) == LinphoneGlobalOn) {
-        LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
-        if (peerAddr) {
-            _chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
-			isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
-			isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
-        }
-        [self configureForRoom:self.editing];
-        if (_chatRoom && _markAsRead) {
-			if (IPAD) {
-				[VIEW(ChatsListView).tableController loadData];
+		LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
+	if (peerAddr) {
+			_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+			if (_chatRoom) {
+				isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
+				isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
+				[self configureForRoom:self.editing];
+				if (_chatRoom && _markAsRead) {
+					if (IPAD) {
+						[VIEW(ChatsListView).tableController loadData];
+					}
+					[ChatConversationView markAsRead:_chatRoom];
+				}
+				_markAsRead = TRUE;
 			}
-
-            [ChatConversationView markAsRead:_chatRoom];
-        }
-        _markAsRead = TRUE;
+		}
 		[SVProgressHUD dismiss];
-    }
+	}
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
