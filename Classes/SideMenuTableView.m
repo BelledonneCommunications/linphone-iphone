@@ -70,7 +70,7 @@
 	MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
 	BOOL hasAccount = accounts != NULL;
 	bctbx_free(accounts);
-	if (mustLink && hasAccount) {
+	if (mustLink && hasAccount && ![LinphoneManager.instance lpConfigIntForKey:@"hide_link_phone_number"]) {
 		[_sideMenuEntries
 			addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Link my account", nil)
                                                      image:[UIImage imageNamed:@"menu_link_account.png"]
