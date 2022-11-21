@@ -1158,7 +1158,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = DialerView.compositeViewDescription;
 			[self configureAccount];
 		} else if (status == LinphoneAccountCreatorStatusAccountExist) {
-			_outgoingView = AssistantLinkView.compositeViewDescription;
+			if([LinphoneManager.instance lpConfigIntForKey:@"hide_link_phone_number"]){
+				_outgoingView = DialerView.compositeViewDescription;
+			}else{
+				_outgoingView = AssistantLinkView.compositeViewDescription;
+			}
 			[self configureAccount];
 		} else {
 			if (resp) {

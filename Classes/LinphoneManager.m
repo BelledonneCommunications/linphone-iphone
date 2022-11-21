@@ -282,6 +282,10 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
         if ([self lpConfigStringForKey:@"display_link_account_popup"] == nil) {
             [self lpConfigSetBool:true forKey:@"display_link_account_popup"];
         }
+		
+		if ([self lpConfigStringForKey:@"hide_link_phone_number"] == nil) {
+			[self lpConfigSetInt:1 forKey:@"hide_link_phone_number"];
+		}
 
 		[self migrateFromUserPrefs];
 		[self loadAvatar];
@@ -1312,7 +1316,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	NSDate *nextTime =
 		[NSDate dateWithTimeIntervalSince1970:[self lpConfigIntForKey:@"must_link_account_time" withDefault:1]];
 	NSDate *now = [NSDate date];
-    if (nextTime.timeIntervalSince1970 > 0 && [now earlierDate:nextTime] == nextTime && [LinphoneManager.instance lpConfigBoolForKey:@"display_link_account_popup"]) {
+    if (nextTime.timeIntervalSince1970 > 0 && [now earlierDate:nextTime] == nextTime && [LinphoneManager.instance lpConfigBoolForKey:@"display_link_account_popup"] && ![LinphoneManager.instance lpConfigIntForKey:@"hide_link_phone_number"]) {
 		LinphoneAccount *account = linphone_core_get_default_account(LC);
 		if (account) {
 			const char *username = linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)));
