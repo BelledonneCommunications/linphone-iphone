@@ -48,17 +48,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	_msg = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	
-	int index = [VIEW(ChatConversationView).tableController indexOfMesssage:_msg];
-	if (index < 0)
-		[PhoneMainView.instance popToView:ChatConversationView.compositeViewDescription];
-	
-	_cell = (UIChatBubbleTextCell *)[VIEW(ChatConversationView).tableController tableView:VIEW(ChatConversationView).tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+	_cell = [VIEW(ChatConversationView).tableController buildMessageCell:_event];
 	_cell.frame = CGRectMake(-10,0,_msgView.frame.size.width,_msgView.frame.size.height);
 	_cell.isFirst = true;
 	_cell.isLast = true;
@@ -90,7 +85,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)updateImdnList {
-    if (_msg && linphone_chat_message_get_chat_room(_msg)) {
+    if (_event) {
+		LinphoneChatMessage *_msg = linphone_event_log_get_chat_message(_event);
         _displayedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDisplayed);
         _receivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDeliveredToUser);
         _notReceivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDelivered);
@@ -101,7 +97,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)fitContent {
-	
+	LinphoneChatMessage *_msg = linphone_event_log_get_chat_message(_event);
 	CGSize messageSize = [UIChatBubbleTextCell ViewHeightForMessage:_msg withWidth:self.view.frame.size.width];
 	[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
 								  _msgView.frame.origin.y,
@@ -299,7 +295,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	f.unitsStyle = NSDateComponentsFormatterUnitsStylePositional;
 	f.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorPad;
 		
-	if (linphone_chat_message_is_ephemeral(_msg)) {
+	LinphoneChatMessage *_msg = _event ? linphone_event_log_get_chat_message(_event) : nil;
+	if (_msg && linphone_chat_message_is_ephemeral(_msg)) {
 		long duration = linphone_chat_message_get_ephemeral_expire_time(_msg) == 0 ?
 			linphone_chat_room_get_ephemeral_lifetime(linphone_chat_message_get_chat_room(_msg)) :
 			linphone_chat_message_get_ephemeral_expire_time(_msg)-[NSDate date].timeIntervalSince1970;

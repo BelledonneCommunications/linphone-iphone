@@ -25,6 +25,7 @@
 
 #import "UICheckBoxTableView.h"
 
+
 @interface FileContext : NSObject
 @property NSMutableArray <NSString *> *typesArray;
 @property NSMutableArray <NSData *> *datasArray;
@@ -70,5 +71,6 @@
 - (void) dismissMessagesPopups;
 - (void) scrollToMessage:(LinphoneChatMessage *)message;
 - (int) indexOfMesssage:(LinphoneChatMessage *)message;
+- (void *)buildMessageCell:(LinphoneEventLog *) event;
 
 @end

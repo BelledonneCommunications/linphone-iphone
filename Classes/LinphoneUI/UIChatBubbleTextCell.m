@@ -848,6 +848,8 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 -(void) buildActions {
 	LinphoneChatMessage *message = self.message;
+	LinphoneEventLog *event = self.event;
+
 	_messageActionsTitles = [[NSMutableArray alloc] init];
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
@@ -905,7 +907,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		[_messageActionsBlocks addObject:^{
 			[thiz dismissPopup];
 			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
-			view.msg = message;
+			view.event = event;
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		}];
 	}
