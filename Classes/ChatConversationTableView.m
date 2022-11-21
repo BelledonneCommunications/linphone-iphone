@@ -380,6 +380,13 @@ static const int BASIC_EVENT_LIST=15;
 	[_chatRoomDelegate tableViewIsScrolling];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+			[ChatConversationView markAsRead:_chatRoom];
+	}
+}
+
 static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
