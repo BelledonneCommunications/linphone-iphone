@@ -226,9 +226,9 @@ class CallsViewModel {
 				return
 			}
 			if (currentCallData??.call.conference != nil) {
-			   PhoneMainView.instance().changeCurrentView(ConferenceCallView.compositeDescription)
+			   PhoneMainView.instance().pop(toView:ConferenceCallView.compositeDescription)
 		   } else {
-			   PhoneMainView.instance().changeCurrentView(SingleCallView.compositeDescription)
+			   PhoneMainView.instance().pop(toView:SingleCallView.compositeDescription)
 		   }
 		}
 	}
