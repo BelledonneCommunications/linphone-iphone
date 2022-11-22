@@ -49,6 +49,7 @@ import AVFoundation
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 	var conference: Conference?
 	var callkitAudioSessionActivated : Bool? = nil // if "nil", ignore.
+	var actionToFulFill : CXCallAction? = nil;
 	
 	var backgroundContextCall : Call?
 	@objc var backgroundContextCameraIsEnabled : Bool = false
@@ -556,7 +557,7 @@ import AVFoundation
 			switch cstate {
 				case .IncomingReceived:
 					let addr = call.remoteAddress
-				var displayName = incomingDisplayName(call: call)
+					var displayName = incomingDisplayName(call: call)
 				
 					if (CallManager.callKitEnabled()) {
 						let isConference = isConferenceCall(call: call)
@@ -608,7 +609,13 @@ import AVFoundation
 						CallManager.instance().speakerBeforePause = false
 						CallManager.instance().changeRouteToSpeaker()
 					}
+					actionToFulFill?.fulfill()
+					actionToFulFill = nil
 					break
+				case .Paused:
+					actionToFulFill?.fulfill()
+					actionToFulFill = nil
+				break
 				case .OutgoingInit,
 					 .OutgoingProgress,
 					 .OutgoingRinging,

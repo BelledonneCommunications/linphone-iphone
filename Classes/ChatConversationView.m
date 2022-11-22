@@ -1451,6 +1451,7 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	if (isDisplayingBottomOfTable) {
 		[view.tableController scrollToBottom:TRUE];
 	} else {
+		[[view.tableController scrollBadge] setHidden:FALSE];
 		int unread_msg = linphone_chat_room_get_unread_messages_count(cr);
 		[[view.tableController scrollBadge] setText:[NSString stringWithFormat:@"%d", unread_msg]];
 	}
