@@ -177,7 +177,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		joinEditDelete.addArrangedSubview(joinConf)
 		joinConf.width(150).done()
 		joinConf.onClick {
-			let view : ConferenceWaitingRoomFragment = self.VIEW(ConferenceWaitingRoomFragment.compositeViewDescription())
+			let view : ConferenceWaitingRoomView = self.VIEW(ConferenceWaitingRoomView.compositeViewDescription())
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 			view.setDetails(subject: (self.conferenceData?.subject.value)!, url: (self.conferenceData?.address.value)!)
 		}

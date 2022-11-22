@@ -673,7 +673,7 @@
 		C63F7212285A24B10066163B /* ScheduledConferenceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F719F285A24B10066163B /* ScheduledConferenceData.swift */; };
 		C63F7213285A24B10066163B /* TimeZoneData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A0285A24B10066163B /* TimeZoneData.swift */; };
 		C63F7214285A24B10066163B /* Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A1285A24B10066163B /* Duration.swift */; };
-		C63F7215285A24B10066163B /* ConferenceWaitingRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A3285A24B10066163B /* ConferenceWaitingRoomFragment.swift */; };
+		C63F7215285A24B10066163B /* ConferenceWaitingRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A3285A24B10066163B /* ConferenceWaitingRoomView.swift */; };
 		C63F7216285A24B10066163B /* ScheduledConferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A4285A24B10066163B /* ScheduledConferencesView.swift */; };
 		C63F7217285A24B10066163B /* ICSBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A5285A24B10066163B /* ICSBubbleView.swift */; };
 		C63F7218285A24B10066163B /* ScheduledConferencesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A6285A24B10066163B /* ScheduledConferencesCell.swift */; };
@@ -1847,7 +1847,7 @@
 		C63F719F285A24B10066163B /* ScheduledConferenceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferenceData.swift; sourceTree = "<group>"; };
 		C63F71A0285A24B10066163B /* TimeZoneData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneData.swift; sourceTree = "<group>"; };
 		C63F71A1285A24B10066163B /* Duration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Duration.swift; sourceTree = "<group>"; };
-		C63F71A3285A24B10066163B /* ConferenceWaitingRoomFragment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceWaitingRoomFragment.swift; sourceTree = "<group>"; };
+		C63F71A3285A24B10066163B /* ConferenceWaitingRoomView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceWaitingRoomView.swift; sourceTree = "<group>"; };
 		C63F71A4285A24B10066163B /* ScheduledConferencesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferencesView.swift; sourceTree = "<group>"; };
 		C63F71A5285A24B10066163B /* ICSBubbleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ICSBubbleView.swift; sourceTree = "<group>"; };
 		C63F71A6285A24B10066163B /* ScheduledConferencesCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferencesCell.swift; sourceTree = "<group>"; };
@@ -3406,7 +3406,7 @@
 		C63F71A2285A24B10066163B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C63F71A3285A24B10066163B /* ConferenceWaitingRoomFragment.swift */,
+				C63F71A3285A24B10066163B /* ConferenceWaitingRoomView.swift */,
 				C63F71A4285A24B10066163B /* ScheduledConferencesView.swift */,
 				C63F71A6285A24B10066163B /* ScheduledConferencesCell.swift */,
 				C63F71A5285A24B10066163B /* ICSBubbleView.swift */,
@@ -4938,7 +4938,7 @@
 				63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */,
 				636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */,
 				C63F7263285A24B10066163B /* FormButton.swift in Sources */,
-				C63F7215285A24B10066163B /* ConferenceWaitingRoomFragment.swift in Sources */,
+				C63F7215285A24B10066163B /* ConferenceWaitingRoomView.swift in Sources */,
 				C6548820292D32FA00BF646B /* SingleCallView.swift in Sources */,
 				63423C0A1C4501D000D9A050 /* Contact.m in Sources */,
 				C63F7262285A24B10066163B /* RotatingSpinner.swift in Sources */,

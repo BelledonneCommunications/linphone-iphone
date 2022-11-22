@@ -22,7 +22,7 @@ import UIKit
 import linphonesw
 
 
-@objc class ConferenceWaitingRoomFragment: UIViewController, UICompositeViewDelegate { // Replaces CallView
+@objc class ConferenceWaitingRoomView: UIViewController, UICompositeViewDelegate { // Replaces CallView
 	
 	// Layout constants
 	let common_margin = 17.0
@@ -54,7 +54,7 @@ import linphonesw
 	let layoutPickerView = ConferenceLayoutPickerView(orientation: UIDevice.current.orientation)
 
 
-	static let compositeDescription = UICompositeViewDescription(ConferenceWaitingRoomFragment.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
+	static let compositeDescription = UICompositeViewDescription(ConferenceWaitingRoomView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
