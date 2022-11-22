@@ -679,7 +679,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 						 _composeIndicatorView.hidden = !visible;
 					 }];
 	if (visible) {
-		if (_tableController.tableView.contentOffset.y + newComposingFrame.size.height >= (_tableController.tableView.contentSize.height - _tableController.tableView.frame.size.height)) {
+		if (_tableController.tableView.contentOffset.y + newComposingFrame.size.height >= (_tableController.tableView.contentSize.height - _tableController.tableView.frame.size.height - 1)) {
 			[_tableController scrollToBottom:TRUE];
 		}
 	}
