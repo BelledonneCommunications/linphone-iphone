@@ -20,7 +20,6 @@
 #import "LinphoneManager.h"
 #import "ChatConversationTableView.h"
 #import "ChatConversationImdnView.h"
-#import "UIChatBubbleTextCell.h"
 #import "UIChatBubblePhotoCell.h"
 #import "UIChatNotifiedEventCell.h"
 #import "PhoneMainView.h"
@@ -330,28 +329,32 @@ static const int BASIC_EVENT_LIST=15;
 	}
 }
 
+-(UIChatBubbleTextCell *)buildMessageCell:(LinphoneEventLog *) event {
+	NSString *kCellId = nil;
+	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+	BOOL isConferenceIcs = [ICSBubbleView isConferenceInvitationMessageWithCmessage:chat];
+	if (!isConferenceIcs && (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)))
+					kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
+	else
+		kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
+	// To use less memory and to avoid overlapping. To be improved.
+	UIChatBubbleTextCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kCellId];
+	cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
+	[cell setEvent:event];
+	return cell;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = nil;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
+		UIChatBubbleTextCell *cell = [self buildMessageCell:event];
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-		BOOL isConferenceIcs = [ICSBubbleView isConferenceInvitationMessageWithCmessage:chat];
-		if (!isConferenceIcs && (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)))
-            kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
-		else
-			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
-
-		// To use less memory and to avoid overlapping. To be improved.
-		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-
-		[cell setEvent:event];
-        if (chat) {
-            cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
-            cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];
-            [cell update];
-        }
-
+		if (chat) {
+				cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
+				cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];
+				[cell update];
+		}
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -442,12 +445,11 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	UIContextualAction *imdnAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
-																		 title:NSLocalizedString(@"Info", nil)
-																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-														   ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
-														   view.msg = msg;
-														   [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+																			 title:NSLocalizedString(@"Info", nil)
+																		   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+		ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+		view.event = event;
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}];
 	
 	UISwipeActionsConfiguration *swipeActionConfig;
