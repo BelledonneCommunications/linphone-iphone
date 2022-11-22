@@ -341,6 +341,7 @@ import linphonesw
 		ControlsViewModel.shared.callStatsVisible.notifyValue()
 		CallsViewModel.shared.currentCallData.notifyValue()
 		ControlsViewModel.shared.audioRoutesSelected.value = false
+		ControlsViewModel.shared.fullScreenMode.value = true
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
