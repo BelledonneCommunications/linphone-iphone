@@ -791,6 +791,7 @@ import AVFoundation
 		do {
 			if let core = lc, let params = try? core.createConferenceParams(conference: nil) {
 				params.videoEnabled = false // We disable video for local conferencing (cf Android)
+				params.subject = VoipTexts.conference_local_title
 				let conference = core.conference != nil ? core.conference : try core.createConferenceWithParams(params: params)
 				try conference?.addParticipants(calls: core.calls)
 			}
