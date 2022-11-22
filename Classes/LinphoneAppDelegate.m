@@ -138,7 +138,6 @@
 			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
 					linphone_call_accept(call);
-					[PhoneMainView.instance changeCurrentView:ActiveCallOrConferenceView.compositeViewDescription];
 				} else {
 					[PhoneMainView.instance displayIncomingCall:call];
 				}
@@ -344,8 +343,9 @@
         return NO;
     }
 
-	[PhoneMainView.instance.mainViewController getCachedController:ActiveCallOrConferenceView.compositeViewDescription.name]; // This will create the single instance of the ActiveCallOrConferenceView including listeneres
-	
+	[PhoneMainView.instance.mainViewController getCachedController:SingleCallView.compositeViewDescription.name]; // This will create the single instance of the SingleCallView including listeneres
+	[PhoneMainView.instance.mainViewController getCachedController:ConferenceCallView.compositeViewDescription.name]; // This will create the single instance of the ConferenceCallView including listeneres
+	[CallsViewModelBridge setupCallsViewNavigation];
 	return YES;
 }
 
@@ -630,7 +630,6 @@
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
 			if (!call) return;
-				[PhoneMainView.instance changeCurrentView:ActiveCallOrConferenceView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
 		  	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
 																  cancelMessage:nil

@@ -301,7 +301,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		muted.alignParentLeft(withMargin: switch_camera_button_margins).alignParentTop(withMargin:switch_camera_button_margins).done()
 		
 		activeSpeakerView.addSubview(conferenceJoinSpinner)
-		conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
+		conferenceJoinSpinner.square(AbstractIncomingOutgoingCallView.spinner_size).center().done()
 
 		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
 		
@@ -411,12 +411,12 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 				meGrid.alignParentRight(withMargin: ActiveCallView.center_view_margin_top).height(grid_height).width(grid_height).alignParentBottom(withMargin: ActiveCallView.center_view_margin_top).done()
 			} else {
-				activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: ActiveCallOrConferenceView.content_inset).done()
+				activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: SharedLayoutConstants.content_inset).done()
 				if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
 					bounceGrids()
 				}
-				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentBottom().alignParentRight().done()
-				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignAbove(view: meGrid, withMargin: ActiveCallOrConferenceView.content_inset).alignParentRight().done()
+				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: SharedLayoutConstants.content_inset).alignParentBottom().alignParentRight().done()
+				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: SharedLayoutConstants.content_inset).alignParentTop().alignAbove(view: meGrid, withMargin: SharedLayoutConstants.content_inset).alignParentRight().done()
 				layout.scrollDirection = .vertical
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 			}
@@ -432,7 +432,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
 				activeSpeakerView.matchParentSideBorders().alignParentTop().done()
 				meGrid.alignParentLeft().height(grid_height).width(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
-				grid.toRightOf(meGrid,withLeftMargin: ActiveCallOrConferenceView.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				grid.toRightOf(meGrid,withLeftMargin: SharedLayoutConstants.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
 				layout.scrollDirection = .horizontal
 			}
 		}

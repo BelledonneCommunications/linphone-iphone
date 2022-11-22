@@ -72,13 +72,14 @@ class CallsViewModel {
 							call.answerVideoUpdateRequest(accept: false)
 						}
 					}
-				}else if (state == Call.State.Connected) {
+				} else if (state == Call.State.Connected) {
 					self.callConnectedEvent.value = call
 				} else if (state == Call.State.StreamsRunning) {
 					self.callUpdateEvent.value = call
 				}
 				self.updateInactiveCallsCount()
 				self.callsData.notifyValue()
+				self.currentCallData.notifyValue()
 			},
 			
 			onMessageReceived : { (core: Core, room: ChatRoom, message: ChatMessage) -> Void in
@@ -203,6 +204,32 @@ class CallsViewModel {
 		ControlsViewModel.shared.updateMicState()
 		//updateUnreadChatCount()
 	}
-	
-	
+}
+
+@objc class CallsViewModelBridge : NSObject {
+	@objc static func callViewToDisplay() -> UICompositeViewDescription? {
+		if let call = CallsViewModel.shared.currentCallData.value??.call {
+			if (call.conference != nil) {
+				return ConferenceCallView.compositeDescription
+			} else {
+				return SingleCallView.compositeDescription
+			}
+		} else {
+			return DialerView.compositeViewDescription()
+		}
+	}
+	@objc static func setupCallsViewNavigation() {
+		CallsViewModel.shared.currentCallData.readCurrentAndObserve { currentCallData in
+			guard currentCallData != nil && currentCallData??.call != nil && currentCallData??.isOutgoing.value != true && currentCallData??.isIncoming.value != true else {
+				PhoneMainView.instance().popView(SingleCallView.compositeDescription)
+				PhoneMainView.instance().popView(ConferenceCallView.compositeDescription)
+				return
+			}
+			if (currentCallData??.call.conference != nil) {
+			   PhoneMainView.instance().changeCurrentView(ConferenceCallView.compositeDescription)
+		   } else {
+			   PhoneMainView.instance().changeCurrentView(SingleCallView.compositeDescription)
+		   }
+		}
+	}
 }

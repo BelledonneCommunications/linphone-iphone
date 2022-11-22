@@ -385,7 +385,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		case LinphoneCallPausedByRemote:
+		case LinphoneCallPausedByRemote:break;
 		case LinphoneCallConnected: {
 			if (![LinphoneManager.instance isCTCallCenterExist]) {
 				/*only register CT call center CB for connected call*/
@@ -417,6 +417,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 		case LinphoneCallUpdating:
 			break;
+
 	}
 	if (state == LinphoneCallEnd || state == LinphoneCallError || floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		[self updateApplicationBadgeNumber];

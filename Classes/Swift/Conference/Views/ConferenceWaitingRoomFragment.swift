@@ -142,7 +142,7 @@ import linphonesw
 			self.layoutPicker?.isHidden = joining == true
 			if (joining == true) {
 				self.view.addSubview(self.conferenceJoinSpinner)
-				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
+				self.conferenceJoinSpinner.square(AbstractIncomingOutgoingCallView.spinner_size).center().done()
 				self.conferenceJoinSpinner.startRotation()
 				self.controlsView.isHidden = true
 			} else {
