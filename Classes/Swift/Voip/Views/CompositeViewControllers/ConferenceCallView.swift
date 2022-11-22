@@ -72,6 +72,7 @@ import linphonesw
 			} else {
 				self.conferenceJoinSpinner.removeFromSuperview()
 				self.conferenceJoinSpinner.stopRotation()
+				self.switchToFullScreenIfPossible(conference: ConferenceViewModel.shared.conference.value)
 			}
 		}
 		
@@ -90,6 +91,9 @@ import linphonesw
 		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { (conferenceMode) in
 			if (ConferenceViewModel.shared.conferenceExists.value == true) {
 				self.displaySelectedConferenceLayout()
+				if (conferenceMode != .AudioOnly) {
+					self.switchToFullScreenIfPossible(conference: ConferenceViewModel.shared.conference.value)
+				}
 			}
 		}
 		ConferenceViewModel.shared.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
@@ -153,6 +157,21 @@ import linphonesw
 	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
 		super.didRotate(from: fromInterfaceOrientation)
 		self.conferenceActiveSpeakerView?.layoutRotatableElements()
+	}
+	
+	private func switchToFullScreenIfPossible(conference: Conference?) {
+		if (ConfigManager.instance().lpConfigBoolForKey(key: "enter_video_conference_enable_full_screen_mode", defaultValue: true)) {
+			if (conference?.currentParams?.isVideoEnabled == true) {
+				if (conference?.me?.devices.count == 0) {
+					Log.i("[Conference Call] Conference has video enabled but our device hasn't joined yet")
+				} else if (conference?.me?.devices.filter { $0.isInConference && $0.getStreamAvailability(streamType: StreamType.Video) }.first != nil) {
+					Log.i("[Conference Call] Conference has video enabled & our device has video enabled, enabling full screen mode")
+					ControlsViewModel.shared.fullScreenMode.value = true
+				} else {
+					Log.i("[Conference Call] Conference has video enabled but our device video is disabled")
+				}
+			}
+		}
 	}
 	
 	
