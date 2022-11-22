@@ -494,7 +494,7 @@
 	for (NSString *address in _sipAddresses) {
 		LinphoneAddress *addr = linphone_core_interpret_url_2(LC, [address UTF8String], YES);
 		bool isFoundInPhones = false;
-		if (addr) {
+		if (addr && linphone_address_get_username(addr)) {
 			for (NSString *phoneNb in _phones) {
 				if ([phoneNb isEqualToString:[NSString stringWithUTF8String:linphone_address_get_username(addr)]]) {
 					isFoundInPhones = true;
