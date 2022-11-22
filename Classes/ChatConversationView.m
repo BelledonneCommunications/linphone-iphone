@@ -313,6 +313,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
+	_chatRoom = NULL;
 }
 
 - (void)removeCallBacks {
