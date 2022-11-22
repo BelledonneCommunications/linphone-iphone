@@ -163,7 +163,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		}
 		
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
+			if (self.superview?.superview?.superview == nil || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
 				return
 			}
 			self.gridContainer.removeConstraints().done()

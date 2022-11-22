@@ -197,7 +197,7 @@ class ActiveCallView: UIView { // = currentCall
 			ControlsViewModel.shared.toggleFullScreen()
 		}
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden) {
+			if (self.superview?.superview?.superview == nil) {
 				return
 			}
 			self.remoteVideo.removeConstraints().done()

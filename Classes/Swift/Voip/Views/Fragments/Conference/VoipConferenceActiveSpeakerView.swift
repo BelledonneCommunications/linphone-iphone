@@ -336,7 +336,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		}
 		
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden) {
+			if (self.superview?.superview?.superview == nil || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .ActiveSpeaker) {
 				return
 			}
 			fullScreenMutableView.removeConstraints().done()

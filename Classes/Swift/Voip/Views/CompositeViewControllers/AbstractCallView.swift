@@ -61,10 +61,12 @@ import linphonesw
 		
 		
 		// Calls List
-		ControlsViewModel.shared.goToCallsListEvent.observe { (_) in
-			self.dismissableView = CallsListView()
-			self.view.addSubview(self.dismissableView!)
-			self.dismissableView?.matchParentDimmensions().done()
+		ControlsViewModel.shared.goToCallsListEvent.observe { _ in
+			if (self.view.superview != nil) {
+				self.dismissableView = CallsListView()
+				self.view.addSubview(self.dismissableView!)
+				self.dismissableView?.matchParentDimmensions().done()
+			}
 		}
 		
 		// Goto chat
