@@ -57,13 +57,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 
 	let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 	var fullScreenOpaqueMasqForNotchedDevices =  UIView()
-	let conferenceJoinSpinner = RotatingSpinner()
+	let conferenceJoinSpinner = RotatingSpinner(color:VoipTheme.dark_grey_color)
 
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
 			if let model = conferenceViewModel {
-				self.setJoininngSpeakerState(enabled: true)
+				self.setJoininngSpeakerState(enabled: false)
 				self.activeSpeakerAvatar.showAsAvatarIcon()
 				model.subject.readCurrentAndObserve { (subject) in
 					self.subjectLabel.text = subject

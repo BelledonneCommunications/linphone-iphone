@@ -28,7 +28,7 @@ import linphonesw
 	var conferenceGridView: VoipConferenceGridView? = nil
 	var conferenceActiveSpeakerView: VoipConferenceActiveSpeakerView? = nil
 	var conferenceAudioOnlyView: VoipConferenceAudioOnlyView? = nil
-	let conferenceJoinSpinner = RotatingSpinner()
+	let conferenceJoinSpinner = RotatingSpinner(color:VoipTheme.dark_grey_color)
 	@objc var participantsListView :  ParticipantsListView? = nil
 	
 	static let compositeDescription = UICompositeViewDescription(ConferenceCallView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: nil, fullscreen: false, isLeftFragment: false,fragmentWith: nil)

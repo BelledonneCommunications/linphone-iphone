@@ -21,10 +21,10 @@ import Foundation
 
 class RotatingSpinner :  UIImageView {
 	
-	init () {
+	init (color:UIColor = .white) {
 		super.init(frame: .zero)
 		self.image = UIImage(named: "voip_spinner")
-		self.tint(UIColor.white)
+		self.tint(color)
 		self.contentMode = .scaleAspectFit
 	}
 	
