@@ -80,7 +80,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					let otherSpeakersCount = model.activeSpeakerConferenceParticipantDevices.value!.count
 					self.switchCamera.isHidden = true
 					if (otherSpeakersCount == 0) {
-						Core.get().nativePreviewWindow = self.activeSpeakerVideoViewAlone
 						self.layoutRotatableElements()
 						self.meGrid.isHidden = true
 						self.grid.isHidden = true
