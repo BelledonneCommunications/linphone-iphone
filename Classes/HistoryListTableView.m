@@ -272,9 +272,9 @@
 						[ConferenceViewModelBridge showCancelledMeetingWithCConferenceInfo:confInfo];
 						return;
 					}
-					ConferenceWaitingRoomFragment *view = VIEW(ConferenceWaitingRoomFragment);
+					ConferenceWaitingRoomView *view = VIEW(ConferenceWaitingRoomView);
 					[view setDetailsWithSubject:[NSString stringWithUTF8String:linphone_conference_info_get_subject(confInfo)] url:[NSString stringWithUTF8String:linphone_address_as_string(linphone_conference_info_get_uri(confInfo))]];
-					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomFragment.compositeViewDescription];
+					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomView.compositeViewDescription];
 				} else {
 					const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 					[LinphoneManager.instance call:addr];

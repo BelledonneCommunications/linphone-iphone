@@ -22,7 +22,7 @@ import UIKit
 import Foundation
 import linphonesw
 
-@objc class IncomingOutgoingCommonView: UIViewController { // Shared between IncomingCallView and OutgoingCallVIew (all upper part except control buttons)
+@objc class AbstractIncomingOutgoingCallView: UIViewController { // Shared between IncomingCallView and OutgoingCallVIew (all upper part except control buttons)
 
 	// Layout constants
 	static let spinner_size = 50
@@ -58,22 +58,22 @@ import linphonesw
 		view.backgroundColor = VoipTheme.voipBackgroundColor.get()
 		
 		view.addSubview(spinner)
-		spinner.square(IncomingOutgoingCommonView.spinner_size).matchParentSideBorders().alignParentTop(withMargin:IncomingOutgoingCommonView.spinner_margin_top + UIDevice.notchHeight()).done()
+		spinner.square(AbstractIncomingOutgoingCallView.spinner_size).matchParentSideBorders().alignParentTop(withMargin:AbstractIncomingOutgoingCallView.spinner_margin_top + UIDevice.notchHeight()).done()
 		
 		let callType = StyledLabel(VoipTheme.call_header_title,forCallType) 
 		view.addSubview(callType)
-		callType.matchParentSideBorders().alignUnder(view:spinner,withMargin:IncomingOutgoingCommonView.call_type_margin_top).done()
+		callType.matchParentSideBorders().alignUnder(view:spinner,withMargin:AbstractIncomingOutgoingCallView.call_type_margin_top).done()
 				
 		self.view.addSubview(duration)
-		duration.matchParentSideBorders().alignUnder(view:callType,withMargin:IncomingOutgoingCommonView.duration_margin_top).done()
+		duration.matchParentSideBorders().alignUnder(view:callType,withMargin:AbstractIncomingOutgoingCallView.duration_margin_top).done()
 		
 		// Center : Avatar + Display name + SIP Address
 		let centerSection = UIView()
 		centerSection.addSubview(avatar)
 		centerSection.addSubview(displayName)
-		displayName.height(IncomingOutgoingCommonView.display_name_height).matchParentSideBorders().alignUnder(view:avatar,withMargin:IncomingOutgoingCommonView.display_name_margin_top).done()
+		displayName.height(AbstractIncomingOutgoingCallView.display_name_height).matchParentSideBorders().alignUnder(view:avatar,withMargin:AbstractIncomingOutgoingCallView.display_name_margin_top).done()
 		centerSection.addSubview(sipAddress)
-		sipAddress.height(IncomingOutgoingCommonView.sip_address_height).matchParentSideBorders().alignUnder(view:displayName,withMargin:IncomingOutgoingCommonView.sip_address_margin_top).done()
+		sipAddress.height(AbstractIncomingOutgoingCallView.sip_address_height).matchParentSideBorders().alignUnder(view:displayName,withMargin:AbstractIncomingOutgoingCallView.sip_address_margin_top).done()
 		self.view.addSubview(centerSection)
 		centerSection.matchParentSideBorders().center().done()
 		

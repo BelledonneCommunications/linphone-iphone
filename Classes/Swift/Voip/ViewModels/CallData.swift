@@ -199,5 +199,13 @@ class CallData  {
 		isPaused.value = isCallPaused()
 	}
 	
+	func isOngoingSingleCall() -> Bool {
+		return !isOutGoing() && !isInComing() && call.conference == nil && call.callLog?.wasConference() != true
+	}
+	
+	func isOngoingConference() -> Bool {
+		return !isOutGoing() && !isInComing() && (call.conference != nil || call.callLog?.wasConference() == true)
+	}
+
 
 }

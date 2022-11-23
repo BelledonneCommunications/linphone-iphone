@@ -27,7 +27,7 @@ import AVFoundation
 @objc class CallAppData: NSObject {
 	@objc var batteryWarningShown = false
 	@objc var videoRequested = false /*set when user has requested for video*/
-	@objc var isConference = true
+	@objc var isConference = false
 
 }
 
@@ -791,6 +791,7 @@ import AVFoundation
 		do {
 			if let core = lc, let params = try? core.createConferenceParams(conference: nil) {
 				params.videoEnabled = false // We disable video for local conferencing (cf Android)
+				params.subject = VoipTexts.conference_local_title
 				let conference = core.conference != nil ? core.conference : try core.createConferenceWithParams(params: params)
 				try conference?.addParticipants(calls: core.calls)
 			}

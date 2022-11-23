@@ -673,7 +673,7 @@
 		C63F7212285A24B10066163B /* ScheduledConferenceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F719F285A24B10066163B /* ScheduledConferenceData.swift */; };
 		C63F7213285A24B10066163B /* TimeZoneData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A0285A24B10066163B /* TimeZoneData.swift */; };
 		C63F7214285A24B10066163B /* Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A1285A24B10066163B /* Duration.swift */; };
-		C63F7215285A24B10066163B /* ConferenceWaitingRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A3285A24B10066163B /* ConferenceWaitingRoomFragment.swift */; };
+		C63F7215285A24B10066163B /* ConferenceWaitingRoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A3285A24B10066163B /* ConferenceWaitingRoomView.swift */; };
 		C63F7216285A24B10066163B /* ScheduledConferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A4285A24B10066163B /* ScheduledConferencesView.swift */; };
 		C63F7217285A24B10066163B /* ICSBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A5285A24B10066163B /* ICSBubbleView.swift */; };
 		C63F7218285A24B10066163B /* ScheduledConferencesCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71A6285A24B10066163B /* ScheduledConferencesCell.swift */; };
@@ -728,7 +728,7 @@
 		C63F724A285A24B10066163B /* VoipConferenceActiveSpeakerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71E4285A24B10066163B /* VoipConferenceActiveSpeakerView.swift */; };
 		C63F724B285A24B10066163B /* VoipConferenceDisplayModeSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71E5285A24B10066163B /* VoipConferenceDisplayModeSelectionView.swift */; };
 		C63F724C285A24B10066163B /* ActiveCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71E7285A24B10066163B /* ActiveCallView.swift */; };
-		C63F724D285A24B10066163B /* IncomingOutgoingCommonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71E8285A24B10066163B /* IncomingOutgoingCommonView.swift */; };
+		C63F724D285A24B10066163B /* AbstractIncomingOutgoingCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71E8285A24B10066163B /* AbstractIncomingOutgoingCallView.swift */; };
 		C63F724E285A24B10066163B /* PausedCallOrConferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71E9285A24B10066163B /* PausedCallOrConferenceView.swift */; };
 		C63F724F285A24B10066163B /* LocalVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71EA285A24B10066163B /* LocalVideoView.swift */; };
 		C63F7250285A24B10066163B /* CallStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71EB285A24B10066163B /* CallStatsView.swift */; };
@@ -742,7 +742,6 @@
 		C63F7258285A24B10066163B /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71F4285A24B10066163B /* ControlsView.swift */; };
 		C63F7259285A24B10066163B /* RemotelyRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71F5285A24B10066163B /* RemotelyRecording.swift */; };
 		C63F725A285A24B10066163B /* OutgoingCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71F7285A24B10066163B /* OutgoingCallView.swift */; };
-		C63F725B285A24B10066163B /* ActiveCallOrConferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71F8285A24B10066163B /* ActiveCallOrConferenceView.swift */; };
 		C63F725C285A24B10066163B /* IncomingCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71F9285A24B10066163B /* IncomingCallView.swift */; };
 		C63F725D285A24B10066163B /* SharedLayoutConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71FA285A24B10066163B /* SharedLayoutConstants.swift */; };
 		C63F725E285A24B10066163B /* VoipDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71FB285A24B10066163B /* VoipDialog.swift */; };
@@ -838,6 +837,9 @@
 		C64A854E2667B67200252AD2 /* EphemeralSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C64A854D2667B67200252AD2 /* EphemeralSettingsView.m */; };
 		C64A85502667B67A00252AD2 /* EphemeralSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C64A854F2667B67A00252AD2 /* EphemeralSettingsView.xib */; };
 		C64A85522667B74100252AD2 /* ephemeral_messages_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C64A85512667B74100252AD2 /* ephemeral_messages_default.png */; };
+		C6548820292D32FA00BF646B /* SingleCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C654881E292D32FA00BF646B /* SingleCallView.swift */; };
+		C6548821292D32FA00BF646B /* ConferenceCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C654881F292D32FA00BF646B /* ConferenceCallView.swift */; };
+		C6548823292D369500BF646B /* AbstractCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6548822292D369500BF646B /* AbstractCallView.swift */; };
 		C66B03BB26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */; };
 		C66B040A26EFDA55009B5EDC /* reply_cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = C66B040926EFDA54009B5EDC /* reply_cancel.png */; };
 		C66B040E26F095D1009B5EDC /* cancel_forward.png in Resources */ = {isa = PBXBuildFile; fileRef = C66B040D26F095CE009B5EDC /* cancel_forward.png */; };
@@ -1845,7 +1847,7 @@
 		C63F719F285A24B10066163B /* ScheduledConferenceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferenceData.swift; sourceTree = "<group>"; };
 		C63F71A0285A24B10066163B /* TimeZoneData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeZoneData.swift; sourceTree = "<group>"; };
 		C63F71A1285A24B10066163B /* Duration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Duration.swift; sourceTree = "<group>"; };
-		C63F71A3285A24B10066163B /* ConferenceWaitingRoomFragment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceWaitingRoomFragment.swift; sourceTree = "<group>"; };
+		C63F71A3285A24B10066163B /* ConferenceWaitingRoomView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceWaitingRoomView.swift; sourceTree = "<group>"; };
 		C63F71A4285A24B10066163B /* ScheduledConferencesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferencesView.swift; sourceTree = "<group>"; };
 		C63F71A5285A24B10066163B /* ICSBubbleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ICSBubbleView.swift; sourceTree = "<group>"; };
 		C63F71A6285A24B10066163B /* ScheduledConferencesCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduledConferencesCell.swift; sourceTree = "<group>"; };
@@ -1900,7 +1902,7 @@
 		C63F71E4285A24B10066163B /* VoipConferenceActiveSpeakerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipConferenceActiveSpeakerView.swift; sourceTree = "<group>"; };
 		C63F71E5285A24B10066163B /* VoipConferenceDisplayModeSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipConferenceDisplayModeSelectionView.swift; sourceTree = "<group>"; };
 		C63F71E7285A24B10066163B /* ActiveCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActiveCallView.swift; sourceTree = "<group>"; };
-		C63F71E8285A24B10066163B /* IncomingOutgoingCommonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingOutgoingCommonView.swift; sourceTree = "<group>"; };
+		C63F71E8285A24B10066163B /* AbstractIncomingOutgoingCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractIncomingOutgoingCallView.swift; sourceTree = "<group>"; };
 		C63F71E9285A24B10066163B /* PausedCallOrConferenceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PausedCallOrConferenceView.swift; sourceTree = "<group>"; };
 		C63F71EA285A24B10066163B /* LocalVideoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalVideoView.swift; sourceTree = "<group>"; };
 		C63F71EB285A24B10066163B /* CallStatsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallStatsView.swift; sourceTree = "<group>"; };
@@ -1914,7 +1916,6 @@
 		C63F71F4285A24B10066163B /* ControlsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
 		C63F71F5285A24B10066163B /* RemotelyRecording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemotelyRecording.swift; sourceTree = "<group>"; };
 		C63F71F7285A24B10066163B /* OutgoingCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallView.swift; sourceTree = "<group>"; };
-		C63F71F8285A24B10066163B /* ActiveCallOrConferenceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActiveCallOrConferenceView.swift; sourceTree = "<group>"; };
 		C63F71F9285A24B10066163B /* IncomingCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallView.swift; sourceTree = "<group>"; };
 		C63F71FA285A24B10066163B /* SharedLayoutConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedLayoutConstants.swift; sourceTree = "<group>"; };
 		C63F71FB285A24B10066163B /* VoipDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoipDialog.swift; sourceTree = "<group>"; };
@@ -2009,6 +2010,9 @@
 		C64A854D2667B67200252AD2 /* EphemeralSettingsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EphemeralSettingsView.m; sourceTree = "<group>"; };
 		C64A854F2667B67A00252AD2 /* EphemeralSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EphemeralSettingsView.xib; sourceTree = "<group>"; };
 		C64A85512667B74100252AD2 /* ephemeral_messages_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ephemeral_messages_default.png; sourceTree = "<group>"; };
+		C654881E292D32FA00BF646B /* SingleCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleCallView.swift; sourceTree = "<group>"; };
+		C654881F292D32FA00BF646B /* ConferenceCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceCallView.swift; sourceTree = "<group>"; };
+		C6548822292D369500BF646B /* AbstractCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractCallView.swift; sourceTree = "<group>"; };
 		C66B03BC26E8EB1A009B5EDC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatReplyBubbleView.xib; sourceTree = "<group>"; };
 		C66B03C126E8EB82009B5EDC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
 		C66B03C326E8EB87009B5EDC /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
@@ -3402,7 +3406,7 @@
 		C63F71A2285A24B10066163B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C63F71A3285A24B10066163B /* ConferenceWaitingRoomFragment.swift */,
+				C63F71A3285A24B10066163B /* ConferenceWaitingRoomView.swift */,
 				C63F71A4285A24B10066163B /* ScheduledConferencesView.swift */,
 				C63F71A6285A24B10066163B /* ScheduledConferencesCell.swift */,
 				C63F71A5285A24B10066163B /* ICSBubbleView.swift */,
@@ -3530,7 +3534,6 @@
 				C63F71DC285A24B10066163B /* AudioRoutesView.swift */,
 				C63F71DD285A24B10066163B /* Conference */,
 				C63F71E6285A24B10066163B /* ActiveCall */,
-				C63F71E8285A24B10066163B /* IncomingOutgoingCommonView.swift */,
 				C63F71E9285A24B10066163B /* PausedCallOrConferenceView.swift */,
 				C63F71EA285A24B10066163B /* LocalVideoView.swift */,
 				C63F71EB285A24B10066163B /* CallStatsView.swift */,
@@ -3590,8 +3593,11 @@
 		C63F71F6285A24B10066163B /* CompositeViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				C63F71E8285A24B10066163B /* AbstractIncomingOutgoingCallView.swift */,
+				C6548822292D369500BF646B /* AbstractCallView.swift */,
+				C654881F292D32FA00BF646B /* ConferenceCallView.swift */,
+				C654881E292D32FA00BF646B /* SingleCallView.swift */,
 				C63F71F7285A24B10066163B /* OutgoingCallView.swift */,
-				C63F71F8285A24B10066163B /* ActiveCallOrConferenceView.swift */,
 				C63F71F9285A24B10066163B /* IncomingCallView.swift */,
 			);
 			path = CompositeViewControllers;
@@ -4932,8 +4938,8 @@
 				63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */,
 				636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */,
 				C63F7263285A24B10066163B /* FormButton.swift in Sources */,
-				C63F725B285A24B10066163B /* ActiveCallOrConferenceView.swift in Sources */,
-				C63F7215285A24B10066163B /* ConferenceWaitingRoomFragment.swift in Sources */,
+				C63F7215285A24B10066163B /* ConferenceWaitingRoomView.swift in Sources */,
+				C6548820292D32FA00BF646B /* SingleCallView.swift in Sources */,
 				63423C0A1C4501D000D9A050 /* Contact.m in Sources */,
 				C63F7262285A24B10066163B /* RotatingSpinner.swift in Sources */,
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
@@ -4994,6 +5000,7 @@
 				63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */,
 				C63F726D285A24B10066163B /* ProviderDelegate.swift in Sources */,
 				C63F7266285A24B10066163B /* UICallTimer.swift in Sources */,
+				C6548821292D32FA00BF646B /* ConferenceCallView.swift in Sources */,
 				C63F726C285A24B10066163B /* StyledTextView.swift in Sources */,
 				570742611D5A09B8004B9C84 /* ShopView.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
@@ -5053,6 +5060,7 @@
 				C63F721F285A24B10066163B /* BackNextNavigationView.swift in Sources */,
 				D3807FC315C28940005BE9BC /* DCRoundSwitchOutlineLayer.m in Sources */,
 				C63F723D285A24B10066163B /* TextStyle.swift in Sources */,
+				C6548823292D369500BF646B /* AbstractCallView.swift in Sources */,
 				C63F7229285A24B10066163B /* UIButtonExtensions.swift in Sources */,
 				C63F722B285A24B10066163B /* UIDeviceExtensions.swift in Sources */,
 				C63F724B285A24B10066163B /* VoipConferenceDisplayModeSelectionView.swift in Sources */,
@@ -5105,7 +5113,7 @@
 				637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ImagePickerView.m in Sources */,
 				22405F001601C19200B92522 /* ImageView.m in Sources */,
-				C63F724D285A24B10066163B /* IncomingOutgoingCommonView.swift in Sources */,
+				C63F724D285A24B10066163B /* AbstractIncomingOutgoingCallView.swift in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
 				C63F7246285A24B10066163B /* VoipGridParticipantCell.swift in Sources */,

@@ -39,10 +39,7 @@ extension Call {
 
 extension Call : CustomStringConvertible {
 	public var description: String {
-		if let callId = callLog?.callId {
-			return "<Call-ID: \(callId)>"
-		}
-		return "<Raw pointer:\(Unmanaged.passUnretained(self).toOpaque())>"
+		return "<Call-ID: \(callLog?.callId ?? "pending") pointer:\(Unmanaged.passUnretained(self).toOpaque()) is conference:\(conference != nil) >"
  }
 }
 

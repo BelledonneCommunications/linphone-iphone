@@ -316,7 +316,7 @@
 		bool remove = true;
 
 		/*ImagePickerView can be used as popover and we do NOT want to free it*/;
-		if ([key isEqualToString:ImagePickerView.compositeViewDescription.name] || [key isEqualToString:ActiveCallOrConferenceView.compositeViewDescription.name]) {
+		if ([key isEqualToString:ImagePickerView.compositeViewDescription.name] || [key isEqualToString:SingleCallView.compositeViewDescription.name]  || [key isEqualToString:ConferenceCallView.compositeViewDescription.name]) {
 			remove = false;
 		} else if (exclude != nil) {
 			for (UICompositeViewDescription *description in exclude) {

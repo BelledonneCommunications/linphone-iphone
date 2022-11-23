@@ -108,7 +108,7 @@ import EventKitUI
 		joinShare.alignParentBottom(withMargin: inner_padding).width(join_share_width).alignParentRight(withMargin: inner_padding).done()
 		
 		join.onClick {
-			let view : ConferenceWaitingRoomFragment = self.VIEW(ConferenceWaitingRoomFragment.compositeViewDescription())
+			let view : ConferenceWaitingRoomView = self.VIEW(ConferenceWaitingRoomView.compositeViewDescription())
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 			view.setDetails(subject: (self.conferenceData?.subject.value)!, url: (self.conferenceData?.address.value)!)
 		}
