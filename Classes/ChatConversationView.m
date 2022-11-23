@@ -314,6 +314,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	PhoneMainView.instance.currentRoom = NULL;
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
 	_chatRoom = NULL;
+	_tableController.chatRoom = nil;
 }
 
 - (void)removeCallBacks {
