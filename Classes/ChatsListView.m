@@ -161,8 +161,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onChatRoomSwiftClick:(id)event {
-    DetailChatRoomFragment *view = VIEW(DetailChatRoomFragment);
-    [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+    [PhoneMainView.instance changeCurrentView:ChatConversationViewSwift.compositeViewDescription];
 }
 
 - (IBAction)onAddClick:(id)event {
