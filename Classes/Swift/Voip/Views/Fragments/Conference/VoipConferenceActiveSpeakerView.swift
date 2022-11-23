@@ -247,6 +247,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 			self.conferenceViewModel?.toggleRecording()
 		})
 		
+		recordCall.isHidden = true;
+		
 		let recordPauseView = UIStackView()
 		recordPauseView.spacing = record_pause_button_margin
 		recordCallButtons.append(recordCall)
