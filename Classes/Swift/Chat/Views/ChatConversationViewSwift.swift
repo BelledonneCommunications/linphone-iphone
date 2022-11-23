@@ -22,12 +22,16 @@ import UIKit
 import Foundation
 import linphonesw
 
-@objc class DetailChatRoomFragment: BackActionsNavigationView, UICompositeViewDelegate { // Replaces ChatConversationView
+@objc class ChatConversationViewSwift: BackActionsNavigationView, UICompositeViewDelegate { // Replaces ChatConversationView
+	
+	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
     
-    static let compositeDescription = UICompositeViewDescription(DetailChatRoomFragment.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
+    static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
+	
     static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
+	
     func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
-    
+	
     override func viewDidLoad() {
         super.viewDidLoad(
             backAction: {
@@ -39,10 +43,10 @@ import linphonesw
             action2: {
                 
             },
-            //title:"benoit.martins.test1"
-            title:"Coin à champis de François"
+            title:"benoit.martins.test1"
+			//title:"Coin à champis de François"
         )
-        view.backgroundColor = VoipTheme.backgroundColor3.get()
+        //view.backgroundColor = VoipTheme.backgroundColor3.get()
     }
     
     func goBackChatListView() {

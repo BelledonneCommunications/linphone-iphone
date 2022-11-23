@@ -75,10 +75,8 @@ import linphonesw
 
         topBar.addSubview(titleLabel)
         titleLabel.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
-        //let titlelabel = title.prefix(13)
-        //titleLabel.text = title.count > 13 ? String(titlelabel+"...") : title
+		titleLabel.toLeftOf(action1Button, withRightMargin: 20).done()
         titleLabel.text = title
-        //titleLabel.truncationMode(.tail)
         
         super.viewDidLoad()
 
