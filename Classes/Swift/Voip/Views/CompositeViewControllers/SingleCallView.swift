@@ -39,6 +39,9 @@ import linphonesw
 		currentCallView = ActiveCallView()
 		fullScreenMutableContainerView.addSubview(currentCallView!)
 		CallsViewModel.shared.currentCallData.readCurrentAndObserve { (currentCallData) in
+			guard currentCallData??.isOngoingSingleCall() == true else {
+				return
+			}
 			self.currentCallView!.callData = currentCallData != nil ? currentCallData! : nil
 			currentCallData??.isRemotelyPaused.readCurrentAndObserve { remotelyPaused in
 				self.callPausedByRemoteView?.isHidden = remotelyPaused != true

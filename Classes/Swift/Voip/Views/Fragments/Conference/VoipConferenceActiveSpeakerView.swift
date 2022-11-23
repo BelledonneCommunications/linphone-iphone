@@ -63,6 +63,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
 			if let model = conferenceViewModel {
+				self.activeSpeakerVideoView.isHidden = true
+				self.activeSpeakerVideoViewAlone.isHidden = true
 				self.setJoininngSpeakerState(enabled: false)
 				self.activeSpeakerAvatar.showAsAvatarIcon()
 				model.subject.readCurrentAndObserve { (subject) in
