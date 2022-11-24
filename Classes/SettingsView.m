@@ -27,7 +27,6 @@
 
 #import "IASKSpecifierValuesViewController.h"
 #import "IASKPSTextFieldSpecifierViewCell.h"
-#import "IASKPSTitleValueSpecifierViewCell.h"
 #import "IASKSpecifier.h"
 #import "IASKTextField.h"
 #include "linphone/lpconfig.h"
@@ -247,7 +246,7 @@
 		[field setTextColor:LINPHONE_MAIN_COLOR];
 	}
 
-	if ([cell isKindOfClass:[IASKPSTitleValueSpecifierViewCell class]]) {
+	if ([cell isKindOfClass:[UITableViewCell class]]) {
 		cell.detailTextLabel.textColor = [UIColor grayColor];
 	} else {
 		cell.detailTextLabel.textColor = LINPHONE_MAIN_COLOR;

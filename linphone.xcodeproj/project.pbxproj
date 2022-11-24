@@ -913,7 +913,6 @@
 		D3807FF615C2894A005BE9BC /* IASKSpecifier.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FDA15C2894A005BE9BC /* IASKSpecifier.m */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 		D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FDD15C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m */; };
 		D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FDF15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
-		D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FE115C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m */; };
 		D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FE315C2894A005BE9BC /* IASKSlider.m */; };
 		D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FE515C2894A005BE9BC /* IASKSwitch.m */; };
 		D380800215C2894A005BE9BC /* IASKTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D3807FE715C2894A005BE9BC /* IASKTextField.m */; };
@@ -2131,8 +2130,6 @@
 		D3807FDD15C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSSliderSpecifierViewCell.m; sourceTree = "<group>"; };
 		D3807FDE15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKPSTextFieldSpecifierViewCell.h; sourceTree = "<group>"; };
 		D3807FDF15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSTextFieldSpecifierViewCell.m; sourceTree = "<group>"; };
-		D3807FE015C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKPSTitleValueSpecifierViewCell.h; sourceTree = "<group>"; };
-		D3807FE115C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKPSTitleValueSpecifierViewCell.m; sourceTree = "<group>"; };
 		D3807FE215C2894A005BE9BC /* IASKSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSlider.h; sourceTree = "<group>"; };
 		D3807FE315C2894A005BE9BC /* IASKSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IASKSlider.m; sourceTree = "<group>"; };
 		D3807FE415C2894A005BE9BC /* IASKSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IASKSwitch.h; sourceTree = "<group>"; };
@@ -3750,8 +3747,6 @@
 				D3807FDD15C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m */,
 				D3807FDE15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.h */,
 				D3807FDF15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m */,
-				D3807FE015C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.h */,
-				D3807FE115C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m */,
 				D3807FE215C2894A005BE9BC /* IASKSlider.h */,
 				D3807FE315C2894A005BE9BC /* IASKSlider.m */,
 				D3807FE415C2894A005BE9BC /* IASKSwitch.h */,
@@ -5092,7 +5087,6 @@
 				C63F726A285A24B10066163B /* StyledDatePicker.swift in Sources */,
 				C63F7237285A24B10066163B /* CallStatisticsData.swift in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
-				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
 				C63F721B285A24B10066163B /* ConferenceSchedulingSummaryView.swift in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
