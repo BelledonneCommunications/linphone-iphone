@@ -70,6 +70,14 @@ extension UIView {
 		return self
 	}
 	
+	func updateSize(w:CGFloat,h:CGFloat) -> UIView {
+		snp.updateConstraints { (make) in
+			make.width.equalTo(w)
+			make.height.equalTo(h)
+		}
+		return self
+	}
+	
 	func height(_ h:CGFloat) -> UIView {
 		snp.makeConstraints { (make) in
 			make.height.equalTo(h)

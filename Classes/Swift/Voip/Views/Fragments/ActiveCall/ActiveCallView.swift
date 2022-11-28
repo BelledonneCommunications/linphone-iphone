@@ -238,8 +238,8 @@ class ActiveCallView: UIView { // = currentCall
 			avatar.square(Avatar.diameter_for_call_views_land).center().done()
 		} else {
 			avatar.square(Avatar.diameter_for_call_views).center().done()
-
 		}
+		localVideo.updateSizeConstraint()
 	}
 	
 	required init?(coder: NSCoder) {

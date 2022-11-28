@@ -73,8 +73,20 @@ class LocalVideoView: UIView {
 		setSizeConstraint()
 	}
 	
+	func getSize() -> CGSize {
+		let w = UIDevice.current.orientation.isLandscape ? width*aspect_ratio : width
+		let h = !UIDevice.current.orientation.isLandscape ? width*aspect_ratio : width
+		return CGSize(width: w,height: h)
+	}
+	
 	func setSizeConstraint() {
-		size(w: width, h: width*aspect_ratio).done()
+		let targetSsize = getSize()
+		size(w: targetSsize.width, h: targetSsize.height).done()
+	}
+	
+	func updateSizeConstraint() {
+		let targetSsize = getSize()
+		updateSize(w: targetSsize.width, h: targetSsize.height).done()
 	}
 	
 	
