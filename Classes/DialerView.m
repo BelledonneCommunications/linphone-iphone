@@ -145,9 +145,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_videoCameraSwitch setHidden:FALSE];
 		}
 	}
-	[_addContactButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
-	_addContactButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-	_addContactButton.enabled = true;
+	
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (!(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)))){
+		[_addContactButton setImage:[UIImage imageNamed:@"contact_add_default"] forState:UIControlStateNormal];
+		_addContactButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+		_addContactButton.enabled = true;
+	}else{
+		[_addContactButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
+		_addContactButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+		_addContactButton.enabled = true;
+	}
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -393,9 +401,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick:(id)event {
-	ConferenceSchedulingView *view = VIEW(ConferenceSchedulingView);
-	[view resetViewModel];
-	[PhoneMainView.instance changeCurrentView:ConferenceSchedulingView.compositeViewDescription];
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (!(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)))){
+		[ContactSelection setSelectionMode:ContactSelectionModeEdit];
+		[ContactSelection setAddAddress:[_addressField text]];
+		[ContactSelection enableSipFilter:FALSE];
+		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
+	}else{
+		ConferenceSchedulingView *view = VIEW(ConferenceSchedulingView);
+		[view resetViewModel];
+		[PhoneMainView.instance changeCurrentView:ConferenceSchedulingView.compositeViewDescription];
+	}
 }
 
 - (IBAction)onBackClick:(id)event {
@@ -405,6 +421,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddressChange:(id)sender {
 	if ([self displayDebugPopup:_addressField.text]) {
 		_addressField.text = @"";
+	}
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (!(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)))){
+		[_addContactButton setImage:[UIImage imageNamed:@"contact_add_default"] forState:UIControlStateNormal];
+		_addContactButton.enabled = ([[_addressField text] length] > 0);
+		if ([_addressField.text length] == 0) {
+			[self.view endEditing:YES];
+		}
+	}else{
+		[_addContactButton setImage:[UIImage imageNamed:@"voip_conference_new"] forState:UIControlStateNormal];
+		_addContactButton.enabled = true;
 	}
 }
 

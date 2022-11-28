@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
-
 	<section name="proxy_default_values">
 		<entry name="avpf" overwrite="true">1</entry>
 		<entry name="dial_escape_plus" overwrite="true">0</entry>
@@ -19,18 +18,16 @@
 		<entry name="rtp_bundle" overwrite="true">1</entry>
 		<entry name="conference_factory_uri" overwrite="true">sip:conference-factory@sip.linphone.org</entry>
 		<entry name="audio_video_conference_factory_uri" overwrite="true">sip:videoconference-factory@sip.linphone.org</entry>
+		<entry name="cpim_in_basic_chat_rooms_enabled" overwrite="true">1</entry>
 	</section>
-
 	<section name="nat_policy_default_values">
 		<entry name="stun_server" overwrite="true">stun.linphone.org</entry>
 		<entry name="protocols" overwrite="true">stun,ice</entry>
 	</section>
-
 	<section name="sip">
 		<entry name="rls_uri" overwrite="true">sips:rls@sip.linphone.org</entry>
 		<entry name="auto_net_state_mon" overwrite="true">1</entry>
 	</section>
-	
 	<section name="assistant">
 		<entry name="domain" overwrite="true">sip.linphone.org</entry>
 		<entry name="password_max_length" overwrite="true">34</entry>
