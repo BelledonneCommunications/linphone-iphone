@@ -218,6 +218,11 @@ import linphonesw
 	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
 		super.didRotate(from: fromInterfaceOrientation)
 		self.layoutRotatableElements()
+		Core.get().videoPreviewEnabled = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true
+	}
+	
+	override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+		Core.get().videoPreviewEnabled = false
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
