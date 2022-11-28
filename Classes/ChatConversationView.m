@@ -213,49 +213,52 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(applicationDidEnterBackground)
-																						 name:UIApplicationDidEnterBackgroundNotification
-																					 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(applicationWillEnterForeground)
-																						 name:UIApplicationWillEnterForegroundNotification
-																					 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(keyboardWillShow:)
-																						 name:UIKeyboardWillShowNotification
-																					 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(keyboardWillHide:)
-																						 name:UIKeyboardWillHideNotification
-																					 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(onMessageChange:)
-																						 name:UITextViewTextDidChangeNotification
-																					 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(callUpdateEvent:)
-																						 name:kLinphoneCallUpdate
-																					 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(onLinphoneCoreReady:)
-																						 name:kLinphoneGlobalStateUpdate
-																					 object:nil];
+	if (!_chatRoom)
+		[self onLinphoneCoreReady:nil];
 	
 	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(endVoicePlayingIfDoingSO:)
-																						 name:kLinphoneVoiceMessagePlayerLostFocus
-																					 object:nil];
+										   selector:@selector(applicationDidEnterBackground)
+											   name:UIApplicationDidEnterBackgroundNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(applicationWillEnterForeground)
+											   name:UIApplicationWillEnterForegroundNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(keyboardWillShow:)
+											   name:UIKeyboardWillShowNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(keyboardWillHide:)
+											   name:UIKeyboardWillHideNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onMessageChange:)
+											   name:UITextViewTextDidChangeNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onLinphoneCoreReady:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
 	
 	[NSNotificationCenter.defaultCenter addObserver:self
-																				 selector:@selector(endVoicePlayingIfDoingSO:)
-																						 name:kLinphoneVoiceMessagePlayerEOF
-																					 object:nil];
+										   selector:@selector(endVoicePlayingIfDoingSO:)
+											   name:kLinphoneVoiceMessagePlayerLostFocus
+											 object:nil];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(endVoicePlayingIfDoingSO:)
+											   name:kLinphoneVoiceMessagePlayerEOF
+											 object:nil];
 	if ([_fileContext count] > 0) {
 		[UIView animateWithDuration:0
-													delay:0
-												options:UIViewAnimationOptionBeginFromCurrentState
-										 animations:^{
+							  delay:0
+							options:UIViewAnimationOptionBeginFromCurrentState
+						 animations:^{
 			// resizing imagesView
 			CGRect imagesFrame = [_imagesView frame];
 			imagesFrame.origin.y = [_messageView frame].origin.y - 120;
@@ -266,8 +269,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			tableViewFrame.size.height -= 120;
 			[_tableController.tableView setFrame:tableViewFrame];
 			[self updateFramesInclRecordingAndReplyView];
-		}
-										 completion:nil];
+		} completion:nil];
 	}
 	[self configureForRoom:self.editing];
 	
@@ -505,7 +507,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)onLinphoneCoreReady:(NSNotification *)notif {
 	if (linphone_core_get_global_state(LC) == LinphoneGlobalOn) {
 		LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
-	if (peerAddr) {
+		if (peerAddr) {
 			_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
 			if (_chatRoom) {
 				isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
