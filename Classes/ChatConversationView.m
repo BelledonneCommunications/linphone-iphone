@@ -622,9 +622,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)confirmShare:(NSData *)data url:(NSString *)url fileName:(NSString *)fileName {
-    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:@""];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select or create a conversation to share the file(s)", nil)];
     dispatch_async(dispatch_get_main_queue(), ^{
-		[sheet addButtonWithTitle:NSLocalizedString(@"send to this conversation", nil)
+		[sheet addButtonWithTitle:NSLocalizedString(@"Send to this conversation", nil)
 							block:^() {
 								if (![[self.messageField text] isEqualToString:@""]) {
 									[self sendMessageInMessageField:linphone_chat_room_create_empty_message(_chatRoom)];
@@ -812,9 +812,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)event {
 	NSString *previousViewName = [PhoneMainView.instance getPreviousViewName];
 	if ([previousViewName isEqualToString:@"ContactDetailsView"]) {
+		VIEW(ChatConversationView).sharingMedia = nil;
 		ContactDetailsView *view = VIEW(ContactDetailsView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
+		VIEW(ChatConversationView).sharingMedia = nil;
 		ChatsListView *view = VIEW(ChatsListView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}

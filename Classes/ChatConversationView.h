@@ -112,6 +112,7 @@
 @property LinphonePlayer *sharedVoicePlayer;
 @property BOOL showVoiceRecorderView;
 @property BOOL preservePendingActions;
+@property BOOL *sharingMedia;
 
 // Reply
 @property (weak, nonatomic) IBOutlet UIView *replyView;

@@ -43,4 +43,6 @@
 - (IBAction)onEditionChangeClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
 
+-(void) mediaSharing;
+
 @end

@@ -453,9 +453,19 @@ static RootViewManager *rootViewManagerInstance = nil;
 		LinphoneManager *lm = LinphoneManager.instance;
 		LOGI(@"%s", linphone_global_state_to_string(linphone_core_get_global_state(LC)));
 		
+		NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+
+
+		NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+		NSDictionary *dict = [defaults valueForKey:@"photoData"];
+		NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
+		NSDictionary *dictUrl = [defaults valueForKey:@"url"];
+		
 		// If we've been started by a remote push notification,
 		// we'll already be on the corresponding chat conversation view, no need to go anywhere else
-		if (![[self currentView].name isEqualToString:@"ChatConversationView"]) {
+		if (dict||dictFile||dictUrl){
+			[self changeCurrentView:ChatsListView.compositeViewDescription];
+		}else if (![[self currentView].name isEqualToString:@"ChatConversationView"]) {
 
 			if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
 				[self changeCurrentView:DialerView.compositeViewDescription];
@@ -607,7 +617,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 	[self _changeCurrentView:viewStack.lastObject ?: DialerView.compositeViewDescription
 				  transition:[PhoneMainView getBackwardTransition]
-					animated:ANIMATED];
+					animated:ANIMATED
+			  addViewToStack:FALSE];
 	return [mainViewController getCurrentViewController];
 }
 
@@ -621,24 +632,27 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view {
-	[self _changeCurrentView:view transition:nil animated:ANIMATED];
+	[self _changeCurrentView:view transition:nil animated:ANIMATED addViewToStack:TRUE];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
-								animated:(BOOL)animated {
+								animated:(BOOL)animated
+						  addViewToStack:(BOOL)addViewToStack {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
+	LOGI(@"_changeCurrentView : stack size before = %d", [RootViewManager instance].viewDescriptionStack.count);
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
 		[self setPreviousViewName:vc.currentView.name];
 		NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-		[viewStack addObject:view];
+		if (addViewToStack) [viewStack addObject:view];
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
 		[vc.mainViewController changeView:view];
 		vc->currentView = view;
 	}
+	LOGI(@"_changeCurrentView : stack size after = %d", [RootViewManager instance].viewDescriptionStack.count);
 
 	//[[RootViewManager instance] setViewControllerForDescription:view];
 
@@ -653,7 +667,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	while (viewStack.count > 0 && ![[viewStack lastObject] equal:view]) {
 		[viewStack removeLastObject];
 	}
-	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED];
+	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED addViewToStack:FALSE];
 }
 
 - (void) setPreviousViewName:(NSString*)previous{

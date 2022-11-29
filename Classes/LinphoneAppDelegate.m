@@ -35,6 +35,8 @@
 #import <IntentsUI/IntentsUI.h>
 #import "linphoneapp-Swift.h"
 
+#import "SVProgressHUD.h"
+
 
 #ifdef USE_CRASHLYTICS
 #include "FIRApp.h"
@@ -402,7 +404,15 @@
 
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
-        [PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+		if ([[PhoneMainView.instance currentView] equal:ChatsListView.compositeViewDescription]) {
+			VIEW(ChatConversationView).sharingMedia = TRUE;
+			ChatsListView *view = VIEW(ChatsListView);
+			[view mediaSharing];
+		}else{
+			[SVProgressHUD dismiss];
+			VIEW(ChatConversationView).sharingMedia = TRUE;
+			[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+		}
     } else if ([scheme isEqualToString:@"sip"]||[scheme isEqualToString:@"sips"]) {
         // remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
         // trailing "/"
