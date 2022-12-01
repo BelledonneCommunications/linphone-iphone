@@ -108,6 +108,12 @@ import linphonesw
 			}
 		}
 		
+		self.view.onClick{
+			if (ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value == true) {
+				ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value = false
+			}
+		}
+		
 		// Form buttons
 		buttonsView.axis = .horizontal
 		buttonsView.spacing = button_spacing
