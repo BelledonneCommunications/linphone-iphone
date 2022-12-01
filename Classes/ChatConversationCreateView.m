@@ -209,7 +209,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableController.contactsGroup removeAllObjects];
 	if (_isForVoipConference) {
 		if (_isForOngoingVoipConference) {
-			[PhoneMainView.instance changeCurrentView:VIEW(ConferenceCallView).compositeViewDescription];
+			[PhoneMainView.instance popToView:VIEW(ConferenceCallView).compositeViewDescription];
 			[ControlsViewModelBridge showParticipants];
 		} else {
 			[PhoneMainView.instance popToView:ConferenceSchedulingView.compositeViewDescription];
@@ -225,7 +225,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onNextClick:(id)sender {
 	if (_isForVoipConference) {
 		if (_isForOngoingVoipConference) {
-			[PhoneMainView.instance changeCurrentView:VIEW(ConferenceCallView).compositeViewDescription];
+			[PhoneMainView.instance popToView:VIEW(ConferenceCallView).compositeViewDescription];
 			[ConferenceViewModelBridge updateParticipantsListWithAddresses:_tableController.contactsGroup];
 		} else {
 			[PhoneMainView.instance changeCurrentView:VIEW(ConferenceSchedulingSummaryView).compositeViewDescription];

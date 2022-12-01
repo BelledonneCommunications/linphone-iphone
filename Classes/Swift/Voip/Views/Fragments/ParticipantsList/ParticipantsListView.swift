@@ -38,6 +38,7 @@ import linphonesw
 		
 		
 		let edit = CallControlButton(buttonTheme: VoipTheme.voip_edit, onClickAction: {
+			self.removeFromSuperview()
 			self.gotoParticipantsListSelection()
 		})
 		super.headerView.addSubview(edit)
