@@ -56,11 +56,13 @@ import linphonesw
 				self.extraButtonsView.isHidden = true
 				self.conferencePausedView?.isHidden = ConferenceViewModel.shared.isConferenceLocallyPaused.value != true
 				self.displaySelectedConferenceLayout()
+				UIApplication.shared.isIdleTimerDisabled = true
 			} else {
 				self.conferenceGridView?.isHidden = true
 				self.conferenceActiveSpeakerView?.isHidden = true
 				self.conferenceActiveSpeakerView?.isHidden = true
 				self.conferencePausedView?.isHidden = true
+				UIApplication.shared.isIdleTimerDisabled = false
 			}
 		}
 		
