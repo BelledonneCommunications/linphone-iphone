@@ -811,12 +811,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onBackClick:(id)event {
 	NSString *previousViewName = [PhoneMainView.instance getPreviousViewName];
+	_sharingMedia = nil;
 	if ([previousViewName isEqualToString:@"ContactDetailsView"]) {
-		VIEW(ChatConversationView).sharingMedia = nil;
 		ContactDetailsView *view = VIEW(ContactDetailsView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
-		VIEW(ChatConversationView).sharingMedia = nil;
 		ChatsListView *view = VIEW(ChatsListView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
