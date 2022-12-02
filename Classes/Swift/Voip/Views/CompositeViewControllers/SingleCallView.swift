@@ -92,6 +92,9 @@ import linphonesw
 				}
 			}
 		}
+		view.onClick {
+			ControlsViewModel.shared.audioRoutesSelected.value = false
+		}
 	}
 	
 	

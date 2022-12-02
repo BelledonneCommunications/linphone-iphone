@@ -127,6 +127,11 @@ import linphonesw
 				VoipDialog.toast(message: VoipTexts.conference_first_to_join)
 			}
 		}
+		
+		view.onClick {
+			ControlsViewModel.shared.audioRoutesSelected.value = false
+		}
+		
 	}
 	
 	func displaySelectedConferenceLayout() {

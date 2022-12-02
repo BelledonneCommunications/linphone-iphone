@@ -92,6 +92,7 @@ class ControlsViewModel {
 		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { _ in
 			self.updateVideoAvailable()
 		}
+		self.isBluetoothHeadsetAvailable.value = !core.audioDevices.filter { [.Bluetooth,.BluetoothA2DP].contains($0.type)}.isEmpty
 	}
 	
 	private func setAudioRoutes(_ call:Call,_ state:Call.State) {
@@ -229,6 +230,7 @@ class ControlsViewModel {
 	}
 	
 	func toggleFullScreen() {
+		ControlsViewModel.shared.audioRoutesSelected.value = false
 		fullScreenMode.value = fullScreenMode.value != true
 	}
 	
