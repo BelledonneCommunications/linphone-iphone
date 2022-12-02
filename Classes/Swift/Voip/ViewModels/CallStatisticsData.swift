@@ -34,17 +34,20 @@ class CallStatisticsData {
 		self.call = call
 		callDelegate = CallDelegateStub(
 			onStatsUpdated : { (call: Call, stats: CallStats) ->  Void in
-				self.isVideoEnabled.value = call.currentParams?.videoEnabled
+				self.isVideoEnabled.value = self.videoStatsAvailable(call)
 				self.updateCallStats(stats: stats)
 				self.statsUpdated.value = true
 			}
-			
 		)
 		call.addDelegate(delegate: callDelegate!)
 		initCallStats()
-		isVideoEnabled.value = call.currentParams?.videoEnabled
+		isVideoEnabled.value = videoStatsAvailable(call)
 		call.audioStats.map { updateCallStats(stats: $0) }
 		call.videoStats.map { updateCallStats(stats: $0) }
+	}
+	
+	private func videoStatsAvailable(_ call:Call) -> Bool {
+		return call.conference != nil ? call.params?.videoDirection == .SendRecv :  call.currentParams?.videoEnabled == true
 	}
 	
 	private func initCallStats() {
