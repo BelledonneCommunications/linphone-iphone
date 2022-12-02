@@ -149,6 +149,8 @@ import IQKeyboardManager
 		let viaChatLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_chat)
 		viaChatView.addSubview(viaChatLabel)
 		viaChatLabel.toRightOf(viaChatSwitch,withLeftMargin: form_margin).alignHorizontalCenterWith(viaChatSwitch).done()
+		
+		viaChatView.wrapContentY().done()
 
     /* Hidden as in Android 9.6.2022
      
