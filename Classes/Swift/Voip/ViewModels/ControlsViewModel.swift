@@ -30,6 +30,7 @@ class ControlsViewModel {
 	let isMicrophoneMuted = MutableLiveData<Bool>()
 	let isMuteMicrophoneEnabled = MutableLiveData<Bool>()
 	let isBluetoothHeadsetSelected = MutableLiveData<Bool>()
+	let isBluetoothHeadsetAvailable = MutableLiveData<Bool>()
 	let nonEarpieceOutputAudioDevice = MutableLiveData<Bool>()
 	let audioRoutesSelected = MutableLiveData<Bool>()
 	let audioRoutesEnabled = MutableLiveData<Bool>()
@@ -71,6 +72,9 @@ class ControlsViewModel {
 				self.nonEarpieceOutputAudioDevice.value = audioDevice.type != AudioDeviceType.Microphone // on iOS Earpiece = Microphone
 				self.updateSpeakerState()
 				self.updateBluetoothHeadsetState()
+			},
+			onAudioDevicesListUpdated : { (core: Core) -> Void in
+				self.isBluetoothHeadsetAvailable.value = !core.audioDevices.filter { [.Bluetooth,.BluetoothA2DP].contains($0.type)}.isEmpty
 			}
 		)
 		Core.get().addDelegate(delegate: coreDelegate!)

@@ -67,6 +67,11 @@ class ControlsView: UIStackView {
 			routes.isHidden = !speaker.isHidden
 		}
 		
+		controlsViewModel.isBluetoothHeadsetAvailable.readCurrentAndObserve { available in
+			speaker.isHidden = available == true
+			routes.isHidden = !speaker.isHidden
+		}
+		
 		// Video
 		if (showVideo) {
 			let video = CallControlButton(buttonTheme: VoipTheme.call_video, onClickAction: {
