@@ -73,7 +73,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
 				model.conferenceParticipantDevices.readCurrentAndObserve { value in
-					model.activeSpeakerConferenceParticipantDevices.value = Array((value!.dropFirst()))
+					model.activeSpeakerConferenceParticipantDevices.value = Array((value!.dropFirst().filter { !$0.isMe } ))
 				}
 				model.activeSpeakerConferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
@@ -192,9 +192,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	}
 	
 	func reloadData() {
-		conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value?.forEach {
-			$0.clearObservers()
-		}
 		self.grid.reloadData()
 		self.meGrid.reloadData()
 	}
