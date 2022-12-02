@@ -102,8 +102,14 @@ class CallData  {
 		
 		updateConferenceInfo()
 
-		isOutgoing.value = isOutGoing()
-		isIncoming.value = isInComing()
+		let outgoing = isOutGoing()
+		if (outgoing != isOutgoing.value) {
+			isOutgoing.value = outgoing
+		}
+		let incoming = isInComing()
+		if (incoming != isIncoming.value) {
+			isIncoming.value = incoming
+		}
 		
 		if (call.mediaInProgress()) {
 			DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
