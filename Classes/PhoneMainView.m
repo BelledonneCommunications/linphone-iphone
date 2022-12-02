@@ -640,7 +640,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 								animated:(BOOL)animated
 						  addViewToStack:(BOOL)addViewToStack {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
-	LOGI(@"_changeCurrentView : stack size before = %d", [RootViewManager instance].viewDescriptionStack.count);
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
 		[self setPreviousViewName:vc.currentView.name];
@@ -652,7 +651,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		[vc.mainViewController changeView:view];
 		vc->currentView = view;
 	}
-	LOGI(@"_changeCurrentView : stack size after = %d", [RootViewManager instance].viewDescriptionStack.count);
 
 	//[[RootViewManager instance] setViewControllerForDescription:view];
 
@@ -667,7 +665,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	while (viewStack.count > 0 && ![[viewStack lastObject] equal:view]) {
 		[viewStack removeLastObject];
 	}
-	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED addViewToStack:FALSE];
+	BOOL addView = (viewStack.count == 0); // if we couldn't find the view in the stack, we need to add it
+	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED addViewToStack:addView];
 }
 
 - (void) setPreviousViewName:(NSString*)previous{
