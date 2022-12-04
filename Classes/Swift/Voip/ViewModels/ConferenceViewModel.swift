@@ -236,7 +236,7 @@ class ConferenceViewModel {
 				try? conf.addParticipant(call: call)
 			}
 		}
-		if (conf.isIn) {
+		if (!conf.isIn) {
 			Log.i("[Conference] Conference was paused, resuming it")
 			let _ = conf.enter()
 		}
