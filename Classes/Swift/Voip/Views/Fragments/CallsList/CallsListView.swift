@@ -112,7 +112,7 @@ import linphonesw
 	
 	func mergeToConferencePossible() -> Bool { // 2 calls or more not in conf or 1 call or more and 1 conf
 		let callsNotInConf = numberOfCallsNotInConf()
-		return (ConferenceViewModel.shared.conferenceExists.value == true && callsNotInConf >= 1) || (ConferenceViewModel.shared.conferenceExists.value != true && callsNotInConf >= 2 )
+		return (ConferenceViewModel.shared.conferenceExists.value == true && callsNotInConf >= 1 && ConferenceViewModel.shared.conference.value?.me?.isAdmin == true) || (ConferenceViewModel.shared.conferenceExists.value != true && callsNotInConf >= 2 )
 	}
 
 	
