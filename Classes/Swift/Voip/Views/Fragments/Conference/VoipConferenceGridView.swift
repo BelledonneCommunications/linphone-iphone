@@ -63,7 +63,6 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 						self.reloadData()
 					}
 				}
-				model.isConferenceLocallyPaused.clearObservers()
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
 						$0.isSelected = paused == true

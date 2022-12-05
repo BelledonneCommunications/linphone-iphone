@@ -56,7 +56,6 @@ class VoipConferenceAudioOnlyView: UIView, UICollectionViewDataSource, UICollect
 				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
 				}
-				model.isConferenceLocallyPaused.clearObservers()
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
 						$0.isSelected = paused == true

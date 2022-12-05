@@ -176,12 +176,12 @@ class ConferenceViewModel {
 	}
 	
 	func pauseConference() {
-		Log.i("[Conference] Leaving conference with address \(conference) temporarily")
+		Log.i("[Conference] Leaving conference with address \(conference.value) temporarily")
 		let _ = conference.value?.leave()
 	}
 	
 	func resumeConference() {
-		Log.i("[Conference] entering conference with address \(conference)")
+		Log.i("[Conference] entering conference with address \(conference.value)")
 		let _ = conference.value?.enter()
 	}
 	
@@ -285,6 +285,7 @@ class ConferenceViewModel {
 		conferenceParticipantDevices.clearObservers()
 		conferenceParticipantDevices.value = []
 		meParticipant.value = nil
+		isConferenceLocallyPaused.value = false
 	}
 	
 	
