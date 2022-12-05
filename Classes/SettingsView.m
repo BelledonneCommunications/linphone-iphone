@@ -523,11 +523,55 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[keys addObject:@"download_bandwidth_preference"];
     } else if ([@"auto_download_mode" compare:notif.object] == NSOrderedSame) {
         NSString *download_mode = [notif.userInfo objectForKey:@"auto_download_mode"];
-        removeFromHiddenKeys = [download_mode isEqualToString:@"Customize"];
-        if (removeFromHiddenKeys)
-            [LinphoneManager.instance lpConfigSetInt:10000000 forKey:@"auto_download_incoming_files_max_size"];
-        [keys addObject:@"auto_download_incoming_files_max_size"];
-    }
+		if([download_mode isEqualToString:@"Customize"]){
+			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"auto_download_mode_is_never"];
+			removeFromHiddenKeys = [download_mode isEqualToString:@"Customize"];
+			[LinphoneManager.instance lpConfigSetInt:10000000 forKey:@"auto_download_incoming_files_max_size"];
+			[keys addObject:@"auto_download_incoming_files_max_size"];
+			[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+		} else if([download_mode isEqualToString:@"Never"]){
+			[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"auto_download_mode_is_never"];
+			removeFromHiddenKeys = [download_mode isEqualToString:@"Never"];
+			if(![LinphoneManager.instance lpConfigBoolForKey:@"vfs_enabled_mode"])
+				[keys addObject:@"auto_write_to_gallery_mode"];
+			else
+				[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+			[hiddenKeys addObject:@"auto_download_incoming_files_max_size"];
+		} else {
+			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"auto_download_mode_is_never"];
+			[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+			[hiddenKeys addObject:@"auto_download_incoming_files_max_size"];
+		}
+    }else if ([@"vfs_enabled_mode" compare:notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = ![[notif.userInfo objectForKey:@"vfs_enabled_mode"] boolValue];
+		if(![LinphoneManager.instance lpConfigBoolForKey:@"auto_write_to_gallery_mode"]){
+			if(removeFromHiddenKeys){
+				[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"vfs_enabled_mode"];
+				if([LinphoneManager.instance lpConfigBoolForKey:@"auto_download_mode_is_never"]){
+					[keys addObject:@"auto_write_to_gallery_mode"];
+				}else{
+					[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+				}
+			}else{
+				[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"vfs_enabled_mode"];
+				[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+			}
+		}
+	}
+	else if ([@"auto_write_to_gallery_mode" compare:notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = ![[notif.userInfo objectForKey:@"auto_write_to_gallery_mode"] boolValue];
+		if(![LinphoneManager.instance lpConfigBoolForKey:@"vfs_enabled_mode"]){
+			if(!removeFromHiddenKeys){
+				[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"auto_write_to_gallery_mode"];
+				[hiddenKeys addObject:@"auto_download_mode"];
+				[hiddenKeys addObject:@"vfs_enabled_mode"];
+			}else{
+				[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"auto_write_to_gallery_mode"];
+				[keys addObject:@"auto_download_mode"];
+				[keys addObject:@"vfs_enabled_mode"];
+			}
+		}
+	}
 
 	for (NSString *key in keys) {
 		if (removeFromHiddenKeys)
@@ -772,6 +816,14 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
     if (![[lm lpConfigStringForKey:@"auto_download_mode"] isEqualToString:@"Customize"]) {
         [hiddenKeys addObject:@"auto_download_incoming_files_max_size"];
     }
+
+	if (![[lm lpConfigStringForKey:@"auto_download_mode"] isEqualToString:@"Never"]) {
+		[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+	}
+	
+	if ([lm lpConfigBoolForKey:@"vfs_enabled_mode"]) {
+		[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+	}
 
 	return hiddenKeys;
 }
