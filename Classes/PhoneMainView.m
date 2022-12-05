@@ -915,7 +915,9 @@ static RootViewManager *rootViewManagerInstance = nil;
         [view clearMessageView];
 	view.chatRoom = cr;
     view.peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(cr));
+	view.localAddress = linphone_address_as_string(linphone_chat_room_get_local_address(cr));
 	self.currentRoom = view.chatRoom;
+	
 	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
 		[view configureForRoom:FALSE];
 	else

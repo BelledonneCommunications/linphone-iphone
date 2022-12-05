@@ -527,15 +527,15 @@
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
 	// If an app extension launch a user notif while app is in fg, it is catch by the app
-    NSString *category = [[[notification request] content] categoryIdentifier];
-    if (category && [category isEqualToString:@"app_active"]) {
-        return;
-    }
-
+	NSString *category = [[[notification request] content] categoryIdentifier];
+	if (category && [category isEqualToString:@"app_active"]) {
+		return;
+	}
+	
 	if (category && [category isEqualToString:@"msg_cat"] && [UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 		if ((PhoneMainView.instance.currentView == ChatsListView.compositeViewDescription))
 			return;
-
+		
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
 			NSDictionary *userInfo = [[[notification request] content] userInfo];
 			NSString *peerAddress = userInfo[@"peer_addr"];
@@ -543,12 +543,12 @@
 			if (peerAddress && localAddress) {
 				LinphoneAddress *peer = linphone_core_create_address([LinphoneManager getLc], peerAddress.UTF8String);
 				LinphoneAddress *local = linphone_core_create_address([LinphoneManager getLc], localAddress.UTF8String);
-				LinphoneChatRoom *room = linphone_core_find_chat_room([LinphoneManager getLc], peer, local);
+				LinphoneChatRoom *room = linphone_core_search_chat_room([LinphoneManager getLc], NULL, local, peer, NULL);
 				if (room == PhoneMainView.instance.currentRoom) return;
 			}
 		}
 	}
-
+	
 	completionHandler(UNNotificationPresentationOptionAlert);
 }
 

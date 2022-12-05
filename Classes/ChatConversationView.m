@@ -337,8 +337,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// force offset recomputing
 	[_messageField refreshHeight];
 	LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
-	if (peerAddr) {
-		_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+	LinphoneAddress *localAddr = linphone_core_create_address([LinphoneManager getLc], _localAddress);
+	if (peerAddr && localAddr) {
+		_chatRoom = linphone_core_search_chat_room([LinphoneManager getLc], NULL, localAddr, peerAddr, NULL);
 		if (_chatRoom) {
 			isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
 			isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
@@ -507,8 +508,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)onLinphoneCoreReady:(NSNotification *)notif {
 	if (linphone_core_get_global_state(LC) == LinphoneGlobalOn) {
 		LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
-		if (peerAddr) {
-			_chatRoom = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+		LinphoneAddress *localAddr = linphone_core_create_address([LinphoneManager getLc], _localAddress);
+		if (peerAddr && localAddr) {
+			_chatRoom = linphone_core_search_chat_room([LinphoneManager getLc], NULL, localAddr, peerAddr, NULL);
 			if (_chatRoom) {
 				isOneToOne = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne;
 				isEncrypted = linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesEncrypted;
@@ -974,6 +976,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT];
 	view.room = _chatRoom;
 	view.peerAddress = _peerAddress;
+	view.localAddress = _localAddress;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

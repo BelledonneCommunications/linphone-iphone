@@ -83,7 +83,6 @@
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
 	bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
 	bctbx_list_t *chatRoomEvents = linphone_chat_room_get_history_events(_chatRoom, 0);
-	
 	int unread_count = 0;
 	
 	bctbx_list_t *head = chatRoomEvents;

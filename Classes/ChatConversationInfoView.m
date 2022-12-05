@@ -84,6 +84,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_room = NULL;
 	_chatRoomCbs = NULL;
 	_peerAddress = NULL;
+	_localAddress = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -153,10 +154,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)onLinphoneCoreReady:(NSNotification *)notif {
 	if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
-		if (!_create && _peerAddress) {
+		if (!_create && _peerAddress && _localAddress) {
 			LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
-			if (peerAddr) {
-				_room = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+			LinphoneAddress *localAddr = linphone_core_create_address([LinphoneManager getLc], _localAddress);
+			if (peerAddr && localAddr) {
+				_room = linphone_core_search_chat_room([LinphoneManager getLc], NULL, localAddr, peerAddr, NULL);
 			}
 			[self configure];
 		}
