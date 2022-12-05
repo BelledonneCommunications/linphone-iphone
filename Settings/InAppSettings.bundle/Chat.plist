@@ -30,16 +30,6 @@
 			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
-			<string>vfs_enabled_mode</string>
-			<key>Title</key>
-			<string>Enable VFS</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
 			<string>auto_write_to_gallery_mode</string>
 			<key>Title</key>
 			<string>Auto write to gallery</string>

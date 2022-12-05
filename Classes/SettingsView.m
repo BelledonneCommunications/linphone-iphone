@@ -544,19 +544,14 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 			[hiddenKeys addObject:@"auto_download_incoming_files_max_size"];
 		}
     }else if ([@"vfs_enabled_mode" compare:notif.object] == NSOrderedSame) {
-		removeFromHiddenKeys = ![[notif.userInfo objectForKey:@"vfs_enabled_mode"] boolValue];
-		if(![LinphoneManager.instance lpConfigBoolForKey:@"auto_write_to_gallery_mode"]){
-			if(removeFromHiddenKeys){
-				[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"vfs_enabled_mode"];
-				[VFSUtil setVfsEnabbledWithEnabled:FALSE groupName:kLinphoneMsgNotificationAppGroupId];
-				if([LinphoneManager.instance lpConfigBoolForKey:@"auto_download_mode_is_never"]){
-					[keys addObject:@"auto_write_to_gallery_mode"];
-				}else{
-					[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
-				}
-			}else{
-				[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"vfs_enabled_mode"];
-				[VFSUtil setVfsEnabbledWithEnabled:TRUE groupName:kLinphoneMsgNotificationAppGroupId];
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"vfs_enabled_mode"] boolValue];
+		if(removeFromHiddenKeys){
+			[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"vfs_enabled_mode"];
+			[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+			[hiddenKeys addObject:@"vfs_enabled_mode"];
+			[keys addObject:@"vfs_enabled"];
+		}else{
+			if(![LinphoneManager.instance lpConfigBoolForKey:@"auto_download_mode_is_never"]){
 				[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
 			}
 		}
@@ -567,11 +562,9 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 			if(!removeFromHiddenKeys){
 				[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"auto_write_to_gallery_mode"];
 				[hiddenKeys addObject:@"auto_download_mode"];
-				[hiddenKeys addObject:@"vfs_enabled_mode"];
 			}else{
 				[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"auto_write_to_gallery_mode"];
 				[keys addObject:@"auto_download_mode"];
-				[keys addObject:@"vfs_enabled_mode"];
 			}
 		}
 	}
@@ -825,6 +818,13 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}
 	
 	if ([lm lpConfigBoolForKey:@"vfs_enabled_mode"]) {
+		[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
+		[hiddenKeys addObject:@"vfs_enabled_mode"];
+	}else{
+		[hiddenKeys addObject:@"vfs_enabled"];
+	}
+	
+	if ([lm lpConfigBoolForKey:@"auto_write_to_gallery_mode"]) {
 		[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
 	}
 

@@ -445,7 +445,7 @@
         [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Never" : @"Customize") forKey:@"auto_download_mode"];
         [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];
 		[self setBool:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] forKey:@"vfs_enabled_mode"];
-		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:YES] forKey:@"auto_write_to_gallery_mode"];
+		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:NO] forKey:@"auto_write_to_gallery_mode"];
 	}
 
 	// network section

@@ -118,6 +118,24 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>vfs_enabled_mode</string>
+			<key>Title</key>
+			<string>Encrypt everything</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>vfs_enabled</string>
+			<key>Title</key>
+			<string>File encryption is enabled</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
 			<string>start_at_boot_preference</string>
