@@ -344,8 +344,10 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 }
 
 static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
-    ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
-    [imdnView updateImdnList];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
+		[imdnView updateImdnList];
+	});
 }
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
