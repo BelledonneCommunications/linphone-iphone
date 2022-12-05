@@ -25,9 +25,9 @@ class StyledDatePicker: UIView {
 	// layout constants
 	let chevron_margin = 10
 	let form_input_height = 38.0
-
+	
 	let datePicker = UIDatePicker()
-
+	
 	var liveValue:MutableLiveData<Date>? {
 		didSet {
 			if let liveValue = liveValue?.value {
@@ -35,8 +35,7 @@ class StyledDatePicker: UIView {
 				self.valueChanged(datePicker: datePicker)
 			} else {
 				formattedLabel.text = nil
-				var cal = Calendar.current
-				datePicker.date = pickerMode == .date ? Date() : cal.startOfDay(for: Date())
+				datePicker.date = pickerMode == .date ? Date() : Calendar.current.startOfDay(for: Date())
 			}
 		}
 		
@@ -51,11 +50,21 @@ class StyledDatePicker: UIView {
 	init (liveValue:MutableLiveData<Date>? = nil, pickerMode:UIDatePicker.Mode, readOnly:Bool = false) {
 		super.init(frame: .zero)
 		self.pickerMode = pickerMode
-
-		addSubview(datePicker)
-		datePicker.datePickerMode = pickerMode
-		datePicker.addTarget(self, action: #selector(valueChanged), for: .valueChanged)
-		datePicker.matchParentDimmensions().done()
+		
+		if #available(iOS 14.0, *) {
+			addSubview(datePicker)
+			datePicker.datePickerMode = pickerMode
+			datePicker.addTarget(self, action: #selector(valueChanged), for: .valueChanged)
+			datePicker.matchParentDimmensions().done()
+			datePicker.preferredDatePickerStyle = .compact
+			onClick {
+				self.valueChanged(datePicker: self.datePicker)
+			}
+		} else {
+			onClick {
+				self.showPickerPreIOS14()
+			}
+		}
 		
 		formattedLabel.isUserInteractionEnabled = false
 		addSubview(formattedLabel)
@@ -81,12 +90,38 @@ class StyledDatePicker: UIView {
 				self.formattedLabel.textColor = self.formattedLabel.textColor.withAlphaComponent(0.5)
 			}
 		}
-
-   }
-
+		
+	}
+	
 	
 	@objc func valueChanged(datePicker: UIDatePicker) {
 		liveValue!.value = datePicker.date
 		formattedLabel.text = "  "+(pickerMode == .date ? TimestampUtils.dateToString(date: datePicker.date) : TimestampUtils.timeToString(date: datePicker.date))
 	}
+	
+	
+	func showPickerPreIOS14() {
+		let alertController = UIAlertController(title: "", message: nil, preferredStyle: .alert)
+		alertController.view.height(200).done()
+		let picker = UIDatePicker()
+		if #available(iOS 13.4, *) {
+			picker.preferredDatePickerStyle = .wheels
+		}
+		liveValue?.value.map {picker.date = $0}
+		picker.datePickerMode = pickerMode
+		alertController.view.addSubview(picker)
+		picker.matchParentDimmensions(insetedBy: UIEdgeInsets(top: 30, left: 50, bottom: 30, right: 50)).done()
+		let ok = UIAlertAction(title: VoipTexts.ok, style: .default, handler: { (action) -> Void in
+			self.valueChanged(datePicker: picker)
+		})
+		let cancel = UIAlertAction(title: VoipTexts.cancel, style: .cancel) { (action) -> Void in
+		}
+		
+		alertController.addAction(cancel)
+		alertController.addAction(ok)
+		
+		alertController.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.statusBarView
+		PhoneMainView.instance().mainViewController.present(alertController, animated: true)
+	}
+	
 }
