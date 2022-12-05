@@ -22,6 +22,7 @@
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 #import "DCRoundSwitch.h"
 
@@ -547,6 +548,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		if(![LinphoneManager.instance lpConfigBoolForKey:@"auto_write_to_gallery_mode"]){
 			if(removeFromHiddenKeys){
 				[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"vfs_enabled_mode"];
+				[VFSUtil setVfsEnabbledWithEnabled:FALSE groupName:kLinphoneMsgNotificationAppGroupId];
 				if([LinphoneManager.instance lpConfigBoolForKey:@"auto_download_mode_is_never"]){
 					[keys addObject:@"auto_write_to_gallery_mode"];
 				}else{
@@ -554,6 +556,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 				}
 			}else{
 				[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"vfs_enabled_mode"];
+				[VFSUtil setVfsEnabbledWithEnabled:TRUE groupName:kLinphoneMsgNotificationAppGroupId];
 				[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
 			}
 		}
