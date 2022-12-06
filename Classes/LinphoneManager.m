@@ -1905,7 +1905,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 	[self checkLocalNetworkPermission];
 	// For OutgoingCall, show CallOutgoingView
-	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE isVideo:false isConference:false];
+	BOOL initiateVideoCall = linphone_core_get_video_activation_policy(LC) && linphone_video_activation_policy_get_automatically_initiate(linphone_core_get_video_activation_policy(LC));
+	[CallManager.instance startCallWithAddr:iaddr isSas:FALSE isVideo:initiateVideoCall isConference:false];
 }
 
 #pragma mark - Misc Functions
