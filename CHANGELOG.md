@@ -26,7 +26,6 @@ Group changes to describe their impact on the project, as follows:
 - In-call views have been re-designed
 - Improved how contact avatars are generated
 - 3-dots menu even for basic chat rooms with more options
-- Phone numbers & email addresses are now clickable links in chat messages
 - Update linphone SDK to 5.2.0
 
 ### Fixed
