@@ -9,7 +9,34 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-	
+		
+## [5.0.0] - 2021-12-06
+
+### Added
+- Post Quantum encryption when using ZRTP
+- Conference creation with scheduling, video, different layouts, showing who is speaking and who is muted, etc...
+- Group calls directly from group chat rooms
+- Chat rooms can be individually muted (no notification when receiving a chat message)
+- Outgoing call video in early-media if requested by callee
+- Call recordings can be exported
+- Setting to prevent international prefix from account to be applied to call & chat
+- Add a "Never ask again" option to the "Link my account" pop-up when starting the app
+
+### Changed
+- In-call views have been re-designed
+- Improved how contact avatars are generated
+- 3-dots menu even for basic chat rooms with more options
+- Phone numbers & email addresses are now clickable links in chat messages
+- Update linphone SDK to 5.2.0
+
+### Fixed
+- Chatroom appearing as empty when being logged on multiple accounts
+- Chatroom appearing as empty after playing a video file inside it
+- Fix potential crash when entering a chatroom
+- Fix potential crash when accessing to the delivery infos of a message in a group chat.
+- IMDN logo not properly displayed when transfering or replying to a message with media (voice message, photo...)
+- Clarified view when sending an image from the galery
+- Various audio route fixes for CallKit and IOS 16
 		
 ## [4.6.4] - 2021-08-06
 ### Changed
