@@ -943,6 +943,7 @@
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
 		D7DA18712A02598700FABA0D /* TextViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA18702A02598700FABA0D /* TextViewer.swift */; };
 		D7421D9E29228A5200290CAB /* DetailChatRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */; };
+		D7013DB82940AA12004EEAAE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7013DB72940AA12004EEAAE /* MessageView.swift */; };
 		D7421D9E29228A5200290CAB /* ChatConversationViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
@@ -2176,6 +2177,8 @@
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
 		D7DA18702A02598700FABA0D /* TextViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewer.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChatRoomFragment.swift; sourceTree = "<group>"; };
+		D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChatRoomFragment.swift; sourceTree = "<group>"; };
+		D7013DB72940AA12004EEAAE /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewSwift.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
@@ -3832,6 +3835,7 @@
 			isa = PBXGroup;
 			children = (
 				D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */,
+				D7013DB72940AA12004EEAAE /* MessageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4978,6 +4982,7 @@
 				8CD99A3C2090B9FA008A7CDA /* ChatConversationImdnView.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
 				C63F7264285A24B10066163B /* BouncingCounter.swift in Sources */,
+				D7013DB82940AA12004EEAAE /* MessageView.swift in Sources */,
 				C6B4444826AADA530076C517 /* SwiftUtil.swift in Sources */,
 				C63F7257285A24B10066163B /* ConferenceLayoutPickerView.swift in Sources */,
 				CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */,

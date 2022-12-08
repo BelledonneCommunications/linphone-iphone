@@ -28,7 +28,6 @@ import linphonesw
     // layout constants
     let top_bar_height = 66.0
     let navigation_buttons_padding = 18.0
-    let content_margin_top = 20
     let side_buttons_margin = 5
     
     // User by subviews
@@ -42,6 +41,7 @@ import linphonesw
     let topBar = UIView()
     let scrollView = UIScrollView()
     let contentView = UIView()
+	let messageView = MessageView()
     var backAction : (() -> Void)? = nil
     var action1 : (() -> Void)? = nil
     var action2 : (() -> Void)? = nil
@@ -71,6 +71,7 @@ import linphonesw
         
         topBar.addSubview(action1Button)
         action1Button.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
+		action1Button.size(w: 35, h: 35)
         action1Button.onClickAction = action1
 
         topBar.addSubview(titleLabel)
@@ -81,9 +82,12 @@ import linphonesw
         super.viewDidLoad()
 
         view.addSubview(scrollView)
-        scrollView.alignUnder(view: topBar, withMargin: content_margin_top).alignParentBottom().matchParentSideBorders().done()
+        scrollView.alignUnder(view: topBar).alignParentBottom().matchParentSideBorders().done()
         scrollView.addSubview(contentView)
         contentView.matchBordersOf(view: view).alignParentBottom().alignParentTop().done() // don't forget a bottom constraint b/w last element of contentview and contentview
+		
+		view.addSubview(messageView)
+		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
             
     }
     
