@@ -71,7 +71,7 @@ import linphonesw
         
         topBar.addSubview(action1Button)
         action1Button.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
-		action1Button.size(w: 35, h: 35)
+		action1Button.size(w: 35, h: 35).done()
         action1Button.onClickAction = action1
 
         topBar.addSubview(titleLabel)

@@ -149,6 +149,11 @@ import UIKit
 	@objc static let conference_scheduled_future_filter = NSLocalizedString("Scheduled",comment:"")
 	@objc static let conference_scheduled_cancelled_by_me = NSLocalizedString("You have cancelled the conference",comment:"")
 	@objc static let conference_scheduled_cancelled_by_organizer = NSLocalizedString("Conference has been cancelled by organizer",comment:"")
+	
+	@objc static let image_picker_view_alert_action_title = NSLocalizedString("Select the source",comment:"")
+	@objc static let image_picker_view_alert_action_camera = NSLocalizedString("Camera",comment:"")
+	@objc static let image_picker_view_alert_action_photo_library = NSLocalizedString("Photo library",comment:"")
+	@objc static let image_picker_view_alert_action_document = NSLocalizedString("Document",comment:"")
 
 	// FROM ANDROID END
 	

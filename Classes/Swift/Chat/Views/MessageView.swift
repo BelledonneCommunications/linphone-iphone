@@ -1,21 +1,37 @@
-//
-//  MessageView.swift
-//  linphone
-//
-//  Created by Benoît Martins on 07/12/2022.
-//
+/*
+ * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import Foundation
+import Photos
+import PhotosUI
+import MobileCoreServices
+import UniformTypeIdentifiers
 
 
-class MessageView:  UIView {
+class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate {
 	
 	let top_bar_height = 66.0
 	let side_buttons_margin = 10
 	
-	var backAction : (() -> Void)? = nil
 	var action1 : (() -> Void)? = nil
 	var action2 : (() -> Void)? = nil
+	var action3 : (() -> Void)? = nil
 	
 	let pictureButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
 	let voiceRecordButton = CallControlButton(buttonTheme:VoipTheme.nav_button("vr_off"))
@@ -38,20 +54,20 @@ class MessageView:  UIView {
 		
 		addSubview(pictureButton)
 		pictureButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
-		pictureButton.setImage(UIImage(named:"chat_attachment_default.png"), for: UIControl.State.normal)
-		pictureButton.setImage(UIImage(named:"chat_attachment_over.png"), for: UIControl.State.highlighted)
-		pictureButton.onClickAction = backAction
+		pictureButton.setImage(UIImage(named:"chat_attachment_default.png"), for: .normal)
+		pictureButton.setImage(UIImage(named:"chat_attachment_over.png"), for: .highlighted)
+		pictureButton.onClickAction = alertAction
 		
 		addSubview(voiceRecordButton)
 		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: 10).matchParentHeight().done()
 		voiceRecordButton.size(w: 30, h: 30).done()
-		voiceRecordButton.onClickAction = action2
+		voiceRecordButton.onClickAction = action3
 
 		addSubview(sendButton)
 		sendButton.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
-		sendButton.setImage(UIImage(named:"chat_send_default.png"), for: UIControl.State.normal)
-		sendButton.setImage(UIImage(named:"chat_send_over.png"), for: UIControl.State.highlighted)
-		sendButton.onClickAction = action1
+		sendButton.setImage(UIImage(named:"chat_send_default.png"), for: .normal)
+		sendButton.setImage(UIImage(named:"chat_send_over.png"), for: .highlighted)
+		sendButton.onClickAction = action2
 		
 		addSubview(messageTextView)
 		messageTextView.toRightOf(voiceRecordButton, withLeftMargin: 5).toLeftOf(sendButton).matchParentHeight().done()
@@ -60,5 +76,70 @@ class MessageView:  UIView {
 		messageText.matchParentDimmensions(insetedByDx: 10).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
 		messageText.backgroundColor = UIColor.white
+	}
+	
+	func alertAction() {
+
+		let alertController = UIAlertController(title: VoipTexts.image_picker_view_alert_action_title, message: nil, preferredStyle: .actionSheet)
+		
+		let alert_action_camera = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_camera, style: .default, handler: { (action) -> Void in
+			self.imageCamera()
+		})
+		let alert_action_photo_library = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_photo_library, style: .default, handler: { (action) -> Void in
+			self.pickPhotos()
+		})
+		let alert_action_document = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_document, style: .default, handler: { (action) -> Void in
+			self.openDocumentPicker()
+		})
+		
+		let cancel = UIAlertAction(title: VoipTexts.cancel, style: .cancel) { (action) -> Void in
+		}
+		
+		
+		alertController.addAction(cancel)
+		alertController.addAction(alert_action_camera)
+		alertController.addAction(alert_action_photo_library)
+		alertController.addAction(alert_action_document)
+		
+		alertController.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.statusBarView
+		PhoneMainView.instance().mainViewController.present(alertController, animated: true)
+	}
+	
+	func imageCamera(){
+		let vc = UIImagePickerController()
+		vc.sourceType = .camera
+		vc.allowsEditing = true
+		PhoneMainView.instance().mainViewController.present(vc, animated: true)
+
+	}
+	
+	func pickPhotos()
+	{
+		if #available(iOS 14.0, *) {
+			var config = PHPickerConfiguration()
+			let pickerViewController = PHPickerViewController(configuration: config)
+			pickerViewController.delegate = self
+			PhoneMainView.instance().mainViewController.present(pickerViewController, animated: true)
+		} else {
+			// Fallback on earlier versions
+		}
+	}
+	
+	// MARK: PHPickerViewControllerDelegate
+	
+	@available(iOS 14.0, *)
+	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+		picker.dismiss(animated: true, completion: nil)
+	}
+	
+	func openDocumentPicker() {
+		if #available(iOS 14.0, *) {
+			let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.jpeg, .png])
+			documentPicker.delegate = self
+		 	documentPicker.modalPresentationStyle = .overFullScreen
+			PhoneMainView.instance().mainViewController.present(documentPicker, animated: true)
+		} else {
+			// Fallback on earlier versions
+		}
 	}
 }
