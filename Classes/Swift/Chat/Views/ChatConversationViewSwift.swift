@@ -1429,4 +1429,11 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		chatRoomSwift.markAsRead()
 		PhoneMainView.instance().updateApplicationBadgeNumber()
 	}
+=======
+		
+		menu.selectionAction = { index, title in
+			print("index \(index) and \(title)")
+		}
+  	}
+>>>>>>> 7c8c2cf81 (Add DropDown menu)
 }
