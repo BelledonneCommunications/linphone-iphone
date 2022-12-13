@@ -49,6 +49,16 @@ import linphonesw
     let backButton = CallControlButton(buttonTheme:VoipTheme.nav_button("back_default"))
     let action1Button = CallControlButton(buttonTheme:VoipTheme.nav_button("call_audio_start_default"))
     let action2Button = CallControlButton(buttonTheme:VoipTheme.nav_button("more_menu_default"))
+	
+	let cancel_button_alert = UIButton()
+	let ok_button_alert = UIButton()
+	let checkBoxButton = CallControlButton(buttonTheme:VoipTheme.nav_button("checkbox_unchecked"))
+	var isChecked = false
+	let checkBoxText = UILabel()
+	
+	let isSecure : Bool = true
+	let levelMaxSecure : Bool = false
+	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
     
     func viewDidLoad(backAction : @escaping () -> Void,
                      action1 : @escaping () -> Void,
@@ -88,6 +98,16 @@ import linphonesw
 		
 		view.addSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
+		
+		
+		if(isSecure){
+		 	view.addSubview(floatingButton)
+		 	floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
+		 	floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 5).isActive = true
+			levelMaxSecure ? floatingButton.setImage(UIImage(named:"security_2_indicator.png"), for: .normal) : floatingButton.setImage(UIImage(named:"security_1_indicator.png"), for: .normal)
+			floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
+			floatingButton.onClickAction = alertAction
+		}
             
     }
     
@@ -97,5 +117,89 @@ import linphonesw
         topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
         
     }
+	
+	func alertAction() {
+
+		let alertController = UIAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
+				
+		alertController.setBackgroundColor(color: .darkGray)
+		alertController.setTitle(font: nil, color: .white)
+		alertController.setTint(color: .white)
+		alertController.setMaxWidth(alert: alertController)
+
+		addButtonsAlertController(alertController: alertController)
+										
+		self.present(alertController, animated: true, completion:{
+			alertController.view.superview?.isUserInteractionEnabled = true
+			alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
+		})
+
+			  
+	}
+	
+	@objc func dismissOnTapOutsideOrCancel(){
+		self.dismiss(animated: true, completion: nil)
+   	}
+	
+	@objc func dismissOnTapOk(){
+		self.dismiss(animated: true, completion: nil)
+	}
+	
+	@objc func switchCheckedValue(){
+		isChecked = !isChecked
+		checkBoxButton.isSelected = isChecked
+	}
+	
+	func addButtonsAlertController(alertController: UIAlertController){
+		
+		let buttonsView = UIView()
+		alertController.view.addSubview(buttonsView)
+		buttonsView.translatesAutoresizingMaskIntoConstraints = false
+		buttonsView.bottomAnchor.constraint(equalTo: alertController.view.bottomAnchor, constant: -10).isActive = true
+		buttonsView.rightAnchor.constraint(equalTo: alertController.view.rightAnchor, constant: -10).isActive = true
+		buttonsView.leftAnchor.constraint(equalTo: alertController.view.leftAnchor, constant: 10).isActive = true
+		buttonsView.heightAnchor.constraint(equalToConstant: 75).isActive = true
+
+		alertController.view.translatesAutoresizingMaskIntoConstraints = false
+		alertController.view.heightAnchor.constraint(equalToConstant: 350).isActive = true
+		
+		cancel_button_alert.setTitle(VoipTexts.cancel.uppercased(), for: .normal)
+		cancel_button_alert.backgroundColor = .systemRed
+		cancel_button_alert.layer.cornerRadius = 5
+		cancel_button_alert.addTarget(self, action: #selector(dismissOnTapOutsideOrCancel), for: .touchUpInside)
+		buttonsView.addSubview(cancel_button_alert)
+		
+		cancel_button_alert.alignParentLeft(withMargin: 40).size(w: 100, h: 50).done()
+		ok_button_alert.setTitle(VoipTexts.ok.uppercased(), for: .normal)
+		ok_button_alert.backgroundColor = .systemGreen
+		ok_button_alert.layer.cornerRadius = 5
+		ok_button_alert.addTarget(self, action: #selector(dismissOnTapOk), for: .touchUpInside)
+		buttonsView.addSubview(ok_button_alert)
+		ok_button_alert.alignParentRight(withMargin: 40).size(w: 100, h: 50).done()
+		
+		
+		let checkboxView = UIView()
+		alertController.view.addSubview(checkboxView)
+		checkboxView.translatesAutoresizingMaskIntoConstraints = false
+		checkboxView.bottomAnchor.constraint(equalTo: buttonsView.topAnchor, constant: -10).isActive = true
+		checkboxView.centerXAnchor.constraint(equalTo: alertController.view.centerXAnchor).isActive = true
+		checkboxView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+		checkboxView.width(180).done()
+		
+		checkBoxButton.setImage(UIImage(named:"checkbox_unchecked.png"), for: .normal)
+		checkBoxButton.setImage(UIImage(named:"checkbox_checked.png"), for: .selected)
+		checkBoxButton.addTarget(self, action: #selector(switchCheckedValue), for: .touchUpInside)
+		checkboxView.addSubview(checkBoxButton)
+		
+		
+		
+		checkBoxText.text = VoipTexts.alert_dialog_secure_badge_button_chat_conversation_checkboxtext
+		checkBoxText.textColor = .white
+		checkboxView.addSubview(checkBoxText)
+		checkBoxText.toRightOf(checkBoxButton, withLeftMargin: -5).size(w: 130, h: 50).done()
+		
+		
+		
+	}
     
 }

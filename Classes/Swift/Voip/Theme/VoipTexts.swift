@@ -154,6 +154,8 @@ import UIKit
 	@objc static let image_picker_view_alert_action_camera = NSLocalizedString("Camera",comment:"")
 	@objc static let image_picker_view_alert_action_photo_library = NSLocalizedString("Photo library",comment:"")
 	@objc static let image_picker_view_alert_action_document = NSLocalizedString("Document",comment:"")
+	@objc static let alert_dialog_secure_badge_button_chat_conversation_title = NSLocalizedString("Instant messages are end-to-end encrypted in secured conversations. It is possible to upgrade the security level of a conversation by authenticating participants. To do so, call the contact and follow the authentification process.",comment:"")
+	@objc static let alert_dialog_secure_badge_button_chat_conversation_checkboxtext = NSLocalizedString("Do not show again",comment:"")
 
 	// FROM ANDROID END
 	
