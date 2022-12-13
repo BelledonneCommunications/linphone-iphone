@@ -948,6 +948,8 @@
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
 		D7C6DE7D2947331A00756E03 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE7C2947331A00756E03 /* UIAlertController.swift */; };
+		D7C6DE832948CF3100756E03 /* DropDownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE812948CF3100756E03 /* DropDownCell.swift */; };
+		D7C6DE842948CF3100756E03 /* DropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7C6DE822948CF3100756E03 /* DropDownCell.xib */; };
 		EA0007A62356008F003CC6BF /* msgNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EA3650DB2330D2E30001148A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5F25DB232BD3E200475F2E /* NotificationService.swift */; };
 		EA88A405242A6216007FEC61 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
@@ -2184,6 +2186,8 @@
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
 		D7C6DE7C2947331A00756E03 /* UIAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
+		D7C6DE812948CF3100756E03 /* DropDownCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownCell.swift; sourceTree = "<group>"; };
+		D7C6DE822948CF3100756E03 /* DropDownCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropDownCell.xib; sourceTree = "<group>"; };
 		DF241FDC6C7431777AB3BD58 /* Pods-msgNotificationContent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationContent.debug.xcconfig"; path = "Target Support Files/Pods-msgNotificationContent/Pods-msgNotificationContent.debug.xcconfig"; sourceTree = "<group>"; };
 		E19FC645A566E91D4EEB9C8F /* Pods-msgNotificationService.distributionadhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationService.distributionadhoc.xcconfig"; path = "Target Support Files/Pods-msgNotificationService/Pods-msgNotificationService.distributionadhoc.xcconfig"; sourceTree = "<group>"; };
 		EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = msgNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3839,6 +3843,8 @@
 			children = (
 				D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */,
 				D7013DB72940AA12004EEAAE /* MessageView.swift */,
+				D7C6DE812948CF3100756E03 /* DropDownCell.swift */,
+				D7C6DE822948CF3100756E03 /* DropDownCell.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4693,6 +4699,7 @@
 				633FEDF31D3CD5590014B822 /* call_video_start_default@2x.png in Resources */,
 				24BFAAA2209B0630004F47A7 /* linphone_user~ipad@2x.png in Resources */,
 				633FEDBA1D3CD5590014B822 /* call_audio_start_default.png in Resources */,
+				D7C6DE842948CF3100756E03 /* DropDownCell.xib in Resources */,
 				61586B8F217A174F0038AC45 /* menu_options@2x.png in Resources */,
 				633FEE131D3CD5590014B822 /* chat_message_not_delivered@2x.png in Resources */,
 				615A282A21805B4C0060F920 /* security_toogle_icon_grey@2x.png in Resources */,
@@ -5072,6 +5079,7 @@
 				C63F7239285A24B10066163B /* ConferenceParticipantDeviceData.swift in Sources */,
 				C63F7238285A24B10066163B /* ConferenceParticipantData.swift in Sources */,
 				63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */,
+				D7C6DE832948CF3100756E03 /* DropDownCell.swift in Sources */,
 				C63F726D285A24B10066163B /* ProviderDelegate.swift in Sources */,
 				C63F7266285A24B10066163B /* UICallTimer.swift in Sources */,
 				C6548821292D32FA00BF646B /* ConferenceCallView.swift in Sources */,

@@ -21,6 +21,7 @@
 import UIKit
 import Foundation
 import linphonesw
+import DropDown
 
 @objc class ChatConversationViewSwift: BackActionsNavigationView, UICompositeViewDelegate { // Replaces ChatConversationView
 	
@@ -32,16 +33,35 @@ import linphonesw
 	
     func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
+	let menu: DropDown = {
+		let menu = DropDown()
+		menu.dataSource = [
+			"Item 1",
+			"Item 2",
+			"Item 3",
+			"Item 4",
+			"Item 5"
+		]
+		menu.cellNib = UINib(nibName: "DropDownCell", bundle: nil)
+		menu.customCellConfiguration = { index, title, cell in
+			guard let cell = cell as? MyCell else {
+				return
+			}
+			cell.myImageView.image = UIImage(named: "security_2_indicator.png")
+		}
+		return menu
+	}()
+	
     override func viewDidLoad() {
         super.viewDidLoad(
             backAction: {
                 self.goBackChatListView()
             },
             action1: {
-                
+				
             },
             action2: {
-                
+				self.tapChooseMenuItem(self.action2Button)
             },
             title:"benoit.martins.test1"
 			//title:"Coin à champis de François"
@@ -52,4 +72,14 @@ import linphonesw
     func goBackChatListView() {
         PhoneMainView.instance().pop(toView: ChatsListView.compositeViewDescription())
     }
+	
+	func tapChooseMenuItem(_ sender: UIButton) {
+		menu.anchorView = sender
+		menu.bottomOffset = CGPoint(x: -UIScreen.main.bounds.width * 0.6, y: sender.frame.size.height)
+		menu.show()
+		
+		menu.selectionAction = { index, title in
+			print("index \(index) and \(title)")
+		}
+  	}
 }

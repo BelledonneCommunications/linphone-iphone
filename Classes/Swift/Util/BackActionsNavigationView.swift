@@ -56,7 +56,8 @@ import linphonesw
 	var isChecked = false
 	let checkBoxText = UILabel()
 	
-	let isSecure : Bool = true
+	let isSecure : Bool = false
+	let isGroupChat : Bool = false
 	let levelMaxSecure : Bool = false
 	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
     
@@ -79,9 +80,16 @@ import linphonesw
         action2Button.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
         action2Button.onClickAction = action2
         
+		if(isGroupChat){
+			action1Button.setImage(UIImage(named:"voip_conference_new.png"), for: .normal)
+			action1Button.setImage(UIImage(named:"voip_conference_new_selected.png"), for: .highlighted)
+		}
+		
         topBar.addSubview(action1Button)
         action1Button.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
-		action1Button.size(w: 35, h: 35).done()
+		if(!isGroupChat){
+			action1Button.size(w: 35, h: 35).done()
+		}
         action1Button.onClickAction = action1
 
         topBar.addSubview(titleLabel)
