@@ -156,6 +156,15 @@ import UIKit
 	@objc static let image_picker_view_alert_action_document = NSLocalizedString("Document",comment:"")
 	@objc static let alert_dialog_secure_badge_button_chat_conversation_title = NSLocalizedString("Instant messages are end-to-end encrypted in secured conversations. It is possible to upgrade the security level of a conversation by authenticating participants. To do so, call the contact and follow the authentification process.",comment:"")
 	@objc static let alert_dialog_secure_badge_button_chat_conversation_checkboxtext = NSLocalizedString("Do not show again",comment:"")
+	@objc static let dropdown_menu_chat_conversation_go_to_contact = NSLocalizedString("Go to contact",comment:"")
+	@objc static let dropdown_menu_chat_conversation_add_to_contact = NSLocalizedString("Add to contacts",comment:"")
+	@objc static let dropdown_menu_chat_conversation_group_infos = NSLocalizedString("Group infos",comment:"")
+	@objc static let dropdown_menu_chat_conversation_conversation_device = NSLocalizedString("Conversation's devices",comment:"")
+	@objc static let dropdown_menu_chat_conversation_ephemeral_messages = NSLocalizedString("Ephemeral messages",comment:"")
+	@objc static let dropdown_menu_chat_conversation_mute_notifications = NSLocalizedString("Mute notifications",comment:"")
+	@objc static let dropdown_menu_chat_conversation_unmute_notifications = NSLocalizedString("Un-mute notifications",comment:"")
+	@objc static let dropdown_menu_chat_conversation_delete_messages = NSLocalizedString("Delete messages",comment:"")
+	@objc static let dropdown_menu_chat_conversation_debug_infos = NSLocalizedString("Debug infos",comment:"")
 
 	// FROM ANDROID END
 	

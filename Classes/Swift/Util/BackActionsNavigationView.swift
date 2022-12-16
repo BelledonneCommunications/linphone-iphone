@@ -48,6 +48,7 @@ import linphonesw
     
     let backButton = CallControlButton(buttonTheme:VoipTheme.nav_button("back_default"))
     let action1Button = CallControlButton(buttonTheme:VoipTheme.nav_button("call_audio_start_default"))
+	let action1BisButton = CallControlButton(buttonTheme:VoipTheme.nav_button("voip_conference_new"))
     let action2Button = CallControlButton(buttonTheme:VoipTheme.nav_button("more_menu_default"))
 	
 	let cancel_button_alert = UIButton()
@@ -56,13 +57,14 @@ import linphonesw
 	var isChecked = false
 	let checkBoxText = UILabel()
 	
-	let isSecure : Bool = false
+	var isSecure : Bool = false
 	let isGroupChat : Bool = false
 	let levelMaxSecure : Bool = false
 	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
     
     func viewDidLoad(backAction : @escaping () -> Void,
                      action1 : @escaping () -> Void,
+					 action1Bis : @escaping () -> Void,
                      action2 : @escaping () -> Void,
                      title:String) {
         self.backAction = backAction
@@ -79,18 +81,16 @@ import linphonesw
         topBar.addSubview(action2Button)
         action2Button.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
         action2Button.onClickAction = action2
-        
-		if(isGroupChat){
-			action1Button.setImage(UIImage(named:"voip_conference_new.png"), for: .normal)
-			action1Button.setImage(UIImage(named:"voip_conference_new_selected.png"), for: .highlighted)
-		}
 		
         topBar.addSubview(action1Button)
+		topBar.addSubview(action1BisButton)
         action1Button.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
-		if(!isGroupChat){
-			action1Button.size(w: 35, h: 35).done()
-		}
+		action1BisButton.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
+
         action1Button.onClickAction = action1
+		action1BisButton.onClickAction = action1Bis
+		
+		action1BisButton.isHidden = true
 
         topBar.addSubview(titleLabel)
         titleLabel.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
@@ -107,15 +107,12 @@ import linphonesw
 		view.addSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
 		
-		
-		if(isSecure){
-		 	view.addSubview(floatingButton)
-		 	floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
-		 	floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 5).isActive = true
-			levelMaxSecure ? floatingButton.setImage(UIImage(named:"security_2_indicator.png"), for: .normal) : floatingButton.setImage(UIImage(named:"security_1_indicator.png"), for: .normal)
-			floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
-			floatingButton.onClickAction = alertAction
-		}
+		view.addSubview(floatingButton)
+		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
+		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 5).isActive = true
+		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
+		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
+		floatingButton.onClickAction = alertAction
             
     }
     
@@ -209,5 +206,28 @@ import linphonesw
 		
 		
 	}
+	
+	func changeTitle(titleString: String){
+		titleLabel.text = titleString
+	}
+	
+	func changeSecureLevel(secureLevel: Bool, imageBadge: UIImage?){
+		isSecure = secureLevel
+		if(isSecure){
+			floatingButton.isHidden = false
+			floatingButton.setImage(imageBadge, for: .normal)
+		}else{
+			floatingButton.isHidden = true
+		}
+	}
     
+	func changeCallIcon(groupeChat: Bool){
+		if(groupeChat){
+			action1Button.isHidden = true
+			action1BisButton.isHidden = false
+		}else{
+			action1Button.isHidden = false
+			action1BisButton.isHidden = true
+		}
+	}
 }

@@ -926,24 +926,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 
 - (void)goToChatRoomSwift:(LinphoneChatRoom *)cr {
-	/*
 	_waitView.hidden = YES;
 	_waitView = NULL;
 	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
-	if (view.chatRoom && view.chatRoomCbs)
-		linphone_chat_room_remove_callbacks(view.chatRoom, view.chatRoomCbs);
-
-	view.chatRoomCbs = NULL;
-	if (view.chatRoom != cr)
-		[view clearMessageView];
-	view.chatRoom = cr;
-	view.peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(cr));
-	self.currentRoom = view.chatRoom;
-	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
-		[view configureForRoom:FALSE];
-	else
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	 */
+	
+	[view initChatRoomWithCChatRoom:cr];
+	
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {

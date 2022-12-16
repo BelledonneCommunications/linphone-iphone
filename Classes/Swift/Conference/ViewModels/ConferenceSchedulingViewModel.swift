@@ -62,7 +62,7 @@ class ConferenceSchedulingViewModel  {
 	private var hour: Int = 0
 	private var minutes: Int = 0
 	
-	private var chatRooomDelegate : ChatRoomDelegate? = nil
+	private var chatRoomDelegate : ChatRoomDelegate? = nil
 	private var conferenceSchedulerDelegate : ConferenceSchedulerDelegateStub? = nil
 	
 	var existingConfInfo:MutableLiveData<ConferenceInfo?> = MutableLiveData()
@@ -110,14 +110,14 @@ class ConferenceSchedulingViewModel  {
 			}
 		)
 				
-		chatRooomDelegate = ChatRoomDelegateStub(
+		chatRoomDelegate = ChatRoomDelegateStub(
 			onStateChanged : { (room: ChatRoom, state: ChatRoom.State) -> Void in
 				if (state == ChatRoom.State.Created) {
 					Log.i("[Conference Creation] Chat room created")
-					room.removeDelegate(delegate: self.chatRooomDelegate!)
+					room.removeDelegate(delegate: self.chatRoomDelegate!)
 				} else if (state == ChatRoom.State.CreationFailed) {
 					Log.e("[Conference Creation] Group chat room creation has failed !")
-					room.removeDelegate(delegate: self.chatRooomDelegate!)
+					room.removeDelegate(delegate: self.chatRoomDelegate!)
 				}
 			}
 		)

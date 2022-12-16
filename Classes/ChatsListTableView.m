@@ -235,7 +235,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		return;
 
 	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
-	[PhoneMainView.instance goToChatRoom:chatRoom];
+	[PhoneMainView.instance goToChatRoomSwift:chatRoom];
 }
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
