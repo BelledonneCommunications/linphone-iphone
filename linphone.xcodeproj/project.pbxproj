@@ -962,6 +962,7 @@
 		D7421D9E29228A5200290CAB /* DetailChatRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
+		D7A7545029507038005C9D4A /* CustomAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A7544F29507038005C9D4A /* CustomAlertController.swift */; };
 		D7C6DE7D2947331A00756E03 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE7C2947331A00756E03 /* UIAlertController.swift */; };
 		D7C6DE832948CF3100756E03 /* DropDownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE812948CF3100756E03 /* DropDownCell.swift */; };
 		D7C6DE842948CF3100756E03 /* DropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7C6DE822948CF3100756E03 /* DropDownCell.xib */; };
@@ -2215,6 +2216,7 @@
 		D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChatRoomFragment.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
+		D7A7544F29507038005C9D4A /* CustomAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertController.swift; sourceTree = "<group>"; };
 		D7C6DE7C2947331A00756E03 /* UIAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		D7C6DE812948CF3100756E03 /* DropDownCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownCell.swift; sourceTree = "<group>"; };
 		D7C6DE822948CF3100756E03 /* DropDownCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropDownCell.xib; sourceTree = "<group>"; };
@@ -3488,6 +3490,7 @@
 				D779D39D29AC9E92007B8087 /* AudioPlayer.swift */,
 				D779D3A129B5E365007B8087 /* UIImageExtension.swift */,
 				D7C6DE7C2947331A00756E03 /* UIAlertController.swift */,
+				D7A7544F29507038005C9D4A /* CustomAlertController.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
