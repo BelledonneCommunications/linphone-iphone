@@ -26,7 +26,6 @@ import UniformTypeIdentifiers
 
 class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate {
 	
-	let top_bar_height = 66.0
 	let side_buttons_margin = 10
 	
 	var action1 : (() -> Void)? = nil

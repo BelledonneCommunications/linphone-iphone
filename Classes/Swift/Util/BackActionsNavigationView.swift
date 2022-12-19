@@ -25,16 +25,8 @@ import linphonesw
 @objc class BackActionsNavigationView:  UIViewController {
     
     
-    // layout constants
     let top_bar_height = 66.0
-    let navigation_buttons_padding = 18.0
     let side_buttons_margin = 5
-    
-    // User by subviews
-    let form_margin = 10.0
-    let form_input_height = 40.0
-    let schdule_for_later_height = 80.0
-    let description_height = 150.0
         
     let titleLabel = StyledLabel(VoipTheme.calls_list_header_font)
     
@@ -51,21 +43,15 @@ import linphonesw
 	let action1BisButton = CallControlButton(buttonTheme:VoipTheme.nav_button("voip_conference_new"))
     let action2Button = CallControlButton(buttonTheme:VoipTheme.nav_button("more_menu_default"))
 	
-	let cancel_button_alert = UIButton()
-	let ok_button_alert = UIButton()
-	let checkBoxButton = CallControlButton(buttonTheme:VoipTheme.nav_button("checkbox_unchecked"))
-	var isChecked = false
-	let checkBoxText = UILabel()
 	
 	var isSecure : Bool = false
-	let isGroupChat : Bool = false
-	let levelMaxSecure : Bool = false
 	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
     
     func viewDidLoad(backAction : @escaping () -> Void,
                      action1 : @escaping () -> Void,
 					 action1Bis : @escaping () -> Void,
                      action2 : @escaping () -> Void,
+					 action3 : @escaping () -> Void,
                      title:String) {
         self.backAction = backAction
         self.action1 = action1
@@ -102,7 +88,7 @@ import linphonesw
         view.addSubview(scrollView)
         scrollView.alignUnder(view: topBar).alignParentBottom().matchParentSideBorders().done()
         scrollView.addSubview(contentView)
-        contentView.matchBordersOf(view: view).alignParentBottom().alignParentTop().done() // don't forget a bottom constraint b/w last element of contentview and contentview
+        contentView.matchBordersOf(view: view).alignParentBottom().alignParentTop().done()
 		
 		view.addSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
@@ -112,7 +98,7 @@ import linphonesw
 		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 5).isActive = true
 		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
 		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
-		floatingButton.onClickAction = alertAction
+		floatingButton.onClickAction = action3
             
     }
     
@@ -122,25 +108,6 @@ import linphonesw
         topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
         
     }
-	
-	func alertAction() {
-
-		let alertController = CustomAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
-				
-		alertController.setBackgroundColor(color: .darkGray)
-		alertController.setTitle(font: nil, color: .white)
-		alertController.setTint(color: .white)
-		alertController.setMaxWidth(alert: alertController)
-
-		alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, checkboxViewHeightV: 50, buttonsAlertHeightV: 40)
-										
-		self.present(alertController, animated: true, completion:{
-			alertController.view.superview?.isUserInteractionEnabled = true
-			alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
-		})
-		
-		alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOk)))
-	}
 	
 	func changeTitle(titleString: String){
 		titleLabel.text = titleString
@@ -164,13 +131,5 @@ import linphonesw
 			action1Button.isHidden = false
 			action1BisButton.isHidden = true
 		}
-	}
-	
-	@objc func dismissOnTapOutsideOrCancel(){
-		self.dismiss(animated: true, completion: nil)
-	}
-	
-	@objc func onTapOk(){
-		self.dismiss(animated: true, completion: nil)
 	}
 }

@@ -42,6 +42,8 @@ import DropDown
 	var address: String? = nil
 	var notifications_on: Bool = true
 	
+	var activeAlertController = CustomAlertController()
+	
 	let menu: DropDown = {
 		let menu = DropDown()
 		menu.dataSource = [""]
@@ -101,11 +103,11 @@ import DropDown
 			action2: {
 				self.tapChooseMenuItem(self.action2Button)
 			},
+			action3: {
+				self.alertActionGoToDevicesList()
+			},
 			title: address ?? "Error"
-			//title:"benoit.martins.test1"
-			//title:"Coin à champis de François"
         )
-        //view.backgroundColor = VoipTheme.backgroundColor3.get()
     }
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -197,7 +199,6 @@ import DropDown
 		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		
 		if (!isOneToOneChat) {
-			//ConferenceViewModelBridge.startGroupCall(cChatRoom: cChatRoom!)
 			alertActionConferenceCall(cChatRoom: cChatRoom)
 		} else {
 			LinphoneManager.instance().call(addr)
@@ -214,6 +215,8 @@ import DropDown
 		alertController.setMaxWidth(alert: alertController)
 
 		alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, buttonsAlertHeightV: 40)
+		
+		activeAlertController = alertController
 										
 		self.present(alertController, animated: true, completion:{
 			alertController.view.superview?.isUserInteractionEnabled = true
@@ -225,15 +228,51 @@ import DropDown
 			  
 	}
 	
+	func alertActionGoToDevicesList() {
+
+		let notAskAgain = ConfigManager.instance().lpConfigBoolForKey(key: "confirmation_dialog_before_sas_call_not_ask_again");
+		if(!notAskAgain){
+			let alertController = CustomAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
+					
+			alertController.setBackgroundColor(color: .darkGray)
+			alertController.setTitle(font: nil, color: .white)
+			alertController.setTint(color: .white)
+			alertController.setMaxWidth(alert: alertController)
+
+			alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, checkboxViewHeightV: 50, buttonsAlertHeightV: 40)
+			
+			activeAlertController = alertController
+											
+			self.present(alertController, animated: true, completion:{
+				alertController.view.superview?.isUserInteractionEnabled = true
+				alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
+			})
+			
+			alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOkGoToDevicesList)))
+		}else{
+			let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
+			view.room = chatRoom?.getCobject
+			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+		}
+		
+	}
+	
 	@objc func onTapOkStartGroupCall(){
 		self.dismiss(animated: true, completion: nil)
 		ConferenceViewModelBridge.startGroupCall(cChatRoom: (chatRoom?.getCobject)!)
 	}
 	
-	@objc override func onTapOk() {
+	@objc func onTapOkGoToDevicesList() {
 		self.dismiss(animated: true, completion: nil)
+		if(activeAlertController.isChecked){
+			ConfigManager.instance().lpConfigSetBool(value: activeAlertController.isChecked, key: "confirmation_dialog_before_sas_call_not_ask_again")
+		}
 		let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
 		view.room = chatRoom?.getCobject
 		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+	}
+	
+	@objc func dismissOnTapOutsideOrCancel(){
+		self.dismiss(animated: true, completion: nil)
 	}
 }

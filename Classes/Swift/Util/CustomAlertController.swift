@@ -27,10 +27,6 @@ class CustomAlertController: UIAlertController {
 	var isChecked = false
 	let checkBoxText = UILabel()
 	
-	var isSecure : Bool = false
-	let isGroupChat : Bool = false
-	let levelMaxSecure : Bool = false
-	
 	@objc func dismissOnTapOutsideOrCancel(){
 		self.dismiss(animated: true, completion: nil)
 	}
@@ -39,7 +35,7 @@ class CustomAlertController: UIAlertController {
 		self.dismiss(animated: true, completion: nil)
 	}
 	
-	@objc func switchCheckedValue(){
+	@objc func changeCheckValue(){
 		isChecked = !isChecked
 		checkBoxButton.isSelected = isChecked
 	}
@@ -87,7 +83,7 @@ class CustomAlertController: UIAlertController {
 			
 			checkBoxButton.setImage(UIImage(named:"checkbox_unchecked.png"), for: .normal)
 			checkBoxButton.setImage(UIImage(named:"checkbox_checked.png"), for: .selected)
-			checkBoxButton.addTarget(self, action: #selector(switchCheckedValue), for: .touchUpInside)
+			checkBoxButton.addTarget(self, action: #selector(changeCheckValue), for: .touchUpInside)
 			checkboxView.addSubview(checkBoxButton)
 			
 			checkBoxText.text = VoipTexts.alert_dialog_secure_badge_button_chat_conversation_checkboxtext
