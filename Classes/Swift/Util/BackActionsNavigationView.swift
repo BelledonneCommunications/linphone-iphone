@@ -125,86 +125,21 @@ import linphonesw
 	
 	func alertAction() {
 
-		let alertController = UIAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
+		let alertController = CustomAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
 				
 		alertController.setBackgroundColor(color: .darkGray)
 		alertController.setTitle(font: nil, color: .white)
 		alertController.setTint(color: .white)
 		alertController.setMaxWidth(alert: alertController)
 
-		addButtonsAlertController(alertController: alertController)
+		alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, checkboxViewHeightV: 50, buttonsAlertHeightV: 40)
 										
 		self.present(alertController, animated: true, completion:{
 			alertController.view.superview?.isUserInteractionEnabled = true
 			alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
 		})
-
-			  
-	}
-	
-	@objc func dismissOnTapOutsideOrCancel(){
-		self.dismiss(animated: true, completion: nil)
-   	}
-	
-	@objc func dismissOnTapOk(){
-		self.dismiss(animated: true, completion: nil)
-	}
-	
-	@objc func switchCheckedValue(){
-		isChecked = !isChecked
-		checkBoxButton.isSelected = isChecked
-	}
-	
-	func addButtonsAlertController(alertController: UIAlertController){
 		
-		let buttonsView = UIView()
-		alertController.view.addSubview(buttonsView)
-		buttonsView.translatesAutoresizingMaskIntoConstraints = false
-		buttonsView.bottomAnchor.constraint(equalTo: alertController.view.bottomAnchor, constant: -10).isActive = true
-		buttonsView.rightAnchor.constraint(equalTo: alertController.view.rightAnchor, constant: -10).isActive = true
-		buttonsView.leftAnchor.constraint(equalTo: alertController.view.leftAnchor, constant: 10).isActive = true
-		buttonsView.heightAnchor.constraint(equalToConstant: 75).isActive = true
-
-		alertController.view.translatesAutoresizingMaskIntoConstraints = false
-		alertController.view.heightAnchor.constraint(equalToConstant: 350).isActive = true
-		
-		cancel_button_alert.setTitle(VoipTexts.cancel.uppercased(), for: .normal)
-		cancel_button_alert.backgroundColor = .systemRed
-		cancel_button_alert.layer.cornerRadius = 5
-		cancel_button_alert.addTarget(self, action: #selector(dismissOnTapOutsideOrCancel), for: .touchUpInside)
-		buttonsView.addSubview(cancel_button_alert)
-		
-		cancel_button_alert.alignParentLeft(withMargin: 40).size(w: 100, h: 50).done()
-		ok_button_alert.setTitle(VoipTexts.ok.uppercased(), for: .normal)
-		ok_button_alert.backgroundColor = .systemGreen
-		ok_button_alert.layer.cornerRadius = 5
-		ok_button_alert.addTarget(self, action: #selector(dismissOnTapOk), for: .touchUpInside)
-		buttonsView.addSubview(ok_button_alert)
-		ok_button_alert.alignParentRight(withMargin: 40).size(w: 100, h: 50).done()
-		
-		
-		let checkboxView = UIView()
-		alertController.view.addSubview(checkboxView)
-		checkboxView.translatesAutoresizingMaskIntoConstraints = false
-		checkboxView.bottomAnchor.constraint(equalTo: buttonsView.topAnchor, constant: -10).isActive = true
-		checkboxView.centerXAnchor.constraint(equalTo: alertController.view.centerXAnchor).isActive = true
-		checkboxView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-		checkboxView.width(180).done()
-		
-		checkBoxButton.setImage(UIImage(named:"checkbox_unchecked.png"), for: .normal)
-		checkBoxButton.setImage(UIImage(named:"checkbox_checked.png"), for: .selected)
-		checkBoxButton.addTarget(self, action: #selector(switchCheckedValue), for: .touchUpInside)
-		checkboxView.addSubview(checkBoxButton)
-		
-		
-		
-		checkBoxText.text = VoipTexts.alert_dialog_secure_badge_button_chat_conversation_checkboxtext
-		checkBoxText.textColor = .white
-		checkboxView.addSubview(checkBoxText)
-		checkBoxText.toRightOf(checkBoxButton, withLeftMargin: -5).size(w: 130, h: 50).done()
-		
-		
-		
+		alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOk)))
 	}
 	
 	func changeTitle(titleString: String){
@@ -220,7 +155,7 @@ import linphonesw
 			floatingButton.isHidden = true
 		}
 	}
-    
+	
 	func changeCallIcon(groupeChat: Bool){
 		if(groupeChat){
 			action1Button.isHidden = true
@@ -229,5 +164,13 @@ import linphonesw
 			action1Button.isHidden = false
 			action1BisButton.isHidden = true
 		}
+	}
+	
+	@objc func dismissOnTapOutsideOrCancel(){
+		self.dismiss(animated: true, completion: nil)
+	}
+	
+	@objc func onTapOk(){
+		self.dismiss(animated: true, completion: nil)
 	}
 }

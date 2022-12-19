@@ -93,10 +93,10 @@ import DropDown
 				self.goBackChatListView()
 			},
 			action1: {
-				
+				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
 			},
 			action1Bis: {
-				
+				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
 			},
 			action2: {
 				self.tapChooseMenuItem(self.action2Button)
@@ -188,5 +188,52 @@ import DropDown
 		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cChatRoom))
 		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
 		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: cChatRoom)
+	}
+	
+	func onCallClick(cChatRoom: OpaquePointer?) {
+		let firstParticipant = chatRoom?.participants.first
+		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom);
+		
+		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+		
+		if (!isOneToOneChat) {
+			//ConferenceViewModelBridge.startGroupCall(cChatRoom: cChatRoom!)
+			alertActionConferenceCall(cChatRoom: cChatRoom)
+		} else {
+			LinphoneManager.instance().call(addr)
+		}
+	}
+	
+	func alertActionConferenceCall(cChatRoom: OpaquePointer?) {
+
+		let alertController = CustomAlertController(title: VoipTexts.conference_start_group_call_dialog_message, message: nil, preferredStyle: .alert)
+				
+		alertController.setBackgroundColor(color: .darkGray)
+		alertController.setTitle(font: nil, color: .white)
+		alertController.setTint(color: .white)
+		alertController.setMaxWidth(alert: alertController)
+
+		alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, buttonsAlertHeightV: 40)
+										
+		self.present(alertController, animated: true, completion:{
+			alertController.view.superview?.isUserInteractionEnabled = true
+			alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
+		})
+		
+		
+		alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOkStartGroupCall)))
+			  
+	}
+	
+	@objc func onTapOkStartGroupCall(){
+		self.dismiss(animated: true, completion: nil)
+		ConferenceViewModelBridge.startGroupCall(cChatRoom: (chatRoom?.getCobject)!)
+	}
+	
+	@objc override func onTapOk() {
+		self.dismiss(animated: true, completion: nil)
+		let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
+		view.room = chatRoom?.getCobject
+		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 	}
 }
