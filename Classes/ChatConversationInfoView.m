@@ -22,6 +22,7 @@
 #import "ChatConversationInfoView.h"
 #import "PhoneMainView.h"
 #import "UIChatConversationInfoTableViewCell.h"
+#import "linphoneapp-Swift.h"
 
 #import "linphone/core.h"
 
@@ -312,7 +313,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		view.isForVoipConference = FALSE;
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
-		ChatConversationView *view = VIEW(ChatConversationView);
+		ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
 }

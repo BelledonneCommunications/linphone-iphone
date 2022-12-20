@@ -51,6 +51,7 @@ import linphonesw
                      action1 : @escaping () -> Void,
                      action2 : @escaping () -> Void,
 					 action3 : @escaping () -> Void,
+					 action4 : @escaping () -> Void,
                      title:String) {
         self.backAction = backAction
         self.action1 = action1
@@ -66,6 +67,7 @@ import linphonesw
         topBar.addSubview(action2Button)
         action2Button.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
         action2Button.onClickAction = action2
+		action2Button.onLongClick(action: action4)
 		
         topBar.addSubview(action1Button)
 		topBar.addSubview(action1BisButton)
@@ -100,7 +102,6 @@ import linphonesw
 		floatingButton.onClickAction = action3
             
     }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
