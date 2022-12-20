@@ -49,7 +49,6 @@ import linphonesw
     
     func viewDidLoad(backAction : @escaping () -> Void,
                      action1 : @escaping () -> Void,
-					 action1Bis : @escaping () -> Void,
                      action2 : @escaping () -> Void,
 					 action3 : @escaping () -> Void,
                      title:String) {
@@ -74,7 +73,7 @@ import linphonesw
 		action1BisButton.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
 
         action1Button.onClickAction = action1
-		action1BisButton.onClickAction = action1Bis
+		action1BisButton.onClickAction = action1
 		
 		action1BisButton.isHidden = true
 

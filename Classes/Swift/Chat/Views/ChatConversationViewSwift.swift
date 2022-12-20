@@ -67,22 +67,31 @@ import DropDown
 				switch menu.dataSource[index] {
 				case VoipTexts.dropdown_menu_chat_conversation_add_to_contact:
 					cell.myImageView.image = UIImage(named: images[0])
+					//cell.addGestureRecognizer(UITapGestureRecognizer(target: parent.self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.dropdown_menu_chat_conversation_go_to_contact:
 					cell.myImageView.image = UIImage(named: images[1])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.conference_schedule_start:
 					cell.myImageView.image = UIImage(named: images[2])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.dropdown_menu_chat_conversation_conversation_device:
 					cell.myImageView.image = UIImage(named: images[3])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.dropdown_menu_chat_conversation_ephemeral_messages:
 					cell.myImageView.image = UIImage(named: images[4])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.dropdown_menu_chat_conversation_mute_notifications:
 					cell.myImageView.image = UIImage(named: images[5])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.dropdown_menu_chat_conversation_unmute_notifications:
 					cell.myImageView.image = UIImage(named: images[6])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				case VoipTexts.dropdown_menu_chat_conversation_delete_messages:
 					cell.myImageView.image = UIImage(named: images[7])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				default:
 					cell.myImageView.image = UIImage(named: images[8])
+					cell.addGestureRecognizer(UITapGestureRecognizer(target: ChatConversationViewSwift.self, action: #selector(dropDownGoToDevicesList)))
 				}
 			}
 		}
@@ -95,9 +104,6 @@ import DropDown
 				self.goBackChatListView()
 			},
 			action1: {
-				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
-			},
-			action1Bis: {
 				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
 			},
 			action2: {
@@ -228,7 +234,7 @@ import DropDown
 			  
 	}
 	
-	func alertActionGoToDevicesList() {
+	@objc func alertActionGoToDevicesList() {
 
 		let notAskAgain = ConfigManager.instance().lpConfigBoolForKey(key: "confirmation_dialog_before_sas_call_not_ask_again");
 		if(!notAskAgain){
@@ -274,5 +280,9 @@ import DropDown
 	
 	@objc func dismissOnTapOutsideOrCancel(){
 		self.dismiss(animated: true, completion: nil)
+	}
+	
+	@objc func dropDownGoToDevicesList() {
+		print("Aaaaaa")
 	}
 }
