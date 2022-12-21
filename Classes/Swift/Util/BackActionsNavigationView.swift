@@ -39,12 +39,16 @@ import linphonesw
     var action2 : (() -> Void)? = nil
     
     let backButton = CallControlButton(buttonTheme:VoipTheme.nav_button("back_default"))
+	let cancelButton = CallControlButton(buttonTheme:VoipTheme.nav_button("cancel_edit_default"))
     let action1Button = CallControlButton(buttonTheme:VoipTheme.nav_button("call_audio_start_default"))
 	let action1BisButton = CallControlButton(buttonTheme:VoipTheme.nav_button("voip_conference_new"))
+	let action1SelectAllButton = CallControlButton(buttonTheme:VoipTheme.nav_button("select_all_default"))
+	let action1DeselectAllButton = CallControlButton(buttonTheme:VoipTheme.nav_button("deselect_all"))
     let action2Button = CallControlButton(buttonTheme:VoipTheme.nav_button("more_menu_default"))
-	
+	let action2Delete = CallControlButton(buttonTheme:VoipTheme.nav_button("delete_default"))
 	
 	var isSecure : Bool = false
+	var isGroupChat : Bool = false
 	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
     
     func viewDidLoad(backAction : @escaping () -> Void,
@@ -63,36 +67,54 @@ import linphonesw
         topBar.addSubview(backButton)
         backButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
         backButton.onClickAction = backAction
+		
+		topBar.addSubview(cancelButton)
+		cancelButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
+		cancelButton.onClickAction = editModeOff
+		cancelButton.isHidden = true
         
         topBar.addSubview(action2Button)
         action2Button.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
         action2Button.onClickAction = action2
 		action2Button.onLongClick(action: action4)
 		
-        topBar.addSubview(action1Button)
+		topBar.addSubview(action2Delete)
+		action2Delete.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
+		action2Delete.onClickAction = action4
+		action2Delete.isHidden = true
+		
+		topBar.addSubview(action1Button)
 		topBar.addSubview(action1BisButton)
         action1Button.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
-		action1BisButton.toLeftOf(action2Button, withRightMargin: 20).matchParentHeight().done()
+		action1BisButton.toLeftOf(action2Button, withRightMargin: 12).matchParentHeight().done()
+		action1Button.size(w: 34, h: 34).done()
 
         action1Button.onClickAction = action1
 		action1BisButton.onClickAction = action1
-		
 		action1BisButton.isHidden = true
+		
+		topBar.addSubview(action1SelectAllButton)
+		topBar.addSubview(action1DeselectAllButton)
+		action1SelectAllButton.toLeftOf(action2Button, withRightMargin: 12).matchParentHeight().done()
+		action1DeselectAllButton.toLeftOf(action2Button, withRightMargin: 12).matchParentHeight().done()
+		action1SelectAllButton.onClickAction = selectDeselectAll
+		action1DeselectAllButton.onClickAction = selectDeselectAll
+		action1SelectAllButton.isHidden = true
+		action1DeselectAllButton.isHidden = true
 
         topBar.addSubview(titleLabel)
         titleLabel.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
 		titleLabel.toLeftOf(action1Button, withRightMargin: 20).done()
-        titleLabel.text = title
+		titleLabel.text = title
+		//titleLabel.textAlignment = .left
         
         super.viewDidLoad()
-
-        view.addSubview(scrollView)
-        scrollView.alignUnder(view: topBar).alignParentBottom().matchParentSideBorders().done()
-        scrollView.addSubview(contentView)
-        contentView.matchBordersOf(view: view).alignParentBottom().alignParentTop().done()
 		
 		view.addSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
+		
+		view.addSubview(contentView)
+		contentView.alignUnder(view: topBar).alignAbove(view: messageView).matchParentSideBorders().done()
 		
 		view.addSubview(floatingButton)
 		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
@@ -123,13 +145,45 @@ import linphonesw
 		}
 	}
 	
-	func changeCallIcon(groupeChat: Bool){
-		if(groupeChat){
+	func changeCallIcon(groupChat: Bool){
+		isGroupChat = groupChat
+		if(groupChat){
 			action1Button.isHidden = true
 			action1BisButton.isHidden = false
 		}else{
 			action1Button.isHidden = false
 			action1BisButton.isHidden = true
+		}
+	}
+	
+	func editModeOn(){
+		backButton.isHidden = true
+		cancelButton.isHidden = false
+		action1Button.isHidden = true
+		action1BisButton.isHidden = true
+		action1SelectAllButton.isHidden = true
+		action1DeselectAllButton.isHidden = false
+		action2Button.isHidden = true
+		action2Delete.isHidden = false
+	}
+	
+	func editModeOff(){
+		backButton.isHidden = false
+		cancelButton.isHidden = true
+		action1DeselectAllButton.isHidden = true
+		action1SelectAllButton.isHidden = true
+		action2Button.isHidden = false
+		action2Delete.isHidden = true
+		changeCallIcon(groupChat: isGroupChat)
+	}
+	
+	func selectDeselectAll(){
+		if(action1SelectAllButton.isHidden){
+			action1SelectAllButton.isHidden = false
+			action1DeselectAllButton.isHidden = true
+		}else{
+			action1SelectAllButton.isHidden = true
+			action1DeselectAllButton.isHidden = false
 		}
 	}
 }

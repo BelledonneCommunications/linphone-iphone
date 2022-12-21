@@ -36,12 +36,14 @@ import DropDown
 	let APP_GROUP_ID = "group.belledonne-communications.linphone.widget"
 	var debugEnabled = false
 	
-	
 	var chatRoom: ChatRoom? = nil
 	var chatRoomDelegate: ChatRoomDelegate? = nil
 	var address: String? = nil
 	
 	var activeAlertController = CustomAlertController()
+	
+	let tableController = ChatConversationTableView()
+	let refreshControl = UIRefreshControl()
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -112,6 +114,15 @@ import DropDown
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		self.contentView.addSubview(tableController.tableView)
+		tableController.chatRoom = chatRoom?.getCobject
+		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+		tableController.refreshControl = refreshControl
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		//tableController.chatRoom = chatRoom?.getCobject
+		tableController.reloadData()
 	}
     
     func goBackChatListView() {
@@ -231,7 +242,7 @@ import DropDown
 	}
 	
 	func onEditionChangeClick() {
-		
+		editModeOn()
 	}
 	
 	func showAddressAndIdentityPopup() {
@@ -314,7 +325,7 @@ import DropDown
 		}
 		
 		changeTitle(titleString: address ?? "Error")
-		changeCallIcon(groupeChat: changeIcon)
+		changeCallIcon(groupChat: changeIcon)
 		
 		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cChatRoom))
 		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
@@ -403,5 +414,18 @@ import DropDown
 	
 	@objc func dismissOnTapOutsideOrCancel(){
 		self.dismiss(animated: true, completion: nil)
+	}
+	
+	@objc func refreshData() {
+		tableController.refreshData()
+		refreshControl.endRefreshing()
+		if tableController.totalNumberOfItems() == 0 {
+			return
+		}
+		tableController.loadData()
+		tableController.tableView.scrollToRow(
+			at: IndexPath(row: tableController.currentIndex, section: 0),
+			at: .top,
+			animated: false)
 	}
 }
