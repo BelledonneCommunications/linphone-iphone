@@ -42,7 +42,7 @@ import DropDown
 	
 	var activeAlertController = CustomAlertController()
 	
-	let tableController = ChatConversationTableView()
+	@objc let tableController = ChatConversationTableView()
 	let refreshControl = UIRefreshControl()
 	
 	let menu: DropDown = {
@@ -118,10 +118,14 @@ import DropDown
 		tableController.chatRoom = chatRoom?.getCobject
 		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 		tableController.refreshControl = refreshControl
+		tableController.toggleSelectionButton = action1SelectAllButton
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		editModeOff()
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
-		//tableController.chatRoom = chatRoom?.getCobject
 		tableController.reloadData()
 	}
     
@@ -427,5 +431,49 @@ import DropDown
 			at: IndexPath(row: tableController.currentIndex, section: 0),
 			at: .top,
 			animated: false)
+	}
+	
+	override func editModeOn(){
+		super.editModeOn()
+		tableController.setEditing(true, animated: false)
+	}
+	
+	override func editModeOff(){
+		super.editModeOff()
+		tableController.setEditing(false, animated: false)
+	}
+	
+	override func selectDeselectAll(){
+		super.selectDeselectAll()
+		if(action1SelectAllButton.isHidden){
+			tableController.onSelectionToggle(action1SelectAllButton)
+		}else{
+			tableController.onSelectionToggle(action1SelectAllButton)
+		}
+	}
+	
+	override func deleteSelected(){
+		super.deleteSelected()
+		onDeleteClick()
+	}
+	
+	func onDeleteClick() {
+		let msg = NSLocalizedString("Do you want to delete the selected messages?", comment: "")
+		UIConfirmationDialog.show(
+			withMessage: msg,
+			cancelMessage: nil,
+			confirmMessage: nil,
+			onCancelClick: { [self] in
+				onEditionChangeClick()},
+			onConfirmationClick: {
+				self.tableController.removeSelection(nil)
+				self.editModeOff()
+				self.tableController.loadData()
+			}
+		)
+	}
+	
+	@objc func pressed() {
+		print("")
 	}
 }

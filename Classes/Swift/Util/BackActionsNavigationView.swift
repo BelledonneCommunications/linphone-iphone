@@ -80,7 +80,7 @@ import linphonesw
 		
 		topBar.addSubview(action2Delete)
 		action2Delete.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
-		action2Delete.onClickAction = action4
+		action2Delete.onClickAction = deleteSelected
 		action2Delete.isHidden = true
 		
 		topBar.addSubview(action1Button)
@@ -161,10 +161,11 @@ import linphonesw
 		cancelButton.isHidden = false
 		action1Button.isHidden = true
 		action1BisButton.isHidden = true
-		action1SelectAllButton.isHidden = true
-		action1DeselectAllButton.isHidden = false
+		action1SelectAllButton.isHidden = false
+		action1DeselectAllButton.isHidden = true
 		action2Button.isHidden = true
 		action2Delete.isHidden = false
+		action2Delete.isEnabled = false
 	}
 	
 	func editModeOff(){
@@ -181,9 +182,15 @@ import linphonesw
 		if(action1SelectAllButton.isHidden){
 			action1SelectAllButton.isHidden = false
 			action1DeselectAllButton.isHidden = true
+			action2Delete.isEnabled = false
 		}else{
 			action1SelectAllButton.isHidden = true
 			action1DeselectAllButton.isHidden = false
+			action2Delete.isEnabled = true
 		}
+	}
+	
+	func deleteSelected(){
+
 	}
 }
