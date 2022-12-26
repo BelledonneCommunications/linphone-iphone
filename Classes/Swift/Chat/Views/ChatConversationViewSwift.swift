@@ -39,11 +39,14 @@ import DropDown
 	var chatRoom: ChatRoom? = nil
 	var chatRoomDelegate: ChatRoomDelegate? = nil
 	var address: String? = nil
+	var participants: String? = nil
 	
 	var activeAlertController = CustomAlertController()
 	
 	@objc let tableController = ChatConversationTableView()
 	let refreshControl = UIRefreshControl()
+	
+	let replyBubble = UIChatReplyBubbleView()
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -107,7 +110,8 @@ import DropDown
 			action4: {
 				(LinphoneManager.instance().lpConfigInt(forKey: "debugenable_preference") == 1) ? self.showAddressAndIdentityPopup() : self.tapChooseMenuItem(self.action2Button)
 			},
-			title: address ?? "Error"
+			title: address ?? "Error",
+			participants: participants ?? "Error"
         )
     }
 	
@@ -119,6 +123,7 @@ import DropDown
 		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 		tableController.refreshControl = refreshControl
 		tableController.toggleSelectionButton = action1SelectAllButton
+		messageView.sendButton.onClickAction = onSendClick
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -311,6 +316,7 @@ import DropDown
 		chatRoom = ChatRoom.getSwiftObject(cObject: cChatRoom)
 		PhoneMainView.instance().currentRoom = cChatRoom
 		address = chatRoom?.peerAddress?.asString()
+				
 		var changeIcon = false
 		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		
@@ -320,11 +326,22 @@ import DropDown
 			let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom);
 			address = FastAddressBook.displayName(for: addr) ?? "unknow"
 			changeIcon = false
+			titleParticipants.isHidden = true
 			
 		} else {
 			address = chatRoom?.subject
 			changeIcon = true
+	
+			titleParticipants.isHidden = false
 			
+			let participants = chatRoom?.participants
+			participantsGroupLabel.text = ""
+			participants?.forEach{ participant in
+				if participantsGroupLabel.text != "" {
+					participantsGroupLabel.text = participantsGroupLabel.text! + ", "
+				}
+				participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
+			}
 			
 		}
 		
@@ -475,5 +492,82 @@ import DropDown
 	
 	@objc func pressed() {
 		print("")
+	}
+	
+	func sendMessage(message: String?, withExterlBodyUrl externalUrl: URL?, rootMessage: ChatMessage?) -> Bool {
+		if chatRoom == nil {
+			return false
+		}
+
+		let msg = rootMessage
+		let basic = ChatConversationView.isBasicChatRoom(chatRoom?.getCobject)
+		let params = linphone_account_get_params(linphone_core_get_default_account(LinphoneManager.getLc()))
+		let cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params)
+		
+		if (!basic || (cpimEnabled != 0)) && (message != nil) && message!.count > 0 {
+			linphone_chat_message_add_utf8_text_content(msg?.getCobject, message)
+		}
+
+		if (externalUrl != nil) {
+			linphone_chat_message_set_external_body_url(msg?.getCobject, externalUrl!.absoluteString)
+		}
+		
+		let contentList = linphone_chat_message_get_contents(msg?.getCobject)
+		if bctbx_list_size(contentList) > 0 {
+			linphone_chat_message_send(msg?.getCobject)
+		}
+
+		if basic && (cpimEnabled == 0) && (message != nil) && message!.count > 0 {
+			linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(chatRoom?.getCobject, message))
+		}
+		
+		return true
+	}
+	
+	func sendMessageInMessageField(rootMessage: ChatMessage?) {
+		if sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage) {
+			messageView.messageText.text = ""
+		}
+	}
+	
+	func onSendClick() {
+		//let rootMessage = replyBubble ? linphone_chat_room_create_reply_message(chatRoom?.getCobject, replyBubble.message) : linphone_chat_room_create_empty_message(chatRoom?.getCobject)
+		let rootMessage = linphone_chat_room_create_empty_message(chatRoom?.getCobject)
+		/*
+		if replyBubble != nil {
+			closePendingReply()
+		}
+		if isPendingVoiceRecord && voiceRecorder && linphone_recorder_get_file(voiceRecorder) {
+			let voiceContent = linphone_recorder_create_content(voiceRecorder)
+			isPendingVoiceRecord = false
+			cancelVoiceRecording()
+			stopVoiceRecordPlayer()
+			linphone_chat_message_add_content(rootMessage, voiceContent)
+		}
+		
+		if fileContext.count() > 0 {
+			if linphone_chat_room_get_capabilities(chatRoom?.getCobject) & LinphoneChatRoomCapabilitiesConference != 0 {
+				startMultiFilesUpload(rootMessage)
+			} else {
+				var i = 0
+				for i in 0..<(fileContext.count() - 1) {
+					startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
+				}
+				if isOneToOne {
+					startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
+					if messageView.messageText.text != "" {
+						sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage)
+					}
+				} else {
+					startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: messageField.text(), rootMessage: rootMessage)
+				}
+			}
+			
+			clearMessageView()
+			return
+		}
+		*/
+		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
+		sendMessageInMessageField(rootMessage: result)
 	}
 }

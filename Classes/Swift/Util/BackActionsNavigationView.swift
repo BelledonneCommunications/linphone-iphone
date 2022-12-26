@@ -28,7 +28,10 @@ import linphonesw
     let top_bar_height = 66.0
     let side_buttons_margin = 5
         
-    let titleLabel = StyledLabel(VoipTheme.calls_list_header_font)
+    let titleLabel = StyledLabel(VoipTheme.chat_conversation_title)
+	let titleParticipants = UIView()
+	let titleGroupLabel = StyledLabel(VoipTheme.chat_conversation_title)
+	let participantsGroupLabel = StyledLabel(VoipTheme.chat_conversation_participants)
     
     let topBar = UIView()
     let scrollView = UIScrollView()
@@ -56,7 +59,8 @@ import linphonesw
                      action2 : @escaping () -> Void,
 					 action3 : @escaping () -> Void,
 					 action4 : @escaping () -> Void,
-                     title:String) {
+                     title: String,
+					 participants: String?) {
         self.backAction = backAction
         self.action1 = action1
         self.action2 = action2
@@ -106,7 +110,21 @@ import linphonesw
         titleLabel.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
 		titleLabel.toLeftOf(action1Button, withRightMargin: 20).done()
 		titleLabel.text = title
-		//titleLabel.textAlignment = .left
+		
+		topBar.addSubview(titleParticipants)
+		titleParticipants.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
+		titleParticipants.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		titleParticipants.toLeftOf(action1Button, withRightMargin: 20).done()
+		
+		titleParticipants.addSubview(titleGroupLabel)
+		titleGroupLabel.alignParentTop(withMargin: 10).matchParentSideBorders().done()
+		titleGroupLabel.text = title
+		
+		titleParticipants.addSubview(participantsGroupLabel)
+		participantsGroupLabel.alignParentBottom(withMargin: 10).matchParentSideBorders().done()
+		participantsGroupLabel.text = participants
+		
+		titleParticipants.isHidden = true
         
         super.viewDidLoad()
 		
@@ -133,6 +151,7 @@ import linphonesw
 	
 	func changeTitle(titleString: String){
 		titleLabel.text = titleString
+		titleGroupLabel.text = titleString
 	}
 	
 	func changeSecureLevel(secureLevel: Bool, imageBadge: UIImage?){

@@ -143,6 +143,9 @@ import UIKit
 	static let conf_list_filter_button_font = TextStyle(fgColor: LightDarkColor(.black,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 14.0)
 	static let conference_list_subject_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 18.0)
 	static let conference_list_address_desc_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)
+	
+	static let chat_conversation_title = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 22.0)
+	static let chat_conversation_participants = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 14.0)
 
 	
 	// Buttons Background (State colors)
