@@ -46,7 +46,7 @@ import DropDown
 	@objc let tableController = ChatConversationTableView()
 	let refreshControl = UIRefreshControl()
 	
-	let replyBubble = UIChatReplyBubbleView()
+	var replyBubble = UIChatReplyBubbleView()
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -124,9 +124,25 @@ import DropDown
 		tableController.refreshControl = refreshControl
 		tableController.toggleSelectionButton = action1SelectAllButton
 		messageView.sendButton.onClickAction = onSendClick
+		
+		
+		chatRoomDelegate = ChatRoomDelegateStub(
+			onChatMessageReceived: { (room: ChatRoom, event: EventLog) -> Void in
+				print("Chaaaaaaaat : 111111")
+				self.on_chat_room_chat_message_received(room, event)
+			},
+			onChatMessageSending: { (room: ChatRoom, event: EventLog) -> Void in
+				print("Chaaaaaaaat : 222222")
+				self.on_chat_room_chat_message_sending(room, event)
+			}
+		)
+		
+		chatRoom?.addDelegate(delegate: chatRoomDelegate!)
+		tableController.tableView.separatorColor = .white
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
+		chatRoom?.removeDelegate(delegate: chatRoomDelegate!)
 		editModeOff()
 	}
 	
@@ -316,7 +332,7 @@ import DropDown
 		chatRoom = ChatRoom.getSwiftObject(cObject: cChatRoom)
 		PhoneMainView.instance().currentRoom = cChatRoom
 		address = chatRoom?.peerAddress?.asString()
-				
+		
 		var changeIcon = false
 		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		
@@ -570,4 +586,154 @@ import DropDown
 		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 		sendMessageInMessageField(rootMessage: result)
 	}
+	
+	func on_chat_room_chat_message_received(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		let chat = event_log?.chatMessage
+		if chat == nil {
+			return
+		}
+
+		var hasFile = false
+		// if auto_download is available and file is downloaded
+		if (linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1) && (chat?.fileTransferInformation != nil) {
+			hasFile = true
+		}
+		
+		var returnValue = false;
+		chat?.contents.forEach({ content in
+			if !content.isFileTransfer && !content.isText && !content.isVoiceRecording && !hasFile {
+				returnValue = true
+			}
+		})
+		
+		if returnValue {
+			return
+		}
+		 
+		let from = chat?.fromAddress
+		if from == nil {
+			return
+		}
+
+		let isDisplayingBottomOfTable = tableController.tableView.indexPathsForVisibleRows?.last?.row == (tableController.totalNumberOfItems() ) - 1
+		tableController.addEventEntry(event_log?.getCobject)
+
+		if isDisplayingBottomOfTable {
+			tableController.scroll(toBottom: true)
+			tableController.scrollBadge!.text = nil
+			tableController.scrollBadge!.isHidden = true
+		} else {
+			tableController.scrollBadge!.isHidden = false
+			let unread_msg = linphone_chat_room_get_unread_messages_count(cr?.getCobject)
+			tableController.scrollBadge!.text = "\(unread_msg)"
+		}
+	}
+	
+	func on_chat_room_chat_message_sending(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		tableController.addEventEntry(event_log?.getCobject)
+		tableController.scroll(toBottom: true)
+	}
+	
+	/*
+	class func autoDownload(_ message: ChatMessage?) {
+		let content = linphone_chat_message_get_file_transfer_information(message?.getCobject)
+		let name = String(utf8String: linphone_content_get_name(content))
+		let fileType = String(utf8String: linphone_content_get_type(content))
+		let key = ChatConversationView.getKeyFromFileType(fileType, fileName: name)
+
+		LinphoneManager.setValueInMessageAppData(name, forKey: key, in: message?.getCobject)
+		DispatchQueue.main.async(execute: {
+			if !VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) && ConfigManager.instance().lpConfigBoolForKey(key: "auto_write_to_gallery_preference") {
+				ChatConversationViewSwift.writeMediaToGallery(name, fileType: fileType)
+			}
+		})
+	}
+	 */
+	
+	/*
+	class func writeMedia(toGallery name: String?, fileType: String?) {
+		let filePath = LinphoneManager.validFilePath(name)
+		let fileManager = FileManager.default
+		if fileManager.fileExists(atPath: filePath!) {
+			let data = NSData(contentsOfFile: filePath!) as Data?
+			let block: (() -> Void)? = {
+				if fileType == "image" {
+					// we're finished, save the image and update the message
+					let image = UIImage(data: data!)
+					if image == nil {
+						let view = VIEW(ChatConversationViewSwift)
+						view?.showFileDownloadError()
+						return
+					}
+					let placeHolder: PHObjectPlaceholder? = nil
+					var placeHolder: PHObjectPlaceholder?
+					PHPhotoLibrary.shared().performChanges({
+						let request = PHAssetCreationRequest.creationRequestForAsset(from: image)
+						placeHolder = request.placeholderForCreatedAsset
+					}) { success, error in
+						DispatchQueue.main.async(execute: {
+							if error != nil {
+								LOGE("Cannot save image data downloaded [%@]", error.localizedDescription)
+								let errView = UIAlertController(
+									title: NSLocalizedString("Transfer error", comment: ""),
+									message: NSLocalizedString("Cannot write image to photo library", comment: ""),
+									preferredStyle: .alert)
+
+								let defaultAction = UIAlertAction(
+									title: "OK",
+									style: .default,
+									handler: { action in
+									})
+
+								errView.addAction(defaultAction)
+								PhoneMainView.instance.present(errView, animated: true)
+							} else {
+								LOGI("Image saved to [%@]", placeHolder.localIdentifier)
+							}
+						})
+					}
+				} else if fileType == "video" {
+				var placeHolder: PHObjectPlaceholder?
+				PHPhotoLibrary.shared().performChanges({
+					let request = PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath))
+					placeHolder = request?.placeholderForCreatedAsset
+					}) { success, error in
+						DispatchQueue.main.async(execute: {
+							if error != nil {
+								LOGE("Cannot save video data downloaded [%@]", error.localizedDescription)
+								let errView = UIAlertController(
+									title: NSLocalizedString("Transfer error", comment: ""),
+									message: NSLocalizedString("Cannot write video to photo library", comment: ""),
+									preferredStyle: .alert)
+								let defaultAction = UIAlertAction(
+									title: "OK",
+									style: .default,
+									handler: { action in
+									})
+
+								errView.addAction(defaultAction)
+								PhoneMainView.instance.present(errView, animated: true)
+							} else {
+								LOGI("video saved to [%@]", placeHolder.localIdentifier)
+							}
+		 				})
+	 				}
+ 				}
+			}
+			if PHPhotoLibrary.authorizationStatus() == .authorized {
+				block()
+			} else {
+				PHPhotoLibrary.requestAuthorization({ status in
+					DispatchQueue.main.async(execute: {
+						if PHPhotoLibrary.authorizationStatus() == .authorized {
+							block()
+						} else {
+							UIAlertView(title: NSLocalizedString("Photo's permission", comment: ""), message: NSLocalizedString("Photo not authorized", comment: ""), delegate: nil, cancelButtonTitle: "", otherButtonTitles: "Continue").show()
+						}
+					})
+				})
+			}
+		}
+	}
+	 */
 }
