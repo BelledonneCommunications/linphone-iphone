@@ -635,9 +635,7 @@ import DropDown
 	}
 	
 	func on_chat_room_is_composing_received(_ cr: ChatRoom?, _ remoteAddr: Address?, _ isComposing: Bool) {
-		//let view = linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr?.getCobject)) as? ChatConversationViewSwift
 		let composing = (linphone_chat_room_is_remote_composing(cr?.getCobject) != 0) || bctbx_list_size(linphone_chat_room_get_composing_addresses(cr?.getCobject)) > 0
-		//view?.setComposingVisible(composing, withDelay: 0.3)
 		setComposingVisible(composing, withDelay: 0.3)
 	}
 	
@@ -667,47 +665,33 @@ import DropDown
 			return
 		}
 		
+		var isBottomOfView = false
+		if (tableController.tableView.contentOffset.y + self.isComposingView.frame.size.height >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height)) {
+			isBottomOfView = true
+		}
 		
 		UIView.animate(
 			withDuration: delay,
 			animations: {
-				//self.tableController.tableView.frame = newTableFrame
-				//self.isComposingView.frame = newComposingFrame
 				self.contentOriginY = self.contentView.frame.origin.y
 				self.composingOriginY = self.isComposingView.frame.origin.y
 				
 				if visible {
-					self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
-					self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
-					
+					if(isBottomOfView){
+						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
+						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
+					}
 					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
 					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
 				}else{
-					self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
-					self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
-					
+					if(isBottomOfView){
+						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
+						self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
+					}
 					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: 0)
 					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: 0)
 				}
 			})
-		 
-		contentOriginY = self.contentView.frame.origin.y
-		composingOriginY = self.isComposingView.frame.origin.y
-		
-		if visible {
-			self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -top_bar_height/2)
-			self.contentView.transform = CGAffineTransform(translationX: 0, y: -top_bar_height/2)
-			
-			self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -top_bar_height/2)
-			self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -top_bar_height/2)
-		}else{
-			self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: 0)
-			self.isComposingView.transform = CGAffineTransform(translationX: 0, y: 0)
-			
-			self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
-			self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
-		}
-	
 	}
 	
 	class func autoDownload(_ message: ChatMessage?) {

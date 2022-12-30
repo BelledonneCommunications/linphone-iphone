@@ -138,6 +138,7 @@ import linphonesw
 		
 		isComposingView.addSubview(isComposingTextView)
 		isComposingTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).matchParentHeight().done()
+		isComposingView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
 		view.addSubview(contentView)
 		contentView.alignParentTop(withMargin: top_bar_height).alignParentBottom(withMargin: top_bar_height).matchParentSideBorders().done()
