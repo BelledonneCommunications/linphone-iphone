@@ -710,7 +710,6 @@ import DropDown
 	
 	}
 	
-	/*
 	class func autoDownload(_ message: ChatMessage?) {
 		let content = linphone_chat_message_get_file_transfer_information(message?.getCobject)
 		let name = String(utf8String: linphone_content_get_name(content))
@@ -720,14 +719,12 @@ import DropDown
 		LinphoneManager.setValueInMessageAppData(name, forKey: key, in: message?.getCobject)
 		DispatchQueue.main.async(execute: {
 			if !VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) && ConfigManager.instance().lpConfigBoolForKey(key: "auto_write_to_gallery_preference") {
-				ChatConversationViewSwift.writeMediaToGallery(name, fileType: fileType)
+				ChatConversationViewSwift.writeMediaToGallery(name: name, fileType: fileType)
 			}
 		})
 	}
-	 */
 	
-	/*
-	class func writeMedia(toGallery name: String?, fileType: String?) {
+	class func writeMediaToGallery(name: String?, fileType: String?) {
 		let filePath = LinphoneManager.validFilePath(name)
 		let fileManager = FileManager.default
 		if fileManager.fileExists(atPath: filePath!) {
@@ -737,19 +734,17 @@ import DropDown
 					// we're finished, save the image and update the message
 					let image = UIImage(data: data!)
 					if image == nil {
-						let view = VIEW(ChatConversationViewSwift)
-						view?.showFileDownloadError()
+						showFileDownloadError()
 						return
 					}
-					let placeHolder: PHObjectPlaceholder? = nil
-					var placeHolder: PHObjectPlaceholder?
+					var placeHolder: PHObjectPlaceholder? = nil
 					PHPhotoLibrary.shared().performChanges({
-						let request = PHAssetCreationRequest.creationRequestForAsset(from: image)
+						let request = PHAssetCreationRequest.creationRequestForAsset(from: image!)
 						placeHolder = request.placeholderForCreatedAsset
 					}) { success, error in
 						DispatchQueue.main.async(execute: {
 							if error != nil {
-								LOGE("Cannot save image data downloaded [%@]", error.localizedDescription)
+								Log.e("Cannot save image data downloaded \(error!.localizedDescription)")
 								let errView = UIAlertController(
 									title: NSLocalizedString("Transfer error", comment: ""),
 									message: NSLocalizedString("Cannot write image to photo library", comment: ""),
@@ -762,21 +757,21 @@ import DropDown
 									})
 
 								errView.addAction(defaultAction)
-								PhoneMainView.instance.present(errView, animated: true)
+								PhoneMainView.instance()!.present(errView, animated: true)
 							} else {
-								LOGI("Image saved to [%@]", placeHolder.localIdentifier)
+								Log.i("Image saved to \(placeHolder!.localIdentifier)")
 							}
 						})
 					}
 				} else if fileType == "video" {
 				var placeHolder: PHObjectPlaceholder?
 				PHPhotoLibrary.shared().performChanges({
-					let request = PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath))
+					let request = PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath!))
 					placeHolder = request?.placeholderForCreatedAsset
 					}) { success, error in
 						DispatchQueue.main.async(execute: {
 							if error != nil {
-								LOGE("Cannot save video data downloaded [%@]", error.localizedDescription)
+								Log.e("Cannot save video data downloaded \(error!.localizedDescription)")
 								let errView = UIAlertController(
 									title: NSLocalizedString("Transfer error", comment: ""),
 									message: NSLocalizedString("Cannot write video to photo library", comment: ""),
@@ -788,21 +783,21 @@ import DropDown
 									})
 
 								errView.addAction(defaultAction)
-								PhoneMainView.instance.present(errView, animated: true)
+								PhoneMainView.instance()!.present(errView, animated: true)
 							} else {
-								LOGI("video saved to [%@]", placeHolder.localIdentifier)
+								Log.i("video saved to \(placeHolder!.localIdentifier)")
 							}
 		 				})
 	 				}
  				}
 			}
 			if PHPhotoLibrary.authorizationStatus() == .authorized {
-				block()
+				block!()
 			} else {
 				PHPhotoLibrary.requestAuthorization({ status in
 					DispatchQueue.main.async(execute: {
 						if PHPhotoLibrary.authorizationStatus() == .authorized {
-							block()
+							block!()
 						} else {
 							UIAlertView(title: NSLocalizedString("Photo's permission", comment: ""), message: NSLocalizedString("Photo not authorized", comment: ""), delegate: nil, cancelButtonTitle: "", otherButtonTitles: "Continue").show()
 						}
@@ -811,5 +806,26 @@ import DropDown
 			}
 		}
 	}
-	 */
+	
+	class func showFileDownloadError() {
+		let errView = UIAlertController(
+			title: NSLocalizedString("File download error", comment: ""),
+			message: NSLocalizedString(
+				"""
+					Error while downloading the file.\n\
+					The file is probably encrypted.\n\
+					Please retry to download this file after activating LIME.
+					""",
+				comment: ""),
+			preferredStyle: .alert)
+
+		let defaultAction = UIAlertAction(
+			title: "OK",
+			style: .default,
+			handler: { action in
+			})
+
+		errView.addAction(defaultAction)
+		PhoneMainView.instance()!.present(errView, animated: true)
+	}
 }
