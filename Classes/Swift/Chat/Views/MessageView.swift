@@ -22,9 +22,10 @@ import Photos
 import PhotosUI
 import MobileCoreServices
 import UniformTypeIdentifiers
+import linphonesw
 
 
-class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate {
+class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UITextViewDelegate {
 	
 	let side_buttons_margin = 10
 	
@@ -66,6 +67,7 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 		sendButton.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
 		sendButton.setImage(UIImage(named:"chat_send_default.png"), for: .normal)
 		sendButton.setImage(UIImage(named:"chat_send_over.png"), for: .highlighted)
+		sendButton.isEnabled = false
 		sendButton.onClickAction = action2
 		
 		addSubview(messageTextView)
@@ -74,7 +76,18 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 		messageTextView.addSubview(messageText)
 		messageText.matchParentDimmensions(insetedByDx: 10).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
-		messageText.backgroundColor = UIColor.white
+		//messageText.backgroundColor = UIColor.white
+		messageText.delegate = self
+	}
+	
+	func textViewDidChangeSelection(_ textView: UITextView) {
+		let chatRoom = ChatRoom.getSwiftObject(cObject: PhoneMainView.instance().currentRoom)
+		if messageText.text.isEmpty {
+			sendButton.isEnabled = false
+		} else {
+			chatRoom.compose()
+			sendButton.isEnabled = true
+		}
 	}
 	
 	func alertAction() {

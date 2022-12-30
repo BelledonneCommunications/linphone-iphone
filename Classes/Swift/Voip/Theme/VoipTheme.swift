@@ -146,6 +146,7 @@ import UIKit
 	
 	static let chat_conversation_title = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 22.0)
 	static let chat_conversation_participants = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 14.0)
+	static let chat_conversation_is_composing_text = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 16.0)
 
 	
 	// Buttons Background (State colors)

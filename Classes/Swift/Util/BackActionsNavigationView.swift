@@ -36,6 +36,8 @@ import linphonesw
     let topBar = UIView()
     let scrollView = UIScrollView()
     let contentView = UIView()
+	let isComposingView = UIView()
+	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
 	let messageView = MessageView()
     var backAction : (() -> Void)? = nil
     var action1 : (() -> Void)? = nil
@@ -131,8 +133,14 @@ import linphonesw
 		view.addSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
 		
+		view.addSubview(isComposingView)
+		isComposingView.alignParentBottom(withMargin: top_bar_height/2).height(top_bar_height/2).matchParentSideBorders().done()
+		
+		isComposingView.addSubview(isComposingTextView)
+		isComposingTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).matchParentHeight().done()
+		
 		view.addSubview(contentView)
-		contentView.alignUnder(view: topBar).alignAbove(view: messageView).matchParentSideBorders().done()
+		contentView.alignParentTop(withMargin: top_bar_height).alignParentBottom(withMargin: top_bar_height).matchParentSideBorders().done()
 		
 		view.addSubview(floatingButton)
 		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
@@ -140,7 +148,13 @@ import linphonesw
 		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
 		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
 		floatingButton.onClickAction = action3
-            
+		
+		
+		view.bringSubviewToFront(isComposingView)
+		
+		view.bringSubviewToFront(messageView)
+		
+		view.bringSubviewToFront(topBar)
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -26,12 +26,12 @@ import DropDown
 @objc class ChatConversationViewSwift: BackActionsNavigationView, UICompositeViewDelegate { // Replaces ChatConversationView
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
-    
-    static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	
-    static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
+	static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	
-    func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
+	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
+	
+	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
 	let APP_GROUP_ID = "group.belledonne-communications.linphone.widget"
 	var debugEnabled = false
@@ -47,6 +47,10 @@ import DropDown
 	let refreshControl = UIRefreshControl()
 	
 	var replyBubble = UIChatReplyBubbleView()
+	
+	var composingVisible = false
+	var contentOriginY = 0.0
+	var composingOriginY = 0.0
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -93,8 +97,8 @@ import DropDown
 		return menu
 	}()
 	
-    override func viewDidLoad() {
-        super.viewDidLoad(
+	override func viewDidLoad() {
+		super.viewDidLoad(
 			backAction: {
 				self.goBackChatListView()
 			},
@@ -112,8 +116,8 @@ import DropDown
 			},
 			title: address ?? "Error",
 			participants: participants ?? "Error"
-        )
-    }
+		)
+	}
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
@@ -127,18 +131,18 @@ import DropDown
 		
 		
 		chatRoomDelegate = ChatRoomDelegateStub(
-			onChatMessageReceived: { (room: ChatRoom, event: EventLog) -> Void in
-				print("Chaaaaaaaat : 111111")
+			onIsComposingReceived: { (room: ChatRoom, remoteAddress: Address, isComposing: Bool) -> Void in
+				self.on_chat_room_is_composing_received(room, remoteAddress, isComposing)
+			}, onChatMessageReceived: { (room: ChatRoom, event: EventLog) -> Void in
 				self.on_chat_room_chat_message_received(room, event)
 			},
 			onChatMessageSending: { (room: ChatRoom, event: EventLog) -> Void in
-				print("Chaaaaaaaat : 222222")
 				self.on_chat_room_chat_message_sending(room, event)
 			}
 		)
 		
 		chatRoom?.addDelegate(delegate: chatRoomDelegate!)
-		tableController.tableView.separatorColor = .white
+		tableController.tableView.separatorColor = .clear
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -149,17 +153,17 @@ import DropDown
 	override func viewDidAppear(_ animated: Bool) {
 		tableController.reloadData()
 	}
-    
-    func goBackChatListView() {
-        PhoneMainView.instance().pop(toView: ChatsListView.compositeViewDescription())
-    }
+	
+	func goBackChatListView() {
+		PhoneMainView.instance().pop(toView: ChatsListView.compositeViewDescription())
+	}
 	
 	func tapChooseMenuItem(_ sender: UIButton) {
 		menu.anchorView = sender
 		menu.bottomOffset = CGPoint(x: -UIScreen.main.bounds.width * 0.6, y: sender.frame.size.height)
 		menu.show()
 		menu.selectionAction = { [weak self] (index: Int, item: String) in
-		  guard let _ = self else { return }
+			guard let _ = self else { return }
 			print(item)
 			switch item {
 			case VoipTexts.dropdown_menu_chat_conversation_add_to_contact:
@@ -187,7 +191,7 @@ import DropDown
 			}
 			self!.menu.clearSelection()
 		}
-  	}
+	}
 	
 	func goToDevicesList() {
 		let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
@@ -198,9 +202,9 @@ import DropDown
 	func addOrGoToContact() {
 		let firstParticipant = chatRoom?.participants.first
 		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(chatRoom?.getCobject)
-
+		
 		let contact = FastAddressBook.getContactWith(addr)
-
+		
 		if let contact {
 			let view: ContactDetailsView = self.VIEW(ContactDetailsView.compositeViewDescription())
 			ContactSelection.setSelectionMode(ContactSelectionModeNone)
@@ -249,8 +253,8 @@ import DropDown
 		view.peerAddress = UnsafePointer(peerAddress)
 		view.localAddress = UnsafePointer(localAddress)
 		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
- 	}
-
+	}
+	
 	func goToEphemeralSettings(){
 		let view: EphemeralSettingsView = self.VIEW(EphemeralSettingsView.compositeViewDescription())
 		view.room = chatRoom?.getCobject
@@ -281,7 +285,7 @@ import DropDown
 		}
 		
 		let popupView = UIAlertController(title: NSLocalizedString("Chatroom debug infos", comment: ""), message: infoMsg, preferredStyle: .alert)
-
+		
 		let defaultAction = UIAlertAction(
 			title: NSLocalizedString("Copy to clipboard", comment: ""),
 			style: .default,
@@ -291,9 +295,9 @@ import DropDown
 			})
 		popupView.addAction(defaultAction)
 		present(popupView, animated: true, completion:{
-				popupView.view.superview?.isUserInteractionEnabled = true
-			   	popupView.view.superview?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
-		   })
+			popupView.view.superview?.isUserInteractionEnabled = true
+			popupView.view.superview?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
+		})
 		
 	}
 	
@@ -305,10 +309,10 @@ import DropDown
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_group_infos)
 		}else{
 			var contact: Contact? = nil
-				let firstParticipant = chatRoom?.participants.first
-				let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom)
-
-				contact = FastAddressBook.getContactWith(addr)
+			let firstParticipant = chatRoom?.participants.first
+			let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom)
+			
+			contact = FastAddressBook.getContactWith(addr)
 			
 			if (contact == nil) {
 				menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_add_to_contact)
@@ -347,7 +351,7 @@ import DropDown
 		} else {
 			address = chatRoom?.subject
 			changeIcon = true
-	
+			
 			titleParticipants.isHidden = false
 			
 			let participants = chatRoom?.participants
@@ -383,18 +387,18 @@ import DropDown
 	}
 	
 	func alertActionConferenceCall(cChatRoom: OpaquePointer?) {
-
+		
 		let alertController = CustomAlertController(title: VoipTexts.conference_start_group_call_dialog_message, message: nil, preferredStyle: .alert)
-				
+		
 		alertController.setBackgroundColor(color: .darkGray)
 		alertController.setTitle(font: nil, color: .white)
 		alertController.setTint(color: .white)
 		alertController.setMaxWidth(alert: alertController)
-
+		
 		alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, buttonsAlertHeightV: 40)
 		
 		activeAlertController = alertController
-										
+		
 		self.present(alertController, animated: true, completion:{
 			alertController.view.superview?.isUserInteractionEnabled = true
 			alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
@@ -402,24 +406,24 @@ import DropDown
 		
 		
 		alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOkStartGroupCall)))
-			  
+		
 	}
 	
 	@objc func alertActionGoToDevicesList() {
-
+		
 		let notAskAgain = ConfigManager.instance().lpConfigBoolForKey(key: "confirmation_dialog_before_sas_call_not_ask_again");
 		if(!notAskAgain){
 			let alertController = CustomAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
-					
+			
 			alertController.setBackgroundColor(color: .darkGray)
 			alertController.setTitle(font: nil, color: .white)
 			alertController.setTint(color: .white)
 			alertController.setMaxWidth(alert: alertController)
-
+			
 			alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, checkboxViewHeightV: 50, buttonsAlertHeightV: 40)
 			
 			activeAlertController = alertController
-											
+			
 			self.present(alertController, animated: true, completion:{
 				alertController.view.superview?.isUserInteractionEnabled = true
 				alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
@@ -506,15 +510,11 @@ import DropDown
 		)
 	}
 	
-	@objc func pressed() {
-		print("")
-	}
-	
 	func sendMessage(message: String?, withExterlBodyUrl externalUrl: URL?, rootMessage: ChatMessage?) -> Bool {
 		if chatRoom == nil {
 			return false
 		}
-
+		
 		let msg = rootMessage
 		let basic = ChatConversationView.isBasicChatRoom(chatRoom?.getCobject)
 		let params = linphone_account_get_params(linphone_core_get_default_account(LinphoneManager.getLc()))
@@ -523,7 +523,7 @@ import DropDown
 		if (!basic || (cpimEnabled != 0)) && (message != nil) && message!.count > 0 {
 			linphone_chat_message_add_utf8_text_content(msg?.getCobject, message)
 		}
-
+		
 		if (externalUrl != nil) {
 			linphone_chat_message_set_external_body_url(msg?.getCobject, externalUrl!.absoluteString)
 		}
@@ -532,7 +532,7 @@ import DropDown
 		if bctbx_list_size(contentList) > 0 {
 			linphone_chat_message_send(msg?.getCobject)
 		}
-
+		
 		if basic && (cpimEnabled == 0) && (message != nil) && message!.count > 0 {
 			linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(chatRoom?.getCobject, message))
 		}
@@ -550,39 +550,39 @@ import DropDown
 		//let rootMessage = replyBubble ? linphone_chat_room_create_reply_message(chatRoom?.getCobject, replyBubble.message) : linphone_chat_room_create_empty_message(chatRoom?.getCobject)
 		let rootMessage = linphone_chat_room_create_empty_message(chatRoom?.getCobject)
 		/*
-		if replyBubble != nil {
-			closePendingReply()
-		}
-		if isPendingVoiceRecord && voiceRecorder && linphone_recorder_get_file(voiceRecorder) {
-			let voiceContent = linphone_recorder_create_content(voiceRecorder)
-			isPendingVoiceRecord = false
-			cancelVoiceRecording()
-			stopVoiceRecordPlayer()
-			linphone_chat_message_add_content(rootMessage, voiceContent)
-		}
-		
-		if fileContext.count() > 0 {
-			if linphone_chat_room_get_capabilities(chatRoom?.getCobject) & LinphoneChatRoomCapabilitiesConference != 0 {
-				startMultiFilesUpload(rootMessage)
-			} else {
-				var i = 0
-				for i in 0..<(fileContext.count() - 1) {
-					startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
-				}
-				if isOneToOne {
-					startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
-					if messageView.messageText.text != "" {
-						sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage)
-					}
-				} else {
-					startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: messageField.text(), rootMessage: rootMessage)
-				}
-			}
-			
-			clearMessageView()
-			return
-		}
-		*/
+		 if replyBubble != nil {
+		 closePendingReply()
+		 }
+		 if isPendingVoiceRecord && voiceRecorder && linphone_recorder_get_file(voiceRecorder) {
+		 let voiceContent = linphone_recorder_create_content(voiceRecorder)
+		 isPendingVoiceRecord = false
+		 cancelVoiceRecording()
+		 stopVoiceRecordPlayer()
+		 linphone_chat_message_add_content(rootMessage, voiceContent)
+		 }
+		 
+		 if fileContext.count() > 0 {
+		 if linphone_chat_room_get_capabilities(chatRoom?.getCobject) & LinphoneChatRoomCapabilitiesConference != 0 {
+		 startMultiFilesUpload(rootMessage)
+		 } else {
+		 var i = 0
+		 for i in 0..<(fileContext.count() - 1) {
+		 startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
+		 }
+		 if isOneToOne {
+		 startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
+		 if messageView.messageText.text != "" {
+		 sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage)
+		 }
+		 } else {
+		 startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: messageField.text(), rootMessage: rootMessage)
+		 }
+		 }
+		 
+		 clearMessageView()
+		 return
+		 }
+		 */
 		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 		sendMessageInMessageField(rootMessage: result)
 	}
@@ -592,7 +592,7 @@ import DropDown
 		if chat == nil {
 			return
 		}
-
+		
 		var hasFile = false
 		// if auto_download is available and file is downloaded
 		if (linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1) && (chat?.fileTransferInformation != nil) {
@@ -609,15 +609,15 @@ import DropDown
 		if returnValue {
 			return
 		}
-		 
+		
 		let from = chat?.fromAddress
 		if from == nil {
 			return
 		}
-
+		
 		let isDisplayingBottomOfTable = tableController.tableView.indexPathsForVisibleRows?.last?.row == (tableController.totalNumberOfItems() ) - 1
 		tableController.addEventEntry(event_log?.getCobject)
-
+		
 		if isDisplayingBottomOfTable {
 			tableController.scroll(toBottom: true)
 			tableController.scrollBadge!.text = nil
@@ -632,6 +632,82 @@ import DropDown
 	func on_chat_room_chat_message_sending(_ cr: ChatRoom?, _ event_log: EventLog?) {
 		tableController.addEventEntry(event_log?.getCobject)
 		tableController.scroll(toBottom: true)
+	}
+	
+	func on_chat_room_is_composing_received(_ cr: ChatRoom?, _ remoteAddr: Address?, _ isComposing: Bool) {
+		//let view = linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr?.getCobject)) as? ChatConversationViewSwift
+		let composing = (linphone_chat_room_is_remote_composing(cr?.getCobject) != 0) || bctbx_list_size(linphone_chat_room_get_composing_addresses(cr?.getCobject)) > 0
+		//view?.setComposingVisible(composing, withDelay: 0.3)
+		setComposingVisible(composing, withDelay: 0.3)
+	}
+	
+	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
+		let shouldAnimate = composingVisible != visible
+		if visible {
+			let addresses = chatRoom!.composingAddresses
+			var composingAddresses : String? = ""
+			if addresses.count == 1 {
+
+				composingAddresses = FastAddressBook.displayName(for: addresses.first?.getCobject)
+				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ is writing...", comment: ""), composingAddresses!)
+			} else {
+				addresses.forEach({ addressItem in
+					if composingAddresses != "" {
+						composingAddresses = composingAddresses! + ", "
+					}
+					composingAddresses = composingAddresses! + FastAddressBook.displayName(for: addressItem.getCobject)
+				})
+
+				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
+			}
+		}
+		
+		composingVisible = visible
+		if !shouldAnimate {
+			return
+		}
+		
+		
+		UIView.animate(
+			withDuration: delay,
+			animations: {
+				//self.tableController.tableView.frame = newTableFrame
+				//self.isComposingView.frame = newComposingFrame
+				self.contentOriginY = self.contentView.frame.origin.y
+				self.composingOriginY = self.isComposingView.frame.origin.y
+				
+				if visible {
+					self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
+					self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
+					
+					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
+					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
+				}else{
+					self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
+					self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
+					
+					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: 0)
+					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: 0)
+				}
+			})
+		 
+		contentOriginY = self.contentView.frame.origin.y
+		composingOriginY = self.isComposingView.frame.origin.y
+		
+		if visible {
+			self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -top_bar_height/2)
+			self.contentView.transform = CGAffineTransform(translationX: 0, y: -top_bar_height/2)
+			
+			self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -top_bar_height/2)
+			self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -top_bar_height/2)
+		}else{
+			self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: 0)
+			self.isComposingView.transform = CGAffineTransform(translationX: 0, y: 0)
+			
+			self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
+			self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
+		}
+	
 	}
 	
 	/*
