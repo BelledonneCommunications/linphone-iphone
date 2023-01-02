@@ -38,6 +38,8 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 	let sendButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
 	let messageTextView = UIView()
 	let messageText = UITextView()
+	let ephemeralIndicator = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
+	let mediaSelector  = UIView()
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -63,6 +65,11 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 		voiceRecordButton.size(w: 30, h: 30).done()
 		voiceRecordButton.onClickAction = action3
 
+		addSubview(ephemeralIndicator)
+		ephemeralIndicator.alignParentRight(withMargin: 4).alignParentTop(withMargin: 4).size(w: 9, h: 10).done()
+		ephemeralIndicator.isHidden = true
+		
+		
 		addSubview(sendButton)
 		sendButton.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
 		sendButton.setImage(UIImage(named:"chat_send_default.png"), for: .normal)

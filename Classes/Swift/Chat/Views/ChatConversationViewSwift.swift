@@ -152,6 +152,7 @@ import DropDown
 	
 	override func viewDidAppear(_ animated: Bool) {
 		tableController.reloadData()
+		messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
 	}
 	
 	func goBackChatListView() {
@@ -330,6 +331,8 @@ import DropDown
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_unmute_notifications)
 		}
 		menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_delete_messages)
+		
+		messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
 	}
 	
 	@objc func initChatRoom(cChatRoom:OpaquePointer) {
