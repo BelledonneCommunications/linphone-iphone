@@ -1356,22 +1356,37 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	}
 }
 
-- (void)activateBasicChatroomCPIMForLinphoneAccounts {
+- (void)enableLinphoneAccountSpecificSettings {
 	const MSList *accountsList = linphone_core_get_account_list(theLinphoneCore);
 	while (accountsList) {
 		LinphoneAccount * account = accountsList->data;
 		LinphoneAccountParams const * currentParams = linphone_account_get_params(account);
 		LinphoneAddress const * currentAddress = linphone_account_params_get_identity_address(currentParams);
+		char * addressIdentity = linphone_address_as_string(currentAddress);
 		
-		if (strcmp(linphone_address_get_domain(currentAddress), "sip.linphone.org") == 0 && !linphone_account_params_cpim_in_basic_chat_room_enabled(currentParams) ) {
-			
-			LOGI(@"Enabling CPIM in basic chatroom for user %s", linphone_address_get_username(currentAddress));
+		if (strcmp(linphone_address_get_domain(currentAddress), "sip.linphone.org") == 0) {
 			LinphoneAccountParams * newParams = linphone_account_params_clone(linphone_account_get_params(account));
-			linphone_account_params_enable_cpim_in_basic_chat_room(newParams, true);
+			if  (!linphone_account_params_cpim_in_basic_chat_room_enabled(currentParams) ) {
+				LOGI(@"Enabling CPIM in basic chatroom for account [%s]", addressIdentity);
+				linphone_account_params_enable_cpim_in_basic_chat_room(newParams, true);
+			}
+			
+			const char* current_lime_url = linphone_account_params_get_lime_server_url(currentParams);
+			if (!current_lime_url){
+				const char* core_lime_url = linphone_core_get_lime_x3dh_server_url(LC);
+				if (core_lime_url) {
+					LOGI(@"Copying core's LIME X3DH server URL [%s] to account [%s]", core_lime_url, addressIdentity);
+					linphone_account_params_set_lime_server_url(newParams, core_lime_url);
+				} else {
+					LOGI(@"Account [%s] didn't have a LIME X3DH server URL, setting one: [%s]", addressIdentity, core_lime_url);
+					linphone_account_params_set_lime_server_url(newParams, "https://lime.linphone.org/lime-server/lime-server.php");
+				}
+			}
 			linphone_account_set_params(account, newParams);
 			linphone_account_params_unref(newParams);
 		}
 		
+		ms_free(addressIdentity);
 		accountsList = accountsList->next;
 	}
 }
@@ -1382,7 +1397,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_start([LinphoneManager getLc]);
 	
 	[self configurePushProviderForAccounts];
-	[self activateBasicChatroomCPIMForLinphoneAccounts];
+	[self enableLinphoneAccountSpecificSettings];
 }
 
 - (void)createLinphoneCore {
