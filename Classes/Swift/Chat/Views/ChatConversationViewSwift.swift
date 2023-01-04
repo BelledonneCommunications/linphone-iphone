@@ -22,8 +22,10 @@ import UIKit
 import Foundation
 import linphonesw
 import DropDown
+import PhotosUI
+import AVFoundation
 
-@objc class ChatConversationViewSwift: BackActionsNavigationView, UICompositeViewDelegate { // Replaces ChatConversationView
+@objc class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate{ // Replaces ChatConversationView
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
 	
@@ -50,7 +52,29 @@ import DropDown
 	
 	var composingVisible = false
 	var contentOriginY = 0.0
-	var composingOriginY = 0.0
+	var messageViewOriginY = 0.0
+	var mediaSelectorHeight = 0.0
+	var mediaSelectorVisible = false
+	
+	let mediaTableView = UITableView()
+	var mediaCollectionView : [UIImage] = []
+	
+	var collectionView: UICollectionView = {
+		let top_bar_height = 66.0
+		let width = UIScreen.main.bounds.width * 0.9
+		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+		layout.itemSize = CGSize(width: top_bar_height*2-8, height: top_bar_height*2-8)
+
+		layout.sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+		layout.scrollDirection = .horizontal
+		layout.minimumLineSpacing = 4
+		layout.minimumInteritemSpacing = 20
+
+		let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: top_bar_height*2), collectionViewLayout: layout)
+		collectionView.translatesAutoresizingMaskIntoConstraints = false
+		collectionView.backgroundColor = UIColor(white: 1, alpha: 0.5)
+		return collectionView
+	}()
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -117,6 +141,7 @@ import DropDown
 			title: address ?? "Error",
 			participants: participants ?? "Error"
 		)
+		setupViews()
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -128,6 +153,7 @@ import DropDown
 		tableController.refreshControl = refreshControl
 		tableController.toggleSelectionButton = action1SelectAllButton
 		messageView.sendButton.onClickAction = onSendClick
+		messageView.pictureButton.onClickAction = selectionMedia
 		
 		
 		chatRoomDelegate = ChatRoomDelegateStub(
@@ -153,6 +179,15 @@ import DropDown
 	override func viewDidAppear(_ animated: Bool) {
 		tableController.reloadData()
 		messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
+	}
+	
+	override func viewDidDisappear(_ animated: Bool) {
+		mediaSelectorVisible = false
+		mediaSelectorHeight = 0.0
+		self.isComposingView.transform = CGAffineTransformIdentity;
+		self.mediaSelector.transform = CGAffineTransformIdentity;
+		self.contentView.transform = CGAffineTransformIdentity;
+		
 	}
 	
 	func goBackChatListView() {
@@ -677,22 +712,68 @@ import DropDown
 			withDuration: delay,
 			animations: {
 				self.contentOriginY = self.contentView.frame.origin.y
-				self.composingOriginY = self.isComposingView.frame.origin.y
+				self.messageViewOriginY = self.isComposingView.frame.origin.y
 				
 				if visible {
-					if(isBottomOfView){
-						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
-						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
+					if(isBottomOfView && self.tableController.totalNumberOfItems() > 3){
+						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
+						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
 					}
-					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
-					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
+					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
+					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
 				}else{
-					if(isBottomOfView){
-						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
-						self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
+					if(isBottomOfView && self.tableController.totalNumberOfItems() > 3){
+						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight)
+						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight)
 					}
 					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: 0)
 					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: 0)
+				}
+			})
+	}
+	
+	func selectionMedia() {
+		self.alertAction()
+		mediaSelectorVisible = !mediaSelectorVisible
+		mediaSelectorHeight = mediaSelectorVisible ? top_bar_height*2 : 0.0
+		var isBottomOfView = false
+		if (tableController.tableView.contentOffset.y + self.isComposingView.frame.size.height >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height)) {
+			isBottomOfView = true
+		}
+		
+		UIView.animate(
+			withDuration: 0.3,
+			animations: { [self] in
+				self.contentOriginY = self.contentView.frame.origin.y
+				self.messageViewOriginY = self.mediaSelector.frame.origin.y
+				
+				if self.mediaSelectorVisible {
+					
+					if(composingVisible){
+						self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
+						self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
+					}
+					
+					if(isBottomOfView && tableController.totalNumberOfItems() > 3){
+						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight)
+						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight)
+					}
+					self.mediaSelector.transform = self.mediaSelector.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight)
+					self.mediaSelector.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight)
+					
+				}else{
+					
+					if(self.composingVisible){
+						self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
+						self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
+					}
+					
+					if(isBottomOfView && tableController.totalNumberOfItems() > 3){
+						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
+						self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
+					}
+					self.mediaSelector.transform = self.mediaSelector.transform.translatedBy(x: 0, y: 0)
+					self.mediaSelector.transform = CGAffineTransform(translationX: 0, y: 0)
 				}
 			})
 	}
@@ -815,4 +896,175 @@ import DropDown
 		errView.addAction(defaultAction)
 		PhoneMainView.instance()!.present(errView, animated: true)
 	}
+	
+	
+	func alertAction() {
+
+		let alertController = UIAlertController(title: VoipTexts.image_picker_view_alert_action_title, message: nil, preferredStyle: .actionSheet)
+		
+		let alert_action_camera = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_camera, style: .default, handler: { (action) -> Void in
+			self.imageCamera()
+		})
+		let alert_action_photo_library = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_photo_library, style: .default, handler: { (action) -> Void in
+			self.pickPhotos()
+		})
+		let alert_action_document = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_document, style: .default, handler: { (action) -> Void in
+			self.openDocumentPicker()
+		})
+		
+		let cancel = UIAlertAction(title: VoipTexts.cancel, style: .cancel) { (action) -> Void in
+		}
+		
+		
+		alertController.addAction(cancel)
+		alertController.addAction(alert_action_camera)
+		alertController.addAction(alert_action_photo_library)
+		alertController.addAction(alert_action_document)
+		
+		alertController.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.statusBarView
+		PhoneMainView.instance().mainViewController.present(alertController, animated: true)
+	}
+	
+	func imageCamera(){
+		let vc = UIImagePickerController()
+		vc.sourceType = .camera
+		vc.allowsEditing = true
+		PhoneMainView.instance().mainViewController.present(vc, animated: true)
+			
+	}
+	
+	func pickPhotos()
+	{
+		if #available(iOS 14.0, *) {
+			var config = PHPickerConfiguration()
+			config.selectionLimit = 0
+			let pickerViewController = PHPickerViewController(configuration: config)
+			pickerViewController.delegate = self
+			PhoneMainView.instance().mainViewController.present(pickerViewController, animated: true)
+		} else {
+			// Fallback on earlier versions
+		}
+	}
+	
+	// MARK: PHPickerViewControllerDelegate
+	
+	@available(iOS 14.0, *)
+	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+		picker.dismiss(animated: true, completion: nil)
+		let itemProviders = results.map(\.itemProvider)
+		for item in itemProviders {
+			if item.canLoadObject(ofClass: UIImage.self) {
+				item.loadObject(ofClass: UIImage.self) { (image, error) in
+					DispatchQueue.main.async {
+						if let image = image as? UIImage {
+							self.collectionView.performBatchUpdates({
+								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+								self.mediaCollectionView.append(image) //add your object to data source first
+								self.collectionView.insertItems(at: [indexPath])
+							}, completion: nil)
+						}
+					}
+				}
+			} else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+				item.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
+					
+					
+						print("SSSSSSSSSSresult:", videoURL, error)
+						DispatchQueue.main.async {
+								if let url = videoURL as? URL {
+									print("SSSSSSSSSSresult:", url.relativeString)
+									let image = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+									DispatchQueue.main.async {
+										guard let image = image else { return }
+										print("SSSSSSSSSS : 5555555555")
+										self.collectionView.performBatchUpdates({
+												print("SSSSSSSSSS : 66666666")
+											let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+												self.mediaCollectionView.append(image)
+												self.collectionView.insertItems(at: [indexPath])
+										}, completion: nil)
+									}
+								}
+						}
+				}
+			}
+		}
+	}
+	
+	func openDocumentPicker() {
+		if #available(iOS 14.0, *) {
+			let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.jpeg, .png])
+			documentPicker.delegate = self
+			documentPicker.modalPresentationStyle = .overFullScreen
+			PhoneMainView.instance().mainViewController.present(documentPicker, animated: true)
+		} else {
+			// Fallback on earlier versions
+		}
+	}
+	
+	func createThumbnailOfVideoFromFileURL(videoURL: String) -> UIImage? {
+		let asset = AVAsset(url: URL(string: videoURL)!)
+		let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+		assetImgGenerate.appliesPreferredTrackTransform = true
+		//let time = CMTimeMakeWithSeconds(Float64(1), preferredTimescale: 100)
+		do {
+			print("SSSSSSSSSScreate : 1111")
+			let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
+			print("SSSSSSSSSScreate : 2222")
+			let thumbnail = UIImage(cgImage: img)
+			print("SSSSSSSSSScreate : 3333")
+			return thumbnail
+		} catch let error{
+			print("SSSSSSSSSScreate : \(error.localizedDescription)")
+			return UIImage(named: "chat_error")
+		}
+	}
+	
+	func setupViews() {
+		
+		mediaSelector.addSubview(collectionView)
+		//contentView.isUserInteractionEnabled = true
+		collectionView.dataSource = self
+		collectionView.delegate = self
+		collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+	}
+
+	@objc func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return mediaCollectionView.count
+	}
+
+	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+		//cell.configureCell(characters[indexPath.row])
+		let viewCell: UIView = UIView(frame: cell.contentView.frame)
+		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("voip_cancel"))
+		
+		let imageCell = mediaCollectionView[indexPath.row]
+		let myImageView = UIImageView(image: imageCell)
+		
+		cell.addSubview(viewCell)
+		
+		myImageView.size(w: (viewCell.frame.width * 0.9)-2, h: (viewCell.frame.height * 0.9)-2).done()
+		
+		viewCell.addSubview(myImageView)
+		viewCell.addSubview(deleteButton)
+		myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
+		myImageView.contentMode = .scaleAspectFill
+		myImageView.clipsToBounds = true
+		
+		deleteButton.alignParentRight().done()
+		deleteButton.backgroundColor = .black
+
+		return cell
+	}
+/*
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+		return CGSize(width: 100, height: mediaSelector.frame.height - 5)
+	 }
+
+
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+		  return UIEdgeInsets(top: 100, left: 14, bottom: 0, right: 0)
+	  }
+ */
 }

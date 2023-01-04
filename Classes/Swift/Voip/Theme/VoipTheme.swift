@@ -394,6 +394,16 @@ import UIKit
 		backgroundStateColors: [:])
 	}
 	
+	static func nav_black_button(_ iconName:String) -> ButtonTheme {
+		return ButtonTheme(
+		tintableStateIcons:[
+			UIButton.State.normal.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(.white,.black)),
+			UIButton.State.highlighted.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(primary_color,primary_color)),
+			UIButton.State.disabled.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(light_grey_color,.white)),
+		],
+		backgroundStateColors: [:])
+	}
+	
 	// Conference scheduling
 	static func scheduled_conference_action(_ iconName:String) -> ButtonTheme {
 		return ButtonTheme(

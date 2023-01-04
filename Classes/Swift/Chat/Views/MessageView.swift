@@ -18,14 +18,10 @@
  */
 
 import Foundation
-import Photos
-import PhotosUI
-import MobileCoreServices
-import UniformTypeIdentifiers
 import linphonesw
 
 
-class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UITextViewDelegate {
+class MessageView:  UIView, UITextViewDelegate {
 	
 	let side_buttons_margin = 10
 	
@@ -39,7 +35,6 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 	let messageTextView = UIView()
 	let messageText = UITextView()
 	let ephemeralIndicator = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
-	let mediaSelector  = UIView()
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -58,7 +53,6 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 		pictureButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
 		pictureButton.setImage(UIImage(named:"chat_attachment_default.png"), for: .normal)
 		pictureButton.setImage(UIImage(named:"chat_attachment_over.png"), for: .highlighted)
-		pictureButton.onClickAction = alertAction
 		
 		addSubview(voiceRecordButton)
 		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: 10).matchParentHeight().done()
@@ -83,7 +77,6 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 		messageTextView.addSubview(messageText)
 		messageText.matchParentDimmensions(insetedByDx: 10).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
-		//messageText.backgroundColor = UIColor.white
 		messageText.delegate = self
 	}
 	
@@ -94,71 +87,6 @@ class MessageView:  UIView, PHPickerViewControllerDelegate, UIDocumentPickerDele
 		} else {
 			chatRoom.compose()
 			sendButton.isEnabled = true
-		}
-	}
-	
-	func alertAction() {
-
-		let alertController = UIAlertController(title: VoipTexts.image_picker_view_alert_action_title, message: nil, preferredStyle: .actionSheet)
-		
-		let alert_action_camera = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_camera, style: .default, handler: { (action) -> Void in
-			self.imageCamera()
-		})
-		let alert_action_photo_library = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_photo_library, style: .default, handler: { (action) -> Void in
-			self.pickPhotos()
-		})
-		let alert_action_document = UIAlertAction(title: VoipTexts.image_picker_view_alert_action_document, style: .default, handler: { (action) -> Void in
-			self.openDocumentPicker()
-		})
-		
-		let cancel = UIAlertAction(title: VoipTexts.cancel, style: .cancel) { (action) -> Void in
-		}
-		
-		
-		alertController.addAction(cancel)
-		alertController.addAction(alert_action_camera)
-		alertController.addAction(alert_action_photo_library)
-		alertController.addAction(alert_action_document)
-		
-		alertController.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.statusBarView
-		PhoneMainView.instance().mainViewController.present(alertController, animated: true)
-	}
-	
-	func imageCamera(){
-		let vc = UIImagePickerController()
-		vc.sourceType = .camera
-		vc.allowsEditing = true
-		PhoneMainView.instance().mainViewController.present(vc, animated: true)
-
-	}
-	
-	func pickPhotos()
-	{
-		if #available(iOS 14.0, *) {
-			var config = PHPickerConfiguration()
-			let pickerViewController = PHPickerViewController(configuration: config)
-			pickerViewController.delegate = self
-			PhoneMainView.instance().mainViewController.present(pickerViewController, animated: true)
-		} else {
-			// Fallback on earlier versions
-		}
-	}
-	
-	// MARK: PHPickerViewControllerDelegate
-	
-	@available(iOS 14.0, *)
-	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-		picker.dismiss(animated: true, completion: nil)
-	}
-	
-	func openDocumentPicker() {
-		if #available(iOS 14.0, *) {
-			let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.jpeg, .png])
-			documentPicker.delegate = self
-		 	documentPicker.modalPresentationStyle = .overFullScreen
-			PhoneMainView.instance().mainViewController.present(documentPicker, animated: true)
-		} else {
-			// Fallback on earlier versions
 		}
 	}
 }

@@ -39,6 +39,7 @@ import linphonesw
 	let isComposingView = UIView()
 	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
 	let messageView = MessageView()
+	let mediaSelector  = UIView()
     var backAction : (() -> Void)? = nil
     var action1 : (() -> Void)? = nil
     var action2 : (() -> Void)? = nil
@@ -133,6 +134,10 @@ import linphonesw
 		view.addSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
 		
+		view.addSubview(mediaSelector)
+		mediaSelector.alignParentBottom(withMargin: -top_bar_height).height(top_bar_height*2).matchParentSideBorders().done()
+		mediaSelector.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		
 		view.addSubview(isComposingView)
 		isComposingView.alignParentBottom(withMargin: top_bar_height/2).height(top_bar_height/2).matchParentSideBorders().done()
 		
@@ -152,6 +157,7 @@ import linphonesw
 		
 		
 		view.bringSubviewToFront(isComposingView)
+		view.bringSubviewToFront(mediaSelector)
 		
 		view.bringSubviewToFront(messageView)
 		
