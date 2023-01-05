@@ -58,6 +58,7 @@ import AVFoundation
 	
 	let mediaTableView = UITableView()
 	var mediaCollectionView : [UIImage] = []
+	var mediaVideoCollection : [Bool] = []
 	
 	var collectionView: UICollectionView = {
 		let top_bar_height = 66.0
@@ -961,31 +962,25 @@ import AVFoundation
 								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 								self.mediaCollectionView.append(image) //add your object to data source first
 								self.collectionView.insertItems(at: [indexPath])
+								self.mediaVideoCollection.append(false)
 							}, completion: nil)
 						}
 					}
 				}
 			} else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-				item.loadItem(forTypeIdentifier: UTType.movie.identifier, options: [:]) { [self] (videoURL, error) in
-					
-					
-						print("SSSSSSSSSSresult:", videoURL, error)
-						DispatchQueue.main.async {
-								if let url = videoURL as? URL {
-									print("SSSSSSSSSSresult:", url.relativeString)
-									let image = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-									DispatchQueue.main.async {
-										guard let image = image else { return }
-										print("SSSSSSSSSS : 5555555555")
-										self.collectionView.performBatchUpdates({
-												print("SSSSSSSSSS : 66666666")
-											let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-												self.mediaCollectionView.append(image)
-												self.collectionView.insertItems(at: [indexPath])
-										}, completion: nil)
-									}
-								}
+				item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, err in
+					if let url = urlFile {
+						DispatchQueue.main.sync {
+							let image = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+							guard let image = image else { return }
+							self.collectionView.performBatchUpdates({
+								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+								self.mediaCollectionView.append(image)
+								self.collectionView.insertItems(at: [indexPath])
+								self.mediaVideoCollection.append(true)
+							}, completion: nil)
 						}
+					}
 				}
 			}
 		}
@@ -1006,16 +1001,11 @@ import AVFoundation
 		let asset = AVAsset(url: URL(string: videoURL)!)
 		let assetImgGenerate = AVAssetImageGenerator(asset: asset)
 		assetImgGenerate.appliesPreferredTrackTransform = true
-		//let time = CMTimeMakeWithSeconds(Float64(1), preferredTimescale: 100)
 		do {
-			print("SSSSSSSSSScreate : 1111")
 			let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
-			print("SSSSSSSSSScreate : 2222")
 			let thumbnail = UIImage(cgImage: img)
-			print("SSSSSSSSSScreate : 3333")
 			return thumbnail
 		} catch let error{
-			print("SSSSSSSSSScreate : \(error.localizedDescription)")
 			return UIImage(named: "chat_error")
 		}
 	}
@@ -1049,6 +1039,18 @@ import AVFoundation
 		viewCell.addSubview(myImageView)
 		viewCell.addSubview(deleteButton)
 		myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
+		if(mediaVideoCollection[indexPath.row]){
+			var imagePlay = UIImage()
+			if #available(iOS 13.0, *) {
+				imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+			} else {
+				imagePlay = UIImage(named: "vr_play")!
+			}
+			let myImagePlayView = UIImageView(image: imagePlay)
+			viewCell.addSubview(myImagePlayView)
+			myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+			myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+		}
 		myImageView.contentMode = .scaleAspectFill
 		myImageView.clipsToBounds = true
 		
