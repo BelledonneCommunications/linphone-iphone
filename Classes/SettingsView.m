@@ -538,6 +538,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"vfs_enabled_mode"] boolValue];
 		if(removeFromHiddenKeys){
 			[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"vfs_enabled_mode"];
+			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"auto_write_to_gallery_preference"];
 			[hiddenKeys addObject:@"auto_write_to_gallery_mode"];
 			[hiddenKeys addObject:@"vfs_enabled_mode"];
 			[keys addObject:@"vfs_enabled"];

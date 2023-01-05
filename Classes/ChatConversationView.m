@@ -1089,84 +1089,86 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (void)writeMediaToGallery:(NSString *)name fileType:(NSString *)fileType {
-	NSString *filePath = [LinphoneManager validFilePath:name];
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	if ([fileManager fileExistsAtPath:filePath]) {
-		NSData* data = [NSData dataWithContentsOfFile:filePath];
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"vfs_enabled_mode"]) {
+		NSString *filePath = [LinphoneManager validFilePath:name];
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		if ([fileManager fileExistsAtPath:filePath]) {
+			NSData* data = [NSData dataWithContentsOfFile:filePath];
 
-		// define a block , not called immediately. To avoid crash when saving photo before PHAuthorizationStatusNotDetermined.
-		void (^block)(void)= ^ {
-			if ([fileType isEqualToString:@"image"] ) {
-				// we're finished, save the image and update the message
-				UIImage *image = [UIImage imageWithData:data];
-				if (!image) {
-					ChatConversationView *view = VIEW(ChatConversationView);
-					[view showFileDownloadError];
-					return;
+			// define a block , not called immediately. To avoid crash when saving photo before PHAuthorizationStatusNotDetermined.
+			void (^block)(void)= ^ {
+				if ([fileType isEqualToString:@"image"] ) {
+					// we're finished, save the image and update the message
+					UIImage *image = [UIImage imageWithData:data];
+					if (!image) {
+						ChatConversationView *view = VIEW(ChatConversationView);
+						[view showFileDownloadError];
+						return;
+					}
+					__block PHObjectPlaceholder *placeHolder;
+					[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+						PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
+						placeHolder = [request placeholderForCreatedAsset];
+					} completionHandler:^(BOOL success, NSError *error) {
+						dispatch_async(dispatch_get_main_queue(), ^{
+							if (error) {
+								LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+								UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+									message:NSLocalizedString(@"Cannot write image to photo library",nil)
+							 preferredStyle:UIAlertControllerStyleAlert];
+
+								UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																		style:UIAlertActionStyleDefault
+																	  handler:^(UIAlertAction * action) {}];
+
+								[errView addAction:defaultAction];
+								[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+							} else {
+								LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
+							}
+						});
+					}];
+				} else if([fileType isEqualToString:@"video"]) {
+					__block PHObjectPlaceholder *placeHolder;
+					[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+						PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]];
+						placeHolder = [request placeholderForCreatedAsset];
+					} completionHandler:^(BOOL success, NSError * _Nullable error) {
+						dispatch_async(dispatch_get_main_queue(), ^{
+							if (error) {
+								LOGE(@"Cannot save video data downloaded [%@]", [error localizedDescription]);
+								UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+									 message:NSLocalizedString(@"Cannot write video to photo library", nil)
+							  preferredStyle:UIAlertControllerStyleAlert];
+
+								UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																		style:UIAlertActionStyleDefault
+																	  handler:^(UIAlertAction * action) {}];
+					
+								[errView addAction:defaultAction];
+								[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+							} else {
+								LOGI(@"video saved to [%@]", [placeHolder localIdentifier]);
+							}
+						});
+					}];
 				}
-				__block PHObjectPlaceholder *placeHolder;
-				[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-					PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
-					placeHolder = [request placeholderForCreatedAsset];
-				} completionHandler:^(BOOL success, NSError *error) {
+			};
+
+			// When you save an image or video to a photo library, make sure that it is allowed. Otherwise, there will be a backup error.
+			if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+				block();
+			} else {
+				[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
 					dispatch_async(dispatch_get_main_queue(), ^{
-						if (error) {
-							LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-							UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-								message:NSLocalizedString(@"Cannot write image to photo library",nil)
-						 preferredStyle:UIAlertControllerStyleAlert];
-
-							UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction * action) {}];
-
-							[errView addAction:defaultAction];
-							[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+						if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+							block();
 						} else {
-							LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
-						}
-					});
-				}];
-			} else if([fileType isEqualToString:@"video"]) {
-				__block PHObjectPlaceholder *placeHolder;
-				[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-					PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]];
-					placeHolder = [request placeholderForCreatedAsset];
-				} completionHandler:^(BOOL success, NSError * _Nullable error) {
-					dispatch_async(dispatch_get_main_queue(), ^{
-						if (error) {
-							LOGE(@"Cannot save video data downloaded [%@]", [error localizedDescription]);
-							UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-								 message:NSLocalizedString(@"Cannot write video to photo library", nil)
-						  preferredStyle:UIAlertControllerStyleAlert];
-
-							UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction * action) {}];
-				
-							[errView addAction:defaultAction];
-							[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-						} else {
-							LOGI(@"video saved to [%@]", [placeHolder localIdentifier]);
+							[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
 						}
 					});
 				}];
 			}
-		};
-
-		// When you save an image or video to a photo library, make sure that it is allowed. Otherwise, there will be a backup error.
-		if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
-			block();
-		} else {
-			[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-				dispatch_async(dispatch_get_main_queue(), ^{
-					if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
-						block();
-					} else {
-						[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-					}
-				});
-			}];
 		}
 	}
 }
