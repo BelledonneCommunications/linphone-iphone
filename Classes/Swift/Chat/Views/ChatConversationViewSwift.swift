@@ -25,7 +25,7 @@ import DropDown
 import PhotosUI
 import AVFoundation
 
-@objc class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate{ // Replaces ChatConversationView
+@objc class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
 	
@@ -927,10 +927,11 @@ import AVFoundation
 	}
 	
 	func imageCamera(){
-		let vc = UIImagePickerController()
-		vc.sourceType = .camera
-		vc.allowsEditing = true
-		PhoneMainView.instance().mainViewController.present(vc, animated: true)
+		let imagePicker = UIImagePickerController()
+		imagePicker.sourceType = .camera
+		imagePicker.mediaTypes = ["public.image", "public.movie"]
+		imagePicker.delegate = self
+		PhoneMainView.instance().mainViewController.present(imagePicker, animated: true)
 			
 	}
 	
@@ -943,58 +944,20 @@ import AVFoundation
 			pickerViewController.delegate = self
 			PhoneMainView.instance().mainViewController.present(pickerViewController, animated: true)
 		} else {
-			// Fallback on earlier versions
-		}
-	}
-	
-	// MARK: PHPickerViewControllerDelegate
-	
-	@available(iOS 14.0, *)
-	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-		picker.dismiss(animated: true, completion: nil)
-		let itemProviders = results.map(\.itemProvider)
-		for item in itemProviders {
-			if item.canLoadObject(ofClass: UIImage.self) {
-				item.loadObject(ofClass: UIImage.self) { (image, error) in
-					DispatchQueue.main.async {
-						if let image = image as? UIImage {
-							self.collectionView.performBatchUpdates({
-								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-								self.mediaCollectionView.append(image) //add your object to data source first
-								self.collectionView.insertItems(at: [indexPath])
-								self.mediaVideoCollection.append(false)
-							}, completion: nil)
-						}
-					}
-				}
-			} else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-				item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, err in
-					if let url = urlFile {
-						DispatchQueue.main.sync {
-							let image = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-							guard let image = image else { return }
-							self.collectionView.performBatchUpdates({
-								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-								self.mediaCollectionView.append(image)
-								self.collectionView.insertItems(at: [indexPath])
-								self.mediaVideoCollection.append(true)
-							}, completion: nil)
-						}
-					}
-				}
-			}
+			let imagePicker = UIImagePickerController()
+			imagePicker.sourceType = .photoLibrary
+			imagePicker.mediaTypes = ["public.image", "public.movie"]
+			imagePicker.delegate = self
+			PhoneMainView.instance().mainViewController.present(imagePicker, animated: true)
 		}
 	}
 	
 	func openDocumentPicker() {
-		if #available(iOS 14.0, *) {
-			let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: [.jpeg, .png])
-			documentPicker.delegate = self
-			documentPicker.modalPresentationStyle = .overFullScreen
-			PhoneMainView.instance().mainViewController.present(documentPicker, animated: true)
-		} else {
-			// Fallback on earlier versions
-		}
+		let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.jpeg","com.compuserve.gif","public.url","public.movie","com.apple.mapkit.map-item","com.adobe.pdf","public.png","public.image", "public.data", "public.text"], in: .import)
+		   	documentPicker.delegate = self
+		   	documentPicker.modalPresentationStyle = .overFullScreen
+			documentPicker.allowsMultipleSelection = true
+		   	PhoneMainView.instance().mainViewController.present(documentPicker, animated: true)
 	}
 	
 	func createThumbnailOfVideoFromFileURL(videoURL: String) -> UIImage? {
@@ -1005,15 +968,13 @@ import AVFoundation
 			let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
 			let thumbnail = UIImage(cgImage: img)
 			return thumbnail
-		} catch let error{
-			return UIImage(named: "chat_error")
+		} catch _{
+			return nil
 		}
 	}
 	
 	func setupViews() {
-		
 		mediaSelector.addSubview(collectionView)
-		//contentView.isUserInteractionEnabled = true
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
@@ -1025,14 +986,15 @@ import AVFoundation
 
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-		//cell.configureCell(characters[indexPath.row])
 		let viewCell: UIView = UIView(frame: cell.contentView.frame)
-		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("voip_cancel"))
+		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
 		
 		let imageCell = mediaCollectionView[indexPath.row]
 		let myImageView = UIImageView(image: imageCell)
 		
 		cell.addSubview(viewCell)
+		
+		
 		
 		myImageView.size(w: (viewCell.frame.width * 0.9)-2, h: (viewCell.frame.height * 0.9)-2).done()
 		
@@ -1054,19 +1016,120 @@ import AVFoundation
 		myImageView.contentMode = .scaleAspectFill
 		myImageView.clipsToBounds = true
 		
+		
+		
+		
 		deleteButton.alignParentRight().done()
-		deleteButton.backgroundColor = .black
 
 		return cell
 	}
-/*
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: 100, height: mediaSelector.frame.height - 5)
-	 }
-
-
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-		  return UIEdgeInsets(top: 100, left: 14, bottom: 0, right: 0)
+	
+	@available(iOS 14.0, *)
+	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+		picker.dismiss(animated: true, completion: nil)
+		let itemProviders = results.map(\.itemProvider)
+		for item in itemProviders {
+			if item.canLoadObject(ofClass: UIImage.self) {
+				item.loadObject(ofClass: UIImage.self) { (image, error) in
+					DispatchQueue.main.async {
+						if let image = image as? UIImage {
+							self.collectionView.performBatchUpdates({
+								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+								self.mediaCollectionView.append(image)
+								self.collectionView.insertItems(at: [indexPath])
+								self.mediaVideoCollection.append(false)
+							}, completion: nil)
+						}
+					}
+				}
+			} else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+				item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, err in
+					if let url = urlFile {
+						DispatchQueue.main.sync {
+							var image = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+							if image == nil { image = UIImage(named: "chat_error")}
+							self.collectionView.performBatchUpdates({
+								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+								self.mediaCollectionView.append(image!)
+								self.collectionView.insertItems(at: [indexPath])
+								self.mediaVideoCollection.append(true)
+							}, completion: nil)
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+	  picker.dismiss(animated: true, completion: nil)
+	}
+	
+	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+	
+	let mediaType = info[UIImagePickerController.InfoKey.mediaType] as! String
+	switch mediaType {
+	case "public.image":
+		let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+		self.collectionView.performBatchUpdates({
+			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+			self.mediaCollectionView.append(image)
+			self.collectionView.insertItems(at: [indexPath])
+			self.mediaVideoCollection.append(false)
+		}, completion: nil)
+  	case "public.movie":
+		let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as! URL
+		var image = createThumbnailOfVideoFromFileURL(videoURL: videoUrl.relativeString)
+		if image == nil { image = UIImage(named: "chat_error")}
+		self.collectionView.performBatchUpdates({
+			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+			self.mediaCollectionView.append(image!)
+			self.collectionView.insertItems(at: [indexPath])
+			self.mediaVideoCollection.append(true)
+		}, completion: nil)
+	default:
+		print("Mismatched type: \(mediaType)")
 	  }
- */
+	  picker.dismiss(animated: true, completion: nil)
+	}
+	
+	public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+		controller.dismiss(animated: true)
+	}
+	
+	
+	public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+		if(controller.documentPickerMode == .import){
+			urls.forEach { url in
+				let imageExtension = ["png", "jpg", "jpeg", "bmp", "heic"]
+				let videoExtension = ["mkv", "avi", "mov", "mp4"]
+				if(imageExtension.contains(url.pathExtension.lowercased())){
+					let image = UIImage(contentsOfFile: url.path)
+					self.collectionView.performBatchUpdates({
+						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+						self.mediaCollectionView.append(image!)
+						self.collectionView.insertItems(at: [indexPath])
+						self.mediaVideoCollection.append(false)
+					}, completion: nil)
+				}else if(videoExtension.contains(url.pathExtension.lowercased())){
+					let thumbnail = createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+					self.collectionView.performBatchUpdates({
+						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+						self.mediaCollectionView.append(thumbnail!)
+						self.collectionView.insertItems(at: [indexPath])
+						self.mediaVideoCollection.append(true)
+					}, completion: nil)
+				}else{
+					let otherFile = UIImage(named: "chat_error")
+					self.collectionView.performBatchUpdates({
+					   let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+					   self.mediaCollectionView.append(otherFile!)
+					   self.collectionView.insertItems(at: [indexPath])
+					   self.mediaVideoCollection.append(false)
+				   	}, completion: nil)
+			   	}
+			}
+		}
+		controller.dismiss(animated: true)
+	}
 }

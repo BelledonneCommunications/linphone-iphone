@@ -397,7 +397,7 @@ import UIKit
 	static func nav_black_button(_ iconName:String) -> ButtonTheme {
 		return ButtonTheme(
 		tintableStateIcons:[
-			UIButton.State.normal.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(.white,.black)),
+			UIButton.State.normal.rawValue : TintableIcon(name: iconName),
 			UIButton.State.highlighted.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(primary_color,primary_color)),
 			UIButton.State.disabled.rawValue : TintableIcon(name: iconName,tintColor: LightDarkColor(light_grey_color,.white)),
 		],
