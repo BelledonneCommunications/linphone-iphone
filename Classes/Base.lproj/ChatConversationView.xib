@@ -364,7 +364,7 @@
                                     <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
                                 </view>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tjL-Vc-5gN" userLabel="encryptedButton">
-                                    <rect key="frame" x="359" y="10" width="34" height="40"/>
+                                    <rect key="frame" x="372" y="8" width="34" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <state key="normal" image="security_1_indicator.png"/>
                                     <connections>
