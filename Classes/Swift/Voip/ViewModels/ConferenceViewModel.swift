@@ -122,16 +122,16 @@ class ConferenceViewModel {
 			},
 			onActiveSpeakerParticipantDevice: { (conference: Conference, participantDevice: ParticipantDevice) in
 				Log.i("[Conference] Participant [\(participantDevice.address?.asStringUriOnly())] is currently being displayed as active speaker")
-					if let device = self.conferenceParticipantDevices.value?.filter ({
-						$0.participantDevice.address!.weakEqual(address2: participantDevice.address!)
-					}).first {
-						if (device.participantDevice.address?.asString() != self.speakingParticipant.value?.participantDevice.address?.asString()) {
-							Log.i("[Conference] Found actively speaking participant device")
-							self.speakingParticipant.value = device
-						}
-					} else {
-						Log.w("[Conference] Participant device [\((participantDevice.address?.asStringUriOnly()).orNil)] is the active speaker but couldn't find it in devices list")
+				if let device = self.conferenceParticipantDevices.value?.filter ({
+					$0.participantDevice.address!.weakEqual(address2: participantDevice.address!)
+				}).first {
+					if (device.participantDevice.address?.asString() != self.speakingParticipant.value?.participantDevice.address?.asString()) {
+						Log.i("[Conference] Found actively speaking participant device")
+						self.speakingParticipant.value = device
 					}
+				} else {
+					Log.w("[Conference] Participant device [\((participantDevice.address?.asStringUriOnly()).orNil)] is the active speaker but couldn't find it in devices list")
+				}
 			}
 		)
 		
@@ -166,6 +166,12 @@ class ConferenceViewModel {
 			}
 		}
 		
+	}
+	
+	func updateActiveSpeakerConferenceParticipantDevices () {
+		activeSpeakerConferenceParticipantDevices.value = self.conferenceParticipantDevices.value!.filter { data in // Filter me and speaking device
+			data.isMe != true && speakingParticipant.value?.participantDevice.address?.weakEqual(address2: data.participantDevice.address!) != true
+		}
 	}
 	
 	func notifyAdminStatusChanged(participantData:ConferenceParticipantData) {

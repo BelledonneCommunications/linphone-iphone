@@ -72,12 +72,16 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				}
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
-				model.conferenceParticipantDevices.readCurrentAndObserve { value in
-					model.activeSpeakerConferenceParticipantDevices.value = Array((value!.dropFirst().filter { !$0.isMe } ))
+				
+				model.conferenceParticipantDevices.readCurrentAndObserve { _ in
+					model.updateActiveSpeakerConferenceParticipantDevices()
+				}
+				model.speakingParticipant.readCurrentAndObserve { _ in
+					model.updateActiveSpeakerConferenceParticipantDevices()
 				}
 				model.activeSpeakerConferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
-					let otherSpeakersCount = model.activeSpeakerConferenceParticipantDevices.value!.count
+					let otherSpeakersCount = model.conferenceParticipantDevices.value!.count - 1
 					self.switchCamera.isHidden = true
 					if (otherSpeakersCount == 0) {
 						self.layoutRotatableElements()
@@ -139,7 +143,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					}
 				}
 				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
-					if (model.activeSpeakerConferenceParticipantDevices.value!.count > 1) {
+					if (model.conferenceParticipantDevices.value!.count - 1 > 1) {
 						speakingParticipant?.videoEnabled.readCurrentAndObserve { video in
 							self.fillActiveSpeakerSpace(data: speakingParticipant,video: video == true)
 							self.muted.isHidden = true
@@ -395,7 +399,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		meGrid.removeConstraints().done()
 		activeSpeakerView.removeConstraints().done()
 		activeSpeakerAvatar.removeConstraints().done()
-		let otherParticipantsCount = conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value!.count
+		let otherParticipantsCount = (conferenceViewModel?.conferenceParticipantDevices.value!.count ?? 0) - 1
 		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
 			if (otherParticipantsCount == 0) {
 				activeSpeakerView.matchParentDimmensions().done()
