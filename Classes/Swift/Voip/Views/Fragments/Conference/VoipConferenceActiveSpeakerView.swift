@@ -103,18 +103,18 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						}
 					} else if (otherSpeakersCount == 1) {
 						if let data =  model.conferenceParticipantDevices.value!.last {
-							data.videoEnabled.readCurrentAndObserve { video in
-								self.fillActiveSpeakerSpace(data: data,video: video == true)
-							}
-							data.micMuted.readCurrentAndObserve { muted in
-								self.muted.isHidden = muted != true
-							}
 							data.isInConference.readCurrentAndObserve { isIn in
 								self.pause.isHidden = isIn == true || data.isJoining.value == true
 								if (isIn != true) {
 									self.activeSpeakerVideoView.isHidden = true
 									self.activeSpeakerVideoViewAlone.isHidden = true
 								}
+							}
+							data.videoEnabled.readCurrentAndObserve { video in
+								self.fillActiveSpeakerSpace(data: data,video: video == true)
+							}
+							data.micMuted.readCurrentAndObserve { muted in
+								self.muted.isHidden = muted != true
 							}
 						}
 						self.layoutRotatableElements()
