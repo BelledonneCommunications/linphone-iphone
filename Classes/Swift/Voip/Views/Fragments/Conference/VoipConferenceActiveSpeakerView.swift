@@ -102,7 +102,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 							}
 						}
 					} else if (otherSpeakersCount == 1) {
-						if let data =  model.activeSpeakerConferenceParticipantDevices.value!.first {
+						if let data =  model.conferenceParticipantDevices.value!.last {
 							data.videoEnabled.readCurrentAndObserve { video in
 								self.fillActiveSpeakerSpace(data: data,video: video == true)
 							}
@@ -399,7 +399,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		meGrid.removeConstraints().done()
 		activeSpeakerView.removeConstraints().done()
 		activeSpeakerAvatar.removeConstraints().done()
-		let otherParticipantsCount = (conferenceViewModel?.conferenceParticipantDevices.value!.count ?? 0) - 1
+		var otherParticipantsCount = (conferenceViewModel?.conferenceParticipantDevices.value!.count ?? 0) > 0 ? conferenceViewModel!.conferenceParticipantDevices.value!.count - 1 : 0
 		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
 			if (otherParticipantsCount == 0) {
 				activeSpeakerView.matchParentDimmensions().done()
