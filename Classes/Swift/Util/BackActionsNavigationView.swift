@@ -149,8 +149,8 @@ import linphonesw
 		contentView.alignParentTop(withMargin: top_bar_height).alignParentBottom(withMargin: top_bar_height).matchParentSideBorders().done()
 		
 		view.addSubview(floatingButton)
-		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
-		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 5).isActive = true
+		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -1).isActive = true
+		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 4).isActive = true
 		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
 		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
 		floatingButton.onClickAction = action3

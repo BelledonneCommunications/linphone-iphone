@@ -56,9 +56,8 @@ import AVFoundation
 	var mediaSelectorHeight = 0.0
 	var mediaSelectorVisible = false
 	
-	let mediaTableView = UITableView()
 	var mediaCollectionView : [UIImage] = []
-	var mediaVideoCollection : [Bool] = []
+	var mediaNameCollection : [String] = []
 	
 	var collectionView: UICollectionView = {
 		let top_bar_height = 66.0
@@ -154,7 +153,7 @@ import AVFoundation
 		tableController.refreshControl = refreshControl
 		tableController.toggleSelectionButton = action1SelectAllButton
 		messageView.sendButton.onClickAction = onSendClick
-		messageView.pictureButton.onClickAction = selectionMedia
+		messageView.pictureButton.onClickAction = alertAction
 		
 		
 		chatRoomDelegate = ChatRoomDelegateStub(
@@ -188,6 +187,9 @@ import AVFoundation
 		self.isComposingView.transform = CGAffineTransformIdentity;
 		self.mediaSelector.transform = CGAffineTransformIdentity;
 		self.contentView.transform = CGAffineTransformIdentity;
+		//self.collectionView = nil
+		self.mediaCollectionView = []
+		self.mediaNameCollection = []
 		
 	}
 	
@@ -599,29 +601,29 @@ import AVFoundation
 		 stopVoiceRecordPlayer()
 		 linphone_chat_message_add_content(rootMessage, voiceContent)
 		 }
-		 
-		 if fileContext.count() > 0 {
-		 if linphone_chat_room_get_capabilities(chatRoom?.getCobject) & LinphoneChatRoomCapabilitiesConference != 0 {
-		 startMultiFilesUpload(rootMessage)
-		 } else {
-		 var i = 0
-		 for i in 0..<(fileContext.count() - 1) {
-		 startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
-		 }
-		 if isOneToOne {
-		 startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
-		 if messageView.messageText.text != "" {
-		 sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage)
-		 }
-		 } else {
-		 startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: messageField.text(), rootMessage: rootMessage)
-		 }
-		 }
-		 
-		 clearMessageView()
-		 return
-		 }
-		 */
+		 *//*
+		if fileContext.count() > 0 {
+		if linphone_chat_room_get_capabilities(chatRoom?.getCobject) & LinphoneChatRoomCapabilitiesConference != 0 {
+			startMultiFilesUpload(rootMessage)
+		} else {
+			var i = 0
+			for i in 0..<(fileContext.count() - 1) {
+				startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
+			}
+			if isOneToOne {
+				startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
+				if messageView.messageText.text != "" {
+					sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage)
+				}
+			} else {
+				startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: messageField.text(), rootMessage: rootMessage)
+			}
+		}
+	 
+	 clearMessageView()
+	 return
+ }
+		  */
 		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 		sendMessageInMessageField(rootMessage: result)
 	}
@@ -734,7 +736,6 @@ import AVFoundation
 	}
 	
 	func selectionMedia() {
-		self.alertAction()
 		mediaSelectorVisible = !mediaSelectorVisible
 		mediaSelectorHeight = mediaSelectorVisible ? top_bar_height*2 : 0.0
 		var isBottomOfView = false
@@ -930,6 +931,7 @@ import AVFoundation
 		let imagePicker = UIImagePickerController()
 		imagePicker.sourceType = .camera
 		imagePicker.mediaTypes = ["public.image", "public.movie"]
+		imagePicker.modalPresentationStyle = .overFullScreen
 		imagePicker.delegate = self
 		PhoneMainView.instance().mainViewController.present(imagePicker, animated: true)
 			
@@ -985,23 +987,45 @@ import AVFoundation
 	}
 
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		if(self.mediaCollectionView.count > 0 && !mediaSelectorVisible){
+			self.selectionMedia()
+			self.messageView.sendButton.isEnabled = true
+		}
+	
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
 		let viewCell: UIView = UIView(frame: cell.contentView.frame)
-		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
-		
-		let imageCell = mediaCollectionView[indexPath.row]
-		let myImageView = UIImageView(image: imageCell)
-		
 		cell.addSubview(viewCell)
 		
+		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"), onClickAction: {
+			self.collectionView.deleteItems(at: [indexPath])
+			self.mediaCollectionView.remove(at: indexPath.row)
+			self.mediaNameCollection.remove(at: indexPath.row)
+			if(self.mediaCollectionView.count == 0){
+				self.selectionMedia()
+				if self.messageView.messageText.text.isEmpty {
+					self.messageView.sendButton.isEnabled = false
+				} else {
+					self.messageView.sendButton.isEnabled = true
+				}
+			}
+		})
 		
+		let imageCell = mediaCollectionView[indexPath.row]
+		var myImageView = UIImageView()
+		
+		if(mediaNameCollection[indexPath.row] == FileType.file_picture_default.rawValue || mediaNameCollection[indexPath.row] == FileType.file_video_default.rawValue){
+			myImageView = UIImageView(image: imageCell)
+		}else{
+			let fileNameText = mediaNameCollection[indexPath.row]
+			let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+			myImageView = UIImageView(image: fileName)
+		}
 		
 		myImageView.size(w: (viewCell.frame.width * 0.9)-2, h: (viewCell.frame.height * 0.9)-2).done()
-		
 		viewCell.addSubview(myImageView)
-		viewCell.addSubview(deleteButton)
 		myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
-		if(mediaVideoCollection[indexPath.row]){
+		
+		if(mediaNameCollection[indexPath.row] == FileType.file_video_default.rawValue){
 			var imagePlay = UIImage()
 			if #available(iOS 13.0, *) {
 				imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1015,12 +1039,10 @@ import AVFoundation
 		}
 		myImageView.contentMode = .scaleAspectFill
 		myImageView.clipsToBounds = true
-		
-		
-		
-		
-		deleteButton.alignParentRight().done()
 
+		viewCell.addSubview(deleteButton)
+		deleteButton.alignParentRight().done()
+		
 		return cell
 	}
 	
@@ -1037,7 +1059,7 @@ import AVFoundation
 								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 								self.mediaCollectionView.append(image)
 								self.collectionView.insertItems(at: [indexPath])
-								self.mediaVideoCollection.append(false)
+								self.mediaNameCollection.append(FileType.file_picture_default.rawValue)
 							}, completion: nil)
 						}
 					}
@@ -1052,7 +1074,7 @@ import AVFoundation
 								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 								self.mediaCollectionView.append(image!)
 								self.collectionView.insertItems(at: [indexPath])
-								self.mediaVideoCollection.append(true)
+								self.mediaNameCollection.append(FileType.file_video_default.rawValue)
 							}, completion: nil)
 						}
 					}
@@ -1066,31 +1088,30 @@ import AVFoundation
 	}
 	
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-	
-	let mediaType = info[UIImagePickerController.InfoKey.mediaType] as! String
-	switch mediaType {
-	case "public.image":
-		let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
-		self.collectionView.performBatchUpdates({
-			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-			self.mediaCollectionView.append(image)
-			self.collectionView.insertItems(at: [indexPath])
-			self.mediaVideoCollection.append(false)
-		}, completion: nil)
-  	case "public.movie":
-		let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as! URL
-		var image = createThumbnailOfVideoFromFileURL(videoURL: videoUrl.relativeString)
-		if image == nil { image = UIImage(named: "chat_error")}
-		self.collectionView.performBatchUpdates({
-			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-			self.mediaCollectionView.append(image!)
-			self.collectionView.insertItems(at: [indexPath])
-			self.mediaVideoCollection.append(true)
-		}, completion: nil)
-	default:
-		print("Mismatched type: \(mediaType)")
-	  }
-	  picker.dismiss(animated: true, completion: nil)
+		let mediaType = info[UIImagePickerController.InfoKey.mediaType] as! String
+		switch mediaType {
+		case "public.image":
+			let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
+			self.collectionView.performBatchUpdates({
+				let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+				self.mediaCollectionView.append(image)
+				self.collectionView.insertItems(at: [indexPath])
+				self.mediaNameCollection.append(FileType.file_picture_default.rawValue)
+			}, completion: nil)
+  		case "public.movie":
+			let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as! URL
+			var image = createThumbnailOfVideoFromFileURL(videoURL: videoUrl.relativeString)
+			if image == nil { image = UIImage(named: "chat_error")}
+			self.collectionView.performBatchUpdates({
+				let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+				self.mediaCollectionView.append(image!)
+				self.collectionView.insertItems(at: [indexPath])
+				self.mediaNameCollection.append(FileType.file_video_default.rawValue)
+			}, completion: nil)
+		default:
+			print("Mismatched type: \(mediaType)")
+	  	}
+	  	picker.dismiss(animated: true, completion: nil)
 	}
 	
 	public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -1109,7 +1130,7 @@ import AVFoundation
 						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 						self.mediaCollectionView.append(image!)
 						self.collectionView.insertItems(at: [indexPath])
-						self.mediaVideoCollection.append(false)
+						self.mediaNameCollection.append(FileType.file_picture_default.rawValue)
 					}, completion: nil)
 				}else if(videoExtension.contains(url.pathExtension.lowercased())){
 					let thumbnail = createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
@@ -1117,15 +1138,17 @@ import AVFoundation
 						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 						self.mediaCollectionView.append(thumbnail!)
 						self.collectionView.insertItems(at: [indexPath])
-						self.mediaVideoCollection.append(true)
+						self.mediaNameCollection.append(FileType.file_video_default.rawValue)
 					}, completion: nil)
 				}else{
-					let otherFile = UIImage(named: "chat_error")
+					//let otherFile = UIImage(named: "chat_error")
+					let otherFile = FileType.init(url.pathExtension)
+					let otherFileImage = otherFile!.getImageFromFile()
 					self.collectionView.performBatchUpdates({
-					   let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-					   self.mediaCollectionView.append(otherFile!)
-					   self.collectionView.insertItems(at: [indexPath])
-					   self.mediaVideoCollection.append(false)
+					   	let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+					   	self.mediaCollectionView.append(otherFileImage!)
+					   	self.collectionView.insertItems(at: [indexPath])
+						self.mediaNameCollection.append(url.lastPathComponent)
 				   	}, completion: nil)
 			   	}
 			}

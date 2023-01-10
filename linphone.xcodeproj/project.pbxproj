@@ -944,6 +944,7 @@
 		D7DA18712A02598700FABA0D /* TextViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA18702A02598700FABA0D /* TextViewer.swift */; };
 		D7421D9E29228A5200290CAB /* DetailChatRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */; };
 		D7013DB82940AA12004EEAAE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7013DB72940AA12004EEAAE /* MessageView.swift */; };
+		D7097B35296D684900AEF6C5 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7097B34296D684900AEF6C5 /* FileType.swift */; };
 		D7421D9E29228A5200290CAB /* ChatConversationViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
@@ -2182,6 +2183,7 @@
 		D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChatRoomFragment.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailChatRoomFragment.swift; sourceTree = "<group>"; };
 		D7013DB72940AA12004EEAAE /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
+		D7097B34296D684900AEF6C5 /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewSwift.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
@@ -3834,6 +3836,7 @@
 		D7421D9B292283E100290CAB /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				D7097B34296D684900AEF6C5 /* FileType.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -5089,6 +5092,7 @@
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */,
 				633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */,
+				D7097B35296D684900AEF6C5 /* FileType.swift in Sources */,
 				63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */,
 				C63F725E285A24B10066163B /* VoipDialog.swift in Sources */,
