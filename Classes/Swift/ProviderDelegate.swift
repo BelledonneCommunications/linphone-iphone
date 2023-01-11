@@ -224,7 +224,11 @@ extension ProviderDelegate: CXProviderDelegate {
 				if (action.isOnHold) {
 					CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
 					try call!.pause()
-					CallManager.instance().actionToFulFill = action;
+					// fullfill() the action now to indicate to Callkit that this call is no longer active, even if the
+					// SIP transaction is not completed yet. At this stage, the media streams are off.
+					// If callkit is not aware that the pause action is completed, it will terminate this call if we
+					// attempt to resume another one.
+					action.fulfill()
 				} else {
 					if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
 						try CallManager.instance().lc?.enterConference()
@@ -232,6 +236,8 @@ extension ProviderDelegate: CXProviderDelegate {
 						NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
 					} else {
 						try call!.resume()
+						// We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point
+						// where we actually start the media streams.
 						CallManager.instance().actionToFulFill = action;
 						// HORRIBLE HACK HERE - PLEASE APPLE FIX THIS !!
 						// When resuming a SIP call after a native call has ended remotely, didActivate: audioSession
