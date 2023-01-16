@@ -35,6 +35,8 @@ class MessageView:  UIView, UITextViewDelegate {
 	let messageTextView = UIView()
 	let messageText = UITextView()
 	let ephemeralIndicator = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
+	var fileContext = false
+	var isComposing = false
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -82,10 +84,17 @@ class MessageView:  UIView, UITextViewDelegate {
 	
 	func textViewDidChangeSelection(_ textView: UITextView) {
 		let chatRoom = ChatRoom.getSwiftObject(cObject: PhoneMainView.instance().currentRoom)
-		if messageText.text.isEmpty {
+		if messageText.text.isEmpty && fileContext == false {
 			sendButton.isEnabled = false
 		} else {
-			chatRoom.compose()
+			if !isComposing {
+				chatRoom.compose()
+				let timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
+					self.isComposing = false
+				}
+			}
+			isComposing = true
+
 			sendButton.isEnabled = true
 		}
 	}

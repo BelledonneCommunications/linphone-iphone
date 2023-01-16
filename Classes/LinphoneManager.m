@@ -914,9 +914,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		return;
     
 	if (hasFile) {
-		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
+		if (PhoneMainView.instance.currentView == ChatConversationViewSwift.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
 			return;
-		[ChatConversationView autoDownload:msg];
+		[self autoDownload:msg];
 	}
 
 	// Post event
@@ -928,6 +928,21 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	};
 
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
+}
+
+- (void)autoDownload:(LinphoneChatMessage *)message {
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(message);
+	NSString *name = [NSString stringWithUTF8String:linphone_content_get_name(content)];
+	NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
+	NSString *key = [ChatConversationViewSwift getKeyFromFileType:fileType fileName:name];
+
+	[LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:VIEW(ChatConversationViewSwift)];
+		if (![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
+			[ChatConversationViewSwift writeMediaToGalleryFromName:name fileType:fileType];
+		}
+	});
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {

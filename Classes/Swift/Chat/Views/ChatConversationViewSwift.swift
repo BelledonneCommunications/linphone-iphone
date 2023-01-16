@@ -57,7 +57,7 @@ import AVFoundation
 	var mediaSelectorVisible = false
 	
 	var mediaCollectionView : [UIImage] = []
-	var mediaNameCollection : [String] = []
+	var mediaURLCollection : [URL] = []
 	
 	var collectionView: UICollectionView = {
 		let top_bar_height = 66.0
@@ -120,6 +120,9 @@ import AVFoundation
 		}
 		return menu
 	}()
+	
+	var fileContext : [Data] = []
+	
 	
 	override func viewDidLoad() {
 		super.viewDidLoad(
@@ -187,9 +190,10 @@ import AVFoundation
 		self.isComposingView.transform = CGAffineTransformIdentity;
 		self.mediaSelector.transform = CGAffineTransformIdentity;
 		self.contentView.transform = CGAffineTransformIdentity;
-		//self.collectionView = nil
 		self.mediaCollectionView = []
-		self.mediaNameCollection = []
+		self.mediaURLCollection = []
+		self.fileContext = []
+		self.messageView.fileContext = false
 		
 	}
 	
@@ -584,6 +588,7 @@ import AVFoundation
 	func sendMessageInMessageField(rootMessage: ChatMessage?) {
 		if sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage) {
 			messageView.messageText.text = ""
+			messageView.isComposing = false
 		}
 	}
 	
@@ -601,31 +606,75 @@ import AVFoundation
 		 stopVoiceRecordPlayer()
 		 linphone_chat_message_add_content(rootMessage, voiceContent)
 		 }
-		 *//*
-		if fileContext.count() > 0 {
-		if linphone_chat_room_get_capabilities(chatRoom?.getCobject) & LinphoneChatRoomCapabilitiesConference != 0 {
-			startMultiFilesUpload(rootMessage)
-		} else {
-			var i = 0
-			for i in 0..<(fileContext.count() - 1) {
-				startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
-			}
-			if isOneToOne {
-				startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: nil, rootMessage: nil)
-				if messageView.messageText.text != "" {
-					sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage)
-				}
+		 */
+		if fileContext.count > 0 {
+			let conference = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesConference.rawValue))
+			if (linphone_chat_room_get_capabilities(chatRoom?.getCobject) != 0) && conference {
+				let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
+				startMultiFilesUpload(result)
 			} else {
-				startUploadData(fileContext.datasArray[i], withType: fileContext.typesArray[i], withName: fileContext.namesArray[i], andMessage: messageField.text(), rootMessage: rootMessage)
+				for i in 0..<(fileContext.count) {
+					startUploadData(fileContext[i], withType: FileType.init(mediaURLCollection[i].pathExtension)?.getGroupTypeFromFile(), withName: mediaURLCollection[i].lastPathComponent, andMessage: nil, rootMessage: nil)
+				}
+				if messageView.messageText.text != "" {
+					let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
+					sendMessageInMessageField(rootMessage: result)
+				}
 			}
-		}
-	 
-	 clearMessageView()
-	 return
- }
-		  */
+			
+			fileContext = []
+			messageView.fileContext = false
+			mediaSelectorVisible = false
+			mediaSelectorHeight = 0.0
+			self.isComposingView.transform = CGAffineTransformIdentity;
+			self.mediaSelector.transform = CGAffineTransformIdentity;
+			self.contentView.transform = CGAffineTransformIdentity;
+			self.mediaCollectionView = []
+			self.mediaURLCollection = []
+	 		return
+ 		}
+		 
 		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 		sendMessageInMessageField(rootMessage: result)
+	}
+	
+	func startMultiFilesUpload(_ rootMessage: ChatMessage?) -> Bool {
+		let fileTransfer = FileTransferDelegate()
+		fileTransfer.text = messageView.messageText.text
+		fileTransfer.uploadFileContent(forSwift: fileContext, urlList: mediaURLCollection, for: chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
+		messageView.messageText.text = ""
+		tableController.scroll(toBottom: true)
+		return true
+	}
+	
+	@objc class func writeFileInImagesDirectory(_ data: Data?, name: String?) {
+		let filePath = URL(fileURLWithPath: LinphoneManager.imagesDirectory()).appendingPathComponent(name ?? "").path
+		if name != nil || (name == "") {
+			print("try to write file in \(filePath)")
+		}
+		FileManager.default.createFile(
+			atPath: filePath,
+			contents: data,
+			attributes: nil)
+	}
+	
+	func startUploadData(_ data: Data?, withType type: String?, withName name: String?, andMessage message: String?, rootMessage: ChatMessage?) -> Bool {
+		let fileTransfer = FileTransferDelegate.init()
+		if let message {
+			fileTransfer.text = message
+		}
+		var resultType = "file"
+		var key = "localfile"
+		if type == "file_video_default" {
+			resultType = "video"
+			key = "localvideo"
+		} else if type == "file_picture_default" {
+			resultType = "image"
+			key = "localimage"
+		}
+		fileTransfer.uploadData(data, for: chatRoom?.getCobject, type: resultType, subtype: resultType, name: name, key: key, rootMessage: rootMessage?.getCobject)
+		tableController.scroll(toBottom: true)
+		return true
 	}
 	
 	func on_chat_room_chat_message_received(_ cr: ChatRoom?, _ event_log: EventLog?) {
@@ -780,21 +829,16 @@ import AVFoundation
 			})
 	}
 	
-	class func autoDownload(_ message: ChatMessage?) {
-		let content = linphone_chat_message_get_file_transfer_information(message?.getCobject)
-		let name = String(utf8String: linphone_content_get_name(content))
-		let fileType = String(utf8String: linphone_content_get_type(content))
-		let key = ChatConversationView.getKeyFromFileType(fileType, fileName: name)
-
-		LinphoneManager.setValueInMessageAppData(name, forKey: key, in: message?.getCobject)
-		DispatchQueue.main.async(execute: {
-			if !VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) && ConfigManager.instance().lpConfigBoolForKey(key: "auto_write_to_gallery_preference") {
-				ChatConversationViewSwift.writeMediaToGallery(name: name, fileType: fileType)
-			}
-		})
+	@objc class func getKeyFromFileType(_ fileType: String?, fileName name: String?) -> String? {
+		if fileType == "video" {
+			return "localvideo"
+		} else if (fileType == "image") || name?.hasSuffix("JPG") ?? false || name?.hasSuffix("PNG") ?? false || name?.hasSuffix("jpg") ?? false || name?.hasSuffix("png") ?? false {
+			return "localimage"
+		}
+		return "localfile"
 	}
 	
-	class func writeMediaToGallery(name: String?, fileType: String?) {
+	@objc class func writeMediaToGalleryFromName(_ name: String?, fileType: String?) {
 		let filePath = LinphoneManager.validFilePath(name)
 		let fileManager = FileManager.default
 		if fileManager.fileExists(atPath: filePath!) {
@@ -990,6 +1034,7 @@ import AVFoundation
 		if(self.mediaCollectionView.count > 0 && !mediaSelectorVisible){
 			self.selectionMedia()
 			self.messageView.sendButton.isEnabled = true
+			self.messageView.fileContext = true
 		}
 	
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
@@ -999,10 +1044,12 @@ import AVFoundation
 		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"), onClickAction: {
 			self.collectionView.deleteItems(at: [indexPath])
 			self.mediaCollectionView.remove(at: indexPath.row)
-			self.mediaNameCollection.remove(at: indexPath.row)
+			self.mediaURLCollection.remove(at: indexPath.row)
+			self.fileContext.remove(at: indexPath.row)
 			if(self.mediaCollectionView.count == 0){
+				self.messageView.fileContext = false
 				self.selectionMedia()
-				if self.messageView.messageText.text.isEmpty {
+				if self.messageView.messageText.text.isEmpty{
 					self.messageView.sendButton.isEnabled = false
 				} else {
 					self.messageView.sendButton.isEnabled = true
@@ -1013,10 +1060,10 @@ import AVFoundation
 		let imageCell = mediaCollectionView[indexPath.row]
 		var myImageView = UIImageView()
 		
-		if(mediaNameCollection[indexPath.row] == FileType.file_picture_default.rawValue || mediaNameCollection[indexPath.row] == FileType.file_video_default.rawValue){
+		if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
 			myImageView = UIImageView(image: imageCell)
 		}else{
-			let fileNameText = mediaNameCollection[indexPath.row]
+			let fileNameText = mediaURLCollection[indexPath.row].lastPathComponent
 			let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
 			myImageView = UIImageView(image: fileName)
 		}
@@ -1025,7 +1072,7 @@ import AVFoundation
 		viewCell.addSubview(myImageView)
 		myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
 		
-		if(mediaNameCollection[indexPath.row] == FileType.file_video_default.rawValue){
+		if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
 			var imagePlay = UIImage()
 			if #available(iOS 13.0, *) {
 				imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1053,14 +1100,24 @@ import AVFoundation
 		for item in itemProviders {
 			if item.canLoadObject(ofClass: UIImage.self) {
 				item.loadObject(ofClass: UIImage.self) { (image, error) in
-					DispatchQueue.main.async {
-						if let image = image as? UIImage {
-							self.collectionView.performBatchUpdates({
-								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-								self.mediaCollectionView.append(image)
-								self.collectionView.insertItems(at: [indexPath])
-								self.mediaNameCollection.append(FileType.file_picture_default.rawValue)
-							}, completion: nil)
+					if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+						item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, err in
+							DispatchQueue.main.async {
+								if let image = image as? UIImage {
+									self.collectionView.performBatchUpdates({
+										self.mediaURLCollection.append(urlFile!)
+										let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+										self.mediaCollectionView.append(image)
+										self.collectionView.insertItems(at: [indexPath])
+									}, completion: nil)
+								}
+							}
+							do {
+								let data = try Data(contentsOf: urlFile!)
+								self.fileContext.append(data)
+							} catch let error{
+								print(error.localizedDescription)
+							}
 						}
 					}
 				}
@@ -1074,7 +1131,13 @@ import AVFoundation
 								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 								self.mediaCollectionView.append(image!)
 								self.collectionView.insertItems(at: [indexPath])
-								self.mediaNameCollection.append(FileType.file_video_default.rawValue)
+								self.mediaURLCollection.append(urlFile!)
+								do {
+									let data = try Data(contentsOf: url)
+									self.fileContext.append(data)
+								} catch let error{
+									print(error.localizedDescription)
+								}
 							}, completion: nil)
 						}
 					}
@@ -1096,7 +1159,21 @@ import AVFoundation
 				let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 				self.mediaCollectionView.append(image)
 				self.collectionView.insertItems(at: [indexPath])
-				self.mediaNameCollection.append(FileType.file_picture_default.rawValue)
+				
+				let date = Date()
+				let df = DateFormatter()
+				df.dateFormat = "yyyy-MM-dd-HHmmss"
+				let dateString = df.string(from: date)
+				
+				let fileUrl = URL(string: dateString + ".jpeg")
+				
+				self.mediaURLCollection.append(fileUrl!)
+				
+				let data  = image.jpegData(compressionQuality: 1)
+				self.fileContext.append(data!)
+				
+				
+				
 			}, completion: nil)
   		case "public.movie":
 			let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as! URL
@@ -1106,7 +1183,13 @@ import AVFoundation
 				let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 				self.mediaCollectionView.append(image!)
 				self.collectionView.insertItems(at: [indexPath])
-				self.mediaNameCollection.append(FileType.file_video_default.rawValue)
+				self.mediaURLCollection.append(videoUrl)
+				do {
+					let data = try Data(contentsOf: videoUrl)
+					self.fileContext.append(data)
+				} catch let error{
+					print(error.localizedDescription)
+				}
 			}, completion: nil)
 		default:
 			print("Mismatched type: \(mediaType)")
@@ -1130,7 +1213,13 @@ import AVFoundation
 						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 						self.mediaCollectionView.append(image!)
 						self.collectionView.insertItems(at: [indexPath])
-						self.mediaNameCollection.append(FileType.file_picture_default.rawValue)
+						self.mediaURLCollection.append(url)
+						do {
+							let data = try Data(contentsOf: url)
+							self.fileContext.append(data)
+						} catch let error{
+							print(error.localizedDescription)
+						}
 					}, completion: nil)
 				}else if(videoExtension.contains(url.pathExtension.lowercased())){
 					let thumbnail = createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
@@ -1138,7 +1227,13 @@ import AVFoundation
 						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 						self.mediaCollectionView.append(thumbnail!)
 						self.collectionView.insertItems(at: [indexPath])
-						self.mediaNameCollection.append(FileType.file_video_default.rawValue)
+						self.mediaURLCollection.append(url)
+						do {
+							let data = try Data(contentsOf: url)
+							self.fileContext.append(data)
+						} catch let error{
+							print(error.localizedDescription)
+						}
 					}, completion: nil)
 				}else{
 					//let otherFile = UIImage(named: "chat_error")
@@ -1148,7 +1243,13 @@ import AVFoundation
 					   	let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 					   	self.mediaCollectionView.append(otherFileImage!)
 					   	self.collectionView.insertItems(at: [indexPath])
-						self.mediaNameCollection.append(url.lastPathComponent)
+						self.mediaURLCollection.append(url)
+						do {
+							let data = try Data(contentsOf: url)
+							self.fileContext.append(data)
+						} catch let error{
+							print(error.localizedDescription)
+						}
 				   	}, completion: nil)
 			   	}
 			}
