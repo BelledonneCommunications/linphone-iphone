@@ -76,6 +76,9 @@ import AVFoundation
 		return collectionView
 	}()
 	
+	let loadingView = UIView()
+	let loading = RotatingSpinner()
+	
 	let menu: DropDown = {
 		let menu = DropDown()
 		menu.dataSource = [""]
@@ -181,7 +184,6 @@ import AVFoundation
 	
 	override func viewDidAppear(_ animated: Bool) {
 		tableController.reloadData()
-		messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
 	}
 	
 	override func viewDidDisappear(_ animated: Bool) {
@@ -1024,6 +1026,15 @@ import AVFoundation
 		collectionView.dataSource = self
 		collectionView.delegate = self
 		collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+		
+		
+		loadingView.backgroundColor = .gray.withAlphaComponent(0.6)
+		mediaSelector.addSubview(loadingView)
+		loadingView.matchParentEdges().done()
+		
+		
+		loadingView.addSubview(loading)
+		loading.square(Int(top_bar_height*2)).alignVerticalCenterWith(loadingView).alignHorizontalCenterWith(loadingView).done()
 	}
 
 	@objc func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -1031,17 +1042,13 @@ import AVFoundation
 	}
 
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		if(self.mediaCollectionView.count > 0 && !mediaSelectorVisible){
-			self.selectionMedia()
-			self.messageView.sendButton.isEnabled = true
-			self.messageView.fileContext = true
-		}
-	
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
 		let viewCell: UIView = UIView(frame: cell.contentView.frame)
 		cell.addSubview(viewCell)
 		
-		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"), onClickAction: {
+		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
+		
+		deleteButton.onClickAction = {
 			self.collectionView.deleteItems(at: [indexPath])
 			self.mediaCollectionView.remove(at: indexPath.row)
 			self.mediaURLCollection.remove(at: indexPath.row)
@@ -1055,7 +1062,7 @@ import AVFoundation
 					self.messageView.sendButton.isEnabled = true
 				}
 			}
-		})
+		}
 		
 		let imageCell = mediaCollectionView[indexPath.row]
 		var myImageView = UIImageView()
@@ -1095,6 +1102,22 @@ import AVFoundation
 	
 	@available(iOS 14.0, *)
 	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+		
+		let mediaCount = mediaCollectionView.count
+		let newMediaCount = results.count
+		loadingView.isHidden = false
+		messageView.isLoading = true
+		loading.startRotation()
+		
+		if(self.mediaCollectionView.count == 0 && results.count >= 1){
+			self.selectionMedia()
+			self.messageView.sendButton.isEnabled = !messageView.isLoading
+			self.messageView.fileContext = true
+		}
+		if(self.mediaCollectionView.count > 0){
+			self.messageView.sendButton.isEnabled = !messageView.isLoading
+		}
+		
 		picker.dismiss(animated: true, completion: nil)
 		let itemProviders = results.map(\.itemProvider)
 		for item in itemProviders {
@@ -1109,6 +1132,14 @@ import AVFoundation
 										let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 										self.mediaCollectionView.append(image)
 										self.collectionView.insertItems(at: [indexPath])
+										if(mediaCount + newMediaCount <= indexPath.row+1){
+											if(self.mediaCollectionView.count > 0){
+												self.messageView.sendButton.isEnabled = true
+											}
+											self.loadingView.isHidden = true
+											self.messageView.isLoading = false
+											self.loading.stopRotation()
+										}
 									}, completion: nil)
 								}
 							}
@@ -1137,6 +1168,14 @@ import AVFoundation
 									self.fileContext.append(data)
 								} catch let error{
 									print(error.localizedDescription)
+								}
+								if(mediaCount + newMediaCount <= indexPath.row+1){
+									if(self.mediaCollectionView.count > 0){
+										self.messageView.sendButton.isEnabled = true
+									}
+									self.loadingView.isHidden = true
+									self.messageView.isLoading = false
+									self.loading.stopRotation()
 								}
 							}, completion: nil)
 						}
@@ -1254,6 +1293,7 @@ import AVFoundation
 			   	}
 			}
 		}
+		
 		controller.dismiss(animated: true)
 	}
 }
