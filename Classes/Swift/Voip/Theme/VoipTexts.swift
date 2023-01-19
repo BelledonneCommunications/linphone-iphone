@@ -165,6 +165,7 @@ import UIKit
 	@objc static let dropdown_menu_chat_conversation_unmute_notifications = NSLocalizedString("Un-mute notifications",comment:"")
 	@objc static let dropdown_menu_chat_conversation_delete_messages = NSLocalizedString("Delete messages",comment:"")
 	@objc static let dropdown_menu_chat_conversation_debug_infos = NSLocalizedString("Debug infos",comment:"")
+	@objc static let operation_in_progress_wait = NSLocalizedString("Operation in progress, please wait",comment:"")
 
 	// FROM ANDROID END
 	

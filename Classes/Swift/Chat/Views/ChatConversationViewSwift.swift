@@ -77,7 +77,7 @@ import AVFoundation
 	}()
 	
 	let loadingView = UIView()
-	let loading = RotatingSpinner()
+	let loading = RotatingSpinner(color: VoipTheme.primary_color)
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -125,6 +125,15 @@ import AVFoundation
 	}()
 	
 	var fileContext : [Data] = []
+	var workItem : DispatchWorkItem? = nil
+	
+	var urlFile : [URL?] = []
+	var imageT : [UIImage?] = []
+	var data : [Data?] = []
+	var mediaCount : Int = 0
+	var newMediaCount : Int = 0
+	
+	var importMedia = false
 	
 	
 	override func viewDidLoad() {
@@ -175,6 +184,28 @@ import AVFoundation
 		
 		chatRoom?.addDelegate(delegate: chatRoomDelegate!)
 		tableController.tableView.separatorColor = .clear
+		
+		workItem = DispatchWorkItem {
+			if(self.importMedia == true){
+					self.collectionView.performBatchUpdates({
+					print("collectionView perform all : \(self.mediaCollectionView.count)")
+					let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+					self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
+					self.mediaCollectionView.append(self.imageT[indexPath.row]!)
+					self.collectionView.insertItems(at: [indexPath])
+					self.fileContext.append(self.data[indexPath.row]!)
+					if(self.mediaCount + self.newMediaCount <= indexPath.row+1){
+						if(self.mediaCollectionView.count > 0){
+							self.messageView.sendButton.isEnabled = true
+						}
+						self.loadingView.isHidden = true
+						self.messageView.isLoading = false
+						self.loading.stopRotation()
+					}
+				}, completion: nil)
+			}
+		}
+
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -196,6 +227,19 @@ import AVFoundation
 		self.mediaURLCollection = []
 		self.fileContext = []
 		self.messageView.fileContext = false
+		self.urlFile = []
+		self.imageT = []
+		self.data = []
+		self.collectionView.reloadData()
+		if self.messageView.messageText.text.isEmpty{
+			self.messageView.sendButton.isEnabled = false
+		} else {
+			self.messageView.sendButton.isEnabled = true
+		}
+		
+		importMedia = false
+		workItem?.cancel()
+		
 		
 	}
 	
@@ -1028,7 +1072,7 @@ import AVFoundation
 		collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
 		
 		
-		loadingView.backgroundColor = .gray.withAlphaComponent(0.6)
+		loadingView.backgroundColor = UIColor(red: 0.77, green: 0.77, blue: 0.77, alpha: 0.60)
 		mediaSelector.addSubview(loadingView)
 		loadingView.matchParentEdges().done()
 		
@@ -1053,6 +1097,9 @@ import AVFoundation
 			self.mediaCollectionView.remove(at: indexPath.row)
 			self.mediaURLCollection.remove(at: indexPath.row)
 			self.fileContext.remove(at: indexPath.row)
+			self.urlFile.remove(at: indexPath.row)
+			self.imageT.remove(at: indexPath.row)
+			self.data.remove(at: indexPath.row)
 			if(self.mediaCollectionView.count == 0){
 				self.messageView.fileContext = false
 				self.selectionMedia()
@@ -1102,20 +1149,27 @@ import AVFoundation
 	
 	@available(iOS 14.0, *)
 	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-		
-		let mediaCount = mediaCollectionView.count
-		let newMediaCount = results.count
-		loadingView.isHidden = false
-		messageView.isLoading = true
-		loading.startRotation()
-		
 		if(self.mediaCollectionView.count == 0 && results.count >= 1){
 			self.selectionMedia()
 			self.messageView.sendButton.isEnabled = !messageView.isLoading
 			self.messageView.fileContext = true
+			self.urlFile = []
+			self.imageT = []
+			self.data = []
 		}
 		if(self.mediaCollectionView.count > 0){
 			self.messageView.sendButton.isEnabled = !messageView.isLoading
+		}
+		
+		if(results.count >= 1){
+			loadingView.isHidden = false
+			messageView.isLoading = true
+			loading.startRotation()
+			
+			self.mediaCount = mediaCollectionView.count
+			self.newMediaCount = results.count
+			
+			importMedia = true
 		}
 		
 		picker.dismiss(animated: true, completion: nil)
@@ -1125,60 +1179,40 @@ import AVFoundation
 				item.loadObject(ofClass: UIImage.self) { (image, error) in
 					if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
 						item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, err in
-							DispatchQueue.main.async {
-								if let image = image as? UIImage {
-									self.collectionView.performBatchUpdates({
-										self.mediaURLCollection.append(urlFile!)
-										let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-										self.mediaCollectionView.append(image)
-										self.collectionView.insertItems(at: [indexPath])
-										if(mediaCount + newMediaCount <= indexPath.row+1){
-											if(self.mediaCollectionView.count > 0){
-												self.messageView.sendButton.isEnabled = true
-											}
-											self.loadingView.isHidden = true
-											self.messageView.isLoading = false
-											self.loading.stopRotation()
-										}
-									}, completion: nil)
-								}
-							}
 							do {
-								let data = try Data(contentsOf: urlFile!)
-								self.fileContext.append(data)
-							} catch let error{
+								self.data.append(try Data(contentsOf: urlFile!))
+								if let image = image as? UIImage {
+									self.imageT.append(image)
+								}
+								self.urlFile.append(urlFile)
+								
+								
+								DispatchQueue.main.asyncAfter(deadline: .now(), execute: self.workItem!)
+								
+							}catch let error{
 								print(error.localizedDescription)
 							}
+							
 						}
 					}
 				}
 			} else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
 				item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, err in
 					if let url = urlFile {
-						DispatchQueue.main.sync {
-							var image = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-							if image == nil { image = UIImage(named: "chat_error")}
-							self.collectionView.performBatchUpdates({
-								let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-								self.mediaCollectionView.append(image!)
-								self.collectionView.insertItems(at: [indexPath])
-								self.mediaURLCollection.append(urlFile!)
-								do {
-									let data = try Data(contentsOf: url)
-									self.fileContext.append(data)
-								} catch let error{
-									print(error.localizedDescription)
-								}
-								if(mediaCount + newMediaCount <= indexPath.row+1){
-									if(self.mediaCollectionView.count > 0){
-										self.messageView.sendButton.isEnabled = true
-									}
-									self.loadingView.isHidden = true
-									self.messageView.isLoading = false
-									self.loading.stopRotation()
-								}
-							}, completion: nil)
-						}
+						
+						do {
+							
+							self.data.append(try Data(contentsOf: url))
+							var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+							if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
+							self.imageT.append(tmpImage)
+							self.urlFile.append(url)
+							
+							DispatchQueue.main.asyncAfter(deadline: .now(), execute: self.workItem!)
+							
+						}catch let error{
+							print(error.localizedDescription)
+						   }
 					}
 				}
 			}
