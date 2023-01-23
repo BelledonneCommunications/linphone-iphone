@@ -78,6 +78,7 @@ import AVFoundation
 	
 	let loadingView = UIView()
 	let loading = RotatingSpinner(color: VoipTheme.primary_color)
+	let loadingText = StyledLabel(VoipTheme.chat_conversation_operation_in_progress_wait)
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -187,7 +188,6 @@ import AVFoundation
 		
 		workItem = DispatchWorkItem {
 			if(self.importMedia == true){
-					self.collectionView.performBatchUpdates({
 					print("collectionView perform all : \(self.mediaCollectionView.count)")
 					let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 					self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
@@ -202,7 +202,6 @@ import AVFoundation
 						self.messageView.isLoading = false
 						self.loading.stopRotation()
 					}
-				}, completion: nil)
 			}
 		}
 
@@ -1072,13 +1071,15 @@ import AVFoundation
 		collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
 		
 		
-		loadingView.backgroundColor = UIColor(red: 0.77, green: 0.77, blue: 0.77, alpha: 0.60)
+		loadingView.backgroundColor = UIColor(red: 0.77, green: 0.77, blue: 0.77, alpha: 0.80)
 		mediaSelector.addSubview(loadingView)
 		loadingView.matchParentEdges().done()
 		
-		
+		loadingText.text = VoipTexts.operation_in_progress_wait
 		loadingView.addSubview(loading)
-		loading.square(Int(top_bar_height*2)).alignVerticalCenterWith(loadingView).alignHorizontalCenterWith(loadingView).done()
+		loadingView.addSubview(loadingText)
+		loadingText.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).alignParentBottom(withMargin: 30).alignVerticalCenterWith(loadingView).done()
+		loading.square(Int(top_bar_height)).alignVerticalCenterWith(loadingView).alignParentTop(withMargin: 20).done()
 	}
 
 	@objc func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -1174,47 +1175,59 @@ import AVFoundation
 		
 		picker.dismiss(animated: true, completion: nil)
 		let itemProviders = results.map(\.itemProvider)
+		var i = 0
 		for item in itemProviders {
-			if item.canLoadObject(ofClass: UIImage.self) {
-				item.loadObject(ofClass: UIImage.self) { (image, error) in
-					if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-						item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, err in
-							do {
-								self.data.append(try Data(contentsOf: urlFile!))
-								if let image = image as? UIImage {
-									self.imageT.append(image)
-								}
-								self.urlFile.append(urlFile)
-								
-								
-								DispatchQueue.main.asyncAfter(deadline: .now(), execute: self.workItem!)
-								
-							}catch let error{
-								print(error.localizedDescription)
-							}
-							
-						}
+			if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+				i+=1
+			 print("collectionView perform all images before \(i)")
+				item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, err in
+					if(self.workItem!.isCancelled){
+						print("collectionView perform all images stopstopstop")
+						return
+					} else {
+						self.createCollectionViewItem(urlFile: urlFile, type: "public.image")
 					}
 				}
-			} else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+			}else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
 				item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, err in
-					if let url = urlFile {
-						
-						do {
-							
-							self.data.append(try Data(contentsOf: url))
-							var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-							if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
-							self.imageT.append(tmpImage)
-							self.urlFile.append(url)
-							
-							DispatchQueue.main.asyncAfter(deadline: .now(), execute: self.workItem!)
-							
-						}catch let error{
-							print(error.localizedDescription)
-						   }
+					if(self.workItem!.isCancelled){
+						print("collectionView perform all movies stopstopstop")
+						return
+					} else {
+						self.createCollectionViewItem(urlFile: urlFile, type: "public.movie")
 					}
 				}
+			}
+		}
+	}
+	
+	func createCollectionViewItem(urlFile: URL?, type: String){
+		if let url = urlFile {
+			print("collectionView perform all images before getData: \(self.mediaCollectionView.count)")
+			do {
+				
+				if(type == "public.image"){
+					let dataResult = try Data(contentsOf: url)
+					self.data.append(dataResult)
+					if let image = UIImage(data: dataResult) {
+						self.imageT.append(image)
+					}else{
+						self.imageT.append(UIImage(named: "chat_error"))
+					}
+				}else if(type == "public.movie"){
+					self.data.append(try Data(contentsOf: url))
+					var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
+					self.imageT.append(tmpImage)
+				}
+				
+				self.urlFile.append(url)
+				
+				print("collectionView perform all images before DispatchQueue: \(self.mediaCollectionView.count)")
+				DispatchQueue.main.asyncAfter(deadline: .now(), execute: self.workItem!)
+				
+			}catch let error{
+				print(error.localizedDescription)
 			}
 		}
 	}
