@@ -127,14 +127,13 @@ import AVFoundation
 	
 	var fileContext : [Data] = []
 	var workItem : DispatchWorkItem? = nil
+	var progress : [Progress] = []
 	
 	var urlFile : [URL?] = []
 	var imageT : [UIImage?] = []
 	var data : [Data?] = []
 	var mediaCount : Int = 0
 	var newMediaCount : Int = 0
-	
-	var importMedia = false
 	
 	
 	override func viewDidLoad() {
@@ -187,24 +186,20 @@ import AVFoundation
 		tableController.tableView.separatorColor = .clear
 		
 		workItem = DispatchWorkItem {
-			if(self.importMedia == true){
-					print("collectionView perform all : \(self.mediaCollectionView.count)")
-					let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-					self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
-					self.mediaCollectionView.append(self.imageT[indexPath.row]!)
-					self.collectionView.insertItems(at: [indexPath])
-					self.fileContext.append(self.data[indexPath.row]!)
-					if(self.mediaCount + self.newMediaCount <= indexPath.row+1){
-						if(self.mediaCollectionView.count > 0){
-							self.messageView.sendButton.isEnabled = true
-						}
-						self.loadingView.isHidden = true
-						self.messageView.isLoading = false
-						self.loading.stopRotation()
-					}
+			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
+			self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
+			self.mediaCollectionView.append(self.imageT[indexPath.row]!)
+			self.collectionView.insertItems(at: [indexPath])
+			self.fileContext.append(self.data[indexPath.row]!)
+			if(self.mediaCount + self.newMediaCount <= indexPath.row+1){
+				if(self.mediaCollectionView.count > 0){
+					self.messageView.sendButton.isEnabled = true
+				}
+				self.loadingView.isHidden = true
+				self.messageView.isLoading = false
+				self.loading.stopRotation()
 			}
 		}
-
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -236,10 +231,11 @@ import AVFoundation
 			self.messageView.sendButton.isEnabled = true
 		}
 		
-		importMedia = false
 		workItem?.cancel()
-		
-		
+		for progressItem in progress{
+			progressItem.cancel()
+		}
+		progress.removeAll()
 	}
 	
 	func goBackChatListView() {
@@ -1150,62 +1146,35 @@ import AVFoundation
 	
 	@available(iOS 14.0, *)
 	func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-		if(self.mediaCollectionView.count == 0 && results.count >= 1){
-			self.selectionMedia()
-			self.messageView.sendButton.isEnabled = !messageView.isLoading
-			self.messageView.fileContext = true
-			self.urlFile = []
-			self.imageT = []
-			self.data = []
-		}
-		if(self.mediaCollectionView.count > 0){
-			self.messageView.sendButton.isEnabled = !messageView.isLoading
-		}
+		initListMedia(sequenceCount: results.count)
 		
-		if(results.count >= 1){
-			loadingView.isHidden = false
-			messageView.isLoading = true
-			loading.startRotation()
-			
-			self.mediaCount = mediaCollectionView.count
-			self.newMediaCount = results.count
-			
-			importMedia = true
-		}
 		
 		picker.dismiss(animated: true, completion: nil)
 		let itemProviders = results.map(\.itemProvider)
-		var i = 0
 		for item in itemProviders {
 			if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-				i+=1
-			 print("collectionView perform all images before \(i)")
-				item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, err in
+				progress.append(item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, error in
 					if(self.workItem!.isCancelled){
-						print("collectionView perform all images stopstopstop")
 						return
 					} else {
 						self.createCollectionViewItem(urlFile: urlFile, type: "public.image")
 					}
-				}
+				})
 			}else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-				item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, err in
+				progress.append(item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, error in
 					if(self.workItem!.isCancelled){
-						print("collectionView perform all movies stopstopstop")
 						return
 					} else {
 						self.createCollectionViewItem(urlFile: urlFile, type: "public.movie")
 					}
-				}
+				})
 			}
 		}
 	}
 	
 	func createCollectionViewItem(urlFile: URL?, type: String){
 		if let url = urlFile {
-			print("collectionView perform all images before getData: \(self.mediaCollectionView.count)")
 			do {
-				
 				if(type == "public.image"){
 					let dataResult = try Data(contentsOf: url)
 					self.data.append(dataResult)
@@ -1219,13 +1188,15 @@ import AVFoundation
 					var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
 					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
 					self.imageT.append(tmpImage)
+				}else{
+					
+					self.data.append(try Data(contentsOf: url))
+					let otherFile = FileType.init(url.pathExtension)
+					let otherFileImage = otherFile!.getImageFromFile()
+					self.imageT.append(otherFileImage)
 				}
-				
 				self.urlFile.append(url)
-				
-				print("collectionView perform all images before DispatchQueue: \(self.mediaCollectionView.count)")
-				DispatchQueue.main.asyncAfter(deadline: .now(), execute: self.workItem!)
-				
+				DispatchQueue.main.async(execute: self.workItem!)
 			}catch let error{
 				print(error.localizedDescription)
 			}
@@ -1237,46 +1208,33 @@ import AVFoundation
 	}
 	
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+		initListMedia(sequenceCount: 1)
 		let mediaType = info[UIImagePickerController.InfoKey.mediaType] as! String
 		switch mediaType {
 		case "public.image":
 			let image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
-			self.collectionView.performBatchUpdates({
-				let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-				self.mediaCollectionView.append(image)
-				self.collectionView.insertItems(at: [indexPath])
-				
-				let date = Date()
-				let df = DateFormatter()
-				df.dateFormat = "yyyy-MM-dd-HHmmss"
-				let dateString = df.string(from: date)
-				
-				let fileUrl = URL(string: dateString + ".jpeg")
-				
-				self.mediaURLCollection.append(fileUrl!)
-				
-				let data  = image.jpegData(compressionQuality: 1)
-				self.fileContext.append(data!)
-				
-				
-				
-			}, completion: nil)
+			let date = Date()
+			let df = DateFormatter()
+			df.dateFormat = "yyyy-MM-dd-HHmmss"
+			let dateString = df.string(from: date)
+			
+			let fileUrl = URL(string: dateString + ".jpeg")
+			
+			let data  = image.jpegData(compressionQuality: 1)
+			
+			self.data.append(data)
+			if let image = UIImage(data: data!) {
+				self.imageT.append(image)
+			}else{
+				self.imageT.append(UIImage(named: "chat_error"))
+			}
+			
+			self.urlFile.append(fileUrl)
+			DispatchQueue.main.async(execute: self.workItem!)
   		case "public.movie":
 			let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as! URL
-			var image = createThumbnailOfVideoFromFileURL(videoURL: videoUrl.relativeString)
-			if image == nil { image = UIImage(named: "chat_error")}
-			self.collectionView.performBatchUpdates({
-				let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-				self.mediaCollectionView.append(image!)
-				self.collectionView.insertItems(at: [indexPath])
-				self.mediaURLCollection.append(videoUrl)
-				do {
-					let data = try Data(contentsOf: videoUrl)
-					self.fileContext.append(data)
-				} catch let error{
-					print(error.localizedDescription)
-				}
-			}, completion: nil)
+			
+			self.createCollectionViewItem(urlFile: videoUrl, type: "public.movie")
 		default:
 			print("Mismatched type: \(mediaType)")
 	  	}
@@ -1289,58 +1247,45 @@ import AVFoundation
 	
 	
 	public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+		initListMedia(sequenceCount: urls.count)
+		
 		if(controller.documentPickerMode == .import){
 			urls.forEach { url in
 				let imageExtension = ["png", "jpg", "jpeg", "bmp", "heic"]
 				let videoExtension = ["mkv", "avi", "mov", "mp4"]
 				if(imageExtension.contains(url.pathExtension.lowercased())){
-					let image = UIImage(contentsOfFile: url.path)
-					self.collectionView.performBatchUpdates({
-						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-						self.mediaCollectionView.append(image!)
-						self.collectionView.insertItems(at: [indexPath])
-						self.mediaURLCollection.append(url)
-						do {
-							let data = try Data(contentsOf: url)
-							self.fileContext.append(data)
-						} catch let error{
-							print(error.localizedDescription)
-						}
-					}, completion: nil)
+					self.createCollectionViewItem(urlFile: url, type: "public.image")
 				}else if(videoExtension.contains(url.pathExtension.lowercased())){
-					let thumbnail = createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-					self.collectionView.performBatchUpdates({
-						let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-						self.mediaCollectionView.append(thumbnail!)
-						self.collectionView.insertItems(at: [indexPath])
-						self.mediaURLCollection.append(url)
-						do {
-							let data = try Data(contentsOf: url)
-							self.fileContext.append(data)
-						} catch let error{
-							print(error.localizedDescription)
-						}
-					}, completion: nil)
+					self.createCollectionViewItem(urlFile: url, type: "public.movie")
 				}else{
-					//let otherFile = UIImage(named: "chat_error")
-					let otherFile = FileType.init(url.pathExtension)
-					let otherFileImage = otherFile!.getImageFromFile()
-					self.collectionView.performBatchUpdates({
-					   	let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-					   	self.mediaCollectionView.append(otherFileImage!)
-					   	self.collectionView.insertItems(at: [indexPath])
-						self.mediaURLCollection.append(url)
-						do {
-							let data = try Data(contentsOf: url)
-							self.fileContext.append(data)
-						} catch let error{
-							print(error.localizedDescription)
-						}
-				   	}, completion: nil)
+					self.createCollectionViewItem(urlFile: url, type: "public.data")
 			   	}
 			}
 		}
 		
 		controller.dismiss(animated: true)
+	}
+	
+	public func initListMedia(sequenceCount : Int){
+		if(self.mediaCollectionView.count == 0 && sequenceCount >= 1){
+			self.selectionMedia()
+			self.messageView.sendButton.isEnabled = !messageView.isLoading
+			self.messageView.fileContext = true
+			self.urlFile = []
+			self.imageT = []
+			self.data = []
+		}
+		if(self.mediaCollectionView.count > 0){
+			self.messageView.sendButton.isEnabled = !messageView.isLoading
+		}
+		
+		if(sequenceCount >= 1){
+			loadingView.isHidden = false
+			messageView.isLoading = true
+			loading.startRotation()
+			
+			self.mediaCount = mediaCollectionView.count
+			self.newMediaCount = sequenceCount
+		}
 	}
 }
