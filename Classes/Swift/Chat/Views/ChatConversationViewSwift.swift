@@ -198,6 +198,9 @@ import AVFoundation
 				self.loadingView.isHidden = true
 				self.messageView.isLoading = false
 				self.loading.stopRotation()
+				
+				self.messageView.sendButton.isEnabled = true
+				self.messageView.pictureButton.isEnabled = true
 			}
 		}
 	}
@@ -230,6 +233,7 @@ import AVFoundation
 		} else {
 			self.messageView.sendButton.isEnabled = true
 		}
+		self.messageView.pictureButton.isEnabled = true
 		
 		workItem?.cancel()
 		for progressItem in progress{
@@ -1283,6 +1287,9 @@ import AVFoundation
 			loadingView.isHidden = false
 			messageView.isLoading = true
 			loading.startRotation()
+			
+			self.messageView.sendButton.isEnabled = false
+			self.messageView.pictureButton.isEnabled = false
 			
 			self.mediaCount = mediaCollectionView.count
 			self.newMediaCount = sequenceCount
