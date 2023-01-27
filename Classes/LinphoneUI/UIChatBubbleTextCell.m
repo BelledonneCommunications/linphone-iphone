@@ -891,7 +891,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsIcons addObject:@"menu_forward_default"];
 	[_messageActionsBlocks addObject:^{
 		[thiz dismissPopup];
-		VIEW(ChatConversationView).pendingForwardMessage = message;
+		VIEW(ChatConversationViewSwift).pendingForwardMessage = message;
 		[PhoneMainView.instance changeCurrentView:VIEW(ChatsListView).compositeViewDescription];
 	}];
 	 

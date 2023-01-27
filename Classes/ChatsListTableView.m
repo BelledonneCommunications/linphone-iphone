@@ -20,7 +20,7 @@
 #import "ChatsListTableView.h"
 #import "UIChatCell.h"
 #import "FileTransferDelegate.h"
-
+#import "linphoneapp-Swift.h"
 #import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -213,7 +213,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
-	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+	BOOL forwardMode = VIEW(ChatConversationViewSwift).pendingForwardMessage != nil;
 	cell.forwardIcon.hidden = !forwardMode;
 	if (forwardMode) {
 		cell.ephemeral.hidden = true;

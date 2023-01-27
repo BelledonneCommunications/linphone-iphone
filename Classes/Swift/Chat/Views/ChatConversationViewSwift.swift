@@ -134,6 +134,7 @@ import AVFoundation
 	var data : [Data?] = []
 	var mediaCount : Int = 0
 	var newMediaCount : Int = 0
+	@objc var pendingForwardMessage : OpaquePointer? = nil
 	
 	
 	override func viewDidLoad() {
@@ -203,6 +204,8 @@ import AVFoundation
 				self.messageView.pictureButton.isEnabled = true
 			}
 		}
+		
+		self.handlePendingTransferIfAny()
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -1297,7 +1300,7 @@ import AVFoundation
 	}
 	
 	func handlePendingTransferIfAny() {
-		if pendingForwardMessage {
+		if (pendingForwardMessage != nil) {
 			let message = pendingForwardMessage
 			pendingForwardMessage = nil
 			let d = UIConfirmationDialog.show(
@@ -1307,10 +1310,10 @@ import AVFoundation
 				onCancelClick: {
 				},
 				onConfirmationClick: {
-					linphone_chat_message_send(linphone_chat_room_create_forward_message(chatRoom, message))
+					linphone_chat_message_send(linphone_chat_room_create_forward_message(self.chatRoom?.getCobject, message))
 
 				})
-			d?.forwardImage.hidden = false
+			d?.forwardImage.isHidden = false
 			d?.setSpecialColor()
 		}
 	}

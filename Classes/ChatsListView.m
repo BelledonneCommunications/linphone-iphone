@@ -74,7 +74,7 @@
 	if(dict||dictFile||dictUrl) VIEW(ChatConversationView).sharingMedia = TRUE;
 
 	if(VIEW(ChatConversationView).sharingMedia == nil){
-		forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+		forwardMode = VIEW(ChatConversationViewSwift).pendingForwardMessage != nil;
 	}else{
 		forwardMode = VIEW(ChatConversationView).sharingMedia != nil;
 	}
@@ -202,7 +202,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCancelForwardClicked:(id)sender {
 	VIEW(ChatConversationView).sharingMedia = nil;
-	VIEW(ChatConversationView).pendingForwardMessage = nil;
+	VIEW(ChatConversationViewSwift).pendingForwardMessage = nil;
 	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
 	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
 	[defaults removeObjectForKey:@"photoData"];
