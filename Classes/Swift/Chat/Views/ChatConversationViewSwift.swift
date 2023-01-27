@@ -1295,4 +1295,23 @@ import AVFoundation
 			self.newMediaCount = sequenceCount
 		}
 	}
+	
+	func handlePendingTransferIfAny() {
+		if pendingForwardMessage {
+			let message = pendingForwardMessage
+			pendingForwardMessage = nil
+			let d = UIConfirmationDialog.show(
+				withMessage: NSLocalizedString("Transfer this message to this conversation ?", comment: ""),
+				cancelMessage: nil,
+				confirmMessage: NSLocalizedString("TRANSFER", comment: ""),
+				onCancelClick: {
+				},
+				onConfirmationClick: {
+					linphone_chat_message_send(linphone_chat_room_create_forward_message(chatRoom, message))
+
+				})
+			d?.forwardImage.hidden = false
+			d?.setSpecialColor()
+		}
+	}
 }
