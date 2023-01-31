@@ -21,6 +21,7 @@
 import UIKit
 import Foundation
 import linphonesw
+import SnapKit
 
 @objc class BackActionsNavigationView:  UIViewController {
     
@@ -34,12 +35,12 @@ import linphonesw
 	let participantsGroupLabel = StyledLabel(VoipTheme.chat_conversation_participants)
     
     let topBar = UIView()
-    let scrollView = UIScrollView()
     let contentView = UIView()
 	let isComposingView = UIView()
 	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
 	let messageView = MessageView()
 	let mediaSelector  = UIView()
+	var replyBubble = UIView()
     var backAction : (() -> Void)? = nil
     var action1 : (() -> Void)? = nil
     var action2 : (() -> Void)? = nil
@@ -56,6 +57,8 @@ import linphonesw
 	var isSecure : Bool = false
 	var isGroupChat : Bool = false
 	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
+	
+	var stackView = UIStackView()
     
     func viewDidLoad(backAction : @escaping () -> Void,
                      action1 : @escaping () -> Void,
@@ -131,24 +134,45 @@ import linphonesw
         
         super.viewDidLoad()
 		
-		view.addSubview(messageView)
-		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
+		stackView.axis = .vertical;
+		stackView.distribution = .fill;
+		stackView.alignment = .center;
+		stackView.spacing = 0;
 		
-		view.addSubview(mediaSelector)
-		mediaSelector.alignParentBottom(withMargin: -top_bar_height).height(top_bar_height*2).matchParentSideBorders().done()
-		mediaSelector.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		stackView.translatesAutoresizingMaskIntoConstraints = false
+		view.addSubview(stackView)
 		
-		view.addSubview(isComposingView)
-		isComposingView.alignParentBottom(withMargin: top_bar_height/2).height(top_bar_height/2).matchParentSideBorders().done()
+		stackView.alignParentTop().alignParentBottom().matchParentSideBorders().done()
+		
+		stackView.addArrangedSubview(contentView)
+		contentView.alignParentTop(withMargin: top_bar_height).matchParentSideBorders().done()
+
+		stackView.addArrangedSubview(isComposingView)
+		isComposingView.height(top_bar_height/2).matchParentSideBorders().done()
+		isComposingView.isHidden = true
 		
 		isComposingView.addSubview(isComposingTextView)
 		isComposingTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).matchParentHeight().done()
 		isComposingView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
-		view.addSubview(contentView)
-		contentView.alignParentTop(withMargin: top_bar_height).alignParentBottom(withMargin: top_bar_height).matchParentSideBorders().done()
+		stackView.addArrangedSubview(replyBubble)
+		replyBubble.height(top_bar_height*2).matchParentSideBorders().done()
+		replyBubble.backgroundColor = UIColor.blue
+		replyBubble.isHidden = true
+		 
+		stackView.addArrangedSubview(mediaSelector)
+		mediaSelector.height(top_bar_height*2).matchParentSideBorders().done()
+		mediaSelector.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		mediaSelector.isHidden = true
+
 		
-		view.addSubview(floatingButton)
+		stackView.addArrangedSubview(messageView)
+		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
+		
+		stackView.translatesAutoresizingMaskIntoConstraints = false;
+		view.addSubview(stackView)
+		
+	 	view.addSubview(floatingButton)
 		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -1).isActive = true
 		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 4).isActive = true
 		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
@@ -156,10 +180,16 @@ import linphonesw
 		floatingButton.onClickAction = action3
 		
 		
+		stackView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
+		stackView.centerYAnchor.constraint(equalTo:self.view.centerYAnchor).isActive = true
+
 		view.bringSubviewToFront(isComposingView)
 		view.bringSubviewToFront(mediaSelector)
+		view.bringSubviewToFront(replyBubble)
 		
 		view.bringSubviewToFront(messageView)
+		
+		view.bringSubviewToFront(contentView)
 		
 		view.bringSubviewToFront(topBar)
     }
@@ -167,7 +197,6 @@ import linphonesw
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-        
     }
 	
 	func changeTitle(titleString: String){

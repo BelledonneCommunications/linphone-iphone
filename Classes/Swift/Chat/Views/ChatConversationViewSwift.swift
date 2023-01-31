@@ -48,14 +48,6 @@ import AVFoundation
 	@objc let tableController = ChatConversationTableView()
 	let refreshControl = UIRefreshControl()
 	
-	var replyBubble = UIChatReplyBubbleView()
-	
-	var composingVisible = false
-	var contentOriginY = 0.0
-	var messageViewOriginY = 0.0
-	var mediaSelectorHeight = 0.0
-	var mediaSelectorVisible = false
-	
 	var mediaCollectionView : [UIImage] = []
 	var mediaURLCollection : [URL] = []
 	
@@ -135,6 +127,10 @@ import AVFoundation
 	var mediaCount : Int = 0
 	var newMediaCount : Int = 0
 	@objc var pendingForwardMessage : OpaquePointer? = nil
+	
+	var replyViewOriginY = 0.0
+	var replyViewHeight = 0.0
+	var showReplyView = false
 	
 	
 	override func viewDidLoad() {
@@ -218,11 +214,17 @@ import AVFoundation
 	}
 	
 	override func viewDidDisappear(_ animated: Bool) {
-		mediaSelectorVisible = false
-		mediaSelectorHeight = 0.0
-		self.isComposingView.transform = CGAffineTransformIdentity;
-		self.mediaSelector.transform = CGAffineTransformIdentity;
-		self.contentView.transform = CGAffineTransformIdentity;
+		
+		if(self.isComposingView.isHidden == false){
+			self.isComposingView.isHidden = true
+		}
+		if(self.mediaSelector.isHidden == false){
+			self.mediaSelector.isHidden = true
+		}
+		if(self.replyBubble.isHidden == false){
+			self.replyBubble.isHidden = true
+		}
+
 		self.mediaCollectionView = []
 		self.mediaURLCollection = []
 		self.fileContext = []
@@ -672,16 +674,19 @@ import AVFoundation
 			
 			fileContext = []
 			messageView.fileContext = false
-			mediaSelectorVisible = false
-			mediaSelectorHeight = 0.0
-			self.isComposingView.transform = CGAffineTransformIdentity;
-			self.mediaSelector.transform = CGAffineTransformIdentity;
-			self.contentView.transform = CGAffineTransformIdentity;
 			self.mediaCollectionView = []
 			self.mediaURLCollection = []
 	 		return
  		}
-		 
+		if(self.isComposingView.isHidden == false){
+			self.isComposingView.isHidden = true
+		}
+		if(self.mediaSelector.isHidden == false){
+			self.mediaSelector.isHidden = true
+		}
+		if(self.replyBubble.isHidden == false){
+			self.replyBubble.isHidden = true
+		}
 		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 		sendMessageInMessageField(rootMessage: result)
 	}
@@ -778,7 +783,6 @@ import AVFoundation
 	}
 	
 	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
-		let shouldAnimate = composingVisible != visible
 		if visible {
 			let addresses = chatRoom!.composingAddresses
 			var composingAddresses : String? = ""
@@ -797,84 +801,42 @@ import AVFoundation
 				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
 			}
 		}
-		
-		composingVisible = visible
-		if !shouldAnimate {
-			return
-		}
-		
 		var isBottomOfView = false
-		if (tableController.tableView.contentOffset.y + self.isComposingView.frame.size.height >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height)) {
+		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
 			isBottomOfView = true
 		}
-		
-		UIView.animate(
-			withDuration: delay,
-			animations: {
-				self.contentOriginY = self.contentView.frame.origin.y
-				self.messageViewOriginY = self.isComposingView.frame.origin.y
-				
-				if visible {
-					if(isBottomOfView && self.tableController.totalNumberOfItems() > 3){
-						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
-						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
-					}
-					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
-					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
-				}else{
-					if(isBottomOfView && self.tableController.totalNumberOfItems() > 3){
-						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight)
-						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight)
-					}
-					self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: 0)
-					self.isComposingView.transform = CGAffineTransform(translationX: 0, y: 0)
-				}
-			})
+		UIView.animate(withDuration: 0.3, animations: {
+			self.isComposingView.isHidden = !self.isComposingView.isHidden
+	   	})
+		if(isBottomOfView){
+			tableController.scroll(toBottom: false)
+		}
 	}
 	
 	func selectionMedia() {
-		mediaSelectorVisible = !mediaSelectorVisible
-		mediaSelectorHeight = mediaSelectorVisible ? top_bar_height*2 : 0.0
 		var isBottomOfView = false
-		if (tableController.tableView.contentOffset.y + self.isComposingView.frame.size.height >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height)) {
+		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
 			isBottomOfView = true
 		}
-		
-		UIView.animate(
-			withDuration: 0.3,
-			animations: { [self] in
-				self.contentOriginY = self.contentView.frame.origin.y
-				self.messageViewOriginY = self.mediaSelector.frame.origin.y
-				
-				if self.mediaSelectorVisible {
-					
-					if(composingVisible){
-						self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
-						self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight - self.top_bar_height/2)
-					}
-					
-					if(isBottomOfView && tableController.totalNumberOfItems() > 3){
-						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight)
-						self.contentView.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight)
-					}
-					self.mediaSelector.transform = self.mediaSelector.transform.translatedBy(x: 0, y: -self.mediaSelectorHeight)
-					self.mediaSelector.transform = CGAffineTransform(translationX: 0, y: -self.mediaSelectorHeight)
-					
-				}else{
-					
-					if(self.composingVisible){
-						self.isComposingView.transform = self.isComposingView.transform.translatedBy(x: 0, y: -self.top_bar_height/2)
-						self.isComposingView.transform = CGAffineTransform(translationX: 0, y: -self.top_bar_height/2)
-					}
-					
-					if(isBottomOfView && tableController.totalNumberOfItems() > 3){
-						self.contentView.transform = self.contentView.transform.translatedBy(x: 0, y: 0)
-						self.contentView.transform = CGAffineTransform(translationX: 0, y: 0)
-					}
-					self.mediaSelector.transform = self.mediaSelector.transform.translatedBy(x: 0, y: 0)
-					self.mediaSelector.transform = CGAffineTransform(translationX: 0, y: 0)
-				}
-			})
+		UIView.animate(withDuration: 0.3, animations: {
+			self.mediaSelector.isHidden = !self.mediaSelector.isHidden
+		})
+		if(isBottomOfView){
+			tableController.scroll(toBottom: false)
+		}
+	}
+	
+	func initReplyView() {
+		var isBottomOfView = false
+		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
+			isBottomOfView = true
+	   	}
+		UIView.animate(withDuration: 0.3, animations: {
+			self.replyBubble.isHidden = !self.replyBubble.isHidden
+	   	})
+		if(isBottomOfView){
+			tableController.scroll(toBottom: false)
+		}
 	}
 	
 	@objc class func getKeyFromFileType(_ fileType: String?, fileName name: String?) -> String? {
@@ -1316,5 +1278,37 @@ import AVFoundation
 			d?.forwardImage.isHidden = false
 			d?.setSpecialColor()
 		}
+	}
+	
+	/*
+	func closePendingReply() {
+		if replyBubble != nil {
+			showReplyView = false
+			replyBubble!.view.removeFromSuperview()
+			updateFramesInclRecordingAndReplyView()
+			replyBubble = nil
+		}
+	}
+  	*/
+	
+	@objc func initiateReplyView(forMessage: OpaquePointer?) {
+		/*
+		if replyBubble != nil {
+			closePendingReply()
+		}
+		replyBubble = UIChatReplyBubbleView(nibName: "UIChatReplyBubbleView", bundle: nil)
+		addChild(replyBubble)
+		replyView.addSubview(replyBubble.view)
+		replyBubble.didMove(toParent: self)
+		replyBubble.configure(for: message, withDimissBlock: { [self] in
+			closePendingReply()
+		}, hideDismiss: false) {
+		}
+		showReplyView = true
+		updateFramesInclRecordingAndReplyView()
+		tableController.scroll(to: message?.getCobject)
+		messageView.messageText.becomeFirstResponder()
+		 */
+		initReplyView()
 	}
 }

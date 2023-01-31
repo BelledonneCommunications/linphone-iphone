@@ -901,7 +901,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsIcons addObject:@"menu_reply_default"];
 	[_messageActionsBlocks addObject:^{
 		[thiz dismissPopup];
-		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
+		[VIEW(ChatConversationViewSwift) initiateReplyViewForMessage:message];
 	}];
 	
 	LinphoneChatRoom *chatroom = linphone_chat_message_get_chat_room(self.message);

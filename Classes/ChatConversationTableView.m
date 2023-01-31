@@ -168,7 +168,7 @@
 	//[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]];
 	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 						  atScrollPosition:UITableViewScrollPositionBottom
-								  animated:YES];
+								  animated:animated];
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 		[ChatConversationView markAsRead:_chatRoom];
 }
@@ -431,7 +431,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 																		 title:NSLocalizedString(@"Reply", nil)
 																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
 		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-		[VIEW(ChatConversationView) initiateReplyViewForMessage:msg];
+		[VIEW(ChatConversationViewSwift) initiateReplyViewForMessage:msg];
 		[self scrollToBottom:TRUE];
 	}];
 	
