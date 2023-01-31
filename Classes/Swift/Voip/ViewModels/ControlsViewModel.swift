@@ -147,7 +147,7 @@ class ControlsViewModel {
 		if let currentCall = core.currentCall {
 			if (currentCall.conference != nil) {
 				if (ConferenceViewModel.shared.conferenceDisplayMode.value == .AudioOnly) {
-					ConferenceViewModel.shared.changeLayout(layout: .ActiveSpeaker, sendVideo:true)
+					ConferenceViewModel.shared.changeLayout(layout: .ActiveSpeaker, sendVideo:Core.get().videoActivationPolicy?.automaticallyInitiate == true)
 				} else if let params = try?core.createCallParams(call: currentCall) {
 					isVideoUpdateInProgress.value = true
 					params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly

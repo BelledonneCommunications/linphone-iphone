@@ -254,9 +254,7 @@ class ConferenceViewModel {
 		if let conference = conference.value, let call = conference.call, let params = try?call.core?.createCallParams(call: call) {
 			params.videoEnabled = layout != .AudioOnly
 			params.conferenceVideoLayout = layout == ConferenceDisplayMode.Grid ? .Grid : .ActiveSpeaker
-			if (sendVideo) {
-				params.videoDirection = .SendRecv
-			}
+			params.videoDirection = sendVideo ? .SendRecv : .RecvOnly
 			try?call.update(params: params)
 			
 			conferenceDisplayMode.value = layout
