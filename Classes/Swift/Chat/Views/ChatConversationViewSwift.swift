@@ -678,9 +678,6 @@ import AVFoundation
 			self.mediaURLCollection = []
 	 		return
  		}
-		if(self.isComposingView.isHidden == false){
-			self.isComposingView.isHidden = true
-		}
 		if(self.mediaSelector.isHidden == false){
 			self.mediaSelector.isHidden = true
 		}
@@ -779,7 +776,9 @@ import AVFoundation
 	
 	func on_chat_room_is_composing_received(_ cr: ChatRoom?, _ remoteAddr: Address?, _ isComposing: Bool) {
 		let composing = (linphone_chat_room_is_remote_composing(cr?.getCobject) != 0) || bctbx_list_size(linphone_chat_room_get_composing_addresses(cr?.getCobject)) > 0
-		setComposingVisible(composing, withDelay: 0.3)
+		if((composing && self.isComposingView.isHidden)||(!composing && !self.isComposingView.isHidden)){
+			setComposingVisible(composing, withDelay: 0.3)
+		}
 	}
 	
 	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
