@@ -825,7 +825,23 @@ import AVFoundation
 		}
 	}
 	
-	func initReplyView() {
+	func initReplyView(_ visible: Bool, message: OpaquePointer?) {
+		if visible {
+			let addresses = ChatMessage.getSwiftObject(cObject: message!).fromAddress
+			let composingAddresses : String? = FastAddressBook.displayName(for: addresses?.getCobject)
+			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), composingAddresses!)
+			
+			//let content = ChatMessage.getSwiftObject(cObject: message!).utf8Text
+			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: message!)
+			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: message!) : ChatMessage.getSwiftObject(cObject: message!).utf8Text)
+
+			replyContentTextView.text = content
+			print("ChatConversationViewSwift initReplyView \(replyBubble.frame.width)")
+			print("ChatConversationViewSwift initReplyView \(replyBubble.frame.height)")
+			
+			replyBubble.frame = CGRect(x: 0, y: 0, width: replyBubble.frame.width, height: replyBubble.frame.height*2)
+
+		}
 		var isBottomOfView = false
 		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
 			isBottomOfView = true
@@ -1308,6 +1324,6 @@ import AVFoundation
 		tableController.scroll(to: message?.getCobject)
 		messageView.messageText.becomeFirstResponder()
 		 */
-		initReplyView()
+		initReplyView(true, message: forMessage)
 	}
 }

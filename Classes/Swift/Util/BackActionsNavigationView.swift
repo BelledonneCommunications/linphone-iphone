@@ -38,6 +38,9 @@ import SnapKit
     let contentView = UIView()
 	let isComposingView = UIView()
 	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
+	let replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
+	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
 	let messageView = MessageView()
 	let mediaSelector  = UIView()
 	var replyBubble = UIView()
@@ -137,7 +140,7 @@ import SnapKit
 		stackView.axis = .vertical;
 		stackView.distribution = .fill;
 		stackView.alignment = .center;
-		stackView.spacing = 0;
+		stackView.spacing = 1;
 		
 		stackView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(stackView)
@@ -157,8 +160,23 @@ import SnapKit
 		
 		stackView.addArrangedSubview(replyBubble)
 		replyBubble.height(top_bar_height*2).matchParentSideBorders().done()
-		replyBubble.backgroundColor = UIColor.blue
+		replyBubble.translatesAutoresizingMaskIntoConstraints = false
+		replyBubble.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		replyBubble.isHidden = true
+		
+		replyBubble.addSubview(replyLabelTextView)
+		replyLabelTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 50).alignParentTop(withMargin: 10).done()
+		
+		replyBubble.addSubview(replyContentTextView)
+		replyContentTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 50).alignParentBottom(withMargin: 10).done()
+		replyContentTextView.translatesAutoresizingMaskIntoConstraints = false
+		replyContentTextView.numberOfLines = 5
+	
+		replyBubble.addSubview(replyDeleteButton)
+		replyDeleteButton.alignParentRight(withMargin: 15).matchParentHeight().done()
+		replyDeleteButton.onClickAction = {
+			self.replyBubble.isHidden = true
+		}
 		 
 		stackView.addArrangedSubview(mediaSelector)
 		mediaSelector.height(top_bar_height*2).matchParentSideBorders().done()
@@ -182,7 +200,7 @@ import SnapKit
 		
 		stackView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
 		stackView.centerYAnchor.constraint(equalTo:self.view.centerYAnchor).isActive = true
-
+		
 		view.bringSubviewToFront(isComposingView)
 		view.bringSubviewToFront(mediaSelector)
 		view.bringSubviewToFront(replyBubble)
