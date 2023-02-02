@@ -131,6 +131,7 @@ import AVFoundation
 	var replyViewOriginY = 0.0
 	var replyViewHeight = 0.0
 	var showReplyView = false
+	var replyMessage : OpaquePointer? = nil
 	
 	
 	override func viewDidLoad() {
@@ -643,12 +644,8 @@ import AVFoundation
 	}
 	
 	func onSendClick() {
-		//let rootMessage = replyBubble ? linphone_chat_room_create_reply_message(chatRoom?.getCobject, replyBubble.message) : linphone_chat_room_create_empty_message(chatRoom?.getCobject)
-		let rootMessage = linphone_chat_room_create_empty_message(chatRoom?.getCobject)
+		let rootMessage = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(chatRoom?.getCobject, replyMessage) : linphone_chat_room_create_empty_message(chatRoom?.getCobject)
 		/*
-		 if replyBubble != nil {
-		 closePendingReply()
-		 }
 		 if isPendingVoiceRecord && voiceRecorder && linphone_recorder_get_file(voiceRecorder) {
 		 let voiceContent = linphone_recorder_create_content(voiceRecorder)
 		 isPendingVoiceRecord = false
@@ -836,11 +833,20 @@ import AVFoundation
 			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: message!) : ChatMessage.getSwiftObject(cObject: message!).utf8Text)
 
 			replyContentTextView.text = content
-			print("ChatConversationViewSwift initReplyView \(replyBubble.frame.width)")
-			print("ChatConversationViewSwift initReplyView \(replyBubble.frame.height)")
+			replyBubble.backgroundColor = (linphone_chat_message_is_outgoing(message) != 0) ? UIColor("A").withAlphaComponent(0.2) : UIColor("D").withAlphaComponent(0.2)
 			
-			replyBubble.frame = CGRect(x: 0, y: 0, width: replyBubble.frame.width, height: replyBubble.frame.height*2)
-
+			replyDeleteButton.onClickAction = {
+				self.initReplyView(false, message: nil)
+			}
+			
+			if(isIcal){
+				replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
+				replyMeetingSchedule.isHidden = false
+				print("voip_meeting_schedule")
+			}else{
+				replyMeetingSchedule.isHidden = true
+			}
+			
 		}
 		var isBottomOfView = false
 		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
@@ -1295,35 +1301,11 @@ import AVFoundation
 		}
 	}
 	
-	/*
-	func closePendingReply() {
-		if replyBubble != nil {
-			showReplyView = false
-			replyBubble!.view.removeFromSuperview()
-			updateFramesInclRecordingAndReplyView()
-			replyBubble = nil
-		}
-	}
-  	*/
-	
 	@objc func initiateReplyView(forMessage: OpaquePointer?) {
-		/*
-		if replyBubble != nil {
-			closePendingReply()
+		if(replyBubble.isHidden == false){
+			replyBubble.isHidden = true
 		}
-		replyBubble = UIChatReplyBubbleView(nibName: "UIChatReplyBubbleView", bundle: nil)
-		addChild(replyBubble)
-		replyView.addSubview(replyBubble.view)
-		replyBubble.didMove(toParent: self)
-		replyBubble.configure(for: message, withDimissBlock: { [self] in
-			closePendingReply()
-		}, hideDismiss: false) {
-		}
-		showReplyView = true
-		updateFramesInclRecordingAndReplyView()
-		tableController.scroll(to: message?.getCobject)
-		messageView.messageText.becomeFirstResponder()
-		 */
+		replyMessage = forMessage
 		initReplyView(true, message: forMessage)
 	}
 }
