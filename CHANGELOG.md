@@ -9,8 +9,18 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-		
-## [5.0.0] - 2021-12-06
+## [5.0.1] - 2023-10-01
+
+### Changed
+- Update linphone SDK to 5.2.11
+
+### Fixed
+- Makes sure sip.linphone.org accounts have a LIME X3DH server URL for E2E chat messages encryption
+- Fix potential crash when displaying images received in a chatroom
+- Fix bug that would cause the previous call to be terminated when resuming another call that was paused
+- Fix participant video display in conferences when a second participant joined with video enabled
+
+## [5.0.0] - 2022-12-06
 
 ### Added
 - Post Quantum encryption when using ZRTP
@@ -37,14 +47,14 @@ Group changes to describe their impact on the project, as follows:
 - Clarified view when sending an image from the galery
 - Various audio route fixes for CallKit and IOS 16
 		
-## [4.6.4] - 2021-08-06
+## [4.6.4] - 2022-08-06
 ### Changed
 - Update linphone SDK to 5.1.42
 
 ### Fixed
 - Prevent possible application freeze and crash when creating a new chatroom, depending on the phone's contacts.
 	
-## [4.6.3] - 2021-02-06
+## [4.6.3] - 2022-02-06
 
 ### Added
 - New "Contacts" menu in the settings, which allows the use of LDAP configurations
@@ -59,7 +69,7 @@ Group changes to describe their impact on the project, as follows:
 - Display bug when changing audio device
 
 	
-## [4.6.2] - 2021-07-03
+## [4.6.2] - 2022-07-03
 
 ### Fixed
 - Bug preventing the activation of the phone speaker during calls
@@ -67,7 +77,7 @@ Group changes to describe their impact on the project, as follows:
 - Bug causing IMDNs to be missing in some chatrooms
 - Update linphone SDK to 5.1.7
 	
-## [4.6.1] - 2021-04-03
+## [4.6.1] - 2022-04-03
 
 ### Fixed
 - Crash in chatroom info view after entering background and re-entering foreground
@@ -75,7 +85,7 @@ Group changes to describe their impact on the project, as follows:
 - Hard to see text (written in black) on dark mode
 - Removed duplicate push authorization request pop up on install
 
-## [4.6.0] - 2021-31-02
+## [4.6.0] - 2022-31-02
 
 ### Added
 - Reply to chat message feature (with original message preview)
