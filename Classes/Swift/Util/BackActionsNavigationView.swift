@@ -40,10 +40,12 @@ import SnapKit
 	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
 	let replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
 	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
 	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
 	let replyMeetingSchedule = UIImageView()
 	let messageView = MessageView()
 	let mediaSelector  = UIView()
+	let mediaSelectorReply  = UIView()
 	var replyBubble = UIView()
     var backAction : (() -> Void)? = nil
     var action1 : (() -> Void)? = nil
@@ -160,26 +162,47 @@ import SnapKit
 		isComposingTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).alignParentTop(withMargin: 10).matchParentHeight().done()
 		isComposingView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
+	
 		stackView.addArrangedSubview(replyBubble)
-		replyBubble.matchParentSideBorders().maxHeight(top_bar_height*2).done()
+		replyBubble.matchParentSideBorders().maxHeight(top_bar_height*3).done()
 		replyBubble.translatesAutoresizingMaskIntoConstraints = false
 		replyBubble.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		replyBubble.isHidden = true
-
-		replyBubble.addSubview(replyLabelTextView)
-		replyLabelTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 50).height(40).done()
 		
-		replyBubble.addSubview(replyMeetingSchedule)
-		replyMeetingSchedule.alignParentLeft(withMargin: 10).alignParentBottom(withMargin: 10).size(w: 40, h: 40).done()
+		stackViewReply.axis = .vertical;
+		stackViewReply.distribution = .fill;
+		stackViewReply.alignment = .leading;
+		
+		replyBubble.addSubview(stackViewReply)
+		stackViewReply.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 50).alignParentBottom(withMargin: 10).matchParentHeight().wrapContentY().done()
+		stackViewReply.translatesAutoresizingMaskIntoConstraints = false
 
-		replyBubble.addSubview(replyContentTextView)
-		replyContentTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 50).alignParentBottom(withMargin: 10).alignParentTop(withMargin: 35).wrapContentY().done()
-		//replyContentTextView.toRightOf(replyMeetingSchedule, withLeftMargin: 10).alignParentRight(withMargin: 50).alignParentBottom(withMargin: 10).alignParentTop(withMargin: 60).wrapContentY().done()
+		stackViewReply.addArrangedSubview(replyLabelTextView)
+		replyLabelTextView.height(30).done()
+		
+		stackViewReply.addArrangedSubview(replyMeetingSchedule)
+		replyMeetingSchedule.size(w: 100, h: 40).done()
+		replyMeetingSchedule.contentMode = .scaleAspectFit
+		replyMeetingSchedule.isHidden = true
+		
+		stackViewReply.addArrangedSubview(replyContentForMeetingTextView)
+		replyContentForMeetingTextView.width(100).wrapContentY().done()
+		replyContentForMeetingTextView.textAlignment = .center
+		replyContentForMeetingTextView.numberOfLines = 5
+		replyContentForMeetingTextView.isHidden = true
+		
+		stackViewReply.addArrangedSubview(mediaSelectorReply)
+		mediaSelectorReply.height(top_bar_height).wrapContentY().alignParentRight(withMargin: 50).done()
+		mediaSelectorReply.isHidden = true
+		
+		stackViewReply.addArrangedSubview(replyContentTextView)
+		replyContentTextView.wrapContentY().done()
 		replyContentTextView.numberOfLines = 5
-		
+				
 		replyBubble.addSubview(replyDeleteButton)
 		replyDeleteButton.alignParentRight(withMargin: 15).centerY().done()
 		
+
 		stackView.addArrangedSubview(mediaSelector)
 		mediaSelector.height(top_bar_height*2).matchParentSideBorders().done()
 		mediaSelector.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()

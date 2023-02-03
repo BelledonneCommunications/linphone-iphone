@@ -49,9 +49,11 @@ import AVFoundation
 	let refreshControl = UIRefreshControl()
 	
 	var mediaCollectionView : [UIImage] = []
+	var replyCollectionView : [UIImage] = []
 	var mediaURLCollection : [URL] = []
+	var replyURLCollection : [URL] = []
 	
-	var collectionView: UICollectionView = {
+	var collectionViewMedia: UICollectionView = {
 		let top_bar_height = 66.0
 		let width = UIScreen.main.bounds.width * 0.9
 		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -66,6 +68,22 @@ import AVFoundation
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
 		collectionView.backgroundColor = UIColor(white: 1, alpha: 0.5)
 		return collectionView
+	}()
+	
+	var collectionViewReply: UICollectionView = {
+		let collection_view_reply_height = 66.0
+		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+		layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
+
+		layout.sectionInset = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+		layout.scrollDirection = .horizontal
+		layout.minimumLineSpacing = 4
+		layout.minimumInteritemSpacing = 20
+
+		let collectionViewReply = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width - 60, height: collection_view_reply_height), collectionViewLayout: layout)
+		collectionViewReply.translatesAutoresizingMaskIntoConstraints = false
+		collectionViewReply.backgroundColor = .clear
+		return collectionViewReply
 	}()
 	
 	let loadingView = UIView()
@@ -187,7 +205,7 @@ import AVFoundation
 			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 			self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
 			self.mediaCollectionView.append(self.imageT[indexPath.row]!)
-			self.collectionView.insertItems(at: [indexPath])
+			self.collectionViewMedia.insertItems(at: [indexPath])
 			self.fileContext.append(self.data[indexPath.row]!)
 			if(self.mediaCount + self.newMediaCount <= indexPath.row+1){
 				if(self.mediaCollectionView.count > 0){
@@ -228,12 +246,17 @@ import AVFoundation
 
 		self.mediaCollectionView = []
 		self.mediaURLCollection = []
+		
+		self.replyURLCollection.removeAll()
+		self.replyCollectionView.removeAll()
+		
 		self.fileContext = []
 		self.messageView.fileContext = false
 		self.urlFile = []
 		self.imageT = []
 		self.data = []
-		self.collectionView.reloadData()
+		self.collectionViewMedia.reloadData()
+		self.collectionViewReply.reloadData()
 		if self.messageView.messageText.text.isEmpty{
 			self.messageView.sendButton.isEnabled = false
 		} else {
@@ -673,6 +696,12 @@ import AVFoundation
 			messageView.fileContext = false
 			self.mediaCollectionView = []
 			self.mediaURLCollection = []
+			if(self.mediaSelector.isHidden == false){
+				self.mediaSelector.isHidden = true
+			}
+			if(self.replyBubble.isHidden == false){
+				self.replyBubble.isHidden = true
+			}
 	 		return
  		}
 		if(self.mediaSelector.isHidden == false){
@@ -833,18 +862,47 @@ import AVFoundation
 			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: message!) : ChatMessage.getSwiftObject(cObject: message!).utf8Text)
 
 			replyContentTextView.text = content
+			replyContentForMeetingTextView.text = content
 			replyBubble.backgroundColor = (linphone_chat_message_is_outgoing(message) != 0) ? UIColor("A").withAlphaComponent(0.2) : UIColor("D").withAlphaComponent(0.2)
 			
+			replyDeleteButton.isHidden = false
 			replyDeleteButton.onClickAction = {
+				self.replyDeleteButton.isHidden = true
 				self.initReplyView(false, message: nil)
+				self.replyURLCollection.removeAll()
+				self.replyCollectionView.removeAll()
+				self.collectionViewReply.reloadData()
 			}
 			
+			let contentList = linphone_chat_message_get_contents(message)
+
 			if(isIcal){
 				replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
 				replyMeetingSchedule.isHidden = false
-				print("voip_meeting_schedule")
+				replyContentForMeetingTextView.isHidden = false
+				replyContentTextView.isHidden = true
 			}else{
+
+				if(bctbx_list_size(contentList) > 1 || content == ""){
+					mediaSelectorReply.isHidden = false
+					
+					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
+						if(content.isFile){
+							let indexPath = IndexPath(row: self.replyCollectionView.count, section: 0)
+							replyURLCollection.append(URL(string: content.filePath)!)
+							replyCollectionView.append(ChatConversationViewSwift.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							collectionViewReply.insertItems(at: [indexPath])
+						}
+					})
+					
+				}else{
+					mediaSelectorReply.isHidden = true
+					print("ChatConversationViewSwift initReplyView false \(bctbx_list_size(contentList))")
+				}
 				replyMeetingSchedule.isHidden = true
+				replyContentForMeetingTextView.isHidden = true
+				replyContentTextView.isHidden = false
+				
 			}
 			
 		}
@@ -859,6 +917,68 @@ import AVFoundation
 			tableController.scroll(toBottom: false)
 		}
 	}
+	
+	class func getImageFrom(_ content: OpaquePointer?, filePath: String?, forReplyBubble: Bool) -> UIImage? {
+		var filePath = filePath
+		let type = String(utf8String: linphone_content_get_type(content))
+		let name = String(utf8String: linphone_content_get_name(content))
+		if filePath == nil {
+			filePath = LinphoneManager.validFilePath(name)
+		}
+
+		var image: UIImage? = nil
+		if type == "video" {
+			image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
+		} else if type == "image" {
+			let data = NSData(contentsOfFile: filePath ?? "") as Data?
+			if let data {
+				image = UIImage(data: data)
+			}
+		}
+		if let image {
+			return image
+		} else {
+			return self.getImageFromFileName(name, forReplyBubble: forReplyBubble)
+		}
+	}
+	
+	class func getImageFromFileName(_ fileName: String?, forReplyBubble forReplyBubbble: Bool) -> UIImage? {
+		let `extension` = fileName?.lowercased().components(separatedBy: ".").last
+		var image: UIImage?
+		var text = fileName
+		if fileName?.contains("voice-recording") ?? false {
+			image = UIImage(named: "file_voice_default")
+			text = "cleson"//self.recordingDuration(LinphoneManager.validFilePath(fileName))
+		} else {
+			if `extension` == "pdf" {
+				image = UIImage(named: "file_pdf_default")
+			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(`extension` ?? "") {
+				image = UIImage(named: "file_picture_default")
+			} else if ["mkv", "avi", "mov", "mp4"].contains(`extension` ?? "") {
+				image = UIImage(named: "file_video_default")
+			} else if ["wav", "au", "m4a"].contains(`extension` ?? "") {
+				image = UIImage(named: "file_audio_default")
+			} else {
+				image = UIImage(named: "file_default")
+			}
+		}
+
+		return SwiftUtil.textToImage(drawText: text!, inImage: image!, forReplyBubble: forReplyBubbble)
+	}
+	
+	/*
+	
+	class func recordingDuration(_ _voiceRecordingFile: String?) -> String? {
+		let p = Core(cPointer: <#OpaquePointer#>).createLocalPlayer(soundCardName: nil, videoDisplayName: nil, windowId: nil)
+		let p = linphone_core_create_local_player(LinphoneManager.getLc(), nil, nil, nil)
+		Player.open(filename: _voiceRecordingFile?.utf8CString)
+		linphone_player_open(p, _voiceRecordingFile?.utf8CString)
+		let result = self.formattedDuration(linphone_player_get_duration(p))
+		linphone_player_close(p)
+		return result
+	}
+	 
+	 */
 	
 	@objc class func getKeyFromFileType(_ fileType: String?, fileName name: String?) -> String? {
 		if fileType == "video" {
@@ -1051,10 +1171,10 @@ import AVFoundation
 	}
 	
 	func setupViews() {
-		mediaSelector.addSubview(collectionView)
-		collectionView.dataSource = self
-		collectionView.delegate = self
-		collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+		mediaSelector.addSubview(collectionViewMedia)
+		collectionViewMedia.dataSource = self
+		collectionViewMedia.delegate = self
+		collectionViewMedia.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
 		
 		
 		loadingView.backgroundColor = UIColor(red: 0.77, green: 0.77, blue: 0.77, alpha: 0.80)
@@ -1066,72 +1186,117 @@ import AVFoundation
 		loadingView.addSubview(loadingText)
 		loadingText.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).alignParentBottom(withMargin: 30).alignVerticalCenterWith(loadingView).done()
 		loading.square(Int(top_bar_height)).alignVerticalCenterWith(loadingView).alignParentTop(withMargin: 20).done()
+		
+		mediaSelectorReply.addSubview(collectionViewReply)
+		collectionViewReply.dataSource = self
+		collectionViewReply.delegate = self
+		collectionViewReply.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellReply")
 	}
 
 	@objc func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return mediaCollectionView.count
+		if(collectionView == collectionViewMedia){
+			return mediaCollectionView.count
+		}
+		return replyCollectionView.count
 	}
 
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-		let viewCell: UIView = UIView(frame: cell.contentView.frame)
-		cell.addSubview(viewCell)
-		
-		let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
-		
-		deleteButton.onClickAction = {
-			self.collectionView.deleteItems(at: [indexPath])
-			self.mediaCollectionView.remove(at: indexPath.row)
-			self.mediaURLCollection.remove(at: indexPath.row)
-			self.fileContext.remove(at: indexPath.row)
-			self.urlFile.remove(at: indexPath.row)
-			self.imageT.remove(at: indexPath.row)
-			self.data.remove(at: indexPath.row)
-			if(self.mediaCollectionView.count == 0){
-				self.messageView.fileContext = false
-				self.selectionMedia()
-				if self.messageView.messageText.text.isEmpty{
-					self.messageView.sendButton.isEnabled = false
-				} else {
-					self.messageView.sendButton.isEnabled = true
+		if(collectionView == collectionViewMedia){
+			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+			let viewCell: UIView = UIView(frame: cell.contentView.frame)
+			cell.addSubview(viewCell)
+			
+			let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
+			
+			deleteButton.onClickAction = {
+				self.collectionViewMedia.deleteItems(at: [indexPath])
+				self.mediaCollectionView.remove(at: indexPath.row)
+				self.mediaURLCollection.remove(at: indexPath.row)
+				self.fileContext.remove(at: indexPath.row)
+				self.urlFile.remove(at: indexPath.row)
+				self.imageT.remove(at: indexPath.row)
+				self.data.remove(at: indexPath.row)
+				if(self.mediaCollectionView.count == 0){
+					self.messageView.fileContext = false
+					self.selectionMedia()
+					if self.messageView.messageText.text.isEmpty{
+						self.messageView.sendButton.isEnabled = false
+					} else {
+						self.messageView.sendButton.isEnabled = true
+					}
 				}
 			}
-		}
-		
-		let imageCell = mediaCollectionView[indexPath.row]
-		var myImageView = UIImageView()
-		
-		if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
-			myImageView = UIImageView(image: imageCell)
-		}else{
-			let fileNameText = mediaURLCollection[indexPath.row].lastPathComponent
-			let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
-			myImageView = UIImageView(image: fileName)
-		}
-		
-		myImageView.size(w: (viewCell.frame.width * 0.9)-2, h: (viewCell.frame.height * 0.9)-2).done()
-		viewCell.addSubview(myImageView)
-		myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
-		
-		if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
-			var imagePlay = UIImage()
-			if #available(iOS 13.0, *) {
-				imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
-			} else {
-				imagePlay = UIImage(named: "vr_play")!
+			
+			let imageCell = mediaCollectionView[indexPath.row]
+			var myImageView = UIImageView()
+			
+			if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				myImageView = UIImageView(image: imageCell)
+			}else{
+				let fileNameText = mediaURLCollection[indexPath.row].lastPathComponent
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+				myImageView = UIImageView(image: fileName)
 			}
-			let myImagePlayView = UIImageView(image: imagePlay)
-			viewCell.addSubview(myImagePlayView)
-			myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
-			myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
-		}
-		myImageView.contentMode = .scaleAspectFill
-		myImageView.clipsToBounds = true
+			
+			myImageView.size(w: (viewCell.frame.width * 0.9)-2, h: (viewCell.frame.height * 0.9)-2).done()
+			viewCell.addSubview(myImageView)
+			myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
+			
+			if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				var imagePlay = UIImage()
+				if #available(iOS 13.0, *) {
+					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+				} else {
+					imagePlay = UIImage(named: "vr_play")!
+				}
+				let myImagePlayView = UIImageView(image: imagePlay)
+				viewCell.addSubview(myImagePlayView)
+				myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+				myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+			}
+			myImageView.contentMode = .scaleAspectFill
+			myImageView.clipsToBounds = true
 
-		viewCell.addSubview(deleteButton)
-		deleteButton.alignParentRight().done()
-		
-		return cell
+			viewCell.addSubview(deleteButton)
+			deleteButton.alignParentRight().done()
+			
+			return cell
+		}else{
+			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellReply", for: indexPath)
+			let viewCell: UIView = UIView(frame: cell.contentView.frame)
+			cell.addSubview(viewCell)
+			
+			let imageCell = replyCollectionView[indexPath.row]
+			var myImageView = UIImageView()
+			
+			if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				myImageView = UIImageView(image: imageCell)
+			}else{
+				let fileNameText = replyURLCollection[indexPath.row].lastPathComponent
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+				myImageView = UIImageView(image: fileName)
+			}
+			
+			myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
+			viewCell.addSubview(myImageView)
+			
+			if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				var imagePlay = UIImage()
+				if #available(iOS 13.0, *) {
+					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+				} else {
+					imagePlay = UIImage(named: "vr_play")!
+				}
+				let myImagePlayView = UIImageView(image: imagePlay)
+				viewCell.addSubview(myImagePlayView)
+				myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+				myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+			}
+			myImageView.contentMode = .scaleAspectFill
+			myImageView.clipsToBounds = true
+			
+			return cell
+		}
 	}
 	
 	@available(iOS 14.0, *)
@@ -1191,6 +1356,34 @@ import AVFoundation
 				print(error.localizedDescription)
 			}
 		}
+	}
+	
+	func createCollectionViewItemForReply(urlFile: URL?, type: String) -> UIImage {
+		if let url = urlFile {
+			do {
+				if(type == "public.image"){
+					
+					print("ChatConversationViewSwift initReplyView URL \(url)")
+					let dataResult = try Data(contentsOf: urlFile!)
+					if let image = UIImage(data: dataResult) {
+						return image
+					}else{
+						return UIImage(named: "chat_error")!
+					}
+				}else if(type == "public.movie"){
+					var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: urlFile!.relativeString)
+					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
+					return tmpImage!
+				}else{
+					let otherFile = FileType.init(urlFile!.pathExtension)
+					let otherFileImage = otherFile!.getImageFromFile()
+					return otherFileImage!
+				}
+			}catch let error{
+				print(error.localizedDescription)
+			}
+		}
+		return UIImage(named: "chat_error")!
 	}
 	
 	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -1305,6 +1498,9 @@ import AVFoundation
 		if(replyBubble.isHidden == false){
 			replyBubble.isHidden = true
 		}
+		self.replyURLCollection.removeAll()
+		self.replyCollectionView.removeAll()
+		self.collectionViewReply.reloadData()
 		replyMessage = forMessage
 		initReplyView(true, message: forMessage)
 	}
