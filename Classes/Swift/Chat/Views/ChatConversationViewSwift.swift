@@ -151,10 +151,13 @@ import AVFoundation
 	var showReplyView = false
 	var replyMessage : OpaquePointer? = nil
 	
+	@objc var sharingMedia : Bool = false
+	
 	override func viewDidLoad() {
 		super.viewDidLoad(
 			backAction: {
 				self.goBackChatListView()
+				
 			},
 			action1: {
 				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
@@ -220,6 +223,7 @@ import AVFoundation
 		}
 		
 		self.handlePendingTransferIfAny()
+		self.shareFile()
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -271,6 +275,7 @@ import AVFoundation
 	}
 	
 	func goBackChatListView() {
+		sharingMedia = false
 		PhoneMainView.instance().pop(toView: ChatsListView.compositeViewDescription())
 	}
 	
@@ -527,7 +532,7 @@ import AVFoundation
 		
 	}
 	
-	@objc func alertActionGoToDevicesList() {
+	func alertActionGoToDevicesList() {
 		
 		let notAskAgain = ConfigManager.instance().lpConfigBoolForKey(key: "confirmation_dialog_before_sas_call_not_ask_again");
 		if(!notAskAgain){
@@ -977,7 +982,7 @@ import AVFoundation
 			result = self.formattedDuration(linphonePlayer.duration)!
 			linphonePlayer.close()
 		}catch{
-			
+			print(error)
 		}
 		return result
 	}
@@ -1005,7 +1010,7 @@ import AVFoundation
 					// we're finished, save the image and update the message
 					let image = UIImage(data: data!)
 					if image == nil {
-						showFileDownloadError()
+						ChatConversationViewSwift.showFileDownloadError()
 						return
 					}
 					var placeHolder: PHObjectPlaceholder? = nil
@@ -1199,7 +1204,7 @@ import AVFoundation
 		collectionViewReply.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellReply")
 	}
 
-	@objc func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		if(collectionView == collectionViewMedia){
 			return mediaCollectionView.count
 		}
@@ -1498,6 +1503,74 @@ import AVFoundation
 		}
 	}
 	
+	func shareFile() {
+		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
+		let defaults = UserDefaults(suiteName: groupName)
+		let dict = defaults?.value(forKey: "photoData") as? [AnyHashable : Any]
+		let dictFile = defaults?.value(forKey: "icloudData") as? [AnyHashable : Any]
+		let dictUrl = defaults?.value(forKey: "url") as? [AnyHashable : Any]
+		if let dict {
+			//file shared from photo lib
+			let fileName = dict["url"] as? String
+			messageView.messageText.text = dict["message"] as? String
+			confirmShare(nsDataRead(), url: nil, fileName: fileName)
+			defaults?.removeObject(forKey: "photoData")
+		} else if let dictFile {
+			let fileName = dictFile["url"] as? String
+			messageView.messageText.text = dictFile["message"] as? String
+			confirmShare(nsDataRead(), url: nil, fileName: fileName)
+			defaults?.removeObject(forKey: "icloudData")
+		} else if let dictUrl {
+			let url = dictUrl["url"] as? String
+			messageView.messageText.text = dictUrl["message"] as? String
+			confirmShare(nil, url: url, fileName: nil)
+			defaults?.removeObject(forKey: "url")
+		}
+	}
+	
+	func nsDataRead() -> Data? {
+		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
+		let path = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupName)?.path
+		let fullCacheFilePathPath = "\(path ?? "")/\("nsData")"
+		return NSData(contentsOfFile: fullCacheFilePathPath) as Data?
+	}
+	
+	func confirmShare(_ data: Data?, url: String?, fileName: String?) {
+		let sheet = DTActionSheet(title: NSLocalizedString("Select or create a conversation to share the file(s)", comment: ""))
+		DispatchQueue.main.async(execute: { [self] in
+			sheet!.addButton(
+				withTitle: NSLocalizedString("Send to this conversation", comment: "")) { [self] in
+					do{
+						if messageView.messageText.text != "" {
+							try sendMessageInMessageField(rootMessage: chatRoom?.createEmptyMessage())
+						}
+						if let url {
+							_ = try sendMessage(message: url, withExterlBodyUrl: nil, rootMessage: chatRoom?.createEmptyMessage())
+						} else {
+							_ = try startFileUpload(data, withName: fileName, rootMessage: chatRoom?.createEmptyMessage())
+						}
+					}catch{
+						print(error)
+					}
+			}
+
+			sheet!.addCancelButton(withTitle: NSLocalizedString("Cancel", comment: ""), block: nil)
+			sheet!.show(in: PhoneMainView.instance().view)
+		})
+	}
+	
+	func startFileUpload(_ data: Data?, withName name: String?, rootMessage: ChatMessage?) -> Bool {
+		let fileTransfer = FileTransferDelegate()
+		fileTransfer.uploadFile(data, for: chatRoom?.getCobject, withName: name, rootMessage: rootMessage?.getCobject)
+		tableController.scroll(toBottom: true)
+		return true
+	}
+	
+	@objc class func getFileUrl(_ name: String?) -> URL? {
+		let filePath = LinphoneManager.validFilePath(name)
+		return URL(fileURLWithPath: filePath!)
+	}
+	
 	@objc func initiateReplyView(forMessage: OpaquePointer?) {
 		if(replyBubble.isHidden == false){
 			replyBubble.isHidden = true
@@ -1507,5 +1580,15 @@ import AVFoundation
 		self.collectionViewReply.reloadData()
 		replyMessage = forMessage
 		initReplyView(true, message: forMessage)
+	}
+	
+	@objc class func isBasicChatRoom(_ room: OpaquePointer?) -> Bool {
+		if room == nil {
+			return true
+		}
+		
+		let charRoomBasic = ChatRoom.getSwiftObject(cObject: room!)
+		let isBasic = charRoomBasic.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesBasic.rawValue))
+		return isBasic
 	}
 }

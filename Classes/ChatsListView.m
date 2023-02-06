@@ -71,15 +71,15 @@
 	NSDictionary *dict = [defaults valueForKey:@"photoData"];
 	NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
 	NSDictionary *dictUrl = [defaults valueForKey:@"url"];
-	if(dict||dictFile||dictUrl) VIEW(ChatConversationView).sharingMedia = TRUE;
+	if(dict||dictFile||dictUrl) VIEW(ChatConversationViewSwift).sharingMedia = TRUE;
 
-	if(VIEW(ChatConversationView).sharingMedia == nil){
+	if(VIEW(ChatConversationViewSwift).sharingMedia == false){
 		forwardMode = VIEW(ChatConversationViewSwift).pendingForwardMessage != nil;
 	}else{
-		forwardMode = VIEW(ChatConversationView).sharingMedia != nil;
+		forwardMode = VIEW(ChatConversationViewSwift).sharingMedia != false;
 	}
 	_tableController.editButton.hidden = forwardMode;
-	if(VIEW(ChatConversationView).sharingMedia == nil){
+	if(VIEW(ChatConversationViewSwift).sharingMedia == false){
 		_forwardTitle.text =  NSLocalizedString(@"Select a discussion or create a new one",nil);
 	}
 	else{
@@ -201,7 +201,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCancelForwardClicked:(id)sender {
-	VIEW(ChatConversationView).sharingMedia = nil;
+	VIEW(ChatConversationViewSwift).sharingMedia = false;
 	VIEW(ChatConversationViewSwift).pendingForwardMessage = nil;
 	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
 	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];

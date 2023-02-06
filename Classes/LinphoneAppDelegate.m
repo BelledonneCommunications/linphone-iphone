@@ -423,12 +423,12 @@
 		}
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
 		if ([[PhoneMainView.instance currentView] equal:ChatsListView.compositeViewDescription]) {
-			VIEW(ChatConversationView).sharingMedia = TRUE;
+			VIEW(ChatConversationViewSwift).sharingMedia = TRUE;
 			ChatsListView *view = VIEW(ChatsListView);
 			[view mediaSharing];
 		}else{
 			[SVProgressHUD dismiss];
-			VIEW(ChatConversationView).sharingMedia = TRUE;
+			VIEW(ChatConversationViewSwift).sharingMedia = TRUE;
 			[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
 		}
     } else if ([scheme isEqualToString:@"sip"]||[scheme isEqualToString:@"sips"]) {
