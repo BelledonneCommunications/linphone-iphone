@@ -48,6 +48,7 @@ import SnapKit
 	let mediaSelector  = UIView()
 	let mediaSelectorReply  = UIView()
 	var replyBubble = UIView()
+	var backgroundReplyColor = UIView()
     var backAction : (() -> Void)? = nil
     var action1 : (() -> Void)? = nil
     var action2 : (() -> Void)? = nil
@@ -163,12 +164,14 @@ import SnapKit
 		isComposingTextView.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).alignParentTop(withMargin: 10).matchParentHeight().done()
 		isComposingView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
-	
 		stackView.addArrangedSubview(replyBubble)
 		replyBubble.matchParentSideBorders().maxHeight(top_bar_height*3).done()
 		replyBubble.translatesAutoresizingMaskIntoConstraints = false
-		replyBubble.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		replyBubble.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		replyBubble.isHidden = true
+		
+		replyBubble.addSubview(backgroundReplyColor)
+		backgroundReplyColor.matchParentSideBorders().matchParentHeight().done()
 		
 		stackViewReply.axis = .vertical;
 		stackViewReply.distribution = .fill;
@@ -231,15 +234,8 @@ import SnapKit
 		stackView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
 		stackView.centerYAnchor.constraint(equalTo:self.view.centerYAnchor).isActive = true
 		
-		view.bringSubviewToFront(isComposingView)
-		view.bringSubviewToFront(mediaSelector)
-		view.bringSubviewToFront(replyBubble)
-		
-		view.bringSubviewToFront(messageView)
-		
-		view.bringSubviewToFront(contentView)
-		
 		view.bringSubviewToFront(topBar)
+
     }
     
     override func viewWillAppear(_ animated: Bool) {

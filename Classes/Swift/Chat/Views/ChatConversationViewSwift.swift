@@ -157,7 +157,6 @@ import AVFoundation
 		super.viewDidLoad(
 			backAction: {
 				self.goBackChatListView()
-				
 			},
 			action1: {
 				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
@@ -266,6 +265,8 @@ import AVFoundation
 			self.messageView.sendButton.isEnabled = true
 		}
 		self.messageView.pictureButton.isEnabled = true
+		
+		isComposingTextView.text = ""
 		
 		workItem?.cancel()
 		for progressItem in progress{
@@ -826,7 +827,6 @@ import AVFoundation
 					}
 					composingAddresses = composingAddresses! + FastAddressBook.displayName(for: addressItem.getCobject)
 				})
-
 				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
 			}
 		}
@@ -867,7 +867,7 @@ import AVFoundation
 
 			replyContentTextView.text = content
 			replyContentForMeetingTextView.text = content
-			replyBubble.backgroundColor = (linphone_chat_message_is_outgoing(message) != 0) ? UIColor("A").withAlphaComponent(0.2) : UIColor("D").withAlphaComponent(0.2)
+			backgroundReplyColor.backgroundColor = (linphone_chat_message_is_outgoing(message) != 0) ? UIColor("A").withAlphaComponent(0.2) : UIColor("D").withAlphaComponent(0.2)
 			
 			replyDeleteButton.isHidden = false
 			replyDeleteButton.onClickAction = {
