@@ -40,6 +40,7 @@ import SnapKit
 	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
 	let replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
 	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	let replyContentTextSpacing = UIView()
 	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
 	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
 	let replyMeetingSchedule = UIImageView()
@@ -181,7 +182,7 @@ import SnapKit
 		replyLabelTextView.height(30).done()
 		
 		stackViewReply.addArrangedSubview(replyMeetingSchedule)
-		replyMeetingSchedule.size(w: 100, h: 40).done()
+		replyMeetingSchedule.size(w: 100, h: 40).wrapContentY().done()
 		replyMeetingSchedule.contentMode = .scaleAspectFit
 		replyMeetingSchedule.isHidden = true
 		
@@ -194,6 +195,10 @@ import SnapKit
 		stackViewReply.addArrangedSubview(mediaSelectorReply)
 		mediaSelectorReply.height(top_bar_height).wrapContentY().alignParentRight(withMargin: 50).done()
 		mediaSelectorReply.isHidden = true
+		
+		stackViewReply.addArrangedSubview(replyContentTextSpacing)
+		replyContentTextSpacing.height(8 ).wrapContentY().done()
+		replyContentTextSpacing.isHidden = true
 		
 		stackViewReply.addArrangedSubview(replyContentTextView)
 		replyContentTextView.wrapContentY().done()

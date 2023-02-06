@@ -25,7 +25,7 @@ import DropDown
 import PhotosUI
 import AVFoundation
 
-@objc class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
+@objc class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
 	
@@ -150,7 +150,6 @@ import AVFoundation
 	var replyViewHeight = 0.0
 	var showReplyView = false
 	var replyMessage : OpaquePointer? = nil
-	
 	
 	override func viewDidLoad() {
 		super.viewDidLoad(
@@ -881,23 +880,26 @@ import AVFoundation
 				replyMeetingSchedule.isHidden = false
 				replyContentForMeetingTextView.isHidden = false
 				replyContentTextView.isHidden = true
+				mediaSelectorReply.isHidden = true
+				replyContentTextSpacing.isHidden = true
 			}else{
 
 				if(bctbx_list_size(contentList) > 1 || content == ""){
 					mediaSelectorReply.isHidden = false
-					
+					replyContentTextSpacing.isHidden = true
 					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
 						if(content.isFile){
 							let indexPath = IndexPath(row: self.replyCollectionView.count, section: 0)
 							replyURLCollection.append(URL(string: content.filePath)!)
 							replyCollectionView.append(ChatConversationViewSwift.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 							collectionViewReply.insertItems(at: [indexPath])
-						}
+						}else if(content.isText){
+							replyContentTextSpacing.isHidden = false
+			 			}
 					})
 					
 				}else{
 					mediaSelectorReply.isHidden = true
-					print("ChatConversationViewSwift initReplyView false \(bctbx_list_size(contentList))")
 				}
 				replyMeetingSchedule.isHidden = true
 				replyContentForMeetingTextView.isHidden = true
@@ -948,7 +950,7 @@ import AVFoundation
 		var text = fileName
 		if fileName?.contains("voice-recording") ?? false {
 			image = UIImage(named: "file_voice_default")
-			text = "cleson"//self.recordingDuration(LinphoneManager.validFilePath(fileName))
+			text = self.recordingDuration(LinphoneManager.validFilePath(fileName))
 		} else {
 			if `extension` == "pdf" {
 				image = UIImage(named: "file_pdf_default")
@@ -966,19 +968,23 @@ import AVFoundation
 		return SwiftUtil.textToImage(drawText: text!, inImage: image!, forReplyBubble: forReplyBubbble)
 	}
 	
-	/*
-	
 	class func recordingDuration(_ _voiceRecordingFile: String?) -> String? {
-		let p = Core(cPointer: <#OpaquePointer#>).createLocalPlayer(soundCardName: nil, videoDisplayName: nil, windowId: nil)
-		let p = linphone_core_create_local_player(LinphoneManager.getLc(), nil, nil, nil)
-		Player.open(filename: _voiceRecordingFile?.utf8CString)
-		linphone_player_open(p, _voiceRecordingFile?.utf8CString)
-		let result = self.formattedDuration(linphone_player_get_duration(p))
-		linphone_player_close(p)
+		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
+		var result = ""
+		do{
+			let linphonePlayer = try core.createLocalPlayer(soundCardName: nil, videoDisplayName: nil, windowId: nil)
+			try linphonePlayer.open(filename: _voiceRecordingFile!)
+			result = self.formattedDuration(linphonePlayer.duration)!
+			linphonePlayer.close()
+		}catch{
+			
+		}
 		return result
 	}
-	 
-	 */
+	
+	class func formattedDuration(_ valueMs: Int) -> String? {
+		return String(format: "%02ld:%02ld", valueMs / 60000, (valueMs % 60000) / 1000)
+	}
 	
 	@objc class func getKeyFromFileType(_ fileType: String?, fileName name: String?) -> String? {
 		if fileType == "video" {
@@ -1362,8 +1368,6 @@ import AVFoundation
 		if let url = urlFile {
 			do {
 				if(type == "public.image"){
-					
-					print("ChatConversationViewSwift initReplyView URL \(url)")
 					let dataResult = try Data(contentsOf: urlFile!)
 					if let image = UIImage(data: dataResult) {
 						return image
