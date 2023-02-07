@@ -89,17 +89,20 @@
 
 		if (!contact) {
 			LinphoneFriend *friend = linphone_core_find_friend(LC, address);
-			MSList *numbers = linphone_friend_get_phone_numbers(friend);
-			while (numbers) {
-				NSString *phone = [NSString stringWithUTF8String:numbers->data];
+			bctbx_list_t *number_list = linphone_friend_get_phone_numbers(friend);
+			bctbx_list_t *it;
+			for (it = number_list ; it != NULL; it = it->next) {
+				NSString *phone = [NSString stringWithUTF8String:it->data];
 				LinphoneAccount *account = linphone_core_get_default_account(LC);
 				
 				if (account) {
-					const char *normvalue = linphone_account_normalize_phone_number(account, phone.UTF8String);
+					char *normvalue = linphone_account_normalize_phone_number(account, phone.UTF8String);
 					LinphoneAddress *addr = linphone_account_normalize_sip_uri(account, normvalue);
 					char *phone_addr = linphone_address_as_string_uri_only(addr);
 					contact = [FastAddressBook getContact:[NSString stringWithUTF8String:phone_addr]];
 					ms_free(phone_addr);
+					linphone_address_unref(addr);
+					bctbx_free(normvalue);
 				} else {
 					contact = [FastAddressBook getContact:phone];
 				}
@@ -107,8 +110,8 @@
 				if (contact) {
 					break;
 				}
-				numbers = numbers->next;
 			}
+			bctbx_list_free(number_list);
 		}
 	}
 

@@ -711,7 +711,7 @@ import AVFoundation
 					}
 					break
 				case .Released:
-					call.userData = nil
+					CallManager.setAppData(sCall : call, appData : nil);
 					break
 				case .Referred:
 					CallManager.instance().referedFromCall = call.callLog?.callId

@@ -64,9 +64,13 @@
 	  }
 	  const char *key = [NSString stringWithFormat:@"ab%@", acncontact.identifier].UTF8String;
 	  // try to find friend associated with that person
+	  if (_friend){
+		  linphone_friend_unref(_friend);
+		  _friend = nil;
+	  }
 	  _friend = linphone_friend_list_find_friend_by_ref_key(linphone_core_get_default_friend_list(LC), key);
 	  if (!_friend) {
-		  _friend = linphone_friend_ref(linphone_core_create_friend(LC));
+		  _friend = linphone_core_create_friend(LC);
 		  linphone_friend_set_ref_key(_friend, key);
 		  linphone_friend_set_name(_friend, [NSString stringWithFormat:@"%@%@", _firstName ? _firstName : @"", _lastName ? [_firstName ? @" " : @"" stringByAppendingString:_lastName] : @""] .UTF8String);
 		  for (NSString *sipAddr in _sipAddresses) {
@@ -85,9 +89,7 @@
 			  linphone_friend_set_inc_subscribe_policy(_friend, LinphoneSPDeny);
 				  linphone_core_add_friend(LC, _friend);
 		  }
-	  }
-	  linphone_friend_ref(_friend);
-	  
+	  }else linphone_friend_ref(_friend);
   } else if (_friend) {
 	  [self loadFriend];
   } else {
@@ -461,7 +463,7 @@
 	// try to find friend associated with that person
 	_friend = linphone_friend_list_find_friend_by_ref_key(linphone_core_get_default_friend_list(LC), key);
 	if (!_friend) {
-		_friend = linphone_friend_ref(linphone_core_create_friend(LC));
+		_friend = linphone_core_create_friend(LC);
 		linphone_friend_set_ref_key(_friend, key);
 		linphone_friend_set_name(_friend, [NSString stringWithFormat:@"%@%@", _firstName ? _firstName : @"", _lastName ? [_firstName ? @" " : @"" stringByAppendingString:_lastName] : @""] .UTF8String);
 		for (NSString *sipAddr in _sipAddresses) {
@@ -480,11 +482,11 @@
 			linphone_friend_set_inc_subscribe_policy(_friend, LinphoneSPDeny);
 				linphone_core_add_friend(LC, _friend);
 		}
-	}
-	linphone_friend_ref(_friend);
+	} else linphone_friend_ref(_friend);
 }
 
 - (void)clearFriend {
+	if (_friend) linphone_friend_unref(_friend);
 	_friend = NULL;
 }
 

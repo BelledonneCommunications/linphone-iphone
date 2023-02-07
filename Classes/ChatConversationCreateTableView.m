@@ -99,10 +99,12 @@
 
 - (void) buildChatContactTable {
 	
-	bctbx_list_t *results = [MagicSearchSingleton.instance getLastSearchResults];
-	while (results) {
-		
-		LinphoneSearchResult *result = results->data;
+	bctbx_list_t *result_list = [MagicSearchSingleton.instance getLastSearchResults];
+	bctbx_list_t *it;
+	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	
+	for (it = result_list; it != NULL; it = it->next) {
+		LinphoneSearchResult *result = it->data;
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
 		const LinphoneFriend* friend = linphone_search_result_get_friend(result);
 		const char *phoneNumber = linphone_search_result_get_phone_number(result);
@@ -110,6 +112,7 @@
 		Contact *contact = nil;
 		char *uri = nil;
 		NSString *address = nil;
+		
 		if (addr) {
 			uri = linphone_address_as_string_uri_only(addr);
 			address = [NSString stringWithUTF8String:uri];
@@ -122,40 +125,37 @@
 			}
 		} else if (friend){
 			if (!phoneNumber) {
-				results = results->next;
 				continue;
 			}
-			LinphoneAccount *account = linphone_core_get_default_account(LC);
+			
 			if (account) {
-				const char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
+				char *normalizedPhoneNumber = linphone_account_normalize_phone_number(account, phoneNumber);
 				if (!normalizedPhoneNumber) {
 					// get invalid phone number, continue
-					results = results->next;
 					continue;
 				}
 				addr = linphone_account_normalize_sip_uri(account, normalizedPhoneNumber);
+				bctbx_free(normalizedPhoneNumber);
 				uri = linphone_address_as_string_uri_only(addr);
 				address = [NSString stringWithUTF8String:uri];
 				
 				contact = [[Contact alloc] initWithFriend:friend];
 				[contact setCreatedFromLdapOrProvisioning:TRUE];
 				[_ldapAndProvisioningContactAddressBookMap setObject:contact forKey:address];
+				linphone_address_unref(addr);
 			}
 		}
+		if (uri) ms_free(uri);
 		
 		if (!addr) {
-			results = results->next;
 			continue;
 		}
-		
-		ms_free(uri);
-		
 		[_addresses addObject:address];
 		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
 		[_addressesCached addObject:[NSString stringWithFormat:@"%d",linphone_search_result_get_capabilities(result)]];
 		
-		results = results->next;
 	}
+	bctbx_list_free(result_list);
 	[self.tableView reloadData];
 	_reloadMagicSearch = FALSE;
 }

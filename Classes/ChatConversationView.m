@@ -348,6 +348,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_tableController scrollToBottom:true];
 		}
 	}
+	if (peerAddr) linphone_address_unref(peerAddr);
+	if (localAddr) linphone_address_unref(localAddr);
 
 	_backButton.hidden = _tableController.isEditing;
 	[self refreshImageDrawer];
@@ -418,6 +420,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
 		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
+		bctbx_list_free(participants);
 	} else
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT];
 

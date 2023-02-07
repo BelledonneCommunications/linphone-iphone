@@ -41,6 +41,11 @@
 	return self;
 }
 
+
+- (void)dealloc {
+	bctbx_list_free(_data);
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {

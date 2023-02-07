@@ -82,6 +82,7 @@
 		} else {
 			_addressLabel.text = [NSString stringWithUTF8String:LINPHONE_DUMMY_SUBJECT];
 		}
+		bctbx_list_free(participants);
 	} else {
 		const char *subject = linphone_chat_room_get_subject(chatRoom);
 		_addressLabel.text = [NSString stringWithUTF8String:subject ?: LINPHONE_DUMMY_SUBJECT];
