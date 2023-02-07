@@ -115,6 +115,9 @@ class Avatar : UIView {
 		if (shared == nil) {
 			prepareIt()
 		}
+		if (displayName.replacingOccurrences(of: " ", with: "").count == 0) {
+			return Avatar.singleAvatar
+		}
 		shared?.initialsLabel.text = Address.initials(displayName: displayName)
 		shared?.initialsLabel.isHidden = false
 		shared?.iconImageView.isHidden = true
