@@ -61,6 +61,7 @@
 @property(nonatomic) NSTimer *ephemeralDisplayTimer;
 @property (nullable, nonatomic) UIButton *floatingScrollButton;
 @property (nullable, nonatomic) UILabel *scrollBadge;
+@property (nullable, nonatomic) UIButton *floatingScrollBackground;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;

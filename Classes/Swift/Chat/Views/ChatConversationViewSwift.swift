@@ -153,6 +153,8 @@ import AVFoundation
 	
 	@objc var sharingMedia : Bool = false
 	
+	var isVoiceRecording : Bool = false
+	
 	override func viewDidLoad() {
 		super.viewDidLoad(
 			backAction: {
@@ -267,6 +269,8 @@ import AVFoundation
 		self.messageView.pictureButton.isEnabled = true
 		
 		isComposingTextView.text = ""
+		
+		tableController.floatingScrollBackground?.isHidden = true;
 		
 		workItem?.cancel()
 		for progressItem in progress{
@@ -1591,4 +1595,97 @@ import AVFoundation
 		let isBasic = charRoomBasic.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesBasic.rawValue))
 		return isBasic
 	}
+	
+	/*
+	func onVrStart(_ sender: Any) {
+		if isVoiceRecording {
+			stopVoiceRecording()
+		} else {
+			startVoiceRecording()
+		}
+	}
+	
+	func createVoiceRecorder() {
+		let p = linphone_core_create_recorder_params(LC)
+		linphone_recorder_params_set_file_format(p, LinphoneRecorderFileFormatMkv)
+		voiceRecorder = linphone_core_create_recorder(LC, p)
+	}
+	
+	func startVoiceRecording() {
+		UIApplication.shared.isIdleTimerDisabled = true
+
+		if !voiceRecorder {
+			createVoiceRecorder()
+		}
+		CallManager.instance.activateAudioSession()
+		toggleRecord.selected = true
+		vrPlayButton.setImage(UIImage(named: "vr_stop"), for: .normal)
+
+
+		showVoiceRecorderView = true
+		updateFramesInclRecordingAndReplyView()
+		isVoiceRecording = true
+		vrWaveMaskPlayer.frame = CGRect.zero
+
+		switch linphone_recorder_get_state(voiceRecorder) {
+		case LinphoneRecorderClosed:
+			let filename = "\(LinphoneManager.imagesDirectory())/voice-recording-\(UUID().uuidString).mkv"
+			linphone_recorder_open(voiceRecorder, filename.utf8CString)
+			linphone_recorder_start(voiceRecorder)
+			LOGW("[Chat Message Sending] Recorder is closed opening it with %@", filename)
+		case LinphoneRecorderRunning:
+			LOGW("[Chat Message Sending] Recorder is already recording")
+		case LinphoneRecorderPaused:
+			LOGW("[Chat Message Sending] Recorder isn't closed, resuming recording")
+			linphone_recorder_start(voiceRecorder)
+		default:
+			break
+		}
+		vrWaveMask.frame = vrWave.frame
+		vrDurationLabel.text = formattedDuration(linphone_recorder_get_duration(voiceRecorder))
+		vrRecordTimer = Timer.scheduledTimer(
+			timeInterval: 1.0,
+			target: self,
+			selector: Selector("voiceRecordTimerUpdate"),
+			userInfo: nil,
+			repeats: true)
+	}
+	
+	func stopVoiceRecording() {
+		UIApplication.shared.isIdleTimerDisabled = false
+		if voiceRecorder && linphone_recorder_get_state(voiceRecorder) == LinphoneRecorderRunning {
+			LOGI("[Chat Message Sending] Pausing / closing voice recorder")
+			linphone_recorder_pause(voiceRecorder)
+			linphone_recorder_close(voiceRecorder)
+			vrDurationLabel.text = formattedDuration(linphone_recorder_get_duration(voiceRecorder))
+		}
+		isVoiceRecording = false
+		if LinphoneManager.instance.lpConfigBool(forKey: "voice_recording_send_right_away", withDefault: false) {
+			onSendClick(nil)
+		}
+		vrPlayButton.setImage(UIImage(named: "vr_play"), for: .normal)
+		toggleRecord.selected = false
+		vrWaveMask.frame = CGRect.zero
+		vrRecordTimer.invalidate()
+		isPendingVoiceRecord = linphone_recorder_get_duration(voiceRecorder) > 0
+		setSendButtonState()
+
+	}
+	
+	func cancelVoiceRecording() {
+		UIApplication.shared.isIdleTimerDisabled = false
+		showVoiceRecorderView = false
+		toggleRecord.selected = false
+		updateFramesInclRecordingAndReplyView()
+		isPendingVoiceRecord = false
+		isVoiceRecording = false
+		if voiceRecorder && linphone_recorder_get_state(voiceRecorder) != LinphoneRecorderClosed {
+			linphone_recorder_close(voiceRecorder)
+			let recordingFile = linphone_recorder_get_file(voiceRecorder)
+			if let recordingFile {
+				AppManager.removeFile(withFile: String(utf8String: recordingFile))
+			}
+		}
+		setSendButtonState()
+	}*/
 }

@@ -107,11 +107,9 @@
 		[checkBoxButton setBackgroundColor:[UIColor clearColor]];
 		checkBoxButton.accessibilityLabel = NSLocalizedString(@"Checkbox", nil);
 		checkBoxButton.userInteractionEnabled = NO;
-		cell.userInteractionEnabled = NO;
 		cell.accessoryView = checkBoxButton;
 	} else {
 		cell.accessoryView = nil;
-		cell.userInteractionEnabled = YES;
 		cell.accessoryType = UITableViewCellAccessoryNone;
 	}
 	_deleteButton.enabled = (_selectedItems.count != 0);
