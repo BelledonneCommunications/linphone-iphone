@@ -97,6 +97,13 @@
 	_loadingView.hidden = TRUE;
 }
 
+-(BOOL) isSecureChatable:(const LinphoneFriend*)friend {
+	if (!friend)
+		return false;
+	const LinphonePresenceModel *model = linphone_friend_get_presence_model(friend);
+	return model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh);
+}
+
 - (void) buildChatContactTable {
 	
 	bctbx_list_t *result_list = [MagicSearchSingleton.instance getLastSearchResults];
@@ -108,6 +115,10 @@
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
 		const LinphoneFriend* friend = linphone_search_result_get_friend(result);
 		const char *phoneNumber = linphone_search_result_get_phone_number(result);
+		
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] && ![self isSecureChatable:friend]) {
+			continue;
+		}
 		
 		Contact *contact = nil;
 		char *uri = nil;

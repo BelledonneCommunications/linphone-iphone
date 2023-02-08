@@ -110,6 +110,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_isEncrypted = true;
 		_tableController.isEncrypted = true;
 		_allButton.hidden = true;
+		_linphoneButton.hidden = true;
+		_selectedButtonImage.hidden = true;
 	}
 	
 	if (_isForVoipConference) {
