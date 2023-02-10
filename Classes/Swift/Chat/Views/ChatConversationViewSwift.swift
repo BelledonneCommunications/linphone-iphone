@@ -158,6 +158,7 @@ import AVFoundation
 	var showVoiceRecorderView : Bool = false
 	var vrRecordTimer = Timer()
 	var isPendingVoiceRecord = false
+	var isPlayingVoiceRecording = false
 	
 	override func viewDidLoad() {
 		super.viewDidLoad(
@@ -684,15 +685,14 @@ import AVFoundation
 	
 	func onSendClick() {
 		let rootMessage = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(chatRoom?.getCobject, replyMessage) : linphone_chat_room_create_empty_message(chatRoom?.getCobject)
-		/*
-		 if isPendingVoiceRecord && voiceRecorder && linphone_recorder_get_file(voiceRecorder) {
+		
+		if isPendingVoiceRecord && (voiceRecorder != nil) && (linphone_recorder_get_file(voiceRecorder) != nil) {
 		 let voiceContent = linphone_recorder_create_content(voiceRecorder)
 		 isPendingVoiceRecord = false
 		 cancelVoiceRecording()
-		 stopVoiceRecordPlayer()
+		 //stopVoiceRecordPlayer()
 		 linphone_chat_message_add_content(rootMessage, voiceContent)
 		 }
-		 */
 		if fileContext.count > 0 {
 			let conference = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesConference.rawValue))
 			if (linphone_chat_room_get_capabilities(chatRoom?.getCobject) != 0) && conference {
@@ -1662,7 +1662,7 @@ import AVFoundation
 		default:
 			break
 		}
-		recordingWaveImageMask.frame = recordingWaveImage.frame
+		self.recordingWaveImageMask.transform = CGAffineTransform.identity
 		recordingDurationTextView.text = ChatConversationViewSwift.formattedDuration(Int(linphone_recorder_get_duration(voiceRecorder)))
 		vrRecordTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
 			self.voiceRecordTimerUpdate()
@@ -1671,30 +1671,15 @@ import AVFoundation
 	
 	func voiceRecordTimerUpdate() {
 		let recorderDuration = linphone_recorder_get_duration(voiceRecorder)
-		if recorderDuration > LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 60000) {
-			print("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = %d)", LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 60000))
+		if recorderDuration > LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999) {
+			print("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = %d)", LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))
 			stopVoiceRecording()
 		} else {
 			recordingDurationTextView.text = ChatConversationViewSwift.formattedDuration(Int(linphone_recorder_get_duration(voiceRecorder)))
 			
-			var r = recordingWaveImageMask.frame
-			//recordingWaveImageMask.frame = CGRect(x: r.origin.x+r.size.width, y: r.origin.y, width: 0, height: r.size.height)
-			//r.origin.x += 20
-			//r.size.width -= 20
-			//r = CGRect(x: r.origin.x-200, y: r.origin.y, width: r.size.width+200, height: r.size.height)
-			r = CGRect(x: r.origin.x-200, y: r.origin.y, width: r.size.width, height: r.size.height)
- 			if r.origin.x > recordingWaveImage.frame.size.width {
-				r = recordingWaveImage.frame
-				recordingWaveImageMask.frame = r
-			} else {
-				UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveLinear, animations: {
-					//self.recordingWaveImageMask.frame = r
-					self.recordingWaveImageMask.transform = CGAffineTransform(scaleX: 0.1, y: 1)
-					//self.recordingWaveImageMask.transform = CGAffineTransform(translationX: 100, y: 1)
-					//self.recordingWaveImageMask.frame = CGRect(x: 0, y: r.origin.y, width: 10, height: r.size.height)
-				}) { finished in
-				}
-			}
+			UIView.animate(withDuration: 10.0, delay: 0.0, options: [.repeat], animations: {
+				self.recordingWaveImageMask.transform = CGAffineTransform(translationX: 95, y: 1).scaledBy(x: 0.01, y: 1)
+			})
 			 
 		}
 	}
@@ -1715,7 +1700,7 @@ import AVFoundation
 		recordingPlayButton.isHidden = false
 		
 		messageView.voiceRecordButton.isSelected = false
-		recordingWaveImageMask.frame = CGRect.zero
+		recordingWaveImageMask.layer.removeAllAnimations()
 		vrRecordTimer.invalidate()
 		isPendingVoiceRecord = linphone_recorder_get_duration(voiceRecorder) > 0
 		setSendButtonState()
@@ -1727,6 +1712,7 @@ import AVFoundation
 		setRecordingVisible(visible: true)
 		recordingStopButton.isHidden = false
 		recordingPlayButton.isHidden = true
+		recordingWaveImageMask.layer.removeAllAnimations()
 		showVoiceRecorderView = false
 		messageView.voiceRecordButton.isSelected = false
 		isPendingVoiceRecord = false
@@ -1744,4 +1730,42 @@ import AVFoundation
 	func setSendButtonState() {
 		//sendButton.enabled = !isVoiceRecording && ((isPendingVoiceRecord && linphone_recorder_get_duration(voiceRecorder) > 0) || messageField.text().length() > 0 || fileContext.count > 0)
 	}
+	/*
+	func onvrPlayPauseStop(_ sender: Any) {
+		if isVoiceRecording {
+			stopVoiceRecording()
+		} else {
+			if isPlayingVoiceRecording {
+				stopVoiceRecordPlayer()
+			} else {
+				playRecordedMessage()
+			}
+		}
+	}
+	
+	func playRecordedMessage() {
+		vrPlayButton.setImage(UIImage(named: "vr_stop"), for: .normal)
+		vrWaveMask.frame = CGRect.zero
+		let r = CGRect.zero
+		r.size.height = vrInnerView.frame.size.height
+		vrWaveMaskPlayer.frame = r
+		vrPlayerTimer = Timer.scheduledTimer(
+			timeInterval: 1.0,
+			target: self,
+			selector: Selector("voicePlayTimerUpdate"),
+			userInfo: nil,
+			repeats: true)
+		startSharedPlayer(linphone_recorder_get_file(voiceRecorder))
+		animPlayerOnce()
+		isPlayingVoiceRecording = true
+	}
+	
+	func stopVoiceRecordPlayer() {
+		stopSharedPlayer()
+		vrPlayButton.setImage(UIImage(named: "vr_play"), for: .normal)
+		isPlayingVoiceRecording = false
+		vrPlayerTimer.invalidate()
+		vrWaveMaskPlayer.frame = CGRect.zero
+	}
+	 */
 }

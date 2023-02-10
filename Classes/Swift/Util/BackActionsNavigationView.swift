@@ -245,9 +245,9 @@ import SnapKit
 		recordingWaveImage.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
 		
 		recordingWaveView.addSubview(recordingWaveImageMask)
-		recordingWaveImageMask.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).done()		//toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
+		recordingWaveImageMask.alignParentTop(withMargin: 5).alignParentBottom(withMargin: 5).alignParentLeft(withMargin: 10).done()		//toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
 		recordingWaveImageMask.rightAnchor.constraint(equalTo: recordingDurationTextView.leftAnchor, constant: -10).isActive = true
-		recordingWaveImageMask.backgroundColor = .blue	//VoipTheme.backgroundWhiteBlack.get()
+		recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
 		
 		
