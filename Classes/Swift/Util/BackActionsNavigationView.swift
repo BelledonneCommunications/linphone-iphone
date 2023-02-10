@@ -44,6 +44,14 @@ import SnapKit
 	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
 	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
 	let replyMeetingSchedule = UIImageView()
+	let recordingView = UIView()
+	let recordingDeleteButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("delete_default"))
+	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_play"))
+	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_stop"))
+	let recordingWaveView = UIView()
+	let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
+	let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
+	let recordingWaveImageMask = UIView()
 	let messageView = MessageView()
 	let mediaSelector  = UIView()
 	let mediaSelectorReply  = UIView()
@@ -209,6 +217,40 @@ import SnapKit
 				
 		replyBubble.addSubview(replyDeleteButton)
 		replyDeleteButton.alignParentRight(withMargin: 15).centerY().done()
+		
+		stackView.addArrangedSubview(recordingView)
+		recordingView.height(top_bar_height).wrapContentY().matchParentSideBorders().done()
+		recordingView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		recordingView.isHidden = true
+		
+		recordingView.addSubview(recordingDeleteButton)
+		recordingDeleteButton.alignParentLeft(withMargin: 10).matchParentHeight().done()
+		
+		recordingView.addSubview(recordingPlayButton)
+		recordingPlayButton.alignParentRight(withMargin: 10).matchParentHeight().done()
+		recordingPlayButton.isHidden = true
+		
+		recordingView.addSubview(recordingStopButton)
+		recordingStopButton.alignParentRight(withMargin: 10).matchParentHeight().done()
+		
+		recordingView.addSubview(recordingWaveView)
+		recordingWaveView.toRightOf(recordingDeleteButton, withLeftMargin: 10).toLeftOf(recordingStopButton, withRightMargin: 10).alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).done()
+		recordingWaveView.layer.cornerRadius = 5
+		recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		
+		recordingWaveView.addSubview(recordingDurationTextView)
+		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
+		
+		recordingWaveView.addSubview(recordingWaveImage)
+		recordingWaveImage.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
+		
+		recordingWaveView.addSubview(recordingWaveImageMask)
+		recordingWaveImageMask.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).done()		//toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
+		recordingWaveImageMask.rightAnchor.constraint(equalTo: recordingDurationTextView.leftAnchor, constant: -10).isActive = true
+		recordingWaveImageMask.backgroundColor = .blue	//VoipTheme.backgroundWhiteBlack.get()
+		
+		
+		
 		
 
 		stackView.addArrangedSubview(mediaSelector)

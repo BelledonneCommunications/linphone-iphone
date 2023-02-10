@@ -60,6 +60,8 @@ class MessageView:  UIView, UITextViewDelegate {
 		addSubview(voiceRecordButton)
 		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: 10).matchParentHeight().done()
 		voiceRecordButton.size(w: 30, h: 30).done()
+		voiceRecordButton.setImage(UIImage(named:"vr_off.png"), for: .normal)
+		voiceRecordButton.setImage(UIImage(named:"vr_on.png"), for: .selected)
 		voiceRecordButton.onClickAction = action3
 
 		addSubview(ephemeralIndicator)
