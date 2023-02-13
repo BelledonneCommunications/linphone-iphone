@@ -48,10 +48,13 @@ import SnapKit
 	let recordingDeleteButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("delete_default"))
 	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_play"))
 	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_stop"))
-	let recordingWaveView = UIView()
+	let recordingWaveView = UIProgressView()
 	let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
 	let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
 	let recordingWaveImageMask = UIView()
+	
+	let recordingPlayerImage = UIView()
+	
 	let messageView = MessageView()
 	let mediaSelector  = UIView()
 	let mediaSelectorReply  = UIView()
@@ -235,30 +238,29 @@ import SnapKit
 		
 		recordingView.addSubview(recordingWaveView)
 		recordingWaveView.toRightOf(recordingDeleteButton, withLeftMargin: 10).toLeftOf(recordingStopButton, withRightMargin: 10).alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).done()
+		recordingWaveView.progressViewStyle = .bar
 		recordingWaveView.layer.cornerRadius = 5
 		recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		recordingWaveView.progressTintColor = .green
+		recordingWaveView.clipsToBounds = true
+		recordingWaveView.layer.sublayers![1].cornerRadius = 5
+		recordingWaveView.subviews[1].clipsToBounds = true
 		
 		recordingWaveView.addSubview(recordingDurationTextView)
 		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
 		
 		recordingWaveView.addSubview(recordingWaveImage)
-		recordingWaveImage.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
+		recordingWaveImage.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).alignParentRight(withMargin: 65).done()
 		
 		recordingWaveView.addSubview(recordingWaveImageMask)
-		recordingWaveImageMask.alignParentTop(withMargin: 5).alignParentBottom(withMargin: 5).alignParentLeft(withMargin: 10).done()		//toLeftOf(recordingDurationTextView, withRightMargin: 10).done()
-		recordingWaveImageMask.rightAnchor.constraint(equalTo: recordingDurationTextView.leftAnchor, constant: -10).isActive = true
+		recordingWaveImageMask.alignParentTop(withMargin: 5).alignParentBottom(withMargin: 5).alignParentLeft(withMargin: 10).alignParentRight(withMargin: 65).done()
 		recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
-		
-		
-		
-
 		stackView.addArrangedSubview(mediaSelector)
 		mediaSelector.height(top_bar_height*2).matchParentSideBorders().done()
 		mediaSelector.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		mediaSelector.isHidden = true
 
-		
 		stackView.addArrangedSubview(messageView)
 		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
 		
@@ -272,12 +274,10 @@ import SnapKit
 		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
 		floatingButton.onClickAction = action3
 		
-		
 		stackView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
 		stackView.centerYAnchor.constraint(equalTo:self.view.centerYAnchor).isActive = true
 		
 		view.bringSubviewToFront(topBar)
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
