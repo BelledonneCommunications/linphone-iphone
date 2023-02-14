@@ -216,6 +216,10 @@ import AVFoundation
 		chatRoom?.addDelegate(delegate: chatRoomDelegate!)
 		tableController.tableView.separatorColor = .clear
 		
+		if !chatRoom!.isReadOnly {
+			messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
+		}
+		
 		workItem = DispatchWorkItem {
 			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
 			self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
@@ -236,6 +240,7 @@ import AVFoundation
 		}
 		
 		self.handlePendingTransferIfAny()
+		configureMessageField()
 		self.shareFile()
 		
 		initSharedPlayer()
@@ -447,7 +452,9 @@ import AVFoundation
 		menu.dataSource.removeAll()
 		
 		if(groupeChat){
-			menu.dataSource.append(VoipTexts.conference_schedule_start)
+			if !chatRoom!.isReadOnly {
+				menu.dataSource.append(VoipTexts.conference_schedule_start)
+			}
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_group_infos)
 		}else{
 			var contact: Contact? = nil
@@ -464,7 +471,9 @@ import AVFoundation
 		}
 		if(secureLevel){
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_conversation_device)
-			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_ephemeral_messages)
+			if !chatRoom!.isReadOnly {
+				menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_ephemeral_messages)
+			}
 		}
 		if(LinphoneManager.getChatroomPushEnabled(chatRoom?.getCobject)){
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_mute_notifications)
@@ -473,7 +482,9 @@ import AVFoundation
 		}
 		menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_delete_messages)
 		
-		messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
+		if !chatRoom!.isReadOnly {
+			messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
+		}
 	}
 	
 	@objc func initChatRoom(cChatRoom:OpaquePointer) {
@@ -510,8 +521,13 @@ import AVFoundation
 		}
 		
 		changeTitle(titleString: address ?? "Error")
-		changeCallIcon(groupChat: changeIcon)
 		
+		if !chatRoom!.isReadOnly{
+			changeCallIcon(groupChat: changeIcon)
+		}else{
+			action1Button.isHidden = true
+			action1BisButton.isHidden = true
+		}
 		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cChatRoom))
 		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
 		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: cChatRoom)
@@ -1840,5 +1856,17 @@ import AVFoundation
 		CallManager.instance().changeRouteToSpeaker()
 		linphone_player_open(linphonePlayer?.getCobject, path)
 		linphone_player_start(linphonePlayer?.getCobject)
+	}
+	
+	func configureMessageField() {
+		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+		if isOneToOneChat {
+			messageView.isHidden = false
+			if chatRoom!.isReadOnly {
+				chatRoom!.addParticipant(addr: (chatRoom?.me?.address)!)
+			}
+		} else {
+			messageView.isHidden = chatRoom!.isReadOnly
+		}
 	}
 }
