@@ -663,6 +663,8 @@
 	// 4. side menu
 	self.sideMenuView.frame = sideMenuFrame;
 	self.sideMenuViewController.view.frame = self.sideMenuView.bounds;
+	[PhoneMainView.instance.mainViewController.view bringSubviewToFront:_sideMenuView];
+	[PhoneMainView.instance.mainViewController.view bringSubviewToFront:_sideMenuViewController.view];
 
 	// Commit animation
 	if (tabBar != nil || statusBar != nil || sideMenu != nil || fullscreen != nil) {

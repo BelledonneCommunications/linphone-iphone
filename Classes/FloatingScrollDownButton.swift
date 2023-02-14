@@ -60,14 +60,18 @@ public extension ChatConversationTableView {
 		self.floatingScrollBackground?.layer.cornerRadius = 25
 		self.floatingScrollBackground?.isHidden = true;
 		
-		self.floatingScrollButton?.addTarget(self, action: #selector(scrollToBottomButtonAction(_:)), for: .touchUpInside)
-		self.floatingScrollBackground?.addTarget(self, action: #selector(scrollToBottomButtonAction(_:)), for: .touchUpInside)
+		self.floatingScrollButton?.onClick(action: {
+			self.scrollToBottomButtonAction()
+		})
+		self.floatingScrollBackground?.onClick(action: {
+			self.scrollToBottomButtonAction()
+		})
 		addBadgeToButton(badge: nil)
 	}
 	
 	private func constrainFloatingButtonToWindow() {
 		DispatchQueue.main.async {
-			guard let keyWindow = UIApplication.shared.keyWindow,
+			guard let keyWindow = PhoneMainView.instance()!.mainViewController.view,
 				  let floatingButton = self.floatingScrollButton else { return }
 			keyWindow.addSubview(self.floatingScrollBackground!)
 			keyWindow.addSubview(floatingButton)
@@ -86,7 +90,7 @@ public extension ChatConversationTableView {
 		}
 	}
 	
-	@IBAction private func scrollToBottomButtonAction(_ sender: Any) {
+	@IBAction private func scrollToBottomButtonAction() {
 		scroll(toBottom: true)
 	}
 	
