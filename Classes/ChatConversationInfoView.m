@@ -217,7 +217,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)onValidate {
-	ChatConversationView *view = VIEW(ChatConversationView);
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 	// Change subject if necessary
 	if (![_oldSubject isEqualToString:_nameLabel.text])
 		linphone_chat_room_set_subject(_room, _nameLabel.text.UTF8String);

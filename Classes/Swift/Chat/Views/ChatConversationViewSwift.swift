@@ -66,7 +66,7 @@ import AVFoundation
 
 		let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: top_bar_height*2), collectionViewLayout: layout)
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
-		collectionView.backgroundColor = UIColor(white: 1, alpha: 0.5)
+		collectionView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		return collectionView
 	}()
 	
@@ -207,9 +207,24 @@ import AVFoundation
 				self.on_chat_room_is_composing_received(room, remoteAddress, isComposing)
 			}, onChatMessageReceived: { (room: ChatRoom, event: EventLog) -> Void in
 				self.on_chat_room_chat_message_received(room, event)
-			},
-			onChatMessageSending: { (room: ChatRoom, event: EventLog) -> Void in
+			}, onChatMessageSending: { (room: ChatRoom, event: EventLog) -> Void in
 				self.on_chat_room_chat_message_sending(room, event)
+			}, onParticipantAdded: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_participant_changed(room, event)
+			}, onParticipantRemoved: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_participant_changed(room, event)
+			}, onParticipantAdminStatusChanged: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_participant_admin_status_changed(room, event)
+			}, onStateChanged: { (room: ChatRoom, state: ChatRoom.State) -> Void in
+				self.on_chat_room_state_changed(room)
+			}, onSecurityEvent: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_conference_alert(room, event)
+			}, onSubjectChanged: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_subject_changed(room, event)
+			}, onConferenceJoined: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_conference_joined(room, event)
+			}, onConferenceLeft: { (room: ChatRoom, event: EventLog) -> Void in
+				self.on_chat_room_conference_left(room, event)
 			}
 		)
 		
@@ -217,7 +232,7 @@ import AVFoundation
 		tableController.tableView.separatorColor = .clear
 		
 		if !chatRoom!.isReadOnly {
-			messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
+			messageView.ephemeralIndicator.isHidden = !chatRoom!.ephemeralEnabled
 		}
 		
 		workItem = DispatchWorkItem {
@@ -483,7 +498,7 @@ import AVFoundation
 		menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_delete_messages)
 		
 		if !chatRoom!.isReadOnly {
-			messageView.ephemeralIndicator.isHidden = (linphone_chat_room_ephemeral_enabled(chatRoom?.getCobject) == 0)
+			messageView.ephemeralIndicator.isHidden = !chatRoom!.ephemeralEnabled
 		}
 	}
 	
@@ -509,14 +524,7 @@ import AVFoundation
 			
 			titleParticipants.isHidden = false
 			
-			let participants = chatRoom?.participants
-			participantsGroupLabel.text = ""
-			participants?.forEach{ participant in
-				if participantsGroupLabel.text != "" {
-					participantsGroupLabel.text = participantsGroupLabel.text! + ", "
-				}
-				participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
-			}
+			updateParticipantLabel()
 			
 		}
 		
@@ -524,13 +532,26 @@ import AVFoundation
 		
 		if !chatRoom!.isReadOnly{
 			changeCallIcon(groupChat: changeIcon)
+			action1BisButton.isEnabled = true
 		}else{
 			action1Button.isHidden = true
-			action1BisButton.isHidden = true
+			action1BisButton.isHidden = false
+			action1BisButton.isEnabled = false
 		}
 		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cChatRoom))
 		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
 		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: cChatRoom)
+	}
+	
+	func updateParticipantLabel(){
+		let participants = chatRoom?.participants
+		participantsGroupLabel.text = ""
+		participants?.forEach{ participant in
+			if participantsGroupLabel.text != "" {
+				participantsGroupLabel.text = participantsGroupLabel.text! + ", "
+			}
+			participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
+		}
 	}
 	
 	func onCallClick(cChatRoom: OpaquePointer?) {
@@ -676,7 +697,7 @@ import AVFoundation
 		}
 		
 		let msg = rootMessage
-		let basic = ChatConversationView.isBasicChatRoom(chatRoom?.getCobject)
+		let basic = ChatConversationViewSwift.isBasicChatRoom(chatRoom?.getCobject)
 		let params = linphone_account_get_params(linphone_core_get_default_account(LinphoneManager.getLc()))
 		let cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params)
 		
@@ -1868,5 +1889,62 @@ import AVFoundation
 		} else {
 			messageView.isHidden = chatRoom!.isReadOnly
 		}
+	}
+	
+	func on_chat_room_state_changed(_ cr: ChatRoom?) {
+		configureMessageField()
+		action1BisButton.isEnabled = !chatRoom!.isReadOnly
+		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cr?.getCobject))
+		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: (cr?.getCobject)!)
+	}
+	
+	func on_chat_room_subject_changed(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		let subject = event_log?.subject != nil ? event_log?.subject : cr?.subject
+		if let subject {
+			titleGroupLabel.text = subject
+			titleLabel.text = subject
+			tableController.addEventEntry(event_log?.getCobject)
+			tableController.scroll(toBottom: true)
+		}
+	}
+	
+	func on_chat_room_participant_changed(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		tableController.addEventEntry(event_log?.getCobject)
+		updateParticipantLabel()
+		tableController.scroll(toBottom: true)
+		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cr?.getCobject))
+		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
+	}
+	
+	func on_chat_room_participant_admin_status_changed(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		tableController.addEventEntry(event_log?.getCobject)
+		tableController.scroll(toBottom: true)
+	}
+	
+	func on_chat_room_conference_joined(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		tableController.addEventEntry(event_log?.getCobject)
+		tableController.scroll(toBottom: true)
+	}
+
+	func on_chat_room_conference_left(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		tableController.addEventEntry(event_log?.getCobject)
+		tableController.scroll(toBottom: true)
+	}
+	
+	func on_chat_room_conference_alert(_ cr: ChatRoom?, _ event_log: EventLog?) {
+		tableController.addEventEntry(event_log?.getCobject)
+		updateParticipantLabel()
+		tableController.scroll(toBottom: true)
+		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cr?.getCobject))
+		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
+	}
+	
+	class func markAsRead(chatRoom: ChatRoom?) {
+		if chatRoom == nil {
+			return
+		}
+		chatRoom!.markAsRead()
+		PhoneMainView.instance().updateApplicationBadgeNumber()
 	}
 }

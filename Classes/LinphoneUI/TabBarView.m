@@ -113,7 +113,7 @@
 						   [view equal:ChatConversationCreateView.compositeViewDescription] ||
 						   [view equal:ChatConversationInfoView.compositeViewDescription] ||
 						   [view equal:ChatConversationImdnView.compositeViewDescription] ||
-						   [view equal:ChatConversationView.compositeViewDescription];
+	[view equal:ChatConversationViewSwift.compositeViewDescription];
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"] && [self viewIsCurrentlyPortrait]) {
 		CGFloat itemWidth = [UIScreen mainScreen].bounds.size.width/3;
 		[_chatButton setEnabled:false];

@@ -241,7 +241,7 @@ import SnapKit
 		recordingWaveView.progressViewStyle = .bar
 		recordingWaveView.layer.cornerRadius = 5
 		recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
-		recordingWaveView.progressTintColor = .green
+		recordingWaveView.progressTintColor = UIColor("L")
 		recordingWaveView.clipsToBounds = true
 		recordingWaveView.layer.sublayers![1].cornerRadius = 5
 		recordingWaveView.subviews[1].clipsToBounds = true

@@ -27,6 +27,12 @@ public extension ChatConversationTableView {
 		super.viewDidAppear(animated)
 		createFloatingButton()
 	}
+	
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		self.floatingScrollButton?.removeFromSuperview()
+		self.floatingScrollBackground?.removeFromSuperview()
+	}
 
 	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 		if let lastCellRowIndex = tableView.indexPathsForVisibleRows?.last?.row {

@@ -398,7 +398,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_room_cbs_set_is_composing_received(_chatRoomCbs, on_chat_room_is_composing_received);
 		linphone_chat_room_cbs_set_conference_joined(_chatRoomCbs, on_chat_room_conference_joined);
 		linphone_chat_room_cbs_set_conference_left(_chatRoomCbs, on_chat_room_conference_left);
-         linphone_chat_room_cbs_set_security_event(_chatRoomCbs, on_chat_room_conference_alert);
+		linphone_chat_room_cbs_set_security_event(_chatRoomCbs, on_chat_room_conference_alert);
 		linphone_chat_room_cbs_set_user_data(_chatRoomCbs, (__bridge void*)self);
 		linphone_chat_room_add_callbacks(_chatRoom, _chatRoomCbs);
 	}

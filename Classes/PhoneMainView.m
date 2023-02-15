@@ -465,7 +465,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		// we'll already be on the corresponding chat conversation view, no need to go anywhere else
 		if (dict||dictFile||dictUrl){
 			[self changeCurrentView:ChatsListView.compositeViewDescription];
-		}else if (![[self currentView].name isEqualToString:@"ChatConversationView"]) {
+		}else if (![[self currentView].name isEqualToString:@"ChatConversationViewSwift"]) {
 
 			if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
 				[self changeCurrentView:DialerView.compositeViewDescription];
@@ -851,7 +851,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		return;
 	}
 
-	[self goToChatRoom:room];
+	[self goToChatRoomSwift:room];
 }
 
 - (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup{
@@ -874,7 +874,7 @@ static RootViewManager *rootViewManagerInstance = nil;
             return nil;
         }
 		LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
-        [self goToChatRoom:basicRoom];
+        [self goToChatRoomSwift:basicRoom];
         return nil;
     }
     
@@ -939,11 +939,11 @@ void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneE
 	PhoneMainView *view = PhoneMainView.instance;
 	LOGI(@"Chat room [%p] conference joined.", cr);
 	linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
-	[view goToChatRoom:cr];
+	[view goToChatRoomSwift:cr];
 	if (!IPAD)
 		return;
 	
-	if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription)
+	if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationViewSwift.compositeViewDescription)
 		return;
 	
 	ChatsListView *mainView = VIEW(ChatsListView);
@@ -962,7 +962,7 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 			break;
 		case LinphoneChatRoomStateTerminated:
 			LOGI(@"Chat room [%p] has been terminated.", cr);
-			[view goToChatRoom:cr];
+			[view goToChatRoomSwift:cr];
 			break;
 		default:
 			break;
