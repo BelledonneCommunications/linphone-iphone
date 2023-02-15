@@ -529,6 +529,17 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 	}
 	
+	func updateParticipantLabel(){
+		let participants = chatRoom?.participants
+		participantsGroupLabel.text = ""
+		participants?.forEach{ participant in
+			if participantsGroupLabel.text != "" {
+				participantsGroupLabel.text = participantsGroupLabel.text! + ", "
+			}
+			participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
+		}
+	}
+	
 	func onCallClick(cChatRoom: OpaquePointer?) {
 		let firstParticipant = ChatConversationViewModel.sharedModel.chatRoom?.participants.first
 		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom);
