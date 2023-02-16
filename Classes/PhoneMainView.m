@@ -929,10 +929,14 @@ static RootViewManager *rootViewManagerInstance = nil;
 	_waitView.hidden = YES;
 	_waitView = NULL;
 	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
-	
 	[view initChatRoomWithCChatRoom:cr];
 	
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (void)resetBeforeGoToChatRoomSwift{
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
+	[view resetView];
 }
 
 void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {

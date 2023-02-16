@@ -83,6 +83,10 @@ class MessageView:  UIView, UITextViewDelegate {
 		messageText.matchParentDimmensions(insetedByDx: 10).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
 		messageText.delegate = self
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		}
 	}
 	
 	func textViewDidChangeSelection(_ textView: UITextView) {

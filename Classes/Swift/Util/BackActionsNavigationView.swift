@@ -42,12 +42,12 @@ import SnapKit
 	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
 	let replyContentTextSpacing = UIView()
 	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
-	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
+	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_button("reply_cancel"))
 	let replyMeetingSchedule = UIImageView()
 	let recordingView = UIView()
-	let recordingDeleteButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("delete_default"))
-	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_play"))
-	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_stop"))
+	let recordingDeleteButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("delete_default"))
+	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_play"))
+	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_stop"))
 	let recordingWaveView = UIProgressView()
 	let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
 	let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
@@ -178,7 +178,7 @@ import SnapKit
 		stackView.addArrangedSubview(replyBubble)
 		replyBubble.matchParentSideBorders().maxHeight(top_bar_height*3).done()
 		replyBubble.translatesAutoresizingMaskIntoConstraints = false
-		replyBubble.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		replyBubble.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		replyBubble.isHidden = true
 		
 		replyBubble.addSubview(backgroundReplyColor)
@@ -278,6 +278,17 @@ import SnapKit
 		stackView.centerYAnchor.constraint(equalTo:self.view.centerYAnchor).isActive = true
 		
 		view.bringSubviewToFront(topBar)
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+			self.titleParticipants.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+			self.replyBubble.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+			self.recordingView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+			self.mediaSelector.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+			self.isComposingView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		}
     }
     
     override func viewWillAppear(_ animated: Bool) {

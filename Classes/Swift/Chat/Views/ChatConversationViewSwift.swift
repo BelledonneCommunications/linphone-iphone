@@ -66,7 +66,7 @@ import AVFoundation
 
 		let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: top_bar_height*2), collectionViewLayout: layout)
 		collectionView.translatesAutoresizingMaskIntoConstraints = false
-		collectionView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		collectionView.backgroundColor = .clear
 		return collectionView
 	}()
 	
@@ -261,16 +261,17 @@ import AVFoundation
 		initSharedPlayer()
 	}
 	
-	override func viewWillDisappear(_ animated: Bool) {
-		chatRoom?.removeDelegate(delegate: chatRoomDelegate!)
-		editModeOff()
-	}
-	
 	override func viewDidAppear(_ animated: Bool) {
 		tableController.reloadData()
 	}
 	
 	override func viewDidDisappear(_ animated: Bool) {
+		resetView()
+	}
+	
+	@objc func resetView(){
+		chatRoom?.removeDelegate(delegate: chatRoomDelegate!)
+		editModeOff()
 		
 		if(self.isComposingView.isHidden == false){
 			self.isComposingView.isHidden = true
@@ -541,6 +542,8 @@ import AVFoundation
 		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cChatRoom))
 		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
 		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: cChatRoom)
+		self.viewWillAppear(true)
+		//tableController.chatRoom = chatRoom?.getCobject
 	}
 	
 	func updateParticipantLabel(){
