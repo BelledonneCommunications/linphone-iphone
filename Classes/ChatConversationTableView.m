@@ -170,7 +170,7 @@
 						  atScrollPosition:UITableViewScrollPositionBottom
 								  animated:animated];
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		[ChatConversationView markAsRead:_chatRoom];
+		[ChatConversationViewSwift markAsRead:_chatRoom];
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
@@ -200,7 +200,7 @@
 		index = (int)count - 1;
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		[ChatConversationView markAsRead:_chatRoom];
+		[ChatConversationViewSwift markAsRead:_chatRoom];
 
 	// Scroll to unread
 	if (index < 0)
@@ -382,7 +382,7 @@ static const int BASIC_EVENT_LIST=15;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
 		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-			[ChatConversationView markAsRead:_chatRoom];
+			[ChatConversationViewSwift markAsRead:_chatRoom];
 	}
 }
 

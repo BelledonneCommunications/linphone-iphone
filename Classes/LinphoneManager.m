@@ -1885,7 +1885,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 	linphone_chat_message_send(msg);
 
-	[ChatConversationView markAsRead:room];
+	[ChatConversationViewSwift markAsRead:room];
 }
 
 /*

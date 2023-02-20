@@ -35,23 +35,18 @@ import AVFoundation
 	
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
-	let APP_GROUP_ID = "group.belledonne-communications.linphone.widget"
-	var debugEnabled = false
 	
-	var chatRoom: ChatRoom? = nil
-	var chatRoomDelegate: ChatRoomDelegate? = nil
-	var address: String? = nil
-	var participants: String? = nil
+	@objc var linphoneChatRoom: OpaquePointer? = nil
+	@objc let tableController = ChatConversationTableView()
+	@objc var pendingForwardMessage : OpaquePointer? = nil
+	@objc var sharingMedia : Bool = false
+	@objc var markAsRead : Bool = false
 	
 	var activeAlertController = CustomAlertController()
-	
-	@objc let tableController = ChatConversationTableView()
 	let refreshControl = UIRefreshControl()
-	
-	var mediaCollectionView : [UIImage] = []
-	var replyCollectionView : [UIImage] = []
-	var mediaURLCollection : [URL] = []
-	var replyURLCollection : [URL] = []
+	let loadingView = UIView()
+	let loading = RotatingSpinner(color: VoipTheme.primary_color)
+	let loadingText = StyledLabel(VoipTheme.chat_conversation_operation_in_progress_wait)
 	
 	var collectionViewMedia: UICollectionView = {
 		let top_bar_height = 66.0
@@ -85,10 +80,6 @@ import AVFoundation
 		collectionViewReply.backgroundColor = .clear
 		return collectionViewReply
 	}()
-	
-	let loadingView = UIView()
-	let loading = RotatingSpinner(color: VoipTheme.primary_color)
-	let loadingText = StyledLabel(VoipTheme.chat_conversation_operation_in_progress_wait)
 	
 	let menu: DropDown = {
 		let menu = DropDown()
@@ -135,40 +126,13 @@ import AVFoundation
 		return menu
 	}()
 	
-	var fileContext : [Data] = []
-	var workItem : DispatchWorkItem? = nil
-	var progress : [Progress] = []
-	
-	var urlFile : [URL?] = []
-	var imageT : [UIImage?] = []
-	var data : [Data?] = []
-	var mediaCount : Int = 0
-	var newMediaCount : Int = 0
-	@objc var pendingForwardMessage : OpaquePointer? = nil
-	
-	var replyViewOriginY = 0.0
-	var replyViewHeight = 0.0
-	var showReplyView = false
-	var replyMessage : OpaquePointer? = nil
-	
-	@objc var sharingMedia : Bool = false
-	
-	var isVoiceRecording : Bool = false
-	var voiceRecorder : Recorder? = nil
-	var showVoiceRecorderView : Bool = false
-	var vrRecordTimer = Timer()
-	var vrPlayerTimer = Timer()
-	var isPendingVoiceRecord = false
-	var isPlayingVoiceRecording = false
-	var linphonePlayer : Player? = nil
-	
 	override func viewDidLoad() {
 		super.viewDidLoad(
 			backAction: {
 				self.goBackChatListView()
 			},
 			action1: {
-				self.onCallClick(cChatRoom: self.chatRoom?.getCobject)
+				self.onCallClick(cChatRoom: ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 			},
 			action2: {
 				self.tapChooseMenuItem(self.action2Button)
@@ -179,17 +143,91 @@ import AVFoundation
 			action4: {
 				(LinphoneManager.instance().lpConfigInt(forKey: "debugenable_preference") == 1) ? self.showAddressAndIdentityPopup() : self.tapChooseMenuItem(self.action2Button)
 			},
-			title: address ?? "Error",
-			participants: participants ?? "Error"
+			title: ChatConversationViewModel.sharedModel.address ?? "Error",
+			participants: ChatConversationViewModel.sharedModel.participants ?? "Error"
 		)
 		setupViews()
+		markAsRead = true
+		
+		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
+			if((compose! && self.isComposingView.isHidden)||(!compose! && !self.isComposingView.isHidden)){
+				self.setComposingVisible(compose!, withDelay: 0.3)
+			}
+		}
+		
+		ChatConversationViewModel.sharedModel.messageReceived.observe { message in
+			let isDisplayingBottomOfTable = self.tableController.tableView.indexPathsForVisibleRows?.last?.row == (self.tableController.totalNumberOfItems() ) - 1
+			self.tableController.addEventEntry(message?.getCobject)
+			
+			if isDisplayingBottomOfTable {
+				self.tableController.scroll(toBottom: true)
+				self.tableController.scrollBadge!.text = nil
+				self.tableController.scrollBadge!.isHidden = true
+			} else {
+				self.tableController.scrollBadge!.isHidden = false
+				self.tableController.scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.unread_msg+1)"
+			}
+		}
+
+		ChatConversationViewModel.sharedModel.stateChanged.observe { state in
+			self.configureMessageField()
+			self.action1BisButton.isEnabled = !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly
+			self.initDataSource(groupeChat: !ChatConversationViewModel.sharedModel.isOneToOneChat, secureLevel: ChatConversationViewModel.sharedModel.secureLevel != nil, cChatRoom: (state?.getCobject)!)
+		}
+		
+		ChatConversationViewModel.sharedModel.secureLevelChanged.observe { secure in
+			self.tableController.addEventEntry(secure?.getCobject)
+			self.updateParticipantLabel()
+			self.tableController.scroll(toBottom: true)
+			self.changeSecureLevel(secureLevel: ChatConversationViewModel.sharedModel.secureLevel != nil, imageBadge: ChatConversationViewModel.sharedModel.secureLevel)
+		}
+		
+		ChatConversationViewModel.sharedModel.subjectChanged.observe { subject in
+			let subjectVM = ChatConversationViewModel.sharedModel.subject
+			if let subjectVM {
+				self.titleGroupLabel.text = subjectVM
+				self.titleLabel.text = subjectVM
+				self.tableController.addEventEntry(subject?.getCobject)
+				self.tableController.scroll(toBottom: true)
+			}
+		}
+
+		ChatConversationViewModel.sharedModel.eventLog.observe { event in
+			self.tableController.addEventEntry(event?.getCobject)
+			self.tableController.scroll(toBottom: true)
+		}
+		
+		ChatConversationViewModel.sharedModel.indexPathVM.observe { index in
+			self.collectionViewMedia.insertItems(at: [IndexPath(row: (index!), section: 0)])
+			if(ChatConversationViewModel.sharedModel.mediaCollectionView.count > 0){
+				self.messageView.sendButton.isEnabled = true
+			}
+			self.loadingView.isHidden = true
+			self.messageView.isLoading = false
+			self.loading.stopRotation()
+			
+			self.messageView.sendButton.isEnabled = true
+			self.messageView.pictureButton.isEnabled = true
+		}
+		
+		ChatConversationViewModel.sharedModel.shareFileName.observe { name in
+			self.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
+			self.confirmShare(ChatConversationViewModel.sharedModel.nsDataRead(), url: nil, fileName: name)
+		}
+		
+		ChatConversationViewModel.sharedModel.shareFileURL.observe { url in
+			self.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
+			self.confirmShare(ChatConversationViewModel.sharedModel.nsDataRead(), url: url, fileName: nil)
+		}
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		ChatConversationViewModel.sharedModel.createChatConversation()
+	
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		self.contentView.addSubview(tableController.tableView)
-		tableController.chatRoom = chatRoom?.getCobject
+		tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 		tableController.refreshControl = refreshControl
 		tableController.toggleSelectionButton = action1SelectAllButton
@@ -200,65 +238,19 @@ import AVFoundation
 		recordingDeleteButton.onClickAction = cancelVoiceRecording
 		recordingPlayButton.onClickAction = onvrPlayPauseStop
 		recordingStopButton.onClickAction = onvrPlayPauseStop
-		
-		
-		chatRoomDelegate = ChatRoomDelegateStub(
-			onIsComposingReceived: { (room: ChatRoom, remoteAddress: Address, isComposing: Bool) -> Void in
-				self.on_chat_room_is_composing_received(room, remoteAddress, isComposing)
-			}, onChatMessageReceived: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_chat_message_received(room, event)
-			}, onChatMessageSending: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_chat_message_sending(room, event)
-			}, onParticipantAdded: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_participant_changed(room, event)
-			}, onParticipantRemoved: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_participant_changed(room, event)
-			}, onParticipantAdminStatusChanged: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_participant_admin_status_changed(room, event)
-			}, onStateChanged: { (room: ChatRoom, state: ChatRoom.State) -> Void in
-				self.on_chat_room_state_changed(room)
-			}, onSecurityEvent: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_conference_alert(room, event)
-			}, onSubjectChanged: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_subject_changed(room, event)
-			}, onConferenceJoined: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_conference_joined(room, event)
-			}, onConferenceLeft: { (room: ChatRoom, event: EventLog) -> Void in
-				self.on_chat_room_conference_left(room, event)
-			}
-		)
-		
-		chatRoom?.addDelegate(delegate: chatRoomDelegate!)
 		tableController.tableView.separatorColor = .clear
 		
-		if !chatRoom!.isReadOnly {
-			messageView.ephemeralIndicator.isHidden = !chatRoom!.ephemeralEnabled
+		if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
+			messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
 		}
+	
 		
-		workItem = DispatchWorkItem {
-			let indexPath = IndexPath(row: self.mediaCollectionView.count, section: 0)
-			self.mediaURLCollection.append(self.urlFile[indexPath.row]!)
-			self.mediaCollectionView.append(self.imageT[indexPath.row]!)
-			self.collectionViewMedia.insertItems(at: [indexPath])
-			self.fileContext.append(self.data[indexPath.row]!)
-			if(self.mediaCount + self.newMediaCount <= indexPath.row+1){
-				if(self.mediaCollectionView.count > 0){
-					self.messageView.sendButton.isEnabled = true
-				}
-				self.loadingView.isHidden = true
-				self.messageView.isLoading = false
-				self.loading.stopRotation()
-				
-				self.messageView.sendButton.isEnabled = true
-				self.messageView.pictureButton.isEnabled = true
-			}
-		}
 		
-		self.handlePendingTransferIfAny()
+		handlePendingTransferIfAny()
 		configureMessageField()
-		self.shareFile()
+		ChatConversationViewModel.sharedModel.shareFile()
 		
-		initSharedPlayer()
+		ChatConversationViewModel.sharedModel.initSharedPlayer()
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
@@ -270,9 +262,9 @@ import AVFoundation
 	}
 	
 	@objc func resetView(){
-		chatRoom?.removeDelegate(delegate: chatRoomDelegate!)
+		ChatConversationViewModel.sharedModel.resetViewModel()
+		linphoneChatRoom = nil
 		editModeOff()
-		
 		if(self.isComposingView.isHidden == false){
 			self.isComposingView.isHidden = true
 		}
@@ -285,17 +277,10 @@ import AVFoundation
 		
 		cancelVoiceRecording()
 
-		self.mediaCollectionView = []
-		self.mediaURLCollection = []
-		
-		self.replyURLCollection.removeAll()
-		self.replyCollectionView.removeAll()
-		
-		self.fileContext = []
+		ChatConversationViewModel.sharedModel.mediaCollectionView = []
+		ChatConversationViewModel.sharedModel.replyCollectionView.removeAll()
 		self.messageView.fileContext = false
-		self.urlFile = []
-		self.imageT = []
-		self.data = []
+		ChatConversationViewModel.sharedModel.imageT = []
 		self.collectionViewMedia.reloadData()
 		self.collectionViewReply.reloadData()
 		if self.messageView.messageText.text.isEmpty{
@@ -308,12 +293,6 @@ import AVFoundation
 		isComposingTextView.text = ""
 		
 		tableController.floatingScrollBackground?.isHidden = true;
-		
-		workItem?.cancel()
-		for progressItem in progress{
-			progressItem.cancel()
-		}
-		progress.removeAll()
 	}
 	
 	func goBackChatListView() {
@@ -358,13 +337,13 @@ import AVFoundation
 	
 	func goToDevicesList() {
 		let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
-		view.room = chatRoom?.getCobject
+		view.room = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 	}
 	
 	func addOrGoToContact() {
-		let firstParticipant = chatRoom?.participants.first
-		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(chatRoom?.getCobject)
+		let firstParticipant = ChatConversationViewModel.sharedModel.chatRoom?.participants.first
+		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 		
 		let contact = FastAddressBook.getContactWith(addr)
 		
@@ -392,7 +371,7 @@ import AVFoundation
 	func displayGroupInfo() {
 		let contactsArray: NSMutableArray = []
 		let admins: NSMutableArray = []
-		let participants = chatRoom?.participants
+		let participants = ChatConversationViewModel.sharedModel.chatRoom?.participants
 		participants?.forEach{ participant in
 			let curi = linphone_address_as_string_uri_only(linphone_participant_get_address(participant.getCobject))
 			let uri = String(utf8String: curi!)
@@ -408,11 +387,11 @@ import AVFoundation
 		view.oldContacts = contactsArray
 		view.admins = admins
 		view.oldAdmins = admins
-		view.oldSubject = String(utf8String: linphone_chat_room_get_subject(chatRoom?.getCobject)) ?? LINPHONE_DUMMY_SUBJECT
-		view.room = chatRoom?.getCobject
+		view.oldSubject = String(utf8String: linphone_chat_room_get_subject(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)) ?? LINPHONE_DUMMY_SUBJECT
+		view.room = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		
-		let localAddress = linphone_address_as_string(linphone_chat_room_get_local_address(chatRoom?.getCobject))
-		let peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom?.getCobject))
+		let localAddress = linphone_address_as_string(linphone_chat_room_get_local_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject))
+		let peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject))
 		view.peerAddress = UnsafePointer(peerAddress)
 		view.localAddress = UnsafePointer(localAddress)
 		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
@@ -420,17 +399,17 @@ import AVFoundation
 	
 	func goToEphemeralSettings(){
 		let view: EphemeralSettingsView = self.VIEW(EphemeralSettingsView.compositeViewDescription())
-		view.room = chatRoom?.getCobject
+		view.room = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 	}
 	
 	func conferenceSchedule(){
-		ConferenceViewModelBridge.scheduleFromGroupChat(cChatRoom: (chatRoom?.getCobject)!)
+		ConferenceViewModelBridge.scheduleFromGroupChat(cChatRoom: (ChatConversationViewModel.sharedModel.chatRoom?.getCobject)!)
 		PhoneMainView.instance().pop(toView: ConferenceSchedulingView.compositeViewDescription())
 	}
 	
 	func mute_unmute_notifications(){
-		LinphoneManager.setChatroomPushEnabled(chatRoom?.getCobject, withPushEnabled: !LinphoneManager.getChatroomPushEnabled(chatRoom?.getCobject))
+		LinphoneManager.setChatroomPushEnabled(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, withPushEnabled: !LinphoneManager.getChatroomPushEnabled(ChatConversationViewModel.sharedModel.chatRoom?.getCobject))
 	}
 	
 	func onEditionChangeClick() {
@@ -439,8 +418,8 @@ import AVFoundation
 	
 	func showAddressAndIdentityPopup() {
 		
-		let localAddress = String(utf8String: linphone_address_as_string(linphone_chat_room_get_local_address(chatRoom?.getCobject)))
-		let peerAddress = String(utf8String: linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom?.getCobject)))
+		let localAddress = String(utf8String: linphone_address_as_string(linphone_chat_room_get_local_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)))
+		let peerAddress = String(utf8String: linphone_address_as_string(linphone_chat_room_get_peer_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)))
 		
 		var infoMsg: String? = nil
 		if let peerAddress, let localAddress {
@@ -468,13 +447,13 @@ import AVFoundation
 		menu.dataSource.removeAll()
 		
 		if(groupeChat){
-			if !chatRoom!.isReadOnly {
+			if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
 				menu.dataSource.append(VoipTexts.conference_schedule_start)
 			}
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_group_infos)
 		}else{
 			var contact: Contact? = nil
-			let firstParticipant = chatRoom?.participants.first
+			let firstParticipant = ChatConversationViewModel.sharedModel.chatRoom?.participants.first
 			let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom)
 			
 			contact = FastAddressBook.getContactWith(addr)
@@ -487,40 +466,41 @@ import AVFoundation
 		}
 		if(secureLevel){
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_conversation_device)
-			if !chatRoom!.isReadOnly {
+			if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
 				menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_ephemeral_messages)
 			}
 		}
-		if(LinphoneManager.getChatroomPushEnabled(chatRoom?.getCobject)){
+		if(LinphoneManager.getChatroomPushEnabled(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)){
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_mute_notifications)
 		}else{
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_unmute_notifications)
 		}
 		menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_delete_messages)
 		
-		if !chatRoom!.isReadOnly {
-			messageView.ephemeralIndicator.isHidden = !chatRoom!.ephemeralEnabled
+		if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
+			messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
 		}
 	}
 	
 	@objc func initChatRoom(cChatRoom:OpaquePointer) {
-		chatRoom = ChatRoom.getSwiftObject(cObject: cChatRoom)
+		ChatConversationViewModel.sharedModel.chatRoom = ChatRoom.getSwiftObject(cObject: cChatRoom)
+		linphoneChatRoom = cChatRoom
 		PhoneMainView.instance().currentRoom = cChatRoom
-		address = chatRoom?.peerAddress?.asString()
+		ChatConversationViewModel.sharedModel.address = ChatConversationViewModel.sharedModel.chatRoom?.peerAddress?.asString()
 		
 		var changeIcon = false
-		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+		let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		
 		if (isOneToOneChat) {
 			
-			let firstParticipant = chatRoom?.participants.first
+			let firstParticipant = ChatConversationViewModel.sharedModel.chatRoom?.participants.first
 			let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom);
-			address = FastAddressBook.displayName(for: addr) ?? "unknow"
+			ChatConversationViewModel.sharedModel.address = FastAddressBook.displayName(for: addr) ?? "unknow"
 			changeIcon = false
 			titleParticipants.isHidden = true
 			
 		} else {
-			address = chatRoom?.subject
+			ChatConversationViewModel.sharedModel.address = ChatConversationViewModel.sharedModel.chatRoom?.subject
 			changeIcon = true
 			
 			titleParticipants.isHidden = false
@@ -529,9 +509,9 @@ import AVFoundation
 			
 		}
 		
-		changeTitle(titleString: address ?? "Error")
+		changeTitle(titleString: ChatConversationViewModel.sharedModel.address ?? "Error")
 		
-		if !chatRoom!.isReadOnly{
+		if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly{
 			changeCallIcon(groupChat: changeIcon)
 			action1BisButton.isEnabled = true
 		}else{
@@ -543,11 +523,10 @@ import AVFoundation
 		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
 		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: cChatRoom)
 		self.viewWillAppear(true)
-		//tableController.chatRoom = chatRoom?.getCobject
 	}
 	
 	func updateParticipantLabel(){
-		let participants = chatRoom?.participants
+		let participants = ChatConversationViewModel.sharedModel.chatRoom?.participants
 		participantsGroupLabel.text = ""
 		participants?.forEach{ participant in
 			if participantsGroupLabel.text != "" {
@@ -558,10 +537,10 @@ import AVFoundation
 	}
 	
 	func onCallClick(cChatRoom: OpaquePointer?) {
-		let firstParticipant = chatRoom?.participants.first
+		let firstParticipant = ChatConversationViewModel.sharedModel.chatRoom?.participants.first
 		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom);
 		
-		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+		let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		
 		if (!isOneToOneChat) {
 			alertActionConferenceCall(cChatRoom: cChatRoom)
@@ -616,7 +595,7 @@ import AVFoundation
 			alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOkGoToDevicesList)))
 		}else{
 			let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
-			view.room = chatRoom?.getCobject
+			view.room = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 		}
 		
@@ -624,7 +603,7 @@ import AVFoundation
 	
 	@objc func onTapOkStartGroupCall(){
 		self.dismiss(animated: true, completion: nil)
-		ConferenceViewModelBridge.startGroupCall(cChatRoom: (chatRoom?.getCobject)!)
+		ConferenceViewModelBridge.startGroupCall(cChatRoom: (ChatConversationViewModel.sharedModel.chatRoom?.getCobject)!)
 	}
 	
 	@objc func onTapOkGoToDevicesList() {
@@ -633,7 +612,7 @@ import AVFoundation
 			ConfigManager.instance().lpConfigSetBool(value: activeAlertController.isChecked, key: "confirmation_dialog_before_sas_call_not_ask_again")
 		}
 		let view: DevicesListView = self.VIEW(DevicesListView.compositeViewDescription())
-		view.room = chatRoom?.getCobject
+		view.room = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 	}
 	
@@ -694,65 +673,37 @@ import AVFoundation
 		)
 	}
 	
-	func sendMessage(message: String?, withExterlBodyUrl externalUrl: URL?, rootMessage: ChatMessage?) -> Bool {
-		if chatRoom == nil {
-			return false
-		}
-		
-		let msg = rootMessage
-		let basic = ChatConversationViewSwift.isBasicChatRoom(chatRoom?.getCobject)
-		let params = linphone_account_get_params(linphone_core_get_default_account(LinphoneManager.getLc()))
-		let cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params)
-		
-		if (!basic || (cpimEnabled != 0)) && (message != nil) && message!.count > 0 {
-			linphone_chat_message_add_utf8_text_content(msg?.getCobject, message)
-		}
-		
-		if (externalUrl != nil) {
-			linphone_chat_message_set_external_body_url(msg?.getCobject, externalUrl!.absoluteString)
-		}
-		
-		let contentList = linphone_chat_message_get_contents(msg?.getCobject)
-		if bctbx_list_size(contentList) > 0 {
-			linphone_chat_message_send(msg?.getCobject)
-		}
-		
-		if basic && (cpimEnabled == 0) && (message != nil) && message!.count > 0 {
-			linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(chatRoom?.getCobject, message))
-		}
-		
-		return true
-	}
+
 	
 	func sendMessageInMessageField(rootMessage: ChatMessage?) {
-		if sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage) {
+		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage) {
 			messageView.messageText.text = ""
 			messageView.isComposing = false
 		}
 	}
 	
 	func onSendClick() {
-		let rootMessage = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(chatRoom?.getCobject, replyMessage) : linphone_chat_room_create_empty_message(chatRoom?.getCobject)
+		let rootMessage = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 		
-		if isVoiceRecording {
+		if ChatConversationViewModel.sharedModel.isVoiceRecording {
 			stopVoiceRecording()
 		}
 		
-		if isPendingVoiceRecord && (voiceRecorder != nil) && (linphone_recorder_get_file(voiceRecorder?.getCobject) != nil) {
+		if ChatConversationViewModel.sharedModel.isPendingVoiceRecord && (ChatConversationViewModel.sharedModel.voiceRecorder != nil) && (linphone_recorder_get_file(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) != nil) {
 			print("ChatConversationViewSwift onSendClick isPendingVoiceRecord")
-			let voiceContent = linphone_recorder_create_content(voiceRecorder?.getCobject)
-			isPendingVoiceRecord = false
+			let voiceContent = linphone_recorder_create_content(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
+			ChatConversationViewModel.sharedModel.isPendingVoiceRecord = false
 		 	cancelVoiceRecording()
 			linphone_chat_message_add_content(rootMessage, voiceContent)
 		}
-		if fileContext.count > 0 {
-			let conference = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesConference.rawValue))
-			if (linphone_chat_room_get_capabilities(chatRoom?.getCobject) != 0) && conference {
+		if ChatConversationViewModel.sharedModel.fileContext.count > 0 {
+			let conference = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesConference.rawValue))
+			if (linphone_chat_room_get_capabilities(ChatConversationViewModel.sharedModel.chatRoom?.getCobject) != 0) && conference {
 				let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
-				startMultiFilesUpload(result)
+				let _ = startMultiFilesUpload(result)
 			} else {
-				for i in 0..<(fileContext.count) {
-					startUploadData(fileContext[i], withType: FileType.init(mediaURLCollection[i].pathExtension)?.getGroupTypeFromFile(), withName: mediaURLCollection[i].lastPathComponent, andMessage: nil, rootMessage: nil)
+				for i in 0..<(ChatConversationViewModel.sharedModel.fileContext.count) {
+					startUploadData(ChatConversationViewModel.sharedModel.fileContext[i], withType: FileType.init(ChatConversationViewModel.sharedModel.mediaURLCollection[i].pathExtension)?.getGroupTypeFromFile(), withName: ChatConversationViewModel.sharedModel.mediaURLCollection[i].lastPathComponent, andMessage: nil, rootMessage: nil)
 				}
 				if messageView.messageText.text != "" {
 					let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
@@ -760,10 +711,10 @@ import AVFoundation
 				}
 			}
 			
-			fileContext = []
+			ChatConversationViewModel.sharedModel.fileContext = []
 			messageView.fileContext = false
-			self.mediaCollectionView = []
-			self.mediaURLCollection = []
+			ChatConversationViewModel.sharedModel.mediaCollectionView = []
+			ChatConversationViewModel.sharedModel.mediaURLCollection = []
 			if(self.mediaSelector.isHidden == false){
 				self.mediaSelector.isHidden = true
 			}
@@ -785,7 +736,7 @@ import AVFoundation
 	func startMultiFilesUpload(_ rootMessage: ChatMessage?) -> Bool {
 		let fileTransfer = FileTransferDelegate()
 		fileTransfer.text = messageView.messageText.text
-		fileTransfer.uploadFileContent(forSwift: fileContext, urlList: mediaURLCollection, for: chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
+		fileTransfer.uploadFileContent(forSwift: ChatConversationViewModel.sharedModel.fileContext, urlList: ChatConversationViewModel.sharedModel.mediaURLCollection, for: ChatConversationViewModel.sharedModel.chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
 		messageView.messageText.text = ""
 		tableController.scroll(toBottom: true)
 		return true
@@ -802,82 +753,14 @@ import AVFoundation
 			attributes: nil)
 	}
 	
-	func startUploadData(_ data: Data?, withType type: String?, withName name: String?, andMessage message: String?, rootMessage: ChatMessage?) -> Bool {
-		let fileTransfer = FileTransferDelegate.init()
-		if let message {
-			fileTransfer.text = message
-		}
-		var resultType = "file"
-		var key = "localfile"
-		if type == "file_video_default" {
-			resultType = "video"
-			key = "localvideo"
-		} else if type == "file_picture_default" {
-			resultType = "image"
-			key = "localimage"
-		}
-		fileTransfer.uploadData(data, for: chatRoom?.getCobject, type: resultType, subtype: resultType, name: name, key: key, rootMessage: rootMessage?.getCobject)
+	func startUploadData(_ data: Data?, withType type: String?, withName name: String?, andMessage message: String?, rootMessage: ChatMessage?){
+		ChatConversationViewModel.sharedModel.startUploadData(data, withType: type, withName: name, andMessage: message, rootMessage: rootMessage)
 		tableController.scroll(toBottom: true)
-		return true
-	}
-	
-	func on_chat_room_chat_message_received(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		let chat = event_log?.chatMessage
-		if chat == nil {
-			return
-		}
-		
-		var hasFile = false
-		// if auto_download is available and file is downloaded
-		if (linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1) && (chat?.fileTransferInformation != nil) {
-			hasFile = true
-		}
-		
-		var returnValue = false;
-		chat?.contents.forEach({ content in
-			if !content.isFileTransfer && !content.isText && !content.isVoiceRecording && !hasFile {
-				returnValue = true
-			}
-		})
-		
-		if returnValue {
-			return
-		}
-		
-		let from = chat?.fromAddress
-		if from == nil {
-			return
-		}
-		
-		let isDisplayingBottomOfTable = tableController.tableView.indexPathsForVisibleRows?.last?.row == (tableController.totalNumberOfItems() ) - 1
-		tableController.addEventEntry(event_log?.getCobject)
-		
-		if isDisplayingBottomOfTable {
-			tableController.scroll(toBottom: true)
-			tableController.scrollBadge!.text = nil
-			tableController.scrollBadge!.isHidden = true
-		} else {
-			tableController.scrollBadge!.isHidden = false
-			let unread_msg = linphone_chat_room_get_unread_messages_count(cr?.getCobject)
-			tableController.scrollBadge!.text = "\(unread_msg)"
-		}
-	}
-	
-	func on_chat_room_chat_message_sending(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		tableController.addEventEntry(event_log?.getCobject)
-		tableController.scroll(toBottom: true)
-	}
-	
-	func on_chat_room_is_composing_received(_ cr: ChatRoom?, _ remoteAddr: Address?, _ isComposing: Bool) {
-		let composing = (linphone_chat_room_is_remote_composing(cr?.getCobject) != 0) || bctbx_list_size(linphone_chat_room_get_composing_addresses(cr?.getCobject)) > 0
-		if((composing && self.isComposingView.isHidden)||(!composing && !self.isComposingView.isHidden)){
-			setComposingVisible(composing, withDelay: 0.3)
-		}
 	}
 	
 	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
 		if visible {
-			let addresses = chatRoom!.composingAddresses
+			let addresses = ChatConversationViewModel.sharedModel.chatRoom!.composingAddresses
 			var composingAddresses : String? = ""
 			if addresses.count == 1 {
 
@@ -937,7 +820,6 @@ import AVFoundation
 			let composingAddresses : String? = FastAddressBook.displayName(for: addresses?.getCobject)
 			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), composingAddresses!)
 			
-			//let content = ChatMessage.getSwiftObject(cObject: message!).utf8Text
 			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: message!)
 			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: message!) : ChatMessage.getSwiftObject(cObject: message!).utf8Text)
 
@@ -949,8 +831,8 @@ import AVFoundation
 			replyDeleteButton.onClickAction = {
 				self.replyDeleteButton.isHidden = true
 				self.initReplyView(false, message: nil)
-				self.replyURLCollection.removeAll()
-				self.replyCollectionView.removeAll()
+				ChatConversationViewModel.sharedModel.replyURLCollection.removeAll()
+				ChatConversationViewModel.sharedModel.replyCollectionView.removeAll()
 				self.collectionViewReply.reloadData()
 			}
 			
@@ -970,9 +852,9 @@ import AVFoundation
 					replyContentTextSpacing.isHidden = true
 					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
 						if(content.isFile){
-							let indexPath = IndexPath(row: self.replyCollectionView.count, section: 0)
-							replyURLCollection.append(URL(string: content.filePath)!)
-							replyCollectionView.append(ChatConversationViewSwift.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							let indexPath = IndexPath(row: ChatConversationViewModel.sharedModel.replyCollectionView.count, section: 0)
+							ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath)!)
+							ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 							collectionViewReply.insertItems(at: [indexPath])
 						}else if(content.isText){
 							replyContentTextSpacing.isHidden = false
@@ -1001,72 +883,6 @@ import AVFoundation
 		}
 	}
 	
-	class func getImageFrom(_ content: OpaquePointer?, filePath: String?, forReplyBubble: Bool) -> UIImage? {
-		var filePath = filePath
-		let type = String(utf8String: linphone_content_get_type(content))
-		let name = String(utf8String: linphone_content_get_name(content))
-		if filePath == nil {
-			filePath = LinphoneManager.validFilePath(name)
-		}
-
-		var image: UIImage? = nil
-		if type == "video" {
-			image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
-		} else if type == "image" {
-			let data = NSData(contentsOfFile: filePath ?? "") as Data?
-			if let data {
-				image = UIImage(data: data)
-			}
-		}
-		if let image {
-			return image
-		} else {
-			return self.getImageFromFileName(name, forReplyBubble: forReplyBubble)
-		}
-	}
-	
-	class func getImageFromFileName(_ fileName: String?, forReplyBubble forReplyBubbble: Bool) -> UIImage? {
-		let `extension` = fileName?.lowercased().components(separatedBy: ".").last
-		var image: UIImage?
-		var text = fileName
-		if fileName?.contains("voice-recording") ?? false {
-			image = UIImage(named: "file_voice_default")
-			text = self.recordingDuration(LinphoneManager.validFilePath(fileName))
-		} else {
-			if `extension` == "pdf" {
-				image = UIImage(named: "file_pdf_default")
-			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(`extension` ?? "") {
-				image = UIImage(named: "file_picture_default")
-			} else if ["mkv", "avi", "mov", "mp4"].contains(`extension` ?? "") {
-				image = UIImage(named: "file_video_default")
-			} else if ["wav", "au", "m4a"].contains(`extension` ?? "") {
-				image = UIImage(named: "file_audio_default")
-			} else {
-				image = UIImage(named: "file_default")
-			}
-		}
-
-		return SwiftUtil.textToImage(drawText: text!, inImage: image!, forReplyBubble: forReplyBubbble)
-	}
-	
-	class func recordingDuration(_ _voiceRecordingFile: String?) -> String? {
-		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
-		var result = ""
-		do{
-			let linphonePlayer = try core.createLocalPlayer(soundCardName: nil, videoDisplayName: nil, windowId: nil)
-			try linphonePlayer.open(filename: _voiceRecordingFile!)
-			result = self.formattedDuration(linphonePlayer.duration)!
-			linphonePlayer.close()
-		}catch{
-			print(error)
-		}
-		return result
-	}
-	
-	class func formattedDuration(_ valueMs: Int) -> String? {
-		return String(format: "%02ld:%02ld", valueMs / 60000, (valueMs % 60000) / 1000)
-	}
-	
 	@objc class func getKeyFromFileType(_ fileType: String?, fileName name: String?) -> String? {
 		if fileType == "video" {
 			return "localvideo"
@@ -1077,86 +893,7 @@ import AVFoundation
 	}
 	
 	@objc class func writeMediaToGalleryFromName(_ name: String?, fileType: String?) {
-		let filePath = LinphoneManager.validFilePath(name)
-		let fileManager = FileManager.default
-		if fileManager.fileExists(atPath: filePath!) {
-			let data = NSData(contentsOfFile: filePath!) as Data?
-			let block: (() -> Void)? = {
-				if fileType == "image" {
-					// we're finished, save the image and update the message
-					let image = UIImage(data: data!)
-					if image == nil {
-						ChatConversationViewSwift.showFileDownloadError()
-						return
-					}
-					var placeHolder: PHObjectPlaceholder? = nil
-					PHPhotoLibrary.shared().performChanges({
-						let request = PHAssetCreationRequest.creationRequestForAsset(from: image!)
-						placeHolder = request.placeholderForCreatedAsset
-					}) { success, error in
-						DispatchQueue.main.async(execute: {
-							if error != nil {
-								Log.e("Cannot save image data downloaded \(error!.localizedDescription)")
-								let errView = UIAlertController(
-									title: NSLocalizedString("Transfer error", comment: ""),
-									message: NSLocalizedString("Cannot write image to photo library", comment: ""),
-									preferredStyle: .alert)
-
-								let defaultAction = UIAlertAction(
-									title: "OK",
-									style: .default,
-									handler: { action in
-									})
-
-								errView.addAction(defaultAction)
-								PhoneMainView.instance()!.present(errView, animated: true)
-							} else {
-								Log.i("Image saved to \(placeHolder!.localIdentifier)")
-							}
-						})
-					}
-				} else if fileType == "video" {
-				var placeHolder: PHObjectPlaceholder?
-				PHPhotoLibrary.shared().performChanges({
-					let request = PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath!))
-					placeHolder = request?.placeholderForCreatedAsset
-					}) { success, error in
-						DispatchQueue.main.async(execute: {
-							if error != nil {
-								Log.e("Cannot save video data downloaded \(error!.localizedDescription)")
-								let errView = UIAlertController(
-									title: NSLocalizedString("Transfer error", comment: ""),
-									message: NSLocalizedString("Cannot write video to photo library", comment: ""),
-									preferredStyle: .alert)
-								let defaultAction = UIAlertAction(
-									title: "OK",
-									style: .default,
-									handler: { action in
-									})
-
-								errView.addAction(defaultAction)
-								PhoneMainView.instance()!.present(errView, animated: true)
-							} else {
-								Log.i("video saved to \(placeHolder!.localIdentifier)")
-							}
-		 				})
-	 				}
- 				}
-			}
-			if PHPhotoLibrary.authorizationStatus() == .authorized {
-				block!()
-			} else {
-				PHPhotoLibrary.requestAuthorization({ status in
-					DispatchQueue.main.async(execute: {
-						if PHPhotoLibrary.authorizationStatus() == .authorized {
-							block!()
-						} else {
-							UIAlertView(title: NSLocalizedString("Photo's permission", comment: ""), message: NSLocalizedString("Photo not authorized", comment: ""), delegate: nil, cancelButtonTitle: "", otherButtonTitles: "Continue").show()
-						}
-					})
-				})
-			}
-		}
+		ChatConversationViewModel.sharedModel.writeMediaToGalleryFromName(name, fileType: fileType)
 	}
 	
 	class func showFileDownloadError() {
@@ -1244,19 +981,6 @@ import AVFoundation
 		   	PhoneMainView.instance().mainViewController.present(documentPicker, animated: true)
 	}
 	
-	func createThumbnailOfVideoFromFileURL(videoURL: String) -> UIImage? {
-		let asset = AVAsset(url: URL(string: videoURL)!)
-		let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-		assetImgGenerate.appliesPreferredTrackTransform = true
-		do {
-			let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
-			let thumbnail = UIImage(cgImage: img)
-			return thumbnail
-		} catch _{
-			return nil
-		}
-	}
-	
 	func setupViews() {
 		mediaSelector.addSubview(collectionViewMedia)
 		collectionViewMedia.dataSource = self
@@ -1282,9 +1006,9 @@ import AVFoundation
 
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		if(collectionView == collectionViewMedia){
-			return mediaCollectionView.count
+			return ChatConversationViewModel.sharedModel.mediaCollectionView.count
 		}
-		return replyCollectionView.count
+		return ChatConversationViewModel.sharedModel.replyCollectionView.count
 	}
 
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -1297,13 +1021,13 @@ import AVFoundation
 			
 			deleteButton.onClickAction = {
 				self.collectionViewMedia.deleteItems(at: [indexPath])
-				self.mediaCollectionView.remove(at: indexPath.row)
-				self.mediaURLCollection.remove(at: indexPath.row)
-				self.fileContext.remove(at: indexPath.row)
-				self.urlFile.remove(at: indexPath.row)
-				self.imageT.remove(at: indexPath.row)
-				self.data.remove(at: indexPath.row)
-				if(self.mediaCollectionView.count == 0){
+				ChatConversationViewModel.sharedModel.mediaCollectionView.remove(at: indexPath.row)
+				ChatConversationViewModel.sharedModel.mediaURLCollection.remove(at: indexPath.row)
+				ChatConversationViewModel.sharedModel.fileContext.remove(at: indexPath.row)
+				ChatConversationViewModel.sharedModel.urlFile.remove(at: indexPath.row)
+				ChatConversationViewModel.sharedModel.imageT.remove(at: indexPath.row)
+				ChatConversationViewModel.sharedModel.data.remove(at: indexPath.row)
+				if(ChatConversationViewModel.sharedModel.mediaCollectionView.count == 0){
 					self.messageView.fileContext = false
 					self.selectionMedia()
 					if self.messageView.messageText.text.isEmpty{
@@ -1314,13 +1038,13 @@ import AVFoundation
 				}
 			}
 			
-			let imageCell = mediaCollectionView[indexPath.row]
+			let imageCell = ChatConversationViewModel.sharedModel.mediaCollectionView[indexPath.row]
 			var myImageView = UIImageView()
 			
-			if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+			if(FileType.init(ChatConversationViewModel.sharedModel.mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(ChatConversationViewModel.sharedModel.mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
 				myImageView = UIImageView(image: imageCell)
 			}else{
-				let fileNameText = mediaURLCollection[indexPath.row].lastPathComponent
+				let fileNameText = ChatConversationViewModel.sharedModel.mediaURLCollection[indexPath.row].lastPathComponent
 				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
 				myImageView = UIImageView(image: fileName)
 			}
@@ -1329,7 +1053,7 @@ import AVFoundation
 			viewCell.addSubview(myImageView)
 			myImageView.alignParentBottom(withMargin: 4).alignParentLeft(withMargin: 4).done()
 			
-			if(FileType.init(mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+			if(FileType.init(ChatConversationViewModel.sharedModel.mediaURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
 				var imagePlay = UIImage()
 				if #available(iOS 13.0, *) {
 					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1353,13 +1077,13 @@ import AVFoundation
 			let viewCell: UIView = UIView(frame: cell.contentView.frame)
 			cell.addSubview(viewCell)
 			
-			let imageCell = replyCollectionView[indexPath.row]
+			let imageCell = ChatConversationViewModel.sharedModel.replyCollectionView[indexPath.row]
 			var myImageView = UIImageView()
 			
-			if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+			if(FileType.init(ChatConversationViewModel.sharedModel.replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(ChatConversationViewModel.sharedModel.replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
 				myImageView = UIImageView(image: imageCell)
 			}else{
-				let fileNameText = replyURLCollection[indexPath.row].lastPathComponent
+				let fileNameText = ChatConversationViewModel.sharedModel.replyURLCollection[indexPath.row].lastPathComponent
 				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
 				myImageView = UIImageView(image: fileName)
 			}
@@ -1367,7 +1091,7 @@ import AVFoundation
 			myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
 			viewCell.addSubview(myImageView)
 			
-			if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+			if(FileType.init(ChatConversationViewModel.sharedModel.replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
 				var imagePlay = UIImage()
 				if #available(iOS 13.0, *) {
 					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1395,80 +1119,23 @@ import AVFoundation
 		let itemProviders = results.map(\.itemProvider)
 		for item in itemProviders {
 			if item.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-				progress.append(item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, error in
-					if(self.workItem!.isCancelled){
+				ChatConversationViewModel.sharedModel.progress.append(item.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, error in
+					if(ChatConversationViewModel.sharedModel.workItem!.isCancelled){
 						return
 					} else {
-						self.createCollectionViewItem(urlFile: urlFile, type: "public.image")
+						ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: urlFile, type: "public.image")
 					}
 				})
 			}else if item.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-				progress.append(item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, error in
-					if(self.workItem!.isCancelled){
+				ChatConversationViewModel.sharedModel.progress.append(item.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, error in
+					if(ChatConversationViewModel.sharedModel.workItem!.isCancelled){
 						return
 					} else {
-						self.createCollectionViewItem(urlFile: urlFile, type: "public.movie")
+						ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: urlFile, type: "public.movie")
 					}
 				})
 			}
 		}
-	}
-	
-	func createCollectionViewItem(urlFile: URL?, type: String){
-		if let url = urlFile {
-			do {
-				if(type == "public.image"){
-					let dataResult = try Data(contentsOf: url)
-					self.data.append(dataResult)
-					if let image = UIImage(data: dataResult) {
-						self.imageT.append(image)
-					}else{
-						self.imageT.append(UIImage(named: "chat_error"))
-					}
-				}else if(type == "public.movie"){
-					self.data.append(try Data(contentsOf: url))
-					var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
-					self.imageT.append(tmpImage)
-				}else{
-					
-					self.data.append(try Data(contentsOf: url))
-					let otherFile = FileType.init(url.pathExtension)
-					let otherFileImage = otherFile!.getImageFromFile()
-					self.imageT.append(otherFileImage)
-				}
-				self.urlFile.append(url)
-				DispatchQueue.main.async(execute: self.workItem!)
-			}catch let error{
-				print(error.localizedDescription)
-			}
-		}
-	}
-	
-	func createCollectionViewItemForReply(urlFile: URL?, type: String) -> UIImage {
-		if let url = urlFile {
-			do {
-				if(type == "public.image"){
-					let dataResult = try Data(contentsOf: urlFile!)
-					if let image = UIImage(data: dataResult) {
-						return image
-					}else{
-						return UIImage(named: "chat_error")!
-					}
-				}else if(type == "public.movie"){
-					var tmpImage = self.createThumbnailOfVideoFromFileURL(videoURL: urlFile!.relativeString)
-					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
-					return tmpImage!
-				}else{
-					let otherFile = FileType.init(urlFile!.pathExtension)
-					let otherFileImage = otherFile!.getImageFromFile()
-					return otherFileImage!
-				}
-			}catch let error{
-				print(error.localizedDescription)
-			}
-		}
-		return UIImage(named: "chat_error")!
 	}
 	
 	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -1490,19 +1157,19 @@ import AVFoundation
 			
 			let data  = image.jpegData(compressionQuality: 1)
 			
-			self.data.append(data)
+			ChatConversationViewModel.sharedModel.data.append(data)
 			if let image = UIImage(data: data!) {
-				self.imageT.append(image)
+				ChatConversationViewModel.sharedModel.imageT.append(image)
 			}else{
-				self.imageT.append(UIImage(named: "chat_error"))
+				ChatConversationViewModel.sharedModel.imageT.append(UIImage(named: "chat_error"))
 			}
 			
-			self.urlFile.append(fileUrl)
-			DispatchQueue.main.async(execute: self.workItem!)
+			ChatConversationViewModel.sharedModel.urlFile.append(fileUrl)
+			DispatchQueue.main.async(execute: ChatConversationViewModel.sharedModel.workItem!)
   		case "public.movie":
 			let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as! URL
 			
-			self.createCollectionViewItem(urlFile: videoUrl, type: "public.movie")
+			ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: videoUrl, type: "public.movie")
 		default:
 			print("Mismatched type: \(mediaType)")
 	  	}
@@ -1522,11 +1189,11 @@ import AVFoundation
 				let imageExtension = ["png", "jpg", "jpeg", "bmp", "heic"]
 				let videoExtension = ["mkv", "avi", "mov", "mp4"]
 				if(imageExtension.contains(url.pathExtension.lowercased())){
-					self.createCollectionViewItem(urlFile: url, type: "public.image")
+					ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: url, type: "public.image")
 				}else if(videoExtension.contains(url.pathExtension.lowercased())){
-					self.createCollectionViewItem(urlFile: url, type: "public.movie")
+					ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: url, type: "public.movie")
 				}else{
-					self.createCollectionViewItem(urlFile: url, type: "public.data")
+					ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: url, type: "public.data")
 			   	}
 			}
 		}
@@ -1535,15 +1202,15 @@ import AVFoundation
 	}
 	
 	public func initListMedia(sequenceCount : Int){
-		if(self.mediaCollectionView.count == 0 && sequenceCount >= 1){
+		if(ChatConversationViewModel.sharedModel.mediaCollectionView.count == 0 && sequenceCount >= 1){
 			self.selectionMedia()
 			self.messageView.sendButton.isEnabled = !messageView.isLoading
 			self.messageView.fileContext = true
-			self.urlFile = []
-			self.imageT = []
-			self.data = []
+			ChatConversationViewModel.sharedModel.urlFile = []
+			ChatConversationViewModel.sharedModel.imageT = []
+			ChatConversationViewModel.sharedModel.data = []
 		}
-		if(self.mediaCollectionView.count > 0){
+		if(ChatConversationViewModel.sharedModel.mediaCollectionView.count > 0){
 			self.messageView.sendButton.isEnabled = !messageView.isLoading
 		}
 		
@@ -1555,8 +1222,8 @@ import AVFoundation
 			self.messageView.sendButton.isEnabled = false
 			self.messageView.pictureButton.isEnabled = false
 			
-			self.mediaCount = mediaCollectionView.count
-			self.newMediaCount = sequenceCount
+			ChatConversationViewModel.sharedModel.mediaCount = ChatConversationViewModel.sharedModel.mediaCollectionView.count
+			ChatConversationViewModel.sharedModel.newMediaCount = sequenceCount
 		}
 	}
 	
@@ -1571,44 +1238,12 @@ import AVFoundation
 				onCancelClick: {
 				},
 				onConfirmationClick: {
-					linphone_chat_message_send(linphone_chat_room_create_forward_message(self.chatRoom?.getCobject, message))
+					linphone_chat_message_send(linphone_chat_room_create_forward_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, message))
 
 				})
 			d?.forwardImage.isHidden = false
 			d?.setSpecialColor()
 		}
-	}
-	
-	func shareFile() {
-		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
-		let defaults = UserDefaults(suiteName: groupName)
-		let dict = defaults?.value(forKey: "photoData") as? [AnyHashable : Any]
-		let dictFile = defaults?.value(forKey: "icloudData") as? [AnyHashable : Any]
-		let dictUrl = defaults?.value(forKey: "url") as? [AnyHashable : Any]
-		if let dict {
-			//file shared from photo lib
-			let fileName = dict["url"] as? String
-			messageView.messageText.text = dict["message"] as? String
-			confirmShare(nsDataRead(), url: nil, fileName: fileName)
-			defaults?.removeObject(forKey: "photoData")
-		} else if let dictFile {
-			let fileName = dictFile["url"] as? String
-			messageView.messageText.text = dictFile["message"] as? String
-			confirmShare(nsDataRead(), url: nil, fileName: fileName)
-			defaults?.removeObject(forKey: "icloudData")
-		} else if let dictUrl {
-			let url = dictUrl["url"] as? String
-			messageView.messageText.text = dictUrl["message"] as? String
-			confirmShare(nil, url: url, fileName: nil)
-			defaults?.removeObject(forKey: "url")
-		}
-	}
-	
-	func nsDataRead() -> Data? {
-		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
-		let path = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupName)?.path
-		let fullCacheFilePathPath = "\(path ?? "")/\("nsData")"
-		return NSData(contentsOfFile: fullCacheFilePathPath) as Data?
 	}
 	
 	func confirmShare(_ data: Data?, url: String?, fileName: String?) {
@@ -1618,12 +1253,12 @@ import AVFoundation
 				withTitle: NSLocalizedString("Send to this conversation", comment: "")) { [self] in
 					do{
 						if messageView.messageText.text != "" {
-							try sendMessageInMessageField(rootMessage: chatRoom?.createEmptyMessage())
+							try sendMessageInMessageField(rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}
 						if let url {
-							_ = try sendMessage(message: url, withExterlBodyUrl: nil, rootMessage: chatRoom?.createEmptyMessage())
+							_ = try ChatConversationViewModel.sharedModel.sendMessage(message: url, withExterlBodyUrl: nil, rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						} else {
-							_ = try startFileUpload(data, withName: fileName, rootMessage: chatRoom?.createEmptyMessage())
+							try startFileUpload(data, withName: fileName, rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}
 					}catch{
 						print(error)
@@ -1635,11 +1270,9 @@ import AVFoundation
 		})
 	}
 	
-	func startFileUpload(_ data: Data?, withName name: String?, rootMessage: ChatMessage?) -> Bool {
-		let fileTransfer = FileTransferDelegate()
-		fileTransfer.uploadFile(data, for: chatRoom?.getCobject, withName: name, rootMessage: rootMessage?.getCobject)
+	func startFileUpload(_ data: Data?, withName name: String?, rootMessage: ChatMessage?){
+		ChatConversationViewModel.sharedModel.startFileUpload(data, withName: name, rootMessage: rootMessage)
 		tableController.scroll(toBottom: true)
-		return true
 	}
 	
 	@objc class func getFileUrl(_ name: String?) -> URL? {
@@ -1651,10 +1284,10 @@ import AVFoundation
 		if(replyBubble.isHidden == false){
 			replyBubble.isHidden = true
 		}
-		self.replyURLCollection.removeAll()
-		self.replyCollectionView.removeAll()
+		ChatConversationViewModel.sharedModel.replyURLCollection.removeAll()
+		ChatConversationViewModel.sharedModel.replyCollectionView.removeAll()
 		self.collectionViewReply.reloadData()
-		replyMessage = forMessage
+		ChatConversationViewModel.sharedModel.replyMessage = forMessage
 		initReplyView(true, message: forMessage)
 	}
 	
@@ -1674,88 +1307,47 @@ import AVFoundation
 		recordingWaveView.progress = 0.0
 		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
 		self.messageView.sendButton.isEnabled = true
-		if isVoiceRecording {
+		if ChatConversationViewModel.sharedModel.isVoiceRecording {
 			stopVoiceRecording()
 		} else {
 			startVoiceRecording()
 		}
 	}
 	
-	func createVoiceRecorder() {
-		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
-		do{
-			let p = try core.createRecorderParams()
-			p.fileFormat = RecorderFileFormat.Mkv
-			voiceRecorder = try core.createRecorder(params: p)
-		}catch{
-			print(error)
-		}
-	}
-	
 	func startVoiceRecording() {
-		UIApplication.shared.isIdleTimerDisabled = true
+		ChatConversationViewModel.sharedModel.startVoiceRecording()
 		setRecordingVisible(visible: false)
-		if (voiceRecorder == nil) {
-			createVoiceRecorder()
-		}
-		CallManager.instance().activateAudioSession()
-		
 		messageView.voiceRecordButton.isSelected = true
-		
 		recordingStopButton.isHidden = false
 		recordingPlayButton.isHidden = true
-
-
-		showVoiceRecorderView = true
-		isVoiceRecording = true
-		//vrWaveMaskPlayer.frame = CGRect.zero
-
-		switch linphone_recorder_get_state(voiceRecorder?.getCobject) {
-		case LinphoneRecorderClosed:
-			let filename = "\(String(describing: LinphoneManager.imagesDirectory()))/voice-recording-\(UUID().uuidString).mkv"
-			linphone_recorder_open(voiceRecorder?.getCobject, filename)
-			linphone_recorder_start(voiceRecorder?.getCobject)
-			print("[Chat Message Sending] Recorder is closed opening it with \(filename)")
-		case LinphoneRecorderRunning:
-			print("[Chat Message Sending] Recorder is already recording")
-		case LinphoneRecorderPaused:
-			print("[Chat Message Sending] Recorder isn't closed, resuming recording")
-			linphone_recorder_start(voiceRecorder?.getCobject)
-		default:
-			break
-		}
 		self.recordingWaveImageMask.transform = CGAffineTransform.identity
 		recordingDurationTextView.isHidden = false
-		recordingDurationTextView.text = ChatConversationViewSwift.formattedDuration(Int(linphone_recorder_get_duration(voiceRecorder?.getCobject)))
-		vrRecordTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+		recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
+		ChatConversationViewModel.sharedModel.vrRecordTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
 			self.voiceRecordTimerUpdate()
 		}
 	}
 	
 	func voiceRecordTimerUpdate() {
-		let recorderDuration = linphone_recorder_get_duration(voiceRecorder?.getCobject)
+		let recorderDuration = linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 		if recorderDuration > LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999) {
 			print("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = %d)", LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))
 			stopVoiceRecording()
 		} else {
-			recordingDurationTextView.text = ChatConversationViewSwift.formattedDuration(Int(linphone_recorder_get_duration(voiceRecorder?.getCobject)))
+			recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
 			
 			UIView.animate(withDuration: 10.0, delay: 0.0, options: [.repeat], animations: {
 				self.recordingWaveImageMask.transform = CGAffineTransform(translationX: 98, y: 0).scaledBy(x: 0.01, y: 1)
 			})
-			 
+			
 		}
 	}
 	
 	func stopVoiceRecording() {
-		UIApplication.shared.isIdleTimerDisabled = false
-		if (voiceRecorder != nil) && linphone_recorder_get_state(voiceRecorder?.getCobject) == LinphoneRecorderRunning {
-			print("[Chat Message Sending] Pausing / closing voice recorder")
-			linphone_recorder_pause(voiceRecorder?.getCobject)
-			linphone_recorder_close(voiceRecorder?.getCobject)
-			recordingDurationTextView.text = ChatConversationViewSwift.formattedDuration(Int(linphone_recorder_get_duration(voiceRecorder?.getCobject)))
+		ChatConversationViewModel.sharedModel.stopVoiceRecording()
+		if (ChatConversationViewModel.sharedModel.voiceRecorder != nil) && linphone_recorder_get_state(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) == LinphoneRecorderRunning {
+			recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
 		}
-		isVoiceRecording = false
 		if LinphoneManager.instance().lpConfigBool(forKey: "voice_recording_send_right_away", withDefault: false) {
 			onSendClick()
 		}
@@ -1764,42 +1356,33 @@ import AVFoundation
 		
 		messageView.voiceRecordButton.isSelected = false
 		recordingWaveImageMask.layer.removeAllAnimations()
-		vrRecordTimer.invalidate()
-		isPendingVoiceRecord = linphone_recorder_get_duration(voiceRecorder?.getCobject) > 0
+		
 		setSendButtonState()
 
 	}
 	
 	func cancelVoiceRecording() {
-		UIApplication.shared.isIdleTimerDisabled = false
 		setRecordingVisible(visible: true)
 		recordingStopButton.isHidden = false
 		recordingPlayButton.isHidden = true
 		recordingWaveImageMask.layer.removeAllAnimations()
-		showVoiceRecorderView = false
 		messageView.voiceRecordButton.isSelected = false
-		isPendingVoiceRecord = false
-		isVoiceRecording = false
-		if (voiceRecorder != nil) && linphone_recorder_get_state(voiceRecorder?.getCobject) != LinphoneRecorderClosed {
-			linphone_recorder_close(voiceRecorder?.getCobject)
-			let recordingFile = linphone_recorder_get_file(voiceRecorder?.getCobject)
-			if let recordingFile {
-				AppManager.removeFile(file: String(utf8String: recordingFile)!)
-			}
-		}
+		
+		ChatConversationViewModel.sharedModel.cancelVoiceRecordingVM()
+		
 		stopVoiceRecordPlayer()
 		setSendButtonState()
 	}
 	
 	func setSendButtonState() {
-		self.messageView.sendButton.isEnabled = !isVoiceRecording && ((isPendingVoiceRecord && linphone_recorder_get_duration(voiceRecorder?.getCobject) > 0) || self.messageView.messageText.text.count > 0 || fileContext.count > 0)
+		self.messageView.sendButton.isEnabled = !ChatConversationViewModel.sharedModel.isVoiceRecording && ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || self.messageView.messageText.text.count > 0 || ChatConversationViewModel.sharedModel.fileContext.count > 0)
 	}
 	
 	func onvrPlayPauseStop() {
-		if isVoiceRecording {
+		if ChatConversationViewModel.sharedModel.isVoiceRecording {
 			stopVoiceRecording()
 		} else {
-			if isPlayingVoiceRecording {
+			if ChatConversationViewModel.sharedModel.isPlayingVoiceRecording {
 				stopVoiceRecordPlayer()
 			} else {
 				playRecordedMessage()
@@ -1811,17 +1394,16 @@ import AVFoundation
 		self.recordingWaveImageMask.isHidden = true
 		self.recordingPlayButton.isHidden = true
 		self.recordingStopButton.isHidden = false
-		startSharedPlayer(voiceRecorder?.file)
+		ChatConversationViewModel.sharedModel.startSharedPlayer(ChatConversationViewModel.sharedModel.voiceRecorder?.file)
 		self.animPlayerOnce()
-		vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+		ChatConversationViewModel.sharedModel.vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
 			self.animPlayerOnce()
 		}
-		isPlayingVoiceRecording = true
+		ChatConversationViewModel.sharedModel.isPlayingVoiceRecording = true
 	}
 	
 	func animPlayerOnce() {
-		self.recordingWaveView.progress += 1.0 / Float(self.linphonePlayer!.duration/1000)
-
+		self.recordingWaveView.progress += 1.0 / Float(ChatConversationViewModel.sharedModel.linphonePlayer!.duration/1000)
 		UIView.animate(withDuration: 1, delay: 0.0, options: [.curveLinear], animations: {
 			self.recordingWaveView.layoutIfNeeded()
 			if(self.recordingWaveView.progress >= 1.0){
@@ -1830,124 +1412,37 @@ import AVFoundation
 				}
 			}
 		})
-		
-		
 	}
 	
 	func stopVoiceRecordPlayer() {
-		stopSharedPlayer()
+		ChatConversationViewModel.sharedModel.stopSharedPlayer()
 		self.recordingWaveView.progress = 0.0
 		self.recordingWaveView.setProgress(self.recordingWaveView.progress, animated: false)
 		self.recordingWaveImageMask.isHidden = false
 		self.recordingPlayButton.isHidden = false
 		self.recordingStopButton.isHidden = true
-		isPlayingVoiceRecording = false
-		vrPlayerTimer.invalidate()
-	}
-	
-	func stopSharedPlayer() {
-		print("[Voice Message] Stopping shared player path = \(String(describing: linphone_player_get_user_data(linphonePlayer?.getCobject)))")
-		do{
-			try linphonePlayer?.pause()
-			try linphonePlayer?.seek(timeMs: 0)
-			linphonePlayer?.close()
-			linphonePlayer?.userData = nil
-		}catch{
-			print(error)
-		}
-	}
-	
-	func initSharedPlayer() {
-		print("[Voice Message] Creating shared player")
-		
-		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
-		do{
-			linphonePlayer = try core.createLocalPlayer(soundCardName: CallManager.instance().getSpeakerSoundCard(), videoDisplayName: nil, windowId: nil)
-		}catch{
-			print(error)
-		}
-	}
-	
-	func startSharedPlayer(_ path: String?) {
-		print("[Voice Message] Starting shared player path = \(String(describing: path))")
-		if ((linphonePlayer!.userData) != nil) {
-			print("[Voice Message] a play was requested (\(String(describing: path)), but there is already one going (\(String(describing: linphonePlayer?.userData))")
-			let userInfo = [
-				"path": linphonePlayer!.userData
-			]
-			NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LinphoneVoiceMessagePlayerEOF"), object: nil, userInfo: userInfo as [AnyHashable : Any])
-		}
-		CallManager.instance().changeRouteToSpeaker()
-		linphone_player_open(linphonePlayer?.getCobject, path)
-		linphone_player_start(linphonePlayer?.getCobject)
+		ChatConversationViewModel.sharedModel.isPlayingVoiceRecording = false
+		ChatConversationViewModel.sharedModel.vrPlayerTimer.invalidate()
 	}
 	
 	func configureMessageField() {
-		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+		let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		if isOneToOneChat {
 			messageView.isHidden = false
-			if chatRoom!.isReadOnly {
-				chatRoom!.addParticipant(addr: (chatRoom?.me?.address)!)
+			if ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
+				ChatConversationViewModel.sharedModel.chatRoom!.addParticipant(addr: (ChatConversationViewModel.sharedModel.chatRoom?.me?.address)!)
 			}
 		} else {
-			messageView.isHidden = chatRoom!.isReadOnly
+			messageView.isHidden = ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly
 		}
 	}
-	
-	func on_chat_room_state_changed(_ cr: ChatRoom?) {
-		configureMessageField()
-		action1BisButton.isEnabled = !chatRoom!.isReadOnly
-		let isOneToOneChat = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
-		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cr?.getCobject))
-		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: (cr?.getCobject)!)
-	}
-	
-	func on_chat_room_subject_changed(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		let subject = event_log?.subject != nil ? event_log?.subject : cr?.subject
-		if let subject {
-			titleGroupLabel.text = subject
-			titleLabel.text = subject
-			tableController.addEventEntry(event_log?.getCobject)
-			tableController.scroll(toBottom: true)
-		}
-	}
-	
-	func on_chat_room_participant_changed(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		tableController.addEventEntry(event_log?.getCobject)
-		updateParticipantLabel()
-		tableController.scroll(toBottom: true)
-		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cr?.getCobject))
-		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
-	}
-	
-	func on_chat_room_participant_admin_status_changed(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		tableController.addEventEntry(event_log?.getCobject)
-		tableController.scroll(toBottom: true)
-	}
-	
-	func on_chat_room_conference_joined(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		tableController.addEventEntry(event_log?.getCobject)
-		tableController.scroll(toBottom: true)
-	}
-
-	func on_chat_room_conference_left(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		tableController.addEventEntry(event_log?.getCobject)
-		tableController.scroll(toBottom: true)
-	}
-	
-	func on_chat_room_conference_alert(_ cr: ChatRoom?, _ event_log: EventLog?) {
-		tableController.addEventEntry(event_log?.getCobject)
-		updateParticipantLabel()
-		tableController.scroll(toBottom: true)
-		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cr?.getCobject))
-		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
-	}
-	
-	class func markAsRead(chatRoom: ChatRoom?) {
-		if chatRoom == nil {
+		
+	@objc class func markAsRead(_ chatRoom: OpaquePointer?) {
+		if ChatConversationViewModel.sharedModel.chatRoom == nil {
 			return
 		}
-		chatRoom!.markAsRead()
+		let chatRoomSwift = ChatRoom.getSwiftObject(cObject: chatRoom!)
+		chatRoomSwift.markAsRead()
 		PhoneMainView.instance().updateApplicationBadgeNumber()
 	}
 }

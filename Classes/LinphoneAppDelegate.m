@@ -455,7 +455,7 @@
             linphone_address_unref(peer);
             linphone_address_unref(local);
             // TODO : Find a better fix
-            VIEW(ChatConversationView).markAsRead = FALSE;
+            VIEW(ChatConversationViewSwift).markAsRead = FALSE;
             [PhoneMainView.instance goToChatRoomSwift:cr];
         }
     }
@@ -635,7 +635,7 @@
 	  	LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 	  	LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 	  	if (room)
-		  	[ChatConversationView markAsRead:room];
+		  	[ChatConversationViewSwift markAsRead:room];
 
 	  	linphone_address_unref(peer);
 	  	linphone_address_unref(local);
@@ -783,7 +783,7 @@
 				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 				if (room)
-					[ChatConversationView markAsRead:room];
+					[ChatConversationViewSwift markAsRead:room];
 
 				linphone_address_unref(peer);
 				linphone_address_unref(local);

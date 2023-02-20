@@ -306,9 +306,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 	if (linphone_chat_message_is_outgoing(msg))
 		return;
 
-	ChatConversationView *view = VIEW(ChatConversationView);
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 	// if we already are in the conversation, we should not ring/vibrate
-	if (view.chatRoom && _currentRoom == view.chatRoom)
+	if (view.linphoneChatRoom && _currentRoom == view.linphoneChatRoom)
 		return;
 
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
@@ -929,6 +929,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	_waitView.hidden = YES;
 	_waitView = NULL;
 	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
+	self.currentRoom = view.linphoneChatRoom;
 	[view initChatRoomWithCChatRoom:cr];
 	
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
