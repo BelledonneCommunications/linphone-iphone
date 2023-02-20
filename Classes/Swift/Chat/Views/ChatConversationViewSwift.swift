@@ -694,7 +694,20 @@ import AVFoundation
 			let voiceContent = linphone_recorder_create_content(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 			ChatConversationViewModel.sharedModel.isPendingVoiceRecord = false
 		 	cancelVoiceRecording()
-			linphone_chat_message_add_content(rootMessage, voiceContent)
+			let conference = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesConference.rawValue))
+			if (linphone_chat_room_get_capabilities(ChatConversationViewModel.sharedModel.chatRoom?.getCobject) != 0) && conference {
+				linphone_chat_message_add_content(rootMessage, voiceContent)
+			}else{
+				if messageView.messageText.text != "" {
+					let rootMessageText = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+					let result = ChatMessage.getSwiftObject(cObject: rootMessageText!)
+					sendMessageInMessageField(rootMessage: result)
+					
+					linphone_chat_message_add_content(rootMessage, voiceContent)
+				}else{
+					linphone_chat_message_add_content(rootMessage, voiceContent)
+				}
+			}
 		}
 		if ChatConversationViewModel.sharedModel.fileContext.count > 0 {
 			let conference = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesConference.rawValue))
