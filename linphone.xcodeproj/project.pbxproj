@@ -948,6 +948,8 @@
 		D7421D9E29228A5200290CAB /* ChatConversationViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
+		D779D39829A3C933007B8087 /* ChatConversationTableViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */; };
+		D779D39A29A4C285007B8087 /* MultilineMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39929A4C285007B8087 /* MultilineMessageCell.swift */; };
 		D7A7545029507038005C9D4A /* CustomAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A7544F29507038005C9D4A /* CustomAlertController.swift */; };
 		D7C6DE832948CF3100756E03 /* DropDownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE812948CF3100756E03 /* DropDownCell.swift */; };
 		D7C6DE842948CF3100756E03 /* DropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7C6DE822948CF3100756E03 /* DropDownCell.xib */; };
@@ -2187,6 +2189,8 @@
 		D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewSwift.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
+		D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationTableViewSwift.swift; sourceTree = "<group>"; };
+		D779D39929A4C285007B8087 /* MultilineMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineMessageCell.swift; sourceTree = "<group>"; };
 		D7A7544F29507038005C9D4A /* CustomAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertController.swift; sourceTree = "<group>"; };
 		D7C6DE812948CF3100756E03 /* DropDownCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownCell.swift; sourceTree = "<group>"; };
 		D7C6DE822948CF3100756E03 /* DropDownCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropDownCell.xib; sourceTree = "<group>"; };
@@ -3845,7 +3849,9 @@
 			isa = PBXGroup;
 			children = (
 				D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */,
+				D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */,
 				D7013DB72940AA12004EEAAE /* MessageView.swift */,
+				D779D39929A4C285007B8087 /* MultilineMessageCell.swift */,
 				D7C6DE812948CF3100756E03 /* DropDownCell.swift */,
 				D7C6DE822948CF3100756E03 /* DropDownCell.xib */,
 			);
@@ -4870,7 +4876,131 @@
 			shellPath = /bin/sh;
 			shellScript = "$SRCROOT/Tools/git_version.sh\n";
 		};
+<<<<<<< HEAD
 		6E1BA6FE5505C7658260F791 /* [CP] Check Pods Manifest.lock */ = {
+=======
+		83EB0ADBEF90B8A23D6563B5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/DropDown/DropDown.framework",
+				"${BUILT_PRODUCTS_DIR}/IQKeyboardManager/IQKeyboardManager.framework",
+				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
+				"${BUILT_PRODUCTS_DIR}/linphone-sdk/linphonesw.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/bctoolbox-ios.framework/bctoolbox-ios",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/bctoolbox-tester.framework/bctoolbox-tester",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/bctoolbox.framework/bctoolbox",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/belcard.framework/belcard",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/belle-sip.framework/belle-sip",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/belr.framework/belr",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/lime.framework/lime",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/limetester.framework/limetester",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/linphone.framework/linphone",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/linphonetester.framework/linphonetester",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/mediastreamer2.framework/mediastreamer2",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/msamr.framework/msamr",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/mscodec2.framework/mscodec2",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/msopenh264.framework/msopenh264",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/mssilk.framework/mssilk",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/mswebrtc.framework/mswebrtc",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/msx264.framework/msx264",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/ortp.framework/ortp",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/ZXing.framework/ZXing",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/bctoolbox-ios.framework/bctoolbox-ios",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/bctoolbox-tester.framework/bctoolbox-tester",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/bctoolbox.framework/bctoolbox",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/belcard.framework/belcard",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/belle-sip.framework/belle-sip",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/belr.framework/belr",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/lime.framework/lime",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/limetester.framework/limetester",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/linphone.framework/linphone",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/linphonetester.framework/linphonetester",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/mediastreamer2.framework/mediastreamer2",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/msamr.framework/msamr",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/mscodec2.framework/mscodec2",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/msopenh264.framework/msopenh264",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/mssilk.framework/mssilk",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/mswebrtc.framework/mswebrtc",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/msx264.framework/msx264",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/ortp.framework/ortp",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/all-frameworks/ZXing.framework/ZXing",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/bctoolbox.framework/bctoolbox",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/belcard.framework/belcard",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/belle-sip.framework/belle-sip",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/belr.framework/belr",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/lime.framework/lime",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/linphone.framework/linphone",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/mediastreamer2.framework/mediastreamer2",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/msamr.framework/msamr",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/mscodec2.framework/mscodec2",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/msopenh264.framework/msopenh264",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/mssilk.framework/mssilk",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/mswebrtc.framework/mswebrtc",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/msx264.framework/msx264",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/app-extension/ortp.framework/ortp",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/linphone-sdk/basic-frameworks/bctoolbox-ios.framework/bctoolbox-ios",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DropDown.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManager.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonesw.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-ios.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox-tester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/bctoolbox.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belcard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belle-sip.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/belr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/lime.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/limetester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphone.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/linphonetester.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mediastreamer2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msamr.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mscodec2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msopenh264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mssilk.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/mswebrtc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/msx264.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ortp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXing.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-linphone/Pods-linphone-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		996F572DEAB25BC278E8B812 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-msgNotificationService-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DA65283ED87557BD0785C5D6 /* [CP] Check Pods Manifest.lock */ = {
+>>>>>>> 8761179ca (New UI for messageBubble (Swift))
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -5067,6 +5197,7 @@
 				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
 				C63F7254285A24B10066163B /* CallsListView.swift in Sources */,
 				63BE7A781D75BDF6000990EF /* ShopTableView.m in Sources */,
+				D779D39A29A4C285007B8087 /* MultilineMessageCell.swift in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
@@ -5183,6 +5314,7 @@
 				C63F7237285A24B10066163B /* CallStatisticsData.swift in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				C63F721B285A24B10066163B /* ConferenceSchedulingSummaryView.swift in Sources */,
+				D779D39829A3C933007B8087 /* ChatConversationTableViewSwift.swift in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
 				662553B427EDFB35007F67D8 /* MagicSearch.swift in Sources */,

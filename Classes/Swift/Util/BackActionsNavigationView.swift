@@ -23,7 +23,7 @@ import Foundation
 import linphonesw
 import SnapKit
 
-@objc class BackActionsNavigationView:  UIViewController {
+class BackActionsNavigationView:  UIViewController {
     
     
     let top_bar_height = 66.0

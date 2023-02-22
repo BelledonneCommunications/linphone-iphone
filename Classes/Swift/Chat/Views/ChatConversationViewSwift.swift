@@ -25,7 +25,7 @@ import DropDown
 import PhotosUI
 import AVFoundation
 
-@objc class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
+class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
 	
@@ -38,6 +38,7 @@ import AVFoundation
 	
 	@objc var linphoneChatRoom: OpaquePointer? = nil
 	@objc let tableController = ChatConversationTableView()
+	@objc let tableControllerSwift = ChatConversationTableViewSwift()
 	@objc var pendingForwardMessage : OpaquePointer? = nil
 	@objc var sharingMedia : Bool = false
 	@objc var markAsRead : Bool = false
@@ -227,6 +228,15 @@ import AVFoundation
 	
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		self.contentView.addSubview(tableController.tableView)
+		self.contentView.addSubview(tableControllerSwift.view)
+		
+		// Setup Autolayout constraints
+		tableControllerSwift.view.translatesAutoresizingMaskIntoConstraints = false
+		tableControllerSwift.view.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
+		
 		tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 		tableController.refreshControl = refreshControl
