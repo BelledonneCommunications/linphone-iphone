@@ -76,6 +76,8 @@ class BackActionsNavigationView:  UIViewController {
 	var isSecure : Bool = false
 	var isGroupChat : Bool = false
 	let floatingButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
+	var constraintFloatingButton : NSLayoutConstraint? = nil
+	var constraintLandscapeFloatingButton : NSLayoutConstraint? = nil
 	
 	var stackView = UIStackView()
 	var stackViewReply = UIStackView()
@@ -268,10 +270,17 @@ class BackActionsNavigationView:  UIViewController {
 		view.addSubview(stackView)
 		
 	 	view.addSubview(floatingButton)
-		floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -1).isActive = true
-		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height + 4).isActive = true
+		constraintFloatingButton = floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: 3)
+		constraintLandscapeFloatingButton = floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -56)
+		if UIDevice.current.orientation.isLandscape {
+			constraintLandscapeFloatingButton!.isActive = true
+		} else {
+			constraintFloatingButton!.isActive = true
+		}
+		constraintFloatingButton!.isActive = true
+		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height).isActive = true
 		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
-		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 45, left: 45, bottom: 45, right: 45)
+		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 42, left: 42, bottom: 42, right: 42)
 		floatingButton.onClickAction = action3
 		
 		stackView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
@@ -289,12 +298,28 @@ class BackActionsNavigationView:  UIViewController {
 			self.recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 			self.recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
     }
+	
+	deinit {
+		 NotificationCenter.default.removeObserver(self)
+	}
+
+	@objc func rotated() {
+		if UIDevice.current.orientation.isLandscape {
+			constraintLandscapeFloatingButton!.isActive = true
+			constraintFloatingButton!.isActive = false
+		} else {
+			constraintLandscapeFloatingButton!.isActive = false
+			constraintFloatingButton!.isActive = true
+		}
+	}
 	
 	func changeTitle(titleString: String){
 		titleLabel.text = titleString

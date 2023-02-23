@@ -13,29 +13,31 @@ class MultilineMessageCell: UICollectionViewCell {
 	private let label: UILabel = UILabel(frame: .zero)
 	private let contentBubble: UIView = UIView(frame: .zero)
 	private let bubble: UIView = UIView(frame: .zero)
+	private let imageUser: UIView = UIView(frame: .zero)
+	private let chatRead = UIImageView(image: UIImage(named: "chat_read.png"))
+	var constraint1 : NSLayoutConstraint? = nil
+	var constraint2 : NSLayoutConstraint? = nil
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
-		let randomMessage = Int.random(in: 1..<3)
-		
 		let labelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 		
 		contentView.addSubview(contentBubble)
-		contentView.backgroundColor = .orange
 		contentBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
 		contentBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
-		//contentBubble.width(UIScreen.main.bounds.size.width).done()
-		if(randomMessage == 1){
-			contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50).isActive = true
-		}else{
-			
-		}
-		//contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 50).isActive = true
-		contentBubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
-
-		//contentBubble.backgroundColor = .green
+		constraint1 = contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
+		constraint2 = contentBubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
+		constraint1!.isActive = true
+		
+		contentBubble.addSubview(imageUser)
+		imageUser.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+		imageUser.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6).isActive = true
+		imageUser.backgroundColor = UIColor("D").withAlphaComponent(0.2)
+		imageUser.layer.cornerRadius = 15.0
+		imageUser.size(w: 30, h: 30).done()
+		imageUser.isHidden = true
 		
 		contentBubble.addSubview(bubble)
 		bubble.translatesAutoresizingMaskIntoConstraints = false
@@ -44,11 +46,7 @@ class MultilineMessageCell: UICollectionViewCell {
 		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left).isActive = true
 		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right).isActive = true
 		
-		//bubble.bounds.origin = contentView.bounds.origin
-		
 		bubble.layer.cornerRadius = 10.0
-		bubble.backgroundColor = .systemBlue
-		
 		
 		label.numberOfLines = 0
 		label.lineBreakMode = .byWordWrapping
@@ -60,33 +58,44 @@ class MultilineMessageCell: UICollectionViewCell {
 		label.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
 		label.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
 		
+		contentBubble.addSubview(chatRead)
+		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
+		chatRead.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+		chatRead.size(w: 10, h: 10).done()
+		chatRead.isHidden = true
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("Storyboards are quicker, easier, more seductive. Not stronger then Code.")
 	}
 	
-	func configure(text: String?) {
+	func configure(text: String?, mess: Int) {
 		label.text = text
+		print("Storyboards are quicker \(mess)")
+		if mess == 1 {
+			constraint1?.isActive = true
+			constraint2?.isActive = false
+			imageUser.isHidden = false
+			bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
+			chatRead.isHidden = true
+		}else{
+			constraint1?.isActive = false
+			constraint2?.isActive = true
+			imageUser.isHidden = true
+			bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
+			chatRead.isHidden = false
+		}
 	}
 	
 	override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-		//bubble.transform = CGAffineTransformIdentity
-		label.preferredMaxLayoutWidth = (UIScreen.main.bounds.size.width*4/5)
-		
-		//print("MultilineMessageCell init UIScreen label \(label.preferredMaxLayoutWidth)")
+		label.preferredMaxLayoutWidth = (UIScreen.main.bounds.size.width*3/4)
 		layoutAttributes.bounds.size.height = systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
-		layoutAttributes.bounds.size.width = (UIScreen.main.bounds.size.width / CGFloat(1)).rounded(.down)
-		//print("MultilineMessageCell init UIScreen \(UIScreen.main.bounds.size.width*4/5)")
-		//print("MultilineMessageCell init layoutAttributes \(layoutAttributes.bounds.size.width)")
-		//print("MultilineMessageCell init \((UIScreen.main.bounds.size.width*4/5) - layoutAttributes.bounds.size.width)")
 		
-		//For Left
-		//bubble.transform = CGAffineTransformTranslate(bubble.transform, (layoutAttributes.bounds.size.width - (UIScreen.main.bounds.size.width*4/5))/2, 0.0)
-		
-		//For Right
-		//bubble.transform = CGAffineTransformTranslate(bubble.transform, -(layoutAttributes.bounds.size.width - (UIScreen.main.bounds.size.width*4/5))/2, 0.0)
-		
+		let cellsPerRow = 1
+		let minimumInterItemSpacing = 1.0
+		let marginsAndInsets = window!.safeAreaInsets.left + window!.safeAreaInsets.right + minimumInterItemSpacing * CGFloat(cellsPerRow - 1)
+		layoutAttributes.bounds.size.width = ((window!.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
+				
 		return layoutAttributes
 	}
 }
