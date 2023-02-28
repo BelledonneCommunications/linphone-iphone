@@ -950,6 +950,8 @@
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
 		D779D39829A3C933007B8087 /* ChatConversationTableViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */; };
 		D779D39A29A4C285007B8087 /* MultilineMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39929A4C285007B8087 /* MultilineMessageCell.swift */; };
+		D779D39C29A76DE6007B8087 /* ChatConversationTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */; };
+		D779D39E29AC9E93007B8087 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39D29AC9E92007B8087 /* AudioPlayer.swift */; };
 		D7A7545029507038005C9D4A /* CustomAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A7544F29507038005C9D4A /* CustomAlertController.swift */; };
 		D7C6DE832948CF3100756E03 /* DropDownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE812948CF3100756E03 /* DropDownCell.swift */; };
 		D7C6DE842948CF3100756E03 /* DropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7C6DE822948CF3100756E03 /* DropDownCell.xib */; };
@@ -2191,6 +2193,8 @@
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
 		D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationTableViewSwift.swift; sourceTree = "<group>"; };
 		D779D39929A4C285007B8087 /* MultilineMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineMessageCell.swift; sourceTree = "<group>"; };
+		D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationTableViewModel.swift; sourceTree = "<group>"; };
+		D779D39D29AC9E92007B8087 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		D7A7544F29507038005C9D4A /* CustomAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertController.swift; sourceTree = "<group>"; };
 		D7C6DE812948CF3100756E03 /* DropDownCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownCell.swift; sourceTree = "<group>"; };
 		D7C6DE822948CF3100756E03 /* DropDownCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropDownCell.xib; sourceTree = "<group>"; };
@@ -3458,6 +3462,7 @@
 				C63F71B0285A24B10066163B /* TimestampUtils.swift */,
 				D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */,
 				D7A7544F29507038005C9D4A /* CustomAlertController.swift */,
+				D779D39D29AC9E92007B8087 /* AudioPlayer.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -3833,6 +3838,7 @@
 			isa = PBXGroup;
 			children = (
 				D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */,
+				D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -5115,6 +5121,7 @@
 			files = (
 				63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */,
 				CF1DE92D210A0F5D00A0A97E /* UILinphoneAudioPlayer.m in Sources */,
+				D779D39C29A76DE6007B8087 /* ChatConversationTableViewModel.swift in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				C63F725C285A24B10066163B /* IncomingCallView.swift in Sources */,
 				C63F726B285A24B10066163B /* ButtonWithStateBackgrounds.swift in Sources */,
@@ -5172,6 +5179,7 @@
 				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
 				6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */,
 				C63F7235285A24B10066163B /* CallsViewModel.swift in Sources */,
+				D779D39E29AC9E93007B8087 /* AudioPlayer.swift in Sources */,
 				C63F722D285A24B10066163B /* CoreExtensions.swift in Sources */,
 				C63F722F285A24B10066163B /* AddressExtensions.swift in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,

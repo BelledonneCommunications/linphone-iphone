@@ -51,7 +51,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	var vrPlayerTimer = Timer()
 	
 	var voiceRecorder : Recorder? = nil
-	var linphonePlayer : Player? = nil
 	
 	var secureLevel : UIImage?
 	var imageT : [UIImage?] = []
@@ -436,6 +435,7 @@ class ChatConversationViewModel: ControlsViewModel {
 				}else if(type == "public.movie"){
 					ChatConversationViewModel.sharedModel.data.append(try Data(contentsOf: url))
 					var tmpImage = ChatConversationViewModel.sharedModel.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
+					print("MultilineMessageCell configure ChatMessage 100000000 \(url.relativeString)")
 					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
 					ChatConversationViewModel.sharedModel.imageT.append(tmpImage)
 				}else{
@@ -544,28 +544,12 @@ class ChatConversationViewModel: ControlsViewModel {
 	}
 	
 	func initSharedPlayer() {
-		print("[Voice Message] Creating shared player")
-		
-		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
-		do{
-			linphonePlayer = try core.createLocalPlayer(soundCardName: CallManager.instance().getSpeakerSoundCard(), videoDisplayName: nil, windowId: nil)
-		}catch{
-			print(error)
-		}
+		AudioPlayer.initSharedPlayer()
 	}
 	
 	func startSharedPlayer(_ path: String?) {
-		print("[Voice Message] Starting shared player path = \(String(describing: path))")
-		if ((linphonePlayer!.userData) != nil) {
-			print("[Voice Message] a play was requested (\(String(describing: path)), but there is already one going (\(String(describing: linphonePlayer?.userData))")
-			let userInfo = [
-				"path": linphonePlayer!.userData
-			]
-			NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LinphoneVoiceMessagePlayerEOF"), object: nil, userInfo: userInfo as [AnyHashable : Any])
-		}
-		CallManager.instance().changeRouteToSpeaker()
-		linphone_player_open(linphonePlayer?.getCobject, path)
-		linphone_player_start(linphonePlayer?.getCobject)
+		AudioPlayer.startSharedPlayer(path)
+		AudioPlayer.sharedModel.fileChanged.value = path
 	}
 	
 	func cancelVoiceRecordingVM() {
@@ -574,23 +558,11 @@ class ChatConversationViewModel: ControlsViewModel {
 		isPendingVoiceRecord = false
 		isVoiceRecording = false
 		if (voiceRecorder != nil) && linphone_recorder_get_state(voiceRecorder?.getCobject) != LinphoneRecorderClosed {
-			linphone_recorder_close(voiceRecorder?.getCobject)
-			let recordingFile = linphone_recorder_get_file(voiceRecorder?.getCobject)
-			if let recordingFile {
-				AppManager.removeFile(file: String(utf8String: recordingFile)!)
-			}
+			AudioPlayer.cancelVoiceRecordingVM(voiceRecorder)
 		}
 	}
 	
 	func stopSharedPlayer() {
-		print("[Voice Message] Stopping shared player path = \(String(describing: linphone_player_get_user_data(linphonePlayer?.getCobject)))")
-		do{
-			try linphonePlayer?.pause()
-			try linphonePlayer?.seek(timeMs: 0)
-			linphonePlayer?.close()
-			linphonePlayer?.userData = nil
-		}catch{
-			print(error)
-		}
+		AudioPlayer.stopSharedPlayer()
 	}
 }

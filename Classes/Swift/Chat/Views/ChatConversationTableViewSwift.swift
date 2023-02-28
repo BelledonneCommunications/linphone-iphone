@@ -6,59 +6,11 @@
 //
 
 import UIKit
-
-let textExample = [
-	"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper.",
-	"Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales.",
-	"sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.",
-	"ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat.",
-	"Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim.",
-	"nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae",
-	"Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing",
-	"Lorem ipsum dolor sit amet",
-	"Salut Salut Salut",
-	"Salut",
-	"1",
-	"Oui",
-	"test",
-	"Salut",
-	"Salut",
-	"1",
-	"Oui",
-	"test",
-	"Salut",
-	"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim. Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum. Maecenas adipiscing ante non diam sodales hendrerit.",
-	"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper.",
-	"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat. Duis semper."
-]
-
-let messageExample : [Int] = [
-	0,
-	1,
-	0,
-	0,
-	1,
-	1,
-	1,
-	0,
-	0,
-	1,
-	0,
-	1,
-	1,
-	0,
-	0,
-	1,
-	1,
-	0,
-	1,
-	1,
-	1,
-	0
-]
+import Foundation
+import linphonesw
 
 class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-	private(set) var collectionView: UICollectionView
+	var collectionView: UICollectionView
 	
 	// Initializers
 	init() {
@@ -98,34 +50,68 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
+	}
+	
+	deinit {
+		 NotificationCenter.default.removeObserver(self)
+	}
+
+	@objc func rotated() {
+		collectionView.reloadData()
+	}
+	
+	override func viewWillAppear(_ animated: Bool) {
+/*
+		if view.subviews.count > 0
+		{
+			view.subviews.forEach({ $0.removeFromSuperview()})
+		}
+		view.addSubview(collectionView)
+ */
+		ChatConversationTableViewModel.sharedModel.reloadData()
+		collectionView.reloadData()
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
-		//let bottomOffset = CGPoint(x: 0, y: collectionView.contentSize.height)
-		//collectionView.setContentOffset(bottomOffset, animated: false)
+		let indexPath = IndexPath(item: ChatConversationTableViewModel.sharedModel.messageListHistory.count - 1, section: 0)
+		self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
+	}
+
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		self.collectionView.scrollToItem(at: IndexPath(row: ChatConversationTableViewModel.sharedModel.messageListHistory.count-1, section: 0), at: .bottom, animated: false)
 	}
 	
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-		cell.configure(text: textExample[indexPath.row], mess: messageExample[indexPath.row])
+		
+		let basic = isBasicChatRoom(ChatConversationTableViewModel.sharedModel.chatRoom?.getCobject)
+		cell.configure(message: ChatConversationTableViewModel.sharedModel.messageListHistory[indexPath.row], isBasic: basic)
+		print("MultilineMessageCell configure ChatMessage audio \(indexPath.row)")
 		return cell
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return textExample.count
+		return ChatConversationTableViewModel.sharedModel.messageListHistory.count
 	}
 	
 	// MARK: - UICollectionViewDelegateFlowLayout -
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		//let sectionInset = (collectionViewLayout as! UICollectionViewFlowLayout).sectionInset
 		let referenceHeight: CGFloat = 100
 		let referenceWidth: CGFloat = 100
-		/*let referenceWidth = collectionView.safeAreaLayoutGuide.layoutFrame.width
-			- sectionInset.left
-			- sectionInset.right
-			- collectionView.contentInset.left
-			- collectionView.contentInset.right*/
 		return CGSize(width: referenceWidth, height: referenceHeight)
+	}
+	
+	func isBasicChatRoom(_ room: OpaquePointer?) -> Bool {
+		if room == nil {
+			return true
+		}
+		
+		let charRoomBasic = ChatRoom.getSwiftObject(cObject: room!)
+		let isBasic = charRoomBasic.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesBasic.rawValue))
+		return isBasic
 	}
 }

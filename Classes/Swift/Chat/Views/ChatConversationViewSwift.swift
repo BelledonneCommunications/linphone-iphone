@@ -38,7 +38,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	@objc var linphoneChatRoom: OpaquePointer? = nil
 	@objc let tableController = ChatConversationTableView()
-	@objc let tableControllerSwift = ChatConversationTableViewSwift()
+	@objc var tableControllerSwift = ChatConversationTableViewSwift()
 	@objc var pendingForwardMessage : OpaquePointer? = nil
 	@objc var sharingMedia : Bool = false
 	@objc var markAsRead : Bool = false
@@ -227,7 +227,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.createChatConversation()
 	
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-		self.contentView.addSubview(tableController.tableView)
+		//self.contentView.addSubview(tableController.tableView)
+		tableControllerSwift = ChatConversationTableViewSwift()
 		self.contentView.addSubview(tableControllerSwift.view)
 		
 		// Setup Autolayout constraints
@@ -237,7 +238,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		tableControllerSwift.view.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 0).isActive = true
 		tableControllerSwift.view.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
 		
-		tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
+		ChatConversationTableViewModel.sharedModel.chatRoom = ChatConversationViewModel.sharedModel.chatRoom
+		//tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
+		
 		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 		tableController.refreshControl = refreshControl
 		tableController.toggleSelectionButton = action1SelectAllButton
@@ -686,7 +689,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 
 	
 	func sendMessageInMessageField(rootMessage: ChatMessage?) {
-		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.text, withExterlBodyUrl: nil, rootMessage: rootMessage) {
+		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.text.trimmingCharacters(in: .whitespacesAndNewlines), withExterlBodyUrl: nil, rootMessage: rootMessage) {
 			messageView.messageText.text = ""
 			messageView.isComposing = false
 		}
@@ -1417,6 +1420,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		self.recordingWaveImageMask.isHidden = true
 		self.recordingPlayButton.isHidden = true
 		self.recordingStopButton.isHidden = false
+		
+		print("MultilineMessageCell configure ChatMessage animPlayerOnce \(ChatConversationViewModel.sharedModel.voiceRecorder?.file)")
 		ChatConversationViewModel.sharedModel.startSharedPlayer(ChatConversationViewModel.sharedModel.voiceRecorder?.file)
 		self.animPlayerOnce()
 		ChatConversationViewModel.sharedModel.vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
@@ -1426,15 +1431,27 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func animPlayerOnce() {
-		self.recordingWaveView.progress += 1.0 / Float(ChatConversationViewModel.sharedModel.linphonePlayer!.duration/1000)
-		UIView.animate(withDuration: 1, delay: 0.0, options: [.curveLinear], animations: {
+		self.recordingWaveView.progress += 1.0 / Float(AudioPlayer.getSharedPlayer()!.duration/1000)
+		AudioPlayer.sharedModel.fileChanged.observe { file in
+			if file != ChatConversationViewModel.sharedModel.voiceRecorder?.file {
+				self.stopVoiceRecordPlayer()
+			}
+		}
+		UIView.animate(withDuration: 1, delay: 0.0, options: .curveLinear, animations: {
 			self.recordingWaveView.layoutIfNeeded()
-			if(self.recordingWaveView.progress >= 1.0){
+		}) { Bool in
+			if(self.recordingWaveView.progress >= 1.0 && ChatConversationViewModel.sharedModel.isPlayingVoiceRecording){
 				DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-					self.stopVoiceRecordPlayer()
+					if(ChatConversationViewModel.sharedModel.isPlayingVoiceRecording){
+						self.stopVoiceRecordPlayer()
+						print("MultilineMessageCell configure ChatMessage animPlayerOnce timer out")
+					}else{
+						print("MultilineMessageCell configure ChatMessage animPlayerOnce timer out cancelled")
+					}
 				}
 			}
-		})
+		}
+
 	}
 	
 	func stopVoiceRecordPlayer() {
