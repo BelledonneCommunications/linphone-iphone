@@ -227,8 +227,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.createChatConversation()
 	
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-		//self.contentView.addSubview(tableController.tableView)
-		tableControllerSwift = ChatConversationTableViewSwift()
+		self.contentView.addSubview(tableController.tableView)
 		self.contentView.addSubview(tableControllerSwift.view)
 		
 		// Setup Autolayout constraints
@@ -239,7 +238,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		tableControllerSwift.view.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
 		
 		ChatConversationTableViewModel.sharedModel.chatRoom = ChatConversationViewModel.sharedModel.chatRoom
-		//tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
+		tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		
 		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 		tableController.refreshControl = refreshControl
@@ -1421,7 +1420,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		self.recordingPlayButton.isHidden = true
 		self.recordingStopButton.isHidden = false
 		
-		print("MultilineMessageCell configure ChatMessage animPlayerOnce \(ChatConversationViewModel.sharedModel.voiceRecorder?.file)")
 		ChatConversationViewModel.sharedModel.startSharedPlayer(ChatConversationViewModel.sharedModel.voiceRecorder?.file)
 		self.animPlayerOnce()
 		ChatConversationViewModel.sharedModel.vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
@@ -1444,9 +1442,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
 					if(ChatConversationViewModel.sharedModel.isPlayingVoiceRecording){
 						self.stopVoiceRecordPlayer()
-						print("MultilineMessageCell configure ChatMessage animPlayerOnce timer out")
 					}else{
-						print("MultilineMessageCell configure ChatMessage animPlayerOnce timer out cancelled")
 					}
 				}
 			}

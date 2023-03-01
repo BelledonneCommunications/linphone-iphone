@@ -22,21 +22,15 @@ class ChatConversationTableViewModel: ControlsViewModel {
 		super.init()
 	}
 	
-	func reloadData() {
-		updateData()
-		//tableView.reloadData()
-		//scroll(toLastUnread: false)
-	}
-	
 	func updateData() {
-		clearEventList()
 		if (chatRoom == nil) {
 			return
 		}
 
 		let oneToOne = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		let chatRoomEvents = chatRoom?.getHistoryEvents(nbEvents: 20)
-
+		messageListHistory.removeAll()
+		messageListHistory = []
 		chatRoomEvents?.forEach({ eventLog in
 			let event = eventLog
 			let eventType = event.type
@@ -60,10 +54,6 @@ class ChatConversationTableViewModel: ControlsViewModel {
 				
 			}
 		})
-	}
-	
-	func clearEventList() {
-		messageListHistory.removeAll()
 	}
 	
 	func eventTypeIsOfInterestForOne(toOneRoom type: EventLogType) -> Bool {

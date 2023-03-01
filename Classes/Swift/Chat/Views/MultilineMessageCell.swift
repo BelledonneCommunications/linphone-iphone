@@ -2,7 +2,7 @@
 //  MultilineMessageCell.swift
 //  linphone
 //
-//  Created by Benoît Martins on 21/02/2023.
+//  Created by Benoît Martins on 01/03/2023.
 //
 
 import UIKit
@@ -18,15 +18,32 @@ class MultilineMessageCell: UICollectionViewCell {
 	private let imageUser: UIView = UIView(frame: .zero)
 	private let chatRead = UIImageView(image: UIImage(named: "chat_read.png"))
 
-	var constraint1 : NSLayoutConstraint? = nil
-	var constraint2 : NSLayoutConstraint? = nil
-	//var imageConstraint : [NSLayoutConstraint?] = []
-	
 	let labelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 	
 	var isPlayingVoiceRecording = false
 	var vrPlayerTimer = Timer()
 	
+	var constraintLeadingBubble : NSLayoutConstraint? = nil
+	var constraintTrailingBubble : NSLayoutConstraint? = nil
+	var labelConstraints: [NSLayoutConstraint] = []
+	var imageConstraints: [NSLayoutConstraint] = []
+	var videoConstraints: [NSLayoutConstraint] = []
+	var playButtonConstraints: [NSLayoutConstraint] = []
+	var recordingConstraints: [NSLayoutConstraint] = []
+	var recordingWaveConstraints: [NSLayoutConstraint] = []
+	
+	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
+	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
+	let imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
+	
+	let recordingView = UIView()
+	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_play"))
+	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_stop"))
+	let recordingWaveView = UIProgressView()
+	let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
+	let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
+	
+
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 
@@ -34,9 +51,9 @@ class MultilineMessageCell: UICollectionViewCell {
 		contentBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
 		contentBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
-		constraint1 = contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
-		constraint2 = contentBubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
-		constraint1!.isActive = true
+		constraintLeadingBubble = contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
+		constraintTrailingBubble = contentBubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
+		constraintLeadingBubble!.isActive = true
 		
 		contentBubble.addSubview(imageUser)
 		imageUser.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
@@ -44,7 +61,6 @@ class MultilineMessageCell: UICollectionViewCell {
 		imageUser.backgroundColor = UIColor("D").withAlphaComponent(0.2)
 		imageUser.layer.cornerRadius = 15.0
 		imageUser.size(w: 30, h: 30).done()
-		imageUser.isHidden = true
 		
 		contentBubble.addSubview(bubble)
 		bubble.translatesAutoresizingMaskIntoConstraints = false
@@ -59,146 +75,77 @@ class MultilineMessageCell: UICollectionViewCell {
 		chatRead.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
 		chatRead.size(w: 10, h: 10).done()
 		chatRead.isHidden = true
-	}
-	
-	required init?(coder aDecoder: NSCoder) {
-		fatalError("Storyboards are quicker, easier, more seductive. Not stronger then Code.")
-	}
-	
-	override func removeFromSuperview() {
-		print("MultilineMessageCell configure ChatMessage animPlayerOnce stop stopstop died")
-	}
-	
-	func configure(message: ChatMessage, isBasic: Bool) {
-	/*
-	 	For Multimedia
-		message.contents.forEach { content in
-			label.text = content.utf8Text
-		}
-	*/
 		
-		if bubble.subviews.count > 0
-		{
-			bubble.subviews.forEach({ $0.removeFromSuperview()})
-		}
-		
-		
-		label.text = message.contents.first?.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
-		if !message.isOutgoing {
-			constraint1?.isActive = true
-			constraint2?.isActive = false
-			imageUser.isHidden = false
-			bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
-			chatRead.isHidden = true
-		}else{
-			constraint1?.isActive = false
-			constraint2?.isActive = true
-			imageUser.isHidden = true
-			bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
-			chatRead.isHidden = false
-		}
-		
-		if isBasic {
-			if message.contents.first?.type == "text"{
-				createBubbleText()
-			}else if message.contents.first?.type == "image"{
-				createBubbleImage(message: message)
-			}else if message.contents.first?.type == "video"{
-				createBubbleVideo(message: message)
-			}else if message.contents.first?.type == "audio"{
-				createBubbleAudio(message: message)
-			}else{
-				//createBubbleText()
-			}
-		}
-	}
-
-	func createBubbleText(){
-		print("MultilineMessageCell configure ChatMessage other")
+	//Text
 		label.numberOfLines = 0
 		label.lineBreakMode = .byWordWrapping
 		
 		bubble.addSubview(label)
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10).isActive = true
-		label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10).isActive = true
-		label.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
-		label.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
-	}
-	
-	func createBubbleImage(message: ChatMessage){
-		print("MultilineMessageCell configure ChatMessage image")
+		labelConstraints = [
+			label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
+			label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
+			label.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
+			label.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+		]
+		NSLayoutConstraint.activate(labelConstraints)
+
 		
-		let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
-		
+	//Image
 		bubble.addSubview(imageViewBubble)
 		imageViewBubble.translatesAutoresizingMaskIntoConstraints = false
-		imageViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10).isActive = true
-		imageViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10).isActive = true
-		imageViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
-		imageViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
+		imageConstraints = [
+			imageViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
+			imageViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
+			imageViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
+			imageViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10),
+		]
+		imageViewBubble.isHidden = true
 		
-		if let imageMessage = UIImage(named: message.contents.first!.filePath){
-			imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-		}
-	}
-	
-	func createBubbleVideo(message: ChatMessage){
-		print("MultilineMessageCell configure ChatMessage video")
-		
-		let imageViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
-		let imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
-		
-		bubble.addSubview(imageViewBubble)
-		imageViewBubble.translatesAutoresizingMaskIntoConstraints = false
-		imageViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10).isActive = true
-		imageViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10).isActive = true
-		imageViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
-		imageViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
-		
+	//Video
+		bubble.addSubview(imageVideoViewBubble)
+		imageVideoViewBubble.translatesAutoresizingMaskIntoConstraints = false
+		videoConstraints = [
+			imageVideoViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
+			imageVideoViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
+			imageVideoViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
+			imageVideoViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+		]
 		if #available(iOS 13.0, *) {
 			imagePlayViewBubble.image = (UIImage(named: "vr_play")!.withTintColor(.white))
 		}
 		
-		imageViewBubble.addSubview(imagePlayViewBubble)
-		imagePlayViewBubble.centerXAnchor.constraint(equalTo: imageViewBubble.centerXAnchor).isActive = true
-		imagePlayViewBubble.centerYAnchor.constraint(equalTo: imageViewBubble.centerYAnchor).isActive = true
+		imageVideoViewBubble.addSubview(imagePlayViewBubble)
+		playButtonConstraints = [
+			imagePlayViewBubble.centerXAnchor.constraint(equalTo: imageVideoViewBubble.centerXAnchor),
+			imagePlayViewBubble.centerYAnchor.constraint(equalTo: imageVideoViewBubble.centerYAnchor)
+		]
 		imagePlayViewBubble.size(w: 40, h: 40).done()
 		
-	
-		if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: message.contents.first!.filePath){
-			imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-		}
-	}
-	
-	func createBubbleAudio(message: ChatMessage){
-		print("MultilineMessageCell configure ChatMessage audio")
+		imageVideoViewBubble.isHidden = true
 		
-		let recordingView = UIView()
-		let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_play"))
-		let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_stop"))
-		let recordingWaveView = UIProgressView()
-		let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
-		let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
-		
+	//RecordingPlayer
 		bubble.addSubview(recordingView)
 		recordingView.translatesAutoresizingMaskIntoConstraints = false
-		recordingView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10).isActive = true
-		recordingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10).isActive = true
-		recordingView.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
-		recordingView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
+		recordingConstraints = [
+			recordingView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
+			recordingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
+			recordingView.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
+			recordingView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+		]
 		recordingView.height(50.0).width(280).done()
 		
 		recordingView.addSubview(recordingWaveView)
 		recordingWaveView.translatesAutoresizingMaskIntoConstraints = false
-		recordingWaveView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10).isActive = true
-		recordingWaveView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10).isActive = true
-		recordingWaveView.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
-		recordingWaveView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
+		recordingWaveConstraints = [
+			recordingWaveView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
+			recordingWaveView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
+			recordingWaveView.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
+			recordingWaveView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+		]
 		
 		recordingWaveView.progressViewStyle = .bar
 		recordingWaveView.layer.cornerRadius = 5
-		recordingWaveView.progressTintColor = message.isOutgoing ? UIColor("A") : UIColor("D")
 		recordingWaveView.clipsToBounds = true
 		recordingWaveView.layer.sublayers![1].cornerRadius = 5
 		recordingWaveView.subviews[1].clipsToBounds = true
@@ -215,28 +162,124 @@ class MultilineMessageCell: UICollectionViewCell {
 		
 		recordingWaveView.addSubview(recordingDurationTextView)
 		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
-		recordingDurationTextView.text = recordingDuration(message.contents.first?.filePath)
 		
-		recordingPlayButton.onClickAction = {
-			self.playRecordedMessage(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, voiceRecorder: message.contents.first?.filePath)
-		}
-		recordingStopButton.onClickAction = {
-			self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView)
-		}
+		recordingView.isHidden = true
+
 	}
 	
-	func createBubbleAudioFile(message: ChatMessage){
-		print("MultilineMessageCell configure ChatMessage audio file")
-		let imageAudioBubble = UIImage(named: "file_audio_default")
-		let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
-		if let imageMessage = imageAudioBubble{
-			bubble.addSubview(imageViewBubble)
-			imageViewBubble.translatesAutoresizingMaskIntoConstraints = false
-			imageViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10).isActive = true
-			imageViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10).isActive = true
-			imageViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10).isActive = true
-			imageViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10).isActive = true
-			imageViewBubble.image = imageMessage
+	required init?(coder aDecoder: NSCoder) {
+		fatalError("Storyboards are quicker, easier, more seductive. Not stronger then Code.")
+	}
+	
+	override func prepareForReuse() {
+		super.prepareForReuse()
+	}
+	
+	func configure(message: ChatMessage, isBasic: Bool) {
+		
+	/*
+		For Multimedia
+		message.contents.forEach { content in
+			label.text = content.utf8Text
+		}
+	*/
+		if !message.isOutgoing {
+			constraintLeadingBubble?.isActive = true
+			constraintTrailingBubble?.isActive = false
+			imageUser.isHidden = false
+			bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
+			chatRead.isHidden = true
+		}else{
+			constraintLeadingBubble?.isActive = false
+			constraintTrailingBubble?.isActive = true
+			imageUser.isHidden = true
+			bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
+			chatRead.isHidden = false
+		}
+		
+		if isBasic {
+			if message.contents.first?.type == "text"{
+				label.text = message.contents.first?.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
+				
+				NSLayoutConstraint.activate(labelConstraints)
+				NSLayoutConstraint.deactivate(imageConstraints)
+				NSLayoutConstraint.deactivate(videoConstraints)
+				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				label.isHidden = false
+				imageViewBubble.isHidden = true
+				imageVideoViewBubble.isHidden = true
+				recordingView.isHidden = true
+				
+				imageViewBubble.image = nil
+				imageVideoViewBubble.image = nil
+				
+			}else if message.contents.first?.type == "image"{
+				if let imageMessage = UIImage(named: message.contents.first!.filePath){
+					imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+				}
+				
+				NSLayoutConstraint.deactivate(labelConstraints)
+				NSLayoutConstraint.activate(imageConstraints)
+				NSLayoutConstraint.deactivate(videoConstraints)
+				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				label.isHidden = true
+				imageViewBubble.isHidden = false
+				imageVideoViewBubble.isHidden = true
+				recordingView.isHidden = true
+				
+				imageVideoViewBubble.image = nil
+				
+			}else if message.contents.first?.type == "video"{
+				if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: message.contents.first!.filePath){
+					imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+				}
+				
+				NSLayoutConstraint.deactivate(labelConstraints)
+				NSLayoutConstraint.deactivate(imageConstraints)
+				NSLayoutConstraint.activate(videoConstraints)
+				NSLayoutConstraint.activate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				label.isHidden = true
+				imageViewBubble.isHidden = true
+				imageVideoViewBubble.isHidden = false
+				recordingView.isHidden = true
+				
+				imageViewBubble.image = nil
+				
+			}else if message.contents.first?.type == "audio"{
+				recordingWaveView.progressTintColor = message.isOutgoing ? UIColor("A") : UIColor("D")
+				
+				recordingDurationTextView.text = recordingDuration(message.contents.first?.filePath)
+				
+				recordingPlayButton.onClickAction = {
+					self.playRecordedMessage(recordingPlayButton: self.recordingPlayButton, recordingStopButton: self.recordingStopButton, recordingWaveView: self.recordingWaveView, voiceRecorder: message.contents.first?.filePath)
+				}
+				recordingStopButton.onClickAction = {
+					self.stopVoiceRecordPlayer(recordingPlayButton: self.recordingPlayButton, recordingStopButton: self.recordingStopButton, recordingWaveView: self.recordingWaveView)
+				}
+				
+				NSLayoutConstraint.deactivate(labelConstraints)
+				NSLayoutConstraint.deactivate(imageConstraints)
+				NSLayoutConstraint.deactivate(videoConstraints)
+				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.activate(recordingConstraints)
+				NSLayoutConstraint.activate(recordingWaveConstraints)
+				label.isHidden = true
+				imageViewBubble.isHidden = true
+				imageVideoViewBubble.isHidden = true
+				recordingView.isHidden = false
+				
+				imageViewBubble.image = nil
+				imageVideoViewBubble.image = nil
+				
+			}else{
+				//createBubbleOthe()
+			}
 		}
 	}
 	
@@ -295,14 +338,12 @@ class MultilineMessageCell: UICollectionViewCell {
 	func playRecordedMessage(recordingPlayButton: UIButton, recordingStopButton:UIButton, recordingWaveView: UIProgressView, voiceRecorder: String?) {
 		AudioPlayer.initSharedPlayer()
 		AudioPlayer.sharedModel.fileChanged.value = voiceRecorder
-		print("MultilineMessageCell configure ChatMessage animPlayerOnce \(String(describing: voiceRecorder))")
 		recordingPlayButton.isHidden = true
 		recordingStopButton.isHidden = false
 		AudioPlayer.startSharedPlayer(voiceRecorder)
 		self.animPlayerOnce(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, voiceRecorder: voiceRecorder)
 		vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.01, repeats: true) { timer in
 			self.animPlayerOnce(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, voiceRecorder: voiceRecorder)
-			print("MultilineMessageCell configure ChatMessage animPlayerOnce timer")
 		}
 		isPlayingVoiceRecording = true
 	}
@@ -326,11 +367,9 @@ class MultilineMessageCell: UICollectionViewCell {
 	}
 	
 	func animPlayerOnce(recordingPlayButton: UIButton, recordingStopButton:UIButton, recordingWaveView: UIProgressView, voiceRecorder: String?) {
-		print("MultilineMessageCell configure ChatMessage animPlayerOnce \(String(describing: AudioPlayer.getSharedPlayer()!.duration))")
 		recordingWaveView.progress += floor(1.0 / Float(AudioPlayer.getSharedPlayer()!.duration/1000) * 10) / 10.0
 		AudioPlayer.sharedModel.fileChanged.observe { file in
 			if (file != voiceRecorder && self.isPlayingVoiceRecording) {
-				print("MultilineMessageCell configure ChatMessage animPlayerOnce stop stopstop\(String(describing: AudioPlayer.getSharedPlayer()!.duration))")
 				self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView)
 			}
 		}

@@ -10,8 +10,21 @@ import Foundation
 import linphonesw
 
 class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-	var collectionView: UICollectionView
 	
+	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationTableViewModel.sharedModel)
+	
+	static let compositeDescription = UICompositeViewDescription(ChatConversationTableViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
+	
+	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
+	
+	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
+	
+	var collectionView: UICollectionView = {
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+		return collectionView
+	}()
+	
+	/*
 	// Initializers
 	init() {
 		// Create new `UICollectionView` and set `UICollectionViewFlowLayout` as its layout
@@ -24,29 +37,13 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 		super.init(coder: aDecoder)
 	}
+	 */
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		collectionView.register(MultilineMessageCell.self, forCellWithReuseIdentifier: MultilineMessageCell.reuseId)
-		
-		view.addSubview(collectionView)
-		collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
-		collectionView.contentInsetAdjustmentBehavior = .always
-		collectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
-		
-		collectionView.translatesAutoresizingMaskIntoConstraints = false
-		collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-		collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-		collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-		collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-		
-		collectionView.dataSource = self
-		collectionView.delegate = self
-		
-		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
-		
+
+		self.initView()
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
@@ -62,23 +59,38 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		collectionView.reloadData()
 	}
 	
-	override func viewWillAppear(_ animated: Bool) {
-/*
-		if view.subviews.count > 0
-		{
-			view.subviews.forEach({ $0.removeFromSuperview()})
-		}
+	func initView(){
 		view.addSubview(collectionView)
- */
-		ChatConversationTableViewModel.sharedModel.reloadData()
+		collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		collectionView.contentInsetAdjustmentBehavior = .always
+		collectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+		
+		collectionView.translatesAutoresizingMaskIntoConstraints = false
+		collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+		collectionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+		collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+		collectionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+		
+		collectionView.dataSource = self
+		collectionView.delegate = self
+		collectionView.register(MultilineMessageCell.self, forCellWithReuseIdentifier: MultilineMessageCell.reuseId)
+		
+		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
+	}
+	
+	override func viewWillAppear(_ animated: Bool) {
+		ChatConversationTableViewModel.sharedModel.updateData()
 		collectionView.reloadData()
 	}
+	
 	
 	override func viewDidAppear(_ animated: Bool) {
 		let indexPath = IndexPath(item: ChatConversationTableViewModel.sharedModel.messageListHistory.count - 1, section: 0)
 		self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
 	}
 
+	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
 		self.collectionView.scrollToItem(at: IndexPath(row: ChatConversationTableViewModel.sharedModel.messageListHistory.count-1, section: 0), at: .bottom, animated: false)
@@ -87,10 +99,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-		
 		let basic = isBasicChatRoom(ChatConversationTableViewModel.sharedModel.chatRoom?.getCobject)
 		cell.configure(message: ChatConversationTableViewModel.sharedModel.messageListHistory[indexPath.row], isBasic: basic)
-		print("MultilineMessageCell configure ChatMessage audio \(indexPath.row)")
+
 		return cell
 	}
 	

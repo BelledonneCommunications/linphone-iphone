@@ -46,7 +46,6 @@ class AudioPlayer: ControlsViewModel {
 		do{
 			try linphonePlayer?.open(filename: path!)
 			try linphonePlayer?.start()
-			print("MultilineMessageCell configure ChatMessage animPlayerOnce linphonePlayer started")
 		}catch{
 			print("error")
 		}

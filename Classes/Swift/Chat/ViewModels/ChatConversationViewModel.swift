@@ -435,7 +435,6 @@ class ChatConversationViewModel: ControlsViewModel {
 				}else if(type == "public.movie"){
 					ChatConversationViewModel.sharedModel.data.append(try Data(contentsOf: url))
 					var tmpImage = ChatConversationViewModel.sharedModel.createThumbnailOfVideoFromFileURL(videoURL: url.relativeString)
-					print("MultilineMessageCell configure ChatMessage 100000000 \(url.relativeString)")
 					if tmpImage == nil { tmpImage = UIImage(named: "chat_error")}
 					ChatConversationViewModel.sharedModel.imageT.append(tmpImage)
 				}else{
