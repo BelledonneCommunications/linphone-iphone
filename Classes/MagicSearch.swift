@@ -20,6 +20,7 @@ import linphonesw
 	var previousFilter : String?
 	var magicSearch : MagicSearch
 	var magicSearchDelegate : MagicSearchDelegate?
+	var lastSearch : [SearchResult]?
 	
 	
 	override init() {
@@ -30,6 +31,7 @@ import linphonesw
 		magicSearchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
 			self.needUpdateLastSearchContacts = true
 			self.ongoingSearch = false
+			self.lastSearch = magicSearch.lastSearch
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Contact magic search -- filter = \(String(describing: self.previousFilter)) -- \(magicSearch.lastSearch.count) contact founds")
 			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchFinished), object: self)
 		}, onLdapHaveMoreResults: { (magicSearch: MagicSearch, ldap: Ldap) in
@@ -101,8 +103,10 @@ import linphonesw
 	@objc func getLastSearchResults() -> UnsafeMutablePointer<bctbx_list_t>? {
 		
 		var cList: UnsafeMutablePointer<bctbx_list_t>? = nil
-		for data in magicSearch.lastSearch {
-			cList = bctbx_list_append(cList, UnsafeMutableRawPointer(data.getCobject))
+		if let search = lastSearch {
+			for data in search {
+				cList = bctbx_list_append(cList, UnsafeMutableRawPointer(data.getCobject))
+			}
 		}
 		return cList
 	}
