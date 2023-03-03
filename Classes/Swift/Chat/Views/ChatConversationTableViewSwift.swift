@@ -24,31 +24,25 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return collectionView
 	}()
 	
-	/*
-	// Initializers
-	init() {
-		// Create new `UICollectionView` and set `UICollectionViewFlowLayout` as its layout
-		collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-		super.init(nibName: nil, bundle: nil)
-	}
+	var isLoaded = false
 	
-	required init?(coder aDecoder: NSCoder) {
-		// Create new `UICollectionView` and set `UICollectionViewFlowLayout` as its layout
-		collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-		super.init(coder: aDecoder)
-	}
-	 */
+	var basic :Bool = false
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 
 		self.initView()
+		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
+		
+		ChatConversationTableViewModel.sharedModel.nbEventDisplayed.observe { index in
+			self.collectionView.reloadData()
+		}
 	}
 	
 	deinit {
@@ -60,6 +54,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}
 	
 	func initView(){
+		basic = isBasicChatRoom(ChatConversationTableViewModel.sharedModel.chatRoom?.getCobject)
+		
 		view.addSubview(collectionView)
 		collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		collectionView.contentInsetAdjustmentBehavior = .always
@@ -77,36 +73,50 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		
 		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
 		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
+		
+		collectionView.transform = CGAffineTransform(scaleX: 1, y: -1)
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
-		ChatConversationTableViewModel.sharedModel.updateData()
+		//ChatConversationTableViewModel.sharedModel.updateData()
 		collectionView.reloadData()
 	}
 	
-	
 	override func viewDidAppear(_ animated: Bool) {
-		let indexPath = IndexPath(item: ChatConversationTableViewModel.sharedModel.messageListHistory.count - 1, section: 0)
-		self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
+		self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+		//print("MultilineMessageCell configure ChatMessage cell loaded")
+		isLoaded = true
 	}
 
-	
-	override func viewDidLayoutSubviews() {
-		super.viewDidLayoutSubviews()
-		self.collectionView.scrollToItem(at: IndexPath(row: ChatConversationTableViewModel.sharedModel.messageListHistory.count-1, section: 0), at: .bottom, animated: false)
-	}
 	
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-		let basic = isBasicChatRoom(ChatConversationTableViewModel.sharedModel.chatRoom?.getCobject)
-		cell.configure(message: ChatConversationTableViewModel.sharedModel.messageListHistory[indexPath.row], isBasic: basic)
 
+		//cell.configure(message: ChatConversationTableViewModel.sharedModel.messageListHistory[indexPath.row], isBasic: basic)
+		
+		print("MultilineMessageCell configure ChatMessage cell \(indexPath.row)")
+		
+		if let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
+			print("MultilineMessageCell configure ChatMessage cell inininni\(indexPath.row)")
+			cell.configure(message: message, isBasic: basic)
+		}
+		
+		/*
+		if(indexPath.row >= ChatConversationTableViewModel.sharedModel.messageListHistory.count-5 && indexPath.row < ChatConversationTableViewModel.sharedModel.messageListHistory.count-4 && isLoaded){
+				
+			ChatConversationTableViewModel.sharedModel.addData()
+				
+			//print("MultilineMessageCell configure ChatMessage cell iiiiinnnnn\(indexPath.row)")
+		}*/
+		//print("MultilineMessageCell configure ChatMessage cell \(indexPath.row)")
+		
+		cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
 		return cell
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return ChatConversationTableViewModel.sharedModel.messageListHistory.count
+		return ChatConversationTableViewModel.sharedModel.getNBMessages()
 	}
 	
 	// MARK: - UICollectionViewDelegateFlowLayout -
