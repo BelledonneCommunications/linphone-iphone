@@ -176,7 +176,7 @@ class MultilineMessageCell: UICollectionViewCell {
 			self.playRecordedMessage(voiceRecorder: message.contents.first?.filePath, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 		}
 		recordingStopButton.onClickAction = {
-			self.stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+			self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 		}
 		
 		NSLayoutConstraint.deactivate(labelConstraints)
@@ -355,7 +355,7 @@ class MultilineMessageCell: UICollectionViewCell {
 		
 		AudioPlayer.sharedModel.fileChanged.observe { file in
 			if (file != voiceRecorder && self.isPlayingVoiceRecording) {
-				self.stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+				self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 			}
 		}
 		
@@ -364,7 +364,7 @@ class MultilineMessageCell: UICollectionViewCell {
 			recordingWaveView.layoutIfNeeded()
 		}, completion: { (finished: Bool) in
 			if (self.isPlayingVoiceRecording) {
-				self.stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+				self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 			}
 		})
 	}
@@ -387,11 +387,14 @@ class MultilineMessageCell: UICollectionViewCell {
 		return String(format: "%02ld:%02ld", valueMs / 60000, (valueMs % 60000) / 1000)
 	}
 	
-	func stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: CallControlButton, recordingStopButton: CallControlButton, recordingWaveView: UIProgressView, message: ChatMessage) {
+	func stopVoiceRecordPlayer(recordingPlayButton: CallControlButton, recordingStopButton: CallControlButton, recordingWaveView: UIProgressView, message: ChatMessage) {
+		print("MultilineMessageCell stopVoiceRecordPlayer")
 		recordingView.subviews.forEach({ view in
 			view.removeFromSuperview()
 		})
-		initPlayerAudio(message: message)
+		if(!recordingView.isHidden){
+			initPlayerAudio(message: message)
+		}
 		recordingWaveView.progress = 0.0
 		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
 		AudioPlayer.stopSharedPlayer()

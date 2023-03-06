@@ -1437,8 +1437,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				self.stopVoiceRecordPlayer()
 			}
 		})
-		
-		
 	}
 	
 	func stopVoiceRecordPlayer() {
