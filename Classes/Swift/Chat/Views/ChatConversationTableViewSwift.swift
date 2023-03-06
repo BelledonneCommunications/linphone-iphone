@@ -24,8 +24,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return collectionView
 	}()
 	
-	var isLoaded = false
-	
 	var basic :Bool = false
 	
 	override func viewDidLoad() {
@@ -84,8 +82,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	override func viewDidAppear(_ animated: Bool) {
 		self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-		//print("MultilineMessageCell configure ChatMessage cell loaded")
-		isLoaded = true
 	}
 
 	
@@ -93,23 +89,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
 
-		//cell.configure(message: ChatConversationTableViewModel.sharedModel.messageListHistory[indexPath.row], isBasic: basic)
-		
-		print("MultilineMessageCell configure ChatMessage cell \(indexPath.row)")
-		
 		if let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
-			print("MultilineMessageCell configure ChatMessage cell inininni\(indexPath.row)")
 			cell.configure(message: message, isBasic: basic)
 		}
-		
-		/*
-		if(indexPath.row >= ChatConversationTableViewModel.sharedModel.messageListHistory.count-5 && indexPath.row < ChatConversationTableViewModel.sharedModel.messageListHistory.count-4 && isLoaded){
-				
-			ChatConversationTableViewModel.sharedModel.addData()
-				
-			//print("MultilineMessageCell configure ChatMessage cell iiiiinnnnn\(indexPath.row)")
-		}*/
-		//print("MultilineMessageCell configure ChatMessage cell \(indexPath.row)")
 		
 		cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
 		return cell

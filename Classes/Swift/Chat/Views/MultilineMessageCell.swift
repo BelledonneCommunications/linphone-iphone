@@ -20,9 +20,6 @@ class MultilineMessageCell: UICollectionViewCell {
 
 	let labelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
 	
-	var isPlayingVoiceRecording = false
-	var vrPlayerTimer = Timer()
-	
 	var constraintLeadingBubble : NSLayoutConstraint? = nil
 	var constraintTrailingBubble : NSLayoutConstraint? = nil
 	var labelConstraints: [NSLayoutConstraint] = []
@@ -37,11 +34,8 @@ class MultilineMessageCell: UICollectionViewCell {
 	let imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
 	
 	let recordingView = UIView()
-	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_play"))
-	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_stop"))
-	let recordingWaveView = UIProgressView()
-	let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
-	let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
+	
+	var isPlayingVoiceRecording = false
 	
 
 	override init(frame: CGRect) {
@@ -134,6 +128,16 @@ class MultilineMessageCell: UICollectionViewCell {
 			recordingView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
 		]
 		recordingView.height(50.0).width(280).done()
+		recordingView.isHidden = true
+
+	}
+	
+	func initPlayerAudio(message: ChatMessage){
+		let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_play"))
+		let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_stop"))
+		let recordingWaveView = UIProgressView()
+		let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
+		let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
 		
 		recordingView.addSubview(recordingWaveView)
 		recordingWaveView.translatesAutoresizingMaskIntoConstraints = false
@@ -147,8 +151,6 @@ class MultilineMessageCell: UICollectionViewCell {
 		recordingWaveView.progressViewStyle = .bar
 		recordingWaveView.layer.cornerRadius = 5
 		recordingWaveView.clipsToBounds = true
-		recordingWaveView.layer.sublayers![1].cornerRadius = 5
-		recordingWaveView.subviews[1].clipsToBounds = true
 		
 		recordingWaveView.addSubview(recordingPlayButton)
 		recordingPlayButton.alignParentLeft(withMargin: 10).matchParentHeight().done()
@@ -163,8 +165,33 @@ class MultilineMessageCell: UICollectionViewCell {
 		recordingWaveView.addSubview(recordingDurationTextView)
 		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
 		
-		recordingView.isHidden = true
-
+		let img = message.isOutgoing ? UIImage.withColor(UIColor("A")) : UIImage.withColor(UIColor("D"))
+		recordingWaveView.progressImage = img
+		
+		//recordingWaveView.progressTintColor = message.isOutgoing ? UIColor("A").withAlphaComponent(1.0) : UIColor("D").withAlphaComponent(1.0)
+		
+		recordingDurationTextView.text = recordingDuration(message.contents.first?.filePath)
+		
+		recordingPlayButton.onClickAction = {
+			self.playRecordedMessage(voiceRecorder: message.contents.first?.filePath, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+		}
+		recordingStopButton.onClickAction = {
+			self.stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+		}
+		
+		NSLayoutConstraint.deactivate(labelConstraints)
+		NSLayoutConstraint.deactivate(imageConstraints)
+		NSLayoutConstraint.deactivate(videoConstraints)
+		NSLayoutConstraint.deactivate(playButtonConstraints)
+		NSLayoutConstraint.activate(recordingConstraints)
+		NSLayoutConstraint.activate(recordingWaveConstraints)
+		label.isHidden = true
+		imageViewBubble.isHidden = true
+		imageVideoViewBubble.isHidden = true
+		recordingView.isHidden = false
+		
+		imageViewBubble.image = nil
+		imageVideoViewBubble.image = nil
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -252,30 +279,11 @@ class MultilineMessageCell: UICollectionViewCell {
 				imageViewBubble.image = nil
 				
 			}else if message.contents.first?.type == "audio"{
-				recordingWaveView.progressTintColor = message.isOutgoing ? UIColor("A") : UIColor("D")
 				
-				recordingDurationTextView.text = recordingDuration(message.contents.first?.filePath)
-				
-				recordingPlayButton.onClickAction = {
-					self.playRecordedMessage(recordingPlayButton: self.recordingPlayButton, recordingStopButton: self.recordingStopButton, recordingWaveView: self.recordingWaveView, voiceRecorder: message.contents.first?.filePath)
-				}
-				recordingStopButton.onClickAction = {
-					self.stopVoiceRecordPlayer(recordingPlayButton: self.recordingPlayButton, recordingStopButton: self.recordingStopButton, recordingWaveView: self.recordingWaveView)
-				}
-				
-				NSLayoutConstraint.deactivate(labelConstraints)
-				NSLayoutConstraint.deactivate(imageConstraints)
-				NSLayoutConstraint.deactivate(videoConstraints)
-				NSLayoutConstraint.deactivate(playButtonConstraints)
-				NSLayoutConstraint.activate(recordingConstraints)
-				NSLayoutConstraint.activate(recordingWaveConstraints)
-				label.isHidden = true
-				imageViewBubble.isHidden = true
-				imageVideoViewBubble.isHidden = true
-				recordingView.isHidden = false
-				
-				imageViewBubble.image = nil
-				imageVideoViewBubble.image = nil
+				recordingView.subviews.forEach({ view in
+					view.removeFromSuperview()
+				})
+				initPlayerAudio(message: message)
 				
 			}else{
 				//createBubbleOthe()
@@ -335,17 +343,30 @@ class MultilineMessageCell: UICollectionViewCell {
 	}
 	
 	//Audio
-	func playRecordedMessage(recordingPlayButton: UIButton, recordingStopButton:UIButton, recordingWaveView: UIProgressView, voiceRecorder: String?) {
+	func playRecordedMessage(voiceRecorder: String?, recordingPlayButton: CallControlButton, recordingStopButton: CallControlButton, recordingWaveView: UIProgressView, message: ChatMessage) {
 		AudioPlayer.initSharedPlayer()
 		AudioPlayer.sharedModel.fileChanged.value = voiceRecorder
 		recordingPlayButton.isHidden = true
 		recordingStopButton.isHidden = false
+		
 		AudioPlayer.startSharedPlayer(voiceRecorder)
-		self.animPlayerOnce(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, voiceRecorder: voiceRecorder)
-		vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.01, repeats: true) { timer in
-			self.animPlayerOnce(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, voiceRecorder: voiceRecorder)
-		}
+		recordingWaveView.progress = 0.0
 		isPlayingVoiceRecording = true
+		
+		AudioPlayer.sharedModel.fileChanged.observe { file in
+			if (file != voiceRecorder && self.isPlayingVoiceRecording) {
+				self.stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+			}
+		}
+		
+		recordingWaveView.progress = 1.0
+		UIView.animate(withDuration: TimeInterval(Double(AudioPlayer.getSharedPlayer()!.duration) / 1000.00), delay: 0.0, options: .curveLinear, animations: {
+			recordingWaveView.layoutIfNeeded()
+		}, completion: { (finished: Bool) in
+			if (self.isPlayingVoiceRecording) {
+				self.stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+			}
+		})
 	}
 	
 	func recordingDuration(_ _voiceRecordingFile: String?) -> String? {
@@ -366,32 +387,16 @@ class MultilineMessageCell: UICollectionViewCell {
 		return String(format: "%02ld:%02ld", valueMs / 60000, (valueMs % 60000) / 1000)
 	}
 	
-	func animPlayerOnce(recordingPlayButton: UIButton, recordingStopButton:UIButton, recordingWaveView: UIProgressView, voiceRecorder: String?) {
-		recordingWaveView.progress += floor(1.0 / Float(AudioPlayer.getSharedPlayer()!.duration/1000) * 10) / 10.0
-		AudioPlayer.sharedModel.fileChanged.observe { file in
-			if (file != voiceRecorder && self.isPlayingVoiceRecording) {
-				self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView)
-			}
-		}
-		UIView.animate(withDuration: 1, delay: 0.0, options: .curveLinear, animations: {
-			recordingWaveView.layoutIfNeeded()
-		}) { Bool in
-			if(recordingWaveView.progress >= 1.0 && self.isPlayingVoiceRecording){
-				UIView.animate(withDuration: 1, delay: 0.0, options: .curveLinear, animations: {
-					recordingWaveView.layoutIfNeeded()
-				})
-				self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView)
-			}
-		}
-	}
-	
-	func stopVoiceRecordPlayer(recordingPlayButton: UIButton, recordingStopButton:UIButton, recordingWaveView: UIProgressView) {
-		AudioPlayer.stopSharedPlayer()
+	func stopVoiceRecordPlayerAfterAnimation(recordingPlayButton: CallControlButton, recordingStopButton: CallControlButton, recordingWaveView: UIProgressView, message: ChatMessage) {
+		recordingView.subviews.forEach({ view in
+			view.removeFromSuperview()
+		})
+		initPlayerAudio(message: message)
 		recordingWaveView.progress = 0.0
 		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
+		AudioPlayer.stopSharedPlayer()
 		recordingPlayButton.isHidden = false
 		recordingStopButton.isHidden = true
 		isPlayingVoiceRecording = false
-		vrPlayerTimer.invalidate()
 	}
 }

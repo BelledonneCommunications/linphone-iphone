@@ -48,7 +48,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	var replyMessage : OpaquePointer? = nil
 	
 	var vrRecordTimer = Timer()
-	var vrPlayerTimer = Timer()
 	
 	var voiceRecorder : Recorder? = nil
 	
@@ -505,7 +504,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	}
 	
 	func startVoiceRecording() {
-		UIApplication.shared.isIdleTimerDisabled = true
 		if (voiceRecorder == nil) {
 			createVoiceRecorder()
 		}
@@ -531,7 +529,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	}
 	
 	func stopVoiceRecording() {
-		UIApplication.shared.isIdleTimerDisabled = false
 		if (ChatConversationViewModel.sharedModel.voiceRecorder != nil) && linphone_recorder_get_state(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) == LinphoneRecorderRunning {
 			print("[Chat Message Sending] Pausing / closing voice recorder")
 			linphone_recorder_pause(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
@@ -552,7 +549,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	}
 	
 	func cancelVoiceRecordingVM() {
-		UIApplication.shared.isIdleTimerDisabled = false
 		showVoiceRecorderView = false
 		isPendingVoiceRecord = false
 		isVoiceRecording = false

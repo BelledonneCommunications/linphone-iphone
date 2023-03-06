@@ -48,7 +48,7 @@ class BackActionsNavigationView:  UIViewController {
 	let recordingDeleteButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("delete_default"))
 	let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_play"))
 	let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("vr_stop"))
-	let recordingWaveView = UIProgressView()
+	var recordingWaveView = UIProgressView()
 	let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
 	let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))
 	let recordingWaveImageMask = UIView()
@@ -228,35 +228,7 @@ class BackActionsNavigationView:  UIViewController {
 		recordingView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		recordingView.isHidden = true
 		
-		recordingView.addSubview(recordingDeleteButton)
-		recordingDeleteButton.alignParentLeft(withMargin: 10).matchParentHeight().done()
-		
-		recordingView.addSubview(recordingPlayButton)
-		recordingPlayButton.alignParentRight(withMargin: 10).matchParentHeight().done()
-		recordingPlayButton.isHidden = true
-		
-		recordingView.addSubview(recordingStopButton)
-		recordingStopButton.alignParentRight(withMargin: 10).matchParentHeight().done()
-		
-		recordingView.addSubview(recordingWaveView)
-		recordingWaveView.toRightOf(recordingDeleteButton, withLeftMargin: 10).toLeftOf(recordingStopButton, withRightMargin: 10).alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).done()
-		recordingWaveView.progressViewStyle = .bar
-		recordingWaveView.layer.cornerRadius = 5
-		recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
-		recordingWaveView.progressTintColor = UIColor("L")
-		recordingWaveView.clipsToBounds = true
-		recordingWaveView.layer.sublayers![1].cornerRadius = 5
-		recordingWaveView.subviews[1].clipsToBounds = true
-		
-		recordingWaveView.addSubview(recordingDurationTextView)
-		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
-		
-		recordingWaveView.addSubview(recordingWaveImage)
-		recordingWaveImage.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).alignParentRight(withMargin: 65).done()
-		
-		recordingWaveView.addSubview(recordingWaveImageMask)
-		recordingWaveImageMask.alignParentTop(withMargin: 5).alignParentBottom(withMargin: 5).alignParentLeft(withMargin: 10).alignParentRight(withMargin: 65).done()
-		recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		resetRecordingProgressBar()
 		
 		stackView.addArrangedSubview(mediaSelector)
 		mediaSelector.height(top_bar_height*2).matchParentSideBorders().done()
@@ -301,6 +273,39 @@ class BackActionsNavigationView:  UIViewController {
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
+	
+	func resetRecordingProgressBar(){
+		recordingView.addSubview(recordingDeleteButton)
+		recordingDeleteButton.alignParentLeft(withMargin: 10).matchParentHeight().done()
+		
+		recordingView.addSubview(recordingPlayButton)
+		recordingPlayButton.alignParentRight(withMargin: 10).matchParentHeight().done()
+		recordingPlayButton.isHidden = true
+		
+		recordingView.addSubview(recordingStopButton)
+		recordingStopButton.alignParentRight(withMargin: 10).matchParentHeight().done()
+		
+		let newRecordingWaveView = UIProgressView()
+		recordingWaveView = newRecordingWaveView
+		
+		recordingView.addSubview(recordingWaveView)
+		recordingWaveView.toRightOf(recordingDeleteButton, withLeftMargin: 10).toLeftOf(recordingStopButton, withRightMargin: 10).alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).done()
+		recordingWaveView.progressViewStyle = .bar
+		recordingWaveView.layer.cornerRadius = 5
+		recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		recordingWaveView.progressImage = UIImage.withColor(UIColor("L"))
+		recordingWaveView.clipsToBounds = true
+		
+		recordingWaveView.addSubview(recordingDurationTextView)
+		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
+		
+		recordingWaveView.addSubview(recordingWaveImage)
+		recordingWaveImage.alignParentTop(withMargin: 10).alignParentBottom(withMargin: 10).alignParentLeft(withMargin: 10).alignParentRight(withMargin: 65).done()
+		
+		recordingWaveView.addSubview(recordingWaveImageMask)
+		recordingWaveImageMask.alignParentTop(withMargin: 5).alignParentBottom(withMargin: 5).alignParentLeft(withMargin: 10).alignParentRight(withMargin: 65).done()
+		recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+	}
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

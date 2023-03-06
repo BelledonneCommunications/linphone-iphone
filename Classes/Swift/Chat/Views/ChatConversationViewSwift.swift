@@ -246,7 +246,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		messageView.sendButton.onClickAction = onSendClick
 		messageView.pictureButton.onClickAction = alertAction
 		messageView.voiceRecordButton.onClickAction = onVrStart
-		recordingStopButton.onClickAction = stopVoiceRecording
 		recordingDeleteButton.onClickAction = cancelVoiceRecording
 		recordingPlayButton.onClickAction = onvrPlayPauseStop
 		recordingStopButton.onClickAction = onvrPlayPauseStop
@@ -261,8 +260,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		handlePendingTransferIfAny()
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()
-		
-		ChatConversationViewModel.sharedModel.initSharedPlayer()
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
@@ -1327,7 +1324,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func onVrStart() {
-		stopVoiceRecordPlayer()
 		self.recordingWaveImageMask.isHidden = false
 		recordingWaveView.progress = 0.0
 		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
@@ -1420,45 +1416,43 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		self.recordingPlayButton.isHidden = true
 		self.recordingStopButton.isHidden = false
 		
+		ChatConversationViewModel.sharedModel.initSharedPlayer()
+		AudioPlayer.sharedModel.fileChanged.value = ChatConversationViewModel.sharedModel.voiceRecorder?.file
 		ChatConversationViewModel.sharedModel.startSharedPlayer(ChatConversationViewModel.sharedModel.voiceRecorder?.file)
-		self.animPlayerOnce()
-		ChatConversationViewModel.sharedModel.vrPlayerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-			self.animPlayerOnce()
-		}
+		
+		recordingWaveView.progress = 0.0
 		ChatConversationViewModel.sharedModel.isPlayingVoiceRecording = true
-	}
-	
-	func animPlayerOnce() {
-		self.recordingWaveView.progress += 1.0 / Float(AudioPlayer.getSharedPlayer()!.duration/1000)
+		
 		AudioPlayer.sharedModel.fileChanged.observe { file in
-			if file != ChatConversationViewModel.sharedModel.voiceRecorder?.file {
+			if (file != ChatConversationViewModel.sharedModel.voiceRecorder?.file && ChatConversationViewModel.sharedModel.isPlayingVoiceRecording) {
 				self.stopVoiceRecordPlayer()
 			}
 		}
-		UIView.animate(withDuration: 1, delay: 0.0, options: .curveLinear, animations: {
+		
+		recordingWaveView.progress = 1.0
+		UIView.animate(withDuration: TimeInterval(Double(AudioPlayer.getSharedPlayer()!.duration) / 1000.00), delay: 0.0, options: .curveLinear, animations: {
 			self.recordingWaveView.layoutIfNeeded()
-		}) { Bool in
-			if(self.recordingWaveView.progress >= 1.0 && ChatConversationViewModel.sharedModel.isPlayingVoiceRecording){
-				DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-					if(ChatConversationViewModel.sharedModel.isPlayingVoiceRecording){
-						self.stopVoiceRecordPlayer()
-					}else{
-					}
-				}
+		}, completion: { (finished: Bool) in
+			if (ChatConversationViewModel.sharedModel.isPlayingVoiceRecording) {
+				self.stopVoiceRecordPlayer()
 			}
-		}
-
+		})
+		
+		
 	}
 	
 	func stopVoiceRecordPlayer() {
-		ChatConversationViewModel.sharedModel.stopSharedPlayer()
+		recordingView.subviews.forEach({ view in
+			view.removeFromSuperview()
+		})
+		resetRecordingProgressBar()
 		self.recordingWaveView.progress = 0.0
 		self.recordingWaveView.setProgress(self.recordingWaveView.progress, animated: false)
+		ChatConversationViewModel.sharedModel.stopSharedPlayer()
 		self.recordingWaveImageMask.isHidden = false
 		self.recordingPlayButton.isHidden = false
 		self.recordingStopButton.isHidden = true
 		ChatConversationViewModel.sharedModel.isPlayingVoiceRecording = false
-		ChatConversationViewModel.sharedModel.vrPlayerTimer.invalidate()
 	}
 	
 	func configureMessageField() {

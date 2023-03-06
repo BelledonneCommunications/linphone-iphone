@@ -952,6 +952,7 @@
 		D779D39A29A4C285007B8087 /* MultilineMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39929A4C285007B8087 /* MultilineMessageCell.swift */; };
 		D779D39C29A76DE6007B8087 /* ChatConversationTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */; };
 		D779D39E29AC9E93007B8087 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39D29AC9E92007B8087 /* AudioPlayer.swift */; };
+		D779D3A229B5E365007B8087 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D3A129B5E365007B8087 /* UIImageExtension.swift */; };
 		D7A7545029507038005C9D4A /* CustomAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A7544F29507038005C9D4A /* CustomAlertController.swift */; };
 		D7C6DE832948CF3100756E03 /* DropDownCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C6DE812948CF3100756E03 /* DropDownCell.swift */; };
 		D7C6DE842948CF3100756E03 /* DropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7C6DE822948CF3100756E03 /* DropDownCell.xib */; };
@@ -2195,6 +2196,7 @@
 		D779D39929A4C285007B8087 /* MultilineMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineMessageCell.swift; sourceTree = "<group>"; };
 		D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationTableViewModel.swift; sourceTree = "<group>"; };
 		D779D39D29AC9E92007B8087 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		D779D3A129B5E365007B8087 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		D7A7544F29507038005C9D4A /* CustomAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertController.swift; sourceTree = "<group>"; };
 		D7C6DE812948CF3100756E03 /* DropDownCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDownCell.swift; sourceTree = "<group>"; };
 		D7C6DE822948CF3100756E03 /* DropDownCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DropDownCell.xib; sourceTree = "<group>"; };
@@ -3463,6 +3465,7 @@
 				D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */,
 				D7A7544F29507038005C9D4A /* CustomAlertController.swift */,
 				D779D39D29AC9E92007B8087 /* AudioPlayer.swift */,
+				D779D3A129B5E365007B8087 /* UIImageExtension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -5255,6 +5258,7 @@
 				D7DA18712A02598700FABA0D /* TextViewer.swift in Sources */,
 				669B140C27A29D140012220A /* FloatingScrollDownButton.swift in Sources */,
 				C63F7219285A24B10066163B /* ConferenceHistoryDetailsView.swift in Sources */,
+				D779D3A229B5E365007B8087 /* UIImageExtension.swift in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */,
 				63D11C531C3D501200E8FCEE /* Log.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */,

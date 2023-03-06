@@ -45,7 +45,6 @@ class ChatConversationTableViewModel: ControlsViewModel {
 				if let chat = event.chatMessage	{
 					//messageListHistory.append(chat)
 					messageListHistory.insert(chat, at: 0)
-					print("MultilineMessageCell configure ChatMessage cell \(messageListHistory.count)")
 				}											//linphone_event_log_get_chat_message(event)
 				/*
 			 	if auto_download is available and file transfer in progress, not add event now
@@ -79,7 +78,6 @@ class ChatConversationTableViewModel: ControlsViewModel {
 				if let chat = event.chatMessage	{
 					//messageListHistory.insert(chat, at: 0)
 					messageListHistory.append(chat)
-					print("MultilineMessageCell configure ChatMessage cell added \(messageListHistory.count)")
 				}											//linphone_event_log_get_chat_message(event)
 				/*
 				if auto_download is available and file transfer in progress, not add event now
@@ -102,13 +100,11 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	*/
 	func getMessage(index: Int) -> ChatMessage? {
 		if (chatRoom == nil) {
-			print("MultilineMessageCell configure ChatMessage cell empty")
 			return nil
 		}
 
 		let oneToOne = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
-		print("MultilineMessageCell configure ChatMessage cell message is \(chatRoomEvents?.first?.chatMessage?.contents.first?.utf8Text)")
 		return chatRoomEvents?.first?.chatMessage
 	}
 	
