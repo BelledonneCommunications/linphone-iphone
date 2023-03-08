@@ -97,6 +97,13 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return cell
 	}
 	
+	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
+		if cell.isPlayingVoiceRecording {
+			AudioPlayer.stopSharedPlayer()
+		}
+	}
+	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return ChatConversationTableViewModel.sharedModel.getNBMessages()
 	}

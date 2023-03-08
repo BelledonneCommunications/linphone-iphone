@@ -13,21 +13,32 @@ class MultilineMessageCell: UICollectionViewCell {
 	static let reuseId = "MultilineMessageCellReuseId"
 	
 	private let label: UILabel = UILabel(frame: .zero)
+	private let preContentViewBubble: UIView = UIView(frame: .zero)
+	private let contentViewBubble: UIView = UIView(frame: .zero)
 	private let contentBubble: UIView = UIView(frame: .zero)
 	private let bubble: UIView = UIView(frame: .zero)
 	private let imageUser: UIView = UIView(frame: .zero)
 	private let chatRead = UIImageView(image: UIImage(named: "chat_read.png"))
 
-	let labelInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+	let labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
 	
 	var constraintLeadingBubble : NSLayoutConstraint? = nil
 	var constraintTrailingBubble : NSLayoutConstraint? = nil
+	var preContentViewBubbleConstraints : [NSLayoutConstraint] = []
+	var preContentViewBubbleConstraintsHidden : [NSLayoutConstraint] = []
+	var contentViewBubbleConstraints : [NSLayoutConstraint] = []
+	var forwardConstraints : [NSLayoutConstraint] = []
 	var labelConstraints: [NSLayoutConstraint] = []
 	var imageConstraints: [NSLayoutConstraint] = []
 	var videoConstraints: [NSLayoutConstraint] = []
 	var playButtonConstraints: [NSLayoutConstraint] = []
 	var recordingConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
+	
+	let forwardView = UIView()
+	let forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
+	let forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	
 	
 	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
 	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
@@ -58,10 +69,10 @@ class MultilineMessageCell: UICollectionViewCell {
 		
 		contentBubble.addSubview(bubble)
 		bubble.translatesAutoresizingMaskIntoConstraints = false
-		bubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top).isActive = true
-		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom).isActive = true
-		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left).isActive = true
-		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right).isActive = true
+		bubble.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor).isActive = true
+		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor).isActive = true
 		bubble.layer.cornerRadius = 10.0
 		
 		contentBubble.addSubview(chatRead)
@@ -70,40 +81,92 @@ class MultilineMessageCell: UICollectionViewCell {
 		chatRead.size(w: 10, h: 10).done()
 		chatRead.isHidden = true
 		
+		
+		
+	//PreContentViewBubble
+		bubble.addSubview(preContentViewBubble)
+		//preContentViewBubble.backgroundColor = .yellow
+		preContentViewBubble.translatesAutoresizingMaskIntoConstraints = false
+		preContentViewBubbleConstraints = [
+			preContentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
+		]
+		preContentViewBubbleConstraintsHidden = [
+			preContentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
+			preContentViewBubble.heightAnchor.constraint(equalToConstant: 0)
+		]
+		
+	//Forward
+		preContentViewBubble.addSubview(forwardView)
+		forwardView.size(w: 90, h: 10).done()
+		
+		forwardView.addSubview(forwardIcon)
+		forwardIcon.size(w: 10, h: 10).done()
+		
+		forwardView.addSubview(forwardLabel)
+		forwardLabel.text = VoipTexts.bubble_chat_transferred
+		forwardLabel.size(w: 90, h: 10).done()
+		forwardConstraints = [
+			forwardView.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 0),
+			forwardView.bottomAnchor.constraint(equalTo: preContentViewBubble.bottomAnchor, constant: 0),
+			forwardView.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 0),
+			forwardView.trailingAnchor.constraint(equalTo: preContentViewBubble.trailingAnchor, constant: 0),
+			
+			forwardIcon.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 6),
+			forwardIcon.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 6),
+			
+			forwardLabel.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 6),
+			forwardLabel.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 20),
+			forwardLabel.trailingAnchor.constraint(equalTo: preContentViewBubble.trailingAnchor, constant: 0)
+		]
+		
+		
+		
+	//ContentViewBubble
+		bubble.addSubview(contentViewBubble)
+		//contentViewBubble.backgroundColor = .red
+		contentViewBubble.translatesAutoresizingMaskIntoConstraints = false
+		contentViewBubbleConstraints = [
+			//contentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
+			contentViewBubble.topAnchor.constraint(equalTo: preContentViewBubble.bottomAnchor),
+			contentViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+			contentViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor),
+			contentViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor)
+		]
+		NSLayoutConstraint.activate(contentViewBubbleConstraints)
+		
 	//Text
 		label.numberOfLines = 0
 		label.lineBreakMode = .byWordWrapping
 		
-		bubble.addSubview(label)
+		contentViewBubble.addSubview(label)
 		label.translatesAutoresizingMaskIntoConstraints = false
 		labelConstraints = [
-			label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
-			label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
-			label.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
-			label.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+			label.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
+			label.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			label.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			label.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		NSLayoutConstraint.activate(labelConstraints)
 
-		
 	//Image
-		bubble.addSubview(imageViewBubble)
+		contentViewBubble.addSubview(imageViewBubble)
 		imageViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		imageConstraints = [
-			imageViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
-			imageViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
-			imageViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
-			imageViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10),
+			imageViewBubble.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
+			imageViewBubble.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			imageViewBubble.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			imageViewBubble.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right),
 		]
 		imageViewBubble.isHidden = true
 		
 	//Video
-		bubble.addSubview(imageVideoViewBubble)
+		contentViewBubble.addSubview(imageVideoViewBubble)
 		imageVideoViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		videoConstraints = [
-			imageVideoViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
-			imageVideoViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
-			imageVideoViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
-			imageVideoViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+			imageVideoViewBubble.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
+			imageVideoViewBubble.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			imageVideoViewBubble.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			imageVideoViewBubble.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		if #available(iOS 13.0, *) {
 			imagePlayViewBubble.image = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -119,13 +182,13 @@ class MultilineMessageCell: UICollectionViewCell {
 		imageVideoViewBubble.isHidden = true
 		
 	//RecordingPlayer
-		bubble.addSubview(recordingView)
+		contentViewBubble.addSubview(recordingView)
 		recordingView.translatesAutoresizingMaskIntoConstraints = false
 		recordingConstraints = [
-			recordingView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
-			recordingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
-			recordingView.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
-			recordingView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+			recordingView.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
+			recordingView.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			recordingView.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			recordingView.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		recordingView.height(50.0).width(280).done()
 		recordingView.isHidden = true
@@ -142,10 +205,10 @@ class MultilineMessageCell: UICollectionViewCell {
 		recordingView.addSubview(recordingWaveView)
 		recordingWaveView.translatesAutoresizingMaskIntoConstraints = false
 		recordingWaveConstraints = [
-			recordingWaveView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: labelInset.top+10),
-			recordingWaveView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: labelInset.bottom-10),
-			recordingWaveView.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: labelInset.left+10),
-			recordingWaveView.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: labelInset.right-10)
+			recordingWaveView.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
+			recordingWaveView.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			recordingWaveView.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			recordingWaveView.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		
 		recordingWaveView.progressViewStyle = .bar
@@ -167,8 +230,6 @@ class MultilineMessageCell: UICollectionViewCell {
 		
 		let img = message.isOutgoing ? UIImage.withColor(UIColor("A")) : UIImage.withColor(UIColor("D"))
 		recordingWaveView.progressImage = img
-		
-		//recordingWaveView.progressTintColor = message.isOutgoing ? UIColor("A").withAlphaComponent(1.0) : UIColor("D").withAlphaComponent(1.0)
 		
 		recordingDurationTextView.text = recordingDuration(message.contents.first?.filePath)
 		
@@ -289,6 +350,16 @@ class MultilineMessageCell: UICollectionViewCell {
 				//createBubbleOthe()
 			}
 		}
+		
+		if message.isForward {
+			NSLayoutConstraint.activate(preContentViewBubbleConstraints)
+			NSLayoutConstraint.activate(forwardConstraints)
+			contentViewBubble.minWidth(90).done()
+		}else{
+			NSLayoutConstraint.activate(preContentViewBubbleConstraintsHidden)
+			forwardView.isHidden = true
+			contentViewBubble.minWidth(0).done()
+		}
 	}
 	
 	override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
@@ -299,7 +370,6 @@ class MultilineMessageCell: UICollectionViewCell {
 		let minimumInterItemSpacing = 1.0
 		let marginsAndInsets = window!.safeAreaInsets.left + window!.safeAreaInsets.right + minimumInterItemSpacing * CGFloat(cellsPerRow - 1)
 		layoutAttributes.bounds.size.width = ((window!.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
-				
 		return layoutAttributes
 	}
 	
@@ -350,7 +420,6 @@ class MultilineMessageCell: UICollectionViewCell {
 		recordingStopButton.isHidden = false
 		
 		AudioPlayer.startSharedPlayer(voiceRecorder)
-		recordingWaveView.progress = 0.0
 		isPlayingVoiceRecording = true
 		
 		AudioPlayer.sharedModel.fileChanged.observe { file in
@@ -388,7 +457,6 @@ class MultilineMessageCell: UICollectionViewCell {
 	}
 	
 	func stopVoiceRecordPlayer(recordingPlayButton: CallControlButton, recordingStopButton: CallControlButton, recordingWaveView: UIProgressView, message: ChatMessage) {
-		print("MultilineMessageCell stopVoiceRecordPlayer")
 		recordingView.subviews.forEach({ view in
 			view.removeFromSuperview()
 		})
