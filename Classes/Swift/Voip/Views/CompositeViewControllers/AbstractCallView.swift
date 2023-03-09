@@ -107,6 +107,7 @@ import linphonesw
 		
 		// Numpad
 		ControlsViewModel.shared.numpadVisible.readCurrentAndObserve { (visible) in
+			showextraButtons.isHidden = visible == true
 			if (visible == true && CallsViewModel.shared.currentCallData.value != nil ) {
 				self.numpadView?.removeFromSuperview()
 				self.shadingMask.isHidden = false
@@ -122,6 +123,7 @@ import linphonesw
 		
 		// Call stats
 		ControlsViewModel.shared.callStatsVisible.readCurrentAndObserve { (visible) in
+			showextraButtons.isHidden = visible == true
 			if (visible == true && CallsViewModel.shared.currentCallData.value != nil ) {
 				self.currentCallStatsVew?.removeFromSuperview()
 				self.shadingMask.isHidden = false
