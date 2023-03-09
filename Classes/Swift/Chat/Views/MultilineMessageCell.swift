@@ -9,7 +9,7 @@ import UIKit
 import Foundation
 import linphonesw
 
-class MultilineMessageCell: UICollectionViewCell {
+class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
 	static let reuseId = "MultilineMessageCellReuseId"
 	
 	private let label: UILabel = UILabel(frame: .zero)
@@ -28,6 +28,7 @@ class MultilineMessageCell: UICollectionViewCell {
 	var preContentViewBubbleConstraintsHidden : [NSLayoutConstraint] = []
 	var contentViewBubbleConstraints : [NSLayoutConstraint] = []
 	var forwardConstraints : [NSLayoutConstraint] = []
+	var replyConstraints : [NSLayoutConstraint] = []
 	var labelConstraints: [NSLayoutConstraint] = []
 	var imageConstraints: [NSLayoutConstraint] = []
 	var videoConstraints: [NSLayoutConstraint] = []
@@ -39,6 +40,36 @@ class MultilineMessageCell: UICollectionViewCell {
 	let forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
 	let forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	
+	let replyView = UIView()
+	let replyIcon = UIImageView(image: UIImage(named: "menu_reply_default"))
+	let replyLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	let replyContent = UIView()
+	let replyColorContent = UIView()
+	let replyLabelContent = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var stackViewReply = UIStackView()
+	let replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
+	let replyLabelContentTextSpacing = UIView()
+	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	let replyContentTextSpacing = UIView()
+	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	let replyMeetingSchedule = UIImageView()
+	let mediaSelectorReply  = UIView()
+	var collectionViewReply: UICollectionView = {
+		let collection_view_reply_height = 60.0
+		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+		layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
+
+		layout.scrollDirection = .horizontal
+		layout.minimumLineSpacing = 4
+		layout.minimumInteritemSpacing = 4
+
+		let collectionViewReply = UICollectionView(frame: .zero, collectionViewLayout: layout)
+		collectionViewReply.translatesAutoresizingMaskIntoConstraints = false
+		collectionViewReply.backgroundColor = .clear
+		return collectionViewReply
+	}()
+	var replyCollectionView : [UIImage] = []
+	var replyURLCollection : [URL] = []
 	
 	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
 	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
@@ -85,13 +116,14 @@ class MultilineMessageCell: UICollectionViewCell {
 		
 	//PreContentViewBubble
 		bubble.addSubview(preContentViewBubble)
-		//preContentViewBubble.backgroundColor = .yellow
 		preContentViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		preContentViewBubbleConstraints = [
-			preContentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
+			preContentViewBubble.topAnchor.constraint(equalTo: contentBubble.topAnchor),
+			preContentViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor, constant: 0),
+			preContentViewBubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor, constant: -16),
 		]
 		preContentViewBubbleConstraintsHidden = [
-			preContentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
+			preContentViewBubble.topAnchor.constraint(equalTo: contentBubble.topAnchor),
 			preContentViewBubble.heightAnchor.constraint(equalToConstant: 0)
 		]
 		
@@ -118,12 +150,76 @@ class MultilineMessageCell: UICollectionViewCell {
 			forwardLabel.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 20),
 			forwardLabel.trailingAnchor.constraint(equalTo: preContentViewBubble.trailingAnchor, constant: 0)
 		]
+		forwardView.isHidden = true
+		
+	//Reply
+		preContentViewBubble.addSubview(replyView)
+		replyView.size(w: 90, h: 10).done()
+		
+		replyView.addSubview(replyIcon)
+		replyIcon.size(w: 10, h: 10).done()
+		
+		replyView.addSubview(replyLabel)
+		replyLabel.text = VoipTexts.bubble_chat_reply
+		replyLabel.size(w: 90, h: 10).done()
+		
+		preContentViewBubble.addSubview(replyContent)
+		//replyContent.maxHeight(100).done()
+		replyContent.minWidth(200).done()
+		replyContent.layer.cornerRadius = 5
+		replyContent.clipsToBounds = true
+		replyContent.translatesAutoresizingMaskIntoConstraints = false
+		
+		replyContent.addSubview(replyColorContent)
+		replyColorContent.width(10).done()
+		replyColorContent.layer.cornerRadius = 5
+		replyColorContent.clipsToBounds = true
+		replyColorContent.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+		
+		initReplyView()
+		
+		replyConstraints = [
+			replyView.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 0),
+			replyView.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 0),
+			
+			replyIcon.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 6),
+			replyIcon.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 6),
+			
+			replyLabel.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 6),
+			replyLabel.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 20),
+			
+			replyContent.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 20),
+			replyContent.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 8),
+			replyContent.trailingAnchor.constraint(equalTo: preContentViewBubble.trailingAnchor, constant: 8),
+			replyContent.bottomAnchor.constraint(equalTo: preContentViewBubble.bottomAnchor, constant: 0),
+			
+			replyColorContent.topAnchor.constraint(equalTo: replyContent.topAnchor),
+			replyColorContent.bottomAnchor.constraint(equalTo: replyContent.bottomAnchor),
+			
+			stackViewReply.topAnchor.constraint(equalTo: replyContent.topAnchor, constant: 4),
+			stackViewReply.bottomAnchor.constraint(equalTo: replyContent.bottomAnchor, constant: -4),
+			stackViewReply.leadingAnchor.constraint(equalTo: replyContent.leadingAnchor, constant: 14),
+			stackViewReply.trailingAnchor.constraint(equalTo: replyContent.trailingAnchor, constant: 14),
+			stackViewReply.widthAnchor.constraint(equalTo: replyContent.widthAnchor),
+			
+			replyContentTextView.leadingAnchor.constraint(equalTo: stackViewReply.leadingAnchor, constant: 0),
+			replyContentTextView.trailingAnchor.constraint(equalTo: stackViewReply.trailingAnchor, constant: -20),
+			
+			mediaSelectorReply.leadingAnchor.constraint(equalTo: stackViewReply.leadingAnchor, constant: 0),
+			mediaSelectorReply.trailingAnchor.constraint(equalTo: stackViewReply.trailingAnchor, constant: -20),
+			
+			collectionViewReply.topAnchor.constraint(equalTo: mediaSelectorReply.topAnchor),
+			collectionViewReply.bottomAnchor.constraint(equalTo: mediaSelectorReply.bottomAnchor),
+			collectionViewReply.leadingAnchor.constraint(equalTo: mediaSelectorReply.leadingAnchor),
+			collectionViewReply.trailingAnchor.constraint(equalTo: mediaSelectorReply.trailingAnchor),
+		]
+		
+		replyView.isHidden = true
 		
 		
 		
 	//ContentViewBubble
 		bubble.addSubview(contentViewBubble)
-		//contentViewBubble.backgroundColor = .red
 		contentViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentViewBubbleConstraints = [
 			//contentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -192,7 +288,10 @@ class MultilineMessageCell: UICollectionViewCell {
 		]
 		recordingView.height(50.0).width(280).done()
 		recordingView.isHidden = true
-
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.replyContent.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		}
 	}
 	
 	func initPlayerAudio(message: ChatMessage){
@@ -253,6 +352,54 @@ class MultilineMessageCell: UICollectionViewCell {
 		
 		imageViewBubble.image = nil
 		imageVideoViewBubble.image = nil
+	}
+	
+	func initReplyView(){
+	//Reply - Contents
+		
+		stackViewReply.axis = .vertical;
+		stackViewReply.distribution = .fill;
+		stackViewReply.alignment = .leading;
+		stackViewReply.maxWidth((UIScreen.main.bounds.size.width*3/4)).done()
+		
+		replyContent.addSubview(stackViewReply)
+		replyContent.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		stackViewReply.translatesAutoresizingMaskIntoConstraints = false
+
+		stackViewReply.addArrangedSubview(replyLabelTextView)
+		replyLabelTextView.height(24).done()
+		
+		stackViewReply.addArrangedSubview(replyLabelContentTextSpacing)
+		replyLabelContentTextSpacing.height(6).wrapContentY().done()
+		
+		stackViewReply.addArrangedSubview(replyMeetingSchedule)
+		replyMeetingSchedule.size(w: 100, h: 40).wrapContentY().done()
+		replyMeetingSchedule.contentMode = .scaleAspectFit
+		replyMeetingSchedule.isHidden = true
+		
+		stackViewReply.addArrangedSubview(replyContentForMeetingTextView)
+		replyContentForMeetingTextView.width(100).wrapContentY().done()
+		replyContentForMeetingTextView.textAlignment = .center
+		replyContentForMeetingTextView.numberOfLines = 5
+		replyContentForMeetingTextView.isHidden = true
+		
+		stackViewReply.addArrangedSubview(replyContentTextView)
+		replyContentTextView.wrapContentY().done()
+		replyContentTextView.numberOfLines = 5
+		
+		stackViewReply.addArrangedSubview(replyContentTextSpacing)
+		replyContentTextSpacing.height(6).wrapContentY().done()
+		replyContentTextSpacing.isHidden = true
+		
+		stackViewReply.addArrangedSubview(mediaSelectorReply)
+		mediaSelectorReply.height(60).done()
+		mediaSelectorReply.isHidden = true
+		mediaSelectorReply.translatesAutoresizingMaskIntoConstraints = false
+		
+		mediaSelectorReply.addSubview(collectionViewReply)
+		collectionViewReply.dataSource = self
+		collectionViewReply.delegate = self
+		collectionViewReply.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellReplyMessage")
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
@@ -354,12 +501,69 @@ class MultilineMessageCell: UICollectionViewCell {
 		if message.isForward {
 			NSLayoutConstraint.activate(preContentViewBubbleConstraints)
 			NSLayoutConstraint.activate(forwardConstraints)
+			NSLayoutConstraint.deactivate(replyConstraints)
 			contentViewBubble.minWidth(90).done()
+			forwardView.isHidden = false
+			replyView.isHidden = true
+		}else if message.isReply{
+			NSLayoutConstraint.activate(preContentViewBubbleConstraints)
+			NSLayoutConstraint.deactivate(forwardConstraints)
+			NSLayoutConstraint.activate(replyConstraints)
+			contentViewBubble.minWidth(216).done()
+			forwardView.isHidden = true
+			replyView.isHidden = false
+			replyColorContent.backgroundColor = message.replyMessage!.isOutgoing ? UIColor("A") : UIColor("D")
+			
+			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.replyMessage?.getCobject)!)
+			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: (message.replyMessage?.getCobject)!) : ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).utf8Text)
+			let contentList = linphone_chat_message_get_contents(message.replyMessage?.getCobject)
+			//replyLabelTextView.text = message.replyMessage!.fromAddress?.displayName
+			let fromAdress = FastAddressBook.displayName(for: message.replyMessage!.fromAddress?.getCobject)
+			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAdress!)
+			
+			replyContentTextView.text = content
+			replyContentForMeetingTextView.text = content
+			if(isIcal){
+				replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
+				replyMeetingSchedule.isHidden = false
+				replyContentForMeetingTextView.isHidden = false
+				replyContentTextView.isHidden = true
+				mediaSelectorReply.isHidden = true
+				replyContentTextSpacing.isHidden = true
+			}else{
+
+				if(bctbx_list_size(contentList) > 1 || content == ""){
+					mediaSelectorReply.isHidden = false
+					replyContentTextSpacing.isHidden = true
+					ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).contents.forEach({ content in
+						if(content.isFile){
+							let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
+							replyURLCollection.append(URL(string: content.filePath)!)
+							replyCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							collectionViewReply.insertItems(at: [indexPath])
+						}else if(content.isText){
+							replyContentTextSpacing.isHidden = false
+						}
+					})
+					
+				}else{
+					mediaSelectorReply.isHidden = true
+				}
+				replyMeetingSchedule.isHidden = true
+				replyContentForMeetingTextView.isHidden = true
+				replyContentTextView.isHidden = false
+				
+			}
+			replyContentTextView.text = message.replyMessage!.contents.first?.utf8Text
 		}else{
 			NSLayoutConstraint.activate(preContentViewBubbleConstraintsHidden)
-			forwardView.isHidden = true
+			NSLayoutConstraint.deactivate(forwardConstraints)
+			NSLayoutConstraint.deactivate(replyConstraints)
 			contentViewBubble.minWidth(0).done()
+			forwardView.isHidden = true
+			replyView.isHidden = true
 		}
+		
 	}
 	
 	override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
@@ -469,5 +673,93 @@ class MultilineMessageCell: UICollectionViewCell {
 		recordingPlayButton.isHidden = false
 		recordingStopButton.isHidden = true
 		isPlayingVoiceRecording = false
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return replyCollectionView.count
+	}
+
+	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellReplyMessage", for: indexPath)
+		let viewCell: UIView = UIView(frame: cell.contentView.frame)
+		cell.addSubview(viewCell)
+		let imageCell = replyCollectionView[indexPath.row]
+		var myImageView = UIImageView()
+		
+		if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+			myImageView = UIImageView(image: imageCell)
+		}else{
+			let fileNameText = replyURLCollection[indexPath.row].lastPathComponent
+			let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+			myImageView = UIImageView(image: fileName)
+		}
+		
+		myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
+		viewCell.addSubview(myImageView)
+		
+		if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+			var imagePlay = UIImage()
+			if #available(iOS 13.0, *) {
+				imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+			} else {
+				imagePlay = UIImage(named: "vr_play")!
+			}
+			let myImagePlayView = UIImageView(image: imagePlay)
+			viewCell.addSubview(myImagePlayView)
+			myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+			myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+		}
+		myImageView.contentMode = .scaleAspectFill
+		myImageView.clipsToBounds = true
+		
+		return cell
+	}
+	
+	func getImageFrom(_ content: OpaquePointer?, filePath: String?, forReplyBubble: Bool) -> UIImage? {
+		var filePath = filePath
+		let type = String(utf8String: linphone_content_get_type(content))
+		let name = String(utf8String: linphone_content_get_name(content))
+		if filePath == nil {
+			filePath = LinphoneManager.validFilePath(name)
+		}
+
+		var image: UIImage? = nil
+		if type == "video" {
+			image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
+		} else if type == "image" {
+			let data = NSData(contentsOfFile: filePath ?? "") as Data?
+			if let data {
+				image = UIImage(data: data)
+			}
+		}
+		if let image {
+			return image
+		} else {
+			return getImageFromFileName(name, forReplyBubble: forReplyBubble)
+		}
+	}
+	
+	func getImageFromFileName(_ fileName: String?, forReplyBubble forReplyBubbble: Bool) -> UIImage? {
+		let `extension` = fileName?.lowercased().components(separatedBy: ".").last
+		var image: UIImage?
+		var text = fileName
+		if fileName?.contains("voice-recording") ?? false {
+			image = UIImage(named: "file_voice_default")
+			text = recordingDuration(LinphoneManager.validFilePath(fileName))
+		} else {
+			if `extension` == "pdf" {
+				image = UIImage(named: "file_pdf_default")
+			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(`extension` ?? "") {
+				image = UIImage(named: "file_picture_default")
+			} else if ["mkv", "avi", "mov", "mp4"].contains(`extension` ?? "") {
+				image = UIImage(named: "file_video_default")
+			} else if ["wav", "au", "m4a"].contains(`extension` ?? "") {
+				image = UIImage(named: "file_audio_default")
+			} else {
+				image = UIImage(named: "file_default")
+			}
+		}
+
+		return SwiftUtil.textToImage(drawText: text!, inImage: image!, forReplyBubble: forReplyBubbble)
 	}
 }

@@ -114,6 +114,13 @@ extension UIView {
 		return self
 	}
 	
+	func maxWidth(_ h:CGFloat) -> UIView {
+		snp.makeConstraints { (make) in
+			make.width.lessThanOrEqualTo(h)
+		}
+		return self
+	}
+	
 	func minWidth(_ h:CGFloat) -> UIView {
 		snp.makeConstraints { (make) in
 			make.width.greaterThanOrEqualTo(h)

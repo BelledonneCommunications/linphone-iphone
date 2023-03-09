@@ -41,6 +41,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		ChatConversationTableViewModel.sharedModel.nbEventDisplayed.observe { index in
 			self.collectionView.reloadData()
 		}
+		
+		
+		collectionView.isUserInteractionEnabled = true
 	}
 	
 	deinit {

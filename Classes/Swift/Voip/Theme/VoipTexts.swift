@@ -167,6 +167,7 @@ import UIKit
 	@objc static let dropdown_menu_chat_conversation_debug_infos = NSLocalizedString("Debug infos",comment:"")
 	@objc static let operation_in_progress_wait = NSLocalizedString("Operation in progress, please wait",comment:"")
 	@objc static let bubble_chat_transferred = NSLocalizedString("Transferred",comment:"")
+	@objc static let bubble_chat_reply = NSLocalizedString("Answer",comment:"")
 
 	// FROM ANDROID END
 	
