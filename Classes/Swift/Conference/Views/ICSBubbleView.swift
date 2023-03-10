@@ -53,7 +53,7 @@ import EventKitUI
 		didSet {
 			if let data = conferenceData {
 				subject.text = data.subject.value
-				participants.text = VoipTexts.conference_invite_participants_count.replacingOccurrences(of: "%d", with: String(data.conferenceInfo.participants.count+1))
+				participants.text = VoipTexts.conference_invite_participants_count.replacingOccurrences(of: "%d", with: "0")//String(data.conferenceInfo.participants.count+1))
 				participants.addIndicatorIcon(iconName: "conference_schedule_participants_default",padding : 0.0, y: -indicator_y, trailing: false)
 				date.text = TimestampUtils.dateToString(date: data.rawDate)
 				date.addIndicatorIcon(iconName: "conference_schedule_calendar_default", padding: 0.0, y:-indicator_y, trailing:false)
@@ -154,6 +154,16 @@ import EventKitUI
 	
 	@objc func setFromChatMessage(cmessage: OpaquePointer) {
 		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					self.conferenceData = ScheduledConferenceData(conferenceInfo: conferenceInfo)
+				}
+			}
+		}
+	}
+	
+	func setFromChatMessageSwift(message: ChatMessage) {
 		message.contents.forEach { content in
 			if (content.isIcalendar) {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {

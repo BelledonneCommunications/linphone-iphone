@@ -35,6 +35,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var playButtonConstraints: [NSLayoutConstraint] = []
 	var recordingConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
+	var meetingConstraints: [NSLayoutConstraint] = []
 	
 	let forwardView = UIView()
 	let forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
@@ -52,6 +53,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
 	let replyContentTextSpacing = UIView()
 	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	let replyContentForMeetingSpacing = UIView()
 	let replyMeetingSchedule = UIImageView()
 	let mediaSelectorReply  = UIView()
 	var collectionViewReply: UICollectionView = {
@@ -68,12 +70,15 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		collectionViewReply.backgroundColor = .clear
 		return collectionViewReply
 	}()
+
 	var replyCollectionView : [UIImage] = []
 	var replyURLCollection : [URL] = []
 	
 	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
 	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
 	let imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
+	
+	let meetingView = UIView()
 	
 	let recordingView = UIView()
 	
@@ -289,6 +294,17 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		recordingView.height(50.0).width(280).done()
 		recordingView.isHidden = true
 		
+	//Meeting
+		contentViewBubble.addSubview(meetingView)
+		meetingView.translatesAutoresizingMaskIntoConstraints = false
+		meetingConstraints = [
+			meetingView.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
+			meetingView.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			meetingView.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			meetingView.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+		]
+		meetingView.isHidden = true
+		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.replyContent.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
@@ -377,6 +393,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		replyMeetingSchedule.contentMode = .scaleAspectFit
 		replyMeetingSchedule.isHidden = true
 		
+		stackViewReply.addArrangedSubview(replyContentForMeetingSpacing)
+		replyContentForMeetingSpacing.height(4).done()
+		replyMeetingSchedule.isHidden = true
+		
 		stackViewReply.addArrangedSubview(replyContentForMeetingTextView)
 		replyContentForMeetingTextView.width(100).wrapContentY().done()
 		replyContentForMeetingTextView.textAlignment = .center
@@ -411,13 +431,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	}
 	
 	func configure(message: ChatMessage, isBasic: Bool) {
-		
-	/*
-		For Multimedia
-		message.contents.forEach { content in
-			label.text = content.utf8Text
-		}
-	*/
 		if !message.isOutgoing {
 			constraintLeadingBubble?.isActive = true
 			constraintTrailingBubble?.isActive = false
@@ -430,72 +443,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			imageUser.isHidden = true
 			bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
 			chatRead.isHidden = false
-		}
-		
-		if isBasic {
-			if message.contents.first?.type == "text"{
-				label.text = message.contents.first?.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
-				
-				NSLayoutConstraint.activate(labelConstraints)
-				NSLayoutConstraint.deactivate(imageConstraints)
-				NSLayoutConstraint.deactivate(videoConstraints)
-				NSLayoutConstraint.deactivate(playButtonConstraints)
-				NSLayoutConstraint.deactivate(recordingConstraints)
-				NSLayoutConstraint.deactivate(recordingWaveConstraints)
-				label.isHidden = false
-				imageViewBubble.isHidden = true
-				imageVideoViewBubble.isHidden = true
-				recordingView.isHidden = true
-				
-				imageViewBubble.image = nil
-				imageVideoViewBubble.image = nil
-				
-			}else if message.contents.first?.type == "image"{
-				if let imageMessage = UIImage(named: message.contents.first!.filePath){
-					imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-				}
-				
-				NSLayoutConstraint.deactivate(labelConstraints)
-				NSLayoutConstraint.activate(imageConstraints)
-				NSLayoutConstraint.deactivate(videoConstraints)
-				NSLayoutConstraint.deactivate(playButtonConstraints)
-				NSLayoutConstraint.deactivate(recordingConstraints)
-				NSLayoutConstraint.deactivate(recordingWaveConstraints)
-				label.isHidden = true
-				imageViewBubble.isHidden = false
-				imageVideoViewBubble.isHidden = true
-				recordingView.isHidden = true
-				
-				imageVideoViewBubble.image = nil
-				
-			}else if message.contents.first?.type == "video"{
-				if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: message.contents.first!.filePath){
-					imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-				}
-				
-				NSLayoutConstraint.deactivate(labelConstraints)
-				NSLayoutConstraint.deactivate(imageConstraints)
-				NSLayoutConstraint.activate(videoConstraints)
-				NSLayoutConstraint.activate(playButtonConstraints)
-				NSLayoutConstraint.deactivate(recordingConstraints)
-				NSLayoutConstraint.deactivate(recordingWaveConstraints)
-				label.isHidden = true
-				imageViewBubble.isHidden = true
-				imageVideoViewBubble.isHidden = false
-				recordingView.isHidden = true
-				
-				imageViewBubble.image = nil
-				
-			}else if message.contents.first?.type == "audio"{
-				
-				recordingView.subviews.forEach({ view in
-					view.removeFromSuperview()
-				})
-				initPlayerAudio(message: message)
-				
-			}else{
-				//createBubbleOthe()
-			}
 		}
 		
 		if message.isForward {
@@ -527,6 +474,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
 				replyMeetingSchedule.isHidden = false
 				replyContentForMeetingTextView.isHidden = false
+				replyContentForMeetingSpacing.isHidden = false
 				replyContentTextView.isHidden = true
 				mediaSelectorReply.isHidden = true
 				replyContentTextSpacing.isHidden = true
@@ -551,6 +499,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				}
 				replyMeetingSchedule.isHidden = true
 				replyContentForMeetingTextView.isHidden = true
+				replyContentForMeetingSpacing.isHidden = true
 				replyContentTextView.isHidden = false
 				
 			}
@@ -563,7 +512,117 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			forwardView.isHidden = true
 			replyView.isHidden = true
 		}
-		
+		let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.getCobject)!)
+		if(isIcal){
+			
+			let icsBubbleView = ICSBubbleView.init()
+			icsBubbleView.setFromChatMessageSwift(message: message)
+			
+			meetingView.addSubview(icsBubbleView)
+			icsBubbleView.size(w: 280, h: 200).done()
+			
+			icsBubbleView.translatesAutoresizingMaskIntoConstraints = false
+			let icsConstraints = [
+				icsBubbleView.topAnchor.constraint(equalTo: meetingView.topAnchor),
+				icsBubbleView.bottomAnchor.constraint(equalTo: meetingView.bottomAnchor),
+				icsBubbleView.leadingAnchor.constraint(equalTo: meetingView.leadingAnchor),
+				icsBubbleView.trailingAnchor.constraint(equalTo: meetingView.trailingAnchor)
+			]
+			NSLayoutConstraint.activate(icsConstraints)
+			
+			
+			NSLayoutConstraint.deactivate(labelConstraints)
+			NSLayoutConstraint.deactivate(imageConstraints)
+			NSLayoutConstraint.deactivate(videoConstraints)
+			NSLayoutConstraint.deactivate(playButtonConstraints)
+			NSLayoutConstraint.deactivate(recordingConstraints)
+			NSLayoutConstraint.deactivate(recordingWaveConstraints)
+			NSLayoutConstraint.activate(meetingConstraints)
+			label.isHidden = false
+			imageViewBubble.isHidden = true
+			imageVideoViewBubble.isHidden = true
+			recordingView.isHidden = true
+			
+			imageViewBubble.image = nil
+			imageVideoViewBubble.image = nil
+			
+			meetingView.isHidden = false
+			
+		}else {
+			message.contents.forEach { content in
+				if content.type == "text"{
+					label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
+					
+					NSLayoutConstraint.activate(labelConstraints)
+					NSLayoutConstraint.deactivate(imageConstraints)
+					NSLayoutConstraint.deactivate(videoConstraints)
+					NSLayoutConstraint.deactivate(playButtonConstraints)
+					NSLayoutConstraint.deactivate(recordingConstraints)
+					NSLayoutConstraint.deactivate(recordingWaveConstraints)
+					NSLayoutConstraint.deactivate(meetingConstraints)
+					label.isHidden = false
+					imageViewBubble.isHidden = true
+					imageVideoViewBubble.isHidden = true
+					recordingView.isHidden = true
+					
+					imageViewBubble.image = nil
+					imageVideoViewBubble.image = nil
+					
+					meetingView.isHidden = true
+					
+				}else if content.type == "image"{
+					if let imageMessage = UIImage(named: content.filePath){
+						imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+					}
+					
+					NSLayoutConstraint.deactivate(labelConstraints)
+					NSLayoutConstraint.activate(imageConstraints)
+					NSLayoutConstraint.deactivate(videoConstraints)
+					NSLayoutConstraint.deactivate(playButtonConstraints)
+					NSLayoutConstraint.deactivate(recordingConstraints)
+					NSLayoutConstraint.deactivate(recordingWaveConstraints)
+					NSLayoutConstraint.deactivate(meetingConstraints)
+					label.isHidden = true
+					imageViewBubble.isHidden = false
+					imageVideoViewBubble.isHidden = true
+					recordingView.isHidden = true
+					
+					imageVideoViewBubble.image = nil
+					
+					meetingView.isHidden = true
+					
+				}else if content.type == "video"{
+					if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+						imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+					}
+					
+					NSLayoutConstraint.deactivate(labelConstraints)
+					NSLayoutConstraint.deactivate(imageConstraints)
+					NSLayoutConstraint.activate(videoConstraints)
+					NSLayoutConstraint.activate(playButtonConstraints)
+					NSLayoutConstraint.deactivate(recordingConstraints)
+					NSLayoutConstraint.deactivate(recordingWaveConstraints)
+					NSLayoutConstraint.deactivate(meetingConstraints)
+					label.isHidden = true
+					imageViewBubble.isHidden = true
+					imageVideoViewBubble.isHidden = false
+					recordingView.isHidden = true
+					
+					imageViewBubble.image = nil
+					
+					meetingView.isHidden = true
+					
+				}else if content.type == "audio"{
+					
+					recordingView.subviews.forEach({ view in
+						view.removeFromSuperview()
+					})
+					initPlayerAudio(message: message)
+					
+				}else{
+					//createBubbleOther()
+				}}
+		}
 	}
 	
 	override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
