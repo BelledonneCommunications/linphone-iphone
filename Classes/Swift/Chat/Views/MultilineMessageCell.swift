@@ -146,14 +146,12 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			forwardView.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 0),
 			forwardView.bottomAnchor.constraint(equalTo: preContentViewBubble.bottomAnchor, constant: 0),
 			forwardView.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 0),
-			forwardView.trailingAnchor.constraint(equalTo: preContentViewBubble.trailingAnchor, constant: 0),
 			
 			forwardIcon.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 6),
 			forwardIcon.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 6),
 			
 			forwardLabel.topAnchor.constraint(equalTo: preContentViewBubble.topAnchor, constant: 6),
-			forwardLabel.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 20),
-			forwardLabel.trailingAnchor.constraint(equalTo: preContentViewBubble.trailingAnchor, constant: 0)
+			forwardLabel.leadingAnchor.constraint(equalTo: preContentViewBubble.leadingAnchor, constant: 20)
 		]
 		forwardView.isHidden = true
 		
@@ -169,7 +167,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		replyLabel.size(w: 90, h: 10).done()
 		
 		preContentViewBubble.addSubview(replyContent)
-		//replyContent.maxHeight(100).done()
 		replyContent.minWidth(200).done()
 		replyContent.layer.cornerRadius = 5
 		replyContent.clipsToBounds = true
@@ -464,9 +461,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.replyMessage?.getCobject)!)
 			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: (message.replyMessage?.getCobject)!) : ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).utf8Text)
 			let contentList = linphone_chat_message_get_contents(message.replyMessage?.getCobject)
-			//replyLabelTextView.text = message.replyMessage!.fromAddress?.displayName
-			let fromAdress = FastAddressBook.displayName(for: message.replyMessage!.fromAddress?.getCobject)
-			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAdress!)
+			let fromAddress = FastAddressBook.displayName(for: message.replyMessage!.fromAddress?.getCobject)
+			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAddress!)
 			
 			replyContentTextView.text = content
 			replyContentForMeetingTextView.text = content
@@ -516,7 +512,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		if(isIcal){
 			
 			let icsBubbleView = ICSBubbleView.init()
-			icsBubbleView.setFromChatMessageSwift(message: message)
+			icsBubbleView.setFromChatMessage(cmessage: message.getCobject!)
 			
 			meetingView.addSubview(icsBubbleView)
 			icsBubbleView.size(w: 280, h: 200).done()

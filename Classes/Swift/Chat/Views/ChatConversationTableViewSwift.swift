@@ -94,7 +94,14 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 
 		if let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 			cell.configure(message: message, isBasic: basic)
+			if !cell.replyContent.isHidden {
+				cell.replyContent.onClick {
+					print("ChatConversationTableViewSwift collectionview cellForItemAt click \(linphone_chat_message_get_reply_message(message.getCobject))")
+				}
+			}
 		}
+		
+
 		
 		cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
 		return cell
