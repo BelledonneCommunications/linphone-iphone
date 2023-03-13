@@ -56,11 +56,14 @@ typedef void (^UIConfirmationBlock)(void);
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property(weak, nonatomic) IBOutlet UIView *firstView;
 @property (weak, nonatomic) IBOutlet UIButton *authButton;
+@property(weak, nonatomic) IBOutlet UILabel *subscribeLabel;
+
 
 - (void)setSpecialColor;
 -(void) setWhiteCancel;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onConfirmationClick:(id)sender;
 - (IBAction)onAuthClick:(id)sender;
+- (IBAction)onSubscribeTap:(id)sender;
 - (void)dismiss;
 @end

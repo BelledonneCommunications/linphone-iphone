@@ -885,25 +885,34 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
 		return;
 	} else if ([key isEqual:@"account_mandatory_remove_button"]) {
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Warning", nil)
-																		 message:NSLocalizedString(@"Are you sure to want to remove your proxy setup?", nil)
-																  preferredStyle:UIAlertControllerStyleAlert];
+		NSString *popUpText;
+		NSString *appDomain  = [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+					inSection:@"app"
+					withDefault:@"sip.linphone.org"];
 		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
+		MSList *accountList = [LinphoneManager.instance createAccountsNotHiddenList];
+		LinphoneAccount *account = bctbx_list_nth_data(accountList,
+														  [settingsStore integerForKey:@"current_proxy_config_preference"]);
 		
-		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
-																 style:UIAlertActionStyleDefault
-															   handler:^(UIAlertAction * action) {
-																   [settingsStore removeAccount];
-																   [self recomputeAccountLabelsAndSync];
-																   [_settingsController.navigationController popViewControllerAnimated:NO];
-															   }];
+		bool isLinphoneAccount = strcmp(appDomain.UTF8String, linphone_account_params_get_domain(linphone_account_get_params(account))) == 0;
+		if (isLinphoneAccount) {
+			popUpText = NSLocalizedString(@"Your account will only be deleted locally.\nTo delete it permanently, go to our account management platform:", nil);
+		} else {
+			popUpText = NSLocalizedString(@"Your account will only be deleted locally.\nTo delete it permanently, go on your SIP provider website.", nil);
+		}
+		bctbx_free(accountList);
 		
-		[errView addAction:defaultAction];
-		[errView addAction:continueAction];
-		[self presentViewController:errView animated:YES completion:nil];
+		UIConfirmationDialog *dialog = [UIConfirmationDialog ShowWithMessage:popUpText
+								cancelMessage:nil
+							   confirmMessage:nil
+								onCancelClick:nil
+						  onConfirmationClick:^() {
+			[settingsStore removeAccount];
+			[self recomputeAccountLabelsAndSync];
+			[_settingsController.navigationController popViewControllerAnimated:NO];
+		}];
+		dialog.subscribeLabel.hidden = !isLinphoneAccount; // Only display link to https://subscribe.linphone.org for linphone accounts
+
 	} else if ([key isEqual:@"account_mandatory_change_password"]) {
 		UIAlertController *alertView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Change your password", nil)
 																		 message:NSLocalizedString(@"Please enter and confirm your new password", nil)

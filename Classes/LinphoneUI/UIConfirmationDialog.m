@@ -145,4 +145,12 @@
 - (void)dismiss {
 	[self onCancelClick:nil];
 }
+
+- (IBAction)onSubscribeTap:(id)sender {
+	UIGestureRecognizer *gest = sender;
+	NSString *url = ((UILabel *)gest.view).text;
+	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
+		LOGE(@"Failed to open %@, invalid URL", url);
+	}
+}
 @end
