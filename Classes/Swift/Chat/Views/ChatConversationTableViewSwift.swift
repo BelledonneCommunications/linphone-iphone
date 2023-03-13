@@ -86,7 +86,19 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	override func viewDidAppear(_ animated: Bool) {
 		self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
 	}
-
+    
+    func scrollToMessage(message: ChatMessage){
+        let messageIndex = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
+        print("ChatConversationTableViewSwift collectionview \(messageIndex)")
+        
+        collectionView.reloadData()
+        collectionView.layoutIfNeeded()
+        collectionView.scrollToItem(at: IndexPath(row: messageIndex, section: 0), at: .bottom, animated: false)
+        //Scroll twice because collection view doesn't have time to calculate cell size
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.collectionView.scrollToItem(at: IndexPath(row: messageIndex, section: 0), at: .bottom, animated: false)
+        }
+    }
 	
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -94,9 +106,11 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 
 		if let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 			cell.configure(message: message, isBasic: basic)
-			if !cell.replyContent.isHidden {
+			if (!cell.replyContent.isHidden && message.replyMessage != nil){
 				cell.replyContent.onClick {
-					print("ChatConversationTableViewSwift collectionview cellForItemAt click \(linphone_chat_message_get_reply_message(message.getCobject))")
+                    print("\n\nChatConversationTableViewSwift collectionview new")
+                    print("ChatConversationTableViewSwift collectionview \(indexPath.row+1)")
+                    self.scrollToMessage(message: message.replyMessage!)
 				}
 			}
 		}

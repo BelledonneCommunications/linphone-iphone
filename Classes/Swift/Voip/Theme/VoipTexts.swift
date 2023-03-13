@@ -168,6 +168,7 @@ import UIKit
 	@objc static let operation_in_progress_wait = NSLocalizedString("Operation in progress, please wait",comment:"")
 	@objc static let bubble_chat_transferred = NSLocalizedString("Transferred",comment:"")
 	@objc static let bubble_chat_reply = NSLocalizedString("Answer",comment:"")
+    @objc static let bubble_chat_reply_message_does_not_exist = NSLocalizedString("Original message does not exist anymore.",comment:"")
 
 	// FROM ANDROID END
 	

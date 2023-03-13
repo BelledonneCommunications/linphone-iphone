@@ -107,6 +107,31 @@ class ChatConversationTableViewModel: ControlsViewModel {
 		let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
 		return chatRoomEvents?.first?.chatMessage
 	}
+    
+    func getIndexMessage(message: ChatMessage) -> Int {
+        var index = -1
+        if (chatRoom == nil) {
+            return index
+        }
+        
+        var indexRange = 0
+        let msgId = message.messageId
+        
+        while index == -1 {
+            let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: indexRange, end: indexRange+20)
+            if chatRoomEvents?.count == 0 {
+                index = -2
+            }
+            chatRoomEvents?.reversed().forEach({ event in
+                let chat = event.chatMessage
+                if (chat != nil && msgId == chat?.messageId) {
+                    index = indexRange ;
+                }
+                indexRange += 1
+            })
+        }
+        return index
+    }
 	
 	func getNBMessages() -> Int {
 		if (chatRoom == nil) {

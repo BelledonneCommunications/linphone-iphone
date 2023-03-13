@@ -456,50 +456,57 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			contentViewBubble.minWidth(216).done()
 			forwardView.isHidden = true
 			replyView.isHidden = false
-			replyColorContent.backgroundColor = message.replyMessage!.isOutgoing ? UIColor("A") : UIColor("D")
-			
-			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.replyMessage?.getCobject)!)
-			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: (message.replyMessage?.getCobject)!) : ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).utf8Text)
-			let contentList = linphone_chat_message_get_contents(message.replyMessage?.getCobject)
-			let fromAddress = FastAddressBook.displayName(for: message.replyMessage!.fromAddress?.getCobject)
-			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAddress!)
-			
-			replyContentTextView.text = content
-			replyContentForMeetingTextView.text = content
-			if(isIcal){
-				replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
-				replyMeetingSchedule.isHidden = false
-				replyContentForMeetingTextView.isHidden = false
-				replyContentForMeetingSpacing.isHidden = false
-				replyContentTextView.isHidden = true
-				mediaSelectorReply.isHidden = true
-				replyContentTextSpacing.isHidden = true
-			}else{
+            
+            if(message.replyMessage != nil){
+                replyColorContent.backgroundColor = message.replyMessage!.isOutgoing ? UIColor("A") : UIColor("D")
+                
+                let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.replyMessage?.getCobject)!)
+                let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: (message.replyMessage?.getCobject)!) : ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).utf8Text)
+                let contentList = linphone_chat_message_get_contents(message.replyMessage?.getCobject)
+                let fromAddress = FastAddressBook.displayName(for: message.replyMessage!.fromAddress?.getCobject)
+                replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAddress!)
+                
+                replyContentTextView.text = content
+                replyContentForMeetingTextView.text = content
+                if(isIcal){
+                    replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
+                    replyMeetingSchedule.isHidden = false
+                    replyContentForMeetingTextView.isHidden = false
+                    replyContentForMeetingSpacing.isHidden = false
+                    replyContentTextView.isHidden = true
+                    mediaSelectorReply.isHidden = true
+                    replyContentTextSpacing.isHidden = true
+                }else{
 
-				if(bctbx_list_size(contentList) > 1 || content == ""){
-					mediaSelectorReply.isHidden = false
-					replyContentTextSpacing.isHidden = true
-					ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).contents.forEach({ content in
-						if(content.isFile){
-							let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
-							replyURLCollection.append(URL(string: content.filePath)!)
-							replyCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
-							collectionViewReply.insertItems(at: [indexPath])
-						}else if(content.isText){
-							replyContentTextSpacing.isHidden = false
-						}
-					})
-					
-				}else{
-					mediaSelectorReply.isHidden = true
-				}
-				replyMeetingSchedule.isHidden = true
-				replyContentForMeetingTextView.isHidden = true
-				replyContentForMeetingSpacing.isHidden = true
-				replyContentTextView.isHidden = false
-				
-			}
-			replyContentTextView.text = message.replyMessage!.contents.first?.utf8Text
+                    if(bctbx_list_size(contentList) > 1 || content == ""){
+                        mediaSelectorReply.isHidden = false
+                        replyContentTextSpacing.isHidden = true
+                        ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).contents.forEach({ content in
+                            if(content.isFile){
+                                let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
+                                replyURLCollection.append(URL(string: content.filePath)!)
+                                replyCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+                                collectionViewReply.insertItems(at: [indexPath])
+                            }else if(content.isText){
+                                replyContentTextSpacing.isHidden = false
+                            }
+                        })
+                        
+                    }else{
+                        mediaSelectorReply.isHidden = true
+                    }
+                    replyMeetingSchedule.isHidden = true
+                    replyContentForMeetingTextView.isHidden = true
+                    replyContentForMeetingSpacing.isHidden = true
+                    replyContentTextView.isHidden = false
+                    
+                }
+                replyContentTextView.text = message.replyMessage!.contents.first?.utf8Text
+            }else{
+                replyLabelTextView.isHidden = true
+                replyContentTextSpacing.isHidden = false
+                replyContentTextView.text = VoipTexts.bubble_chat_reply_message_does_not_exist + "  "
+            }
 		}else{
 			NSLayoutConstraint.activate(preContentViewBubbleConstraintsHidden)
 			NSLayoutConstraint.deactivate(forwardConstraints)
