@@ -8,6 +8,7 @@
 import UIKit
 import Foundation
 import linphonesw
+import DropDown
 
 class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	
@@ -22,6 +23,52 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	var collectionView: UICollectionView = {
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 		return collectionView
+	}()
+	
+	var menu: DropDown = {
+		let menu = DropDown()
+		menu.dataSource = [""]
+		var images = [
+			"menu_resend_default",
+			"menu_copy_text_default",
+			"menu_forward_default",
+			"menu_reply_default",
+			"menu_info",
+			"contact_add_default",
+			"menu_delete",
+			"menu_info"
+		]
+		menu.cellNib = UINib(nibName: "DropDownCell", bundle: nil)
+		menu.customCellConfiguration = { index, title, cell in
+			guard let cell = cell as? MyCell else {
+				return
+			}
+			if(index < images.count){
+				switch menu.dataSource[index] {
+				case VoipTexts.bubble_chat_dropDown_resend:
+					if #available(iOS 13.0, *) {
+						cell.myImageView.image = UIImage(named: images[0])!.withTintColor(.darkGray)
+					} else {
+						cell.myImageView.image = UIImage(named: images[0])
+					}
+				case VoipTexts.bubble_chat_dropDown_copy_text:
+					cell.myImageView.image = UIImage(named: images[1])
+				case VoipTexts.bubble_chat_dropDown_forward:
+					cell.myImageView.image = UIImage(named: images[2])
+				case VoipTexts.bubble_chat_dropDown_reply:
+					cell.myImageView.image = UIImage(named: images[3])
+				case VoipTexts.bubble_chat_dropDown_infos:
+					cell.myImageView.image = UIImage(named: images[4])
+				case VoipTexts.bubble_chat_dropDown_add_to_contact:
+					cell.myImageView.image = UIImage(named: images[5])
+				case VoipTexts.bubble_chat_dropDown_delete:
+					cell.myImageView.image = UIImage(named: images[6])
+				default:
+					cell.myImageView.image = UIImage(named: images[7])
+				}
+			}
+		}
+		return menu
 	}()
 	
 	var basic :Bool = false
@@ -44,6 +91,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		
 		
 		collectionView.isUserInteractionEnabled = true
+		
+		
+		initDataSource()
 	}
 	
 	deinit {
@@ -106,6 +156,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 
 		if let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 			cell.configure(message: message, isBasic: basic)
+
+			cell.contentViewBubble.onLongClickOneClick {
+				self.initDataSource()
+				self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, message: message)
+			}
+			
 			if (!cell.replyContent.isHidden && message.replyMessage != nil){
 				cell.replyContent.onClick {
                     print("\n\nChatConversationTableViewSwift collectionview new")
@@ -147,5 +203,188 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let charRoomBasic = ChatRoom.getSwiftObject(cObject: room!)
 		let isBasic = charRoomBasic.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesBasic.rawValue))
 		return isBasic
+	}
+	
+	func tapChooseMenuItemMessage(contentViewBubble: UIView, message: ChatMessage) {
+		
+		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(contentViewBubble.frame.size.height)")
+		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(view.frame.size.height)")
+		
+		if(contentViewBubble.frame.size.height >= view.frame.size.height){
+			menu.anchorView = view
+			menu.width = 200
+			menu.bottomOffset = CGPoint(x: 0, y: (view.frame.size.height))
+		}else{
+			menu.anchorView = contentViewBubble
+			menu.width = 200
+			menu.bottomOffset = CGPoint(x: 0, y: (contentViewBubble.frame.maxY))
+		}
+		
+		/*
+		 menu.anchorView = view
+		 menu.width = 200
+		 menu.bottomOffset = CGPoint(x: 0, y: (contentViewBubble.frame.maxY))
+		 */
+		
+
+		
+		//menu.bottomOffset = sender.location(in: view)
+		
+		
+		
+		
+		
+		//menu.bottomOffset = point
+		//menu.topOffset = point
+		menu.show()
+		menu.selectionAction = { [weak self] (index: Int, item: String) in
+			guard let _ = self else { return }
+			print(item)
+			switch item {
+			case VoipTexts.bubble_chat_dropDown_resend:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick resend")
+				//self!.addOrGoToContact()
+			case VoipTexts.bubble_chat_dropDown_copy_text:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick copy")
+				//self!.addOrGoToContact()
+			case VoipTexts.bubble_chat_dropDown_forward:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick forward")
+				//self!.conferenceSchedule()
+			case VoipTexts.bubble_chat_dropDown_reply:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick reply")
+				//self!.displayGroupInfo()
+			case VoipTexts.bubble_chat_dropDown_infos:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick infos")
+				//self!.goToDevicesList()
+			case VoipTexts.bubble_chat_dropDown_add_to_contact:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick add")
+				//self!.goToEphemeralSettings()
+			case VoipTexts.bubble_chat_dropDown_delete:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick delete")
+				//self!.mute_unmute_notifications()
+			default:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick default")
+				//self!.showAddressAndIdentityPopup()
+			}
+			self!.menu.clearSelection()
+		}
+	}
+	
+	func tapChooseMenuItem(_ sender: UILongPressGestureRecognizer, message: OpaquePointer) {
+		/*
+		if(sender.frame.height >= UIScreen.main.bounds.size.height*0.8){
+			menu.bottomOffset = CGPoint(x: 0, y: 0)
+		}else{
+			menu.anchorView = sender
+			menu.bottomOffset = CGPoint(x: 0, y: sender.frame.size.height)
+		}
+		 */
+		
+		//menu.anchorView = sender.view
+		//menu.bottomOffset = CGPoint(x: 0, y: (sender.view?.frame.size.height)!)
+		
+		let chatMessage = ChatMessage.getSwiftObject(cObject: message)
+		
+		menu.anchorView = view
+		menu.width = 200
+		menu.bottomOffset = CGPoint(x: (sender.view?.frame.minX)!, y: sender.location(in: view).y)
+		
+		//menu.bottomOffset = sender.location(in: view)
+		
+		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick sender.view \(sender.location(in: sender.view))")
+		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(sender.location(in: view))")
+		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(chatMessage.isOutgoing)")
+		
+		//menu.bottomOffset = point
+		//menu.topOffset = point
+		menu.show()
+		menu.selectionAction = { [weak self] (index: Int, item: String) in
+			guard let _ = self else { return }
+			print(item)
+			switch item {
+			case VoipTexts.bubble_chat_dropDown_resend:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick resend")
+				//self!.addOrGoToContact()
+			case VoipTexts.bubble_chat_dropDown_copy_text:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick copy")
+				//self!.addOrGoToContact()
+			case VoipTexts.bubble_chat_dropDown_forward:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick forward")
+				//self!.conferenceSchedule()
+			case VoipTexts.bubble_chat_dropDown_reply:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick reply")
+				//self!.displayGroupInfo()
+			case VoipTexts.bubble_chat_dropDown_infos:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick infos")
+				//self!.goToDevicesList()
+			case VoipTexts.bubble_chat_dropDown_add_to_contact:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick add")
+				//self!.goToEphemeralSettings()
+			case VoipTexts.bubble_chat_dropDown_delete:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick delete")
+				//self!.mute_unmute_notifications()
+			default:
+				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick default")
+				//self!.showAddressAndIdentityPopup()
+			}
+			self!.menu.clearSelection()
+		}
+	}
+	
+	func initDataSource() {
+	menu = {
+		let menu = DropDown()
+		menu.dataSource = [""]
+		let images = [
+			"menu_resend_default",
+			"menu_copy_text_default",
+			"menu_forward_default",
+			"menu_reply_default",
+			"menu_info",
+			"contact_add_default",
+			"menu_delete",
+			"menu_info"
+		]
+		menu.cellNib = UINib(nibName: "DropDownCell", bundle: nil)
+		menu.customCellConfiguration = { index, title, cell in
+			guard let cell = cell as? MyCell else {
+				return
+			}
+			if(index < images.count){
+				switch menu.dataSource[index] {
+				case VoipTexts.bubble_chat_dropDown_resend:
+					if #available(iOS 13.0, *) {
+						cell.myImageView.image = UIImage(named: images[0])!.withTintColor(.darkGray)
+					} else {
+						cell.myImageView.image = UIImage(named: images[0])
+					}
+				case VoipTexts.bubble_chat_dropDown_copy_text:
+					cell.myImageView.image = UIImage(named: images[1])
+				case VoipTexts.bubble_chat_dropDown_forward:
+					cell.myImageView.image = UIImage(named: images[2])
+				case VoipTexts.bubble_chat_dropDown_reply:
+					cell.myImageView.image = UIImage(named: images[3])
+				case VoipTexts.bubble_chat_dropDown_infos:
+					cell.myImageView.image = UIImage(named: images[4])
+				case VoipTexts.bubble_chat_dropDown_add_to_contact:
+					cell.myImageView.image = UIImage(named: images[5])
+				case VoipTexts.bubble_chat_dropDown_delete:
+					cell.myImageView.image = UIImage(named: images[6])
+				default:
+					cell.myImageView.image = UIImage(named: images[7])
+				}
+			}
+		}
+		return menu
+	}()
+		
+		menu.dataSource.removeAll()
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_resend)
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_copy_text)
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_forward)
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_reply)
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_infos)
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_add_to_contact)
+		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_delete)
 	}
 }

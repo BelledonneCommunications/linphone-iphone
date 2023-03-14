@@ -169,6 +169,14 @@ import UIKit
 	@objc static let bubble_chat_transferred = NSLocalizedString("Transferred",comment:"")
 	@objc static let bubble_chat_reply = NSLocalizedString("Answer",comment:"")
     @objc static let bubble_chat_reply_message_does_not_exist = NSLocalizedString("Original message does not exist anymore.",comment:"")
+	
+	@objc static let bubble_chat_dropDown_resend = NSLocalizedString("Resend",comment:"")
+	@objc static let bubble_chat_dropDown_copy_text = NSLocalizedString("Copy text",comment:"")
+	@objc static let bubble_chat_dropDown_forward = NSLocalizedString("Forward",comment:"")
+	@objc static let bubble_chat_dropDown_reply = NSLocalizedString("Reply",comment:"")
+	@objc static let bubble_chat_dropDown_infos = NSLocalizedString("Infos",comment:"")
+	@objc static let bubble_chat_dropDown_add_to_contact = NSLocalizedString("Add to contacts",comment:"")
+	@objc static let bubble_chat_dropDown_delete = NSLocalizedString("Delete",comment:"")
 
 	// FROM ANDROID END
 	

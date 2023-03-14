@@ -12,13 +12,13 @@ import linphonesw
 class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
 	static let reuseId = "MultilineMessageCellReuseId"
 	
-	private let label: UILabel = UILabel(frame: .zero)
-	private let preContentViewBubble: UIView = UIView(frame: .zero)
-	private let contentViewBubble: UIView = UIView(frame: .zero)
-	private let contentBubble: UIView = UIView(frame: .zero)
-	private let bubble: UIView = UIView(frame: .zero)
-	private let imageUser: UIView = UIView(frame: .zero)
-	private let chatRead = UIImageView(image: UIImage(named: "chat_read.png"))
+	let label: UILabel = UILabel(frame: .zero)
+	let preContentViewBubble: UIView = UIView(frame: .zero)
+	let contentViewBubble: UIView = UIView(frame: .zero)
+	let contentBubble: UIView = UIView(frame: .zero)
+	let bubble: UIView = UIView(frame: .zero)
+	let imageUser: UIView = UIView(frame: .zero)
+	let chatRead = UIImageView(image: UIImage(named: "chat_read.png"))
 
 	let labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
 	

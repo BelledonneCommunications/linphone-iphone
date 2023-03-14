@@ -504,6 +504,19 @@ extension UIView {
 		sender.action!()
 	}
 	
+	func onLongClickOneClick(action : @escaping ()->Void ){
+		let tap = LongPressGestureRecognizer(target: self , action: #selector(self.handleLongClickOneClick(_:)))
+		tap.action = action
+		tap.cancelsTouchesInView = false
+		self.addGestureRecognizer(tap)
+		self.isUserInteractionEnabled = true
+	}
+	@objc func handleLongClickOneClick(_ sender: LongPressGestureRecognizer) {
+		if (sender.state == .began){
+			sender.action!()
+		}
+	}
+	
 	func VIEW<T>( _ desc: UICompositeViewDescription) -> T{
 		return PhoneMainView.instance().mainViewController.getCachedController(desc.name) as! T
 	}
