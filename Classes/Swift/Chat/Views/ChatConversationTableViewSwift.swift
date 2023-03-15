@@ -91,9 +91,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		
 		
 		collectionView.isUserInteractionEnabled = true
-		
-		
-		initDataSource()
 	}
 	
 	deinit {
@@ -157,9 +154,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 			cell.configure(message: message, isBasic: basic)
 
-			cell.contentViewBubble.onLongClickOneClick {
-				self.initDataSource()
-				self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, message: message)
+			cell.onLongClickOneClick {
+				self.initDataSource(message: message)
+                self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, message: message, preContentSize: cell.preContentViewBubble.frame.size.height)
 			}
 			
 			if (!cell.replyContent.isHidden && message.replyMessage != nil){
@@ -205,37 +202,24 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return isBasic
 	}
 	
-	func tapChooseMenuItemMessage(contentViewBubble: UIView, message: ChatMessage) {
-		
-		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(contentViewBubble.frame.size.height)")
-		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(view.frame.size.height)")
-		
-		if(contentViewBubble.frame.size.height >= view.frame.size.height){
-			menu.anchorView = view
-			menu.width = 200
-			menu.bottomOffset = CGPoint(x: 0, y: (view.frame.size.height))
-		}else{
-			menu.anchorView = contentViewBubble
-			menu.width = 200
-			menu.bottomOffset = CGPoint(x: 0, y: (contentViewBubble.frame.maxY))
-		}
-		
-		/*
-		 menu.anchorView = view
-		 menu.width = 200
-		 menu.bottomOffset = CGPoint(x: 0, y: (contentViewBubble.frame.maxY))
-		 */
-		
+    func tapChooseMenuItemMessage(contentViewBubble: UIView, message: ChatMessage, preContentSize: CGFloat) {
+        
+        menu.anchorView = view
+        menu.width = 200
 
-		
-		//menu.bottomOffset = sender.location(in: view)
-		
-		
-		
-		
-		
-		//menu.bottomOffset = point
-		//menu.topOffset = point
+        let coordinateMin = contentViewBubble.convert(contentViewBubble.frame.origin, to: view)
+        let coordinateMax = contentViewBubble.convert(CGPoint(x: contentViewBubble.frame.maxX, y: contentViewBubble.frame.maxY), to: view)
+        
+        print("ChatConversationTableViewSwift collectionview cellForItemAt longclick")
+        
+        if (coordinateMax.y + CGFloat(menu.dataSource.count * 44) - preContentSize < view.frame.maxY) {
+            menu.bottomOffset = CGPoint(x: message.isOutgoing ? coordinateMax.x - 200 : coordinateMin.x, y: coordinateMax.y - preContentSize)
+        } else if ((coordinateMax.y + CGFloat(menu.dataSource.count * 44) > view.frame.maxY) && coordinateMin.y > CGFloat(menu.dataSource.count * 44) + (preContentSize * 2)) {
+            menu.bottomOffset = CGPoint(x: message.isOutgoing ? coordinateMax.x - 200 : coordinateMin.x, y: coordinateMin.y - (preContentSize * 2) - CGFloat(menu.dataSource.count * 44))
+        } else {
+            menu.bottomOffset = CGPoint(x: message.isOutgoing ? coordinateMax.x - 200 : coordinateMin.x, y: 0)
+        }
+        
 		menu.show()
 		menu.selectionAction = { [weak self] (index: Int, item: String) in
 			guard let _ = self else { return }
@@ -243,22 +227,22 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			switch item {
 			case VoipTexts.bubble_chat_dropDown_resend:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick resend")
-				//self!.addOrGoToContact()
+				self!.resendMessage(message: message)
 			case VoipTexts.bubble_chat_dropDown_copy_text:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick copy")
-				//self!.addOrGoToContact()
+				self!.copyMessage(message: message)
 			case VoipTexts.bubble_chat_dropDown_forward:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick forward")
-				//self!.conferenceSchedule()
+				self!.forwardMessage(message: message)
 			case VoipTexts.bubble_chat_dropDown_reply:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick reply")
-				//self!.displayGroupInfo()
+				self!.replyMessage(message: message)
 			case VoipTexts.bubble_chat_dropDown_infos:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick infos")
-				//self!.goToDevicesList()
+				self!.infoMessage(message: message)
 			case VoipTexts.bubble_chat_dropDown_add_to_contact:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick add")
-				//self!.goToEphemeralSettings()
+                self!.addToContacts(message: message)
 			case VoipTexts.bubble_chat_dropDown_delete:
 				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick delete")
 				//self!.mute_unmute_notifications()
@@ -270,68 +254,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		}
 	}
 	
-	func tapChooseMenuItem(_ sender: UILongPressGestureRecognizer, message: OpaquePointer) {
-		/*
-		if(sender.frame.height >= UIScreen.main.bounds.size.height*0.8){
-			menu.bottomOffset = CGPoint(x: 0, y: 0)
-		}else{
-			menu.anchorView = sender
-			menu.bottomOffset = CGPoint(x: 0, y: sender.frame.size.height)
-		}
-		 */
-		
-		//menu.anchorView = sender.view
-		//menu.bottomOffset = CGPoint(x: 0, y: (sender.view?.frame.size.height)!)
-		
-		let chatMessage = ChatMessage.getSwiftObject(cObject: message)
-		
-		menu.anchorView = view
-		menu.width = 200
-		menu.bottomOffset = CGPoint(x: (sender.view?.frame.minX)!, y: sender.location(in: view).y)
-		
-		//menu.bottomOffset = sender.location(in: view)
-		
-		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick sender.view \(sender.location(in: sender.view))")
-		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(sender.location(in: view))")
-		print("ChatConversationTableViewSwift collectionview cellForItemAt longclick view \(chatMessage.isOutgoing)")
-		
-		//menu.bottomOffset = point
-		//menu.topOffset = point
-		menu.show()
-		menu.selectionAction = { [weak self] (index: Int, item: String) in
-			guard let _ = self else { return }
-			print(item)
-			switch item {
-			case VoipTexts.bubble_chat_dropDown_resend:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick resend")
-				//self!.addOrGoToContact()
-			case VoipTexts.bubble_chat_dropDown_copy_text:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick copy")
-				//self!.addOrGoToContact()
-			case VoipTexts.bubble_chat_dropDown_forward:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick forward")
-				//self!.conferenceSchedule()
-			case VoipTexts.bubble_chat_dropDown_reply:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick reply")
-				//self!.displayGroupInfo()
-			case VoipTexts.bubble_chat_dropDown_infos:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick infos")
-				//self!.goToDevicesList()
-			case VoipTexts.bubble_chat_dropDown_add_to_contact:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick add")
-				//self!.goToEphemeralSettings()
-			case VoipTexts.bubble_chat_dropDown_delete:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick delete")
-				//self!.mute_unmute_notifications()
-			default:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick default")
-				//self!.showAddressAndIdentityPopup()
-			}
-			self!.menu.clearSelection()
-		}
-	}
-	
-	func initDataSource() {
+    func initDataSource(message: ChatMessage) {
 	menu = {
 		let menu = DropDown()
 		menu.dataSource = [""]
@@ -379,12 +302,81 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}()
 		
 		menu.dataSource.removeAll()
-		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_resend)
-		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_copy_text)
+        let state = message.state
+        
+        if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue || state.rawValue == LinphoneChatMessageStateFileTransferError.rawValue) {
+            menu.dataSource.append(VoipTexts.bubble_chat_dropDown_resend)
+        }
+        
+        if (message.utf8Text != "" && !ICSBubbleView.isConferenceInvitationMessage(cmessage: message.getCobject!)) {
+            menu.dataSource.append(VoipTexts.bubble_chat_dropDown_copy_text)
+        }
+        
 		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_forward)
+        
 		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_reply)
-		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_infos)
-		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_add_to_contact)
+        
+        let chatroom = message.chatRoom
+        if (chatroom!.nbParticipants > 1) {
+            menu.dataSource.append(VoipTexts.bubble_chat_dropDown_infos)
+        }
+        
+        let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+        if (!message.isOutgoing && FastAddressBook.getContactWith(message.fromAddress?.getCobject) == nil
+            && !isOneToOneChat ) {
+            menu.dataSource.append(VoipTexts.bubble_chat_dropDown_add_to_contact)
+        }
+        
 		menu.dataSource.append(VoipTexts.bubble_chat_dropDown_delete)
 	}
+    
+    func resendMessage(message: ChatMessage){
+        if ((linphone_core_is_network_reachable(LinphoneManager.getLc()) == 0)) {
+            PhoneMainView.instance().present(LinphoneUtils.networkErrorView("send a message"), animated: true)
+            return;
+        }else{
+            message.send()
+        }
+    }
+    
+    func copyMessage(message: ChatMessage){
+        UIPasteboard.general.string = message.utf8Text
+    }
+    
+    func forwardMessage(message: ChatMessage){
+        let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
+        view.pendingForwardMessage = message.getCobject
+        let viewtoGo: ChatsListView = self.VIEW(ChatsListView.compositeViewDescription())
+        PhoneMainView.instance().changeCurrentView(viewtoGo.compositeViewDescription())
+    }
+    
+    func replyMessage(message: ChatMessage){
+        let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
+        view.initiateReplyView(forMessage: message.getCobject)
+    }
+    
+    func infoMessage(message: ChatMessage){
+        let view: ChatConversationImdnView = self.VIEW(ChatConversationImdnView.compositeViewDescription())
+        
+        //let callbackMessage: OpaquePointer = linphone_chat_message_get_callbacks(message.getCobject)
+        //let eventMessage: OpaquePointer = linphone_chat_message_cbs_get_user_data(callbackMessage)
+        
+        //view.event = eventMessage
+        PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+    }
+    
+    func addToContacts(message: ChatMessage) {
+        let addr = message.fromAddress
+        addr?.clean()
+        let lAddress = addr?.asStringUriOnly()
+        if let lAddress {
+            var normSip = String(utf8String: lAddress)
+            normSip = normSip?.hasPrefix("sip:") ?? false ? (normSip as NSString?)?.substring(from: 4) : normSip
+            normSip = normSip?.hasPrefix("sips:") ?? false ? (normSip as NSString?)?.substring(from: 5) : normSip
+            ContactSelection.setAddAddress(normSip)
+            ContactSelection.setSelectionMode(ContactSelectionModeEdit)
+            ContactSelection.enableSipFilter(false)
+            PhoneMainView.instance().changeCurrentView(ContactsListView.compositeViewDescription())
+        }
+    }
 }
