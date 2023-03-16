@@ -92,9 +92,12 @@ class BackActionsNavigationView:  UIViewController {
         self.backAction = backAction
         self.action1 = action1
         self.action2 = action2
-        
+		
         self.view.addSubview(topBar)
-        topBar.alignParentTop().height(top_bar_height).matchParentSideBorders().done()
+        //topBar.alignParentTop().height(top_bar_height).matchParentSideBorders().done()
+		topBar.alignParentTop().height(top_bar_height).done()
+		topBar.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+		topBar.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         
         topBar.addSubview(backButton)
         backButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
@@ -164,7 +167,10 @@ class BackActionsNavigationView:  UIViewController {
 		stackView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(stackView)
 		
-		stackView.alignParentTop().alignParentBottom().matchParentSideBorders().done()
+		//stackView.alignParentTop().alignParentBottom().matchParentSideBorders().done()
+		stackView.alignParentTop().alignParentBottom().done()
+		stackView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+		stackView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
 		
 		stackView.addArrangedSubview(contentView)
 		contentView.alignParentTop(withMargin: top_bar_height).matchParentSideBorders().done()

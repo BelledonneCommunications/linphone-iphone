@@ -112,9 +112,11 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 			cell.configure(event: event)
 
-			cell.onLongClickOneClick {
-				self.initDataSource(message: event.chatMessage!)
-                self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, event: event, preContentSize: cell.preContentViewBubble.frame.size.height)
+			if (event.chatMessage != nil){
+				cell.onLongClickOneClick {
+					self.initDataSource(message: event.chatMessage!)
+					self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, event: event, preContentSize: cell.preContentViewBubble.frame.size.height)
+				}
 			}
 			
 			if (!cell.replyContent.isHidden && event.chatMessage?.replyMessage != nil){
@@ -168,8 +170,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         let coordinateMin = contentViewBubble.convert(contentViewBubble.frame.origin, to: view)
         let coordinateMax = contentViewBubble.convert(CGPoint(x: contentViewBubble.frame.maxX, y: contentViewBubble.frame.maxY), to: view)
         
-        print("ChatConversationTableViewSwift collectionview cellForItemAt longclick")
-        
         if (coordinateMax.y + CGFloat(menu!.dataSource.count * 44) - preContentSize < view.frame.maxY) {
 			menu!.bottomOffset = CGPoint(x: event.chatMessage!.isOutgoing ? coordinateMax.x - 200 : coordinateMin.x, y: coordinateMax.y - preContentSize)
         } else if ((coordinateMax.y + CGFloat(menu!.dataSource.count * 44) > view.frame.maxY) && coordinateMin.y > CGFloat(menu!.dataSource.count * 44) + (preContentSize * 2)) {
@@ -198,7 +198,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			case VoipTexts.bubble_chat_dropDown_delete:
 				self!.deleteMessage(message: event.chatMessage!)
 			default:
-				print("ChatConversationTableViewSwift collectionview cellForItemAt longclick default")
+				print("Error ChatConversationTableViewSwift TapChooseMenuItemMessage Default")
 			}
 			self!.menu!.clearSelection()
 		}
