@@ -13,6 +13,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	static let reuseId = "MultilineMessageCellReuseId"
 	
 	let label: UILabel = UILabel(frame: .zero)
+	let eventMessageView: UIView = UIView(frame: .zero)
 	let preContentViewBubble: UIView = UIView(frame: .zero)
 	let contentViewBubble: UIView = UIView(frame: .zero)
 	let contentBubble: UIView = UIView(frame: .zero)
@@ -22,6 +23,9 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 
 	let labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
 	
+	var constraintEventMesssage : [NSLayoutConstraint] = []
+	var constraintEventMesssageLabel : [NSLayoutConstraint] = []
+	var constraintBubble : [NSLayoutConstraint] = []
 	var constraintLeadingBubble : NSLayoutConstraint? = nil
 	var constraintTrailingBubble : NSLayoutConstraint? = nil
 	var preContentViewBubbleConstraints : [NSLayoutConstraint] = []
@@ -36,6 +40,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var recordingConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
+	
+	let eventMessageLineView: UIView = UIView(frame: .zero)
+	let eventMessageLabelView: UIView = UIView(frame: .zero)
+	let eventMessageLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	
 	let forwardView = UIView()
 	let forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
@@ -87,13 +95,48 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-
+		
+	//Event Message
+		contentView.addSubview(eventMessageView)
+		constraintEventMesssage = [
+			eventMessageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+			eventMessageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
+			eventMessageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+			eventMessageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0)
+		]
+		eventMessageView.height(40).done()
+		
+		eventMessageView.addSubview(eventMessageLineView)
+		eventMessageLineView.height(1).alignParentLeft().alignParentRight().matchCenterYOf(view: eventMessageView).done()
+		
+		eventMessageView.addSubview(eventMessageLabelView)
+		eventMessageLabelView.translatesAutoresizingMaskIntoConstraints = false
+		eventMessageLabelView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		
+		eventMessageLabelView.addSubview(eventMessageLabel)
+		eventMessageLabel.text = ""
+		eventMessageLabel.height(40).matchCenterYOf(view: eventMessageView).matchCenterXOf(view: eventMessageView).done()
+		constraintEventMesssageLabel = [
+			eventMessageLabel.topAnchor.constraint(equalTo: eventMessageLabelView.topAnchor, constant: 0),
+			eventMessageLabel.bottomAnchor.constraint(equalTo: eventMessageLabelView.bottomAnchor, constant: 0),
+			eventMessageLabel.leadingAnchor.constraint(equalTo: eventMessageLabelView.leadingAnchor, constant: 6),
+			eventMessageLabel.trailingAnchor.constraint(equalTo: eventMessageLabelView.trailingAnchor, constant: -6)
+		]
+		
+		
+		eventMessageView.isHidden = true
+		
+	//Message
 		contentView.addSubview(contentBubble)
 		contentBubble.translatesAutoresizingMaskIntoConstraints = false
-		contentBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
-		contentBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
+		constraintBubble = [
+			contentBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+			contentBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+		]
 		constraintLeadingBubble = contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
 		constraintTrailingBubble = contentBubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
+		
+		NSLayoutConstraint.activate(constraintBubble)
 		constraintLeadingBubble!.isActive = true
 		
 		contentBubble.addSubview(imageUser)
@@ -427,204 +470,232 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		super.prepareForReuse()
 	}
 	
-	func configure(message: ChatMessage, isBasic: Bool) {
-		if !message.isOutgoing {
-			constraintLeadingBubble?.isActive = true
-			constraintTrailingBubble?.isActive = false
-			imageUser.isHidden = false
-			bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
-			chatRead.isHidden = true
-		}else{
-			constraintLeadingBubble?.isActive = false
-			constraintTrailingBubble?.isActive = true
-			imageUser.isHidden = true
-			bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
-			chatRead.isHidden = false
-		}
-		
-		if message.isForward {
-			NSLayoutConstraint.activate(preContentViewBubbleConstraints)
-			NSLayoutConstraint.activate(forwardConstraints)
-			NSLayoutConstraint.deactivate(replyConstraints)
-			contentViewBubble.minWidth(90).done()
-			forwardView.isHidden = false
-			replyView.isHidden = true
-		}else if message.isReply{
-			NSLayoutConstraint.activate(preContentViewBubbleConstraints)
-			NSLayoutConstraint.deactivate(forwardConstraints)
-			NSLayoutConstraint.activate(replyConstraints)
-			contentViewBubble.minWidth(216).done()
-			forwardView.isHidden = true
-			replyView.isHidden = false
-            
-            if(message.replyMessage != nil){
-                replyColorContent.backgroundColor = message.replyMessage!.isOutgoing ? UIColor("A") : UIColor("D")
-                
-                let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.replyMessage?.getCobject)!)
-                let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: (message.replyMessage?.getCobject)!) : ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).utf8Text)
-                let contentList = linphone_chat_message_get_contents(message.replyMessage?.getCobject)
-                let fromAddress = FastAddressBook.displayName(for: message.replyMessage!.fromAddress?.getCobject)
-                replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAddress!)
-                
-                replyContentTextView.text = content
-                replyContentForMeetingTextView.text = content
-                if(isIcal){
-                    replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
-                    replyMeetingSchedule.isHidden = false
-                    replyContentForMeetingTextView.isHidden = false
-                    replyContentForMeetingSpacing.isHidden = false
-                    replyContentTextView.isHidden = true
-                    mediaSelectorReply.isHidden = true
-                    replyContentTextSpacing.isHidden = true
-                }else{
+	func configure(event: EventLog) {
+		if event.chatMessage != nil {
+			contentBubble.isHidden = false
+			eventMessageView.isHidden = true
+			NSLayoutConstraint.activate(constraintBubble)
+			NSLayoutConstraint.deactivate(constraintEventMesssage)
+			NSLayoutConstraint.deactivate(constraintEventMesssageLabel)
+			if !event.chatMessage!.isOutgoing {
+				constraintLeadingBubble?.isActive = true
+				constraintTrailingBubble?.isActive = false
+				imageUser.isHidden = false
+				bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
+				chatRead.isHidden = true
+			}else{
+				constraintLeadingBubble?.isActive = false
+				constraintTrailingBubble?.isActive = true
+				imageUser.isHidden = true
+				bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
+				chatRead.isHidden = false
+			}
+			
+			if event.chatMessage!.isForward {
+				NSLayoutConstraint.activate(preContentViewBubbleConstraints)
+				NSLayoutConstraint.activate(forwardConstraints)
+				NSLayoutConstraint.deactivate(replyConstraints)
+				contentViewBubble.minWidth(90).done()
+				forwardView.isHidden = false
+				replyView.isHidden = true
+			}else if event.chatMessage!.isReply{
+				NSLayoutConstraint.activate(preContentViewBubbleConstraints)
+				NSLayoutConstraint.deactivate(forwardConstraints)
+				NSLayoutConstraint.activate(replyConstraints)
+				contentViewBubble.minWidth(216).done()
+				forwardView.isHidden = true
+				replyView.isHidden = false
+				
+				if(event.chatMessage!.replyMessage != nil){
+					replyColorContent.backgroundColor = event.chatMessage!.replyMessage!.isOutgoing ? UIColor("A") : UIColor("D")
+					
+					let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (event.chatMessage!.replyMessage?.getCobject)!)
+					let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: (event.chatMessage!.replyMessage?.getCobject)!) : ChatMessage.getSwiftObject(cObject: (event.chatMessage!.replyMessage?.getCobject)!).utf8Text)
+					let contentList = linphone_chat_message_get_contents(event.chatMessage!.replyMessage?.getCobject)
+					let fromAddress = FastAddressBook.displayName(for: event.chatMessage!.replyMessage!.fromAddress?.getCobject)
+					replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), fromAddress!)
+					
+					replyContentTextView.text = content
+					replyContentForMeetingTextView.text = content
+					if(isIcal){
+						replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
+						replyMeetingSchedule.isHidden = false
+						replyContentForMeetingTextView.isHidden = false
+						replyContentForMeetingSpacing.isHidden = false
+						replyContentTextView.isHidden = true
+						mediaSelectorReply.isHidden = true
+						replyContentTextSpacing.isHidden = true
+					}else{
 
-                    if(bctbx_list_size(contentList) > 1 || content == ""){
-                        mediaSelectorReply.isHidden = false
-                        replyContentTextSpacing.isHidden = true
-                        ChatMessage.getSwiftObject(cObject: (message.replyMessage?.getCobject)!).contents.forEach({ content in
-                            if(content.isFile){
-                                let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
-                                replyURLCollection.append(URL(string: content.filePath)!)
-                                replyCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
-                                collectionViewReply.insertItems(at: [indexPath])
-                            }else if(content.isText){
-                                replyContentTextSpacing.isHidden = false
-                            }
-                        })
-                        
-                    }else{
-                        mediaSelectorReply.isHidden = true
-                    }
-                    replyMeetingSchedule.isHidden = true
-                    replyContentForMeetingTextView.isHidden = true
-                    replyContentForMeetingSpacing.isHidden = true
-                    replyContentTextView.isHidden = false
-                    
-                }
-                replyContentTextView.text = message.replyMessage!.contents.first?.utf8Text
-            }else{
-                replyLabelTextView.isHidden = true
-                replyContentTextSpacing.isHidden = false
-                replyContentTextView.text = VoipTexts.bubble_chat_reply_message_does_not_exist + "  "
-            }
-		}else{
-			NSLayoutConstraint.activate(preContentViewBubbleConstraintsHidden)
-			NSLayoutConstraint.deactivate(forwardConstraints)
-			NSLayoutConstraint.deactivate(replyConstraints)
-			contentViewBubble.minWidth(0).done()
-			forwardView.isHidden = true
-			replyView.isHidden = true
-		}
-		let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (message.getCobject)!)
-		if(isIcal){
-			
-			let icsBubbleView = ICSBubbleView.init()
-			icsBubbleView.setFromChatMessage(cmessage: message.getCobject!)
-			
-			meetingView.addSubview(icsBubbleView)
-			icsBubbleView.size(w: 280, h: 200).done()
-			
-			icsBubbleView.translatesAutoresizingMaskIntoConstraints = false
-			let icsConstraints = [
-				icsBubbleView.topAnchor.constraint(equalTo: meetingView.topAnchor),
-				icsBubbleView.bottomAnchor.constraint(equalTo: meetingView.bottomAnchor),
-				icsBubbleView.leadingAnchor.constraint(equalTo: meetingView.leadingAnchor),
-				icsBubbleView.trailingAnchor.constraint(equalTo: meetingView.trailingAnchor)
-			]
-			NSLayoutConstraint.activate(icsConstraints)
-			
-			
-			NSLayoutConstraint.deactivate(labelConstraints)
-			NSLayoutConstraint.deactivate(imageConstraints)
-			NSLayoutConstraint.deactivate(videoConstraints)
-			NSLayoutConstraint.deactivate(playButtonConstraints)
-			NSLayoutConstraint.deactivate(recordingConstraints)
-			NSLayoutConstraint.deactivate(recordingWaveConstraints)
-			NSLayoutConstraint.activate(meetingConstraints)
-			label.isHidden = false
-			imageViewBubble.isHidden = true
-			imageVideoViewBubble.isHidden = true
-			recordingView.isHidden = true
-			
-			imageViewBubble.image = nil
-			imageVideoViewBubble.image = nil
-			
-			meetingView.isHidden = false
-			
-		}else {
-			message.contents.forEach { content in
-				if content.type == "text"{
-					label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
-					
-					NSLayoutConstraint.activate(labelConstraints)
-					NSLayoutConstraint.deactivate(imageConstraints)
-					NSLayoutConstraint.deactivate(videoConstraints)
-					NSLayoutConstraint.deactivate(playButtonConstraints)
-					NSLayoutConstraint.deactivate(recordingConstraints)
-					NSLayoutConstraint.deactivate(recordingWaveConstraints)
-					NSLayoutConstraint.deactivate(meetingConstraints)
-					label.isHidden = false
-					imageViewBubble.isHidden = true
-					imageVideoViewBubble.isHidden = true
-					recordingView.isHidden = true
-					
-					imageViewBubble.image = nil
-					imageVideoViewBubble.image = nil
-					
-					meetingView.isHidden = true
-					
-				}else if content.type == "image"{
-					if let imageMessage = UIImage(named: content.filePath){
-						imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+						if(bctbx_list_size(contentList) > 1 || content == ""){
+							mediaSelectorReply.isHidden = false
+							replyContentTextSpacing.isHidden = true
+							ChatMessage.getSwiftObject(cObject: (event.chatMessage!.replyMessage?.getCobject)!).contents.forEach({ content in
+								if(content.isFile){
+									let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
+									replyURLCollection.append(URL(string: content.filePath)!)
+									replyCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+									collectionViewReply.insertItems(at: [indexPath])
+								}else if(content.isText){
+									replyContentTextSpacing.isHidden = false
+								}
+							})
+							
+						}else{
+							mediaSelectorReply.isHidden = true
+						}
+						replyMeetingSchedule.isHidden = true
+						replyContentForMeetingTextView.isHidden = true
+						replyContentForMeetingSpacing.isHidden = true
+						replyContentTextView.isHidden = false
+						
 					}
-					
-					NSLayoutConstraint.deactivate(labelConstraints)
-					NSLayoutConstraint.activate(imageConstraints)
-					NSLayoutConstraint.deactivate(videoConstraints)
-					NSLayoutConstraint.deactivate(playButtonConstraints)
-					NSLayoutConstraint.deactivate(recordingConstraints)
-					NSLayoutConstraint.deactivate(recordingWaveConstraints)
-					NSLayoutConstraint.deactivate(meetingConstraints)
-					label.isHidden = true
-					imageViewBubble.isHidden = false
-					imageVideoViewBubble.isHidden = true
-					recordingView.isHidden = true
-					
-					imageVideoViewBubble.image = nil
-					
-					meetingView.isHidden = true
-					
-				}else if content.type == "video"{
-					if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
-						imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-					}
-					
-					NSLayoutConstraint.deactivate(labelConstraints)
-					NSLayoutConstraint.deactivate(imageConstraints)
-					NSLayoutConstraint.activate(videoConstraints)
-					NSLayoutConstraint.activate(playButtonConstraints)
-					NSLayoutConstraint.deactivate(recordingConstraints)
-					NSLayoutConstraint.deactivate(recordingWaveConstraints)
-					NSLayoutConstraint.deactivate(meetingConstraints)
-					label.isHidden = true
-					imageViewBubble.isHidden = true
-					imageVideoViewBubble.isHidden = false
-					recordingView.isHidden = true
-					
-					imageViewBubble.image = nil
-					
-					meetingView.isHidden = true
-					
-				}else if content.type == "audio"{
-					
-					recordingView.subviews.forEach({ view in
-						view.removeFromSuperview()
-					})
-					initPlayerAudio(message: message)
-					
+					replyContentTextView.text = event.chatMessage!.replyMessage!.contents.first?.utf8Text
 				}else{
-					//createBubbleOther()
-				}}
+					replyLabelTextView.isHidden = true
+					replyContentTextSpacing.isHidden = false
+					replyContentTextView.text = VoipTexts.bubble_chat_reply_message_does_not_exist + "  "
+				}
+			}else{
+				NSLayoutConstraint.activate(preContentViewBubbleConstraintsHidden)
+				NSLayoutConstraint.deactivate(forwardConstraints)
+				NSLayoutConstraint.deactivate(replyConstraints)
+				contentViewBubble.minWidth(0).done()
+				forwardView.isHidden = true
+				replyView.isHidden = true
+			}
+			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: (event.chatMessage!.getCobject)!)
+			if(isIcal){
+				
+				let icsBubbleView = ICSBubbleView.init()
+				icsBubbleView.setFromChatMessage(cmessage: event.chatMessage!.getCobject!)
+				
+				meetingView.addSubview(icsBubbleView)
+				icsBubbleView.size(w: 280, h: 200).done()
+				
+				icsBubbleView.translatesAutoresizingMaskIntoConstraints = false
+				let icsConstraints = [
+					icsBubbleView.topAnchor.constraint(equalTo: meetingView.topAnchor),
+					icsBubbleView.bottomAnchor.constraint(equalTo: meetingView.bottomAnchor),
+					icsBubbleView.leadingAnchor.constraint(equalTo: meetingView.leadingAnchor),
+					icsBubbleView.trailingAnchor.constraint(equalTo: meetingView.trailingAnchor)
+				]
+				NSLayoutConstraint.activate(icsConstraints)
+				
+				
+				NSLayoutConstraint.deactivate(labelConstraints)
+				NSLayoutConstraint.deactivate(imageConstraints)
+				NSLayoutConstraint.deactivate(videoConstraints)
+				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				NSLayoutConstraint.activate(meetingConstraints)
+				label.isHidden = false
+				imageViewBubble.isHidden = true
+				imageVideoViewBubble.isHidden = true
+				recordingView.isHidden = true
+				
+				imageViewBubble.image = nil
+				imageVideoViewBubble.image = nil
+				
+				meetingView.isHidden = false
+				
+			}else {
+				event.chatMessage!.contents.forEach { content in
+					if content.type == "text"{
+						label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
+						
+						NSLayoutConstraint.activate(labelConstraints)
+						NSLayoutConstraint.deactivate(imageConstraints)
+						NSLayoutConstraint.deactivate(videoConstraints)
+						NSLayoutConstraint.deactivate(playButtonConstraints)
+						NSLayoutConstraint.deactivate(recordingConstraints)
+						NSLayoutConstraint.deactivate(recordingWaveConstraints)
+						NSLayoutConstraint.deactivate(meetingConstraints)
+						label.isHidden = false
+						imageViewBubble.isHidden = true
+						imageVideoViewBubble.isHidden = true
+						recordingView.isHidden = true
+						
+						imageViewBubble.image = nil
+						imageVideoViewBubble.image = nil
+						
+						meetingView.isHidden = true
+						
+					}else if content.type == "image"{
+						if let imageMessage = UIImage(named: content.filePath){
+							imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+						}
+						
+						NSLayoutConstraint.deactivate(labelConstraints)
+						NSLayoutConstraint.activate(imageConstraints)
+						NSLayoutConstraint.deactivate(videoConstraints)
+						NSLayoutConstraint.deactivate(playButtonConstraints)
+						NSLayoutConstraint.deactivate(recordingConstraints)
+						NSLayoutConstraint.deactivate(recordingWaveConstraints)
+						NSLayoutConstraint.deactivate(meetingConstraints)
+						label.isHidden = true
+						imageViewBubble.isHidden = false
+						imageVideoViewBubble.isHidden = true
+						recordingView.isHidden = true
+						
+						imageVideoViewBubble.image = nil
+						
+						meetingView.isHidden = true
+						
+					}else if content.type == "video"{
+						if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+							imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+						}
+						
+						NSLayoutConstraint.deactivate(labelConstraints)
+						NSLayoutConstraint.deactivate(imageConstraints)
+						NSLayoutConstraint.activate(videoConstraints)
+						NSLayoutConstraint.activate(playButtonConstraints)
+						NSLayoutConstraint.deactivate(recordingConstraints)
+						NSLayoutConstraint.deactivate(recordingWaveConstraints)
+						NSLayoutConstraint.deactivate(meetingConstraints)
+						label.isHidden = true
+						imageViewBubble.isHidden = true
+						imageVideoViewBubble.isHidden = false
+						recordingView.isHidden = true
+						
+						imageViewBubble.image = nil
+						
+						meetingView.isHidden = true
+						
+					}else if content.type == "audio"{
+						
+						recordingView.subviews.forEach({ view in
+							view.removeFromSuperview()
+						})
+						initPlayerAudio(message: event.chatMessage!)
+						
+					}else{
+						//createBubbleOther()
+					}}
+			}
+		}else{
+			contentBubble.isHidden = true
+			NSLayoutConstraint.deactivate(constraintBubble)
+			constraintLeadingBubble?.isActive = false
+			constraintTrailingBubble?.isActive = false
+			imageUser.isHidden = true
+			chatRead.isHidden = true
+			
+			eventMessageView.isHidden = false
+			NSLayoutConstraint.activate(constraintEventMesssage)
+			NSLayoutConstraint.activate(constraintEventMesssageLabel)
+			
+			eventMessageLabel.text = setEvent(event: event)
+			
+			if (eventMessageLabel.text == VoipTexts.bubble_chat_event_message_left_group || eventMessageLabel.text!.hasPrefix(VoipTexts.bubble_chat_event_message_max_participant) || eventMessageLabel.text!.hasPrefix(VoipTexts.bubble_chat_event_message_lime_changed) || eventMessageLabel.text!.hasPrefix(VoipTexts.bubble_chat_event_message_attack_detected)) {
+				eventMessageLineView.backgroundColor = .red
+				eventMessageLabel.textColor = .red
+			} else {
+				eventMessageLineView.backgroundColor = UIColor("D").withAlphaComponent(0.6)
+				eventMessageLabel.textColor = UIColor("D").withAlphaComponent(0.6)
+			}
 		}
 	}
 	
@@ -823,5 +894,89 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		}
 
 		return SwiftUtil.textToImage(drawText: text!, inImage: image!, forReplyBubble: forReplyBubbble)
+	}
+	
+	func setEvent(event: EventLog) -> String {
+		var subject = ""
+		var participant = ""
+		switch (event.type.rawValue) {
+		case Int(LinphoneEventLogTypeConferenceSubjectChanged.rawValue):
+			subject = event.subject
+			return VoipTexts.bubble_chat_event_message_new_subject + subject
+		case Int(LinphoneEventLogTypeConferenceParticipantAdded.rawValue):
+			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			return participant + VoipTexts.bubble_chat_event_message_has_joined
+		case Int(LinphoneEventLogTypeConferenceParticipantRemoved.rawValue):
+			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			return participant + VoipTexts.bubble_chat_event_message_has_left
+		case Int(LinphoneEventLogTypeConferenceParticipantSetAdmin.rawValue):
+			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			return participant + VoipTexts.bubble_chat_event_message_now_admin
+		case Int(LinphoneEventLogTypeConferenceParticipantUnsetAdmin.rawValue):
+			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			return participant + VoipTexts.bubble_chat_event_message_no_longer_admin
+		case Int(LinphoneEventLogTypeConferenceTerminated.rawValue):
+			return VoipTexts.bubble_chat_event_message_left_group
+		case Int(LinphoneEventLogTypeConferenceCreated.rawValue):
+			return VoipTexts.bubble_chat_event_message_joined_group
+		case Int(LinphoneEventLogTypeConferenceSecurityEvent.rawValue):
+			let type = event.securityEventType
+			let participant = event.securityEventFaultyDeviceAddress!.displayName != "" ? event.securityEventFaultyDeviceAddress!.displayName : event.securityEventFaultyDeviceAddress!.username
+			switch (type.rawValue) {
+			case Int(LinphoneSecurityEventTypeSecurityLevelDowngraded.rawValue):
+				if (participant.isEmpty){
+					return VoipTexts.bubble_chat_event_message_security_level_decreased
+				}else{
+					return VoipTexts.bubble_chat_event_message_security_level_decreased_because + participant
+				}
+			case Int(LinphoneSecurityEventTypeParticipantMaxDeviceCountExceeded.rawValue):
+				if (participant.isEmpty){
+					return VoipTexts.bubble_chat_event_message_max_participant
+				}else{
+					return VoipTexts.bubble_chat_event_message_max_participant_by + participant
+				}
+			case Int(LinphoneSecurityEventTypeEncryptionIdentityKeyChanged.rawValue):
+				if (participant.isEmpty){
+					return VoipTexts.bubble_chat_event_message_lime_changed
+				}else{
+					return VoipTexts.bubble_chat_event_message_lime_changed_for + participant
+				}
+			case Int(LinphoneSecurityEventTypeManInTheMiddleDetected.rawValue):
+				if (participant.isEmpty){
+					return VoipTexts.bubble_chat_event_message_attack_detected
+				}else{
+					return VoipTexts.bubble_chat_event_message_attack_detected_for + participant
+				}
+			default:
+				return ""
+			}
+		case Int(LinphoneEventLogTypeConferenceEphemeralMessageDisabled.rawValue):
+			return VoipTexts.bubble_chat_event_message_disabled_ephemeral
+		case Int(LinphoneEventLogTypeConferenceEphemeralMessageEnabled.rawValue):
+			return VoipTexts.bubble_chat_event_message_enabled_ephemeral
+		case Int(LinphoneEventLogTypeConferenceEphemeralMessageLifetimeChanged.rawValue):
+			return VoipTexts.bubble_chat_event_message_expiry_ephemeral + formatEphemeralExpiration(duration: event.ephemeralMessageLifetime)
+		default:
+			return ""
+		}
+	}
+		
+	func formatEphemeralExpiration(duration: CLong) -> String{
+		switch (duration) {
+		case 0:
+			return VoipTexts.bubble_chat_event_message_ephemeral_disable
+		case 60:
+			return VoipTexts.bubble_chat_event_message_ephemeral_one_minute
+		case 3600:
+			return VoipTexts.bubble_chat_event_message_ephemeral_one_hour
+		case 86400:
+			return VoipTexts.bubble_chat_event_message_ephemeral_one_day
+		case 259200:
+			return VoipTexts.bubble_chat_event_message_ephemeral_three_days
+		case 604800:
+			return VoipTexts.bubble_chat_event_message_ephemeral_one_week
+		default:
+			return VoipTexts.bubble_chat_event_message_ephemeral_unexpected_duration
+		}
 	}
 }

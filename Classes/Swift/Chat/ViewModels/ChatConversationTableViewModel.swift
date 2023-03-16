@@ -26,7 +26,6 @@ class ChatConversationTableViewModel: ControlsViewModel {
 
 	func getMessage(index: Int) -> EventLog? {
 		if (chatRoom != nil) {
-			let oneToOne = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 			let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
 			return chatRoomEvents?.first
 		}else{
@@ -63,7 +62,7 @@ class ChatConversationTableViewModel: ControlsViewModel {
 		if (chatRoom == nil) {
 			return 0
 		}
-		return chatRoom!.historySize
+		return chatRoom!.historyEventsSize
 	}
 	
 	func eventTypeIsOfInterestForOne(toOneRoom type: EventLogType) -> Bool {

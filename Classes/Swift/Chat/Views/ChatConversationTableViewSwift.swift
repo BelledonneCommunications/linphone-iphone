@@ -110,7 +110,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
 
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
-			cell.configure(message: event.chatMessage!, isBasic: basic)
+			cell.configure(event: event)
 
 			cell.onLongClickOneClick {
 				self.initDataSource(message: event.chatMessage!)

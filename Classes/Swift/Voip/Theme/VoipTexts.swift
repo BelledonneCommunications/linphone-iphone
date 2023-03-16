@@ -177,7 +177,35 @@ import UIKit
 	@objc static let bubble_chat_dropDown_infos = NSLocalizedString("Infos",comment:"")
 	@objc static let bubble_chat_dropDown_add_to_contact = NSLocalizedString("Add to contacts",comment:"")
 	@objc static let bubble_chat_dropDown_delete = NSLocalizedString("Delete",comment:"")
-
+	
+	@objc static let bubble_chat_event_message_new_subject = NSLocalizedString("New subject : %@",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_has_joined = NSLocalizedString("%@ has joined",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_has_left = NSLocalizedString("%@ has left",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_now_admin = NSLocalizedString("%@ is now an admin",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_no_longer_admin = NSLocalizedString("%@ is no longer an admin",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_left_group = NSLocalizedString("You have left the group",comment:"")
+	@objc static let bubble_chat_event_message_joined_group = NSLocalizedString("You have joined the group",comment:"")
+	@objc static let bubble_chat_event_message_disabled_ephemeral = NSLocalizedString("You disabled ephemeral messages",comment:"")
+	@objc static let bubble_chat_event_message_enabled_ephemeral = NSLocalizedString("You enabled ephemeral messages: %@",comment:"").replacingOccurrences(of: ": %@", with: "")
+	@objc static let bubble_chat_event_message_expiry_ephemeral = NSLocalizedString("Ephemeral messages expiry date: %@",comment:"").replacingOccurrences(of: "%@", with: "")
+	
+	@objc static let bubble_chat_event_message_ephemeral_disable = NSLocalizedString("Disabled",comment:"")
+	@objc static let bubble_chat_event_message_ephemeral_one_minute = NSLocalizedString("1 minute",comment:"")
+	@objc static let bubble_chat_event_message_ephemeral_one_hour = NSLocalizedString("1 hour",comment:"")
+	@objc static let bubble_chat_event_message_ephemeral_one_day = NSLocalizedString("1 day",comment:"")
+	@objc static let bubble_chat_event_message_ephemeral_three_days = NSLocalizedString("3 days",comment:"")
+	@objc static let bubble_chat_event_message_ephemeral_one_week = NSLocalizedString("1 week",comment:"")
+	@objc static let bubble_chat_event_message_ephemeral_unexpected_duration = NSLocalizedString("Unexpected duration",comment:"")
+	
+	@objc static let bubble_chat_event_message_security_level_decreased = NSLocalizedString("Security level decreased",comment:"")
+	@objc static let bubble_chat_event_message_security_level_decreased_because = NSLocalizedString("Security level decreased because of %@",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_max_participant = NSLocalizedString("Max participant count exceeded",comment:"")
+	@objc static let bubble_chat_event_message_max_participant_by = NSLocalizedString("Max participant count exceeded by %@",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_lime_changed = NSLocalizedString("LIME identity key changed",comment:"")
+	@objc static let bubble_chat_event_message_lime_changed_for = NSLocalizedString("LIME identity key changed for %@",comment:"").replacingOccurrences(of: "%@", with: "")
+	@objc static let bubble_chat_event_message_attack_detected = NSLocalizedString("Man-in-the-middle attack detected",comment:"")
+	@objc static let bubble_chat_event_message_attack_detected_for = NSLocalizedString("Man-in-the-middle attack detected for %@",comment:"").replacingOccurrences(of: "%@", with: "")
+	
 	// FROM ANDROID END
 	
 	
