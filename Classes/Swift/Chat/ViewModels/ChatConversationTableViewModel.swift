@@ -24,14 +24,14 @@ class ChatConversationTableViewModel: ControlsViewModel {
 		super.init()
 	}
 
-	func getMessage(index: Int) -> ChatMessage? {
-		if (chatRoom == nil) {
+	func getMessage(index: Int) -> EventLog? {
+		if (chatRoom != nil) {
+			let oneToOne = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+			let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
+			return chatRoomEvents?.first
+		}else{
 			return nil
 		}
-
-		let oneToOne = chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
-		let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
-		return chatRoomEvents?.first?.chatMessage
 	}
     
     func getIndexMessage(message: ChatMessage) -> Int {
