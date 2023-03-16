@@ -9,6 +9,16 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
+	
+## [5.0.2] - 2023-16-03
+
+### Changed
+- Update linphone SDK to 5.2.32
+
+### Fixed
+- Performance issue causing a global slowing of the app, especially at launch
+- Fix several memory leaks and crashes
+
 ## [5.0.1] - 2023-10-01
 
 ### Changed
