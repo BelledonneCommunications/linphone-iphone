@@ -94,7 +94,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     
     func scrollToMessage(message: ChatMessage){
         let messageIndex = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
-        print("ChatConversationTableViewSwift collectionview \(messageIndex)")
         
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
@@ -121,14 +120,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			
 			if (!cell.replyContent.isHidden && event.chatMessage?.replyMessage != nil){
 				cell.replyContent.onClick {
-                    print("\n\nChatConversationTableViewSwift collectionview new")
-                    print("ChatConversationTableViewSwift collectionview \(indexPath.row+1)")
 					self.scrollToMessage(message: (event.chatMessage?.replyMessage)!)
 				}
 			}
 		}
-		
-
 		
 		cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
 		return cell

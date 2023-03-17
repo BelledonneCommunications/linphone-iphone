@@ -38,6 +38,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var labelConstraints: [NSLayoutConstraint] = []
 	var labelTopConstraints: [NSLayoutConstraint] = []
 	var labelHiddenConstraints: [NSLayoutConstraint] = []
+	var imagesGridConstraints : [NSLayoutConstraint] = []
 	var imageConstraints: [NSLayoutConstraint] = []
 	var videoConstraints: [NSLayoutConstraint] = []
 	var playButtonConstraints: [NSLayoutConstraint] = []
@@ -68,6 +69,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	let replyContentForMeetingSpacing = UIView()
 	let replyMeetingSchedule = UIImageView()
 	let mediaSelectorReply  = UIView()
+	
 	var collectionViewReply: UICollectionView = {
 		let collection_view_reply_height = 60.0
 		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -82,9 +84,25 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		collectionViewReply.backgroundColor = .clear
 		return collectionViewReply
 	}()
+	var collectionViewImagesGrid: DynamicHeightCollectionView = {
+		let collection_view_reply_height = 138.0
+		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+		layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
+		layout.scrollDirection = .vertical
+		layout.minimumLineSpacing = 4
+		layout.minimumInteritemSpacing = 4
+
+		let collectionViewImagesGrid = DynamicHeightCollectionView(frame: .zero, collectionViewLayout: layout)
+		collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
+		collectionViewImagesGrid.backgroundColor = .clear
+		return collectionViewImagesGrid
+	}()
 
 	var replyCollectionView : [UIImage] = []
 	var replyURLCollection : [URL] = []
+	
+	var imagesGridCollectionView : [UIImage] = []
+	var imagesGridURLCollection : [URL] = []
 	
 	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
 	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
@@ -96,7 +114,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	
 	var isPlayingVoiceRecording = false
 	
-
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
@@ -271,7 +288,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		bubble.addSubview(contentViewBubble)
 		contentViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentViewBubbleConstraints = [
-			//contentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
 			contentViewBubble.topAnchor.constraint(equalTo: preContentViewBubble.bottomAnchor),
 			contentViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 			contentViewBubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor),
@@ -283,12 +299,28 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		contentViewBubble.addSubview(contentMediaViewBubble)
 		contentMediaViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentMediaViewBubbleConstraints = [
-			//contentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
 			contentMediaViewBubble.topAnchor.constraint(equalTo: contentViewBubble.topAnchor),
 			contentMediaViewBubble.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor),
 			contentMediaViewBubble.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor)
 		]
 		NSLayoutConstraint.activate(contentMediaViewBubbleConstraints)
+		
+	//Images Grid
+		contentMediaViewBubble.addSubview(collectionViewImagesGrid)
+		collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
+		imagesGridConstraints = [
+			collectionViewImagesGrid.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
+			collectionViewImagesGrid.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
+			collectionViewImagesGrid.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			collectionViewImagesGrid.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
+		]
+		
+		collectionViewImagesGrid.dataSource = self
+		collectionViewImagesGrid.delegate = self
+		collectionViewImagesGrid.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellImagesGridMessage")
+		//collectionViewImagesGrid.size(w: 280, h: 500).done()
+		collectionViewImagesGrid.width(280).done()
+		collectionViewImagesGrid.isHidden = true
 
 	//Image
 		contentMediaViewBubble.addSubview(imageViewBubble)
@@ -625,6 +657,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				NSLayoutConstraint.deactivate(labelConstraints)
 				NSLayoutConstraint.deactivate(labelTopConstraints)
 				NSLayoutConstraint.activate(labelHiddenConstraints)
+				NSLayoutConstraint.deactivate(imagesGridConstraints)
 				NSLayoutConstraint.deactivate(imageConstraints)
 				NSLayoutConstraint.deactivate(videoConstraints)
 				NSLayoutConstraint.deactivate(playButtonConstraints)
@@ -632,6 +665,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				NSLayoutConstraint.deactivate(recordingWaveConstraints)
 				NSLayoutConstraint.deactivate(meetingConstraints)
 				label.isHidden = true
+				collectionViewImagesGrid.isHidden = true
 				imageViewBubble.isHidden = true
 				imageVideoViewBubble.isHidden = true
 				recordingView.isHidden = true
@@ -656,12 +690,41 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 					
 						
 					}else if content.type == "image"{
-						if let imageMessage = UIImage(named: content.filePath){
-							imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+						
+						if imagesGridCollectionView.count > 1 {
+							if(content.isFile){
+								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
+								imagesGridURLCollection.append(URL(string: content.filePath)!)
+								imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+								collectionViewImagesGrid.insertItems(at: [indexPath])
+							}
+							
+							collectionViewImagesGrid.isHidden = false
+							NSLayoutConstraint.activate(imagesGridConstraints)
+							imageViewBubble.image = nil
+							NSLayoutConstraint.deactivate(imageConstraints)
+							imageViewBubble.isHidden = true
+							
+						}else{
+							if let imageMessage = UIImage(named: content.filePath){
+								imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+							}
+							
+							if(content.isFile){
+								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
+								imagesGridURLCollection.append(URL(string: content.filePath)!)
+								imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+								collectionViewImagesGrid.insertItems(at: [indexPath])
+							}
+							
+							NSLayoutConstraint.activate(imageConstraints)
+							imageViewBubble.isHidden = false
 						}
 
-						NSLayoutConstraint.activate(imageConstraints)
-						imageViewBubble.isHidden = false
+						
+						
+
+
 						
 					}else if content.type == "video"{
 						if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
@@ -682,6 +745,9 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 					}else{
 						//createBubbleOther()
 					}}
+				if imagesGridCollectionView.count > 0 {
+					self.collectionViewImagesGrid.layoutIfNeeded()
+				}
 			}
 		}else{
 			contentBubble.isHidden = true
@@ -817,43 +883,83 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return replyCollectionView.count
+		if(collectionView == collectionViewReply){
+			return replyCollectionView.count
+		}else{
+			return imagesGridCollectionView.count
+		}
 	}
 
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellReplyMessage", for: indexPath)
-		let viewCell: UIView = UIView(frame: cell.contentView.frame)
-		cell.addSubview(viewCell)
-		let imageCell = replyCollectionView[indexPath.row]
-		var myImageView = UIImageView()
-		
-		if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
-			myImageView = UIImageView(image: imageCell)
-		}else{
-			let fileNameText = replyURLCollection[indexPath.row].lastPathComponent
-			let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
-			myImageView = UIImageView(image: fileName)
-		}
-		
-		myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
-		viewCell.addSubview(myImageView)
-		
-		if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
-			var imagePlay = UIImage()
-			if #available(iOS 13.0, *) {
-				imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
-			} else {
-				imagePlay = UIImage(named: "vr_play")!
+		if(collectionView == collectionViewReply){
+			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellReplyMessage", for: indexPath)
+			let viewCell: UIView = UIView(frame: cell.contentView.frame)
+			cell.addSubview(viewCell)
+			let imageCell = replyCollectionView[indexPath.row]
+			var myImageView = UIImageView()
+			
+			if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				myImageView = UIImageView(image: imageCell)
+			}else{
+				let fileNameText = replyURLCollection[indexPath.row].lastPathComponent
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+				myImageView = UIImageView(image: fileName)
 			}
-			let myImagePlayView = UIImageView(image: imagePlay)
-			viewCell.addSubview(myImagePlayView)
-			myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
-			myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+			
+			myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
+			viewCell.addSubview(myImageView)
+			
+			if(FileType.init(replyURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				var imagePlay = UIImage()
+				if #available(iOS 13.0, *) {
+					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+				} else {
+					imagePlay = UIImage(named: "vr_play")!
+				}
+				let myImagePlayView = UIImageView(image: imagePlay)
+				viewCell.addSubview(myImagePlayView)
+				myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+				myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+			}
+			myImageView.contentMode = .scaleAspectFill
+			myImageView.clipsToBounds = true
+			
+			return cell
+		}else{
+			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellImagesGridMessage", for: indexPath)
+			let viewCell: UIView = UIView(frame: cell.contentView.frame)
+			cell.addSubview(viewCell)
+			let imageCell = imagesGridCollectionView[indexPath.row]
+			let myImageView = UIImageView()
+			
+			if(FileType.init(imagesGridURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(imagesGridURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				myImageView.image = imageCell
+			}else{
+				let fileNameText = imagesGridURLCollection[indexPath.row].lastPathComponent
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+				myImageView.image = fileName
+			}
+			
+			myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
+			viewCell.addSubview(myImageView)
+			
+			if(FileType.init(imagesGridURLCollection[indexPath.row].pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
+				var imagePlay = UIImage()
+				if #available(iOS 13.0, *) {
+					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+				} else {
+					imagePlay = UIImage(named: "vr_play")!
+				}
+				let myImagePlayView = UIImageView(image: imagePlay)
+				viewCell.addSubview(myImagePlayView)
+				myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+				myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+			}
+			myImageView.contentMode = .scaleAspectFill
+			myImageView.clipsToBounds = true
+			
+			return cell
 		}
-		myImageView.contentMode = .scaleAspectFill
-		myImageView.clipsToBounds = true
-		
-		return cell
 	}
 	
 	func getImageFrom(_ content: OpaquePointer?, filePath: String?, forReplyBubble: Bool) -> UIImage? {
@@ -868,10 +974,14 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		if type == "video" {
 			image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
 		} else if type == "image" {
+			/*
 			let data = NSData(contentsOfFile: filePath ?? "") as Data?
 			if let data {
 				image = UIImage(data: data)
 			}
+			 */
+
+			image = UIImage(named: filePath ?? "")
 		}
 		if let image {
 			return image
@@ -986,5 +1096,18 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		default:
 			return VoipTexts.bubble_chat_event_message_ephemeral_unexpected_duration
 		}
+	}
+}
+
+class DynamicHeightCollectionView: UICollectionView {
+	override func layoutSubviews() {
+		super.layoutSubviews()
+		if !__CGSizeEqualToSize(bounds.size, self.intrinsicContentSize) {
+			self.invalidateIntrinsicContentSize()
+		}
+	}
+	
+	override var intrinsicContentSize: CGSize {
+		return contentSize
 	}
 }

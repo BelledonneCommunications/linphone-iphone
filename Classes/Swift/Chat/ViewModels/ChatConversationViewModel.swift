@@ -283,10 +283,7 @@ class ChatConversationViewModel: ControlsViewModel {
 		if type == "video" {
 			image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
 		} else if type == "image" {
-			let data = NSData(contentsOfFile: filePath ?? "") as Data?
-			if let data {
-				image = UIImage(data: data)
-			}
+			image = UIImage(named: filePath ?? "")
 		}
 		if let image {
 			return image
