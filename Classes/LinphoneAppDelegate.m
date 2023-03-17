@@ -93,7 +93,12 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	LinphoneCall *call = linphone_core_get_current_call(LC);
-
+	
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	if (defaults) {
+		[defaults setBool:false forKey:@"appactive"];
+	}
+	
 	if (!call)
 		return;
 
@@ -116,7 +121,12 @@
 	}
 	LinphoneManager *instance = LinphoneManager.instance;
 	[instance becomeActive];
-
+	
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	if (defaults) {
+		[defaults setBool:true forKey:@"appactive"];
+	}
+		
 	if (instance.fastAddressBook.needToUpdate) {
 		//Update address book for external changes
 		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
@@ -553,7 +563,31 @@
 }
 
 -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+	LOGD(@"didReceiveRemoteNotification -- backgroundPush");
+	if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
+		[LinphoneManager.instance startLinphoneCore];
+		[LinphoneManager.instance.fastAddressBook reloadFriends];
+	}
 	
+	const MSList *accounts = linphone_core_get_account_list(LC);
+	while (accounts) {
+		LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+		linphone_account_refresh_register(account);
+		accounts = accounts->next;
+	}
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+		NSMutableDictionary *chatroomsPushStatus = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"appactive"]];
+		
+		if ([defaults boolForKey:@"appactive"] != TRUE) {
+			linphone_core_enter_background(LC);
+			if (linphone_core_get_calls_nb(LC) == 0) {
+				linphone_core_stop(LC);
+			}
+		}
+		completionHandler(UIBackgroundFetchResultNewData);
+	});
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
