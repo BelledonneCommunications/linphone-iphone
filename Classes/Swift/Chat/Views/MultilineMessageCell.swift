@@ -16,6 +16,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	let eventMessageView: UIView = UIView(frame: .zero)
 	let preContentViewBubble: UIView = UIView(frame: .zero)
 	let contentViewBubble: UIView = UIView(frame: .zero)
+	let contentMediaViewBubble: UIView = UIView(frame: .zero)
 	let contentBubble: UIView = UIView(frame: .zero)
 	let bubble: UIView = UIView(frame: .zero)
 	let imageUser: UIView = UIView(frame: .zero)
@@ -31,9 +32,12 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var preContentViewBubbleConstraints : [NSLayoutConstraint] = []
 	var preContentViewBubbleConstraintsHidden : [NSLayoutConstraint] = []
 	var contentViewBubbleConstraints : [NSLayoutConstraint] = []
+	var contentMediaViewBubbleConstraints : [NSLayoutConstraint] = []
 	var forwardConstraints : [NSLayoutConstraint] = []
 	var replyConstraints : [NSLayoutConstraint] = []
 	var labelConstraints: [NSLayoutConstraint] = []
+	var labelTopConstraints: [NSLayoutConstraint] = []
+	var labelHiddenConstraints: [NSLayoutConstraint] = []
 	var imageConstraints: [NSLayoutConstraint] = []
 	var videoConstraints: [NSLayoutConstraint] = []
 	var playButtonConstraints: [NSLayoutConstraint] = []
@@ -275,39 +279,36 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		]
 		NSLayoutConstraint.activate(contentViewBubbleConstraints)
 		
-	//Text
-		label.numberOfLines = 0
-		label.lineBreakMode = .byWordWrapping
-		
-		contentViewBubble.addSubview(label)
-		label.translatesAutoresizingMaskIntoConstraints = false
-		labelConstraints = [
-			label.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
-			label.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
-			label.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
-			label.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+	//Content Media View
+		contentViewBubble.addSubview(contentMediaViewBubble)
+		contentMediaViewBubble.translatesAutoresizingMaskIntoConstraints = false
+		contentMediaViewBubbleConstraints = [
+			//contentViewBubble.topAnchor.constraint(equalTo: contentView.topAnchor),
+			contentMediaViewBubble.topAnchor.constraint(equalTo: contentViewBubble.topAnchor),
+			contentMediaViewBubble.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor),
+			contentMediaViewBubble.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor)
 		]
-		NSLayoutConstraint.activate(labelConstraints)
+		NSLayoutConstraint.activate(contentMediaViewBubbleConstraints)
 
 	//Image
-		contentViewBubble.addSubview(imageViewBubble)
+		contentMediaViewBubble.addSubview(imageViewBubble)
 		imageViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		imageConstraints = [
-			imageViewBubble.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
-			imageViewBubble.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
-			imageViewBubble.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
-			imageViewBubble.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right),
+			imageViewBubble.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
+			imageViewBubble.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
+			imageViewBubble.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			imageViewBubble.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
 		]
 		imageViewBubble.isHidden = true
 		
 	//Video
-		contentViewBubble.addSubview(imageVideoViewBubble)
+		contentMediaViewBubble.addSubview(imageVideoViewBubble)
 		imageVideoViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		videoConstraints = [
-			imageVideoViewBubble.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
-			imageVideoViewBubble.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
-			imageVideoViewBubble.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
-			imageVideoViewBubble.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+			imageVideoViewBubble.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
+			imageVideoViewBubble.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
+			imageVideoViewBubble.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			imageVideoViewBubble.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		if #available(iOS 13.0, *) {
 			imagePlayViewBubble.image = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -323,16 +324,44 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		imageVideoViewBubble.isHidden = true
 		
 	//RecordingPlayer
-		contentViewBubble.addSubview(recordingView)
+		contentMediaViewBubble.addSubview(recordingView)
 		recordingView.translatesAutoresizingMaskIntoConstraints = false
 		recordingConstraints = [
-			recordingView.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
-			recordingView.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
-			recordingView.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
-			recordingView.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+			recordingView.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
+			recordingView.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
+			recordingView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			recordingView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		recordingView.height(50.0).width(280).done()
 		recordingView.isHidden = true
+		
+	//Text
+		label.numberOfLines = 0
+		label.lineBreakMode = .byWordWrapping
+		
+		contentViewBubble.addSubview(label)
+		label.translatesAutoresizingMaskIntoConstraints = false
+		labelConstraints = [
+			label.topAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.top),
+			label.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			label.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			label.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+		]
+		
+		labelTopConstraints = [
+			label.topAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor),
+			label.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
+			label.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
+			label.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+		]
+		
+		labelHiddenConstraints = [
+			label.topAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor),
+			label.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor)
+		]
+		
+		//label.backgroundColor = .red
+		NSLayoutConstraint.activate(labelConstraints)
 		
 	//Meeting
 		contentViewBubble.addSubview(meetingView)
@@ -360,10 +389,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		recordingView.addSubview(recordingWaveView)
 		recordingWaveView.translatesAutoresizingMaskIntoConstraints = false
 		recordingWaveConstraints = [
-			recordingWaveView.topAnchor.constraint(equalTo: contentViewBubble.topAnchor, constant: labelInset.top),
-			recordingWaveView.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: labelInset.bottom),
-			recordingWaveView.leadingAnchor.constraint(equalTo: contentViewBubble.leadingAnchor, constant: labelInset.left),
-			recordingWaveView.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: labelInset.right)
+			recordingWaveView.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
+			recordingWaveView.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
+			recordingWaveView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			recordingWaveView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
 		
 		recordingWaveView.progressViewStyle = .bar
@@ -395,19 +424,9 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 		}
 		
-		NSLayoutConstraint.deactivate(labelConstraints)
-		NSLayoutConstraint.deactivate(imageConstraints)
-		NSLayoutConstraint.deactivate(videoConstraints)
-		NSLayoutConstraint.deactivate(playButtonConstraints)
 		NSLayoutConstraint.activate(recordingConstraints)
 		NSLayoutConstraint.activate(recordingWaveConstraints)
-		label.isHidden = true
-		imageViewBubble.isHidden = true
-		imageVideoViewBubble.isHidden = true
 		recordingView.isHidden = false
-		
-		imageViewBubble.image = nil
-		imageVideoViewBubble.image = nil
 	}
 	
 	func initReplyView(){
@@ -584,6 +603,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				
 				
 				NSLayoutConstraint.deactivate(labelConstraints)
+				NSLayoutConstraint.deactivate(labelTopConstraints)
+				NSLayoutConstraint.activate(labelHiddenConstraints)
 				NSLayoutConstraint.deactivate(imageConstraints)
 				NSLayoutConstraint.deactivate(videoConstraints)
 				NSLayoutConstraint.deactivate(playButtonConstraints)
@@ -601,68 +622,55 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				meetingView.isHidden = false
 				
 			}else {
+				NSLayoutConstraint.deactivate(labelConstraints)
+				NSLayoutConstraint.deactivate(labelTopConstraints)
+				NSLayoutConstraint.activate(labelHiddenConstraints)
+				NSLayoutConstraint.deactivate(imageConstraints)
+				NSLayoutConstraint.deactivate(videoConstraints)
+				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				NSLayoutConstraint.deactivate(meetingConstraints)
+				label.isHidden = true
+				imageViewBubble.isHidden = true
+				imageVideoViewBubble.isHidden = true
+				recordingView.isHidden = true
+				
+				imageViewBubble.image = nil
+				imageVideoViewBubble.image = nil
+				
+				meetingView.isHidden = true
 				event.chatMessage!.contents.forEach { content in
 					if content.type == "text"{
 						label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
+						if event.chatMessage!.contents.count > 1 {
+							NSLayoutConstraint.deactivate(labelConstraints)
+							NSLayoutConstraint.activate(labelTopConstraints)
+						}else{
+							NSLayoutConstraint.activate(labelConstraints)
+							NSLayoutConstraint.deactivate(labelTopConstraints)
+						}
 						
-						NSLayoutConstraint.activate(labelConstraints)
-						NSLayoutConstraint.deactivate(imageConstraints)
-						NSLayoutConstraint.deactivate(videoConstraints)
-						NSLayoutConstraint.deactivate(playButtonConstraints)
-						NSLayoutConstraint.deactivate(recordingConstraints)
-						NSLayoutConstraint.deactivate(recordingWaveConstraints)
-						NSLayoutConstraint.deactivate(meetingConstraints)
+						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
-						imageViewBubble.isHidden = true
-						imageVideoViewBubble.isHidden = true
-						recordingView.isHidden = true
-						
-						imageViewBubble.image = nil
-						imageVideoViewBubble.image = nil
-						
-						meetingView.isHidden = true
+					
 						
 					}else if content.type == "image"{
 						if let imageMessage = UIImage(named: content.filePath){
 							imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
 						}
-						
-						NSLayoutConstraint.deactivate(labelConstraints)
+
 						NSLayoutConstraint.activate(imageConstraints)
-						NSLayoutConstraint.deactivate(videoConstraints)
-						NSLayoutConstraint.deactivate(playButtonConstraints)
-						NSLayoutConstraint.deactivate(recordingConstraints)
-						NSLayoutConstraint.deactivate(recordingWaveConstraints)
-						NSLayoutConstraint.deactivate(meetingConstraints)
-						label.isHidden = true
 						imageViewBubble.isHidden = false
-						imageVideoViewBubble.isHidden = true
-						recordingView.isHidden = true
-						
-						imageVideoViewBubble.image = nil
-						
-						meetingView.isHidden = true
 						
 					}else if content.type == "video"{
 						if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
 							imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
 						}
-						
-						NSLayoutConstraint.deactivate(labelConstraints)
-						NSLayoutConstraint.deactivate(imageConstraints)
+
 						NSLayoutConstraint.activate(videoConstraints)
 						NSLayoutConstraint.activate(playButtonConstraints)
-						NSLayoutConstraint.deactivate(recordingConstraints)
-						NSLayoutConstraint.deactivate(recordingWaveConstraints)
-						NSLayoutConstraint.deactivate(meetingConstraints)
-						label.isHidden = true
-						imageViewBubble.isHidden = true
 						imageVideoViewBubble.isHidden = false
-						recordingView.isHidden = true
-						
-						imageViewBubble.image = nil
-						
-						meetingView.isHidden = true
 						
 					}else if content.type == "audio"{
 						
