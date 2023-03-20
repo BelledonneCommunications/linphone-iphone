@@ -116,6 +116,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	let recordingView = UIView()
 	
 	var isPlayingVoiceRecording = false
+    
+    var chatMessage: ChatMessage?
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -524,7 +526,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	}
 	
 	func configure(event: EventLog) {
-        
+        chatMessage = event.chatMessage
 		if event.chatMessage != nil {
 			contentBubble.isHidden = false
 			eventMessageView.isHidden = true
@@ -705,7 +707,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 						
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
-					
 						
 					}else if content.type == "image"{
 						
@@ -731,14 +732,12 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							
 							if(content.isFile){
 								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
+                                print("ChatConversationTableViewSwift collectionview \(content.filePath)")
                                 imagesGridContentCollection.append(content)
 								imagesGridURLCollection.append(URL(string: content.filePath)!)
 								imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 								collectionViewImagesGrid.insertItems(at: [indexPath])
 							}
-							
-							NSLayoutConstraint.activate(imageConstraints)
-							imageViewBubble.isHidden = false
 						}
 
 					}else if content.type == "video"{
@@ -765,6 +764,11 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				}
                 if imagesGridCollectionView.count == 1 {
                     collectionViewImagesGrid.width(138).done()
+                }
+                
+                if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+                    NSLayoutConstraint.activate(imageConstraints)
+                    imageViewBubble.isHidden = false
                 }
 			}
 		}else{
@@ -977,25 +981,19 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                 downloadSpacingMulti.size(w: 138, h: 14).done()
                 downloadImageViewMulti.center = CGPoint(x: 69, y: 40)
                 
-                /*
-                downloadStackViewMulti.translatesAutoresizingMaskIntoConstraints = false
-                let downloadStackViewConstraintsMulti = [
-                    downloadStackViewMulti.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
-                    downloadStackViewMulti.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
-                    downloadStackViewMulti.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
-                    downloadStackViewMulti.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
-                ]
-                
-                NSLayoutConstraint.activate(downloadStackViewConstraintsMulti)
-                 */
-                
                 downloadNameLabelMulti.text = imagesGridContentCollection[indexPath.row].name.replacingOccurrences(of: imagesGridContentCollection[indexPath.row].name.dropFirst(6).dropLast(8), with: "...")
 
                 let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
                 let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(Float(imagesGridContentCollection[indexPath.row].fileSize / 1000000)) Mo)", attributes: underlineAttribute)
                 downloadButtonLabelMulti.attributedText = underlineAttributedString
                 downloadButtonLabelMulti.onClick {
-                    print("ChatConversationTableViewSwift collectionview \(self.imagesGridContentCollection[indexPath.row].name) downloaded")
+                    DispatchQueue.main.async(execute: {
+                        self.imagesGridContentCollection[indexPath.row].filePath = LinphoneManager.imagesDirectory() + self.imagesGridContentCollection[indexPath.row].name
+                        self.chatMessage!.downloadContent(content: self.imagesGridContentCollection[indexPath.row])
+                    })
+                }
+                if(linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1 && self.chatMessage!.isFileTransferInProgress){
+                    downloadButtonLabelMulti.isHidden = true
                 }
             } else {
                 let imageCell = imagesGridCollectionView[indexPath.row]
