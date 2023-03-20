@@ -53,6 +53,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var recordingConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
+    var downloadStackViewConstraints: [NSLayoutConstraint] = []
 	
 	var eventMessageLineView: UIView = UIView(frame: .zero)
 	var eventMessageLabelView: UIView = UIView(frame: .zero)
