@@ -33,6 +33,7 @@ target 'linphone' do
 	pod 'SnapKit', '~> 5.6.0'
         pod 'DropDown'
         pod 'IQKeyboardManager'
+  pod 'SDWebImage'
 	all_pods
 
 end

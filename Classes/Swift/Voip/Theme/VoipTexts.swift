@@ -205,6 +205,8 @@ import UIKit
 	@objc static let bubble_chat_event_message_lime_changed_for = NSLocalizedString("LIME identity key changed for %@",comment:"").replacingOccurrences(of: "%@", with: "")
 	@objc static let bubble_chat_event_message_attack_detected = NSLocalizedString("Man-in-the-middle attack detected",comment:"")
 	@objc static let bubble_chat_event_message_attack_detected_for = NSLocalizedString("Man-in-the-middle attack detected for %@",comment:"").replacingOccurrences(of: "%@", with: "")
+    
+    @objc static let bubble_chat_download_file = NSLocalizedString("Download",comment:"")
 	
 	// FROM ANDROID END
 	
