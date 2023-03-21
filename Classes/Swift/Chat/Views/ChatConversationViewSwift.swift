@@ -168,6 +168,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				self.tableController.scrollBadge!.isHidden = false
 				self.tableController.scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.unread_msg+1)"
 			}
+			
+			self.tableControllerSwift.refreshData()
 		}
 
 		ChatConversationViewModel.sharedModel.stateChanged.observe { state in

@@ -104,6 +104,31 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         }
     }
 	
+	func scrollToBottom(){
+		self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .bottom, animated: true)
+	}
+	
+	func refreshData(){
+		let indexBottom = self.collectionView.indexPathsForVisibleItems.sorted().first?.row
+		let offset = self.collectionView.contentOffset
+		print("MultilineMessageCell configure \(offset) \(indexBottom)")
+		collectionView.reloadData()
+		self.collectionView.scrollToItem(at: IndexPath(row: indexBottom! + 1, section: 0), at: .top, animated: false)
+
+		/*
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+			let offsetIndex = self.collectionView.contentOffset
+			print("MultilineMessageCell configure \(offsetIndex)")
+			self.collectionView.setContentOffset(CGPoint(x: self.collectionView.contentOffset.x, y: self.collectionView.contentOffset.y + offset.y + 10), animated: false)
+		}
+		 */
+		
+		//self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .bottom, animated: false)
+		//DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+		//	self.scrollToBottom()
+		//}
+	}
+	
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell

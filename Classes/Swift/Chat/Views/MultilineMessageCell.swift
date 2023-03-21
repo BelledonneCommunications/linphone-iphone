@@ -1175,7 +1175,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			
 			downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
 			downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
-			//downloadContentCollection[indexTransferProgress]!.downloadProgressBar.isHidden = false
 		}
 		
 		DispatchQueue.main.async(execute: { [self] in
@@ -1189,7 +1188,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				indexTransferProgress = -1
 			} else {
 				downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
-				//downloadContentCollection[indexTransferProgress]!.downloadProgressBar.setProgress(p, animated: true)
 			}
 		})
 	}
