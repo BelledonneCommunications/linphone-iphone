@@ -46,7 +46,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var recordingConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
-    var downloadStackViewConstraints: [NSLayoutConstraint] = []
 	
 	let eventMessageLineView: UIView = UIView(frame: .zero)
 	let eventMessageLabelView: UIView = UIView(frame: .zero)
@@ -106,6 +105,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var imagesGridCollectionView : [UIImage?] = []
 	var imagesGridURLCollection : [URL?] = []
     var imagesGridContentCollection : [Content] = []
+	var downloadContentCollection: [DownloadMessageCell?] = []
 	
 	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
 	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
@@ -118,6 +118,9 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var isPlayingVoiceRecording = false
     
     var chatMessage: ChatMessage?
+	var chatMessageDelegate: ChatMessageDelegate? = nil
+	
+	var indexTransferProgress: Int = -1
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -527,6 +530,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	
 	func configure(event: EventLog) {
         chatMessage = event.chatMessage
+		addMessageDelegate()
 		if event.chatMessage != nil {
 			contentBubble.isHidden = false
 			eventMessageView.isHidden = true
@@ -795,6 +799,16 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		}
 	}
 	
+	
+	func addMessageDelegate(){
+		chatMessageDelegate = ChatMessageDelegateStub(
+			onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) -> Void in
+				self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
+			}
+		)
+		chatMessage?.addDelegate(delegate: chatMessageDelegate!)
+	}
+	
 	override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
 		label.preferredMaxLayoutWidth = (UIScreen.main.bounds.size.width*3/4)
 		layoutAttributes.bounds.size.height = systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
@@ -953,49 +967,29 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			cell.addSubview(viewCell)
             
             if imagesGridURLCollection[indexPath.row] == nil {
-                let downloadStackViewMulti = UIStackView()
-                let downloadViewMulti = UIView()
-                let downloadImageViewMulti = UIImageView(image: UIImage(named: "file_picture_default"))
-                let downloadNameLabelMulti = StyledLabel(VoipTheme.chat_conversation_download_button)
-                let downloadButtonLabelMulti = StyledLabel(VoipTheme.chat_conversation_download_button)
-                let downloadSpacingMulti = UIView()
-                
-                downloadStackViewMulti.axis = .vertical;
-                downloadStackViewMulti.distribution = .fill;
-                downloadStackViewMulti.alignment = .center;
-                
-                cell.addSubview(downloadStackViewMulti)
-                downloadStackViewMulti.addArrangedSubview(downloadViewMulti)
-                downloadViewMulti.addSubview(downloadImageViewMulti)
-                downloadStackViewMulti.addArrangedSubview(downloadNameLabelMulti)
-                downloadStackViewMulti.addArrangedSubview(downloadButtonLabelMulti)
-                downloadStackViewMulti.addArrangedSubview(downloadSpacingMulti)
-                
-    
-                downloadStackViewMulti.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
-                
-                downloadStackViewMulti.size(w: 138, h: 138).done()
-                downloadViewMulti.size(w: 138, h: 80).done()
-                downloadNameLabelMulti.size(w: 130, h: 22).done()
-                downloadButtonLabelMulti.size(w: 130, h: 22).done()
-                downloadSpacingMulti.size(w: 138, h: 14).done()
-                downloadImageViewMulti.center = CGPoint(x: 69, y: 40)
-                
-                downloadNameLabelMulti.text = imagesGridContentCollection[indexPath.row].name.replacingOccurrences(of: imagesGridContentCollection[indexPath.row].name.dropFirst(6).dropLast(8), with: "...")
+				let  downloadView = DownloadMessageCell()
+				downloadContentCollection.append(downloadView)
+				downloadView.content = imagesGridContentCollection[indexPath.row]
+				downloadView.size(w: 138, h: 138).done()
+				viewCell.addSubview(downloadView)
 
+				downloadView.downloadNameLabel.text = imagesGridContentCollection[indexPath.row].name.replacingOccurrences(of: imagesGridContentCollection[indexPath.row].name.dropFirst(6).dropLast(8), with: "...")
+				
                 let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-                let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(Float(imagesGridContentCollection[indexPath.row].fileSize / 1000000)) Mo)", attributes: underlineAttribute)
-                downloadButtonLabelMulti.attributedText = underlineAttributedString
-                downloadButtonLabelMulti.onClick {
-                    DispatchQueue.main.async(execute: {
-                        self.imagesGridContentCollection[indexPath.row].filePath = LinphoneManager.imagesDirectory() + self.imagesGridContentCollection[indexPath.row].name
-                        self.chatMessage!.downloadContent(content: self.imagesGridContentCollection[indexPath.row])
-                    })
+				let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(imagesGridContentCollection[indexPath.row].fileSize) / 1000000)) Mo)", attributes: underlineAttribute)
+				downloadView.downloadButtonLabel.attributedText = underlineAttributedString
+				downloadView.downloadButtonLabel.onClick {
+					self.imagesGridContentCollection[indexPath.row].filePath = LinphoneManager.imagesDirectory() + self.imagesGridContentCollection[indexPath.row].name
+					let _ = self.chatMessage!.downloadContent(content: self.imagesGridContentCollection[indexPath.row])
                 }
+				downloadView.downloadButtonLabel.isUserInteractionEnabled = true
+				
                 if(linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1 && self.chatMessage!.isFileTransferInProgress){
-                    downloadButtonLabelMulti.isHidden = true
+					downloadView.downloadButtonLabel.isHidden = true
                 }
             } else {
+				downloadContentCollection.append(nil)
+				
                 let imageCell = imagesGridCollectionView[indexPath.row]
                 let myImageView = UIImageView()
                 
@@ -1166,6 +1160,36 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		default:
 			return VoipTexts.bubble_chat_event_message_ephemeral_unexpected_duration
 		}
+	}
+	
+	func file_transfer_progress_indication_recv(message: ChatMessage, content: Content, offset: Int, total: Int) {
+		let p =  Float(offset) / Float(total)
+		
+		if indexTransferProgress == -1 {
+			for indexItem in 0...imagesGridContentCollection.count - 1 {
+				if imagesGridContentCollection[indexItem].name == content.name {
+					indexTransferProgress = indexItem
+					break
+				}
+			}
+			
+			downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
+			downloadContentCollection[indexTransferProgress]!.downloadProgressBar.isHidden = false
+		}
+		
+		DispatchQueue.main.async(execute: { [self] in
+			if (offset == total) {
+				downloadContentCollection[indexTransferProgress] = nil
+				imagesGridContentCollection[indexTransferProgress] = content
+				imagesGridURLCollection[indexTransferProgress] = (URL(string: content.filePath)!)
+				imagesGridCollectionView[indexTransferProgress] = getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!
+				
+				collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+				indexTransferProgress = -1
+			} else {
+				downloadContentCollection[indexTransferProgress]!.downloadProgressBar.setProgress(p, animated: true)
+			}
+		})
 	}
 }
 

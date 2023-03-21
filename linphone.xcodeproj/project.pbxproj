@@ -946,6 +946,7 @@
 		D7421D9E29228A5200290CAB /* DetailChatRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* DetailChatRoomFragment.swift */; };
 		D7013DB82940AA12004EEAAE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7013DB72940AA12004EEAAE /* MessageView.swift */; };
 		D7097B35296D684900AEF6C5 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7097B34296D684900AEF6C5 /* FileType.swift */; };
+		D71418E329C9B4E0002EEF75 /* DownloadMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71418E229C9B4E0002EEF75 /* DownloadMessageCell.swift */; };
 		D7421D9E29228A5200290CAB /* ChatConversationViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
@@ -2207,6 +2208,7 @@
 		D59A11B7EA2D725CDEB15DDF /* Pods_msgNotificationContent.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_msgNotificationContent.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7013DB72940AA12004EEAAE /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		D7097B34296D684900AEF6C5 /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
+		D71418E229C9B4E0002EEF75 /* DownloadMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMessageCell.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewSwift.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
@@ -3889,6 +3891,7 @@
 				D779D39929A4C285007B8087 /* MultilineMessageCell.swift */,
 				D7C6DE812948CF3100756E03 /* DropDownCell.swift */,
 				D7C6DE822948CF3100756E03 /* DropDownCell.xib */,
+				D71418E229C9B4E0002EEF75 /* DownloadMessageCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -5334,6 +5337,7 @@
 				C63F7248285A24B10066163B /* MicMuted.swift in Sources */,
 				C63F7243285A24B10066163B /* AudioRoutesView.swift in Sources */,
 				D3807FF415C2894A005BE9BC /* IASKSettingsStoreUserDefaults.m in Sources */,
+				D71418E329C9B4E0002EEF75 /* DownloadMessageCell.swift in Sources */,
 				C63F7240285A24B10066163B /* VoipTheme.swift in Sources */,
 				C63F7265285A24B10066163B /* VoipExtraButton.swift in Sources */,
 				639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */,
