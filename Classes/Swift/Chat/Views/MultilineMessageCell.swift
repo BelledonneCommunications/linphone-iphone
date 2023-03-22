@@ -736,7 +736,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							
 							if(content.isFile){
 								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
-                                print("ChatConversationTableViewSwift collectionview \(content.filePath)")
                                 imagesGridContentCollection.append(content)
 								imagesGridURLCollection.append(URL(string: content.filePath)!)
 								imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
@@ -745,13 +744,34 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 						}
 
 					}else if content.type == "video"{
-						if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
-							imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+						if imagesGridCollectionView.count > 1 {
+							if(content.isFile){
+								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
+								imagesGridContentCollection.append(content)
+								imagesGridURLCollection.append(URL(string: content.filePath)!)
+								imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+								collectionViewImagesGrid.insertItems(at: [indexPath])
+							}
+							
+							collectionViewImagesGrid.isHidden = false
+							NSLayoutConstraint.activate(imagesGridConstraints)
+							imageVideoViewBubble.image = nil
+							NSLayoutConstraint.deactivate(imageConstraints)
+							imageVideoViewBubble.isHidden = true
+							
+						}else{
+							if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+								imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+							}
+							
+							if(content.isFile){
+								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
+								imagesGridContentCollection.append(content)
+								imagesGridURLCollection.append(URL(string: content.filePath)!)
+								imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+								collectionViewImagesGrid.insertItems(at: [indexPath])
+							}
 						}
-
-						NSLayoutConstraint.activate(videoConstraints)
-						NSLayoutConstraint.activate(playButtonConstraints)
-						imageVideoViewBubble.isHidden = false
 						
 					}else if content.type == "audio"{
 						
@@ -761,7 +781,16 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 						initPlayerAudio(message: event.chatMessage!)
 						
 					}else{
-						//createBubbleOther()
+						if(content.isFile){
+							let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
+							imagesGridContentCollection.append(content)
+							imagesGridURLCollection.append(URL(string: content.filePath)!)
+							imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							collectionViewImagesGrid.insertItems(at: [indexPath])
+						}
+						
+						collectionViewImagesGrid.isHidden = false
+						NSLayoutConstraint.activate(imagesGridConstraints)
 					}}
 				if imagesGridCollectionView.count > 0 {
 					self.collectionViewImagesGrid.layoutIfNeeded()
@@ -769,11 +798,25 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                 if imagesGridCollectionView.count == 1 {
                     collectionViewImagesGrid.width(138).done()
                 }
+				
+				if imagesGridCollectionView.count == 2 {
+					collectionViewImagesGrid.isHidden = false
+					NSLayoutConstraint.activate(imagesGridConstraints)
+					imageVideoViewBubble.image = nil
+					NSLayoutConstraint.deactivate(imageConstraints)
+					imageVideoViewBubble.isHidden = true
+				}
                 
                 if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
                     NSLayoutConstraint.activate(imageConstraints)
                     imageViewBubble.isHidden = false
                 }
+				
+				if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+					NSLayoutConstraint.activate(videoConstraints)
+					NSLayoutConstraint.activate(playButtonConstraints)
+					imageVideoViewBubble.isHidden = false
+				}
 			}
 		}else{
 			contentBubble.isHidden = true
@@ -979,7 +1022,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(imagesGridContentCollection[indexPath.row].fileSize) / 1000000)) Mo)", attributes: underlineAttribute)
 				downloadView.downloadButtonLabel.attributedText = underlineAttributedString
 				downloadView.downloadButtonLabel.onClick {
-					self.imagesGridContentCollection[indexPath.row].filePath = LinphoneManager.imagesDirectory() + self.imagesGridContentCollection[indexPath.row].name
+					print("MultilineMessageCell collectionView onClick: \(LinphoneManager.imagesDirectory() + (self.imagesGridContentCollection[indexPath.row].name).filter { !$0.isWhitespace })")
+					self.imagesGridContentCollection[indexPath.row].filePath = LinphoneManager.imagesDirectory() + (self.imagesGridContentCollection[indexPath.row].name).filter { !$0.isWhitespace }
 					let _ = self.chatMessage!.downloadContent(content: self.imagesGridContentCollection[indexPath.row])
                 }
 				downloadView.downloadButtonLabel.isUserInteractionEnabled = true
@@ -1036,15 +1080,9 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 
 		var image: UIImage? = nil
 		if type == "video" {
-			image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
+			//image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
+			image = createThumbnailOfVideoFromFileURL(videoURL: filePath!)
 		} else if type == "image" {
-			/*
-			let data = NSData(contentsOfFile: filePath ?? "") as Data?
-			if let data {
-				image = UIImage(data: data)
-			}
-			 */
-
 			image = UIImage(named: filePath ?? "")
 		}
 		if let image {
