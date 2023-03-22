@@ -37,7 +37,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	
 	@objc var linphoneChatRoom: OpaquePointer? = nil
-	@objc let tableController = ChatConversationTableView()
 	@objc var tableControllerSwift = ChatConversationTableViewSwift()
 	@objc var pendingForwardMessage : OpaquePointer? = nil
 	@objc var sharingMedia : Bool = false
@@ -157,18 +156,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		ChatConversationViewModel.sharedModel.messageReceived.observe { message in
-			let isDisplayingBottomOfTable = self.tableController.tableView.indexPathsForVisibleRows?.last?.row == (self.tableController.totalNumberOfItems() ) - 1
-			self.tableController.addEventEntry(message?.getCobject)
-			
-			if isDisplayingBottomOfTable {
-				self.tableController.scroll(toBottom: true)
-				self.tableController.scrollBadge!.text = nil
-				self.tableController.scrollBadge!.isHidden = true
-			} else {
-				self.tableController.scrollBadge!.isHidden = false
-				self.tableController.scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.unread_msg+1)"
-			}
-			
 			self.tableControllerSwift.refreshData()
 		}
 
@@ -179,9 +166,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		ChatConversationViewModel.sharedModel.secureLevelChanged.observe { secure in
-			self.tableController.addEventEntry(secure?.getCobject)
 			self.updateParticipantLabel()
-			self.tableController.scroll(toBottom: true)
+			self.tableControllerSwift.scrollToBottomWithRelaod()
 			self.changeSecureLevel(secureLevel: ChatConversationViewModel.sharedModel.secureLevel != nil, imageBadge: ChatConversationViewModel.sharedModel.secureLevel)
 		}
 		
@@ -190,14 +176,12 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			if let subjectVM {
 				self.titleGroupLabel.text = subjectVM
 				self.titleLabel.text = subjectVM
-				self.tableController.addEventEntry(subject?.getCobject)
-				self.tableController.scroll(toBottom: true)
+				self.tableControllerSwift.scrollToBottomWithRelaod()
 			}
 		}
 
 		ChatConversationViewModel.sharedModel.eventLog.observe { event in
-			self.tableController.addEventEntry(event?.getCobject)
-			self.tableController.scroll(toBottom: true)
+			self.tableControllerSwift.scrollToBottomWithRelaod()
 		}
 		
 		ChatConversationViewModel.sharedModel.indexPathVM.observe { index in
@@ -229,7 +213,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.createChatConversation()
 	
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-		self.contentView.addSubview(tableController.tableView)
 		self.contentView.addSubview(tableControllerSwift.view)
 		
 		// Setup Autolayout constraints
@@ -239,19 +222,14 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		tableControllerSwift.view.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 0).isActive = true
 		tableControllerSwift.view.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
 		
-		tableController.chatRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		ChatConversationTableViewModel.sharedModel.chatRoom = ChatConversationViewModel.sharedModel.chatRoom
 		
-		refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
-		tableController.refreshControl = refreshControl
-		tableController.toggleSelectionButton = action1SelectAllButton
 		messageView.sendButton.onClickAction = onSendClick
 		messageView.pictureButton.onClickAction = alertAction
 		messageView.voiceRecordButton.onClickAction = onVrStart
 		recordingDeleteButton.onClickAction = cancelVoiceRecording
 		recordingPlayButton.onClickAction = onvrPlayPauseStop
 		recordingStopButton.onClickAction = onvrPlayPauseStop
-		tableController.tableView.separatorColor = .clear
 		
 		if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
 			messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
@@ -262,10 +240,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		handlePendingTransferIfAny()
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
-		tableController.reloadData()
 	}
 	
 	override func viewDidDisappear(_ animated: Bool) {
@@ -302,8 +276,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		self.messageView.pictureButton.isEnabled = true
 		
 		isComposingTextView.text = ""
-		
-		tableController.floatingScrollBackground?.isHidden = true;
 	}
 	
 	func goBackChatListView() {
@@ -630,36 +602,23 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	@objc func dismissOnTapOutsideOrCancel(){
 		self.dismiss(animated: true, completion: nil)
 	}
-	
-	@objc func refreshData() {
-		tableController.refreshData()
-		refreshControl.endRefreshing()
-		if tableController.totalNumberOfItems() == 0 {
-			return
-		}
-		tableController.loadData()
-		tableController.tableView.scrollToRow(
-			at: IndexPath(row: tableController.currentIndex, section: 0),
-			at: .top,
-			animated: false)
-	}
-	
+
 	override func editModeOn(){
 		super.editModeOn()
-		tableController.setEditing(true, animated: false)
+		//tableController.setEditing(true, animated: false)
 	}
 	
 	override func editModeOff(){
 		super.editModeOff()
-		tableController.setEditing(false, animated: false)
+		//tableController.setEditing(false, animated: false)
 	}
 	
 	override func selectDeselectAll(){
 		super.selectDeselectAll()
 		if(action1SelectAllButton.isHidden){
-			tableController.onSelectionToggle(action1SelectAllButton)
+			//tableController.onSelectionToggle(action1SelectAllButton)
 		}else{
-			tableController.onSelectionToggle(action1SelectAllButton)
+			//tableController.onSelectionToggle(action1SelectAllButton)
 		}
 	}
 	
@@ -677,9 +636,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			onCancelClick: { [self] in
 				onEditionChangeClick()},
 			onConfirmationClick: {
-				self.tableController.removeSelection(nil)
+				//self.tableController.removeSelection(nil)
 				self.editModeOff()
-				self.tableController.loadData()
+				//self.tableController.loadData()
 			}
 		)
 	}
@@ -762,7 +721,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		fileTransfer.text = messageView.messageText.text
 		fileTransfer.uploadFileContent(forSwift: ChatConversationViewModel.sharedModel.fileContext, urlList: ChatConversationViewModel.sharedModel.mediaURLCollection, for: ChatConversationViewModel.sharedModel.chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
 		messageView.messageText.text = ""
-		tableController.scroll(toBottom: true)
+		tableControllerSwift.scrollToBottomWithRelaod()
 		return true
 	}
 	
@@ -779,7 +738,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startUploadData(_ data: Data?, withType type: String?, withName name: String?, andMessage message: String?, rootMessage: ChatMessage?){
 		ChatConversationViewModel.sharedModel.startUploadData(data, withType: type, withName: name, andMessage: message, rootMessage: rootMessage)
-		tableController.scroll(toBottom: true)
+		tableControllerSwift.scrollToBottomWithRelaod()
 	}
 	
 	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
@@ -800,42 +759,21 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
 			}
 		}
-		var isBottomOfView = false
-		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
-			isBottomOfView = true
-		}
 		UIView.animate(withDuration: 0.3, animations: {
 			self.isComposingView.isHidden = !self.isComposingView.isHidden
 	   	})
-		if(isBottomOfView){
-			tableController.scroll(toBottom: false)
-		}
 	}
 	
 	func selectionMedia() {
-		var isBottomOfView = false
-		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
-			isBottomOfView = true
-		}
 		UIView.animate(withDuration: 0.3, animations: {
 			self.mediaSelector.isHidden = !self.mediaSelector.isHidden
 		})
-		if(isBottomOfView){
-			tableController.scroll(toBottom: false)
-		}
 	}
 	
 	func setRecordingVisible(visible : Bool) {
-		var isBottomOfView = false
-		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
-			isBottomOfView = true
-		}
 		UIView.animate(withDuration: 0.3, animations: {
 			self.recordingView.isHidden = visible
 		})
-		if(isBottomOfView){
-			tableController.scroll(toBottom: false)
-		}
 	}
 	
 	func initReplyView(_ visible: Bool, message: OpaquePointer?) {
@@ -895,16 +833,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			}
 			
 		}
-		var isBottomOfView = false
-		if (tableController.tableView.contentOffset.y + 1) >= (tableController.tableView.contentSize.height - tableController.tableView.frame.size.height) {
-			isBottomOfView = true
-	   	}
 		UIView.animate(withDuration: 0.3, animations: {
 			self.replyBubble.isHidden = !self.replyBubble.isHidden
 	   	})
-		if(isBottomOfView){
-			tableController.scroll(toBottom: false)
-		}
 	}
 	
 	@objc class func getKeyFromFileType(_ fileType: String?, fileName name: String?) -> String? {
@@ -1296,7 +1227,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startFileUpload(_ data: Data?, withName name: String?, rootMessage: ChatMessage?){
 		ChatConversationViewModel.sharedModel.startFileUpload(data, withName: name, rootMessage: rootMessage)
-		tableController.scroll(toBottom: true)
+		tableControllerSwift.scrollToBottomWithRelaod()
 	}
 	
 	@objc class func getFileUrl(_ name: String?) -> URL? {

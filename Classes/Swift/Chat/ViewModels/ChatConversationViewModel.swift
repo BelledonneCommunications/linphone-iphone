@@ -21,7 +21,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	
 	var mediaCount : Int = 0
 	var newMediaCount : Int = 0
-	var unread_msg : Int32 = 0
 	
 	var address: String? = nil
 	var participants: String? = nil
@@ -157,7 +156,6 @@ class ChatConversationViewModel: ControlsViewModel {
 		}
 		
 		messageReceived.value = event_log
-		unread_msg = linphone_chat_room_get_unread_messages_count(cr?.getCobject)
 	}
 	
 	func on_chat_room_state_changed(_ cr: ChatRoom?) {

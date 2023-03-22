@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public extension ChatConversationTableView {
+extension ChatConversationTableViewSwift {
 
 	private enum Constants {
 		static let trailingValue: CGFloat = 30.0
@@ -17,6 +17,7 @@ public extension ChatConversationTableView {
 		static let buttonWidth: CGFloat = 16.0
 	}
 	
+	/*
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -27,28 +28,15 @@ public extension ChatConversationTableView {
 		super.viewDidAppear(animated)
 		createFloatingButton()
 	}
+	 */
 	
 	override func viewDidDisappear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		self.floatingScrollButton?.removeFromSuperview()
 		self.floatingScrollBackground?.removeFromSuperview()
 	}
-
-	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-		if let lastCellRowIndex = tableView.indexPathsForVisibleRows?.last?.row {
-			if( lastCellRowIndex != self.totalNumberOfItems() - 1) {
-				self.floatingScrollButton?.isHidden = false
-				self.floatingScrollBackground?.isHidden = false;
-				self.scrollBadge?.isHidden = (self.scrollBadge?.text == nil)
-			} else {
-				self.floatingScrollButton?.isHidden = true
-				self.floatingScrollBackground?.isHidden = true;
-				self.scrollBadge?.text = nil
-			}
-		}
-	}
 	
-	private func createFloatingButton() {
+	func createFloatingButton() {
 		self.floatingScrollButton = UIButton(type: .custom)
 		self.floatingScrollBackground = UIButton(type: .custom)
 		self.floatingScrollButton?.translatesAutoresizingMaskIntoConstraints = false
@@ -97,7 +85,7 @@ public extension ChatConversationTableView {
 	}
 	
 	@IBAction private func scrollToBottomButtonAction() {
-		scroll(toBottom: true)
+		scrollToBottomWithRelaod()
 	}
 	
 	

@@ -29,6 +29,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	var basic :Bool = false
 	
+	var floatingScrollButton : UIButton?
+	var scrollBadge : UILabel?
+	var floatingScrollBackground : UIButton?
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -82,13 +86,13 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
-		//ChatConversationTableViewModel.sharedModel.updateData()
 		collectionView.reloadData()
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
+		createFloatingButton()
 		if ChatConversationTableViewModel.sharedModel.getNBMessages() > 0 {
-			self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+			scrollToBottom()
 		}
 	}
     
@@ -106,33 +110,50 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func scrollToBottom(){
 		self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .bottom, animated: true)
+		ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+		scrollBadge!.text = "0"
+	}
+	
+	func scrollToBottomWithRelaod(){
+		let isDisplayingBottomOfTable = collectionView.indexPathsForVisibleItems.sorted().first?.row == 0
+		collectionView.reloadData()
+		if isDisplayingBottomOfTable {
+			self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .bottom, animated: false)
+		}
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+			self.scrollToBottom()
+		}
 	}
 	
 	func refreshData(){
-		let indexBottom = self.collectionView.indexPathsForVisibleItems.sorted().first?.row
-		let offset = self.collectionView.contentOffset
-		print("MultilineMessageCell configure \(offset) \(indexBottom)")
+		let indexBottom = collectionView.indexPathsForVisibleItems.sorted().first?.row
+		let isDisplayingBottomOfTable = collectionView.indexPathsForVisibleItems.sorted().first?.row == 0
 		collectionView.reloadData()
-		self.collectionView.scrollToItem(at: IndexPath(row: indexBottom! + 1, section: 0), at: .top, animated: false)
 
-		/*
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-			let offsetIndex = self.collectionView.contentOffset
-			print("MultilineMessageCell configure \(offsetIndex)")
-			self.collectionView.setContentOffset(CGPoint(x: self.collectionView.contentOffset.x, y: self.collectionView.contentOffset.y + offset.y + 10), animated: false)
+		if isDisplayingBottomOfTable {
+			self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .bottom, animated: false)
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+				self.scrollToBottom()
+			}
+		} else {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+				self.collectionView.contentOffset = CGPoint(x: self.collectionView.contentOffset.x, y: self.collectionView.contentOffset.y + (self.collectionView.cellForItem(at: IndexPath(row: indexBottom! + 1, section: 0))?.frame.size.height)! + 2.0)
+			}
+			scrollBadge!.isHidden = false
+			scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
 		}
-		 */
-		
-		//self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .bottom, animated: false)
-		//DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-		//	self.scrollToBottom()
-		//}
 	}
 	
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-
+		
+		if(indexPath.row <= 1) {
+			self.floatingScrollButton?.isHidden = true
+			self.floatingScrollBackground?.isHidden = true;
+			self.scrollBadge?.text = "0"
+		}
+		
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 			cell.configure(event: event)
 
@@ -158,6 +179,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
 		if cell.isPlayingVoiceRecording {
 			AudioPlayer.stopSharedPlayer()
+		}
+		
+		if(indexPath.row <= 1) {
+			self.floatingScrollButton?.isHidden = false
+			self.floatingScrollBackground?.isHidden = false;
+			self.scrollBadge?.isHidden = true
 		}
 	}
 	
