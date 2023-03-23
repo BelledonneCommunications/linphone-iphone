@@ -11,7 +11,7 @@ import linphonesw
 class DownloadMessageCell: UIView {
 	let downloadStackView = UIStackView()
 	let downloadView = UIView()
-	let downloadImageView = UIImageView(image: UIImage(named: "file_picture_default"))
+	var downloadImageView = UIImageView(image: UIImage(named: "file_default"))
 	let downloadNameLabel = StyledLabel(VoipTheme.chat_conversation_download_button)
 	let downloadButtonLabel = StyledLabel(VoipTheme.chat_conversation_download_button)
 	var circularProgressBarView = CircularProgressBarView()
@@ -53,6 +53,24 @@ class DownloadMessageCell: UIView {
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+    
+    func setFileType(fileName: String) {
+        let extensionFile = fileName.lowercased().components(separatedBy: ".").last
+
+        if extensionFile == "pdf" {
+            downloadImageView.image = UIImage(named: "file_pdf_default")
+        } else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "") {
+            downloadImageView.image = UIImage(named: "file_picture_default")
+        } else if ["mkv", "avi", "mov", "mp4"].contains(extensionFile ?? "") {
+            downloadImageView.image = UIImage(named: "file_video_default")
+            downloadImageView.frame = CGRect(x: 0, y: 0, width: 50, height: 40)
+            downloadImageView.center = CGPoint(x: 69, y: 40)
+        } else if ["wav", "au", "m4a"].contains(extensionFile ?? "") {
+            downloadImageView.image = UIImage(named: "file_audio_default")
+        } else {
+            downloadImageView.image = UIImage(named: "file_default")
+        }
+    }
 	
 	func setUpCircularProgressBarView(toValue: Float) {
 		

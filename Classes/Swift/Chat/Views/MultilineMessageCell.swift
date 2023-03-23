@@ -785,7 +785,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 							imagesGridContentCollection.append(content)
 							imagesGridURLCollection.append(URL(string: content.filePath)!)
-							imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							imagesGridCollectionView.append(getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: false)!)
 							collectionViewImagesGrid.insertItems(at: [indexPath])
 						}
 						
@@ -1017,12 +1017,12 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				viewCell.addSubview(downloadView)
 
 				downloadView.downloadNameLabel.text = imagesGridContentCollection[indexPath.row].name.replacingOccurrences(of: imagesGridContentCollection[indexPath.row].name.dropFirst(6).dropLast(8), with: "...")
-				
+                downloadView.setFileType(fileName: imagesGridContentCollection[indexPath.row].name)
+                
                 let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
 				let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(imagesGridContentCollection[indexPath.row].fileSize) / 1000000)) Mo)", attributes: underlineAttribute)
 				downloadView.downloadButtonLabel.attributedText = underlineAttributedString
 				downloadView.downloadButtonLabel.onClick {
-					print("MultilineMessageCell collectionView onClick: \(LinphoneManager.imagesDirectory() + (self.imagesGridContentCollection[indexPath.row].name).filter { !$0.isWhitespace })")
 					self.imagesGridContentCollection[indexPath.row].filePath = LinphoneManager.imagesDirectory() + (self.imagesGridContentCollection[indexPath.row].name).filter { !$0.isWhitespace }
 					let _ = self.chatMessage!.downloadContent(content: self.imagesGridContentCollection[indexPath.row])
                 }
@@ -1034,16 +1034,24 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
             } else {
 				downloadContentCollection.append(nil)
 				
-                let imageCell = imagesGridCollectionView[indexPath.row]
+                
                 let myImageView = UIImageView()
                 
                 if(FileType.init(imagesGridURLCollection[indexPath.row]!.pathExtension)?.getGroupTypeFromFile() == FileType.file_picture_default.rawValue || FileType.init(imagesGridURLCollection[indexPath.row]!.pathExtension)?.getGroupTypeFromFile() == FileType.file_video_default.rawValue){
-                    myImageView.image = imageCell
-                    //myImageView.sd_setImage(with: imagesGridURLCollection[indexPath.row], placeholderImage: UIImage(named: "file_picture_default"))
+                    myImageView.sd_setImage(with: imagesGridURLCollection[indexPath.row], placeholderImage: UIImage(named: "file_picture_default"), completed: {(_ image: UIImage?, _ error: Error?, _ cacheType: SDImageCacheType, _ imageURL: URL?) -> Void in
+                        myImageView.image = self.getImageFrom(self.imagesGridContentCollection[indexPath.row].getCobject, filePath: imageURL?.absoluteString, forReplyBubble: true)!
+                    })
                 }else{
-                    let fileNameText = imagesGridURLCollection[indexPath.row]!.lastPathComponent
-                    let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell!, forReplyBubble:false)
-                    myImageView.image = fileName
+                    //let fileNameText = imagesGridURLCollection[indexPath.row]!.lastPathComponent
+                    //print("ChatConversationTableViewSwift collectionview \(imagesGridURLCollection[indexPath.row]!.lastPathComponent)")
+                    //let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell!, forReplyBubble:true)
+                    
+                    imagesGridURLCollection[indexPath.row] = URL(string: imagesGridContentCollection[indexPath.row].filePath)
+                    imagesGridCollectionView[indexPath.row] = getImageFrom(imagesGridContentCollection[indexPath.row].getCobject, filePath: imagesGridURLCollection[indexPath.row]?.absoluteString, forReplyBubble: false)
+                    
+                    myImageView.image = imagesGridCollectionView[indexPath.row]
+                    //print("ChatConversationTableViewSwift collectionview \(imagesGridURLCollection[indexPath.row]!.absoluteString)")
+                    //myImageView.image = getImageFrom(imagesGridContentCollection[indexPath.row].getCobject, filePath: imagesGridURLCollection[indexPath.row]?.absoluteString, forReplyBubble: true)
                 }
                 
                 myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
@@ -1080,7 +1088,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 
 		var image: UIImage? = nil
 		if type == "video" {
-			//image = UIChatBubbleTextCell.getImageFromVideoUrl(URL(fileURLWithPath: filePath ?? ""))
 			image = createThumbnailOfVideoFromFileURL(videoURL: filePath!)
 		} else if type == "image" {
 			image = UIImage(named: filePath ?? "")
@@ -1093,20 +1100,20 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	}
 	
 	func getImageFromFileName(_ fileName: String?, forReplyBubble forReplyBubbble: Bool) -> UIImage? {
-		let `extension` = fileName?.lowercased().components(separatedBy: ".").last
+		let extensionFile = fileName?.lowercased().components(separatedBy: ".").last
 		var image: UIImage?
 		var text = fileName
 		if fileName?.contains("voice-recording") ?? false {
 			image = UIImage(named: "file_voice_default")
 			text = recordingDuration(LinphoneManager.validFilePath(fileName))
 		} else {
-			if `extension` == "pdf" {
+			if extensionFile == "pdf" {
 				image = UIImage(named: "file_pdf_default")
-			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(`extension` ?? "") {
+			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "") {
 				image = UIImage(named: "file_picture_default")
-			} else if ["mkv", "avi", "mov", "mp4"].contains(`extension` ?? "") {
+			} else if ["mkv", "avi", "mov", "mp4"].contains(extensionFile ?? "") {
 				image = UIImage(named: "file_video_default")
-			} else if ["wav", "au", "m4a"].contains(`extension` ?? "") {
+			} else if ["wav", "au", "m4a"].contains(extensionFile ?? "") {
 				image = UIImage(named: "file_audio_default")
 			} else {
 				image = UIImage(named: "file_default")
@@ -1227,18 +1234,20 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                     if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
                         imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
                         if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
-                            ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
                         }
                     } else if let imageMessage = UIImage(named: content.filePath){
                         imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
                         if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
                             ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
                         }
+                    } else {
+                        collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+                        indexTransferProgress = -1
                     }
+                }else{
+                    collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+                    indexTransferProgress = -1
                 }
-				
-				collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
-				indexTransferProgress = -1
 			} else {
 				downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
 			}
