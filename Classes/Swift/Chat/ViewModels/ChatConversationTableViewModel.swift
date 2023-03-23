@@ -18,7 +18,7 @@ class ChatConversationTableViewModel: ControlsViewModel {
  
 	var chatRoom: ChatRoom? = nil
 	
-	var nbEventDisplayed = MutableLiveData<Int>(20)
+    var refreshIndexPath = MutableLiveData<Int>(0)
 	
 	override init() {
 		super.init()
@@ -68,4 +68,8 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	func eventTypeIsOfInterestForOne(toOneRoom type: EventLogType) -> Bool {
 		return type.rawValue == LinphoneEventLogTypeConferenceChatMessage.rawValue || type.rawValue == LinphoneEventLogTypeConferenceEphemeralMessageEnabled.rawValue || type.rawValue == LinphoneEventLogTypeConferenceEphemeralMessageDisabled.rawValue || type.rawValue == LinphoneEventLogTypeConferenceEphemeralMessageLifetimeChanged.rawValue
 	}
+    
+    func reloadCollectionViewCell(){
+        refreshIndexPath.value! += 1
+    }
 }

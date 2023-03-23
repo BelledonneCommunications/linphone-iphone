@@ -44,10 +44,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		}
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
-		
-		ChatConversationTableViewModel.sharedModel.nbEventDisplayed.observe { index in
-			self.collectionView.reloadData()
-		}
+        
+        ChatConversationTableViewModel.sharedModel.refreshIndexPath.observe { index in
+            self.collectionView.reloadData()
+        }
 		
 		
 		collectionView.isUserInteractionEnabled = true
@@ -155,7 +155,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		}
 		
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
-			cell.configure(event: event)
+            cell.configure(event: event, selfIndexPathConfigure: indexPath)
 
 			if (event.chatMessage != nil){
 				cell.onLongClickOneClick {
@@ -377,4 +377,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		message.chatRoom?.deleteMessage(message: message)
 		collectionView.reloadData()
 	}
+    
+    public func reloadCollectionViewCell(indexPath: IndexPath){
+        collectionView.reloadItems(at: [indexPath])
+    }
 }

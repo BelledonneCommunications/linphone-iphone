@@ -528,7 +528,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		super.prepareForReuse()
 	}
 	
-	func configure(event: EventLog) {
+    func configure(event: EventLog, selfIndexPathConfigure: IndexPath) {
         chatMessage = event.chatMessage
 		addMessageDelegate()
 		if event.chatMessage != nil {
@@ -1221,6 +1221,21 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				imagesGridContentCollection[indexTransferProgress] = content
 				imagesGridURLCollection[indexTransferProgress] = (URL(string: content.filePath)!)
 				imagesGridCollectionView[indexTransferProgress] = getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!
+                
+                
+                if (imagesGridCollectionView.count <= 1){
+                    if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+                        imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+                        if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+                            ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+                        }
+                    } else if let imageMessage = UIImage(named: content.filePath){
+                        imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+                        if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+                            ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+                        }
+                    }
+                }
 				
 				collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
 				indexTransferProgress = -1
