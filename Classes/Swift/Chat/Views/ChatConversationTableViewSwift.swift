@@ -112,17 +112,21 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
         collectionView.reloadData()
 		ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+        self.floatingScrollButton?.isHidden = true
+        self.floatingScrollBackground?.isHidden = true
 		scrollBadge!.text = "0"
 	}
     
     func scrollToBottomNewMessage(){
         self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
         ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+        self.floatingScrollButton?.isHidden = true
+        self.floatingScrollBackground?.isHidden = true
         scrollBadge!.text = "0"
     }
 	
 	func scrollToBottomWithRelaod(){
-		let isDisplayingBottomOfTable = collectionView.indexPathsForVisibleItems.sorted().first?.row == 0
+		let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
 		collectionView.reloadData()
         if isDisplayingBottomOfTable {
             self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
@@ -138,7 +142,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func refreshData(){
 		let indexBottom = collectionView.indexPathsForVisibleItems.sorted().first?.row
-		let isDisplayingBottomOfTable = collectionView.indexPathsForVisibleItems.sorted().first?.row == 0
+		let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
         let sizeCell = (self.collectionView.cellForItem(at: IndexPath(row: indexBottom!, section: 0))?.frame.size.height)
 		collectionView.reloadData()
 
@@ -155,20 +159,30 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
 		}
 	}
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let contentOffsetY = scrollView.contentOffset.y
+        if contentOffsetY <= 20 /* Needed offset */ {
+            self.floatingScrollButton?.isHidden = true
+            self.floatingScrollBackground?.isHidden = true
+            self.scrollBadge?.text = "0"
+            ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+        } else {
+            self.floatingScrollButton?.isHidden = false
+            self.floatingScrollBackground?.isHidden = false;
+            if(self.scrollBadge?.text ==  "0"){
+                self.scrollBadge?.isHidden = true
+            }
+        }
+    }
 	
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-		
-		if(indexPath.row < 1) {
-			self.floatingScrollButton?.isHidden = true
-			self.floatingScrollBackground?.isHidden = true;
-			self.scrollBadge?.text = "0"
-		}
-		
+
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
             cell.configure(event: event, selfIndexPathConfigure: indexPath)
-
+            
 			if (event.chatMessage != nil){
 				cell.onLongClickOneClick {
 					self.initDataSource(message: event.chatMessage!)
@@ -191,12 +205,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
 		if cell.isPlayingVoiceRecording {
 			AudioPlayer.stopSharedPlayer()
-		}
-        
-		if(indexPath.row < 1) {
-			self.floatingScrollButton?.isHidden = false
-			self.floatingScrollBackground?.isHidden = false;
-			self.scrollBadge?.isHidden = true
 		}
 	}
 	

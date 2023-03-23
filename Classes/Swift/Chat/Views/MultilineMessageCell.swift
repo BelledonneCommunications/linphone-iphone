@@ -21,7 +21,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	let contentBubble: UIView = UIView(frame: .zero)
 	let bubble: UIView = UIView(frame: .zero)
 	let imageUser: UIView = UIView(frame: .zero)
-	let chatRead = UIImageView(image: UIImage(named: "chat_read.png"))
+	let chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
 
 	let labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
 	
@@ -542,13 +542,12 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				constraintTrailingBubble?.isActive = false
 				imageUser.isHidden = false
 				bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
-				chatRead.isHidden = true
 			}else{
 				constraintLeadingBubble?.isActive = false
 				constraintTrailingBubble?.isActive = true
 				imageUser.isHidden = true
 				bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
-				chatRead.isHidden = false
+                displayImdnStatus(message: event.chatMessage!, state: event.chatMessage!.state)
 			}
 			
 			if event.chatMessage!.isForward {
@@ -824,7 +823,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			constraintLeadingBubble?.isActive = false
 			constraintTrailingBubble?.isActive = false
 			imageUser.isHidden = true
-			chatRead.isHidden = true
 			
 			eventMessageView.isHidden = false
 			NSLayoutConstraint.activate(constraintEventMesssage)
@@ -845,9 +843,15 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	
 	func addMessageDelegate(){
 		chatMessageDelegate = ChatMessageDelegateStub(
+            onMsgStateChanged: { (message: ChatMessage, state: ChatMessage.State) -> Void in
+                self.displayImdnStatus(message: message, state: state)
+            },
 			onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) -> Void in
 				self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
-			}
+			},
+            onParticipantImdnStateChanged: { (message: ChatMessage, state: ParticipantImdnState) -> Void in
+                //self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
+            }
 		)
 		chatMessage?.addDelegate(delegate: chatMessageDelegate!)
 	}
@@ -1218,8 +1222,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				}
 			}
 			
-			downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
-			downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
+            if downloadContentCollection[indexTransferProgress] != nil {
+                downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
+                downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
+            }
 		}
 		
 		DispatchQueue.main.async(execute: { [self] in
@@ -1249,10 +1255,29 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                     indexTransferProgress = -1
                 }
 			} else {
-				downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+                if downloadContentCollection[indexTransferProgress] != nil {
+                    downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+                }
 			}
 		})
 	}
+    
+    func displayImdnStatus(message: ChatMessage, state: ChatMessage.State) {
+        if message.isOutgoing {
+            if (state == ChatMessage.State.DeliveredToUser) {
+                chatRead.image = UIImage(named: "chat_delivered.png")
+                chatRead.isHidden = false
+            } else if (state == ChatMessage.State.Displayed) {
+                chatRead.image = UIImage(named: "chat_read.png")
+                chatRead.isHidden = false
+            } else if (state == ChatMessage.State.NotDelivered || state == ChatMessage.State.FileTransferError) {
+                chatRead.image = UIImage(named: "chat_error")
+                chatRead.isHidden = false
+            } else {
+                chatRead.isHidden = true
+            }
+        }
+    }
 }
 
 class DynamicHeightCollectionView: UICollectionView {
