@@ -950,6 +950,7 @@
 		D71418E529C9E2CD002EEF75 /* CircularProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71418E429C9E2CD002EEF75 /* CircularProgressBarView.swift */; };
 		D7421D9E29228A5200290CAB /* ChatConversationViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
+		D768763529CDA88200570747 /* UploadMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768763429CDA88200570747 /* UploadMessageCell.swift */; };
 		D77057F1292E4A340031A970 /* ChatConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */; };
 		D779D39829A3C933007B8087 /* ChatConversationTableViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */; };
 		D779D39A29A4C285007B8087 /* MultilineMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39929A4C285007B8087 /* MultilineMessageCell.swift */; };
@@ -2213,6 +2214,7 @@
 		D71418E429C9E2CD002EEF75 /* CircularProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBarView.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewSwift.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
+		D768763429CDA88200570747 /* UploadMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMessageCell.swift; sourceTree = "<group>"; };
 		D77057F0292E4A340031A970 /* ChatConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewModel.swift; sourceTree = "<group>"; };
 		D779D39729A3C933007B8087 /* ChatConversationTableViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationTableViewSwift.swift; sourceTree = "<group>"; };
 		D779D39929A4C285007B8087 /* MultilineMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineMessageCell.swift; sourceTree = "<group>"; };
@@ -3895,6 +3897,7 @@
 				D7C6DE822948CF3100756E03 /* DropDownCell.xib */,
 				D71418E229C9B4E0002EEF75 /* DownloadMessageCell.swift */,
 				D71418E429C9E2CD002EEF75 /* CircularProgressBarView.swift */,
+				D768763429CDA88200570747 /* UploadMessageCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -5213,6 +5216,7 @@
 				617C242A263022690042FB4A /* UIChatContentView.m in Sources */,
 				C63F7261285A24B10066163B /* CallControlButton.swift in Sources */,
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
+				D768763529CDA88200570747 /* UploadMessageCell.swift in Sources */,
 				C63F7220285A24B10066163B /* TimestampUtils.swift in Sources */,
 				61AEBEBD2191990A00F35E7F /* DevicesListView.m in Sources */,
 				D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */,

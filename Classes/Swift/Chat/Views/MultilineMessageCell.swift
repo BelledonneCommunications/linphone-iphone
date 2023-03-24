@@ -106,6 +106,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var imagesGridURLCollection : [URL?] = []
     var imagesGridContentCollection : [Content] = []
 	var downloadContentCollection: [DownloadMessageCell?] = []
+	var uploadContentCollection: [UploadMessageCell?] = []
 	
 	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
 	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
@@ -121,6 +122,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var chatMessageDelegate: ChatMessageDelegate? = nil
 	
 	var indexTransferProgress: Int = -1
+	var indexUploadTransferProgress: Int = -1
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -1032,7 +1034,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                 }
 				downloadView.downloadButtonLabel.isUserInteractionEnabled = true
 				
-                if(linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1 && self.chatMessage!.isFileTransferInProgress){
+				if((linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1 && self.chatMessage!.isFileTransferInProgress) || self.chatMessage!.isOutgoing){
 					downloadView.downloadButtonLabel.isHidden = true
                 }
             } else {
@@ -1046,16 +1048,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                         myImageView.image = self.getImageFrom(self.imagesGridContentCollection[indexPath.row].getCobject, filePath: imageURL?.absoluteString, forReplyBubble: true)!
                     })
                 }else{
-                    //let fileNameText = imagesGridURLCollection[indexPath.row]!.lastPathComponent
-                    //print("ChatConversationTableViewSwift collectionview \(imagesGridURLCollection[indexPath.row]!.lastPathComponent)")
-                    //let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell!, forReplyBubble:true)
-                    
                     imagesGridURLCollection[indexPath.row] = URL(string: imagesGridContentCollection[indexPath.row].filePath)
                     imagesGridCollectionView[indexPath.row] = getImageFrom(imagesGridContentCollection[indexPath.row].getCobject, filePath: imagesGridURLCollection[indexPath.row]?.absoluteString, forReplyBubble: false)
                     
                     myImageView.image = imagesGridCollectionView[indexPath.row]
-                    //print("ChatConversationTableViewSwift collectionview \(imagesGridURLCollection[indexPath.row]!.absoluteString)")
-                    //myImageView.image = getImageFrom(imagesGridContentCollection[indexPath.row].getCobject, filePath: imagesGridURLCollection[indexPath.row]?.absoluteString, forReplyBubble: true)
                 }
                 
                 myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
@@ -1075,6 +1071,13 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                 }
                 myImageView.contentMode = .scaleAspectFill
                 myImageView.clipsToBounds = true
+				
+				
+				let  uploadView = UploadMessageCell()
+				uploadContentCollection.append(uploadView)
+				uploadView.content = imagesGridContentCollection[indexPath.row]
+				uploadView.size(w: 138, h: 138).done()
+				viewCell.addSubview(uploadView)
             }
 
 			
@@ -1214,52 +1217,74 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	func file_transfer_progress_indication_recv(message: ChatMessage, content: Content, offset: Int, total: Int) {
 		let p =  Float(offset) / Float(total)
 		
-		if indexTransferProgress == -1 {
-			for indexItem in 0...imagesGridContentCollection.count - 1 {
-				if imagesGridContentCollection[indexItem].name == content.name {
-					indexTransferProgress = indexItem
-					break
+		if (imagesGridContentCollection.count > 0){
+			if  !message.isOutgoing {
+				if (indexTransferProgress == -1) {
+					for indexItem in 0...imagesGridContentCollection.count - 1 {
+						if imagesGridContentCollection[indexItem].name == content.name {
+							indexTransferProgress = indexItem
+							break
+						}
+					}
+					
+					if downloadContentCollection[indexTransferProgress] != nil {
+						downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
+						downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
+					}
 				}
-			}
-			
-            if downloadContentCollection[indexTransferProgress] != nil {
-                downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
-                downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
-            }
-		}
-		
-		DispatchQueue.main.async(execute: { [self] in
-			if (offset == total) {
-				downloadContentCollection[indexTransferProgress] = nil
-				imagesGridContentCollection[indexTransferProgress] = content
-				imagesGridURLCollection[indexTransferProgress] = (URL(string: content.filePath)!)
-				imagesGridCollectionView[indexTransferProgress] = getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!
-                
-                
-                if (imagesGridCollectionView.count <= 1){
-                    if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
-                        imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-                        if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
-                        }
-                    } else if let imageMessage = UIImage(named: content.filePath){
-                        imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
-                        if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
-                            ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
-                        }
-                    } else {
-                        collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
-                        indexTransferProgress = -1
-                    }
-                }else{
-                    collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
-                    indexTransferProgress = -1
-                }
+				DispatchQueue.main.async(execute: { [self] in
+					if (offset == total) {
+						downloadContentCollection[indexTransferProgress] = nil
+						imagesGridContentCollection[indexTransferProgress] = content
+						imagesGridURLCollection[indexTransferProgress] = (URL(string: content.filePath)!)
+						imagesGridCollectionView[indexTransferProgress] = getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!
+						
+						
+						if (imagesGridCollectionView.count <= 1){
+							if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+								imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+								if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+									ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+								}
+							} else if let imageMessage = UIImage(named: content.filePath){
+								imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSizeMake(UIScreen.main.bounds.size.width*3/4, 300.0))
+								if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+									ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+								}
+							} else {
+								collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+								indexTransferProgress = -1
+							}
+						}else{
+							collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+							indexTransferProgress = -1
+						}
+					} else {
+						if downloadContentCollection[indexTransferProgress] != nil {
+							downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+						}
+					}
+				})
 			} else {
-                if downloadContentCollection[indexTransferProgress] != nil {
-                    downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
-                }
+				if (indexUploadTransferProgress == -1) {
+					for indexItem in 0...imagesGridContentCollection.count - 1 {
+						if imagesGridContentCollection[indexItem].name == content.name {
+							indexUploadTransferProgress = indexItem
+							break
+						}
+					}
+					uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
+				}
+				DispatchQueue.main.async(execute: { [self] in
+					if (offset == total) {
+						uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = true
+						indexUploadTransferProgress = -1
+					} else {
+						uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+					}
+				})
 			}
-		})
+		}
 	}
     
     func displayImdnStatus(message: ChatMessage, state: ChatMessage.State) {
