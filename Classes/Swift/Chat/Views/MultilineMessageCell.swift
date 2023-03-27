@@ -1411,7 +1411,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		f.zeroFormattingBehavior = [.pad]
 		
 		if ((chatMessage != nil) && chatMessage!.isEphemeral) {
-			let duration = self.chatMessage?.ephemeralExpireTime == 0 ? self.chatMessage?.chatRoom?.ephemeralLifetime : self.chatMessage!.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
+			let duration = self.chatMessage?.ephemeralExpireTime == 0 ? self.chatMessage?.ephemeralLifetime : self.chatMessage!.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
 			if(duration! > 86400){
 				f.allowedUnits = [.day]
 			}else if(duration! > 3600){
