@@ -20,7 +20,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	let contentMediaViewBubble: UIView = UIView(frame: .zero)
 	let contentBubble: UIView = UIView(frame: .zero)
 	let bubble: UIView = UIView(frame: .zero)
-	let imageUser: UIView = UIView(frame: .zero)
+	let imageUser = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.chat_conversation_avatar_small)
+	let contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	let chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
 
 	let labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
@@ -30,6 +31,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var constraintBubble : [NSLayoutConstraint] = []
 	var constraintLeadingBubble : NSLayoutConstraint? = nil
 	var constraintTrailingBubble : NSLayoutConstraint? = nil
+	var constraintDateLeadingBubble : NSLayoutConstraint? = nil
+	var constraintDateTrailingBubble : NSLayoutConstraint? = nil
+	var constraintDateBubble : NSLayoutConstraint? = nil
+	var constraintDateBubbleHidden : NSLayoutConstraint? = nil
 	var preContentViewBubbleConstraints : [NSLayoutConstraint] = []
 	var preContentViewBubbleConstraintsHidden : [NSLayoutConstraint] = []
 	var contentViewBubbleConstraints : [NSLayoutConstraint] = []
@@ -154,14 +159,23 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			eventMessageLabel.trailingAnchor.constraint(equalTo: eventMessageLabelView.trailingAnchor, constant: -6)
 		]
 		
-		
 		eventMessageView.isHidden = true
 		
 	//Message
+		contentView.addSubview(contactDateLabel)
+		
+		constraintDateBubble = contactDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4)
+		constraintDateBubbleHidden = contactDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor)
+		constraintDateLeadingBubble = contactDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
+		constraintDateTrailingBubble = contactDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
+		constraintDateBubble!.isActive = true
+		contactDateLabel.isHidden = true
+		
+		
 		contentView.addSubview(contentBubble)
 		contentBubble.translatesAutoresizingMaskIntoConstraints = false
 		constraintBubble = [
-			contentBubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+			contentBubble.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor, constant: 0),
 			contentBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 		]
 		constraintLeadingBubble = contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
@@ -171,15 +185,14 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		constraintLeadingBubble!.isActive = true
 		
 		contentBubble.addSubview(imageUser)
-		imageUser.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+		imageUser.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor).isActive = true
 		imageUser.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6).isActive = true
-		imageUser.backgroundColor = UIColor("D").withAlphaComponent(0.2)
 		imageUser.layer.cornerRadius = 15.0
 		imageUser.size(w: 30, h: 30).done()
 		
 		contentBubble.addSubview(bubble)
 		bubble.translatesAutoresizingMaskIntoConstraints = false
-		bubble.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+		bubble.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor).isActive = true
 		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
 		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor).isActive = true
 		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor).isActive = true
@@ -543,11 +556,36 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				constraintLeadingBubble?.isActive = true
 				constraintTrailingBubble?.isActive = false
 				imageUser.isHidden = false
+				if isFirstIndexInTableView(indexPath: selfIndexPathConfigure, chat: event.chatMessage!) {
+					imageUser.fillFromAddress(address: (event.chatMessage?.fromAddress)!)
+					contactDateLabel.text = contactDateForChat(message: event.chatMessage!)
+					contactDateLabel.isHidden = false
+					constraintDateLeadingBubble?.isActive = true
+					contactDateLabel.size(w: 200, h: 20).done()
+				}else{
+					constraintDateBubble?.isActive = false
+					constraintDateBubbleHidden?.isActive = true
+					contactDateLabel.size(w: 200, h: 0).done()
+				}
+
 				bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
 			}else{
 				constraintLeadingBubble?.isActive = false
 				constraintTrailingBubble?.isActive = true
+				
 				imageUser.isHidden = true
+				if isFirstIndexInTableView(indexPath: selfIndexPathConfigure, chat: event.chatMessage!) {
+					contactDateLabel.text = LinphoneUtils.time(toString: event.chatMessage!.time, with: LinphoneDateChatBubble)
+					contactDateLabel.isHidden = false
+					contactDateLabel.textAlignment = .right
+					constraintDateTrailingBubble?.isActive = true
+					contactDateLabel.size(w: 200, h: 20).done()
+				}else{
+					constraintDateBubble?.isActive = false
+					constraintDateBubbleHidden?.isActive = true
+					contactDateLabel.size(w: 200, h: 0).done()
+				}
+				
 				bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
                 displayImdnStatus(message: event.chatMessage!, state: event.chatMessage!.state)
 			}
@@ -852,7 +890,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
 			},
             onParticipantImdnStateChanged: { (message: ChatMessage, state: ParticipantImdnState) -> Void in
-                //self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
+                //self.displayImdnStatus(message: message, state: state)
             }
 		)
 		chatMessage?.addDelegate(delegate: chatMessageDelegate!)
@@ -1303,6 +1341,40 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
             }
         }
     }
+	
+	func contactDateForChat(message: ChatMessage) -> String {
+		let address: Address? = message.fromAddress != nil ? message.fromAddress : message.chatRoom?.peerAddress
+		return LinphoneUtils.time(toString: message.time, with: LinphoneDateChatBubble) + " - " + FastAddressBook.displayName(for: address?.getCobject)
+	}
+	
+	func isFirstIndexInTableView(indexPath: IndexPath, chat: ChatMessage) -> Bool{
+		let MAX_AGGLOMERATED_TIME=300
+		var previousEvent : EventLog?  = nil
+		let indexOfPreviousEvent = indexPath.row + 1
+		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row+1)
+		if (indexOfPreviousEvent > -1) {
+			if ((previousEvent?.type.rawValue)! != LinphoneEventLogTypeConferenceChatMessage.rawValue) {
+				return true
+			}
+		}
+		if (previousEvent == nil){
+			return true
+		}
+
+		let previousChat = previousEvent?.chatMessage
+		
+		if previousChat != nil {
+			if (previousChat?.fromAddress!.equal(address2: chat.fromAddress!) == false) {
+				return true;
+			}
+			// the maximum interval between 2 agglomerated chats at 5mn
+			if (chat.time - previousChat!.time > MAX_AGGLOMERATED_TIME) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }
 
 class DynamicHeightCollectionView: UICollectionView {
