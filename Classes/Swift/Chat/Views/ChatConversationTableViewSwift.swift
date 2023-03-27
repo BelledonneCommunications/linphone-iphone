@@ -206,6 +206,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if cell.isPlayingVoiceRecording {
 			AudioPlayer.stopSharedPlayer()
 		}
+		if cell.ephemeralTimer != nil {
+			cell.ephemeralTimer?.invalidate()
+		}
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

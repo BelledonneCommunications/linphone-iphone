@@ -121,6 +121,11 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	
 	let recordingView = UIView()
 	
+	let ephemeralIcon = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
+	let ephemeralTimerLabel = StyledLabel(VoipTheme.chat_conversation_ephemeral_timer)
+	var ephemeralTimer : Timer? = nil
+	
+	
 	var isPlayingVoiceRecording = false
     
     var chatMessage: ChatMessage?
@@ -431,6 +436,20 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.replyContent.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
+		
+	//Ephemeral
+		contentViewBubble.addSubview(ephemeralTimerLabel)
+		ephemeralTimerLabel.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: -2).isActive = true
+		ephemeralTimerLabel.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: -14).isActive = true
+		ephemeralTimerLabel.text = "00:00"
+		ephemeralTimerLabel.height(10).done()
+		ephemeralTimerLabel.isHidden = true
+		
+		contentViewBubble.addSubview(ephemeralIcon)
+		ephemeralIcon.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: -3).isActive = true
+		ephemeralIcon.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: -6).isActive = true
+		ephemeralIcon.size(w: 7, h: 8).done()
+		ephemeralIcon.isHidden = true
 	}
 	
 	func initPlayerAudio(message: ChatMessage){
@@ -588,6 +607,16 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				
 				bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
                 displayImdnStatus(message: event.chatMessage!, state: event.chatMessage!.state)
+			}
+			
+			if event.chatMessage!.isEphemeral {
+				ephemeralTimerLabel.isHidden = false
+				ephemeralIcon.isHidden = false
+				contentViewBubble.minWidth(44).done()
+				updateEphemeralTimes()
+			}else{
+				ephemeralTimerLabel.isHidden = true
+				ephemeralIcon.isHidden = true
 			}
 			
 			if event.chatMessage!.isForward {
@@ -1374,6 +1403,48 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		}
 		
 		return false;
+	}
+	
+	func updateEphemeralTimes() {
+		let f = DateComponentsFormatter()
+		f.unitsStyle = .positional
+		f.zeroFormattingBehavior = [.pad]
+		
+		if ((chatMessage != nil) && chatMessage!.isEphemeral) {
+			let duration = self.chatMessage?.ephemeralExpireTime == 0 ? self.chatMessage?.chatRoom?.ephemeralLifetime : self.chatMessage!.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
+			if(duration! > 86400){
+				f.allowedUnits = [.day]
+			}else if(duration! > 3600){
+				f.allowedUnits = [.hour]
+			}else{
+				f.allowedUnits = [.minute, .second]
+			}
+			
+			let textDuration = f.string(for: DateComponents(second: duration))?.capitalized ?? ""
+			self.ephemeralTimerLabel.text = textDuration
+			self.ephemeralTimerLabel.isHidden = false
+			self.ephemeralIcon.isHidden = false
+			ephemeralTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+				let duration = self.chatMessage?.ephemeralExpireTime == 0 ? self.chatMessage?.ephemeralLifetime : self.chatMessage!.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
+				if(duration! > 86400){
+					f.allowedUnits = [.day]
+				}else if(duration! > 3600){
+					f.allowedUnits = [.hour]
+				}else{
+					f.allowedUnits = [.minute, .second]
+				}
+				
+				let textDuration = f.string(for: DateComponents(second: duration))?.capitalized ?? ""
+				self.ephemeralTimerLabel.text = textDuration
+				self.ephemeralTimerLabel.isHidden = false
+				self.ephemeralIcon.isHidden = false
+				if(duration! <= 0){
+					self.ephemeralTimer!.invalidate()
+					ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+				}
+				print("MultilineMessageCell updateEphemeralTimes \(duration)")
+			}
+		}
 	}
 }
 

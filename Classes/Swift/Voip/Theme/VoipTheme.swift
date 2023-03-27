@@ -157,6 +157,7 @@ import UIKit
 	static let chat_conversation_download_progress_text = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 12.0)
 	static let chat_conversation_avatar_small = TextStyle(fgColor: LightDarkColor(.white,voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .center, font: fontName+"-Bold", size: 14.0)
 	static let chat_conversation_contact_date = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .left, font: fontName+"-Bold", size: 12.0)
+	static let chat_conversation_ephemeral_timer = TextStyle(fgColor: LightDarkColor(.orange,.orange), bgColor: LightDarkColor(.clear,.clear), allCaps: true, align: .left, font: fontName+"-Bold", size: 8.0)
 	
 	// Buttons Background (State colors)
 	
