@@ -1381,7 +1381,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		var previousEvent : EventLog?  = nil
 		let indexOfPreviousEvent = indexPath.row + 1
 		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row+1)
-		if (indexOfPreviousEvent > -1) {
+		if (indexOfPreviousEvent > -1 && indexOfPreviousEvent < ChatConversationTableViewModel.sharedModel.getNBMessages()) {
 			if ((previousEvent?.type.rawValue)! != LinphoneEventLogTypeConferenceChatMessage.rawValue) {
 				return true
 			}
@@ -1442,10 +1442,70 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 					self.ephemeralTimer!.invalidate()
 					ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 				}
-				print("MultilineMessageCell updateEphemeralTimes \(duration)")
 			}
 		}
 	}
+	
+	/*
+	func onImageClick() {
+		/*
+		if (_finalImage.tag == FILE_ICON_TAG) {
+			[self onFileClick:nil];
+			return;
+		}
+		 */
+		let state = chatMessage?.state
+		if (state!.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
+			return;
+		} else {
+			//if (![_messageImageView isLoading]) {
+			let view: ImageView = VIEW(ImageView.compositeViewDescription())
+			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+			let filePath = LinphoneManager.getMessageAppData(forKey: "encryptedfile", in: chatMessage?.getCobject)
+			if ((filePath) != nil) {
+				let image = UIImage(contentsOfFile: filePath as! String)
+				view.image = image
+			}
+
+			let localImage: String? = LinphoneManager.getMessageAppData(forKey: "localimage", in: chatMessage?.getCobject) as? String
+			let localFile: String? = LinphoneManager.getMessageAppData(forKey: "localfile", in: chatMessage?.getCobject) as? String
+			var imageName : String? = nil
+			
+			if ((localImage != nil) && FileManager.default.fileExists(atPath: LinphoneManager.validFilePath(localImage))) {
+				imageName = localImage
+			} else if ((localFile != nil) && FileManager.default.fileExists(atPath: LinphoneManager.validFilePath(localFile))) {
+				if (localFile!.hasSuffix("JPG") || localFile!.hasSuffix("PNG") || localFile!.hasSuffix("jpg") || localFile!.hasSuffix("png")) {
+					imageName = localFile
+				}
+			}
+
+			if ((imageName) != nil) {
+				let image = UIImage(contentsOfFile: LinphoneManager.validFilePath(imageName))
+				if ((image) != nil){
+					view.image = image
+				}else{
+					print("Can't read image")
+				}
+			}
+			
+			let options = PHImageRequestOptions()
+			options.isSynchronous = true
+				[[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
+														resultHandler:^(UIImage *image, NSDictionary * info) {
+															if (image) {
+																[view setImage:image];
+															}
+															else {
+																LOGE(@"Can't read image");
+															}
+														}];
+			
+			PHImageManager.default.requestImage(for: <#T##PHAsset#>, targetSize: <#T##CGSize#>, contentMode: <#T##PHImageContentMode#>, options: <#T##PHImageRequestOptions?#>, resultHandler: <#T##(UIImage?, [AnyHashable : Any]?) -> Void#>)
+			//}
+		}
+	}
+	 */
+	
 }
 
 class DynamicHeightCollectionView: UICollectionView {
