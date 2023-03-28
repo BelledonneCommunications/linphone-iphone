@@ -815,7 +815,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
 						if(content.isFile){
 							let indexPath = IndexPath(row: ChatConversationViewModel.sharedModel.replyCollectionView.count, section: 0)
-							ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath)!)
+                            ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)!)
 							ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 							collectionViewReply.insertItems(at: [indexPath])
 						}else if(content.isText){
