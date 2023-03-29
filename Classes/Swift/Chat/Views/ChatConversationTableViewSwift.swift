@@ -9,8 +9,9 @@ import UIKit
 import Foundation
 import linphonesw
 import DropDown
+import QuickLook
 
-class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, QLPreviewControllerDelegate, QLPreviewControllerDataSource {
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationTableViewModel.sharedModel)
 	
@@ -32,6 +33,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	var floatingScrollButton : UIButton?
 	var scrollBadge : UILabel?
 	var floatingScrollBackground : UIButton?
+	
+	var previewItems : [QLPreviewItem?] = []
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -195,7 +198,30 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					self.scrollToMessage(message: (event.chatMessage?.replyMessage)!)
 				}
 			}
+			
+			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden){
+				cell.imageViewBubble.onClick {
+					self.onImageClick(chatMessage: event.chatMessage!)
+				}
+			}
+			
+			/*
+			if (!cell.collectionViewImagesGrid.isHidden){
+				cell.onClick {
+					let previewController = QLPreviewController()
+					self.previewItems = []
+					event.chatMessage?.contents.forEach({ content in
+						self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+					})
+					
+					previewController.currentPreviewItemIndex = 0
+					previewController.dataSource = self
+					self.present(previewController, animated: true, completion: nil)
+				}
+			}
+			 */
 		}
+				
 		
 		cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
 		return cell
@@ -404,4 +430,41 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     public func reloadCollectionViewCell(indexPath: IndexPath){
         collectionView.reloadItems(at: [indexPath])
     }
+	
+	func getPreviewItem(filePath: String) -> NSURL{
+		let url = NSURL(fileURLWithPath: filePath)
+		
+		return url
+	}
+	
+	func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+		return previewItems.count
+	}
+	
+	func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+		return (previewItems[index] as QLPreviewItem?)!
+	}
+	
+	func onImageClick(chatMessage: ChatMessage) {
+
+		let state = chatMessage.state
+		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
+			print("Messsage not delivered")
+		} else {
+			if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId){
+				let view: ImageView = VIEW(ImageView.compositeViewDescription())
+				let image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)
+				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+				view.image = image
+			} else {
+				let previewController = QLPreviewController()
+				self.previewItems = []
+				self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
+				
+				previewController.currentPreviewItemIndex = 0
+				previewController.dataSource = self
+				self.present(previewController, animated: true, completion: nil)
+			}
+		}
+	}
 }

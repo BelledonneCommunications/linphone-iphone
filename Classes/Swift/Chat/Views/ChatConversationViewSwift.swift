@@ -1000,7 +1000,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				myImageView = UIImageView(image: imageCell)
 			}else{
 				let fileNameText = ChatConversationViewModel.sharedModel.mediaURLCollection[indexPath.row].lastPathComponent
-				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:true)
 				myImageView = UIImageView(image: fileName)
 			}
 			
@@ -1039,7 +1039,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				myImageView = UIImageView(image: imageCell)
 			}else{
 				let fileNameText = ChatConversationViewModel.sharedModel.replyURLCollection[indexPath.row].lastPathComponent
-				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:false)
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:true)
 				myImageView = UIImageView(image: fileName)
 			}
 			
