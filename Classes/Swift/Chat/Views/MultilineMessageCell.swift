@@ -132,6 +132,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var indexTransferProgress: Int = -1
 	var indexUploadTransferProgress: Int = -1
 	
+	var selfIndexMessage: Int = -1
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
@@ -561,6 +563,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	}
 	
     func configure(event: EventLog, selfIndexPathConfigure: IndexPath) {
+		selfIndexMessage = selfIndexPathConfigure.row
         chatMessage = event.chatMessage
 		addMessageDelegate()
 		if event.chatMessage != nil {
@@ -1126,6 +1129,11 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				uploadContentCollection.append(uploadView)
 				uploadView.content = chatMessage?.contents[indexPath.row]
 				uploadView.size(w: 138, h: 138).done()
+				
+				viewCell.onClick {
+					ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPath.row)
+				}
+				
 				viewCell.addSubview(uploadView)
             }
 

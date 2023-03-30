@@ -35,6 +35,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	var floatingScrollBackground : UIButton?
 	
 	var previewItems : [QLPreviewItem?] = []
+	var afterPreviewIndex = -1
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -51,6 +52,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         ChatConversationTableViewModel.sharedModel.refreshIndexPath.observe { index in
             self.collectionView.reloadData()
         }
+		
+		ChatConversationTableViewModel.sharedModel.onClickIndexPath.observe { index in
+			self.onGridClick(indexMessage: ChatConversationTableViewModel.sharedModel.onClickMessageIndexPath, index: index!)
+		}
 		
 		
 		collectionView.isUserInteractionEnabled = true
@@ -204,22 +209,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					self.onImageClick(chatMessage: event.chatMessage!)
 				}
 			}
-			
-			/*
-			if (!cell.collectionViewImagesGrid.isHidden){
-				cell.onClick {
-					let previewController = QLPreviewController()
-					self.previewItems = []
-					event.chatMessage?.contents.forEach({ content in
-						self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
-					})
-					
-					previewController.currentPreviewItemIndex = 0
-					previewController.dataSource = self
-					self.present(previewController, animated: true, completion: nil)
-				}
-			}
-			 */
 		}
 				
 		
@@ -445,13 +434,21 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return (previewItems[index] as QLPreviewItem?)!
 	}
 	
+	func previewControllerDidDismiss(_ controller: QLPreviewController) {
+		print("ChatConversationTableViewSwift controller \(afterPreviewIndex)")
+		if afterPreviewIndex > -1 {
+			collectionView.scrollToItem(at: IndexPath(row: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
+
+		}
+	}
+	
 	func onImageClick(chatMessage: ChatMessage) {
 
 		let state = chatMessage.state
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
 			print("Messsage not delivered")
 		} else {
-			if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId){
+			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())
 				let image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)
 				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
@@ -461,10 +458,43 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				self.previewItems = []
 				self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
 				
+				afterPreviewIndex = 0
+				
 				previewController.currentPreviewItemIndex = 0
 				previewController.dataSource = self
-				self.present(previewController, animated: true, completion: nil)
+				previewController.delegate = self
+				previewController.reloadData()
+				PhoneMainView.instance().mainViewController.present(previewController, animated: true, completion: nil)
 			}
 		}
 	}
+	
+	func onGridClick(indexMessage: Int, index: Int) {
+		let chatMessage = ChatConversationTableViewModel.sharedModel.getMessage(index: indexMessage)?.chatMessage
+		let state = chatMessage!.state
+		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
+			print("Messsage not delivered")
+		} else {
+			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
+				let view: ImageView = VIEW(ImageView.compositeViewDescription())
+				let image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)
+				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+				view.image = image
+			} else {
+				let previewController = QLPreviewController()
+				self.previewItems = []
+				chatMessage?.contents.forEach({ content in
+					self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+				})
+				
+				afterPreviewIndex = indexMessage
+				
+				previewController.dataSource = self
+				previewController.currentPreviewItemIndex = index
+				previewController.delegate = self
+				PhoneMainView.instance().mainViewController.present(previewController, animated: true, completion: nil)
+			}
+		}
+	}
+
 }

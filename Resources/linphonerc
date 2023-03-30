@@ -18,6 +18,7 @@ auto_download_incoming_files_max_size=0
 lime_migration_done=0
 use_rls_presence=1
 use_callkit=1
+use_in_app_file_viewer_for_non_encrypted_files=0
 unexpected_pushkit=0
 force_lime_chat_rooms=0
 disable_chat_feature=0

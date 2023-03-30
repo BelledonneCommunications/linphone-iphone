@@ -24,6 +24,7 @@ publish_presence=0
 backgroundmode_preference=1
 use_rls_presence=1
 use_callkit=1
+use_in_app_file_viewer_for_non_encrypted_files=0
 
 accept_early_media=0
 

@@ -20,6 +20,9 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	
     var refreshIndexPath = MutableLiveData<Int>(0)
 	
+	var onClickIndexPath = MutableLiveData<Int>(0)
+	var onClickMessageIndexPath = 0
+	
 	override init() {
 		super.init()
 	}
@@ -72,4 +75,9 @@ class ChatConversationTableViewModel: ControlsViewModel {
     func reloadCollectionViewCell(){
         refreshIndexPath.value! += 1
     }
+	
+	func onGridClick(indexMessage: Int, index :Int){
+		onClickMessageIndexPath = indexMessage
+		onClickIndexPath.value! = index
+	}
 }
