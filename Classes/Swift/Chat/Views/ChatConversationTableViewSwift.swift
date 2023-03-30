@@ -58,7 +58,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		}
 		
 		ChatConversationTableViewModel.sharedModel.editModeOn.observe { mode in
-			self.changeEditMode(editModeOn: mode!)
+			self.collectionView.reloadData()
 		}
 		
 		
@@ -150,6 +150,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
                 self.scrollToBottom()
             }
         }
+		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
+		}
 	}
 	
 	func refreshData(){
@@ -169,6 +172,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			}
 			scrollBadge!.isHidden = false
 			scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
+		}
+		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
 		}
 	}
     
@@ -193,7 +199,14 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
 
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
-            cell.configure(event: event, selfIndexPathConfigure: indexPath)
+
+			if(ChatConversationTableViewModel.sharedModel.editModeOn.value! && indexPath.row >= ChatConversationTableViewModel.sharedModel.messageListSelected.value!.count){
+				for _ in ChatConversationTableViewModel.sharedModel.messageListSelected.value!.count...indexPath.row {
+					ChatConversationTableViewModel.sharedModel.messageListSelected.value!.append(false)
+				}
+			}
+			
+			cell.configure(event: event, selfIndexPathConfigure: indexPath, editMode: ChatConversationTableViewModel.sharedModel.editModeOn.value!, selected: ChatConversationTableViewModel.sharedModel.editModeOn.value! ? ChatConversationTableViewModel.sharedModel.messageListSelected.value![indexPath.row] : false)
             
 			if (event.chatMessage != nil){
 				cell.onLongClickOneClick {
@@ -416,6 +429,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     }
 	
 	func deleteMessage(message: ChatMessage){
+		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+			let indexDeletedMessage = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
+			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.remove(at: indexDeletedMessage)
+		}
 		message.chatRoom?.deleteMessage(message: message)
 		collectionView.reloadData()
 	}
@@ -498,9 +515,5 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				PhoneMainView.instance().mainViewController.present(previewController, animated: true, completion: nil)
 			}
 		}
-	}
-
-	func changeEditMode(editModeOn: Bool){
-		
 	}
 }

@@ -605,12 +605,13 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 
 	override func editModeOn(){
 		super.editModeOn()
-		//tableController.setEditing(true, animated: false)
+		ChatConversationTableViewModel.sharedModel.changeEditMode(editMode: true)
 	}
 	
 	override func editModeOff(){
 		super.editModeOff()
-		//tableController.setEditing(false, animated: false)
+		ChatConversationTableViewModel.sharedModel.messageListSelected.value?.removeAll()
+		ChatConversationTableViewModel.sharedModel.changeEditMode(editMode: false)
 	}
 	
 	override func selectDeselectAll(){

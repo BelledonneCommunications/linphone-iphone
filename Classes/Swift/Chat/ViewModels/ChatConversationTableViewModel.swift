@@ -13,8 +13,6 @@ import linphonesw
 class ChatConversationTableViewModel: ControlsViewModel {
 	
 	static let sharedModel = ChatConversationTableViewModel()
-	
-	var messageListHistory : [ChatMessage] = []
  
 	var chatRoom: ChatRoom? = nil
 	
@@ -25,6 +23,8 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	
 	
 	var editModeOn = MutableLiveData<Bool>(false)
+	
+	var messageListSelected = MutableLiveData<[Bool]>([])
 	
 	override init() {
 		super.init()
@@ -86,5 +86,19 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	
 	func changeEditMode(editMode :Bool){
 		editModeOn.value = editMode
+	}
+	
+	func selectAllMessages(){
+		for i in 0...messageListSelected.value!.count {
+			messageListSelected.value![i] = true
+		}
+		refreshIndexPath.value! += 1
+	}
+	
+	func unSelectAllMessages(){
+		for i in 0...messageListSelected.value!.count {
+			messageListSelected.value![i] = false
+		}
+		refreshIndexPath.value! += 1
 	}
 }

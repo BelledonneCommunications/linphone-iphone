@@ -134,8 +134,13 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	
 	var selfIndexMessage: Int = -1
 	
+	var deleteItemCheckBox = StyledCheckBox()
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
+		
+	//CheckBox for select item to delete
+		contentView.addSubview(deleteItemCheckBox)
 		
 	//Event Message
 		contentView.addSubview(eventMessageView)
@@ -143,7 +148,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			eventMessageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
 			eventMessageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0),
 			eventMessageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
-			eventMessageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0)
+			eventMessageView.trailingAnchor.constraint(equalTo: deleteItemCheckBox.leadingAnchor, constant: 0)
 		]
 		eventMessageView.height(40).done()
 		
@@ -166,16 +171,16 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		
 		eventMessageView.isHidden = true
 		
+		
 	//Message
 		contentView.addSubview(contactDateLabel)
 		
 		constraintDateBubble = contactDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4)
 		constraintDateBubbleHidden = contactDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor)
 		constraintDateLeadingBubble = contactDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
-		constraintDateTrailingBubble = contactDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
+		constraintDateTrailingBubble = contactDateLabel.trailingAnchor.constraint(equalTo: deleteItemCheckBox.leadingAnchor, constant: -22)
 		constraintDateBubble!.isActive = true
 		contactDateLabel.isHidden = true
-		
 		
 		contentView.addSubview(contentBubble)
 		contentBubble.translatesAutoresizingMaskIntoConstraints = false
@@ -184,7 +189,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			contentBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 		]
 		constraintLeadingBubble = contentBubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 40)
-		constraintTrailingBubble = contentBubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -22)
+		constraintTrailingBubble = contentBubble.trailingAnchor.constraint(equalTo: deleteItemCheckBox.leadingAnchor, constant: -22)
 		
 		NSLayoutConstraint.activate(constraintBubble)
 		constraintLeadingBubble!.isActive = true
@@ -205,7 +210,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		
 		contentBubble.addSubview(chatRead)
 		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
-		chatRead.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
+		chatRead.trailingAnchor.constraint(equalTo: deleteItemCheckBox.leadingAnchor, constant: -8).isActive = true
 		chatRead.size(w: 10, h: 10).done()
 		chatRead.isHidden = true
 		
@@ -562,10 +567,11 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		super.prepareForReuse()
 	}
 	
-    func configure(event: EventLog, selfIndexPathConfigure: IndexPath) {
+	func configure(event: EventLog, selfIndexPathConfigure: IndexPath, editMode: Bool, selected: Bool) {
 		selfIndexMessage = selfIndexPathConfigure.row
         chatMessage = event.chatMessage
 		addMessageDelegate()
+		
 		if event.chatMessage != nil {
 			contentBubble.isHidden = false
 			eventMessageView.isHidden = true
@@ -573,14 +579,25 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			NSLayoutConstraint.deactivate(constraintEventMesssage)
 			NSLayoutConstraint.deactivate(constraintEventMesssageLabel)
 			if !event.chatMessage!.isOutgoing {
-				constraintLeadingBubble?.isActive = true
-				constraintTrailingBubble?.isActive = false
+				if editMode {
+					constraintLeadingBubble?.isActive = false
+					constraintTrailingBubble?.isActive = true
+				}else{
+					constraintLeadingBubble?.isActive = true
+					constraintTrailingBubble?.isActive = false
+				}
+				
 				imageUser.isHidden = false
 				if isFirstIndexInTableView(indexPath: selfIndexPathConfigure, chat: event.chatMessage!) {
 					imageUser.fillFromAddress(address: (event.chatMessage?.fromAddress)!)
 					contactDateLabel.text = contactDateForChat(message: event.chatMessage!)
 					contactDateLabel.isHidden = false
-					constraintDateLeadingBubble?.isActive = true
+					if editMode {
+						constraintDateTrailingBubble?.isActive = true
+						contactDateLabel.textAlignment = .right
+					}else{
+						constraintDateLeadingBubble?.isActive = true
+					}
 					contactDateLabel.size(w: 200, h: 20).done()
 				}else{
 					constraintDateBubble?.isActive = false
@@ -894,6 +911,29 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				eventMessageLineView.backgroundColor = UIColor("D").withAlphaComponent(0.6)
 				eventMessageLabel.textColor = UIColor("D").withAlphaComponent(0.6)
 			}
+		}
+		
+		if (editMode) {
+			deleteItemCheckBox.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -18).isActive = true
+			deleteItemCheckBox.isSelected = selected
+			if (event.chatMessage != nil){
+				deleteItemCheckBox.matchCenterYOf(view: contentBubble).done()
+			}else{
+				deleteItemCheckBox.matchCenterYOf(view: contentView).done()
+			}
+			imageUser.isHidden = true
+			contentView.onClick {
+				self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
+				ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+			}
+			deleteItemCheckBox.onClick {
+				self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
+				ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+			}
+		}else{
+			deleteItemCheckBox.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0).isActive = true
+			deleteItemCheckBox.isHidden = true
+			deleteItemCheckBox.width(0).done()
 		}
 	}
 	
@@ -1332,17 +1372,21 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							break
 						}
 					}
-					if((chatMessage?.contents.count)! > 1){
+					if((chatMessage?.contents.count)! > 1 && indexUploadTransferProgress > -1){
                         uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
                     }
 				}
 				if((chatMessage?.contents.count)! > 1){
                     DispatchQueue.main.async(execute: { [self] in
                         if (offset == total) {
-                            uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = true
+							if(indexUploadTransferProgress > -1){
+								uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = true
+							}
                             indexUploadTransferProgress = -1
                         } else {
-                            uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+							if(indexUploadTransferProgress > -1){
+								uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+							}
                         }
                     })
                 }
