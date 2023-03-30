@@ -23,6 +23,9 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	var onClickIndexPath = MutableLiveData<Int>(0)
 	var onClickMessageIndexPath = 0
 	
+	
+	var editModeOn = MutableLiveData<Bool>(false)
+	
 	override init() {
 		super.init()
 	}
@@ -79,5 +82,9 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	func onGridClick(indexMessage: Int, index :Int){
 		onClickMessageIndexPath = indexMessage
 		onClickIndexPath.value! = index
+	}
+	
+	func changeEditMode(editMode :Bool){
+		editModeOn.value = editMode
 	}
 }

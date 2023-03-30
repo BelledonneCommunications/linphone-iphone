@@ -57,6 +57,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			self.onGridClick(indexMessage: ChatConversationTableViewModel.sharedModel.onClickMessageIndexPath, index: index!)
 		}
 		
+		ChatConversationTableViewModel.sharedModel.editModeOn.observe { mode in
+			self.changeEditMode(editModeOn: mode!)
+		}
+		
 		
 		collectionView.isUserInteractionEnabled = true
 	}
@@ -206,7 +210,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			
 			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden){
 				cell.imageViewBubble.onClick {
-					self.onImageClick(chatMessage: event.chatMessage!)
+					self.onImageClick(chatMessage: event.chatMessage!, index: indexPath.row)
 				}
 			}
 		}
@@ -283,7 +287,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			case VoipTexts.bubble_chat_dropDown_delete:
 				self!.deleteMessage(message: event.chatMessage!)
 			default:
-				print("Error ChatConversationTableViewSwift TapChooseMenuItemMessage Default")
+				print("Error Default")
 			}
 			self!.menu!.clearSelection()
 		}
@@ -435,14 +439,13 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}
 	
 	func previewControllerDidDismiss(_ controller: QLPreviewController) {
-		print("ChatConversationTableViewSwift controller \(afterPreviewIndex)")
 		if afterPreviewIndex > -1 {
 			collectionView.scrollToItem(at: IndexPath(row: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
 
 		}
 	}
 	
-	func onImageClick(chatMessage: ChatMessage) {
+	func onImageClick(chatMessage: ChatMessage, index: Int) {
 
 		let state = chatMessage.state
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
@@ -458,7 +461,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				self.previewItems = []
 				self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
 				
-				afterPreviewIndex = 0
+				afterPreviewIndex = index
 				
 				previewController.currentPreviewItemIndex = 0
 				previewController.dataSource = self
@@ -497,4 +500,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		}
 	}
 
+	func changeEditMode(editModeOn: Bool){
+		
+	}
 }
