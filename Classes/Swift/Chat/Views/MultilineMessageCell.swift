@@ -8,7 +8,6 @@
 import UIKit
 import Foundation
 import linphonesw
-import SDWebImage
 
 class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
 	static let reuseId = "MultilineMessageCellReuseId"
@@ -925,10 +924,22 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			contentView.onClick {
 				self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
 				ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+				
+				if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
+					ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
+				}else{
+					ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+				}
 			}
 			deleteItemCheckBox.onClick {
 				self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
 				ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+				
+				if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
+					ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
+				}else{
+					ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+				}
 			}
 		}else{
 			deleteItemCheckBox.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0).isActive = true
@@ -1078,7 +1089,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			let imageCell = replyCollectionView[indexPath.row]
 			var myImageView = UIImageView()
 			
-			if(replyURLCollection[indexPath.row].type == FileType.file_picture_default.rawValue || replyURLCollection[indexPath.row].type == FileType.file_video_default.rawValue){
+			if(replyURLCollection[indexPath.row].type == "image" || replyURLCollection[indexPath.row].type == "video"){
 				myImageView = UIImageView(image: imageCell)
 			}else{
 				let fileNameText = replyURLCollection[indexPath.row].name
@@ -1089,7 +1100,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
 			viewCell.addSubview(myImageView)
 			
-			if(replyURLCollection[indexPath.row].type == FileType.file_video_default.rawValue){
+			if(replyURLCollection[indexPath.row].type == "video"){
 				var imagePlay = UIImage()
 				if #available(iOS 13.0, *) {
 					imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1137,11 +1148,25 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                 
                 let myImageView = UIImageView()
                 
-				if(self.chatMessage?.contents[indexPath.row].type == FileType.file_picture_default.rawValue || self.chatMessage?.contents[indexPath.row].type == FileType.file_video_default.rawValue){
+				if(self.chatMessage?.contents[indexPath.row].type == "image" || self.chatMessage?.contents[indexPath.row].type == "video"){
+					if #available(iOS 15.0, *) {
+						myImageView.image = UIImage(named: "file_picture_default")
+						let imageAsync: UIImage = getImageFrom(self.chatMessage?.contents[indexPath.row], forReplyBubble: false)!
+						imageAsync.prepareForDisplay(completionHandler: { imageAsyncResult in
+							DispatchQueue.main.async {
+								myImageView.image = imageAsyncResult
+							}
+						})
+					} else {
+						DispatchQueue.global().async { [weak self] in
+							if let image = self!.getImageFrom(self!.chatMessage?.contents[indexPath.row], forReplyBubble: false) {
+								DispatchQueue.main.async {
+									myImageView.image = image
+								}
+							}
+						}
+					}
 					
-					myImageView.sd_setImage(with: URL(string: (self.chatMessage?.contents[indexPath.row].filePath)!), placeholderImage: UIImage(named: "file_picture_default"), completed: {(_ image: UIImage?, _ error: Error?, _ cacheType: SDImageCacheType, _ imageURL: URL?) -> Void in
-                        myImageView.image = self.getImageFrom(self.chatMessage?.contents[indexPath.row], forReplyBubble: false)!
-                    })
                 }else{
 					myImageView.image = self.getImageFrom(self.chatMessage?.contents[indexPath.row], forReplyBubble: false)!
                 }
@@ -1149,18 +1174,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                 myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
                 viewCell.addSubview(myImageView)
                 
-				if(self.chatMessage?.contents[indexPath.row].type == FileType.file_video_default.rawValue){
-                    var imagePlay = UIImage()
-                    if #available(iOS 13.0, *) {
-                        imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
-                    } else {
-                        imagePlay = UIImage(named: "vr_play")!
-                    }
-                    let myImagePlayView = UIImageView(image: imagePlay)
-                    viewCell.addSubview(myImagePlayView)
-                    myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
-                    myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
-                }
                 myImageView.contentMode = .scaleAspectFill
                 myImageView.clipsToBounds = true
 				
@@ -1169,6 +1182,19 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				uploadContentCollection.append(uploadView)
 				uploadView.content = chatMessage?.contents[indexPath.row]
 				uploadView.size(w: 138, h: 138).done()
+				
+				if(self.chatMessage?.contents[indexPath.row].type == "video"){
+					var imagePlay = UIImage()
+					if #available(iOS 13.0, *) {
+						imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+					} else {
+						imagePlay = UIImage(named: "vr_play")!
+					}
+					let myImagePlayView = UIImageView(image: imagePlay)
+					viewCell.addSubview(myImagePlayView)
+					myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+					myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+				}
 				
 				viewCell.onClick {
 					ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPath.row)
@@ -1332,7 +1358,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				DispatchQueue.main.async(execute: { [self] in
 					if (offset == total) {
 						downloadContentCollection[indexTransferProgress] = nil
-						//chatMessage?.contents[indexTransferProgress] = content
 						imagesGridCollectionView[indexTransferProgress] = getImageFrom(content, forReplyBubble: false)!
 						
 						

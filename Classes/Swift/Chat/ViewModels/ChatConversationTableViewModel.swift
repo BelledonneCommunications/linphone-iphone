@@ -24,7 +24,10 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	
 	var editModeOn = MutableLiveData<Bool>(false)
 	
+	var messageSelected = MutableLiveData<Int>(0)
 	var messageListSelected = MutableLiveData<[Bool]>([])
+	
+	var messageListToDelete : [EventLog] = []
 	
 	override init() {
 		super.init()
@@ -89,16 +92,34 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	}
 	
 	func selectAllMessages(){
-		for i in 0...messageListSelected.value!.count {
+		for i in 0...messageListSelected.value!.count - 1 {
 			messageListSelected.value![i] = true
+			messageSelected.value! += 1
 		}
 		refreshIndexPath.value! += 1
 	}
 	
 	func unSelectAllMessages(){
-		for i in 0...messageListSelected.value!.count {
+		for i in 0...messageListSelected.value!.count - 1 {
 			messageListSelected.value![i] = false
 		}
+		messageSelected.value! = 0
+		refreshIndexPath.value! += 1
+	}
+	
+	func deleteMessagesSelected(){
+		for i in 0...(messageListSelected.value!.count - 1) {
+			if messageListSelected.value![i] == true {
+				let messageEvent = getMessage(index: i)
+				//if messageEvent
+				messageListToDelete.append((messageEvent)!)
+			}
+		}
+
+		messageListToDelete.forEach { chatMessage in
+			chatMessage.deleteFromDatabase()
+		}
+		messageSelected.value! = 0
 		refreshIndexPath.value! += 1
 	}
 }

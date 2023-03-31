@@ -138,43 +138,52 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     }
 	
 	func scrollToBottomWithRelaod(){
-		let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
-		collectionView.reloadData()
-        if isDisplayingBottomOfTable {
-            self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.scrollToBottomNewMessage()
-            }
-        }else{
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.scrollToBottom()
-            }
-        }
-		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
-			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
+		if (ChatConversationTableViewModel.sharedModel.getNBMessages() > 1){
+			let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
+			collectionView.reloadData()
+			if isDisplayingBottomOfTable {
+				self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+					self.scrollToBottomNewMessage()
+				}
+			}else{
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+					self.scrollToBottom()
+				}
+			}
+			if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+				ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
+			}
+		}else{
+			collectionView.reloadData()
 		}
+		
 	}
 	
 	func refreshData(){
-		let indexBottom = collectionView.indexPathsForVisibleItems.sorted().first?.row
-		let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
-        let sizeCell = (self.collectionView.cellForItem(at: IndexPath(row: indexBottom!, section: 0))?.frame.size.height)
-		collectionView.reloadData()
+		if (ChatConversationTableViewModel.sharedModel.getNBMessages() > 1){
+			let indexBottom = collectionView.indexPathsForVisibleItems.sorted().first?.row
+			let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
+			let sizeCell = (self.collectionView.cellForItem(at: IndexPath(row: indexBottom!, section: 0))?.frame.size.height)
+			collectionView.reloadData()
 
-		if isDisplayingBottomOfTable {
-			self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-				self.scrollToBottomNewMessage()
+			if isDisplayingBottomOfTable {
+				self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+					self.scrollToBottomNewMessage()
+				}
+			} else {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+					self.collectionView.contentOffset = CGPoint(x: self.collectionView.contentOffset.x, y: self.collectionView.contentOffset.y + sizeCell! + 2.0)
+				}
+				scrollBadge!.isHidden = false
+				scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
 			}
-		} else {
-			DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                self.collectionView.contentOffset = CGPoint(x: self.collectionView.contentOffset.x, y: self.collectionView.contentOffset.y + sizeCell! + 2.0)
+			if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+				ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
 			}
-			scrollBadge!.isHidden = false
-			scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
-		}
-		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
-			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
+		}else{
+			collectionView.reloadData()
 		}
 	}
     
@@ -223,6 +232,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			
 			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden){
 				cell.imageViewBubble.onClick {
+					self.onImageClick(chatMessage: event.chatMessage!, index: indexPath.row)
+				}
+				cell.imageVideoViewBubble.onClick {
 					self.onImageClick(chatMessage: event.chatMessage!, index: indexPath.row)
 				}
 			}
@@ -432,6 +444,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
 			let indexDeletedMessage = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
 			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.remove(at: indexDeletedMessage)
+			ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
 		}
 		message.chatRoom?.deleteMessage(message: message)
 		collectionView.reloadData()
@@ -468,7 +481,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
 			print("Messsage not delivered")
 		} else {
-			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
+			if ((VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")) && chatMessage.contents.first?.type == "image"){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())
 				let image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)
 				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
@@ -495,7 +508,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
 			print("Messsage not delivered")
 		} else {
-			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
+			if ((VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")) && chatMessage!.contents[index].type == "image"){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())
 				let image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)
 				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())

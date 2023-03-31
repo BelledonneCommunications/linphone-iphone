@@ -206,6 +206,18 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			self.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
 			self.confirmShare(ChatConversationViewModel.sharedModel.nsDataRead(), url: url, fileName: nil)
 		}
+		
+		ChatConversationTableViewModel.sharedModel.messageSelected.observe { result in
+			if ChatConversationTableViewModel.sharedModel.messageSelected.value! > 0 {
+				self.action1SelectAllButton.isHidden = true
+				self.action1DeselectAllButton.isHidden = false
+				self.action2Delete.isEnabled = true
+			}else{
+				self.action1SelectAllButton.isHidden = false
+				self.action1DeselectAllButton.isHidden = true
+				self.action2Delete.isEnabled = false
+			}
+		}
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -617,9 +629,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	override func selectDeselectAll(){
 		super.selectDeselectAll()
 		if(action1SelectAllButton.isHidden){
-			//tableController.onSelectionToggle(action1SelectAllButton)
+			ChatConversationTableViewModel.sharedModel.selectAllMessages()
 		}else{
-			//tableController.onSelectionToggle(action1SelectAllButton)
+			ChatConversationTableViewModel.sharedModel.unSelectAllMessages()
 		}
 	}
 	
@@ -635,11 +647,11 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			cancelMessage: nil,
 			confirmMessage: nil,
 			onCancelClick: { [self] in
-				onEditionChangeClick()},
+				//onEditionChangeClick()
+			},
 			onConfirmationClick: {
-				//self.tableController.removeSelection(nil)
+				ChatConversationTableViewModel.sharedModel.deleteMessagesSelected()
 				self.editModeOff()
-				//self.tableController.loadData()
 			}
 		)
 	}
@@ -816,6 +828,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
 						if(content.isFile){
 							let indexPath = IndexPath(row: ChatConversationViewModel.sharedModel.replyCollectionView.count, section: 0)
+							
                             ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)!)
 							ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 							collectionViewReply.insertItems(at: [indexPath])
