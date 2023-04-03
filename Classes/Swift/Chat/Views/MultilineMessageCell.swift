@@ -129,7 +129,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	var chatMessageDelegate: ChatMessageDelegate? = nil
 	
 	var indexTransferProgress: Int = -1
-	var indexUploadTransferProgress: Int = -1
+	var indexUploadTransferProgress: Int = 0
 	
 	var selfIndexMessage: Int = -1
 	
@@ -1249,8 +1249,10 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			image = UIImage(named: filePath)
 		}
 		
-		ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePath)
-		filePath = ""
+		if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+			ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePath)
+			filePath = ""
+		}
 		
 		if let image {
 			return image
@@ -1447,28 +1449,23 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 					}
 				})
 			} else {
-				if (indexUploadTransferProgress == -1) {
-					for indexItem in 0...(chatMessage?.contents.count)! - 1 {
-						if chatMessage?.contents[indexItem].name == content.name {
-							indexUploadTransferProgress = indexItem
-							break
-						}
-					}
-					if((chatMessage?.contents.count)! > 1 && indexUploadTransferProgress > -1){
-                        uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
-                    }
-				}
+				print("indexUploadTransferProgressindexUploadTransferProgress \(indexUploadTransferProgress)")
 				if((chatMessage?.contents.count)! > 1){
                     DispatchQueue.main.async(execute: { [self] in
                         if (offset == total) {
-							if(indexUploadTransferProgress > -1){
+							if(indexUploadTransferProgress >= 0){
 								uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = true
 							}
-                            indexUploadTransferProgress = -1
-                        } else {
-							if(indexUploadTransferProgress > -1){
-								uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+							if indexUploadTransferProgress <= (chatMessage?.contents.count)! {
+								indexUploadTransferProgress += 1
+							}else{
+								indexUploadTransferProgress = 0
 							}
+                        } else {
+							if((chatMessage?.contents.count)! > 1){
+						  		uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
+								uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+					  		}
                         }
                     })
                 }
