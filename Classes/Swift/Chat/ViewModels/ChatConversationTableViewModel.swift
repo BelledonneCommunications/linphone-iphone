@@ -35,7 +35,7 @@ class ChatConversationTableViewModel: ControlsViewModel {
 
 	func getMessage(index: Int) -> EventLog? {
 		if (chatRoom != nil) {
-			let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
+			let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: ChatConversationTableViewModel.sharedModel.getNBMessages() - 1 - index, end: ChatConversationTableViewModel.sharedModel.getNBMessages() - index)
 			return chatRoomEvents?.first
 		}else{
 			return nil
@@ -59,7 +59,7 @@ class ChatConversationTableViewModel: ControlsViewModel {
             chatRoomEvents?.reversed().forEach({ event in
                 let chat = event.chatMessage
                 if (chat != nil && msgId == chat?.messageId) {
-                    index = indexRange ;
+                    index = ChatConversationTableViewModel.sharedModel.getNBMessages() - 1 - indexRange ;
                 }
                 indexRange += 1
             })

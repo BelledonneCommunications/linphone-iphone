@@ -1449,7 +1449,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 					}
 				})
 			} else {
-				print("indexUploadTransferProgressindexUploadTransferProgress \(indexUploadTransferProgress)")
 				if((chatMessage?.contents.count)! > 1){
                     DispatchQueue.main.async(execute: { [self] in
                         if (offset == total) {
@@ -1498,8 +1497,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	func isFirstIndexInTableView(indexPath: IndexPath, chat: ChatMessage) -> Bool{
 		let MAX_AGGLOMERATED_TIME=300
 		var previousEvent : EventLog?  = nil
-		let indexOfPreviousEvent = indexPath.row + 1
-		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row+1)
+		let indexOfPreviousEvent = indexPath.row - 1
+		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row-1)
 		if (indexOfPreviousEvent > -1 && indexOfPreviousEvent < ChatConversationTableViewModel.sharedModel.getNBMessages()) {
 			if ((previousEvent?.type.rawValue)! != LinphoneEventLogTypeConferenceChatMessage.rawValue) {
 				return true
