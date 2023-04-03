@@ -555,4 +555,17 @@ class ChatConversationViewModel: ControlsViewModel {
 	func stopSharedPlayer() {
 		AudioPlayer.stopSharedPlayer()
 	}
+	
+	func removeTmpFile(filePath: String?){
+		if (filePath != nil) {
+			if (filePath != "") {
+				do {
+					print("[vfs] remove item at \(filePath)")
+					try FileManager.default.removeItem(atPath: filePath!)
+				}catch{
+					print("[vfs] remove item error")
+				}
+			}
+		}
+	}
 }

@@ -470,8 +470,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func previewControllerDidDismiss(_ controller: QLPreviewController) {
 		if afterPreviewIndex > -1 {
-			collectionView.scrollToItem(at: IndexPath(row: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
-
+			//collectionView.scrollToItem(at: IndexPath(row: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
 		}
 	}
 	
@@ -481,15 +480,39 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
 			print("Messsage not delivered")
 		} else {
-			if ((VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")) && chatMessage.contents.first?.type == "image"){
+			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())
-				let image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)
+				
+				var image = UIImage()
+				if chatMessage.contents.first!.type == "image" {
+					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+						var plainFile = chatMessage.contents.first!.exportPlainFile()
+						
+						image = UIImage(contentsOfFile: plainFile)!
+						
+						ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+						plainFile = ""
+						
+					}else {
+						image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)!
+					}
+				}
 				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 				view.image = image
 			} else {
 				let previewController = QLPreviewController()
 				self.previewItems = []
-				self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
+				
+				if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+					var plainFile = chatMessage.contents.first?.exportPlainFile()
+					
+					self.previewItems.append(self.getPreviewItem(filePath: plainFile!))
+					
+					ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+					plainFile = ""
+				}else {
+					self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
+				}
 				
 				afterPreviewIndex = index
 				
@@ -508,16 +531,41 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
 			print("Messsage not delivered")
 		} else {
-			if ((VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")) && chatMessage!.contents[index].type == "image"){
+			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())
-				let image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)
+				
+				var image = UIImage()
+				if chatMessage!.contents[index].type == "image" {
+					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+						var plainFile = chatMessage!.contents[index].exportPlainFile()
+						
+						image = UIImage(contentsOfFile: plainFile)!
+						
+						ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+						plainFile = ""
+						
+					}else {
+						image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)!
+					}
+				}
+				
 				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 				view.image = image
 			} else {
 				let previewController = QLPreviewController()
 				self.previewItems = []
 				chatMessage?.contents.forEach({ content in
-					self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+						var plainFile = content.exportPlainFile()
+						
+						self.previewItems.append(self.getPreviewItem(filePath: plainFile))
+						
+						ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+						plainFile = ""
+						
+					}else {
+						self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+					}
 				})
 				
 				afterPreviewIndex = indexMessage

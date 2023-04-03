@@ -829,8 +829,20 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 						if(content.isFile){
 							let indexPath = IndexPath(row: ChatConversationViewModel.sharedModel.replyCollectionView.count, section: 0)
 							
-                            ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)!)
-							ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+								var plainFile = content.exportPlainFile()
+								
+								ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: plainFile.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!)
+								ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: plainFile, forReplyBubble: true)!)
+								
+								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+								plainFile = ""
+								
+							}else{
+								ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!)
+								ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
+							}
+							
 							collectionViewReply.insertItems(at: [indexPath])
 						}else if(content.isText){
 							replyContentTextSpacing.isHidden = false
