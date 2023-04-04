@@ -29,15 +29,13 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	
 	var messageListToDelete : [EventLog] = []
 	
-	var isComposing = MutableLiveData<Bool>(false)
-	
 	override init() {
 		super.init()
 	}
 
 	func getMessage(index: Int) -> EventLog? {
 		if (chatRoom != nil) {
-			let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: ChatConversationTableViewModel.sharedModel.getNBMessages() - 1 - index, end: ChatConversationTableViewModel.sharedModel.getNBMessages() - index)
+			let chatRoomEvents = chatRoom?.getHistoryRangeEvents(begin: index, end: index+1)
 			return chatRoomEvents?.first
 		}else{
 			return nil
@@ -61,7 +59,7 @@ class ChatConversationTableViewModel: ControlsViewModel {
             chatRoomEvents?.reversed().forEach({ event in
                 let chat = event.chatMessage
                 if (chat != nil && msgId == chat?.messageId) {
-                    index = ChatConversationTableViewModel.sharedModel.getNBMessages() - 1 - indexRange ;
+                    index = indexRange
                 }
                 indexRange += 1
             })

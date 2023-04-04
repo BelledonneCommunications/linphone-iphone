@@ -423,7 +423,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			label.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor)
 		]
 		
-		//label.backgroundColor = .red
 		NSLayoutConstraint.activate(labelConstraints)
 		
 	//Meeting
@@ -1223,8 +1222,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				
 				viewCell.addSubview(uploadView)
             }
-
-			
 			return cell
 		}
 	}
@@ -1497,8 +1494,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	func isFirstIndexInTableView(indexPath: IndexPath, chat: ChatMessage) -> Bool{
 		let MAX_AGGLOMERATED_TIME=300
 		var previousEvent : EventLog?  = nil
-		let indexOfPreviousEvent = indexPath.row - 1
-		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row-1)
+		let indexOfPreviousEvent = indexPath.row + 1
+		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row+1)
 		if (indexOfPreviousEvent > -1 && indexOfPreviousEvent < ChatConversationTableViewModel.sharedModel.getNBMessages()) {
 			if ((previousEvent?.type.rawValue)! != LinphoneEventLogTypeConferenceChatMessage.rawValue) {
 				return true

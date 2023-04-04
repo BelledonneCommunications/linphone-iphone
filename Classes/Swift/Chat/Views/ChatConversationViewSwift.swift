@@ -152,8 +152,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
 			if((compose! && self.isComposingView.isHidden)||(!compose! && !self.isComposingView.isHidden)){
 				self.setComposingVisible(compose!, withDelay: 0.3)
-				
-				ChatConversationTableViewModel.sharedModel.isComposing.value = compose
 			}
 		}
 		
