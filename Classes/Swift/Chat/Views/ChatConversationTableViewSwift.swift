@@ -61,6 +61,15 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			self.collectionView.reloadData()
 		}
 		
+		ChatConversationTableViewModel.sharedModel.isComposing.observe { isComposing in
+			if isComposing! {
+				let isDisplayingBottomOfTable = self.collectionView.contentOffset.y >= (self.collectionView.contentSize.height - self.collectionView.bounds.height + self.collectionView.contentInset.bottom) - 40
+				if isDisplayingBottomOfTable {
+					self.scrollToBottom(animated: true)
+				}
+			}
+		}
+		
 		
 		collectionView.isUserInteractionEnabled = true
 	}
@@ -93,15 +102,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		
 		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
 		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
-		
-		//collectionView.transform = CGAffineTransform(scaleX: 1, y: -1)
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
-		collectionView.reloadData()
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
 		createFloatingButton()
 		if ChatConversationTableViewModel.sharedModel.getNBMessages() > 0 {
 			scrollToBottom(animated: false)
@@ -116,8 +119,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     }
 	
 	func scrollToBottom(animated: Bool){
+		
         collectionView.reloadData()
-		self.collectionView.scrollToItem(at: IndexPath(item: ChatConversationTableViewModel.sharedModel.getNBMessages()-1, section: 0), at: .bottom, animated: false)
+		let isDisplayingBottomOfTable = collectionView.contentOffset.y >= (collectionView.contentSize.height - collectionView.bounds.height + collectionView.contentInset.bottom) - 20
+		if !isDisplayingBottomOfTable {
+			self.collectionView.scrollToItem(at: IndexPath(item: ChatConversationTableViewModel.sharedModel.getNBMessages()-1, section: 0), at: .bottom, animated: false)
+		}
 		//Scroll twice because collection view doesn't have time to calculate cell size
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
 			self.collectionView.scrollToItem(at: IndexPath(item: ChatConversationTableViewModel.sharedModel.getNBMessages()-1, section: 0), at: .bottom, animated: animated)
@@ -212,8 +219,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				}
 			}
 		}
-		
-		//cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
 		return cell
 	}
 	
@@ -438,12 +443,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
 		return (previewItems[index] as QLPreviewItem?)!
-	}
-	
-	func previewControllerDidDismiss(_ controller: QLPreviewController) {
-		if afterPreviewIndex > -1 {
-			//collectionView.scrollToItem(at: IndexPath(row: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
-		}
 	}
 	
 	func onImageClick(chatMessage: ChatMessage, index: Int) {

@@ -29,6 +29,8 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	
 	var messageListToDelete : [EventLog] = []
 	
+	var isComposing = MutableLiveData<Bool>(false)
+	
 	override init() {
 		super.init()
 	}
