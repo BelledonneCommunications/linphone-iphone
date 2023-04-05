@@ -85,7 +85,7 @@ extension ChatConversationTableViewSwift {
 	}
 	
 	@IBAction private func scrollToBottomButtonAction() {
-		scrollToBottomWithRelaod()
+		scrollToBottom(animated: false)
 	}
 	
 	

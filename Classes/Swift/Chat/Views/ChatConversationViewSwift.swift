@@ -156,7 +156,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		ChatConversationViewModel.sharedModel.messageReceived.observe { message in
-			self.tableControllerSwift.refreshData()
+			self.tableControllerSwift.refreshData(isOutgoing: false)
 		}
 
 		ChatConversationViewModel.sharedModel.stateChanged.observe { state in
@@ -167,7 +167,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 		ChatConversationViewModel.sharedModel.secureLevelChanged.observe { secure in
 			self.updateParticipantLabel()
-			self.tableControllerSwift.scrollToBottomWithRelaod()
+			self.tableControllerSwift.refreshData(isOutgoing: false)
 			self.changeSecureLevel(secureLevel: ChatConversationViewModel.sharedModel.secureLevel != nil, imageBadge: ChatConversationViewModel.sharedModel.secureLevel)
 		}
 		
@@ -176,12 +176,16 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			if let subjectVM {
 				self.titleGroupLabel.text = subjectVM
 				self.titleLabel.text = subjectVM
-				self.tableControllerSwift.scrollToBottomWithRelaod()
+				self.tableControllerSwift.refreshData(isOutgoing: false)
 			}
 		}
 
 		ChatConversationViewModel.sharedModel.eventLog.observe { event in
-			self.tableControllerSwift.scrollToBottomWithRelaod()
+			if (event?.chatMessage != nil || event?.chatMessage?.isOutgoing != nil) {
+				self.tableControllerSwift.refreshData(isOutgoing: (event?.chatMessage!.isOutgoing)!)
+			}else{
+				self.tableControllerSwift.refreshData(isOutgoing: false)
+			}
 		}
 		
 		ChatConversationViewModel.sharedModel.indexPathVM.observe { index in
@@ -734,7 +738,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		fileTransfer.text = messageView.messageText.text
 		fileTransfer.uploadFileContent(forSwift: ChatConversationViewModel.sharedModel.fileContext, urlList: ChatConversationViewModel.sharedModel.mediaURLCollection, for: ChatConversationViewModel.sharedModel.chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
 		messageView.messageText.text = ""
-		tableControllerSwift.scrollToBottomWithRelaod()
+		tableControllerSwift.refreshData(isOutgoing: true)
 		return true
 	}
 	
@@ -751,7 +755,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startUploadData(_ data: Data?, withType type: String?, withName name: String?, andMessage message: String?, rootMessage: ChatMessage?){
 		ChatConversationViewModel.sharedModel.startUploadData(data, withType: type, withName: name, andMessage: message, rootMessage: rootMessage)
-		tableControllerSwift.scrollToBottomWithRelaod()
+		tableControllerSwift.refreshData(isOutgoing: true)
 	}
 	
 	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
@@ -1253,7 +1257,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startFileUpload(_ data: Data?, withName name: String?, rootMessage: ChatMessage?){
 		ChatConversationViewModel.sharedModel.startFileUpload(data, withName: name, rootMessage: rootMessage)
-		tableControllerSwift.scrollToBottomWithRelaod()
+		tableControllerSwift.refreshData(isOutgoing: true)
 	}
 	
 	@objc class func getFileUrl(_ name: String?) -> URL? {

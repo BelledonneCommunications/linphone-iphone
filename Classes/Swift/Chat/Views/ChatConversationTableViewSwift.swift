@@ -105,20 +105,18 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     
     func scrollToMessage(message: ChatMessage){
         let messageIndex = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
-        collectionView.reloadData()
-        collectionView.layoutIfNeeded()
-        collectionView.scrollToItem(at: IndexPath(row: messageIndex-1, section: 0), at: .bottom, animated: false)
+		
+		collectionView.performBatchUpdates({
+			collectionView.reloadData()
+		}) { (finished) in
+			DispatchQueue.main.async{
+				self.collectionView.scrollToItem(at: IndexPath(row: messageIndex, section: 0), at: .top, animated: false)
+			}
+		}
     }
 	
 	func scrollToBottom(animated: Bool){
-		
-        collectionView.reloadData()
-		let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
-		if isDisplayingBottomOfTable {
-			self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
-		}
-		//Scroll twice because collection view doesn't have time to calculate cell size
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+		DispatchQueue.main.async{
 			self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animated)
 		}
 		ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
@@ -127,45 +125,58 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		scrollBadge!.text = "0"
 	}
 	
-	func scrollToBottomWithRelaod(){
-		if (ChatConversationTableViewModel.sharedModel.getNBMessages() > 1){
-			scrollToBottom(animated: false)
-			if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
-				ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
-			}
-		}else{
-			collectionView.reloadData()
-		}
-		
-	}
-	
-	func refreshData(){
+	func refreshData(isOutgoing: Bool){
 		if (ChatConversationTableViewModel.sharedModel.getNBMessages() > 1){
 			let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
 
 			if isDisplayingBottomOfTable {
-				scrollToBottom(animated: true)
-			} else {
-				let contentOffsetY = collectionView.contentOffset.y
-				collectionView.reloadData()
-				self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-				
-				DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-					//self.collectionView.setContentOffset(CGPoint(x: self.collectionView.contentOffset.x, y: self.collectionView.contentOffset.y + (self.collectionView.visibleCells.first?.frame.height)! + 2), animated: false)
-					
-					
-					let sizeFirstItem = self.collectionView.cellForItem(at: IndexPath(row: 0, section: 0))?.frame.size.height
-					self.collectionView.contentOffset.y = contentOffsetY + sizeFirstItem!
+				collectionView.performBatchUpdates({
+					let isDisplayingBottomOfTable = self.collectionView.contentOffset.y <= 20
+					if isDisplayingBottomOfTable {
+						self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
+					}
+					collectionView.reloadData()
+				}) { (finished) in
+					self.scrollToBottom(animated: true)
 				}
+			} else if !isOutgoing {
+				let selectedCellIndex = collectionView.indexPathsForVisibleItems.sorted().first!
+				let selectedCell = collectionView.cellForItem(at: selectedCellIndex)
+				let visibleRect = collectionView.convert(collectionView.bounds, to: selectedCell)
+				
+				UIView.performWithoutAnimation {
+					collectionView.performBatchUpdates({
+						collectionView.reloadData()
+					}) { (finished) in
+						DispatchQueue.main.async{
+							let newSelectedCell = self.collectionView.cellForItem(at: IndexPath(row: selectedCellIndex.row + 1, section: 0))
+							let updatedVisibleRect = self.collectionView.convert(self.collectionView.bounds, to: newSelectedCell)
+
+							var contentOffset = self.collectionView.contentOffset
+							contentOffset.y = contentOffset.y + (visibleRect.origin.y - updatedVisibleRect.origin.y)
+							self.collectionView.contentOffset = contentOffset
+						}
+					}
+				}
+				
+				
 				scrollBadge!.isHidden = false
 				scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
 				
+			} else {
+				collectionView.performBatchUpdates({
+					collectionView.reloadData()
+				}) { (finished) in
+					self.scrollToBottom(animated: false)
+				}
 			}
+			
 			if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
 				ChatConversationTableViewModel.sharedModel.messageListSelected.value!.insert(false, at: 0)
 			}
 		}else{
 			collectionView.reloadData()
+			ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 		}
 	}
     
@@ -529,16 +540,18 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				let previewController = QLPreviewController()
 				self.previewItems = []
 				chatMessage?.contents.forEach({ content in
-					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-						var plainFile = content.exportPlainFile()
-						
-						self.previewItems.append(self.getPreviewItem(filePath: plainFile))
-						
-						ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
-						plainFile = ""
-						
-					}else {
-						self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+					if(content.isFile){
+						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+							var plainFile = content.exportPlainFile()
+							
+							self.previewItems.append(self.getPreviewItem(filePath: plainFile))
+							
+							ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+							plainFile = ""
+							
+						}else {
+							self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+						}
 					}
 				})
 				
