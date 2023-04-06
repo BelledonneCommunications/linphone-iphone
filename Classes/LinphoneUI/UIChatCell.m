@@ -95,11 +95,11 @@
 
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
-        BOOL imdnInSnap = FALSE;
+        BOOL imdnInSnap = TRUE;
         if (imdnInSnap) {
             BOOL outgoing = linphone_chat_message_is_outgoing(last_msg);
             NSString *text = [UIChatBubbleTextCell TextMessageForChat:last_msg];
-            if (outgoing) {
+            if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
                 // shorten long messages
                 /*if ([text length] > 50)
                     text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];*/
