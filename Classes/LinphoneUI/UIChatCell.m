@@ -123,6 +123,13 @@
                 _chatContentLabel.attributedText = boldText;
             }
 
+            if (outgoing){
+                linphone_chat_message_set_user_data(last_msg, (void *)CFBridgingRetain(self));
+                LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(last_msg);
+                linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
+                linphone_chat_message_cbs_set_participant_imdn_state_changed(cbs, participant_imdn_status);
+                linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
+            }
             
             LinphoneChatMessageState state = linphone_chat_message_get_state(last_msg);
             if (outgoing && (state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed || state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError)) {
@@ -219,6 +226,24 @@
     } else {
         [_imdmIcon setHidden:TRUE];
     }
+}
+
+static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
+    LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
+    if (state == LinphoneChatMessageStateFileTransferInProgress)
+        return;
+    
+    if (!linphone_chat_message_is_outgoing(msg) || (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateFileTransferInProgress)) {
+        ChatsListView *view = VIEW(ChatsListView);
+        [view.tableController updateEventEntry:msg];
+    }
+}
+
+static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
+        [imdnView updateImdnList];
+    });
 }
 
 @end

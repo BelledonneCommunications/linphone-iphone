@@ -29,6 +29,7 @@
 	LinphoneChatRoom *chatRoom;
 }
 
+@property(readonly, nonatomic) LinphoneEventLog *event;
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property (weak, nonatomic) IBOutlet UIImageView *securityImage;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;

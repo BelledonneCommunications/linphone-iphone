@@ -138,6 +138,16 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	}
 }
 
+- (void)updateEventEntry:(LinphoneChatMessage *)msg {
+    int idx = bctbx_list_index(_data, linphone_chat_message_get_chat_room(msg));
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+    if (idx < 0) {
+        LOGW(@"event entry doesn't exist");
+        return;
+    }
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:FALSE];
+}
+
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
 	int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
