@@ -800,6 +800,18 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                             imagesGridCollectionViewNil += 1
                         }
                         
+                        if (content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
+                            var onlyEmojis = true
+                            content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
+                                if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
+                                    onlyEmojis = false
+                                }
+                            }
+                            if onlyEmojis {
+                                label.font = label.font.withSize(51)
+                            }
+                        }
+                        
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
 						
