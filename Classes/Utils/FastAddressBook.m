@@ -32,7 +32,7 @@
 
 + (UIImage *)imageForContact:(Contact *)contact {
 	@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
-		UIImage *retImage = [contact avatar];
+		UIImage *retImage = nil;
 		if (retImage == nil) {
 			retImage = contact.friend && linphone_friend_get_addresses(contact.friend) ?
 				[AvatarBridge imageForAddressWithAddress:linphone_friend_get_addresses(contact.friend)->data] :
@@ -49,11 +49,7 @@
 	if ([LinphoneManager isMyself:addr] && [LinphoneUtils hasSelfAvatar]) {
 		return [LinphoneUtils selfAvatar];
 	}
-	UIImage *contactImage =  [[FastAddressBook getContactWithAddress:addr] avatar];
-	if (contactImage)
-		return contactImage;
-	else
-		return [AvatarBridge imageForAddressWithAddress:addr];
+	return [AvatarBridge imageForAddressWithAddress:addr];
 }
 
 + (UIImage *)imageForSecurityLevel:(LinphoneChatRoomSecurityLevel)level {
