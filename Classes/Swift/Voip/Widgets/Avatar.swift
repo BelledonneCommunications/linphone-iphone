@@ -35,6 +35,7 @@ class Avatar : UIView {
 	
 	let initialsLabel: StyledLabel
 	let iconImageView = UIImageView()
+    let iconPresenceView = UIImageView(image: UIImage(named:"led_connected"))
 
 	init (color:LightDarkColor,textStyle:TextStyle) {
 		initialsLabel =  StyledLabel(textStyle)
@@ -43,9 +44,11 @@ class Avatar : UIView {
 		self.backgroundColor = color.get()
 		addSubview(initialsLabel)
 		addSubview(iconImageView)
+        addSubview(iconPresenceView)
 		iconImageView.backgroundColor = .white
 		initialsLabel.matchParentSideBorders().matchParentHeight().done()
 		iconImageView.matchParentDimmensions().done()
+        iconPresenceView.alignParentRight().alignParentBottom().done()
 		UIDeviceBridge.displayModeSwitched.observe { _ in
 			self.initialsLabel.applyStyle(textStyle)
 			self.backgroundColor = color.get()
