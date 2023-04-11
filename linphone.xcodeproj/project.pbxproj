@@ -865,6 +865,7 @@
 		C6E3E7EE291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C6E3E7ED291D648D00DDFC46 /* side_menu_voip_meeting_schedule@2x.png */; };
 		C6F55645287CC69F0056E213 /* voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6F55644287CC69F0056E213 /* voip_meeting_schedule.png */; };
 		C6F55647287CCFB70056E213 /* menu_voip_meeting_schedule.png in Resources */ = {isa = PBXBuildFile; fileRef = C6F55646287CCFB60056E213 /* menu_voip_meeting_schedule.png */; };
+		C7FE025F958813C3A97531E8 /* Pods_msgNotificationService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 109D838392DD2F69597772BD /* Pods_msgNotificationService.framework */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		CF15F21E20E4F9A3008B1DE6 /* UIImageViewDeletable.m in Sources */ = {isa = PBXBuildFile; fileRef = CF15F21C20E4F9A3008B1DE6 /* UIImageViewDeletable.m */; };
 		CF15F21F20E4F9A3008B1DE6 /* UIImageViewDeletable.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF15F21D20E4F9A3008B1DE6 /* UIImageViewDeletable.xib */; };
@@ -979,7 +980,6 @@
 		EA8CB833239F96CA00C330CC /* msgNotificationContent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EA8CB827239F96CA00C330CC /* msgNotificationContent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EAE6C88423FABF690076A018 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE6C88323FABF690076A018 /* Utils.swift */; };
 		EAE6C88523FABF690076A018 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE6C88323FABF690076A018 /* Utils.swift */; };
-		EB748A3A89C90B4B9F7B9274 /* Pods_msgNotificationContent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D59A11B7EA2D725CDEB15DDF /* Pods_msgNotificationContent.framework */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */; };
@@ -1068,7 +1068,6 @@
 		228697C311AC29B800E9E0CA /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		22AA8AFF13D83F6300B30535 /* UICamSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICamSwitch.h; sourceTree = "<group>"; };
 		22AA8B0013D83F6300B30535 /* UICamSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICamSwitch.m; sourceTree = "<group>"; };
-		22AAF90991F931743D9137EE /* Pods-msgNotificationContent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationContent.release.xcconfig"; path = "Target Support Files/Pods-msgNotificationContent/Pods-msgNotificationContent.release.xcconfig"; sourceTree = "<group>"; };
 		22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
@@ -1099,6 +1098,7 @@
 		24E1C7B91F9A235500D3F981 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		26E290F2B9ECEB456016811A /* Pods-msgNotificationContent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationContent.release.xcconfig"; path = "Target Support Files/Pods-msgNotificationContent/Pods-msgNotificationContent.release.xcconfig"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		296C56DF8F1DCF187DB34FD8 /* Pods-msgNotificationContent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationContent.debug.xcconfig"; path = "Target Support Files/Pods-msgNotificationContent/Pods-msgNotificationContent.debug.xcconfig"; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2EC58F3778B5BF098767FCE4 /* Pods-msgNotificationService.distribution.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationService.distribution.xcconfig"; path = "Target Support Files/Pods-msgNotificationService/Pods-msgNotificationService.distribution.xcconfig"; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* linphone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linphone_Prefix.pch; sourceTree = "<group>"; };
@@ -1771,7 +1771,6 @@
 		669B140B27A29D140012220A /* FloatingScrollDownButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingScrollDownButton.swift; sourceTree = "<group>"; };
 		66E399F52857869200E73456 /* menu_notifications_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_notifications_off.png; sourceTree = "<group>"; };
 		66E399F62857869200E73456 /* menu_notifications_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_notifications_on.png; sourceTree = "<group>"; };
-		70074A72423F5E020A68EE6F /* Pods-msgNotificationService.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-msgNotificationService.release.xcconfig"; path = "Target Support Files/Pods-msgNotificationService/Pods-msgNotificationService.release.xcconfig"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		7E4D63B15A31882D6F68D69B /* Pods_msgNotificationService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_msgNotificationService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
