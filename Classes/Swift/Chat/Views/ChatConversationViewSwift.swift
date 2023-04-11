@@ -677,7 +677,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		if ChatConversationViewModel.sharedModel.isPendingVoiceRecord && (ChatConversationViewModel.sharedModel.voiceRecorder != nil) && (linphone_recorder_get_file(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) != nil) {
-			print("ChatConversationViewSwift onSendClick isPendingVoiceRecord")
 			let voiceContent = linphone_recorder_create_content(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 			ChatConversationViewModel.sharedModel.isPendingVoiceRecord = false
 		 	cancelVoiceRecording()

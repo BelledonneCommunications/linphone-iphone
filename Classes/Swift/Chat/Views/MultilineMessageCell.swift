@@ -136,6 +136,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 	
 	var deleteItemCheckBox = StyledCheckBox()
 	
+	var matches : [NSTextCheckingResult] = []
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
@@ -772,7 +774,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 				meetingView.isHidden = true
                 
 				event.chatMessage!.contents.forEach { content in
-					print("indexPath.rowindexPath.rowindexPath.rowindexPath.row \(content.name) \(event.chatMessage!.contents.count)")
 					if (content.isFileTransfer && content.name != "") {
                     
                         let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
@@ -786,7 +787,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                     }
                     
 					if content.type == "text"{
-						label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
+						//label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
 						if event.chatMessage!.contents.count > 1 {
 							NSLayoutConstraint.deactivate(labelConstraints)
 							NSLayoutConstraint.activate(labelTopConstraints)
@@ -811,6 +812,11 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                                 label.font = label.font.withSize(51)
                             }
                         }
+						
+						
+						
+						checkIfIsLink(content: content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines))
+						
                         
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
@@ -990,6 +996,47 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		}
 	}
 	
+	func checkIfIsLink(content: String){
+		let input = content
+		let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+		matches = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+		
+		
+		let paragraphStyle = NSMutableParagraphStyle()
+		paragraphStyle.lineSpacing = 1
+		
+		let attributedString = NSMutableAttributedString.init(string: content, attributes: [
+			NSAttributedString.Key.font: label.font as Any
+		 ])
+
+		for match in matches {
+			let linkRange = match.range
+			let linkAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue, NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue] as [NSAttributedString.Key : Any]
+			attributedString.setAttributes(linkAttributes, range: linkRange)
+		}
+		
+		if matches.count > 0 {
+			label.isUserInteractionEnabled = true
+			let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTapOnLabel(_:)))
+			label.addGestureRecognizer(tap)
+		}
+		
+		label.attributedText = attributedString;
+	}
+									   
+	@objc func handleTapOnLabel(_ sender: UITapGestureRecognizer) {
+		matches.forEach { match in
+			if sender.didTapAttributedTextInLabel(label: label, inRange: match.range) {
+				if let url = match.url {
+					if #available(iOS 10.0, *) {
+						UIApplication.shared.open(url, options: [:], completionHandler: nil)
+					} else {
+						UIApplication.shared.openURL(url)
+					}
+				}
+			}
+		}
+	}
 	
 	func addMessageDelegate(){
 		chatMessageDelegate = ChatMessageDelegateStub(
@@ -1599,4 +1646,41 @@ class DynamicHeightCollectionView: UICollectionView {
 	override var intrinsicContentSize: CGSize {
 		return contentSize
 	}
+}
+
+extension UITapGestureRecognizer {
+
+	func didTapAttributedTextInLabel(label: UILabel, inRange targetRange: NSRange) -> Bool {
+		// Create instances of NSLayoutManager, NSTextContainer and NSTextStorage
+		let layoutManager = NSLayoutManager()
+		let textContainer = NSTextContainer(size: CGSize.zero)
+		let textStorage = NSTextStorage(attributedString: label.attributedText!)
+
+		// Configure layoutManager and textStorage
+		layoutManager.addTextContainer(textContainer)
+		textStorage.addLayoutManager(layoutManager)
+
+		// Configure textContainer
+		textContainer.lineFragmentPadding = 0.0
+		textContainer.lineBreakMode = label.lineBreakMode
+		textContainer.maximumNumberOfLines = label.numberOfLines
+		let labelSize = label.bounds.size
+		textContainer.size = labelSize
+
+		// Find the tapped character location and compare it to the specified range
+		let locationOfTouchInLabel = self.location(in: label)
+		let textBoundingBox = layoutManager.usedRect(for: textContainer)
+		let textContainerOffset = CGPoint(
+			x: (labelSize.width - textBoundingBox.size.width) * 0.5 - textBoundingBox.origin.x,
+			y: (labelSize.height - textBoundingBox.size.height) * 0.5 - textBoundingBox.origin.y
+		)
+		let locationOfTouchInTextContainer = CGPoint(
+			x: locationOfTouchInLabel.x - textContainerOffset.x,
+			y: locationOfTouchInLabel.y - textContainerOffset.y
+		)
+		let indexOfCharacter = layoutManager.characterIndex(for: locationOfTouchInTextContainer, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+
+		return NSLocationInRange(indexOfCharacter, targetRange)
+	}
+
 }
