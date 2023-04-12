@@ -201,9 +201,7 @@
         _avatarImage.hidden = TRUE;
         
     } else {
-        [_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_from_address(_message)]
-                      bordered:NO
-             withRoundedRadius:YES];
+        [_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_from_address(_message)]];
         _contactDateLabel.text = [self.class ContactDateForChat:_message];
         _contactDateLabel.textAlignment = NSTextAlignmentLeft;
         _avatarImage.hidden = !_isFirst;

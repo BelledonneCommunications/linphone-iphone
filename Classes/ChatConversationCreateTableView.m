@@ -238,7 +238,7 @@
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:str] : phoneOrAddr;
 	ms_free(str);
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
-	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr]];
 	cell.contentView.userInteractionEnabled = false;
 	cell.contentView.backgroundColor  = UIColor.clearColor;
 	cell.backgroundColor = UIColor.clearColor;

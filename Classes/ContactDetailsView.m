@@ -63,7 +63,7 @@
 	}
 
 	LOGI(@"Reset data to contact %p", _contact);
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 	[_tableController setContact:_contact];
 	_emptyLabel.hidden = YES;
 	_avatarImage.hidden = !_emptyLabel.hidden;
@@ -123,7 +123,7 @@
 	_deleteButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdapOrProvisioning];
 	_editButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdapOrProvisioning];
 
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 	_organizationLabel.text = _contact.organizationName;
 	[_tableController setContact:_contact];
@@ -456,7 +456,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_contact.firstName = _tmpContact.firstName.copy;
 		_contact.lastName = _tmpContact.lastName.copy;
 		_contact.avatar = _tmpContact.avatar.copy;
-		[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 		
 		while (_contact.sipAddresses.count > 0) {
 			[_contact removeSipAddressAtIndex:0];
@@ -633,7 +633,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_contact setAvatar:image];
 
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 }
 
 - (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info {

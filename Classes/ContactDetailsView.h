@@ -35,7 +35,7 @@
 @property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property(nonatomic, strong) IBOutlet UIButton *cancelButton;
-@property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property(weak, nonatomic) IBOutlet UIImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *organizationLabel;
 @property(weak, nonatomic) IBOutlet UIToggleButton *deleteButton;

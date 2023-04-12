@@ -231,7 +231,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 	// Cached avatar
 	UIImage *image = [FastAddressBook imageForContact:contact];
-	[cell.avatarImage setImage:image bordered:NO withRoundedRadius:YES];
+	[cell.avatarImage setImage:image];
 	[cell setContact:contact];
 	[super accessoryForCell:cell atPath:indexPath];
 	cell.contentView.userInteractionEnabled = false;

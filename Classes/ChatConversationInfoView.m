@@ -328,7 +328,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	cell.uri = _contacts[indexPath.row];
 	LinphoneAddress *addr = linphone_address_new(cell.uri.UTF8String);
 	cell.nameLabel.text = (addr == nil? cell.uri : [FastAddressBook displayNameForAddress:addr]);
-	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:YES withRoundedRadius:YES];
+	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr]];
 	cell.controllerView = self;
 	if(![_admins containsObject:cell.uri]) {
 		cell.adminLabel.enabled	= FALSE;

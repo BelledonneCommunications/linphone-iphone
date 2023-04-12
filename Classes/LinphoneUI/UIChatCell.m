@@ -78,7 +78,7 @@
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(chatRoom);
 		if (addr) {
 			[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-			[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+			[_avatarImage setImage:[FastAddressBook imageForAddress:addr]];
 		} else {
 			_addressLabel.text = [NSString stringWithUTF8String:LINPHONE_DUMMY_SUBJECT];
 		}
@@ -86,7 +86,7 @@
 	} else {
 		const char *subject = linphone_chat_room_get_subject(chatRoom);
 		_addressLabel.text = [NSString stringWithUTF8String:subject ?: LINPHONE_DUMMY_SUBJECT];
-		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"]];
 	}
     // TODO update security image when security level changed
     [_securityImage setImage:[FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(chatRoom)]];

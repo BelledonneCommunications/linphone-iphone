@@ -39,7 +39,7 @@
 @property(readonly, nonatomic) LinphoneEventLog *event;
 @property(readonly, nonatomic) LinphoneChatMessage *message;
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColorImage;
-@property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
+@property(nonatomic, weak) IBOutlet UIImageView *avatarImage;
 @property(nonatomic, weak) IBOutlet UILabel *contactDateLabel;
 //@property(weak, nonatomic) IBOutlet UIActivityIndicatorView *statusInProgressSpinner;
 @property(nonatomic, weak) IBOutlet UITextViewNoDefine *messageText;

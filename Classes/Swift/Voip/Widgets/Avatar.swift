@@ -35,7 +35,6 @@ class Avatar : UIView {
 	
 	let initialsLabel: StyledLabel
 	let iconImageView = UIImageView()
-    let iconPresenceView = UIImageView(image: UIImage(named:"led_connected"))
 
 	init (color:LightDarkColor,textStyle:TextStyle) {
 		initialsLabel =  StyledLabel(textStyle)
@@ -44,11 +43,9 @@ class Avatar : UIView {
 		self.backgroundColor = color.get()
 		addSubview(initialsLabel)
 		addSubview(iconImageView)
-        addSubview(iconPresenceView)
 		iconImageView.backgroundColor = .white
 		initialsLabel.matchParentSideBorders().matchParentHeight().done()
 		iconImageView.matchParentDimmensions().done()
-        iconPresenceView.alignParentRight().alignParentBottom().done()
 		UIDeviceBridge.displayModeSwitched.observe { _ in
 			self.initialsLabel.applyStyle(textStyle)
 			self.backgroundColor = color.get()
@@ -94,7 +91,7 @@ class Avatar : UIView {
 
 @objc class AvatarBridge : NSObject { // Ugly work around to tap into the swift Avatars, until rest of the app is reworked in Swift.
 	static var shared : Avatar? = nil
-	static let size = 50.0	
+	static let size = 50.0
 	@objc static func prepareIt() {
 		if (shared != nil) {
 			shared?.removeFromSuperview()
@@ -111,7 +108,16 @@ class Avatar : UIView {
 		}
 		let sAddr = Address.getSwiftObject(cObject: address)
 		shared?.fillFromAddress(address: sAddr)
-		return shared?.toImage()
+        
+        let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
+        let iconPresenceView = UIImageView(image: UIImage(named:"led_connected"))
+        
+        avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+        avatarWithPresence.addSubview(iconPresenceView)
+        iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
+        
+        return avatarWithPresence.toImage()
 	}
 	
 	@objc static func imageForInitials(displayName:String) -> UIImage? {
@@ -124,7 +130,16 @@ class Avatar : UIView {
 		shared?.initialsLabel.text = Address.initials(displayName: displayName)
 		shared?.initialsLabel.isHidden = false
 		shared?.iconImageView.isHidden = true
-		return shared?.toImage()
+        
+        let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
+        let iconPresenceView = UIImageView(image: UIImage(named:"led_connected"))
+        
+        avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+        avatarWithPresence.addSubview(iconPresenceView)
+        iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
+        
+        return avatarWithPresence.toImage()
 	}
 	
 }

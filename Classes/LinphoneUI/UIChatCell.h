@@ -30,7 +30,7 @@
 }
 
 @property(readonly, nonatomic) LinphoneEventLog *event;
-@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UIImageView *avatarImage;
 @property (weak, nonatomic) IBOutlet UIImageView *securityImage;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
 @property(nonatomic, strong) IBOutlet UILabel *chatContentLabel;
