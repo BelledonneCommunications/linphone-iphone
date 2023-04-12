@@ -111,7 +111,11 @@ class Avatar : UIView {
         
         let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
-        let iconPresenceView = UIImageView(image: UIImage(named:"led_connected"))
+        let contactAddress = Address.getSwiftObject(cObject: address).contact()
+        var iconPresenceView = UIImageView()
+        if contactAddress != nil {
+            iconPresenceView = updatePresenceImage(contact: Address.getSwiftObject(cObject: address).contact()!)
+        }
         
         avatarWithPresence.addSubview(avatarImageWihtoutPresence)
         avatarWithPresence.addSubview(iconPresenceView)
@@ -120,7 +124,8 @@ class Avatar : UIView {
         return avatarWithPresence.toImage()
 	}
 	
-	@objc static func imageForInitials(displayName:String) -> UIImage? {
+    @objc static func imageForInitials(contact:Contact) -> UIImage? {
+        let displayName: String = contact.displayName
 		if (shared == nil) {
 			prepareIt()
 		}
@@ -133,7 +138,7 @@ class Avatar : UIView {
         
         let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
-        let iconPresenceView = UIImageView(image: UIImage(named:"led_connected"))
+        let iconPresenceView = updatePresenceImage(contact: contact)
         
         avatarWithPresence.addSubview(avatarImageWihtoutPresence)
         avatarWithPresence.addSubview(iconPresenceView)
@@ -142,4 +147,26 @@ class Avatar : UIView {
         return avatarWithPresence.toImage()
 	}
 	
+    @objc static func updatePresenceImage(contact:Contact) -> UIImageView {
+
+        let friend = Friend.getSwiftObject(cObject: contact.friend)
+        
+        var presenceModel : PresenceModel?
+        var hasPresence : Bool? = false
+        
+        var imageName = "";
+        
+        if friend.address?.asStringUriOnly() != nil {
+            presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
+            hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
+        }
+        
+        if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
+            imageName = "led_connected";
+        } else {
+            imageName = "led_inprogress";
+        }
+        
+        return UIImageView(image: UIImage(named:imageName))
+    }
 }
