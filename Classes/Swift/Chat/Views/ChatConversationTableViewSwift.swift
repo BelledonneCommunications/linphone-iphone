@@ -105,14 +105,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     
     func scrollToMessage(message: ChatMessage){
         let messageIndex = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
-		
-		collectionView.performBatchUpdates({
-			collectionView.reloadData()
-		}) { (finished) in
-			DispatchQueue.main.async{
-				self.collectionView.scrollToItem(at: IndexPath(row: messageIndex, section: 0), at: .top, animated: false)
-			}
-		}
+        self.collectionView.scrollToItem(at: IndexPath(row: messageIndex, section: 0), at: .bottom, animated: false)
     }
 	
 	func scrollToBottom(animated: Bool){
@@ -130,33 +123,24 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
 
 			if isDisplayingBottomOfTable {
-				collectionView.performBatchUpdates({
-					let isDisplayingBottomOfTable = self.collectionView.contentOffset.y <= 20
-					if isDisplayingBottomOfTable {
-						self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
-					}
-					collectionView.reloadData()
-				}) { (finished) in
-					self.scrollToBottom(animated: true)
-				}
+                self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
+                collectionView.reloadData()
+                self.scrollToBottom(animated: true)
 			} else if !isOutgoing {
 				let selectedCellIndex = collectionView.indexPathsForVisibleItems.sorted().first!
 				let selectedCell = collectionView.cellForItem(at: selectedCellIndex)
 				let visibleRect = collectionView.convert(collectionView.bounds, to: selectedCell)
 				
 				UIView.performWithoutAnimation {
-					collectionView.performBatchUpdates({
-						collectionView.reloadData()
-					}) { (finished) in
-						DispatchQueue.main.async{
-							let newSelectedCell = self.collectionView.cellForItem(at: IndexPath(row: selectedCellIndex.row + 1, section: 0))
-							let updatedVisibleRect = self.collectionView.convert(self.collectionView.bounds, to: newSelectedCell)
+                    collectionView.reloadData()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
+                        let newSelectedCell = self.collectionView.cellForItem(at: IndexPath(row: selectedCellIndex.row + 1, section: 0))
+                        let updatedVisibleRect = self.collectionView.convert(self.collectionView.bounds, to: newSelectedCell)
 
-							var contentOffset = self.collectionView.contentOffset
-							contentOffset.y = contentOffset.y + (visibleRect.origin.y - updatedVisibleRect.origin.y)
-							self.collectionView.contentOffset = contentOffset
-						}
-					}
+                        var contentOffset = self.collectionView.contentOffset
+                        contentOffset.y = contentOffset.y + (visibleRect.origin.y - updatedVisibleRect.origin.y)
+                        self.collectionView.contentOffset = contentOffset
+                    }
 				}
 				
 				
@@ -164,11 +148,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
 				
 			} else {
-				collectionView.performBatchUpdates({
-					collectionView.reloadData()
-				}) { (finished) in
-					self.scrollToBottom(animated: false)
-				}
+                collectionView.reloadData()
+                self.scrollToBottom(animated: false)
 			}
 			
 			if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
