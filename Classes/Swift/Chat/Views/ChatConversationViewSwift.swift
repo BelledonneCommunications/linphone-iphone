@@ -172,8 +172,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		ChatConversationViewModel.sharedModel.subjectChanged.observe { subject in
-			let subjectVM = ChatConversationViewModel.sharedModel.subject
-			if let subjectVM {
+            if let subjectVM = ChatConversationViewModel.sharedModel.subject {
 				self.titleGroupLabel.text = subjectVM
 				self.titleLabel.text = subjectVM
 				self.tableControllerSwift.refreshData(isOutgoing: false)
@@ -344,18 +343,14 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		let firstParticipant = ChatConversationViewModel.sharedModel.chatRoom?.participants.first
 		let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 		
-		let contact = FastAddressBook.getContactWith(addr)
-		
-		if let contact {
+		if let contact = FastAddressBook.getContactWith(addr) {
 			let view: ContactDetailsView = self.VIEW(ContactDetailsView.compositeViewDescription())
 			ContactSelection.setSelectionMode(ContactSelectionModeNone)
 			MagicSearchSingleton.instance().currentFilter = ""
 			view.contact = contact
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 		} else {
-			
-			let lAddress = linphone_address_as_string_uri_only(addr)
-			if let lAddress {
+			if let lAddress = linphone_address_as_string_uri_only(addr) {
 				var normSip = String(utf8String: lAddress)
 				normSip = normSip?.hasPrefix("sip:") ?? false ? (normSip as NSString?)?.substring(from: 4) : normSip
 				normSip = normSip?.hasPrefix("sips:") ?? false ? (normSip as NSString?)?.substring(from: 5) : normSip
@@ -421,8 +416,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		let peerAddress = String(utf8String: linphone_address_as_string(linphone_chat_room_get_peer_address(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)))
 		
 		var infoMsg: String? = nil
-		if let peerAddress, let localAddress {
-			infoMsg = "Chat room id:\n\(peerAddress)\nLocal account:\n\(localAddress)"
+		if (peerAddress != nil && localAddress != nil) {
+			infoMsg = "Chat room id:\n\(peerAddress ?? "nil")\nLocal account:\n\(localAddress ?? "nil")"
 		}
 		
 		let popupView = UIAlertController(title: NSLocalizedString("Chatroom debug infos", comment: ""), message: infoMsg, preferredStyle: .alert)
@@ -1239,8 +1234,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 						if messageView.messageText.text != "" {
 							try sendMessageInMessageField(rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}
-						if let url {
-							_ = try ChatConversationViewModel.sharedModel.sendMessage(message: url, withExterlBodyUrl: nil, rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
+						if let sUrl = url {
+							_ = try ChatConversationViewModel.sharedModel.sendMessage(message: sUrl, withExterlBodyUrl: nil, rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						} else {
 							try startFileUpload(data, withName: fileName, rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}

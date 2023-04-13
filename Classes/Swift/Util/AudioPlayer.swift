@@ -53,8 +53,7 @@ class AudioPlayer: ControlsViewModel {
 	
 	static func cancelVoiceRecordingVM(_ voiceRecorder: Recorder?) {
 		voiceRecorder?.close()
-		let recordingFile = voiceRecorder?.file
-		if let recordingFile {
+		if let recordingFile = voiceRecorder?.file {
 			AppManager.removeFile(file: String(utf8String: recordingFile)!)
 		}
 	}

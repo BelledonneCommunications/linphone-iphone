@@ -419,8 +419,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     func addToContacts(message: ChatMessage) {
         let addr = message.fromAddress
         addr?.clean()
-        let lAddress = addr?.asStringUriOnly()
-        if let lAddress {
+        if let lAddress = addr?.asStringUriOnly() {
             var normSip = String(utf8String: lAddress)
             normSip = normSip?.hasPrefix("sip:") ?? false ? (normSip as NSString?)?.substring(from: 4) : normSip
             normSip = normSip?.hasPrefix("sips:") ?? false ? (normSip as NSString?)?.substring(from: 5) : normSip

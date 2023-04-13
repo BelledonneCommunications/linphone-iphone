@@ -227,8 +227,8 @@ class ChatConversationViewModel: ControlsViewModel {
 	
 	func startUploadData(_ data: Data?, withType type: String?, withName name: String?, andMessage message: String?, rootMessage: ChatMessage?){
 		let fileTransfer = FileTransferDelegate.init()
-		if let message {
-			fileTransfer.text = message
+		if let msg = message {
+			fileTransfer.text = msg
 		}
 		var resultType = "file"
 		var key = "localfile"
@@ -251,18 +251,16 @@ class ChatConversationViewModel: ControlsViewModel {
 		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
 		let defaults = UserDefaults(suiteName: groupName)
 		let dict = defaults?.value(forKey: "photoData") as? [AnyHashable : Any]
-		let dictFile = defaults?.value(forKey: "icloudData") as? [AnyHashable : Any]
-		let dictUrl = defaults?.value(forKey: "url") as? [AnyHashable : Any]
-		if let dict {
+		if let dict_notnil = dict {
 			//file shared from photo lib
-			shareFileMessage = dict["message"] as? String
-			shareFileName.value = dict["url"] as? String
+			shareFileMessage = dict_notnil["message"] as? String
+			shareFileName.value = dict_notnil["url"] as? String
 			defaults?.removeObject(forKey: "photoData")
-		} else if let dictFile {
+		} else if let dictFile = defaults?.value(forKey: "icloudData") as? [AnyHashable : Any] {
 			shareFileMessage = dict?["message"] as? String
 			shareFileName.value = dictFile["url"] as? String
 			defaults?.removeObject(forKey: "icloudData")
-		} else if let dictUrl {
+		} else if let dictUrl = defaults?.value(forKey: "url") as? [AnyHashable : Any] {
 			shareFileMessage = dict?["message"] as? String
 			shareFileURL.value = dictUrl["url"] as? String
 			defaults?.removeObject(forKey: "url")
@@ -283,8 +281,9 @@ class ChatConversationViewModel: ControlsViewModel {
 		} else if type == "image" {
 			image = UIImage(named: filePath ?? "")
 		}
-		if let image {
-			return image
+        
+		if let img = image {
+			return img
 		} else {
 			return getImageFromFileName(name, forReplyBubble: forReplyBubble)
 		}
