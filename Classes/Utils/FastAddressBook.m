@@ -36,7 +36,7 @@
 		if (retImage == nil) {
 			retImage = contact.friend && linphone_friend_get_addresses(contact.friend) ?
 				[AvatarBridge imageForAddressWithAddress:linphone_friend_get_addresses(contact.friend)->data] :
-				[AvatarBridge imageForInitialsWithContact:contact];
+			[AvatarBridge imageForInitialsWithContact:contact displayName:[contact displayName]];
 		}
 		if (retImage.size.width != retImage.size.height) {
 			retImage = [retImage squareCrop];

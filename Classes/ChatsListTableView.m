@@ -53,6 +53,24 @@
 	self.tableView.accessibilityIdentifier = @"Chat list";
 	[self loadData];
 	_chatRooms = NULL;
+
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receiveTestNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receiveTestNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		BOOL friendIsOnline = (BOOL)userInfo[@"isOnline"];
+		
+		//NSLog(@"Successfully received test notification! %@ %d", friend, friendIsOnline);
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {

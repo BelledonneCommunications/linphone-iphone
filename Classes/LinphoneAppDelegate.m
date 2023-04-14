@@ -75,6 +75,9 @@
 			// To avoid crash
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
+		
+		linphone_core_set_consolidated_presence(LC, LinphoneConsolidatedPresenceBusy);
+		
 		[CallManager.instance stopLinphoneCore];
 	}
 	[SwiftUtil resetCachedAsset];
@@ -85,6 +88,8 @@
 	
     [LinphoneManager.instance startLinphoneCore];
     [LinphoneManager.instance.fastAddressBook reloadFriends];
+	
+	linphone_core_set_consolidated_presence(LC, LinphoneConsolidatedPresenceOnline);
 	
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 	
