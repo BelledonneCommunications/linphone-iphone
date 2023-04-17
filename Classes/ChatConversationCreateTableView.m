@@ -82,6 +82,41 @@
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
 	
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receiveTestNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receiveTestNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+		for (int i = 0; i < _addresses.count; i++)
+		{
+			
+			NSString *key = [_addresses objectAtIndex:i];
+			Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[FastAddressBook normalizeSipURI:key use_prefix:[CallManager.instance applyInternationalPrefix]]];
+			if (!contact) {
+				contact = [_ldapAndProvisioningContactAddressBookMap objectForKey:key];
+			}
+			
+			if (contact.friend != nil) {
+				char *curi = linphone_address_as_string_uri_only(linphone_friend_get_address(contact.friend));
+				NSString *uri = [NSString stringWithUTF8String:curi];
+
+				if([uri isEqual:friend]){
+					NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+					NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+					[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+				}
+			}
+		}
+	}
 }
 
 - (void) viewWillDisappear:(BOOL)animated {

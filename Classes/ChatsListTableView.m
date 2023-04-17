@@ -67,9 +67,25 @@
 	{
 		NSDictionary* userInfo = notification.userInfo;
 		NSString* friend = (NSString*)userInfo[@"friend"];
-		BOOL friendIsOnline = (BOOL)userInfo[@"isOnline"];
 		
-		//NSLog(@"Successfully received test notification! %@ %d", friend, friendIsOnline);
+		for (int i = 0; i < bctbx_list_size(_data); i++)
+		{
+			LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, i);
+			
+			bctbx_list_t *participants = linphone_chat_room_get_participants(chatRoom);
+			LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+			
+			char *curi = linphone_address_as_string_uri_only(linphone_participant_get_address(firstParticipant));
+			NSString *uri = [NSString stringWithUTF8String:curi];
+			
+			LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chatRoom);
+			bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
+			if(oneToOne && [uri isEqual:friend]){
+				NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+				NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+				[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+			}
+		}
 	}
 }
 

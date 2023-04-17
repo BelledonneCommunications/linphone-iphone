@@ -28,6 +28,9 @@ class Avatar : UIView {
 	static let groupAvatar = UIImage(named:"voip_multiple_contacts_avatar")
 	static let singleAvatar = UIImage(named:"avatar")
 	
+	var friend: [Friend] = []
+	var friendDelegate: [FriendDelegate] = []
+	
 	required init?(coder: NSCoder) {
 		initialsLabel =  StyledLabel(VoipTheme.call_generated_avatar_large)
 		super.init(coder: coder)
@@ -86,12 +89,33 @@ class Avatar : UIView {
 		layer.cornerRadius = self.frame.width / 2.0
 	}
 	
+	func addDelegate(contactAddress: Contact){
+		var delegatePresence = false
+		
+		friend.forEach { friendForEach in
+			if friendForEach.address?.asStringUriOnly() == Friend.getSwiftObject(cObject: (contactAddress.friend)!).address?.asStringUriOnly() {
+				delegatePresence = true
+			}
+		}
+		if delegatePresence == false {
+			friend.append(Friend.getSwiftObject(cObject: (contactAddress.friend)!))
+			let newFriendDelegate = FriendDelegateStub(
+				onPresenceReceived: { (linphoneFriend: Friend) -> Void in
+					let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
+					NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel!.isOnline])
+				}
+			)
+			friendDelegate.append(newFriendDelegate)
+			friend.last?.addDelegate(delegate: friendDelegate.last!)
+		}
+	}
 }
 
 
 @objc class AvatarBridge : NSObject { // Ugly work around to tap into the swift Avatars, until rest of the app is reworked in Swift.
 	static var shared : Avatar? = nil
 	static let size = 50.0
+	
 	@objc static func prepareIt() {
 		if (shared != nil) {
 			shared?.removeFromSuperview()
@@ -116,34 +140,12 @@ class Avatar : UIView {
         if contactAddress != nil {
             iconPresenceView = updatePresenceImage(contact: contactAddress!)
 			
+			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+			avatarWithPresence.addSubview(iconPresenceView)
+			iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
 			
-			
-			
-			let friend = Friend.getSwiftObject(cObject: (contactAddress?.friend)!)
-			
-			let friendDelegate = FriendDelegateStub(
-				onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-					let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
-					print("Successfully received test notification linphoneFriend \(linphoneFriend.address?.displayName)")
-					print("Successfully received test notification friend \(friend.address?.displayName)")
-					print("Successfully received test notification consolidatedPresence \(presenceModel!.consolidatedPresence)")
-				 print("Successfully received test notification consolidatedPresence \(friend.consolidatedPresence)")
-					print("Successfully received test notification isOnline \(presenceModel!.isOnline)")
-				 print("Successfully received test notification friend \(friend.isPresenceReceived)")
-					NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly(), "isOnline": presenceModel!.isOnline])
-				}
-			)
-			
-			friend.addDelegate(delegate: friendDelegate)
-			
-			
-			
+			shared?.addDelegate(contactAddress: contactAddress!)
         }
-        
-        avatarWithPresence.addSubview(avatarImageWihtoutPresence)
-        avatarWithPresence.addSubview(iconPresenceView)
-        iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
-        
         return avatarWithPresence.toImage()
 	}
 	
@@ -162,34 +164,12 @@ class Avatar : UIView {
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
         let iconPresenceView = updatePresenceImage(contact: contact)
 		
+		avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+		avatarWithPresence.addSubview(iconPresenceView)
+		iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
 		
+		shared?.addDelegate(contactAddress: contact)
 		
-		
-		let friend = Friend.getSwiftObject(cObject: contact.friend)
-		
-		let friendDelegate = FriendDelegateStub(
-			onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-				let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
-				print("Successfully received test notification linphoneFriend displayName \(linphoneFriend.address?.displayName)")
-				   print("Successfully received test notification friend displayName \(friend.address?.displayName)")
-				   print("Successfully received test notification presenceModel consolidatedPresence \(presenceModel!.consolidatedPresence)")
-				print("Successfully received test notification friend consolidatedPresence \(friend.consolidatedPresence)")
-				   print("Successfully received test notification presenceModel isOnline \(presenceModel!.isOnline)")
-				print("Successfully received test notification friend isPresenceReceived \(friend.isPresenceReceived)")
-				   NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly(), "isOnline": presenceModel!.isOnline])
-			}
-		)
-		
-		friend.addDelegate(delegate: friendDelegate)
-		
-		
-		
-		
-        
-        avatarWithPresence.addSubview(avatarImageWihtoutPresence)
-        avatarWithPresence.addSubview(iconPresenceView)
-        iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
-        
         return avatarWithPresence.toImage()
 	}
 	

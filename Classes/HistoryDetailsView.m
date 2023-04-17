@@ -93,6 +93,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector: @selector(deviceOrientationDidChange:)
 												 name: UIDeviceOrientationDidChangeNotification
 											   object: nil];
+	
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receiveTestNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receiveTestNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		[self update];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

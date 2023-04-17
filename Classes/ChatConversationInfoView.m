@@ -96,6 +96,39 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(onLinphoneCoreReady:)
 											   name:kLinphoneGlobalStateUpdate
 											 object:nil];
+	
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receiveTestNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receiveTestNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+		for (int i = 0; i < _contacts.count; i++)
+		{
+			
+			NSString *uri = _contacts[i];
+			LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+			
+			if (addr != nil) {
+				char *curi = linphone_address_as_string_uri_only(addr);
+				NSString *uri = [NSString stringWithUTF8String:curi];
+
+				if([uri isEqual:friend]){
+					NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+					NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+					[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+				}
+			}
+		}
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

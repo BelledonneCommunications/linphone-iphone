@@ -60,6 +60,41 @@
 			[view setContact:nil];
 		}
 	}
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receiveTestNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receiveTestNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+		self.tableView.indexPathsForVisibleRows;
+		
+		for (int i = 0; i < addressBookMap.count; i++)
+		{
+			/*
+			NSMutableArray *subAr = [addressBookMap objectForKey:[addressBookMap keyAtIndex:2]];
+			Contact *contact = subAr[1];
+			
+			if (contact.friend != nil) {
+				char *curi = linphone_address_as_string_uri_only(linphone_friend_get_address(contact.friend));
+				NSString *uri = [NSString stringWithUTF8String:curi];
+
+				if([uri isEqual:friend]){
+					NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+					NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+					[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+				}
+			}
+			 */
+		}
+	}
 }
 
 - (id)init {
