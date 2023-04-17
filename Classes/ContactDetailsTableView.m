@@ -139,7 +139,7 @@
 }
 
 - (BOOL)isValid {
-	BOOL hasName = (_contact.firstName.length + _contact.lastName.length > 0);
+	BOOL hasName = (_contact.firstName.length + _contact.lastName.length + _contact.organizationName.length > 0);
         BOOL hasAddr =
             (_contact.phones.count + _contact.sipAddresses.count) > 0;
         return hasName && hasAddr;
@@ -156,7 +156,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == ContactSections_FirstName || section == ContactSections_LastName) {
+	if (section == ContactSections_FirstName || section == ContactSections_LastName || section == ContactSections_Organization) {
 		/*first and last name only when editting */
 		return (self.tableView.isEditing) ? 1 : 0;
 	} else if (section == ContactSections_Sip) {
@@ -191,6 +191,9 @@
 		[cell hideDeleteButton:YES];
 	} else if (indexPath.section == ContactSections_LastName) {
 		value = _contact.lastName;
+		[cell hideDeleteButton:YES];
+	} else if (indexPath.section == ContactSections_Organization) {
+		value = _contact.organizationName;
 		[cell hideDeleteButton:YES];
 	} else if ([indexPath section] == ContactSections_Number) {
 		value = _contact.phones[indexPath.row];
@@ -279,6 +282,9 @@
 	} else if (section == ContactSections_LastName && self.tableView.isEditing) {
 		text = NSLocalizedString(@"Last name", nil);
 		canAddEntry = NO;
+	} else if (section == ContactSections_Organization && self.tableView.isEditing) {
+		text = NSLocalizedString(@"Organization", nil);
+		canAddEntry = NO;
 	} else if ([self getSectionData:section].count > 0 || self.tableView.isEditing) {
 		if (section == ContactSections_Number) {
 			text = NSLocalizedString(@"Phone numbers", nil);
@@ -358,7 +364,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	if (section == 0 ||
-		(!self.tableView.isEditing && (section == ContactSections_FirstName || section == ContactSections_LastName))) {
+		(!self.tableView.isEditing && (section == ContactSections_FirstName || section == ContactSections_LastName || section == ContactSections_LastName))) {
 		return 1e-5;
 	}
 	return [self tableView:tableView viewForHeaderInSection:section].frame.size.height;
@@ -389,6 +395,9 @@
 				break;
 			case ContactSections_LastName:
 				_contact.lastName = value;
+				break;
+			case ContactSections_Organization:
+				_contact.organizationName = value;
 				break;
 			case ContactSections_Sip:
 				[_contact setSipAddress:value atIndex:path.row];

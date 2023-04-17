@@ -44,6 +44,7 @@
 	  _identifier = _person.identifier;
 	  _firstName = _person.givenName;
 	  _lastName = _person.familyName;
+	  _organizationName = _person.organizationName;
 	  _displayName = [NSString stringWithFormat:@"%@ %@", _firstName, _lastName];
 	  for (CNLabeledValue<CNPhoneNumber *> *phoneNumber in _person.phoneNumbers) {
 		  [_phones addObject:phoneNumber.value.stringValue];
@@ -83,6 +84,9 @@
 		  }
 		  for (NSString *phone in _phones) {
 			  linphone_friend_add_phone_number(_friend, phone.UTF8String);
+		  }
+		  if (_organizationName) {
+			  linphone_friend_set_organization(_friend, [_organizationName UTF8String]);
 		  }
 		  if (_friend) {
 			  linphone_friend_enable_subscribes(_friend, FALSE);

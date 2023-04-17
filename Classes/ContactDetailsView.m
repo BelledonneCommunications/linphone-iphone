@@ -91,24 +91,25 @@
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
-        PhoneMainView.instance.currentName = _contact.displayName;
-        _nameLabel.text = PhoneMainView.instance.currentName;
-
-    // fix no sipaddresses in contact.friend
-    const MSList *sips = linphone_friend_get_addresses(_contact.friend);
-    while (sips) {
-        linphone_friend_remove_address(_contact.friend, sips->data);
-        sips = sips->next;
-    }
-    
-    for (NSString *sipAddr in _contact.sipAddresses) {
-        LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sipAddr.UTF8String, true);
-        if (addr) {
-            linphone_friend_add_address(_contact.friend, addr);
-            linphone_address_destroy(addr);
-        }
-    }
-        [LinphoneManager.instance.fastAddressBook saveContact:_contact];
+	PhoneMainView.instance.currentName = _contact.displayName;
+	_nameLabel.text = PhoneMainView.instance.currentName;
+	_organizationLabel.text = _contact.organizationName;
+	
+	// fix no sipaddresses in contact.friend
+	const MSList *sips = linphone_friend_get_addresses(_contact.friend);
+	while (sips) {
+		linphone_friend_remove_address(_contact.friend, sips->data);
+		sips = sips->next;
+	}
+	
+	for (NSString *sipAddr in _contact.sipAddresses) {
+		LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sipAddr.UTF8String, true);
+		if (addr) {
+			linphone_friend_add_address(_contact.friend, addr);
+			linphone_address_destroy(addr);
+		}
+	}
+	[LinphoneManager.instance.fastAddressBook saveContact:_contact];
 }
 
 - (void)selectContact:(Contact *)acontact andReload:(BOOL)reload {
@@ -124,6 +125,7 @@
 
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
+	_organizationLabel.text = _contact.organizationName;
 	[_tableController setContact:_contact];
 
 	if (reload) {
@@ -319,6 +321,7 @@
 		_deleteButton.hidden = TRUE;
 	}
 	_nameLabel.hidden = self.tableController.isEditing;
+	_organizationLabel.hidden = self.tableController.isEditing;
 	[self updateBackOrCancelButton];
 	[self recomputeTableViewSize:self.tableController.isEditing];
 }
@@ -405,7 +408,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_cancelButton.hidden = !editing;
 	_backButton.hidden = editing;
 	_nameLabel.hidden = editing;
+	_organizationLabel.hidden = editing;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
+	_organizationLabel.text = _contact.organizationName;
 
     [self recomputeTableViewSize:editing];
 
@@ -417,7 +422,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)recomputeTableViewSize:(BOOL)editing {
     CGRect frame = _tableController.tableView.frame;
     if ([self viewIsCurrentlyPortrait] && !editing) {
-        frame.origin.y = _nameLabel.frame.origin.y + _nameLabel.frame.size.height;
+		frame.origin.y = _organizationLabel.frame.origin.y + _organizationLabel.frame.size.height;
 	} else {
 		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
 	}

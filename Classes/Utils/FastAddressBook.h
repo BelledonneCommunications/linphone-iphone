@@ -55,6 +55,7 @@
 + (BOOL)isSipURIValid:(NSString*)addr;
 
 + (NSString *)displayNameForContact:(Contact *)person;
++ (NSString *)ogrganizationForContact:(Contact *)person;
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
 
 + (BOOL)isSipURI:(NSString *)address;

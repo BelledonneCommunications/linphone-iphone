@@ -31,6 +31,7 @@
 @property(nonatomic, retain) NSString *identifier;
 @property(nonatomic, retain) NSString *firstName;
 @property(nonatomic, retain) NSString *lastName;
+@property(nonatomic, retain) NSString *organizationName;
 @property(nonatomic, retain) NSString *displayName;
 @property(nonatomic, strong) NSMutableArray *sipAddresses;
 @property(nonatomic, strong) NSMutableArray *emails;

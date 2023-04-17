@@ -338,6 +338,9 @@
 + (NSString *)displayNameForContact:(Contact *)contact {
 	return contact.displayName;
 }
++ (NSString *)ogrganizationForContact:(Contact *)contact {
+	return contact.organizationName;
+}
 
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr {
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
@@ -365,7 +368,7 @@
     CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
     CNContactIdentifierKey, CNContactInstantMessageAddressesKey,
-    CNInstantMessageAddressUsernameKey, CNContactImageDataKey
+    CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey
   ];
   CNMutableContact *mCNContact =
       [[store unifiedContactWithIdentifier:acontact.identifier
@@ -450,42 +453,42 @@
 }
 
 - (BOOL)saveCNContact:(CNContact *)cNContact contact:(Contact *)contact {
-  CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-  NSArray *keysToFetch = @[
-    CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-    CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
-    CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
-    CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey
-  ];
-  CNMutableContact *mCNContact =
-      [[store unifiedContactWithIdentifier:contact.identifier
-                               keysToFetch:keysToFetch
-                                     error:nil] mutableCopy];
+	CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
+	NSArray *keysToFetch = @[
+		CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+		CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+		CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+		CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey, CNContactOrganizationNameKey
+	];
+	CNMutableContact *mCNContact =
+	[[store unifiedContactWithIdentifier:contact.identifier
+							 keysToFetch:keysToFetch
+								   error:nil] mutableCopy];
 	if(mCNContact == NULL){
 		[saveRequest addContact:[cNContact mutableCopy] toContainerWithIdentifier:nil];
 	}else{
-	  [mCNContact setGivenName:contact.firstName];
-	  [mCNContact setFamilyName:contact.lastName];
-	  [mCNContact setNickname:contact.displayName];
-	  [mCNContact setPhoneNumbers:contact.person.phoneNumbers];
-	  [mCNContact setEmailAddresses:contact.person.emailAddresses];
-	  [mCNContact
-		  setInstantMessageAddresses:contact.person.instantMessageAddresses];
-	  [mCNContact setImageData:UIImageJPEGRepresentation(contact.avatar, 0.9f)];
-
-	  [saveRequest updateContact:mCNContact];
+		[mCNContact setGivenName:contact.firstName];
+		[mCNContact setFamilyName:contact.lastName];
+		[mCNContact setNickname:contact.displayName];
+		[mCNContact setOrganizationName:contact.organizationName];
+		[mCNContact setPhoneNumbers:contact.person.phoneNumbers];
+		[mCNContact setEmailAddresses:contact.person.emailAddresses];
+		[mCNContact setInstantMessageAddresses:contact.person.instantMessageAddresses];
+		[mCNContact setImageData:UIImageJPEGRepresentation(contact.avatar, 0.9f)];
+		
+		[saveRequest updateContact:mCNContact];
 	}
-  NSError *saveError;
-  @try {
-	  [self updateFriend:contact];
-	  [LinphoneManager.instance setContactsUpdated:TRUE];
-	  NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:&saveError]);
-  } @catch (NSException *exception) {
-	  NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@", [exception description]);
-	  return FALSE;
-  }
+	NSError *saveError;
+	@try {
+		[self updateFriend:contact];
+		[LinphoneManager.instance setContactsUpdated:TRUE];
+		NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:&saveError]);
+	} @catch (NSException *exception) {
+		NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@", [exception description]);
+		return FALSE;
+	}
 	[self fetchContactsInBackGroundThread];
-  return TRUE;
+	return TRUE;
 }
 
 -(void)updateFriend:(Contact*) contact{
