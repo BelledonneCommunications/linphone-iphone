@@ -137,7 +137,7 @@ class Avatar : UIView {
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
         let contactAddress = Address.getSwiftObject(cObject: address).contact()
         var iconPresenceView = UIImageView()
-        if contactAddress != nil {
+        if (contactAddress != nil) {
             iconPresenceView = updatePresenceImage(contact: contactAddress!)
 			
 			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
@@ -145,6 +145,8 @@ class Avatar : UIView {
 			iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
 			
 			shared?.addDelegate(contactAddress: contactAddress!)
+        }else{
+            avatarWithPresence.addSubview(avatarImageWihtoutPresence)
         }
         return avatarWithPresence.toImage()
 	}
@@ -162,13 +164,8 @@ class Avatar : UIView {
         
         let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
-        let iconPresenceView = updatePresenceImage(contact: contact)
 		
 		avatarWithPresence.addSubview(avatarImageWihtoutPresence)
-		avatarWithPresence.addSubview(iconPresenceView)
-		iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
-		
-		shared?.addDelegate(contactAddress: contact)
 		
         return avatarWithPresence.toImage()
 	}

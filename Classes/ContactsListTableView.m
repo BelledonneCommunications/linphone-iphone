@@ -74,25 +74,34 @@
 		NSDictionary* userInfo = notification.userInfo;
 		NSString* friend = (NSString*)userInfo[@"friend"];
 		
-		self.tableView.indexPathsForVisibleRows;
+        NSArray<NSIndexPath *> *indexPathsVisible = self.tableView.indexPathsForVisibleRows;
 		
-		for (int i = 0; i < addressBookMap.count; i++)
+		for (int i = 0; i < indexPathsVisible.count; i++)
 		{
-			/*
-			NSMutableArray *subAr = [addressBookMap objectForKey:[addressBookMap keyAtIndex:2]];
-			Contact *contact = subAr[1];
-			
-			if (contact.friend != nil) {
-				char *curi = linphone_address_as_string_uri_only(linphone_friend_get_address(contact.friend));
-				NSString *uri = [NSString stringWithUTF8String:curi];
+			NSMutableArray *subAr = [addressBookMap objectForKey:[addressBookMap keyAtIndex:indexPathsVisible[i].section]];
+			Contact *contact = subAr[indexPathsVisible[i].row];
 
-				if([uri isEqual:friend]){
-					NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-					NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
-					[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
-				}
-			}
-			 */
+            if (contact.sipAddresses.count > 0){
+                for (NSString *sip in contact.sipAddresses) {
+                    NSString *uri = [@"sip:" stringByAppendingString:sip];
+
+                    if([uri isEqual:friend]){
+                        NSIndexPath* indexPath = indexPathsVisible[i];
+                        NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+                        [self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+                    }
+                }
+            }else if (contact.phones.count > 0){
+                for (NSString *phone in contact.phones) {
+                    NSString *uri = phone;
+
+                    if([uri isEqual:friend]){
+                        NSIndexPath* indexPath = indexPathsVisible[i];
+                        NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+                        [self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+                    }
+                }
+            }
 		}
 	}
 }
