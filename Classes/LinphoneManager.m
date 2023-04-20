@@ -483,29 +483,31 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 	   while (accounts) {
 		   LinphoneAccount *account = accounts->data;
 		   LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
-		   // can not create group chat without conference factory
-		   if (!linphone_account_params_get_conference_factory_uri(newAccountParams)) {
-			   if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
+		   
+		   if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
+			   // can not create group chat without conference factory
+			   if (!linphone_account_params_get_conference_factory_uri(newAccountParams)) {
 				   linphone_account_params_set_conference_factory_uri(newAccountParams, "sip:conference-factory@sip.linphone.org");
 				   linphone_account_set_params(account, newAccountParams);
 			   }
-		   }
-		   if (!linphone_account_params_get_audio_video_conference_factory_address(newAccountParams) && strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
-			   NSString *uri = [self lpConfigStringForKey:@"default_audio_video_conference_factory_uri" withDefault:@"sip:videoconference-factory2@sip.linphone.org"];
-			   LinphoneAddress *a = linphone_factory_create_address(linphone_factory_get(), uri.UTF8String);
-			   if (a) {
-				   linphone_account_params_set_audio_video_conference_factory_address(newAccountParams, a);
-				   linphone_account_set_params(account, newAccountParams);
+			   
+			   if (!linphone_account_params_get_audio_video_conference_factory_address(newAccountParams)) {
+				   NSString *uri = [self lpConfigStringForKey:@"default_audio_video_conference_factory_uri" withDefault:@"sip:videoconference-factory2@sip.linphone.org"];
+				   LinphoneAddress *a = linphone_factory_create_address(linphone_factory_get(), uri.UTF8String);
+				   if (a) {
+					   linphone_account_params_set_audio_video_conference_factory_address(newAccountParams, a);
+					   linphone_account_set_params(account, newAccountParams);
+				   }
 			   }
-		   }
-		   
-		   if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0 && !linphone_account_params_rtp_bundle_enabled(newAccountParams)) {
-			   linphone_account_params_enable_rtp_bundle(newAccountParams, true);
-			   linphone_account_set_params(account,newAccountParams);
+			   
+			   if (!linphone_account_params_rtp_bundle_enabled(newAccountParams)) {
+				   linphone_account_params_enable_rtp_bundle(newAccountParams, true);
+				   linphone_account_set_params(account,newAccountParams);
+			   }
+			   
 			   LOGI(@"Setting the sip 'expires' parameters of existing account to 1 month (2629800 seconds)");
 			   linphone_account_params_set_expires(newAccountParams, 2629800);
 		   }
-		 
 		   linphone_account_params_unref(newAccountParams);
 		   accounts = accounts->next;
 	   }
