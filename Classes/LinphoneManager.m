@@ -381,6 +381,10 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 }
 
 - (void)migrationLinphoneSettings {
+	NSString *appDomain  = [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+				inSection:@"app"
+				withDefault:@"sip.linphone.org"];
+	
 	/* AVPF migration */
 	if ([self lpConfigBoolForKey:@"avpf_migration_done"] == FALSE) {
 		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
@@ -472,6 +476,26 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 			accounts = accounts->next;
 		}
 		[self lpConfigSetBool:TRUE forKey:@"push_notification_migration_done"];
+	}
+	if ([self lpConfigBoolForKey:@"publish_enabled_migration_done"] == FALSE) {
+		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
+		linphone_core_set_log_collection_upload_server_url(LC, "https://www.linphone.org:444/lft.php");
+		[self lpConfigSetBool:TRUE forKey:@"update_presence_model_timestamp_before_publish_expires_refresh"];
+		
+		while (accounts)
+		{
+			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			LinphoneAccountParams *newAccountParams = linphone_account_params_clone(linphone_account_get_params(account));
+			
+			if (strcmp(appDomain.UTF8String, linphone_account_params_get_domain(newAccountParams)) == 0) {
+				linphone_account_params_set_publish_enabled(newAccountParams, true);
+				linphone_account_params_set_publish_expires(newAccountParams, 120);
+				linphone_account_set_params(account, newAccountParams);
+			}
+			linphone_account_params_unref(newAccountParams);
+			accounts = accounts->next;
+		}
+		[self lpConfigSetBool:TRUE forKey:@"publish_enabled_migration_done"];
 	}
 }
 

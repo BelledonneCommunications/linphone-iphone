@@ -4,6 +4,7 @@
 	<section name="proxy_default_values">
 		<entry name="dial_escape_plus" overwrite="true">0</entry>
 		<entry name="publish" overwrite="true">0</entry>
+		<entry name="publish_expires" overwrite="true">-1</entry>
 		<entry name="reg_expires" overwrite="true">3600</entry>
 		<entry name="reg_identity" overwrite="true"></entry>
 		<entry name="reg_proxy" overwrite="true"></entry>

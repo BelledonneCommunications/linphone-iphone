@@ -1118,6 +1118,14 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 
 	// retrieve linphone logs if available
 	char *filepath = linphone_core_compress_log_collection();
+	
+	
+	LinphoneCoreCbs *coreCbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_log_collection_upload_state_changed(coreCbs, core_log_collection_upload_state_changed);
+	linphone_core_add_callbacks(LC, coreCbs);
+	
+	linphone_core_upload_log_collection(LC);
+	
 	if (filepath != NULL) {
 		NSString *filename = [[NSString stringWithUTF8String:filepath] componentsSeparatedByString:@"/"].lastObject;
 		NSString *mimeType = nil;
@@ -1163,6 +1171,17 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}
 
 	[self emailAttachments:attachments];
+}
+
+void core_log_collection_upload_state_changed(LinphoneCore *core, LinphoneCoreLogCollectionUploadState state , const char* info) {
+	
+	LOGD(@"LinphoneCoreLogCollectionUploadStateDelivered core_log_collection_upload_state_changed %s", info);
+	if (state == LinphoneCoreLogCollectionUploadStateDelivered) {
+		LOGD(@"LinphoneCoreLogCollectionUploadStateDelivered %s", info);
+		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+		
+		pasteboard.string = [NSString stringWithUTF8String: info];
+	}
 }
 
 - (void)sendEmailWithPrivacyAttachments {

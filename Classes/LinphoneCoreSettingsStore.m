@@ -186,7 +186,7 @@
 			BOOL pushEnabled = linphone_account_params_get_push_notification_allowed(accountParams);
 			[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
             
-            BOOL pushPresenceEnabled = [LinphoneManager.instance lpConfigBoolForKey:@"account_push_presence_preference"];
+			BOOL pushPresenceEnabled = linphone_account_params_get_publish_enabled(accountParams);
             [self setBool:pushPresenceEnabled forKey:@"account_push_presence_preference"];
 
 			const LinphoneAddress *identity_addr = linphone_account_params_get_identity_address(accountParams);
@@ -618,6 +618,7 @@
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
 		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
+		BOOL publishPrensence = [self boolForKey:@"account_push_presence_preference"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
 		BOOL use_prefix = [self boolForKey:@"apply_international_prefix_for_calls_and_chats"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
@@ -698,7 +699,10 @@
 		// use empty string "" instead of NULL to avoid being overwritten by default proxy config values
 		linphone_account_params_set_push_notification_allowed(newAccountParams, pushnotification);
 		linphone_account_params_set_remote_push_notification_allowed(newAccountParams, pushnotification);
-
+		
+		linphone_account_params_set_publish_enabled(newAccountParams, publishPrensence);
+		[LinphoneManager.instance lpConfigSetBool:publishPrensence forKey:@"account_push_presence_preference"];
+		
 		linphone_account_params_set_register_enabled(newAccountParams, is_enabled);
 		linphone_account_params_set_avpf_mode(newAccountParams, use_avpf);
 		linphone_account_params_set_expires(newAccountParams, expire);
