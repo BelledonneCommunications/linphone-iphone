@@ -99,7 +99,34 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			scrollToBottom(animated: false)
 		}
 		collectionView.reloadData()
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(self.receivePresenceNotification(notification:)), name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil)
 	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		NotificationCenter.default.removeObserver(self, name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil)
+		NotificationCenter.default.removeObserver(self)
+	}
+	
+	@objc func receivePresenceNotification(notification: NSNotification) {
+		if (notification.name.rawValue == "LinphoneFriendPresenceUpdate"){
+			let userInfo = notification.userInfo
+			let friend = userInfo!["friend"]
+			
+			let indexPathsVisible = self.collectionView.indexPathsForVisibleItems
+			for i in 0...indexPathsVisible.count-1 {
+				let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
+				if (contact != nil){
+					let uri = "sip:" + contact!.username + "@" + contact!.domain
+
+					if(uri == friend as! String){
+						let indexPath = indexPathsVisible[i]
+						collectionView.reloadItems(at: [indexPath])
+					}
+				}
+			}
+		}
+ 	}
     
     func scrollToMessage(message: ChatMessage){
         let messageIndex = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)

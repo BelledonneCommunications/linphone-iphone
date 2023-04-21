@@ -305,12 +305,12 @@
 	
 	NSDictionary* userInfo;
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector: @selector(receiveTestNotification:)
+										   selector: @selector(receivePresenceNotification:)
 											   name: @"LinphoneFriendPresenceUpdate"
 											 object: userInfo];
 }
 
--(void) receiveTestNotification:(NSNotification*)notification
+-(void) receivePresenceNotification:(NSNotification*)notification
 {
 	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
 	{
@@ -368,6 +368,8 @@
 	if (rm) {
 		[LinphoneManager.instance.fastAddressBook deleteContact:_contact];
 	}
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
 }
 
 #pragma mark - UICompositeViewDelegate Functions

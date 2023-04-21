@@ -73,12 +73,12 @@
 	[self loadData];
 	NSDictionary* userInfo;
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector: @selector(receiveTestNotification:)
+										   selector: @selector(receivePresenceNotification:)
 											   name: @"LinphoneFriendPresenceUpdate"
 											 object: userInfo];
 }
 
--(void) receiveTestNotification:(NSNotification*)notification
+-(void) receivePresenceNotification:(NSNotification*)notification
 {
 	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
 	{
@@ -109,6 +109,7 @@
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCoreUpdate object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
 }
 
 #pragma mark - Event Functions

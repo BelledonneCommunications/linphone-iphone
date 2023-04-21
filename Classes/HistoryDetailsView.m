@@ -96,12 +96,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	NSDictionary* userInfo;
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector: @selector(receiveTestNotification:)
+										   selector: @selector(receivePresenceNotification:)
 											   name: @"LinphoneFriendPresenceUpdate"
 											 object: userInfo];
 }
 
--(void) receiveTestNotification:(NSNotification*)notification
+-(void) receivePresenceNotification:(NSNotification*)notification
 {
 	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
 	{
@@ -112,6 +112,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
 }
 
 #pragma mark - Event Functions

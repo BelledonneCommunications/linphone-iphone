@@ -62,12 +62,17 @@
 	}
 	NSDictionary* userInfo;
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector: @selector(receiveTestNotification:)
+										   selector: @selector(receivePresenceNotification:)
 											   name: @"LinphoneFriendPresenceUpdate"
 											 object: userInfo];
 }
 
--(void) receiveTestNotification:(NSNotification*)notification
+-(void)viewDidDisappear:(BOOL)animated{
+	[super viewDidDisappear:animated];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
 {
 	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
 	{
