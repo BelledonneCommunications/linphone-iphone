@@ -752,9 +752,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					constraintTrailingBubble?.isActive = false
 				}
 				
-				imageUser.isHidden = false
 				if isFirstIndexInTableView(indexPath: selfIndexPathConfigure, chat: event.chatMessage!) {
-					imageUser.fillFromAddress(address: (event.chatMessage?.fromAddress)!)
+					imageUser.isHidden = false
+					imageUser.fillFromAddress(address: (event.chatMessage?.fromAddress)!, withPresence: true)
 					contactDateLabel.text = contactDateForChat(message: event.chatMessage!)
 					contactDateLabel.isHidden = false
 					if editMode {
@@ -767,6 +767,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				}else{
 					constraintDateBubble?.isActive = false
 					constraintDateBubbleHidden?.isActive = true
+					imageUser.isHidden = true
 					contactDateLabel.size(w: 200, h: 0).done()
 				}
 

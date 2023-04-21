@@ -42,7 +42,7 @@ class Avatar : UIView {
 	init (color:LightDarkColor,textStyle:TextStyle) {
 		initialsLabel =  StyledLabel(textStyle)
 		super.init(frame: .zero)
-		clipsToBounds = true
+		clipsToBounds = false
 		self.backgroundColor = color.get()
 		addSubview(initialsLabel)
 		addSubview(iconImageView)
@@ -56,7 +56,7 @@ class Avatar : UIView {
 	}
 	
 	
-	func fillFromAddress(address:Address, isGroup:Bool = false) {
+	func fillFromAddress(address:Address, isGroup:Bool = false, withPresence:Bool = false) {
 		if (isGroup) {
 			iconImageView.image = Avatar.groupAvatar
 			iconImageView.isHidden = false
@@ -76,6 +76,51 @@ class Avatar : UIView {
 				iconImageView.isHidden = true
 			}
 		}
+		
+		if withPresence {
+			imageWithPresence(address: address)
+		}
+	}
+	
+	func imageWithPresence(address:Address){
+		var iconPresenceView = UIImageView()
+		if (address.contact() != nil) {
+			
+			addDelegate(contactAddress: address.contact()!)
+			
+			iconPresenceView = updatePresenceImage(contact: address.contact()!)
+			
+			addSubview(iconPresenceView)
+			
+			iconPresenceView.alignParentBottom().alignParentRight().size(w: 8, h: 8).done()
+			
+			bringSubviewToFront(iconPresenceView)
+		}
+	}
+	
+	func updatePresenceImage(contact:Contact) -> UIImageView {
+
+		let friend = Friend.getSwiftObject(cObject: contact.friend)
+		
+		var presenceModel : PresenceModel?
+		var hasPresence : Bool? = false
+		
+		var imageName = "";
+		
+		if friend.address?.asStringUriOnly() != nil {
+			presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
+			hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
+		}
+		
+		if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
+			imageName = "led_connected";
+		} else  if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Busy){
+			imageName = "led_inprogress";
+		} else {
+			imageName = "";
+		}
+
+		return UIImageView(image: UIImage(named:imageName))
 	}
 	
 	func showAsAvatarIcon() {
@@ -87,6 +132,10 @@ class Avatar : UIView {
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		layer.cornerRadius = self.frame.width / 2.0
+		
+		initialsLabel.layer.cornerRadius = self.frame.width / 2.0
+		iconImageView.layer.cornerRadius = self.frame.width / 2.0
+		iconImageView.clipsToBounds = true
 	}
 	
 	func addDelegate(contactAddress: Contact){
@@ -147,7 +196,7 @@ class Avatar : UIView {
 			
 			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
 			avatarWithPresence.addSubview(iconPresenceView)
-			iconPresenceView.frame = CGRect(x: 35, y: 35, width: 16, height: 16)
+			iconPresenceView.frame = CGRect(x: 36, y: 36, width: 14, height: 14)
         }else{
             avatarWithPresence.addSubview(avatarImageWihtoutPresence)
         }
