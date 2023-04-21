@@ -122,7 +122,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if (ChatConversationTableViewModel.sharedModel.getNBMessages() > 1){
 			let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
 
-			if isDisplayingBottomOfTable {
+			if  ChatConversationTableViewModel.sharedModel.getNBMessages() < 4 {
+					collectionView.reloadData()
+			} else if isDisplayingBottomOfTable {
                 self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
                 collectionView.reloadData()
                 self.scrollToBottom(animated: true)
