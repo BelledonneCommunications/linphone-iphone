@@ -141,7 +141,7 @@ class BackActionsNavigationView:  UIViewController {
         titleLabel.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
 		titleLabel.toLeftOf(action1Button, withRightMargin: 20).done()
 		titleLabel.text = title
-		
+         
 		topBar.addSubview(titleParticipants)
 		titleParticipants.toRightOf(backButton, withLeftMargin: 10).matchParentHeight().done()
 		titleParticipants.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
@@ -154,8 +154,6 @@ class BackActionsNavigationView:  UIViewController {
 		titleParticipants.addSubview(participantsGroupLabel)
 		participantsGroupLabel.alignParentBottom(withMargin: 10).matchParentSideBorders().done()
 		participantsGroupLabel.text = participants
-		
-		titleParticipants.isHidden = true
         
         super.viewDidLoad()
 		

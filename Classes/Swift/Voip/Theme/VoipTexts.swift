@@ -207,6 +207,12 @@ import UIKit
 	@objc static let bubble_chat_event_message_attack_detected_for = NSLocalizedString("Man-in-the-middle attack detected for %@",comment:"").replacingOccurrences(of: "%@", with: "")
     
     @objc static let bubble_chat_download_file = NSLocalizedString("Download",comment:"")
+    
+    @objc static let chat_room_presence_online = NSLocalizedString("Online",comment:"")
+    @objc static let chat_room_presence_last_seen_online_today = NSLocalizedString("Online today at ",comment:"")
+    @objc static let chat_room_presence_last_seen_online_yesterday = NSLocalizedString("Online yesterday at ",comment:"")
+    @objc static let chat_room_presence_last_seen_online = NSLocalizedString("Online on ",comment:"")
+    @objc static let chat_room_presence_away = NSLocalizedString("Away",comment:"")
 	
 	// FROM ANDROID END
 	

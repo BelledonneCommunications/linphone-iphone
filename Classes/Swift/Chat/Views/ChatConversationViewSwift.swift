@@ -490,15 +490,12 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom);
 			ChatConversationViewModel.sharedModel.address = FastAddressBook.displayName(for: addr) ?? "unknow"
 			changeIcon = false
-			titleParticipants.isHidden = true
+            updateParticipantLabel()
 			
 		} else {
 			ChatConversationViewModel.sharedModel.address = ChatConversationViewModel.sharedModel.chatRoom?.subject
 			changeIcon = true
-			
-			titleParticipants.isHidden = false
-			
-			updateParticipantLabel()
+            updateParticipantLabel()
 			
 		}
 		
@@ -521,12 +518,63 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	func updateParticipantLabel(){
 		let participants = ChatConversationViewModel.sharedModel.chatRoom?.participants
 		participantsGroupLabel.text = ""
-		participants?.forEach{ participant in
-			if participantsGroupLabel.text != "" {
-				participantsGroupLabel.text = participantsGroupLabel.text! + ", "
-			}
-			participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
-		}
+        if participants!.count > 1 {
+            participants?.forEach{ participant in
+                if participantsGroupLabel.text != "" {
+                    participantsGroupLabel.text = participantsGroupLabel.text! + ", "
+                }
+                participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
+            }
+            titleParticipants.isHidden = false
+        }else if participants?.first?.address?.contact() != nil {
+            let participantAddress = participants?.first?.address
+            participantsGroupLabel.text = participantAddress?.asStringUriOnly()
+            
+            
+            let participantFriend = participants?.first?.address?.contact()?.friend
+            let friend = Friend.getSwiftObject(cObject: participantFriend!)
+            
+            var presenceModel : PresenceModel?
+            var hasPresence : Bool? = false
+            
+            if friend.address?.asStringUriOnly() != nil {
+                presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
+                hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
+            }
+            
+            if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
+                participantsGroupLabel.text = VoipTexts.chat_room_presence_online;
+            } else  if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Busy){
+                
+                let timeInterval = TimeInterval(presenceModel!.latestActivityTimestamp)
+                let myNSDate = Date(timeIntervalSince1970: timeInterval)
+                
+                
+                if timeInterval == -1 {
+                    participantsGroupLabel.text = VoipTexts.chat_room_presence_away;
+                } else if Calendar.current.isDateInToday(myNSDate) {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "HH:mm"
+                    let dateString = dateFormatter.string(from: myNSDate)
+                    participantsGroupLabel.text = VoipTexts.chat_room_presence_last_seen_online_today + dateString;
+                } else if Calendar.current.isDateInYesterday(myNSDate) {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "HH:mm"
+                    let dateString = dateFormatter.string(from: myNSDate)
+                    participantsGroupLabel.text = VoipTexts.chat_room_presence_last_seen_online_yesterday + dateString;
+                } else {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .short
+                    let dateString = dateFormatter.string(from: myNSDate)
+                    participantsGroupLabel.text = VoipTexts.chat_room_presence_last_seen_online + dateString;
+                }
+            }
+            
+            titleParticipants.isHidden = false
+        }else{
+            titleParticipants.isHidden = true
+        }
+		
 	}
 	
 	func updateParticipantLabel(){
