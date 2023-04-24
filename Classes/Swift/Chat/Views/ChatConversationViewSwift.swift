@@ -259,6 +259,13 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()
 	}
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if friendDelegate != nil {
+            friend?.removeDelegate(delegate: friendDelegate!)
+        }
+        AvatarBridge.removeAllObserver()
+    }
 	
 	override func viewDidDisappear(_ animated: Bool) {
 		resetView()

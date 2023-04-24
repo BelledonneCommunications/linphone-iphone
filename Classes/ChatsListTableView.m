@@ -113,6 +113,7 @@
 	}
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 - (void)layoutSubviews {

@@ -153,17 +153,6 @@ class Avatar : UIView {
                     if (linphoneFriend.address?.asStringUriOnly()) != nil {
                         let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
                         NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel!.consolidatedPresence.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
-                        
-                        var i = 0
-                        self.friend.forEach { friendForEach in
-                            if friendForEach.address?.asStringUriOnly() == linphoneFriend.address?.asStringUriOnly() {
-                                self.friend[i].removeDelegate(delegate: self.friendDelegate[i])
-                                self.friendDelegate.remove(at: i)
-                                self.friend.remove(at: i)
-                            }
-                            i += 1;
-                        }
-                        
                     }
 				}
 			)
@@ -171,6 +160,17 @@ class Avatar : UIView {
 			friend.last?.addDelegate(delegate: friendDelegate.last!)
 		}
 	}
+    
+    func removeAllDelegate(){
+        var i = 0
+        self.friend.forEach { friendForEach in
+            self.friend[i].removeDelegate(delegate: self.friendDelegate[i])
+            i += 1;
+        }
+        
+        self.friendDelegate = []
+        self.friend = []
+    }
 }
 
 
@@ -265,4 +265,8 @@ class Avatar : UIView {
 			shared!.friendDelegate = []
 		}
 	}
+    
+    @objc static func removeAllObserver(){
+        shared!.removeAllDelegate()
+    }
 }

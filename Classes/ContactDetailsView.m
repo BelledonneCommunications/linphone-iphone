@@ -20,6 +20,7 @@
 #import "ContactDetailsView.h"
 #import "PhoneMainView.h"
 #import "UIContactDetailsCell.h"
+#import "linphoneapp-Swift.h"
 
 @implementation ContactDetailsView
 
@@ -370,6 +371,7 @@
 	}
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 #pragma mark - UICompositeViewDelegate Functions

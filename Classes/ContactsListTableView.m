@@ -67,6 +67,11 @@
 											 object: userInfo];
 }
 
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [AvatarBridge removeAllObserver];
+}
+
 -(void)viewDidDisappear:(BOOL)animated{
 	[super viewDidDisappear:animated];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];

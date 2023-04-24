@@ -135,6 +135,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 	if (!_room || !_chatRoomCbs)
 		return;
 

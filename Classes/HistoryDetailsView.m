@@ -20,6 +20,7 @@
 #import "HistoryDetailsView.h"
 #import "PhoneMainView.h"
 #import "FastAddressBook.h"
+#import "linphoneapp-Swift.h"
 
 @implementation HistoryDetailsView
 
@@ -113,6 +114,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 #pragma mark - Event Functions
