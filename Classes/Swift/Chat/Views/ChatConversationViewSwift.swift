@@ -47,6 +47,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	let loadingView = UIView()
 	let loading = RotatingSpinner(color: VoipTheme.primary_color)
 	let loadingText = StyledLabel(VoipTheme.chat_conversation_operation_in_progress_wait)
+    
+    var friend: Friend? = nil
+    var friendDelegate: FriendDelegate? = nil
 	
 	var collectionViewMedia: UICollectionView = {
 		let top_bar_height = 66.0
@@ -532,13 +535,13 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
             
             
             let participantFriend = participants?.first?.address?.contact()?.friend
-            let friend = Friend.getSwiftObject(cObject: participantFriend!)
+            friend = Friend.getSwiftObject(cObject: participantFriend!)
             
             var presenceModel : PresenceModel?
             var hasPresence : Bool? = false
             
-            if friend.address?.asStringUriOnly() != nil {
-                presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
+            if friend?.address?.asStringUriOnly() != nil {
+                presenceModel = friend!.getPresenceModelForUriOrTel(uriOrTel: (friend?.address?.asStringUriOnly())!)
                 hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
             }
             
@@ -569,6 +572,14 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
                     participantsGroupLabel.text = VoipTexts.chat_room_presence_last_seen_online + dateString;
                 }
             }
+
+            friendDelegate = FriendDelegateStub(
+                onPresenceReceived: { (linphoneFriend: Friend) -> Void in
+                    self.friend?.removeDelegate(delegate: self.friendDelegate!)
+                    self.updateParticipantLabel()
+                }
+            )
+            friend?.addDelegate(delegate: friendDelegate!)
             
             titleParticipants.isHidden = false
         }else{
