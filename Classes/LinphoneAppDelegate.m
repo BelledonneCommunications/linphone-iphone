@@ -390,29 +390,25 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options{
 	NSString *scheme = [[url scheme] lowercaseString];
-	if ([scheme isEqualToString:@"linphone-config"] || [scheme isEqualToString:@"linphone-config"]) {
+	if ([scheme isEqualToString:@"linphone-config"]) {
 		NSString *encodedURL =
-			[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config://" withString:@""];
+			[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config:" withString:@""];
 		self.configURL = [encodedURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Remote configuration", nil)
-																		 message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?", nil)
-																  preferredStyle:UIAlertControllerStyleAlert];
-
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", nil)
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
-
-		UIAlertAction* yesAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
-																style:UIAlertActionStyleDefault
-														  handler:^(UIAlertAction * action) {
-															  [self showWaitingIndicator];
-															  [self attemptRemoteConfiguration];
-														  }];
-
-		[errView addAction:defaultAction];
-		[errView addAction:yesAction];
-
-		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+		
+		
+		NSString *msg = [NSString stringWithFormat:NSLocalizedString(@" Do you want to download and apply configuration from this URL?\n\n%@", nil), encodedURL];
+		
+		UIConfirmationDialog* remoteConfigurationDialog =[UIConfirmationDialog ShowWithMessage:msg
+								cancelMessage:nil
+							   confirmMessage:NSLocalizedString(@"APPLY", nil)
+								onCancelClick:^() {}
+						  onConfirmationClick:^() {
+			[SVProgressHUD show];
+			[self attemptRemoteConfiguration];
+			[SVProgressHUD dismiss];
+		}];
+		[remoteConfigurationDialog setSpecialColor];
+		
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
 		if ([[PhoneMainView.instance currentView] equal:ChatsListView.compositeViewDescription]) {
 			VIEW(ChatConversationView).sharingMedia = TRUE;
@@ -855,23 +851,7 @@
 	}
 }
 
-- (void)showWaitingIndicator {
-	_waitingIndicator = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Fetching remote configuration...", nil)
-															message:@""
-													 preferredStyle:UIAlertControllerStyleAlert];
-
-	UIActivityIndicatorView *progress = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(125, 60, 30, 30)];
-	progress.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-
-	[_waitingIndicator setValue:progress forKey:@"accessoryView"];
-	[progress setColor:[UIColor blackColor]];
-
-	[progress startAnimating];
-	[PhoneMainView.instance presentViewController:_waitingIndicator animated:YES completion:nil];
-}
-
 - (void)attemptRemoteConfiguration {
-
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(ConfigurationStateUpdateEvent:)
 											   name:kLinphoneConfiguringStateUpdate
@@ -879,7 +859,7 @@
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
 	[LinphoneManager.instance launchLinphoneCore];
-        [LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
+	[LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 #pragma mark - Prevent ImagePickerView from rotating
