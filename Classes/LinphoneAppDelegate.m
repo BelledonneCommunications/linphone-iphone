@@ -394,21 +394,25 @@
 		NSString *encodedURL =
 			[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config:" withString:@""];
 		self.configURL = [encodedURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-		
-		
-		NSString *msg = [NSString stringWithFormat:NSLocalizedString(@" Do you want to download and apply configuration from this URL?\n\n%@", nil), encodedURL];
-		
-		UIConfirmationDialog* remoteConfigurationDialog =[UIConfirmationDialog ShowWithMessage:msg
-								cancelMessage:nil
-							   confirmMessage:NSLocalizedString(@"APPLY", nil)
-								onCancelClick:^() {}
-						  onConfirmationClick:^() {
+
+		BOOL auto_apply_provisioning = 	[LinphoneManager.instance lpConfigBoolForKey:@"auto_apply_provisioning_config_uri_handler" inSection:@"app" withDefault:FALSE];
+		if (auto_apply_provisioning) {
 			[SVProgressHUD show];
 			[self attemptRemoteConfiguration];
 			[SVProgressHUD dismiss];
-		}];
-		[remoteConfigurationDialog setSpecialColor];
-		
+		} else {
+			NSString *msg = [NSString stringWithFormat:NSLocalizedString(@" Do you want to download and apply configuration from this URL?\n\n%@", nil), encodedURL];
+			UIConfirmationDialog* remoteConfigurationDialog =[UIConfirmationDialog ShowWithMessage:msg
+																					 cancelMessage:nil
+																					confirmMessage:NSLocalizedString(@"APPLY", nil)
+																					 onCancelClick:^() {}
+																			   onConfirmationClick:^() {
+				[SVProgressHUD show];
+				[self attemptRemoteConfiguration];
+				[SVProgressHUD dismiss];
+			}];
+			[remoteConfigurationDialog setSpecialColor];
+		}
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
 		if ([[PhoneMainView.instance currentView] equal:ChatsListView.compositeViewDescription]) {
 			VIEW(ChatConversationView).sharingMedia = TRUE;
