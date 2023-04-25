@@ -150,6 +150,7 @@ class Avatar : UIView {
 			friend.append(Friend.getSwiftObject(cObject: (contactAddress.friend)!))
 			let newFriendDelegate = FriendDelegateStub(
 				onPresenceReceived: { (linphoneFriend: Friend) -> Void in
+					print("onPresenceReceivedonPresenceReceived \(linphoneFriend.address?.displayName)")
                     if (linphoneFriend.address?.asStringUriOnly()) != nil {
                         let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
                         NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel!.consolidatedPresence.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
@@ -267,6 +268,8 @@ class Avatar : UIView {
 	}
     
     @objc static func removeAllObserver(){
-        shared!.removeAllDelegate()
+		if shared != nil {
+			shared!.removeAllDelegate()
+		}
     }
 }

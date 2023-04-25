@@ -64,7 +64,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if([LinphoneManager.instance lpConfigBoolForKey:@"account_push_presence_preference"]){
-		linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOffline);
+		linphone_core_set_consolidated_presence(LC, LinphoneConsolidatedPresenceOffline);
 	}
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
 		[LinphoneManager.instance enterBackgroundMode];
@@ -91,7 +91,7 @@
     [LinphoneManager.instance.fastAddressBook reloadFriends];
 	[AvatarBridge clearFriends];
     if([LinphoneManager.instance lpConfigBoolForKey:@"account_push_presence_preference"]){
-        linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOnline);
+        linphone_core_set_consolidated_presence(LC, LinphoneConsolidatedPresenceOnline);
     }
 	
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
