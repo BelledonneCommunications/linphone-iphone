@@ -38,6 +38,7 @@ import UIKit
 	@objc static let call_context_action_pause = NSLocalizedString("Pause call",comment:"")
 	@objc static let call_context_action_resume = NSLocalizedString("Resume call",comment:"")
 	@objc static let call_context_action_transfer = NSLocalizedString("Transfer call",comment:"")
+	@objc static let call_context_action_attended_transfer = NSLocalizedString("Attended transfer",comment:"")
 	@objc static let call_error_declined = NSLocalizedString("Call has been declined",comment:"")
 	@objc static let call_error_generic = NSLocalizedString("Error: %s",comment:"")
 	@objc static let call_error_incompatible_media_params = NSLocalizedString("Incompatible media parameters",comment:"")
