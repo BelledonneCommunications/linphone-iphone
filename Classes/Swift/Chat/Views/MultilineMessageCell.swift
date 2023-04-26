@@ -815,7 +815,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 						
 						
 						
-						checkIfIsLink(content: content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines))
+						checkIfIsLinkOrPhoneNumber(content: content.utf8Text)
+						
 						
                         
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
@@ -996,11 +997,23 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		}
 	}
 	
-	func checkIfIsLink(content: String){
+	func checkIfIsLinkOrPhoneNumber(content: String){
 		let input = content
-		let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-		matches = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
 		
+		let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.phoneNumber.rawValue | NSTextCheckingResult.CheckingType.link.rawValue)
+		
+		let regex = try! NSRegularExpression(pattern: "sips:(\\S+)")
+		
+		
+		//matches = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+		//let matchesSips = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+		
+		let matchesSips = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+		matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
+		
+		for matcheSips in matchesSips {
+			matches.append(matcheSips)
+		}
 		
 		let paragraphStyle = NSMutableParagraphStyle()
 		paragraphStyle.lineSpacing = 1
@@ -1021,18 +1034,48 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			label.addGestureRecognizer(tap)
 		}
 		
-		label.attributedText = attributedString;
+		label.attributedText = attributedString
 	}
 									   
 	@objc func handleTapOnLabel(_ sender: UITapGestureRecognizer) {
 		matches.forEach { match in
 			if sender.didTapAttributedTextInLabel(label: label, inRange: match.range) {
+				
+				let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+				let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+				
 				if let url = match.url {
-					if #available(iOS 10.0, *) {
-						UIApplication.shared.open(url, options: [:], completionHandler: nil)
-					} else {
-						UIApplication.shared.openURL(url)
+					
+					if url.absoluteString.hasPrefix("sip:") || url.absoluteString.hasPrefix("sips:"){
+						let view: DialerView = self.VIEW(DialerView.compositeViewDescription())
+						CallManager.instance().nextCallIsTransfer = true
+						PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+						view.addressField.text = url.absoluteString
+					}else if emailTest.evaluate(with: url.absoluteString){
+						if let urlWithMailTo = URL(string: "mailto:\(url.absoluteString)") {
+						  if #available(iOS 10.0, *) {
+							UIApplication.shared.open(urlWithMailTo, options: [:], completionHandler: nil)
+						  } else {
+							UIApplication.shared.openURL(urlWithMailTo)
+						  }
+						}
+					}else{
+						if #available(iOS 10.0, *) {
+							UIApplication.shared.open(url, options: [:], completionHandler: nil)
+						} else {
+							UIApplication.shared.openURL(url)
+						}
 					}
+				}else if let phoneNumber = match.phoneNumber {
+					let view: DialerView = self.VIEW(DialerView.compositeViewDescription())
+					CallManager.instance().nextCallIsTransfer = true
+					PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+					view.addressField.text = phoneNumber
+				}else if let sips = label.attributedText {
+					let view: DialerView = self.VIEW(DialerView.compositeViewDescription())
+					CallManager.instance().nextCallIsTransfer = true
+					PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+					view.addressField.text = (sips.string as NSString).substring(with: match.range)
 				}
 			}
 		}

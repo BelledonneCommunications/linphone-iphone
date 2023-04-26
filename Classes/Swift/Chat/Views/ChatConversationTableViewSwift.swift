@@ -101,6 +101,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if ChatConversationTableViewModel.sharedModel.getNBMessages() > 0 {
 			scrollToBottom(animated: false)
 		}
+		collectionView.reloadData()
 	}
     
     func scrollToMessage(message: ChatMessage){
