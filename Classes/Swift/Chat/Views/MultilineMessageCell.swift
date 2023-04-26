@@ -20,7 +20,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var contentMediaViewBubble: UIView = UIView(frame: .zero)
 	var contentBubble: UIView = UIView(frame: .zero)
 	var bubble: UIView = UIView(frame: .zero)
-	let imageUser = UIImageView()//Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.chat_conversation_avatar_small)
+	let imageUser = UIImageView()
 	var contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	var chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
 
@@ -754,9 +754,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				
 				if isFirstIndexInTableView(indexPath: selfIndexPathConfigure, chat: event.chatMessage!) {
 					imageUser.isHidden = false
-					//imageUser.fillFromAddress(address: (event.chatMessage?.fromAddress)!, withPresence: true)
-					imageUser.image = FastAddressBook.image(for: event.chatMessage?.fromAddress?.contact())
-					//[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr]];
+					if event.chatMessage?.fromAddress?.contact() != nil {
+						imageUser.image = FastAddressBook.image(for: event.chatMessage?.fromAddress?.contact())
+					}else{
+						imageUser.image = FastAddressBook.image(for: event.chatMessage?.fromAddress?.getCobject)
+					}
 					contactDateLabel.text = contactDateForChat(message: event.chatMessage!)
 					contactDateLabel.isHidden = false
 					if editMode {
