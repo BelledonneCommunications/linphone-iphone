@@ -98,7 +98,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		if ChatConversationTableViewModel.sharedModel.getNBMessages() > 0 {
 			scrollToBottom(animated: false)
 		}
-		collectionView.reloadData()
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.receivePresenceNotification(notification:)), name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil)
 	}
