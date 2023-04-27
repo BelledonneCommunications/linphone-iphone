@@ -49,7 +49,9 @@ import AVFoundation
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 	var conference: Conference?
 	var callkitAudioSessionActivated : Bool? = nil // if "nil", ignore.
-	var actionToFulFill : CXCallAction? = nil;
+	var actionToFulFill : CXCallAction? = nil
+	var endCallKitReplacedCall: Bool = true
+	static var uuidReplacedCall: String?
 	
 	var backgroundContextCall : Call?
 	@objc var backgroundContextCameraIsEnabled : Bool = false
@@ -559,7 +561,21 @@ import AVFoundation
 					let addr = call.remoteAddress
 					var displayName = incomingDisplayName(call: call)
 				
-					if (CallManager.callKitEnabled()) {
+				if call.replacedCall != nil {
+					endCallKitReplacedCall = false
+					
+					
+					print("uuidReplacedCalluuidReplacedCall incoming \(CallManager.uuidReplacedCall)")
+					let uuid = CallManager.instance().providerDelegate.uuids["\(CallManager.uuidReplacedCall)"]
+					let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
+					callInfo!.callId = CallManager.instance().referedToCall ?? ""
+					CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+					CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
+					CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
+					
+					//CallManager.uuidReplacedCall = callId
+					
+				} else if (CallManager.callKitEnabled()) {
 						let isConference = isConferenceCall(call: call)
 						let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
 						if (isEarlyConference) {
@@ -573,6 +589,11 @@ import AVFoundation
 						}
 						
 						let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+						if call.replacedCall == nil {
+							CallManager.uuidReplacedCall = callId
+						}
+					
+						print("uuidReplacedCalluuidReplacedCall callID \(callId) uuidReplacedCall \(CallManager.uuidReplacedCall)")
 						if (uuid != nil) {
 							// Tha app is now registered, updated the call already existed.
 							CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
@@ -680,6 +701,7 @@ import AVFoundation
 					}
 
 					if (CallManager.callKitEnabled()) {
+						print("uuidReplacedCalluuidReplacedCall callKitEnabled \(CallManager.uuidReplacedCall) \(call.replacedCall != nil)")
 						var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
 						if (callId == CallManager.instance().referedToCall) {
 							// refered call ended before connecting
@@ -703,11 +725,28 @@ import AVFoundation
 								CallManager.instance().referedToCall = nil
 								break
 							}
-
+							if (endCallKitReplacedCall){
+								print("uuidReplacedCalluuidReplacedCall end \(CallManager.uuidReplacedCall)")
+								let transaction = CXTransaction(action:
+								CXEndCallAction(call: uuid!))
+								CallManager.instance().requestTransaction(transaction, action: "endCall")
+							}else{
+								print("uuidReplacedCalluuidReplacedCall not end \(CallManager.uuidReplacedCall)")
+								endCallKitReplacedCall = true
+							}
+							
+						}
+						/*
+						if call.replacedCall != nil {
+							endCallKitReplacedCall = true
+							
+							print("uuidReplacedCalluuidReplacedCall end \(CallManager.uuidReplacedCall)")
+							var uuidReplacedCallToEnd = CallManager.instance().providerDelegate.uuids["\(CallManager.uuidReplacedCall!)"]
 							let transaction = CXTransaction(action:
-							CXEndCallAction(call: uuid!))
+							CXEndCallAction(call: uuidReplacedCallToEnd!))
 							CallManager.instance().requestTransaction(transaction, action: "endCall")
 						}
+						 */
 					}
 					break
 				case .Released:
