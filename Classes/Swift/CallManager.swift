@@ -564,8 +564,6 @@ import AVFoundation
 				if call.replacedCall != nil {
 					endCallKitReplacedCall = false
 					
-					
-					print("uuidReplacedCalluuidReplacedCall incoming \(CallManager.uuidReplacedCall)")
 					let uuid = CallManager.instance().providerDelegate.uuids["\(CallManager.uuidReplacedCall)"]
 					let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 					callInfo!.callId = CallManager.instance().referedToCall ?? ""
@@ -593,7 +591,6 @@ import AVFoundation
 							CallManager.uuidReplacedCall = callId
 						}
 					
-						print("uuidReplacedCalluuidReplacedCall callID \(callId) uuidReplacedCall \(CallManager.uuidReplacedCall)")
 						if (uuid != nil) {
 							// Tha app is now registered, updated the call already existed.
 							CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
@@ -701,7 +698,6 @@ import AVFoundation
 					}
 
 					if (CallManager.callKitEnabled()) {
-						print("uuidReplacedCalluuidReplacedCall callKitEnabled \(CallManager.uuidReplacedCall) \(call.replacedCall != nil)")
 						var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
 						if (callId == CallManager.instance().referedToCall) {
 							// refered call ended before connecting
@@ -726,27 +722,14 @@ import AVFoundation
 								break
 							}
 							if (endCallKitReplacedCall){
-								print("uuidReplacedCalluuidReplacedCall end \(CallManager.uuidReplacedCall)")
 								let transaction = CXTransaction(action:
 								CXEndCallAction(call: uuid!))
 								CallManager.instance().requestTransaction(transaction, action: "endCall")
 							}else{
-								print("uuidReplacedCalluuidReplacedCall not end \(CallManager.uuidReplacedCall)")
 								endCallKitReplacedCall = true
 							}
 							
 						}
-						/*
-						if call.replacedCall != nil {
-							endCallKitReplacedCall = true
-							
-							print("uuidReplacedCalluuidReplacedCall end \(CallManager.uuidReplacedCall)")
-							var uuidReplacedCallToEnd = CallManager.instance().providerDelegate.uuids["\(CallManager.uuidReplacedCall!)"]
-							let transaction = CXTransaction(action:
-							CXEndCallAction(call: uuidReplacedCallToEnd!))
-							CallManager.instance().requestTransaction(transaction, action: "endCall")
-						}
-						 */
 					}
 					break
 				case .Released:
