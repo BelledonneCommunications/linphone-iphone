@@ -570,9 +570,7 @@ import AVFoundation
 					CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 					CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
 					CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-					
-					//CallManager.uuidReplacedCall = callId
-					
+					CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
 				} else if (CallManager.callKitEnabled()) {
 						let isConference = isConferenceCall(call: call)
 						let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
