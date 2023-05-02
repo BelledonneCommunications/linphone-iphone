@@ -240,7 +240,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
 		self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
 
-		_sounds.vibrate = kSystemSoundID_Vibrate;
+		//_sounds.vibrate = kSystemSoundID_Vibrate;
 
 		_logs = [[NSMutableArray alloc] init];
 		_pushDict = [[NSMutableDictionary alloc] init];
@@ -254,6 +254,11 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
 		[self overrideDefaultSettings];
+		
+		if (![self lpConfigBoolForKey:@"disable_chat_feature" withDefault:FALSE]) {
+			_sounds.vibrate = kSystemSoundID_Vibrate;
+		}
+		
 		if (![self lpConfigBoolForKey:@"migration_images_done" withDefault:FALSE]) {
 			[self migrationAllImages];
 		}

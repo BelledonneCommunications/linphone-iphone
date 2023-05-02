@@ -69,7 +69,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"];
+	_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self update];
 }
@@ -178,7 +178,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)shouldHideEncryptedChatView:(BOOL)hasLime {
-    _encryptedChatView.hidden = !hasLime;
+    _encryptedChatView.hidden = !hasLime || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
     CGRect newFrame = _optionsView.frame;
     if (!hasLime) {
         newFrame.origin.x = _encryptedChatView.frame.size.width * 2/3;

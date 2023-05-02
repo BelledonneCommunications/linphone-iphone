@@ -669,6 +669,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if (!linphone_core_ldap_available(LC)) {
 		[hiddenKeys addObject:@"contacts_menu"];
 	}
+	
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"]){
+		[hiddenKeys addObject:@"message_menu"];
+	}
 #ifndef DEBUG
 	[hiddenKeys addObject:@"debug_actions_group"];
 	[hiddenKeys addObject:@"release_button"];

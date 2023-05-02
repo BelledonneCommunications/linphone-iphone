@@ -151,7 +151,7 @@
 		const LinphoneFriend* friend = linphone_search_result_get_friend(result);
 		const char *phoneNumber = linphone_search_result_get_phone_number(result);
 		
-		if ([LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] && ![self isSecureChatable:friend]) {
+		if (([LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] && ![self isSecureChatable:friend]) || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"]) {
 			continue;
 		}
 		

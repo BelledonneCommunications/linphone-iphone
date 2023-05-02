@@ -77,7 +77,7 @@
 			   [FastAddressBook isSipURIValid:_addressLabel.text]));
 		self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
 		[self shouldHideEncryptedChatView:account && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(account)) && model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
-		_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"];
+		_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
 	}
 
 	if (addr) {
@@ -86,7 +86,7 @@
 }
 
 - (void)shouldHideEncryptedChatView:(BOOL)hasLime {
-    _encryptedChatView.hidden = !hasLime;
+    _encryptedChatView.hidden = !hasLime || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
     CGRect newFrame = _optionsView.frame;
     if (!hasLime) {
         newFrame.origin.x = _addressLabel.frame.origin.x + _callButton.frame.size.width * 2/3;

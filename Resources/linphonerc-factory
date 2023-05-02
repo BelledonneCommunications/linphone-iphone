@@ -28,6 +28,7 @@ use_callkit=1
 accept_early_media=0
 
 force_lime_chat_rooms=0
+disable_chat_feature=0
 enable_native_address_book=1
 
 hide_link_phone_number=0
