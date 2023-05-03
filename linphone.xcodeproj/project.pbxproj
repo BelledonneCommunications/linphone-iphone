@@ -941,6 +941,7 @@
 		D3F795D615A582810077328B /* ChatConversationView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatConversationView.m */; };
 		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
+		D7DA18712A02598700FABA0D /* TextViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA18702A02598700FABA0D /* TextViewer.swift */; };
 		EA0007A62356008F003CC6BF /* msgNotificationService.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		EA3650DB2330D2E30001148A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5F25DB232BD3E200475F2E /* NotificationService.swift */; };
 		EA88A405242A6216007FEC61 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
@@ -2169,6 +2170,7 @@
 		D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TPMultiLayoutViewController.m; path = Utils/TPMultiLayoutViewController/TPMultiLayoutViewController.m; sourceTree = "<group>"; };
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
+		D7DA18702A02598700FABA0D /* TextViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewer.swift; sourceTree = "<group>"; };
 		EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = msgNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA5F25DB232BD3E200475F2E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		EA5F25DD232BD3E200475F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3422,6 +3424,7 @@
 		C63F71AA285A24B10066163B /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				D7DA18722A02599A00FABA0D /* Viewers */,
 				C63F71AB285A24B10066163B /* ViewModel */,
 				C63F71AD285A24B10066163B /* MutableLiveData.swift */,
 				C63F71AE285A24B10066163B /* Pair.swift */,
@@ -3778,6 +3781,14 @@
 				D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */,
 			);
 			name = TPMultiLayoutViewController;
+			sourceTree = "<group>";
+		};
+		D7DA18722A02599A00FABA0D /* Viewers */ = {
+			isa = PBXGroup;
+			children = (
+				D7DA18702A02598700FABA0D /* TextViewer.swift */,
+			);
+			path = Viewers;
 			sourceTree = "<group>";
 		};
 		EA5F25DA232BD3E200475F2E /* msgNotificationService */ = {
@@ -5036,6 +5047,7 @@
 				C63F7233285A24B10066163B /* ConferenceExtensions.swift in Sources */,
 				C63F7260285A24B10066163B /* StyledSwitch.swift in Sources */,
 				C63F7252285A24B10066163B /* VoipExtraButtonsView.swift in Sources */,
+				D7DA18712A02598700FABA0D /* TextViewer.swift in Sources */,
 				669B140C27A29D140012220A /* FloatingScrollDownButton.swift in Sources */,
 				C63F7219285A24B10066163B /* ConferenceHistoryDetailsView.swift in Sources */,
 				D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */,

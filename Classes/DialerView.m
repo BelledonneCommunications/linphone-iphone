@@ -285,16 +285,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)displayDebugPopup:(NSString *)address {
 	LinphoneManager *mgr = LinphoneManager.instance;
 	NSString *debugAddress = [mgr lpConfigStringForKey:@"debug_popup_magic" withDefault:@""];
-	if (![debugAddress isEqualToString:@""] && [address isEqualToString:debugAddress]) {
+	if (TRUE) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Debug", nil)
 																		 message:NSLocalizedString(@"Choose an action", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-		
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
-		
-		[errView addAction:defaultAction];
 
 		int debugLevel = [LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"];
 		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
@@ -322,31 +316,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   }];
 		[errView addAction:logAction];
 		
-		UIAlertAction* remAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
-															style:UIAlertActionStyleDefault
-														  handler:^(UIAlertAction * action) {
-															  linphone_core_clear_accounts([LinphoneManager getLc]);
-															  linphone_core_clear_all_auth_info([LinphoneManager getLc]);
-															  @try {
-																  [LinphoneManager.instance destroyLinphoneCore];
-															  } @catch (NSException *e) {
-																  LOGW(@"Exception while destroying linphone core: %@", e);
-															  } @finally {
-																  if ([NSFileManager.defaultManager
-																	   isDeletableFileAtPath:[LinphoneManager preferenceFile:@"linphonerc"]] == YES) {
-																	  [NSFileManager.defaultManager
-																	   removeItemAtPath:[LinphoneManager preferenceFile:@"linphonerc"]
-																	   error:nil];
-																  }
-#ifdef DEBUG
-																  [LinphoneManager instanceRelease];
-#endif
-															  }
-															  [UIApplication sharedApplication].keyWindow.rootViewController = nil;
-															  // make the application crash to be sure that user restart it properly
-															  LOGF(@"Self-destructing in 3..2..1..0!");
-														  }];
-		[errView addAction:remAction];
+		UIAlertAction* configAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"View config file", nil)
+			style:UIAlertActionStyleDefault
+		 	handler:^(UIAlertAction * action) {
+				TextViewer *view = VIEW(TextViewer);
+				view.textViewer = [NSString stringWithContentsOfFile:[LinphoneManager bundleFile:@"linphonerc"] encoding:NSUTF8StringEncoding error:nil];
+				[PhoneMainView.instance popToView:view.compositeViewDescription];
+			}];
+
+		[errView addAction:configAction];
+
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+	  		style:UIAlertActionStyleDefault
+			handler:^(UIAlertAction * action) {}];
+
+		[errView addAction:defaultAction];
 		
 		[self presentViewController:errView animated:YES completion:nil];
 		return true;
@@ -419,7 +403,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddressChange:(id)sender {
-	if ([self displayDebugPopup:_addressField.text]) {
+	if ([_addressField.text  isEqual: @"#1234#"]) {
+		[self displayDebugPopup:_addressField.text];
 		_addressField.text = @"";
 	}
 	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
