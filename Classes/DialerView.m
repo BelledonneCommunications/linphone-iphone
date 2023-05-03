@@ -320,7 +320,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 			style:UIAlertActionStyleDefault
 		 	handler:^(UIAlertAction * action) {
 				TextViewer *view = VIEW(TextViewer);
-				view.textViewer = [NSString stringWithContentsOfFile:[LinphoneManager bundleFile:@"linphonerc"] encoding:NSUTF8StringEncoding error:nil];
+				LpConfig *conf = LinphoneManager.instance.configDb;
+				char *config = linphone_config_dump(conf);
+				view.textViewer = [NSString stringWithUTF8String: config];
 				[PhoneMainView.instance popToView:view.compositeViewDescription];
 			}];
 
