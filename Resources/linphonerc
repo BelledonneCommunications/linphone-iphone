@@ -23,6 +23,11 @@ force_lime_chat_rooms=0
 disable_chat_feature=0
 disable_video_feature=0
 
+enable_native_address_book=1
+read_only_native_address_book=0
+only_show_sip_contacts_list=0
+hide_sip_contacts_list=0
+
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application
 enabled=0

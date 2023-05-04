@@ -60,6 +60,7 @@ static BOOL addAddressFromOthers = FALSE;
 @synthesize allButton;
 @synthesize linphoneButton;
 @synthesize addButton;
+@synthesize deleteButton;
 @synthesize topBar;
 
 typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
@@ -237,7 +238,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)refreshButtons {
-	[addButton setHidden:![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]];
+	[addButton setHidden:![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"] || [LinphoneManager.instance lpConfigBoolForKey:@"read_only_native_address_book"]];
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"read_only_native_address_book"]) {
+		addButton.hidden = true;
+		deleteButton.hidden = true;
+	}
 	[self changeView:[ContactSelection getSipFilterEnabled] ? ContactsLinphone : ContactsAll];
 }
 
@@ -286,6 +291,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	allButton.hidden = linphoneButton.hidden = _selectedButtonImage.hidden = addButton.hidden =	self.tableController.isEditing;
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]) {
 		addButton.hidden = self.tableController.isEditing;
+	}
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"read_only_native_address_book"]) {
+		addButton.hidden = true;
+		deleteButton.hidden = true;
 	}
 }
 
