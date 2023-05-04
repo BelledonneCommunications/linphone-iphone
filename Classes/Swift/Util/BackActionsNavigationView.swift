@@ -349,9 +349,13 @@ class BackActionsNavigationView:  UIViewController {
 	
 	func changeCallIcon(groupChat: Bool){
 		isGroupChat = groupChat
-		if(groupChat){
+		let defaultAccount = Core.getSwiftObject(cObject: LinphoneManager.getLc()).defaultAccount
+		if(groupChat && (defaultAccount != nil) && (defaultAccount!.params!.audioVideoConferenceFactoryAddress != nil)){
 			action1Button.isHidden = true
 			action1BisButton.isHidden = false
+		}else if(groupChat){
+			action1Button.isHidden = true
+			action1BisButton.isHidden = true
 		}else{
 			action1Button.isHidden = false
 			action1BisButton.isHidden = true

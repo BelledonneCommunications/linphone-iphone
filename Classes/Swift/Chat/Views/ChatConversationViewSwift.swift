@@ -439,9 +439,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func initDataSource(groupeChat: Bool, secureLevel: Bool, cChatRoom: OpaquePointer) {
 		menu.dataSource.removeAll()
-		
+		let defaultAccount = Core.getSwiftObject(cObject: LinphoneManager.getLc()).defaultAccount
 		if(groupeChat){
-			if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
+			if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly && (defaultAccount != nil) && (defaultAccount!.params!.audioVideoConferenceFactoryAddress != nil) {
 				menu.dataSource.append(VoipTexts.conference_schedule_start)
 			}
 			menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_group_infos)
