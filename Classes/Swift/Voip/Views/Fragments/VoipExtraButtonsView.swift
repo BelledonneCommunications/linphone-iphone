@@ -115,7 +115,16 @@ class VoipExtraButtonsView: UIStackView {
 			ControlsViewModel.shared.goToConferenceLayoutSettings.notifyAllObservers(with: true)
 		})
 		row2.addArrangedSubview(layoutselect)
-			
+		
+		if (Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true) {
+			layoutselect.isEnabled = false
+			layoutselect.setTitleColor(.gray, for: .disabled)
+			if #available(iOS 13.0, *) {
+				layoutselect.setImage(UIImage(named: "voip_conference_mosaic")!.withTintColor(.gray), for: .disabled)
+			}
+		}
+		
+		
 		let calls = VoipExtraButton(text: VoipTexts.call_action_calls_list, buttonTheme: VoipTheme.call_action("voip_calls_list"), withbBoucinCounterDataSource: CallsViewModel.shared.inactiveCallsCount, onClickAction: {
 			ControlsViewModel.shared.goToCallsListEvent.notifyAllObservers(with: true)
 		})

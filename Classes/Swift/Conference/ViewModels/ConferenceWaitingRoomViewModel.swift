@@ -45,7 +45,7 @@ class ConferenceWaitingRoomViewModel: ControlsViewModel {
 		isMuteMicrophoneEnabled.value = true
 		isSpeakerSelected.value = true
 		isVideoEnabled.value = false
-		isVideoAvailable.value = core.videoCaptureEnabled
+		isVideoAvailable.value = core.videoCaptureEnabled && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false
 		showLayoutPicker.value = false
 	}
 	

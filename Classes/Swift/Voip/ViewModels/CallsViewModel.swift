@@ -65,7 +65,7 @@ class CallsViewModel {
 					let localVideo = call.currentParams?.videoEnabled == true
 					let autoAccept = call.core?.videoActivationPolicy?.automaticallyAccept == true
 					if (remoteVideo && !localVideo && !autoAccept) {
-						if (core.videoCaptureEnabled || core.videoDisplayEnabled) {
+						if (core.videoCaptureEnabled || core.videoDisplayEnabled) && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false {
 							try?call.deferUpdate()
 							self.callUpdateEvent.value =  call
 						} else {

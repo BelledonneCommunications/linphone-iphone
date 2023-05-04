@@ -201,10 +201,10 @@ class ControlsViewModel {
 	private func updateVideoAvailable() {
 		let currentCall = core.currentCall
 		isVideoAvailable.value =
-			(core.videoCaptureEnabled || core.videoPreviewEnabled) &&
+			((core.videoCaptureEnabled || core.videoPreviewEnabled) &&
 			currentCall?.state != .Paused &&
 			currentCall?.state != .PausedByRemote &&
-		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true))
+		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true))) && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false
 	}
 	
 	private func updateVideoEnabled() {

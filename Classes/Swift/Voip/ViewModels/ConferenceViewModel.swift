@@ -267,7 +267,7 @@ class ConferenceViewModel {
 	
 	private func updateConferenceLayout(conference: Conference) {
 		if let call = conference.call, let params = call.params {
-			conferenceDisplayMode.value = !params.videoEnabled ? ConferenceDisplayMode.AudioOnly :  params.conferenceVideoLayout == .Grid ? .Grid : .ActiveSpeaker
+			conferenceDisplayMode.value = !params.videoEnabled || Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true ? ConferenceDisplayMode.AudioOnly :  params.conferenceVideoLayout == .Grid ? .Grid : .ActiveSpeaker
 			let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
 			conferenceParticipantDevices.value = list
 			Log.i("[Conference] Conference current layout is: \(conferenceDisplayMode.value)")

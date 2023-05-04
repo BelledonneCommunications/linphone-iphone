@@ -673,6 +673,12 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"]){
 		[hiddenKeys addObject:@"message_menu"];
 	}
+	
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"disable_video_feature"]) {
+		[hiddenKeys addObject:@"enable_video_preference"];
+		[hiddenKeys addObject:@"video_menu"];
+	}
+	
 #ifndef DEBUG
 	[hiddenKeys addObject:@"debug_actions_group"];
 	[hiddenKeys addObject:@"release_button"];

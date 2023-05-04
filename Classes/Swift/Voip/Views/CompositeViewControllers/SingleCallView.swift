@@ -80,7 +80,7 @@ import linphonesw
 				self.videoAcceptDialog?.removeFromSuperview()
 				self.videoAcceptDialog = nil
 			} else if (call?.state == .UpdatedByRemote) {
-				if (core.videoCaptureEnabled || core.videoDisplayEnabled) {
+				if ((core.videoCaptureEnabled || core.videoDisplayEnabled) && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false) {
 					if (call?.currentParams?.videoEnabled != call?.remoteParams?.videoEnabled) {
 						let accept = ButtonAttributes(text:VoipTexts.dialog_accept, action: {call?.answerVideoUpdateRequest(accept: true)}, isDestructive:false)
 						let cancel = ButtonAttributes(text:VoipTexts.dialog_decline, action: {call?.answerVideoUpdateRequest(accept: false)}, isDestructive:true)
@@ -88,6 +88,9 @@ import linphonesw
 						self.videoAcceptDialog?.show()
 					}
 				} else {
+					if (Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true) {
+						call?.answerVideoUpdateRequest(accept: false)
+					}
 					Log.w("[Call] Video display & capture are disabled, don't show video dialog")
 				}
 			}

@@ -21,6 +21,7 @@ use_callkit=1
 unexpected_pushkit=0
 force_lime_chat_rooms=0
 disable_chat_feature=0
+disable_video_feature=0
 
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application

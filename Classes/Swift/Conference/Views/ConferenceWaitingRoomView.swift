@@ -146,6 +146,9 @@ import linphonesw
 			//self.localVideo.isHidden = joining == true (UX question as video window goes black by the core, better black or hidden ?)
 			self.noVideoLabel.isHidden = joining == true
 			self.layoutPicker?.isHidden = joining == true
+			if (Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true) {
+				self.layoutPicker!.isHidden = true
+			}
 			if (joining == true) {
 				self.view.addSubview(self.conferenceJoinSpinner)
 				self.conferenceJoinSpinner.square(AbstractIncomingOutgoingCallView.spinner_size).center().done()
