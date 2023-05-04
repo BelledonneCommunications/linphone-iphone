@@ -410,7 +410,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_addressField.text = @"";
 	}
 	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
-	if (!(defaultAccount && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(defaultAccount)))){
+	if (!(defaultAccount && linphone_account_params_get_audio_video_conference_factory_address(linphone_account_get_params(defaultAccount)))){
 		[_addContactButton setImage:[UIImage imageNamed:@"contact_add_default"] forState:UIControlStateNormal];
 		_addContactButton.enabled = ([[_addressField text] length] > 0);
 		if ([_addressField.text length] == 0) {

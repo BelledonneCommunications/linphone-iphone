@@ -106,13 +106,17 @@
 												  }]];
 	}
 	
-	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:VoipTexts.conference_scheduled
-															   image:[UIImage imageNamed:@"side_menu_voip_meeting_schedule"]
-															tapBlock:^() {
-															  [PhoneMainView.instance
-																  changeCurrentView:ScheduledConferencesView.compositeViewDescription];
+	LinphoneAccount *defaultAccount = linphone_core_get_default_account(LC);
+	if (defaultAccount && linphone_account_params_get_audio_video_conference_factory_address(linphone_account_get_params(defaultAccount))){
+		
+		[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:VoipTexts.conference_scheduled
+																   image:[UIImage imageNamed:@"side_menu_voip_meeting_schedule"]
+																tapBlock:^() {
+																  [PhoneMainView.instance
+																	  changeCurrentView:ScheduledConferencesView.compositeViewDescription];
 
-															}]];
+																}]];
+	}
 	
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
                                                                image:[UIImage imageNamed:@"menu_about.png"]
