@@ -285,7 +285,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)displayDebugPopup:(NSString *)address {
 	LinphoneManager *mgr = LinphoneManager.instance;
 	NSString *debugAddress = [mgr lpConfigStringForKey:@"debug_popup_magic" withDefault:@""];
-	if (TRUE) {
+	if ((![debugAddress isEqualToString:@""] && [address isEqualToString:debugAddress]) || [_addressField.text  isEqual: @"#1234#"]) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Debug", nil)
 																		 message:NSLocalizedString(@"Choose an action", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
