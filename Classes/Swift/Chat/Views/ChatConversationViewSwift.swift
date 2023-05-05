@@ -451,10 +451,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			let addr = (firstParticipant != nil) ? linphone_participant_get_address(firstParticipant?.getCobject) : linphone_chat_room_get_peer_address(cChatRoom)
 			
 			contact = FastAddressBook.getContactWith(addr)
-			
-			if (contact == nil) {
+            
+            if (contact == nil && !ConfigManager.instance().lpConfigBoolForKey(key: "read_only_native_address_book")) {
 				menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_add_to_contact)
-			} else {
+            } else if (contact != nil) {
 				menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_go_to_contact)
 			}
 		}

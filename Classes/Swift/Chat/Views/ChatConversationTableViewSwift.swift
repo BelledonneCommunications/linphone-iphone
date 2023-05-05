@@ -362,7 +362,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         
         let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
         if (!message.isOutgoing && FastAddressBook.getContactWith(message.fromAddress?.getCobject) == nil
-            && !isOneToOneChat ) {
+            && !isOneToOneChat && !ConfigManager.instance().lpConfigBoolForKey(key: "read_only_native_address_book")) {
             menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_add_to_contact)
         }
         
