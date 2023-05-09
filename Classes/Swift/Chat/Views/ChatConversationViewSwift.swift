@@ -1308,7 +1308,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	func voiceRecordTimerUpdate() {
 		let recorderDuration = linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 		if recorderDuration > LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999) {
-			Log.i("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = %d)", LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))
+			Log.i("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = \(LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))")
 			stopVoiceRecording()
 		} else {
 			recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))

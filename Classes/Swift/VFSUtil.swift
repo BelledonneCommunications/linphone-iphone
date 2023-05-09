@@ -104,7 +104,7 @@ import os
 		}
 		var error: Unmanaged<CFError>?
 		guard let clearTextData = SecKeyCreateDecryptedData(key,algorithm,Data(base64Encoded: encryptedText)! as CFData,&error) as Data? else {
-			Log.e("[VFS] failed deciphering data \(String(describing: error))")
+			print("[VFS] failed deciphering data \(String(describing: error))")
 			return nil
 		}
 		return String(decoding: clearTextData, as: UTF8.self)

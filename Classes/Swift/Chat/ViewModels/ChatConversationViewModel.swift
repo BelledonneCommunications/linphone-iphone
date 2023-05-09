@@ -406,7 +406,9 @@ class ChatConversationViewModel: ControlsViewModel {
 						if PHPhotoLibrary.authorizationStatus() == .authorized {
 							block!()
 						} else {
-							UIAlertView(title: NSLocalizedString("Photo's permission", comment: ""), message: NSLocalizedString("Photo not authorized", comment: ""), delegate: nil, cancelButtonTitle: "", otherButtonTitles: "Continue").show()
+							let alert = UIAlertController(title: NSLocalizedString("Photo's permission", comment: ""), message: NSLocalizedString("Photo not authorized", comment: ""), preferredStyle: .alert)
+							alert.addAction(UIAlertAction(title: NSLocalizedString("Continue", comment: ""), style: .default))
+							PhoneMainView.instance()!.present(alert, animated: true)
 						}
 					})
 				})
