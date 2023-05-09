@@ -266,6 +266,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         } else {
 			menu!.bottomOffset = CGPoint(x: event.chatMessage!.isOutgoing ? coordinateMax.x - 200 : coordinateMin.x, y: 0)
         }
+		
+		let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
+		view.messageView.endEditing(true)
         
 		menu!.show()
 		menu!.selectionAction = { [weak self] (index: Int, item: String) in
@@ -390,6 +393,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     
     func replyMessage(message: ChatMessage){
         let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
+		if (view.messageView.messageText.text == "" && view.stackView.arrangedSubviews[3].isHidden && view.stackView.arrangedSubviews[4].isHidden){
+			view.messageView.messageText.becomeFirstResponder()
+		}
         view.initiateReplyView(forMessage: message.getCobject)
     }
     
