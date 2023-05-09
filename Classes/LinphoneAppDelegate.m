@@ -554,7 +554,7 @@
 		if ((PhoneMainView.instance.currentView == ChatsListView.compositeViewDescription))
 			return;
 		
-		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
+		if (PhoneMainView.instance.currentView == ChatConversationViewSwift.compositeViewDescription) {
 			NSDictionary *userInfo = [[[notification request] content] userInfo];
 			NSString *peerAddress = userInfo[@"peer_addr"];
 			NSString *localAddress = userInfo[@"local_addr"];
