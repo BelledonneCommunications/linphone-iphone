@@ -304,7 +304,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		menu.show()
 		menu.selectionAction = { [weak self] (index: Int, item: String) in
 			guard let _ = self else { return }
-			print(item)
 			switch item {
 			case VoipTexts.dropdown_menu_chat_conversation_add_to_contact:
 				self!.addOrGoToContact()
@@ -739,7 +738,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	@objc class func writeFileInImagesDirectory(_ data: Data?, name: String?) {
 		let filePath = URL(fileURLWithPath: LinphoneManager.imagesDirectory()).appendingPathComponent(name ?? "").path
 		if name != nil || (name == "") {
-			print("try to write file in \(filePath)")
+			Log.i("try to write file in \(filePath)")
 		}
 		FileManager.default.createFile(
 			atPath: filePath,
@@ -1150,7 +1149,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			
 			ChatConversationViewModel.sharedModel.createCollectionViewItem(urlFile: videoUrl, type: "public.movie")
 		default:
-			print("Mismatched type: \(mediaType)")
+			Log.i("Mismatched type: \(mediaType)")
 	  	}
 	  	picker.dismiss(animated: true, completion: nil)
 	}
@@ -1240,7 +1239,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 							try startFileUpload(data, withName: fileName, rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}
 					}catch{
-						print(error)
+						Log.e(error.localizedDescription)
 					}
 			}
 
@@ -1309,7 +1308,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	func voiceRecordTimerUpdate() {
 		let recorderDuration = linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 		if recorderDuration > LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999) {
-			print("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = %d)", LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))
+			Log.i("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = %d)", LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))
 			stopVoiceRecording()
 		} else {
 			recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))

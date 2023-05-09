@@ -272,7 +272,7 @@ import AVFoundation
 	// for outgoing call. There is not yet callId
 	@objc func startCall(addr: OpaquePointer?, isSas: Bool, isVideo: Bool, isConference: Bool = false) {
 		if (addr == nil) {
-			print("Can not start a call with null address!")
+			Log.i("Can not start a call with null address!")
 			return
 		}
 		

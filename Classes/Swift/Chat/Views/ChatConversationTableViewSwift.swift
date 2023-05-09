@@ -270,7 +270,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		menu!.show()
 		menu!.selectionAction = { [weak self] (index: Int, item: String) in
 			guard let _ = self else { return }
-			print(item)
 			switch item {
 			case VoipTexts.bubble_chat_dropDown_resend:
 				self!.resendMessage(message: event.chatMessage!)
@@ -287,7 +286,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			case VoipTexts.bubble_chat_dropDown_delete:
 				self!.deleteMessage(message: event.chatMessage!)
 			default:
-				print("Error Default")
+				Log.e("Error Default tapChooseMenuItemMessage ChatConversationTableViewSwift")
 			}
 			self!.menu!.clearSelection()
 		}
@@ -446,7 +445,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 
 		let state = chatMessage.state
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
-			print("Messsage not delivered")
+			Log.i("Messsage not delivered")
 		} else {
 			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())
@@ -497,7 +496,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let chatMessage = ChatConversationTableViewModel.sharedModel.getMessage(index: indexMessage)?.chatMessage
 		let state = chatMessage!.state
 		if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue) {
-			print("Messsage not delivered")
+			Log.i("Messsage not delivered")
 		} else {
 			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
 				let view: ImageView = VIEW(ImageView.compositeViewDescription())

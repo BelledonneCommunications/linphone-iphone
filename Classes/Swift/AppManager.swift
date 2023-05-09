@@ -72,7 +72,7 @@ enum NetworkType: Int {
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "File :\(file) removed")
 
 		} catch {
-			print("Could not remove file : \(file) \(error)")
+			Log.e("Could not remove file : \(file) \(error)")
 		}
 	}
 	

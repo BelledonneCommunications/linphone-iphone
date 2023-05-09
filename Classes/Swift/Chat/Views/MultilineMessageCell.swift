@@ -1181,7 +1181,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 			result = formattedDuration(linphonePlayer.duration)!
 			linphonePlayer.close()
 		}catch{
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 		return result
 	}

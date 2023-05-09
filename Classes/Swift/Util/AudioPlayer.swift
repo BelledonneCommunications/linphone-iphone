@@ -21,7 +21,7 @@ class AudioPlayer: ControlsViewModel {
 	}
 	
 	static func initSharedPlayer(){
-		print("[Voice Message] Creating shared player")
+		Log.i("[Voice Message] Creating shared player")
 		
 		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
 		do{
@@ -29,14 +29,14 @@ class AudioPlayer: ControlsViewModel {
 				linphonePlayer = try core.createLocalPlayer(soundCardName: CallManager.instance().getSpeakerSoundCard(), videoDisplayName: nil, windowId: nil)
 			}
 		}catch{
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 	}
 	
 	static func startSharedPlayer(_ path: String?) {
-		print("[Voice Message] Starting shared player path = \(String(describing: path))")
+		Log.i("[Voice Message] Starting shared player path = \(String(describing: path))")
 		if ((linphonePlayer!.userData) != nil) {
-			print("[Voice Message] a play was requested (\(String(describing: path)), but there is already one going (\(String(describing: linphonePlayer?.userData))")
+			Log.i("[Voice Message] a play was requested (\(String(describing: path)), but there is already one going (\(String(describing: linphonePlayer?.userData))")
 			let userInfo = [
 				"path": linphonePlayer!.userData
 			]
@@ -47,7 +47,7 @@ class AudioPlayer: ControlsViewModel {
 			try linphonePlayer?.open(filename: path!)
 			try linphonePlayer?.start()
 		}catch{
-			print("error")
+			Log.e(error.localizedDescription)
 		}
 	}
 	
@@ -59,14 +59,14 @@ class AudioPlayer: ControlsViewModel {
 	}
 	
 	static func stopSharedPlayer() {
-		print("[Voice Message] Stopping shared player path = \(String(describing: linphonePlayer?.userData))")
+		Log.i("[Voice Message] Stopping shared player path = \(String(describing: linphonePlayer?.userData))")
 		do{
 			try linphonePlayer?.pause()
 			try linphonePlayer?.seek(timeMs: 0)
 			//linphonePlayer?.close()
 			linphonePlayer?.userData = nil
 		}catch{
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 	}
 }

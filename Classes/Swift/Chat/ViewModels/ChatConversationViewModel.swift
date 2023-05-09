@@ -322,7 +322,7 @@ class ChatConversationViewModel: ControlsViewModel {
 			result = formattedDuration(linphonePlayer.duration)!
 			linphonePlayer.close()
 		}catch{
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 		return result
 	}
@@ -440,7 +440,7 @@ class ChatConversationViewModel: ControlsViewModel {
 				ChatConversationViewModel.sharedModel.urlFile.append(url)
 				DispatchQueue.main.async(execute: ChatConversationViewModel.sharedModel.workItem!)
 			}catch let error{
-				print(error.localizedDescription)
+				Log.e(error.localizedDescription)
 			}
 		}
 	}
@@ -466,7 +466,7 @@ class ChatConversationViewModel: ControlsViewModel {
 					return otherFileImage!
 				}
 			}catch let error{
-				print(error.localizedDescription)
+				Log.e(error.localizedDescription)
 			}
 		}
 		return UIImage(named: "chat_error")!
@@ -493,7 +493,7 @@ class ChatConversationViewModel: ControlsViewModel {
 			p.fileFormat = RecorderFileFormat.Mkv
 			ChatConversationViewModel.sharedModel.voiceRecorder = try core.createRecorder(params: p)
 		}catch{
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 	}
 	
@@ -511,11 +511,11 @@ class ChatConversationViewModel: ControlsViewModel {
 			let filename = "\(String(describing: LinphoneManager.imagesDirectory()))/voice-recording-\(UUID().uuidString).mkv"
 			linphone_recorder_open(voiceRecorder?.getCobject, filename)
 			linphone_recorder_start(voiceRecorder?.getCobject)
-			print("[Chat Message Sending] Recorder is closed opening it with \(filename)")
+			Log.i("[Chat Message Sending] Recorder is closed opening it with \(filename)")
 		case LinphoneRecorderRunning:
-			print("[Chat Message Sending] Recorder is already recording")
+			Log.i("[Chat Message Sending] Recorder is already recording")
 		case LinphoneRecorderPaused:
-			print("[Chat Message Sending] Recorder isn't closed, resuming recording")
+			Log.i("[Chat Message Sending] Recorder isn't closed, resuming recording")
 			linphone_recorder_start(voiceRecorder?.getCobject)
 		default:
 			break
@@ -524,7 +524,7 @@ class ChatConversationViewModel: ControlsViewModel {
 	
 	func stopVoiceRecording() {
 		if (ChatConversationViewModel.sharedModel.voiceRecorder != nil) && linphone_recorder_get_state(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) == LinphoneRecorderRunning {
-			print("[Chat Message Sending] Pausing / closing voice recorder")
+			Log.i("[Chat Message Sending] Pausing / closing voice recorder")
 			linphone_recorder_pause(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 			linphone_recorder_close(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)
 		}
@@ -559,10 +559,10 @@ class ChatConversationViewModel: ControlsViewModel {
 		if (filePath != nil) {
 			if (filePath != "") {
 				do {
-					print("[vfs] remove item at \(filePath)")
+					Log.i("[vfs] remove item at \(filePath)")
 					try FileManager.default.removeItem(atPath: filePath!)
 				}catch{
-					print("[vfs] remove item error")
+					Log.e("[vfs] remove item error")
 				}
 			}
 		}

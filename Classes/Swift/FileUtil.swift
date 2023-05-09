@@ -54,7 +54,7 @@ import linphonesw
 			do {
 				try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
 			} catch {
-				print(error)
+				Log.e(error.localizedDescription)
 			}
 		}
 	}
@@ -79,7 +79,7 @@ import linphonesw
 				return false
 			}
 		} catch {
-			print(error)
+			Log.e(error.localizedDescription)
 			return false
 		}
 	}
@@ -88,25 +88,25 @@ import linphonesw
 		do {
 			try string.write(to: URL(fileURLWithPath:toPath), atomically: true, encoding: String.Encoding.utf8)
 		} catch {
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 	}
 	
 	public class func delete(path:String) {
 		do {
 			try FileManager.default.removeItem(atPath: path)
-			print("FIle \(path) was removed")
+			Log.i("FIle \(path) was removed")
 		} catch {
-			print("Error deleting file at path \(path) error is \(error)")
+			Log.e("Error deleting file at path \(path) error is \(error)")
 		}
 	}
 	
 	public class func mkdir(path:String) {
 		do {
 			try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
-			print("Dir \(path) was created")
+			Log.i("Dir \(path) was created")
 		} catch {
-			print("Error creating dir at path \(path) error is \(error)")
+			Log.e("Error creating dir at path \(path) error is \(error)")
 		}
 	}
 	
@@ -119,7 +119,7 @@ import linphonesw
 			}
 			try FileManager.default.copyItem(at:  URL(fileURLWithPath:fromPath), to:  URL(fileURLWithPath:toPath))
 		} catch {
-			print(error)
+			Log.e(error.localizedDescription)
 		}
 	}
 	
@@ -132,7 +132,7 @@ import linphonesw
 			let fileURLs = try fileManager.contentsOfDirectory(at:  FileUtil.sharedContainerUrl(appGroupName: appGroupName), includingPropertiesForKeys: nil)
 			fileURLs.forEach{print($0)}
 		} catch {
-			print("Error while enumerating files \(error.localizedDescription)")
+			Log.e("Error while enumerating files \(error.localizedDescription)")
 		}
 	}
 	
