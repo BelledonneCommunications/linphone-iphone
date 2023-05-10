@@ -173,7 +173,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		
 		eventMessageView.isHidden = true
 		
-		
 	//Message
 		contentView.addSubview(contactDateLabel)
 		
@@ -204,19 +203,17 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		
 		contentBubble.addSubview(bubble)
 		bubble.translatesAutoresizingMaskIntoConstraints = false
-		bubble.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor).isActive = true
-		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+		bubble.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor, constant: 2).isActive = true
+		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
 		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor).isActive = true
 		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor).isActive = true
 		bubble.layer.cornerRadius = 10.0
 		
 		contentBubble.addSubview(chatRead)
-		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
+		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
 		chatRead.trailingAnchor.constraint(equalTo: deleteItemCheckBox.leadingAnchor, constant: -8).isActive = true
 		chatRead.size(w: 10, h: 10).done()
 		chatRead.isHidden = true
-		
-		
 		
 	//PreContentViewBubble
 		bubble.addSubview(preContentViewBubble)
@@ -316,8 +313,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		]
 		
 		replyView.isHidden = true
-		
-		
 		
 	//ContentViewBubble
 		bubble.addSubview(contentViewBubble)
@@ -1003,10 +998,6 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.phoneNumber.rawValue | NSTextCheckingResult.CheckingType.link.rawValue)
 		
 		let regex = try! NSRegularExpression(pattern: "sips:(\\S+)")
-		
-		
-		//matches = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
-		//let matchesSips = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
 		
 		let matchesSips = detector.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))
 		matches = regex.matches(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count))

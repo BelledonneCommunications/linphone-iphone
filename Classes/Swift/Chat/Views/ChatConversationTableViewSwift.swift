@@ -22,8 +22,38 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
 	var collectionView: UICollectionView = {
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-		return collectionView
+		if #available(iOS 14.0, *) {
+			var listConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
+			
+			listConfiguration.leadingSwipeActionsConfigurationProvider = { indexPath in
+				let rep = UIContextualAction(style: .normal, title: "Reply") {
+					action, view, completion in
+					//self?.deleteMessage(at: indexPath)
+					completion(true)
+				}
+				return UISwipeActionsConfiguration(actions: [rep])
+			}
+			
+			listConfiguration.trailingSwipeActionsConfigurationProvider = { indexPath in
+				let del = UIContextualAction(style: .destructive, title: "Delete") {
+					action, view, completion in
+					//self?.deleteMessage(at: indexPath)
+					completion(true)
+				}
+				return UISwipeActionsConfiguration(actions: [del])
+			}
+
+			listConfiguration.showsSeparators = false
+			
+			let layout = UICollectionViewCompositionalLayout.list(using: listConfiguration)
+			layout.configuration.contentInsetsReference = .layoutMargins
+			let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+			collectionView.layoutMargins = .init(top: 100, left: 100, bottom: 100, right: 100)
+			return collectionView
+		} else {
+			let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+			return collectionView
+		}
 	}()
 	
 	var menu: DropDown? = nil
@@ -90,9 +120,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		collectionView.delegate = self
 		collectionView.register(MultilineMessageCell.self, forCellWithReuseIdentifier: MultilineMessageCell.reuseId)
 		
-		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
-		
+		if #available(iOS 14.0, *) {
+			collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+		} else {
+			(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+			(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
+		}
 		collectionView.transform = CGAffineTransform(scaleX: 1, y: -1)
 	}
 	
@@ -232,13 +265,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return ChatConversationTableViewModel.sharedModel.getNBMessages()
-	}
-	
-	// MARK: - UICollectionViewDelegateFlowLayout -
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		let referenceHeight: CGFloat = 100
-		let referenceWidth: CGFloat = 100
-		return CGSize(width: referenceWidth, height: referenceHeight)
 	}
 	
 	func isBasicChatRoom(_ room: OpaquePointer?) -> Bool {
