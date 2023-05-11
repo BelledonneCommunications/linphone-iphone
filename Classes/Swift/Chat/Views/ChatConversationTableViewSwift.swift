@@ -21,34 +21,57 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
-	var collectionView: UICollectionView = {
+	lazy var collectionView: UICollectionView = {
 		if #available(iOS 14.0, *) {
 			var listConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
 			
 			listConfiguration.leadingSwipeActionsConfigurationProvider = { indexPath in
-				let rep = UIContextualAction(style: .normal, title: "Reply") {
-					action, view, completion in
-					//self?.deleteMessage(at: indexPath)
+				let rep = UIContextualAction(style: .normal, title: nil) {
+					[weak self] action, view, completion in
+					
+					let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)?.chatMessage
+					self!.replyMessage(message: message!)
+					
 					completion(true)
 				}
+				
+				let label = UILabel(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
+				label.text = VoipTexts.bubble_chat_dropDown_reply
+				label.textColor = .white
+				label.textAlignment = .center
+				
+				let image = SwiftUtil.imageWithLabel(label: label)
+				
+				rep.image = UIImage(cgImage:image.cgImage!, scale: 1, orientation:.downMirrored)
+				
 				return UISwipeActionsConfiguration(actions: [rep])
 			}
 			
 			listConfiguration.trailingSwipeActionsConfigurationProvider = { indexPath in
-				let del = UIContextualAction(style: .destructive, title: "Delete") {
-					action, view, completion in
-					//self?.deleteMessage(at: indexPath)
-					completion(true)
+				let del = UIContextualAction(style: .destructive, title: nil) {
+					[weak self] action, view, completion in
+					
+					let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)?.chatMessage
+					self!.deleteMessage(message: message!)
+					
+					completion(false)
 				}
+				
+				let label = UILabel(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
+				label.text = VoipTexts.bubble_chat_dropDown_delete
+				label.textColor = .white
+				label.textAlignment = .center
+				
+				let image = SwiftUtil.imageWithLabel(label: label)
+				
+				del.image = UIImage(cgImage:image.cgImage!, scale: 1, orientation:.downMirrored)
 				return UISwipeActionsConfiguration(actions: [del])
 			}
-
+			
 			listConfiguration.showsSeparators = false
 			
 			let layout = UICollectionViewCompositionalLayout.list(using: listConfiguration)
-			layout.configuration.contentInsetsReference = .layoutMargins
 			let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-			collectionView.layoutMargins = .init(top: 100, left: 100, bottom: 100, right: 100)
 			return collectionView
 		} else {
 			let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
