@@ -26,25 +26,29 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			var listConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
 			
 			listConfiguration.leadingSwipeActionsConfigurationProvider = { indexPath in
-				let rep = UIContextualAction(style: .normal, title: nil) {
-					[weak self] action, view, completion in
+				
+				let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)?.chatMessage
+				if message != nil {
+					let rep = UIContextualAction(style: .normal, title: nil) {
+						[weak self] action, view, completion in
+						
+						self!.replyMessage(message: message!)
+						
+						completion(true)
+					}
+					let label = UILabel(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
+					label.text = VoipTexts.bubble_chat_dropDown_reply
+					label.textColor = .white
+					label.textAlignment = .center
 					
-					let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)?.chatMessage
-					self!.replyMessage(message: message!)
+					let image = SwiftUtil.imageWithLabel(label: label)
 					
-					completion(true)
+					rep.image = UIImage(cgImage:image.cgImage!, scale: 1, orientation:.downMirrored)
+					
+					return UISwipeActionsConfiguration(actions: [rep])
+				} else {
+					return nil
 				}
-				
-				let label = UILabel(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
-				label.text = VoipTexts.bubble_chat_dropDown_reply
-				label.textColor = .white
-				label.textAlignment = .center
-				
-				let image = SwiftUtil.imageWithLabel(label: label)
-				
-				rep.image = UIImage(cgImage:image.cgImage!, scale: 1, orientation:.downMirrored)
-				
-				return UISwipeActionsConfiguration(actions: [rep])
 			}
 			
 			listConfiguration.trailingSwipeActionsConfigurationProvider = { indexPath in
