@@ -143,6 +143,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		
 	//CheckBox for select item to delete
 		contentView.addSubview(deleteItemCheckBox)
+		deleteItemCheckBox.isHidden = true
 		
 	//Event Message
 		contentView.addSubview(eventMessageView)
@@ -569,6 +570,9 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		addMessageDelegate()
         imagesGridCollectionView.removeAll()
         imagesGridCollectionViewNil = 0
+		imageUser.isHidden = true
+		deleteItemCheckBox.isHidden = true
+		
 		
 		if event.chatMessage != nil {
 			contentBubble.isHidden = false
@@ -850,7 +854,11 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                             if(content.isFile){
                                 let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
                                 imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-                                collectionViewImagesGrid.insertItems(at: [indexPath])
+								if (imagesGridCollectionView.count == 1) {
+									collectionViewImagesGrid.reloadData()
+								} else {
+									collectionViewImagesGrid.insertItems(at: [indexPath])
+								}
                             }
 						}
 
@@ -957,6 +965,8 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		}
 		
 		if (editMode) {
+			
+			deleteItemCheckBox.isHidden = false
 			deleteItemCheckBox.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -18).isActive = true
 			deleteItemCheckBox.isSelected = selected
 			if (event.chatMessage != nil){
