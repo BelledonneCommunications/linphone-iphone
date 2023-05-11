@@ -1581,7 +1581,6 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-        [LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
         [self configureAccount];
     });
 }
