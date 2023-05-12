@@ -64,6 +64,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		
 		
 		collectionView.isUserInteractionEnabled = true
+		collectionView.keyboardDismissMode = .interactiveWithAccessory
 	}
 	
 	deinit {
