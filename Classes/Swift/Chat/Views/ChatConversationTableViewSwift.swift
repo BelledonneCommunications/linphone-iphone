@@ -10,8 +10,9 @@ import Foundation
 import linphonesw
 import DropDown
 import QuickLook
+import SwipeCellKit
 
-class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, QLPreviewControllerDelegate, QLPreviewControllerDataSource {
+class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, QLPreviewControllerDelegate, QLPreviewControllerDataSource, SwipeCollectionViewCellDelegate {
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationTableViewModel.sharedModel)
 	
@@ -22,65 +23,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
 	lazy var collectionView: UICollectionView = {
-		if #available(iOS 14.0, *) {
-			var listConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
-			
-			listConfiguration.leadingSwipeActionsConfigurationProvider = { indexPath in
-				
-				let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)?.chatMessage
-				if message != nil {
-					let rep = UIContextualAction(style: .normal, title: nil) {
-						[weak self] action, view, completion in
-						
-						self!.replyMessage(message: message!)
-						
-						completion(true)
-					}
-					let label = UILabel(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
-					label.text = VoipTexts.bubble_chat_dropDown_reply
-					label.textColor = .white
-					label.textAlignment = .center
-					
-					let image = SwiftUtil.imageWithLabel(label: label)
-					
-					rep.image = UIImage(cgImage:image.cgImage!, scale: 1, orientation:.downMirrored)
-					
-					return UISwipeActionsConfiguration(actions: [rep])
-				} else {
-					return nil
-				}
-			}
-			
-			listConfiguration.trailingSwipeActionsConfigurationProvider = { indexPath in
-				let del = UIContextualAction(style: .destructive, title: nil) {
-					[weak self] action, view, completion in
-					
-					let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)?.chatMessage
-					self!.deleteMessage(message: message!)
-					
-					completion(false)
-				}
-				
-				let label = UILabel(frame: CGRect(x: 0,y: 0,width: 80,height: 80))
-				label.text = VoipTexts.bubble_chat_dropDown_delete
-				label.textColor = .white
-				label.textAlignment = .center
-				
-				let image = SwiftUtil.imageWithLabel(label: label)
-				
-				del.image = UIImage(cgImage:image.cgImage!, scale: 1, orientation:.downMirrored)
-				return UISwipeActionsConfiguration(actions: [del])
-			}
-			
-			listConfiguration.showsSeparators = false
-			
-			let layout = UICollectionViewCompositionalLayout.list(using: listConfiguration)
-			let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-			return collectionView
-		} else {
-			let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-			return collectionView
-		}
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+		return collectionView
 	}()
 	
 	var menu: DropDown? = nil
@@ -147,12 +91,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		collectionView.delegate = self
 		collectionView.register(MultilineMessageCell.self, forCellWithReuseIdentifier: MultilineMessageCell.reuseId)
 		
-		if #available(iOS 14.0, *) {
-			collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-		} else {
-			(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-			(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
-		}
+		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+		(collectionView.collectionViewLayout as! UICollectionViewFlowLayout).minimumLineSpacing = 2
+		
 		collectionView.transform = CGAffineTransform(scaleX: 1, y: -1)
 	}
 	
@@ -243,7 +184,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	// MARK: - UICollectionViewDataSource -
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-
+		cell.delegate = self
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
 
 			if(ChatConversationTableViewModel.sharedModel.editModeOn.value! && indexPath.row >= ChatConversationTableViewModel.sharedModel.messageListSelected.value!.count){
@@ -294,6 +235,33 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return ChatConversationTableViewModel.sharedModel.getNBMessages()
 	}
 	
+	func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+		let message = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row)
+		if orientation == .left {
+			if message?.chatMessage != nil {
+				let replyAction = SwipeAction(style: .default, title: "Reply") { action, indexPath in
+					self.replyMessage(message: (message?.chatMessage)!)
+				}
+				return [replyAction]
+			} else {
+				return nil
+			}
+		} else {
+			let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+				self.deleteMessage(message: message!)
+			}
+			return [deleteAction]
+		}
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+		var options = SwipeOptions()
+		if orientation == .left {
+			options.expansionStyle = .selection
+		}
+		return options
+	}
+	
 	func isBasicChatRoom(_ room: OpaquePointer?) -> Bool {
 		if room == nil {
 			return true
@@ -340,7 +308,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			case VoipTexts.bubble_chat_dropDown_add_to_contact:
                 self!.addToContacts(message: event.chatMessage!)
 			case VoipTexts.bubble_chat_dropDown_delete:
-				self!.deleteMessage(message: event.chatMessage!)
+				self!.deleteMessage(message: event)
 			default:
 				Log.e("Error Default tapChooseMenuItemMessage ChatConversationTableViewSwift")
 			}
@@ -472,13 +440,18 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         }
     }
 	
-	func deleteMessage(message: ChatMessage){
-		if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
-			let indexDeletedMessage = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: message)
-			ChatConversationTableViewModel.sharedModel.messageListSelected.value!.remove(at: indexDeletedMessage)
-			ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+	func deleteMessage(message: EventLog){
+		let messageChat = message.chatMessage
+		if messageChat != nil {
+			if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+				let indexDeletedMessage = ChatConversationTableViewModel.sharedModel.getIndexMessage(message: messageChat!)
+				ChatConversationTableViewModel.sharedModel.messageListSelected.value!.remove(at: indexDeletedMessage)
+				ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+			}
+			messageChat?.chatRoom?.deleteMessage(message: messageChat!)
+		} else {
+			message.deleteFromDatabase()
 		}
-		message.chatRoom?.deleteMessage(message: message)
 		collectionView.reloadData()
 	}
     

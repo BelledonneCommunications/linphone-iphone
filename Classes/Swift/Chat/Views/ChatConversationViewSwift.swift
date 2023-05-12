@@ -188,7 +188,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		ChatConversationViewModel.sharedModel.indexPathVM.observe { index in
-			self.collectionViewMedia.insertItems(at: [IndexPath(row: (index!), section: 0)])
+			self.collectionViewMedia.reloadData()
 			if(ChatConversationViewModel.sharedModel.mediaCollectionView.count > 0){
 				self.messageView.sendButton.isEnabled = true
 			}
@@ -840,7 +840,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 								ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 							}
 							
-							collectionViewReply.insertItems(at: [indexPath])
+							collectionViewReply.reloadData()
 						}else if(content.isText){
 							replyContentTextSpacing.isHidden = false
 			 			}

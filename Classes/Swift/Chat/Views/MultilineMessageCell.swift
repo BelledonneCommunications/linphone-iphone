@@ -8,8 +8,9 @@
 import UIKit
 import Foundation
 import linphonesw
+import SwipeCellKit
 
-class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
+class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
 	static let reuseId = "MultilineMessageCellReuseId"
 	
 	let label: UILabel = UILabel(frame: .zero)
@@ -204,14 +205,14 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 		
 		contentBubble.addSubview(bubble)
 		bubble.translatesAutoresizingMaskIntoConstraints = false
-		bubble.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor, constant: 2).isActive = true
-		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
+		bubble.topAnchor.constraint(equalTo: contactDateLabel.bottomAnchor).isActive = true
+		bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
 		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor).isActive = true
 		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor).isActive = true
 		bubble.layer.cornerRadius = 10.0
 		
 		contentBubble.addSubview(chatRead)
-		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
+		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
 		chatRead.trailingAnchor.constraint(equalTo: deleteItemCheckBox.leadingAnchor, constant: -8).isActive = true
 		chatRead.size(w: 10, h: 10).done()
 		chatRead.isHidden = true
@@ -683,7 +684,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 									let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
                                     replyContentCollection.append(content)
 									replyCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-									collectionViewReply.insertItems(at: [indexPath])
+									collectionViewReply.reloadData()
 								}else if(content.isText){
 									replyContentTextSpacing.isHidden = false
 								}
@@ -778,7 +779,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
                         let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
                         //imagesGridCollectionView.append(nil)
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-                        collectionViewImagesGrid.insertItems(at: [indexPath])
+                        collectionViewImagesGrid.reloadData()
                         
                         collectionViewImagesGrid.isHidden = false
                         NSLayoutConstraint.activate(imagesGridConstraints)
@@ -827,7 +828,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							if(content.isFile){
 								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-								collectionViewImagesGrid.insertItems(at: [indexPath])
+								collectionViewImagesGrid.reloadData()
 							}
 							
 							collectionViewImagesGrid.isHidden = false
@@ -857,7 +858,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 								if (imagesGridCollectionView.count == 1) {
 									collectionViewImagesGrid.reloadData()
 								} else {
-									collectionViewImagesGrid.insertItems(at: [indexPath])
+									collectionViewImagesGrid.reloadData()
 								}
                             }
 						}
@@ -867,7 +868,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							if(content.isFile){
 								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-								collectionViewImagesGrid.insertItems(at: [indexPath])
+								collectionViewImagesGrid.reloadData()
 							}
 							
 							collectionViewImagesGrid.isHidden = false
@@ -894,7 +895,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 							if(content.isFile){
 								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-								collectionViewImagesGrid.insertItems(at: [indexPath])
+								collectionViewImagesGrid.reloadData()
 							}
 						}
 						
@@ -909,7 +910,7 @@ class MultilineMessageCell: UICollectionViewCell, UICollectionViewDataSource, UI
 						if(content.isFile && !content.isText){
 							let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 							imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-							collectionViewImagesGrid.insertItems(at: [indexPath])
+							collectionViewImagesGrid.reloadData()
 							
 							collectionViewImagesGrid.isHidden = false
 							NSLayoutConstraint.activate(imagesGridConstraints)
