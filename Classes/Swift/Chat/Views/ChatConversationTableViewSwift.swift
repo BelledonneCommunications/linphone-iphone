@@ -473,6 +473,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		return (previewItems[index] as QLPreviewItem?)!
 	}
 	
+	func previewControllerDidDismiss(_ controller: QLPreviewController) {
+		print("previewControllerWillDismisspreviewControllerWillDismiss \(afterPreviewIndex)")
+		collectionView.scrollToItem(at: IndexPath(item: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
+		afterPreviewIndex = -1
+	}
+	
 	func onImageClick(chatMessage: ChatMessage, index: Int) {
 
 		let state = chatMessage.state
