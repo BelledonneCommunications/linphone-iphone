@@ -299,6 +299,16 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>Title</key>
+			<string>Bundle Mode</string>
+			<key>Key</key>
+			<string>account_bundle_mode_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>Key</key>
 			<string>account_mandatory_change_password</string>
 			<key>Title</key>
