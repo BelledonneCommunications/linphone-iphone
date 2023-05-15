@@ -29,7 +29,7 @@ target 'linphone' do
 	pod 'SnapKit', '~> 5.6.0'
 	pod 'DropDown'
 	pod 'IQKeyboardManager'
-	pod 'SwipeCellKit'
+	pod 'SwipeCellKit' # https://github.com/SwipeCellKit/SwipeCellKit
 	all_pods
 
 end
