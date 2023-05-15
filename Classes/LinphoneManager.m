@@ -529,10 +529,12 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 				   }
 			   }
 			   
-			   if (!linphone_account_params_rtp_bundle_enabled(newAccountParams)) {
-				   linphone_account_params_enable_rtp_bundle(newAccountParams, true);
-				   linphone_account_set_params(account,newAccountParams);
-			   }
+			   	/*
+				if (!linphone_account_params_rtp_bundle_enabled(newAccountParams)) {
+					linphone_account_params_enable_rtp_bundle(newAccountParams, true);
+					linphone_account_set_params(account,newAccountParams);
+			   	}
+				*/
 			   
 			   LOGI(@"Setting the sip 'expires' parameters of existing account to 1 month (2629800 seconds)");
 			   linphone_account_params_set_expires(newAccountParams, 2629800);
