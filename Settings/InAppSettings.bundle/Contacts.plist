@@ -6,6 +6,16 @@
 	<array>
 		<dict>
 			<key>Title</key>
+			<string>Push Presence</string>
+			<key>Key</key>
+			<string>account_push_presence_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>LDAP configs</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>

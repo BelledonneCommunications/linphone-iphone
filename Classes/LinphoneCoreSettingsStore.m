@@ -155,7 +155,6 @@
 	// default values
 	{
 		[self setBool:NO forKey:@"account_pushnotification_preference"];
-		[self setBool:YES forKey:@"account_push_presence_preference"];
 		[self setBool:NO forKey:@"account_bundle_mode_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_username_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_domain_preference"];
@@ -186,9 +185,6 @@
 		{
 			BOOL pushEnabled = linphone_account_params_get_push_notification_allowed(accountParams);
 			[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
-			
-			BOOL pushPresenceEnabled = linphone_account_params_get_publish_enabled(accountParams);
-			[self setBool:pushPresenceEnabled forKey:@"account_push_presence_preference"];
 			
 			BOOL bundleModeEnabled = linphone_account_params_rtp_bundle_enabled(accountParams);
 			[self setBool:bundleModeEnabled forKey:@"account_bundle_mode_preference"];
@@ -528,8 +524,11 @@
 	}
 	
 	// contacts section
-	if (linphone_core_ldap_available(LC)) {
-		[self transformLdapToKeys:nil];
+	{
+		[self setInteger:[lm lpConfigIntForKey:@"account_push_presence_preference" withDefault:1] forKey:@"account_push_presence_preference"];
+		if (linphone_core_ldap_available(LC)) {
+			[self transformLdapToKeys:nil];
+		}
 	}
 
 	// advanced section
@@ -622,7 +621,6 @@
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
 		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
-		BOOL publishPrensence = [self boolForKey:@"account_push_presence_preference"];
 		BOOL bundlemode = [self boolForKey:@"account_bundle_mode_preference"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
 		BOOL use_prefix = [self boolForKey:@"apply_international_prefix_for_calls_and_chats"];
@@ -706,9 +704,6 @@
 		linphone_account_params_enable_rtp_bundle(newAccountParams, bundlemode);
 		linphone_account_params_set_push_notification_allowed(newAccountParams, pushnotification);
 		linphone_account_params_set_remote_push_notification_allowed(newAccountParams, pushnotification);
-		
-		linphone_account_params_set_publish_enabled(newAccountParams, publishPrensence);
-		[LinphoneManager.instance lpConfigSetBool:publishPrensence forKey:@"account_push_presence_preference"];
 		
 		linphone_account_params_set_register_enabled(newAccountParams, is_enabled);
 		linphone_account_params_set_avpf_mode(newAccountParams, use_avpf);
@@ -1094,7 +1089,13 @@
 		}
 
 		// contacts section
-
+		BOOL push_presence = [self boolForKey:@"account_push_presence_preference"];
+		if (push_presence) {
+			linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOnline);
+		} else {
+			linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOffline);
+		}
+		[lm lpConfigSetInt:push_presence forKey:@"account_push_presence_preference"];
 		
 		BOOL ldap_changed = NO;
 		for (NSString *key in self->changedDict) {

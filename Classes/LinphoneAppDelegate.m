@@ -64,7 +64,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if([LinphoneManager.instance lpConfigBoolForKey:@"account_push_presence_preference"]){
-		linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceBusy);
+		linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOffline);
 	}
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
 		[LinphoneManager.instance enterBackgroundMode];
