@@ -13,18 +13,18 @@ import SwipeCellKit
 class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
 	static let reuseId = "MultilineMessageCellReuseId"
 	
-	let label: UILabel = UILabel(frame: .zero)
-	let eventMessageView: UIView = UIView(frame: .zero)
-	let preContentViewBubble: UIView = UIView(frame: .zero)
-	let contentViewBubble: UIView = UIView(frame: .zero)
-	let contentMediaViewBubble: UIView = UIView(frame: .zero)
-	let contentBubble: UIView = UIView(frame: .zero)
-	let bubble: UIView = UIView(frame: .zero)
-	let imageUser = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.chat_conversation_avatar_small)
-	let contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
-	let chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
+	var label: UILabel = UILabel(frame: .zero)
+	var eventMessageView: UIView = UIView(frame: .zero)
+	var preContentViewBubble: UIView = UIView(frame: .zero)
+	var contentViewBubble: UIView = UIView(frame: .zero)
+	var contentMediaViewBubble: UIView = UIView(frame: .zero)
+	var contentBubble: UIView = UIView(frame: .zero)
+	var bubble: UIView = UIView(frame: .zero)
+	var imageUser = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.chat_conversation_avatar_small)
+	var contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
 
-	let labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
+	var labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
 	
 	var constraintEventMesssage : [NSLayoutConstraint] = []
 	var constraintEventMesssageLabel : [NSLayoutConstraint] = []
@@ -52,29 +52,29 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
 	
-	let eventMessageLineView: UIView = UIView(frame: .zero)
-	let eventMessageLabelView: UIView = UIView(frame: .zero)
-	let eventMessageLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var eventMessageLineView: UIView = UIView(frame: .zero)
+	var eventMessageLabelView: UIView = UIView(frame: .zero)
+	var eventMessageLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	
-	let forwardView = UIView()
-	let forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
-	let forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var forwardView = UIView()
+	var forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
+	var forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	
-	let replyView = UIView()
-	let replyIcon = UIImageView(image: UIImage(named: "menu_reply_default"))
-	let replyLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
-	let replyContent = UIView()
-	let replyColorContent = UIView()
-	let replyLabelContent = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var replyView = UIView()
+	var replyIcon = UIImageView(image: UIImage(named: "menu_reply_default"))
+	var replyLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var replyContent = UIView()
+	var replyColorContent = UIView()
+	var replyLabelContent = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	var stackViewReply = UIStackView()
-	let replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
-	let replyLabelContentTextSpacing = UIView()
-	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
-	let replyContentTextSpacing = UIView()
-	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
-	let replyContentForMeetingSpacing = UIView()
-	let replyMeetingSchedule = UIImageView()
-	let mediaSelectorReply  = UIView()
+	var replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
+	var replyLabelContentTextSpacing = UIView()
+	var replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	var replyContentTextSpacing = UIView()
+	var replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+	var replyContentForMeetingSpacing = UIView()
+	var replyMeetingSchedule = UIImageView()
+	var mediaSelectorReply  = UIView()
 	
 	var collectionViewReply: UICollectionView = {
 		let collection_view_reply_height = 60.0
@@ -112,16 +112,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var downloadContentCollection: [DownloadMessageCell?] = []
 	var uploadContentCollection: [UploadMessageCell?] = []
 	
-	let imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
-	let imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
-	let imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
+	var imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
+	var imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
+	var imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
 	
-	let meetingView = UIView()
+	var meetingView = UIView()
 	
-	let recordingView = UIView()
+	var recordingView = UIView()
 	
-	let ephemeralIcon = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
-	let ephemeralTimerLabel = StyledLabel(VoipTheme.chat_conversation_ephemeral_timer)
+	var ephemeralIcon = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
+	var ephemeralTimerLabel = StyledLabel(VoipTheme.chat_conversation_ephemeral_timer)
 	var ephemeralTimer : Timer? = nil
 	
 	
@@ -141,7 +141,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		
+		initCell()
+	}
+	
+	func initCell(){
 	//CheckBox for select item to delete
 		contentView.addSubview(deleteItemCheckBox)
 		deleteItemCheckBox.isHidden = true
@@ -563,6 +566,121 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	override func prepareForReuse() {
 		super.prepareForReuse()
+		
+		deleteItemCheckBox.removeFromSuperview()
+		eventMessageView.removeFromSuperview()
+		contactDateLabel.removeFromSuperview()
+		contentBubble.removeFromSuperview()
+		
+		label = UILabel(frame: .zero)
+		eventMessageView = UIView(frame: .zero)
+		preContentViewBubble = UIView(frame: .zero)
+		contentViewBubble = UIView(frame: .zero)
+		contentMediaViewBubble = UIView(frame: .zero)
+		contentBubble = UIView(frame: .zero)
+		bubble = UIView(frame: .zero)
+		imageUser = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.chat_conversation_avatar_small)
+		contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+		chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
+		labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
+		constraintEventMesssage = []
+		constraintEventMesssageLabel = []
+		constraintBubble = []
+		constraintLeadingBubble = nil
+		constraintTrailingBubble = nil
+		constraintDateLeadingBubble = nil
+		constraintDateTrailingBubble = nil
+		constraintDateBubble = nil
+		constraintDateBubbleHidden = nil
+		preContentViewBubbleConstraints = []
+		preContentViewBubbleConstraintsHidden = []
+		contentViewBubbleConstraints = []
+		contentMediaViewBubbleConstraints = []
+		forwardConstraints = []
+		replyConstraints = []
+		labelConstraints = []
+		labelTopConstraints = []
+		labelHiddenConstraints = []
+		imagesGridConstraints = []
+		imageConstraints = []
+		videoConstraints = []
+		playButtonConstraints = []
+		recordingConstraints = []
+		recordingWaveConstraints = []
+		meetingConstraints = []
+		eventMessageLineView = UIView(frame: .zero)
+		eventMessageLabelView = UIView(frame: .zero)
+		eventMessageLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+		forwardView = UIView()
+		forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
+		forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+		replyView = UIView()
+		replyIcon = UIImageView(image: UIImage(named: "menu_reply_default"))
+		replyLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+		replyContent = UIView()
+		replyColorContent = UIView()
+		replyLabelContent = StyledLabel(VoipTheme.chat_conversation_forward_label)
+		stackViewReply = UIStackView()
+		replyLabelTextView = StyledLabel(VoipTheme.chat_conversation_reply_label)
+		replyLabelContentTextSpacing = UIView()
+		replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+		replyContentTextSpacing = UIView()
+		replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
+		replyContentForMeetingSpacing = UIView()
+		replyMeetingSchedule = UIImageView()
+		mediaSelectorReply  = UIView()
+		replyCollectionView = []
+		replyContentCollection = []
+		imagesGridCollectionView = []
+		imagesGridCollectionViewNil = 0
+		downloadContentCollection = []
+		uploadContentCollection = []
+		imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
+		imageVideoViewBubble = UIImageView(image: UIImage(named: "file_video_default"))
+		imagePlayViewBubble = UIImageView(image: UIImage(named: "vr_play"))
+		meetingView = UIView()
+		recordingView = UIView()
+		ephemeralIcon = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
+		ephemeralTimerLabel = StyledLabel(VoipTheme.chat_conversation_ephemeral_timer)
+		ephemeralTimer = nil
+		isPlayingVoiceRecording = false
+		chatMessage = nil
+		chatMessageDelegate = nil
+		indexTransferProgress = -1
+		indexUploadTransferProgress = 0
+		selfIndexMessage = -1
+		deleteItemCheckBox = StyledCheckBox()
+		matches = []
+		
+		collectionViewReply = {
+			let collection_view_reply_height = 60.0
+			let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+			layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
+
+			layout.scrollDirection = .horizontal
+			layout.minimumLineSpacing = 4
+			layout.minimumInteritemSpacing = 4
+
+			let collectionViewReply = UICollectionView(frame: .zero, collectionViewLayout: layout)
+			collectionViewReply.translatesAutoresizingMaskIntoConstraints = false
+			collectionViewReply.backgroundColor = .clear
+			return collectionViewReply
+		}()
+		collectionViewImagesGrid = {
+			let collection_view_reply_height = 138.0
+			let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+			layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
+			layout.scrollDirection = .vertical
+			layout.minimumLineSpacing = 4
+			layout.minimumInteritemSpacing = 4
+
+			let collectionViewImagesGrid = DynamicHeightCollectionView(frame: .zero, collectionViewLayout: layout)
+			collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
+			collectionViewImagesGrid.backgroundColor = .clear
+			return collectionViewImagesGrid
+		}()
+		
+		initCell()
 	}
 	
 	func configure(event: EventLog, selfIndexPathConfigure: IndexPath, editMode: Bool, selected: Bool) {
@@ -681,7 +799,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							replyContentTextSpacing.isHidden = true
 							ChatMessage.getSwiftObject(cObject: (event.chatMessage!.replyMessage?.getCobject)!).contents.forEach({ content in
 								if(content.isFile){
-									let indexPath = IndexPath(row: replyCollectionView.count, section: 0)
                                     replyContentCollection.append(content)
 									replyCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 									collectionViewReply.reloadData()
@@ -776,8 +893,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				event.chatMessage!.contents.forEach { content in
 					if (content.isFileTransfer && content.name != "") {
                     
-                        let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
-                        //imagesGridCollectionView.append(nil)
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
                         collectionViewImagesGrid.reloadData()
                         
@@ -800,6 +915,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                             imagesGridCollectionView.append(nil)
                             imagesGridCollectionViewNil += 1
                         }
+						
+						label.font = label.font.withSize(17)
                         
                         if (content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
                             var onlyEmojis = true
@@ -826,7 +943,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
-								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 								collectionViewImagesGrid.reloadData()
 							}
@@ -841,19 +957,18 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 								var plainFile = content.exportPlainFile()
 								if let imageMessage = UIImage(named: plainFile){
-                                    imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 								}
 								
 								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 								plainFile = ""
 							}else{
 								if let imageMessage = UIImage(named: content.filePath){
-                                    imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 								}
 							}
                             
                             if(content.isFile){
-                                let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
                                 imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 								if (imagesGridCollectionView.count == 1) {
 									collectionViewImagesGrid.reloadData()
@@ -866,7 +981,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					}else if content.type == "video"{
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
-								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 								collectionViewImagesGrid.reloadData()
 							}
@@ -893,7 +1007,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							}
 							
 							if(content.isFile){
-								let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 								collectionViewImagesGrid.reloadData()
 							}
@@ -908,7 +1021,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 					}else{
 						if(content.isFile && !content.isText){
-							let indexPath = IndexPath(row: imagesGridCollectionView.count, section: 0)
 							imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 							collectionViewImagesGrid.reloadData()
 							

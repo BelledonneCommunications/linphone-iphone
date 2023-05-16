@@ -46,9 +46,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.collectionView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.collectionView.reloadData()
 		}
-		
-		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
         
         ChatConversationTableViewModel.sharedModel.refreshIndexPath.observe { index in
             self.collectionView.reloadData()
@@ -69,10 +68,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	deinit {
 		 NotificationCenter.default.removeObserver(self)
-	}
-
-	@objc func rotated() {
-		collectionView.reloadData()
 	}
 	
 	func initView(){
@@ -223,12 +218,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
-		if cell.isPlayingVoiceRecording {
+		let customCell = cell as! MultilineMessageCell
+		if customCell.isPlayingVoiceRecording {
 			AudioPlayer.stopSharedPlayer()
 		}
-		if cell.ephemeralTimer != nil {
-			cell.ephemeralTimer?.invalidate()
+		if customCell.ephemeralTimer != nil {
+			customCell.ephemeralTimer?.invalidate()
 		}
 	}
 	
@@ -475,7 +470,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}
 	
 	func previewControllerDidDismiss(_ controller: QLPreviewController) {
-		print("previewControllerWillDismisspreviewControllerWillDismiss \(afterPreviewIndex)")
 		collectionView.scrollToItem(at: IndexPath(item: afterPreviewIndex, section: 0), at: .centeredVertically, animated: false)
 		afterPreviewIndex = -1
 	}
