@@ -525,7 +525,7 @@
 	
 	// contacts section
 	{
-		[self setInteger:[lm lpConfigIntForKey:@"account_push_presence_preference" withDefault:1] forKey:@"account_push_presence_preference"];
+		[self setInteger:[lm lpConfigBoolForKey:@"account_push_presence_preference" withDefault:YES] forKey:@"account_push_presence_preference"];
 		if (linphone_core_ldap_available(LC)) {
 			[self transformLdapToKeys:nil];
 		}
