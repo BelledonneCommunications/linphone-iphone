@@ -290,20 +290,20 @@ class ChatConversationViewModel: ControlsViewModel {
 	}
 	
 	func getImageFromFileName(_ fileName: String?, forReplyBubble forReplyBubbble: Bool) -> UIImage? {
-		let `extension` = fileName?.lowercased().components(separatedBy: ".").last
+		let extensionFile = fileName?.lowercased().components(separatedBy: ".").last
 		var image: UIImage?
 		var text = fileName
 		if fileName?.contains("voice-recording") ?? false {
 			image = UIImage(named: "file_voice_default")
 			text = recordingDuration(LinphoneManager.validFilePath(fileName))
 		} else {
-			if `extension` == "pdf" {
+			if extensionFile == "pdf" {
 				image = UIImage(named: "file_pdf_default")
-			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(`extension` ?? "") {
+			} else if ["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "") {
 				image = UIImage(named: "file_picture_default")
-			} else if ["mkv", "avi", "mov", "mp4"].contains(`extension` ?? "") {
+			} else if ["mkv", "avi", "mov", "mp4"].contains(extensionFile ?? "") {
 				image = UIImage(named: "file_video_default")
-			} else if ["wav", "au", "m4a"].contains(`extension` ?? "") {
+			} else if ["wav", "au", "m4a"].contains(extensionFile ?? "") {
 				image = UIImage(named: "file_audio_default")
 			} else {
 				image = UIImage(named: "file_default")

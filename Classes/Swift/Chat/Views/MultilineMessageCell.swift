@@ -892,7 +892,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                 
 				event.chatMessage!.contents.forEach { content in
 					if (content.isFileTransfer && content.name != "") {
-                    
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
                         collectionViewImagesGrid.reloadData()
                         
@@ -940,7 +939,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						label.isHidden = false
 						
 					}else if content.type == "image"{
-						
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
@@ -1021,13 +1019,36 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 					}else{
 						if(content.isFile && !content.isText){
-							imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-							collectionViewImagesGrid.reloadData()
-							
-							collectionViewImagesGrid.isHidden = false
-							NSLayoutConstraint.activate(imagesGridConstraints)
+							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+								var plainFile = content.exportPlainFile()
+								if let imageMessage = UIImage(named: plainFile){
+									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+								} else if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: plainFile){
+									imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+								} else {
+									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+									collectionViewImagesGrid.reloadData()
+									
+									collectionViewImagesGrid.isHidden = false
+									NSLayoutConstraint.activate(imagesGridConstraints)
+								}
+								
+								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+								plainFile = ""
+							}else{
+								if let imageMessage = UIImage(named: content.filePath){
+									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+								} else if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+									imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+								} else {
+									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+									collectionViewImagesGrid.reloadData()
+									
+									collectionViewImagesGrid.isHidden = false
+									NSLayoutConstraint.activate(imagesGridConstraints)
+								}
+							}
 						}
-						
 					}}
 				if imagesGridCollectionView.count > 0 {
 					self.collectionViewImagesGrid.layoutIfNeeded()
