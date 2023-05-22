@@ -1747,7 +1747,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		let indexOfPreviousEvent = indexPath.row + 1
 		previousEvent = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row+1)
 		if (indexOfPreviousEvent > -1 && indexOfPreviousEvent < ChatConversationTableViewModel.sharedModel.getNBMessages()) {
-			if ((previousEvent?.type.rawValue)! != LinphoneEventLogTypeConferenceChatMessage.rawValue) {
+			if (previousEvent?.type != nil && (previousEvent?.type.rawValue)! != LinphoneEventLogTypeConferenceChatMessage.rawValue) {
 				return true
 			}
 		}
