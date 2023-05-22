@@ -473,16 +473,20 @@ class ChatConversationViewModel: ControlsViewModel {
 		}
 		return UIImage(named: "chat_error")!
 	}
-
+	
 	func createThumbnailOfVideoFromFileURL(videoURL: String) -> UIImage? {
-		let asset = AVAsset(url: URL(string: videoURL)!)
-		let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-		assetImgGenerate.appliesPreferredTrackTransform = true
-		do {
-			let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
-			let thumbnail = UIImage(cgImage: img)
-			return thumbnail
-		} catch _{
+		if let urlVideo = URL(string: videoURL){
+			let asset = AVAsset(url: urlVideo)
+			let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+			assetImgGenerate.appliesPreferredTrackTransform = true
+			do {
+				let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
+				let thumbnail = UIImage(cgImage: img)
+				return thumbnail
+			} catch _{
+				return nil
+			}
+		} else {
 			return nil
 		}
 	}

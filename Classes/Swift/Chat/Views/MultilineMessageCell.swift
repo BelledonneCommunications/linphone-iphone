@@ -1243,14 +1243,22 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
 	
 	func createThumbnailOfVideoFromFileURL(videoURL: String) -> UIImage? {
-		let asset = AVAsset(url: URL(string: "file://" + videoURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!)
-		let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-		assetImgGenerate.appliesPreferredTrackTransform = true
-		do {
-			let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
-			let thumbnail = UIImage(cgImage: img)
-			return thumbnail
-		} catch _{
+		if let urlEncoded = videoURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+			if let urlVideo = URL(string: "file://" + urlEncoded){
+				let asset = AVAsset(url: urlVideo)
+				let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+				assetImgGenerate.appliesPreferredTrackTransform = true
+				do {
+					let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
+					let thumbnail = UIImage(cgImage: img)
+					return thumbnail
+				} catch _{
+					return nil
+				}
+			} else {
+				return nil
+			}
+		} else {
 			return nil
 		}
 	}
