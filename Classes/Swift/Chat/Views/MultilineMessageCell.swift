@@ -1619,7 +1619,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	func file_transfer_progress_indication_recv(message: ChatMessage, content: Content, offset: Int, total: Int) {
 		let p =  Float(offset) / Float(total)
-		
 		if ((imagesGridCollectionView.count) > 0){
 			if  !message.isOutgoing {
 				if (indexTransferProgress == -1) {
@@ -1630,13 +1629,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 					}
 					
-					if downloadContentCollection[indexTransferProgress] != nil {
+					if (indexTransferProgress > -1 && downloadContentCollection[indexTransferProgress] != nil) {
 						downloadContentCollection[indexTransferProgress]!.downloadButtonLabel.isHidden = true
 						downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
 					}
 				}
 				DispatchQueue.main.async(execute: { [self] in
-					if (offset == total) {
+					if (indexTransferProgress > -1 && offset == total) {
 						downloadContentCollection[indexTransferProgress] = nil
 						imagesGridCollectionView[indexTransferProgress] = getImageFrom(content, forReplyBubble: false)!
 						
@@ -1691,7 +1690,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							indexTransferProgress = -1
 						}
 					} else {
-						if downloadContentCollection[indexTransferProgress] != nil {
+						if (indexTransferProgress > -1 && downloadContentCollection[indexTransferProgress] != nil) {
 							downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
 						}
 					}
