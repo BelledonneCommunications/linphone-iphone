@@ -131,7 +131,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var chatMessageDelegate: ChatMessageDelegate? = nil
 	
 	var indexTransferProgress: Int = -1
-	var indexUploadTransferProgress: Int = 0
+	var indexUploadTransferProgress: Int = -1
 	
 	var selfIndexMessage: Int = -1
 	
@@ -572,6 +572,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		contactDateLabel.removeFromSuperview()
 		contentBubble.removeFromSuperview()
 		
+		if chatMessageDelegate != nil {
+			chatMessage?.removeDelegate(delegate: chatMessageDelegate!)
+		}
+		
 		label = UILabel(frame: .zero)
 		eventMessageView = UIView(frame: .zero)
 		preContentViewBubble = UIView(frame: .zero)
@@ -647,7 +651,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		chatMessage = nil
 		chatMessageDelegate = nil
 		indexTransferProgress = -1
-		indexUploadTransferProgress = 0
+		indexUploadTransferProgress = -1
 		selfIndexMessage = -1
 		deleteItemCheckBox = StyledCheckBox()
 		matches = []
@@ -897,8 +901,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                         
                         collectionViewImagesGrid.isHidden = false
                         NSLayoutConstraint.activate(imagesGridConstraints)
-                         
                     }
+					
+					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true) {
+						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+						
+						collectionViewImagesGrid.isHidden = false
+						NSLayoutConstraint.activate(imagesGridConstraints)
+					}
                     
 					if content.type == "text"{
 						//label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -968,11 +978,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                             
                             if(content.isFile){
                                 imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-								if (imagesGridCollectionView.count == 1) {
-									collectionViewImagesGrid.reloadData()
-								} else {
-									collectionViewImagesGrid.reloadData()
-								}
+								collectionViewImagesGrid.reloadData()
                             }
 						}
 
@@ -1397,7 +1403,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
             if ((indexPathWithoutNil <= (imagesGridCollectionView.count) - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNil].isFile == true || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
 				let viewCell: UIView = UIView(frame: cell.contentView.frame)
 				cell.addSubview(viewCell)
-                if (chatMessage?.contents[indexPathWithoutNil].filePath == "") {
+				if (chatMessage?.isOutgoing == false && (chatMessage?.contents[indexPathWithoutNil].filePath == "" || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
 					let  downloadView = DownloadMessageCell()
 					downloadContentCollection.append(downloadView)
 					downloadView.content = chatMessage?.contents[indexPathWithoutNil]
@@ -1422,7 +1428,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				} else {
 					downloadContentCollection.append(nil)
 					
-					
 					let myImageView = UIImageView()
 					
 					if(chatMessage?.contents[indexPathWithoutNil].type == "image" || chatMessage?.contents[indexPathWithoutNil].type == "video"){
@@ -1436,7 +1441,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							})
 						} else {
 							DispatchQueue.global().async { [weak self] in
-                                if let image = self!.getImageFrom(self!.chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false) {
+								if let image = self!.getImageFrom(self!.chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false) {
 									DispatchQueue.main.async {
 										myImageView.image = image
 									}
@@ -1454,30 +1459,32 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					myImageView.contentMode = .scaleAspectFill
 					myImageView.clipsToBounds = true
 					
-					
-					let  uploadView = UploadMessageCell()
-					uploadContentCollection.append(uploadView)
-					uploadView.content = chatMessage?.contents[indexPathWithoutNil]
-					uploadView.size(w: 138, h: 138).done()
-					
-					if(chatMessage?.contents[indexPathWithoutNil].type == "video"){
-						var imagePlay = UIImage()
-						if #available(iOS 13.0, *) {
-							imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
-						} else {
-							imagePlay = UIImage(named: "vr_play")!
+					if (chatMessage?.isOutgoing == true && (chatMessage?.contents[indexPathWithoutNil].filePath == "" || chatMessage?.isFileTransferInProgress == true)){
+						let  uploadView = UploadMessageCell()
+						uploadContentCollection.append(uploadView)
+						uploadView.content = chatMessage?.contents[indexPathWithoutNil]
+						uploadView.size(w: 138, h: 138).done()
+						
+						if(chatMessage?.contents[indexPathWithoutNil].type == "video"){
+							var imagePlay = UIImage()
+							if #available(iOS 13.0, *) {
+								imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+							} else {
+								imagePlay = UIImage(named: "vr_play")!
+							}
+							let myImagePlayView = UIImageView(image: imagePlay)
+							viewCell.addSubview(myImagePlayView)
+							myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+							myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
 						}
-						let myImagePlayView = UIImageView(image: imagePlay)
-						viewCell.addSubview(myImagePlayView)
-						myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
-						myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+						
+						viewCell.onClick {
+							ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
+						}
+						
+						viewCell.addSubview(uploadView)
+
 					}
-					
-					viewCell.onClick {
-						ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
-					}
-					
-					viewCell.addSubview(uploadView)
 				}
 			}
 			
@@ -1503,6 +1510,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			image = createThumbnailOfVideoFromFileURL(videoURL: filePath)
 		} else if type == "image" {
 			image = UIImage(named: filePath)
+		} else {
+			let extensionFile = filePath.lowercased().components(separatedBy: ".").last
+			if (["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "")){
+				image = UIImage(named: filePath)
+			} else if (["mkv", "avi", "mov", "mp4"].contains(extensionFile ?? "")){
+				image = createThumbnailOfVideoFromFileURL(videoURL: filePath)
+			}
 		}
 		
 		if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
@@ -1704,7 +1718,15 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					}
 				})
 			} else {
-				if((imagesGridCollectionView.count) > 1){
+				if((imagesGridCollectionView.count) > 0){
+					if (indexUploadTransferProgress == -1) {
+						for indexItem in 0...(imagesGridCollectionView.count) - 1 {
+							if chatMessage?.contents[indexItem].filePath == content.filePath {
+								indexUploadTransferProgress = indexItem - imagesGridCollectionViewNil
+								break
+							}
+						}
+					}
                     DispatchQueue.main.async(execute: { [self] in
                         if (offset == total) {
 							if(indexUploadTransferProgress >= 0){
@@ -1713,10 +1735,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							if indexUploadTransferProgress <= (imagesGridCollectionView.count) {
 								indexUploadTransferProgress += 1
 							}else{
-								indexUploadTransferProgress = 0
+								indexUploadTransferProgress = -1
 							}
                         } else {
-							if((imagesGridCollectionView.count) > 1){
+							if((imagesGridCollectionView.count) > 0){
 						  		uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
 								uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
 					  		}
