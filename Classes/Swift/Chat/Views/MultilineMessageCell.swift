@@ -48,6 +48,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var imageConstraints: [NSLayoutConstraint] = []
 	var videoConstraints: [NSLayoutConstraint] = []
 	var playButtonConstraints: [NSLayoutConstraint] = []
+	var progressBarVideoConstraints: [NSLayoutConstraint] = []
+	var progressBarImageConstraints: [NSLayoutConstraint] = []
 	var recordingConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
@@ -138,6 +140,12 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var deleteItemCheckBox = StyledCheckBox()
 	
 	var matches : [NSTextCheckingResult] = []
+	
+	var circularProgressBarVideoView = CircularProgressBarView()
+	var circularProgressBarImageView = CircularProgressBarView()
+	var circularProgressBarVideoLabel = StyledLabel(VoipTheme.chat_conversation_download_progress_text)
+	var circularProgressBarImageLabel = StyledLabel(VoipTheme.chat_conversation_download_progress_text)
+	var fromValue : Float = 0.0
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -365,6 +373,19 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			imageViewBubble.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			imageViewBubble.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
 		]
+		
+		imageViewBubble.addSubview(circularProgressBarImageView)
+		progressBarImageConstraints = [
+			circularProgressBarImageView.centerXAnchor.constraint(equalTo: imageViewBubble.centerXAnchor),
+			circularProgressBarImageView.centerYAnchor.constraint(equalTo: imageViewBubble.centerYAnchor)
+		]
+		
+		circularProgressBarImageView.size(w: 138, h: 138).done()
+		circularProgressBarImageLabel.size(w: 30, h: 30).done()
+		circularProgressBarImageLabel.text = "0%"
+		circularProgressBarImageView.addSubview(circularProgressBarImageLabel)
+		circularProgressBarImageView.isHidden = true
+		
 		imageViewBubble.isHidden = true
 		
 	//Video
@@ -386,6 +407,18 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			imagePlayViewBubble.centerYAnchor.constraint(equalTo: imageVideoViewBubble.centerYAnchor)
 		]
 		imagePlayViewBubble.size(w: 40, h: 40).done()
+		
+		imageVideoViewBubble.addSubview(circularProgressBarVideoView)
+		progressBarVideoConstraints = [
+			circularProgressBarVideoView.centerXAnchor.constraint(equalTo: imageVideoViewBubble.centerXAnchor),
+			circularProgressBarVideoView.centerYAnchor.constraint(equalTo: imageVideoViewBubble.centerYAnchor)
+		]
+		
+		circularProgressBarVideoView.size(w: 138, h: 138).done()
+		circularProgressBarVideoLabel.size(w: 30, h: 30).done()
+		circularProgressBarVideoLabel.text = "0%"
+		circularProgressBarVideoView.addSubview(circularProgressBarVideoLabel)
+		circularProgressBarVideoView.isHidden = true
 		
 		imageVideoViewBubble.isHidden = true
 		
@@ -609,6 +642,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		imageConstraints = []
 		videoConstraints = []
 		playButtonConstraints = []
+		progressBarVideoConstraints = []
+		progressBarImageConstraints = []
 		recordingConstraints = []
 		recordingWaveConstraints = []
 		meetingConstraints = []
@@ -655,6 +690,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		selfIndexMessage = -1
 		deleteItemCheckBox = StyledCheckBox()
 		matches = []
+		circularProgressBarVideoView = CircularProgressBarView()
+		circularProgressBarImageView = CircularProgressBarView()
+		circularProgressBarVideoLabel = StyledLabel(VoipTheme.chat_conversation_download_progress_text)
+		circularProgressBarImageLabel = StyledLabel(VoipTheme.chat_conversation_download_progress_text)
+		fromValue = 0.0
 		
 		collectionViewReply = {
 			let collection_view_reply_height = 60.0
@@ -859,6 +899,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				NSLayoutConstraint.deactivate(imageConstraints)
 				NSLayoutConstraint.deactivate(videoConstraints)
 				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(progressBarVideoConstraints)
+				NSLayoutConstraint.deactivate(progressBarImageConstraints)
 				NSLayoutConstraint.deactivate(recordingConstraints)
 				NSLayoutConstraint.deactivate(recordingWaveConstraints)
 				NSLayoutConstraint.activate(meetingConstraints)
@@ -880,6 +922,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				NSLayoutConstraint.deactivate(imageConstraints)
 				NSLayoutConstraint.deactivate(videoConstraints)
 				NSLayoutConstraint.deactivate(playButtonConstraints)
+				NSLayoutConstraint.deactivate(progressBarVideoConstraints)
+				NSLayoutConstraint.deactivate(progressBarImageConstraints)
 				NSLayoutConstraint.deactivate(recordingConstraints)
 				NSLayoutConstraint.deactivate(recordingWaveConstraints)
 				NSLayoutConstraint.deactivate(meetingConstraints)
@@ -904,10 +948,90 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                     }
 					
 					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true) {
-						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+						var filePath = ""
+						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+							filePath = content.exportPlainFile()
+						}else {
+							filePath = content.filePath
+						}
+						let name = content.name
+						if filePath == "" {
+							filePath = LinphoneManager.validFilePath(name)
+						}
 						
-						collectionViewImagesGrid.isHidden = false
-						NSLayoutConstraint.activate(imagesGridConstraints)
+						let extensionFile = filePath.lowercased().components(separatedBy: ".").last
+						if (["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "")){
+							if imagesGridCollectionView.count > 1 {
+								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+								collectionViewImagesGrid.reloadData()
+								
+								collectionViewImagesGrid.isHidden = false
+								NSLayoutConstraint.activate(imagesGridConstraints)
+								imageViewBubble.image = nil
+								NSLayoutConstraint.deactivate(imageConstraints)
+								imageViewBubble.isHidden = true
+								
+							}else{
+								if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+									var plainFile = content.exportPlainFile()
+									if let imageMessage = UIImage(named: plainFile){
+										self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+									}
+									
+									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+									plainFile = ""
+								}else{
+									if let imageMessage = UIImage(named: content.filePath){
+										self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+									}
+								}
+								
+								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+								collectionViewImagesGrid.reloadData()
+							}
+						} else if (["mkv", "avi", "mov", "mp4"].contains(extensionFile ?? "")){
+							if imagesGridCollectionView.count > 1 {
+								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+								collectionViewImagesGrid.reloadData()
+								
+								collectionViewImagesGrid.isHidden = false
+								NSLayoutConstraint.activate(imagesGridConstraints)
+								imageVideoViewBubble.image = nil
+								NSLayoutConstraint.deactivate(imageConstraints)
+								imageVideoViewBubble.isHidden = true
+								
+							}else{
+								if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+									var plainFile = content.exportPlainFile()
+									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: plainFile){
+										imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+									}
+									
+									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+									plainFile = ""
+								}else{
+									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+										imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+									}
+								}
+								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+								collectionViewImagesGrid.reloadData()
+							}
+							
+							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePath)
+								filePath = ""
+							}
+						} else {
+							imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+						   	collectionViewImagesGrid.reloadData()
+						   	
+						   	collectionViewImagesGrid.isHidden = false
+						   	NSLayoutConstraint.activate(imagesGridConstraints)
+						   	imageViewBubble.image = nil
+						   	NSLayoutConstraint.deactivate(imageConstraints)
+						   	imageViewBubble.isHidden = true
+						}
 					}
                     
 					if content.type == "text"{
@@ -1017,7 +1141,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 						
 					}else if content.type == "audio"{
-						
 						recordingView.subviews.forEach({ view in
 							view.removeFromSuperview()
 						})
@@ -1025,35 +1148,90 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 					}else{
 						if(content.isFile && !content.isText){
+							var filePath = ""
 							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-								var plainFile = content.exportPlainFile()
-								if let imageMessage = UIImage(named: plainFile){
-									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
-								} else if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: plainFile){
-									imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
-								} else {
+								filePath = content.exportPlainFile()
+							}else {
+								filePath = content.filePath
+							}
+							let name = content.name
+							if filePath == "" {
+								filePath = LinphoneManager.validFilePath(name)
+							}
+							
+							let extensionFile = filePath.lowercased().components(separatedBy: ".").last
+							if (["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "")){
+								if imagesGridCollectionView.count > 1 {
 									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 									collectionViewImagesGrid.reloadData()
 									
 									collectionViewImagesGrid.isHidden = false
 									NSLayoutConstraint.activate(imagesGridConstraints)
+									imageViewBubble.image = nil
+									NSLayoutConstraint.deactivate(imageConstraints)
+									imageViewBubble.isHidden = true
+									
+								}else{
+									if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+										var plainFile = content.exportPlainFile()
+										if let imageMessage = UIImage(named: plainFile){
+											self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+										}
+										
+										ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+										plainFile = ""
+									}else{
+										if let imageMessage = UIImage(named: content.filePath){
+											self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+										}
+									}
+									
+									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+									collectionViewImagesGrid.reloadData()
+								}
+							} else if (["mkv", "avi", "mov", "mp4"].contains(extensionFile ?? "")){
+								if imagesGridCollectionView.count > 1 {
+									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+									collectionViewImagesGrid.reloadData()
+									
+									collectionViewImagesGrid.isHidden = false
+									NSLayoutConstraint.activate(imagesGridConstraints)
+									imageVideoViewBubble.image = nil
+									NSLayoutConstraint.deactivate(imageConstraints)
+									imageVideoViewBubble.isHidden = true
+									
+								}else{
+									if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+										var plainFile = content.exportPlainFile()
+										if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: plainFile){
+											imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+										}
+										
+										ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+										plainFile = ""
+									}else{
+										if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+											imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+										}
+									}
+									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+									collectionViewImagesGrid.reloadData()
 								}
 								
-								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
-								plainFile = ""
-							}else{
-								if let imageMessage = UIImage(named: content.filePath){
-									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
-								} else if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
-									imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
-								} else {
-									imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-									collectionViewImagesGrid.reloadData()
-									
-									collectionViewImagesGrid.isHidden = false
-									NSLayoutConstraint.activate(imagesGridConstraints)
+								if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePath)
+									filePath = ""
 								}
-							}
+							} else {
+								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+								collectionViewImagesGrid.reloadData()
+								
+								collectionViewImagesGrid.isHidden = false
+								NSLayoutConstraint.activate(imagesGridConstraints)
+								imageViewBubble.image = nil
+								NSLayoutConstraint.deactivate(imageConstraints)
+								imageViewBubble.isHidden = true
+						 	}
 						}
 					}}
 				if imagesGridCollectionView.count > 0 {
@@ -1430,28 +1608,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					
 					let myImageView = UIImageView()
 					
-					if(chatMessage?.contents[indexPathWithoutNil].type == "image" || chatMessage?.contents[indexPathWithoutNil].type == "video"){
-						if #available(iOS 15.0, *) {
-							myImageView.image = UIImage(named: "file_picture_default")
-							let imageAsync: UIImage = getImageFrom(chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false)!
-							imageAsync.prepareForDisplay(completionHandler: { imageAsyncResult in
-								DispatchQueue.main.async {
-									myImageView.image = imageAsyncResult
-								}
-							})
-						} else {
-							DispatchQueue.global().async { [weak self] in
-								if let image = self!.getImageFrom(self!.chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false) {
-									DispatchQueue.main.async {
-										myImageView.image = image
-									}
-								}
-							}
-						}
-						
-					}else{
-						myImageView.image = getImageFrom(chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false)!
-					}
+					
+				   	myImageView.image = getImageFrom(chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false)
 					
 					myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
 					viewCell.addSubview(myImageView)
@@ -1478,12 +1636,25 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
 						}
 						
-						viewCell.onClick {
-							ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
-						}
-						
 						viewCell.addSubview(uploadView)
 
+					}
+				}
+				if(chatMessage?.contents[indexPathWithoutNil].type == "video"){
+					var imagePlay = UIImage()
+					if #available(iOS 13.0, *) {
+						imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+					} else {
+						imagePlay = UIImage(named: "vr_play")!
+					}
+					let myImagePlayView = UIImageView(image: imagePlay)
+					viewCell.addSubview(myImagePlayView)
+					myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+					myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
+				}
+				if chatMessage?.contents[indexPathWithoutNil].filePath != "" {
+					viewCell.onClick {
+						ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
 					}
 				}
 			}
@@ -1527,7 +1698,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		if let img = image {
 			return img
 		} else {
-			return getImageFromFileName(name, forReplyBubble: forReplyBubble)
+			if (name == ""){
+				return getImageFromFileName(filePath, forReplyBubble: forReplyBubble)
+			} else {
+				return getImageFromFileName(name, forReplyBubble: forReplyBubble)
+			}
 		}
 	}
 	
@@ -1736,6 +1911,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								indexUploadTransferProgress += 1
 							}else{
 								indexUploadTransferProgress = -1
+								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+									ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+								}
 							}
                         } else {
 							if((imagesGridCollectionView.count) > 0){
@@ -1745,6 +1923,42 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                         }
                     })
                 }
+				if((imagesGridCollectionView.count) == 1){
+					var filePath = ""
+					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+						filePath = content.exportPlainFile()
+					}else {
+						filePath = content.filePath
+					}
+					
+					let extensionFile = filePath.lowercased().components(separatedBy: ".").last
+					if (offset == total) {
+						if (["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "")){
+							NSLayoutConstraint.deactivate(progressBarImageConstraints)
+							circularProgressBarImageView.isHidden = true
+						} else{
+							NSLayoutConstraint.deactivate(progressBarVideoConstraints)
+							circularProgressBarVideoView.isHidden = true
+						}
+						
+					} else {
+						if (["png", "jpg", "jpeg", "bmp", "heic"].contains(extensionFile ?? "")){
+							NSLayoutConstraint.activate(progressBarImageConstraints)
+							circularProgressBarImageView.isHidden = false
+							circularProgressBarImageLabel.text = "\(Int(p*100))%"
+							circularProgressBarImageLabel.center = CGPoint(x: 69, y: 69)
+							circularProgressBarImageView.progressAnimation(fromValue: fromValue, toValue: p)
+						} else{
+							NSLayoutConstraint.activate(progressBarVideoConstraints)
+							circularProgressBarVideoView.isHidden = false
+							circularProgressBarVideoLabel.text = "\(Int(p*100))%"
+							circularProgressBarVideoLabel.center = CGPoint(x: 69, y: 69)
+							circularProgressBarVideoView.progressAnimation(fromValue: fromValue, toValue: p)
+						}
+						
+						fromValue = p
+					}
+				}
 			}
 		}
 	}
