@@ -97,7 +97,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (![[PhoneMainView.instance  getPreviousViewName] isEqualToString:@"ContactDetailsView"]) {
 		_searchBar.text = @"";
 	}
-	if (![LinphoneManager.instance lpConfigBoolForKey:@"only_show_sip_contacts_list"] && ![LinphoneManager.instance lpConfigBoolForKey:@"hide_sip_contacts_list"]) {
+	
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"only_show_sip_contacts_list"]) {
+		_switchView.hidden = true;
+		[self changeView:ContactsLinphone];
+	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_sip_contacts_list"]){
+		_switchView.hidden = true;
+		[self changeView:ContactsAll];
+	} else {
 		[self changeView:ContactsAll];
 	}
 	
@@ -107,15 +114,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	
 	[tap setDelegate:self];
 	[self.view addGestureRecognizer:tap];
-	
-	
-	if ([LinphoneManager.instance lpConfigBoolForKey:@"only_show_sip_contacts_list"]) {
-		_switchView.hidden = true;
-		[self changeView:ContactsLinphone];
- 	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_sip_contacts_list"]){
-		_switchView.hidden = true;
-		[self changeView:ContactsAll];
- 	}
 }
 
 - (void)viewWillAppear:(BOOL)animated {
