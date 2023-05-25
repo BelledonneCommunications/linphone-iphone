@@ -19,6 +19,7 @@
                 <outlet property="loadingView" destination="CM2-Aq-Q3g" id="uie-SJ-TKf"/>
                 <outlet property="searchBar" destination="5jE-oF-d45" id="xfS-xo-2Bm"/>
                 <outlet property="selectedButtonImage" destination="A9k-KU-Dlm" id="4dX-pd-Y2D"/>
+                <outlet property="switchView" destination="93" id="4iM-Fl-F9B"/>
                 <outlet property="tableController" destination="TJG-JZ-YRR" id="0lt-gC-EOm"/>
                 <outlet property="toggleSelectionButton" destination="5lZ-u7-Yex" id="ULR-WM-Yuo"/>
                 <outlet property="topBar" destination="3" id="w1O-2o-b18"/>
