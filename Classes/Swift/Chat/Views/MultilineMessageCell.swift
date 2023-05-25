@@ -1830,7 +1830,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
 	
 	func file_transfer_progress_indication_recv(message: ChatMessage, content: Content, offset: Int, total: Int) {
-		print("file_transfer_progress_indication_recvfile_transfer_progress_indication_recv")
 		let p =  Float(offset) / Float(total)
 		if ((imagesGridCollectionView.count) > 0){
 			if  !message.isOutgoing {
