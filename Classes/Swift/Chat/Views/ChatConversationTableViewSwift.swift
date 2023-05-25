@@ -219,11 +219,17 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 		let customCell = cell as! MultilineMessageCell
+		
 		if customCell.isPlayingVoiceRecording {
 			AudioPlayer.stopSharedPlayer()
 		}
+		
 		if customCell.ephemeralTimer != nil {
 			customCell.ephemeralTimer?.invalidate()
+		}
+		
+		if customCell.chatMessageDelegate != nil {
+			customCell.chatMessage?.removeDelegate(delegate: customCell.chatMessageDelegate!)
 		}
 	}
 	

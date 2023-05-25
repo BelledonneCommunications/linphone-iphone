@@ -1232,6 +1232,17 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageViewBubble.isHidden = true
 						 	}
+						} else {
+							if content.filePath == "" {
+								imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
+								collectionViewImagesGrid.reloadData()
+								
+								collectionViewImagesGrid.isHidden = false
+								NSLayoutConstraint.activate(imagesGridConstraints)
+								imageViewBubble.image = nil
+								NSLayoutConstraint.deactivate(imageConstraints)
+								imageViewBubble.isHidden = true
+							}
 						}
 					}}
 				if imagesGridCollectionView.count > 0 {
@@ -1294,23 +1305,27 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			}
 			imageUser.isHidden = true
 			contentView.onClick {
-				self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
-				ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
-				
-				if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
-					ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
-				}else{
-					ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+				if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+					self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
+					ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+					
+					if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
+						ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
+					}else{
+						ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+					}
 				}
 			}
 			deleteItemCheckBox.onClick {
-				self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
-				ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
-				
-				if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
-					ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
-				}else{
-					ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+				if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
+					self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
+				 	ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+				 
+				 	if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
+					 	ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
+				 	}else{
+						ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
+				 	}
 				}
 			}
 		}else{
@@ -1815,6 +1830,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
 	
 	func file_transfer_progress_indication_recv(message: ChatMessage, content: Content, offset: Int, total: Int) {
+		print("file_transfer_progress_indication_recvfile_transfer_progress_indication_recv")
 		let p =  Float(offset) / Float(total)
 		if ((imagesGridCollectionView.count) > 0){
 			if  !message.isOutgoing {
