@@ -316,7 +316,6 @@ class BackActionsNavigationView:  UIViewController {
         topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
     }
 	
-<<<<<<< HEAD
 	deinit {
 		 NotificationCenter.default.removeObserver(self)
 	}
@@ -329,25 +328,6 @@ class BackActionsNavigationView:  UIViewController {
 			constraintLandscapeFloatingButton!.isActive = false
 			constraintFloatingButton!.isActive = true
 		}
-=======
-	func alertAction() {
-
-		let alertController = CustomAlertController(title: VoipTexts.alert_dialog_secure_badge_button_chat_conversation_title, message: nil, preferredStyle: .alert)
-				
-		alertController.setBackgroundColor(color: .darkGray)
-		alertController.setTitle(font: nil, color: .white)
-		alertController.setTint(color: .white)
-		alertController.setMaxWidth(alert: alertController)
-
-		alertController.addButtonsAlertController(alertController: alertController, buttonsViewHeightV: 60, checkboxViewHeightV: 50, buttonsAlertHeightV: 40)
-										
-		self.present(alertController, animated: true, completion:{
-			alertController.view.superview?.isUserInteractionEnabled = true
-			alertController.view.superview?.subviews[0].addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
-		})
-		
-		alertController.ok_button_alert.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapOk)))
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 	}
 	
 	func changeTitle(titleString: String){
@@ -365,15 +345,10 @@ class BackActionsNavigationView:  UIViewController {
 		}
 	}
 	
-<<<<<<< HEAD
 	func changeCallIcon(groupChat: Bool){
 		isGroupChat = groupChat
 		let defaultAccount = Core.getSwiftObject(cObject: LinphoneManager.getLc()).defaultAccount
 		if(groupChat && (defaultAccount != nil) && (defaultAccount!.params!.audioVideoConferenceFactoryAddress != nil)){
-=======
-	func changeCallIcon(groupeChat: Bool){
-		if(groupeChat){
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 			action1Button.isHidden = true
 			action1BisButton.isHidden = false
 		}else if(groupChat){
@@ -385,7 +360,6 @@ class BackActionsNavigationView:  UIViewController {
 		}
 	}
 	
-<<<<<<< HEAD
 	func editModeOn(){
 		backButton.isHidden = true
 		cancelButton.isHidden = false
@@ -421,14 +395,5 @@ class BackActionsNavigationView:  UIViewController {
 	}
 	
 	func deleteSelected(){
-
-=======
-	@objc func dismissOnTapOutsideOrCancel(){
-		self.dismiss(animated: true, completion: nil)
-	}
-	
-	@objc func onTapOk(){
-		self.dismiss(animated: true, completion: nil)
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 	}
 }

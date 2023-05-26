@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * Copyright (c) 2010-2020 Belledonne Communications SARL.
  *
@@ -17,14 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-=======
-//
-//  CustomAlertController.swift
-//  linphone
-//
-//  Created by Benoît Martins on 19/12/2022.
-//
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 
 import Foundation
 
@@ -36,13 +27,6 @@ class CustomAlertController: UIAlertController {
 	var isChecked = false
 	let checkBoxText = UILabel()
 	
-<<<<<<< HEAD
-=======
-	var isSecure : Bool = false
-	let isGroupChat : Bool = false
-	let levelMaxSecure : Bool = false
-	
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 	@objc func dismissOnTapOutsideOrCancel(){
 		self.dismiss(animated: true, completion: nil)
 	}
@@ -51,11 +35,7 @@ class CustomAlertController: UIAlertController {
 		self.dismiss(animated: true, completion: nil)
 	}
 	
-<<<<<<< HEAD
 	@objc func changeCheckValue(){
-=======
-	@objc func switchCheckedValue(){
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 		isChecked = !isChecked
 		checkBoxButton.isSelected = isChecked
 	}
@@ -103,11 +83,7 @@ class CustomAlertController: UIAlertController {
 			
 			checkBoxButton.setImage(UIImage(named:"checkbox_unchecked.png"), for: .normal)
 			checkBoxButton.setImage(UIImage(named:"checkbox_checked.png"), for: .selected)
-<<<<<<< HEAD
 			checkBoxButton.addTarget(self, action: #selector(changeCheckValue), for: .touchUpInside)
-=======
-			checkBoxButton.addTarget(self, action: #selector(switchCheckedValue), for: .touchUpInside)
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 			checkboxView.addSubview(checkBoxButton)
 			
 			checkBoxText.text = VoipTexts.alert_dialog_secure_badge_button_chat_conversation_checkboxtext
@@ -117,7 +93,6 @@ class CustomAlertController: UIAlertController {
 			checkBoxText.sizeToFit()
 		}
 	}
-<<<<<<< HEAD
 	
 	func setBackgroundColor(color: UIColor) {
 		if let bgView = self.view.subviews.first, let groupView = bgView.subviews.first, let contentView = groupView.subviews.first {
@@ -194,6 +169,4 @@ class CustomAlertController: UIAlertController {
 	func setTint(color: UIColor) {
 		self.view.tintColor = color
 	}
-=======
->>>>>>> 8f0096967 (Add CustomAlertController and functions called in alertController (Start group call and go to Device list view))
 }

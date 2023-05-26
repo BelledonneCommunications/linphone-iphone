@@ -592,18 +592,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
         }else{
             titleParticipants.isHidden = true
         }
-		
-	}
-	
-	func updateParticipantLabel(){
-		let participants = chatRoom?.participants
-		participantsGroupLabel.text = ""
-		participants?.forEach{ participant in
-			if participantsGroupLabel.text != "" {
-				participantsGroupLabel.text = participantsGroupLabel.text! + ", "
-			}
-			participantsGroupLabel.text = participantsGroupLabel.text! + FastAddressBook.displayName(for: linphone_participant_get_address(participant.getCobject))
-		}
 	}
 	
 	func onCallClick(cChatRoom: OpaquePointer?) {

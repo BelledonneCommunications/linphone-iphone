@@ -20,7 +20,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var contentMediaViewBubble: UIView = UIView(frame: .zero)
 	var contentBubble: UIView = UIView(frame: .zero)
 	var bubble: UIView = UIView(frame: .zero)
-	let imageUser = UIImageView()
+	var imageUser = UIImageView()
 	var contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	var chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
 
@@ -616,7 +616,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		contentMediaViewBubble = UIView(frame: .zero)
 		contentBubble = UIView(frame: .zero)
 		bubble = UIView(frame: .zero)
-		imageUser = Avatar(color:VoipTheme.primaryTextColor, textStyle: VoipTheme.chat_conversation_avatar_small)
+		imageUser = UIImageView()
 		contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 		chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
 		labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
@@ -1598,6 +1598,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		}else{
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellImagesGridMessage", for: indexPath)
             let indexPathWithoutNil = indexPath.row + imagesGridCollectionViewNil
+			print("indexPathWithoutNilindexPathWithoutNil \(indexPathWithoutNil) \(chatMessage?.contents[indexPathWithoutNil])")
             if ((indexPathWithoutNil <= (imagesGridCollectionView.count) - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNil].isFile == true || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
 				let viewCell: UIView = UIView(frame: cell.contentView.frame)
 				cell.addSubview(viewCell)
