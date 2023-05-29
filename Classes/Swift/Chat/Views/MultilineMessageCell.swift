@@ -950,6 +950,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                         
                         collectionViewImagesGrid.isHidden = false
                         NSLayoutConstraint.activate(imagesGridConstraints)
+						imageViewBubble.image = nil
+						NSLayoutConstraint.deactivate(imageConstraints)
+						imageViewBubble.isHidden = true
                     }
 					
 					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true) {
@@ -1238,7 +1241,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								imageViewBubble.isHidden = true
 						 	}
 						} else {
-							if content.filePath == "" {
+							if content.filePath == "" && content.isFileTransfer == false {
 								imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
 								collectionViewImagesGrid.reloadData()
 								
@@ -1598,8 +1601,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		}else{
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellImagesGridMessage", for: indexPath)
             let indexPathWithoutNil = indexPath.row + imagesGridCollectionViewNil
-			print("indexPathWithoutNilindexPathWithoutNil \(indexPathWithoutNil) \(chatMessage?.contents[indexPathWithoutNil])")
-            if ((indexPathWithoutNil <= (imagesGridCollectionView.count) - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNil].isFile == true || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
+			if ((indexPathWithoutNil <= imagesGridCollectionView.count - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNil].isFile == true || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
 				let viewCell: UIView = UIView(frame: cell.contentView.frame)
 				cell.addSubview(viewCell)
 				if (chatMessage?.isOutgoing == false && (chatMessage?.contents[indexPathWithoutNil].filePath == "" || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {

@@ -548,7 +548,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
             var hasPresence : Bool? = false
             
             if friend?.address?.asStringUriOnly() != nil {
-                presenceModel = friend!.getPresenceModelForUriOrTel(uriOrTel: (friend?.address?.asStringUriOnly())!)
+				presenceModel = friend!.presenceModel
                 hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
             }
             
@@ -558,7 +558,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
                 
                 let timeInterval = TimeInterval(presenceModel!.latestActivityTimestamp)
                 let myNSDate = Date(timeIntervalSince1970: timeInterval)
-                
                 
                 if timeInterval == -1 {
                     participantsGroupLabel.text = VoipTexts.chat_room_presence_away;
