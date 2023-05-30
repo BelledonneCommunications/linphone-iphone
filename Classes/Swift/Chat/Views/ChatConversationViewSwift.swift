@@ -1062,7 +1062,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
 			
 			deleteButton.onClickAction = {
-				self.collectionViewMedia.deleteItems(at: [indexPath])
 				ChatConversationViewModel.sharedModel.mediaCollectionView.remove(at: indexPath.row)
 				ChatConversationViewModel.sharedModel.mediaURLCollection.remove(at: indexPath.row)
 				ChatConversationViewModel.sharedModel.fileContext.remove(at: indexPath.row)
@@ -1078,6 +1077,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 						self.messageView.sendButton.isEnabled = true
 					}
 				}
+				self.collectionViewMedia.reloadData()
 			}
 			
 			let imageCell = ChatConversationViewModel.sharedModel.mediaCollectionView[indexPath.row]

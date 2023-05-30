@@ -45,13 +45,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var labelTopConstraints: [NSLayoutConstraint] = []
 	var labelHiddenConstraints: [NSLayoutConstraint] = []
 	var imagesGridConstraints : [NSLayoutConstraint] = []
+	var imagesGridConstraintsWithRecording : [NSLayoutConstraint] = []
 	var imageConstraints: [NSLayoutConstraint] = []
 	var videoConstraints: [NSLayoutConstraint] = []
 	var playButtonConstraints: [NSLayoutConstraint] = []
 	var progressBarVideoConstraints: [NSLayoutConstraint] = []
 	var progressBarImageConstraints: [NSLayoutConstraint] = []
 	var recordingConstraints: [NSLayoutConstraint] = []
+	var recordingConstraintsWithMediaGrid: [NSLayoutConstraint] = []
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
+	var recordingWaveConstraintsWithMediaGrid: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
 	
 	var eventMessageLineView: UIView = UIView(frame: .zero)
@@ -146,6 +149,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var circularProgressBarVideoLabel = StyledLabel(VoipTheme.chat_conversation_download_progress_text)
 	var circularProgressBarImageLabel = StyledLabel(VoipTheme.chat_conversation_download_progress_text)
 	var fromValue : Float = 0.0
+	
+	var messageWithRecording = false
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -358,6 +363,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			collectionViewImagesGrid.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
 		]
 		
+		imagesGridConstraintsWithRecording = [
+			collectionViewImagesGrid.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top + 50),
+			collectionViewImagesGrid.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
+			collectionViewImagesGrid.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			collectionViewImagesGrid.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
+		]
+		
 		collectionViewImagesGrid.dataSource = self
 		collectionViewImagesGrid.delegate = self
 		collectionViewImagesGrid.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellImagesGridMessage")
@@ -431,6 +443,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			recordingView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			recordingView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
+
+		recordingConstraintsWithMediaGrid = [
+			recordingView.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
+			recordingView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			recordingView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
+		]
+		 
 		recordingView.height(50.0).width(280).done()
 		recordingView.isHidden = true
 		
@@ -504,7 +523,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			recordingWaveView.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
 			recordingWaveView.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
 			recordingWaveView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
-			recordingWaveView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
+			recordingWaveView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
+			recordingWaveImage.bottomAnchor.constraint(equalTo: recordingWaveView.bottomAnchor, constant: -12)
+		]
+		
+		recordingWaveConstraintsWithMediaGrid = [
+			recordingWaveView.topAnchor.constraint(equalTo: recordingView.topAnchor, constant: 0),
+			recordingWaveView.bottomAnchor.constraint(equalTo: recordingView.bottomAnchor, constant: -10),
+			recordingWaveView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
+			recordingWaveView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
+			recordingWaveImage.bottomAnchor.constraint(equalTo: recordingWaveView.bottomAnchor, constant: -7)
 		]
 		
 		recordingWaveView.progressViewStyle = .bar
@@ -519,7 +547,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		recordingStopButton.isHidden = true
 		
 		recordingWaveView.addSubview(recordingWaveImage)
-		recordingWaveImage.alignParentLeft(withMargin: 60).alignParentRight(withMargin: 60).height(26).alignHorizontalCenterWith(recordingView).done()
+		recordingWaveImage.alignParentLeft(withMargin: 60).alignParentRight(withMargin: 60).height(26).done()
 		
 		recordingWaveView.addSubview(recordingDurationTextView)
 		recordingDurationTextView.alignParentRight(withMargin: 10).matchParentHeight().done()
@@ -536,8 +564,15 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 		}
 		
-		NSLayoutConstraint.activate(recordingConstraints)
-		NSLayoutConstraint.activate(recordingWaveConstraints)
+		if (recordingView.isHidden == false && imagesGridCollectionView.count > 0){
+			collectionViewImagesGrid.isHidden = false
+			NSLayoutConstraint.activate(recordingConstraintsWithMediaGrid)
+			NSLayoutConstraint.activate(recordingWaveConstraintsWithMediaGrid)
+		} else {
+			NSLayoutConstraint.activate(recordingConstraints)
+			NSLayoutConstraint.activate(recordingWaveConstraints)
+		}
+		
 		recordingView.isHidden = false
 	}
 	
@@ -639,13 +674,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		labelTopConstraints = []
 		labelHiddenConstraints = []
 		imagesGridConstraints = []
+		imagesGridConstraintsWithRecording = []
 		imageConstraints = []
 		videoConstraints = []
 		playButtonConstraints = []
 		progressBarVideoConstraints = []
 		progressBarImageConstraints = []
 		recordingConstraints = []
+		recordingConstraintsWithMediaGrid = []
 		recordingWaveConstraints = []
+		recordingWaveConstraintsWithMediaGrid = []
 		meetingConstraints = []
 		eventMessageLineView = UIView(frame: .zero)
 		eventMessageLabelView = UIView(frame: .zero)
@@ -723,7 +761,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			collectionViewImagesGrid.backgroundColor = .clear
 			return collectionViewImagesGrid
 		}()
-		
+		messageWithRecording = false
 		initCell()
 	}
 	
@@ -907,7 +945,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				NSLayoutConstraint.deactivate(progressBarVideoConstraints)
 				NSLayoutConstraint.deactivate(progressBarImageConstraints)
 				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraintsWithMediaGrid)
 				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraintsWithMediaGrid)
 				NSLayoutConstraint.activate(meetingConstraints)
 				label.isHidden = false
 				imageViewBubble.isHidden = true
@@ -924,13 +964,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				NSLayoutConstraint.deactivate(labelTopConstraints)
 				NSLayoutConstraint.activate(labelHiddenConstraints)
 				NSLayoutConstraint.deactivate(imagesGridConstraints)
+				NSLayoutConstraint.deactivate(imagesGridConstraintsWithRecording)
 				NSLayoutConstraint.deactivate(imageConstraints)
 				NSLayoutConstraint.deactivate(videoConstraints)
 				NSLayoutConstraint.deactivate(playButtonConstraints)
 				NSLayoutConstraint.deactivate(progressBarVideoConstraints)
 				NSLayoutConstraint.deactivate(progressBarImageConstraints)
 				NSLayoutConstraint.deactivate(recordingConstraints)
+				NSLayoutConstraint.deactivate(recordingConstraintsWithMediaGrid)
 				NSLayoutConstraint.deactivate(recordingWaveConstraints)
+				NSLayoutConstraint.deactivate(recordingWaveConstraintsWithMediaGrid)
 				NSLayoutConstraint.deactivate(meetingConstraints)
 				label.isHidden = true
 				collectionViewImagesGrid.isHidden = true
@@ -1148,12 +1191,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							}
 						}
 						
-					}else if content.type == "audio"{
+					}else if content.isVoiceRecording {
 						recordingView.subviews.forEach({ view in
 							view.removeFromSuperview()
 						})
 						initPlayerAudio(message: event.chatMessage!)
-						
+						if imagesGridCollectionView.count == 0 {
+							messageWithRecording = true
+						}
 					}else{
 						if(content.isFile && !content.isText){
 							var filePath = ""
@@ -1256,7 +1301,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				if imagesGridCollectionView.count > 0 {
 					self.collectionViewImagesGrid.layoutIfNeeded()
 				}
-                if imagesGridCollectionView.count == 1 {
+                if imagesGridCollectionView.count == 1 && recordingView.isHidden == true {
                     collectionViewImagesGrid.width(138).done()
                 }
 				
@@ -1277,6 +1322,20 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					NSLayoutConstraint.activate(videoConstraints)
 					NSLayoutConstraint.activate(playButtonConstraints)
 					imageVideoViewBubble.isHidden = false
+				}
+				
+				if (recordingView.isHidden == false && imagesGridCollectionView.count > 0){
+					collectionViewImagesGrid.isHidden = false
+					NSLayoutConstraint.deactivate(imagesGridConstraints)
+					NSLayoutConstraint.activate(imagesGridConstraintsWithRecording)
+					NSLayoutConstraint.deactivate(recordingConstraints)
+					NSLayoutConstraint.activate(recordingConstraintsWithMediaGrid)
+					NSLayoutConstraint.deactivate(recordingWaveConstraints)
+					NSLayoutConstraint.activate(recordingWaveConstraintsWithMediaGrid)
+					imageViewBubble.image = nil
+					imageVideoViewBubble.image = nil
+					NSLayoutConstraint.deactivate(imageConstraints)
+					imageVideoViewBubble.isHidden = true
 				}
 			}
 		}else{
@@ -1600,26 +1659,27 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			return cell
 		}else{
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellImagesGridMessage", for: indexPath)
-            let indexPathWithoutNil = indexPath.row + imagesGridCollectionViewNil
-			if ((indexPathWithoutNil <= imagesGridCollectionView.count - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNil].isFile == true || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
+			let indexPathWithoutNil = indexPath.row + imagesGridCollectionViewNil
+			let indexPathWithoutNilWithRecording = indexPathWithoutNil + (messageWithRecording ? 1 : 0)
+			if ((indexPathWithoutNil <= imagesGridCollectionView.count - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNilWithRecording].isFile == true || chatMessage?.contents[indexPathWithoutNilWithRecording].isFileTransfer == true)) {
 				let viewCell: UIView = UIView(frame: cell.contentView.frame)
 				cell.addSubview(viewCell)
-				if (chatMessage?.isOutgoing == false && (chatMessage?.contents[indexPathWithoutNil].filePath == "" || chatMessage?.contents[indexPathWithoutNil].isFileTransfer == true)) {
+				if (chatMessage?.isOutgoing == false && (chatMessage?.contents[indexPathWithoutNilWithRecording].filePath == "" || chatMessage?.contents[indexPathWithoutNilWithRecording].isFileTransfer == true)) {
 					let  downloadView = DownloadMessageCell()
 					downloadContentCollection.append(downloadView)
-					downloadView.content = chatMessage?.contents[indexPathWithoutNil]
+					downloadView.content = chatMessage?.contents[indexPathWithoutNilWithRecording]
 					downloadView.size(w: 138, h: 138).done()
 					viewCell.addSubview(downloadView)
 
-                    downloadView.downloadNameLabel.text = chatMessage?.contents[indexPathWithoutNil].name.replacingOccurrences(of: ((chatMessage?.contents[indexPathWithoutNil].name.dropFirst(6).dropLast(8))!), with: "...")
-                    downloadView.setFileType(fileName: (chatMessage?.contents[indexPathWithoutNil].name)!)
+                    downloadView.downloadNameLabel.text = chatMessage?.contents[indexPathWithoutNilWithRecording].name.replacingOccurrences(of: ((chatMessage?.contents[indexPathWithoutNilWithRecording].name.dropFirst(6).dropLast(8))!), with: "...")
+                    downloadView.setFileType(fileName: (chatMessage?.contents[indexPathWithoutNilWithRecording].name)!)
 					
 					let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-                    let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(((chatMessage?.contents[indexPathWithoutNil].fileSize)!)) / 1000000)) Mo)", attributes: underlineAttribute)
+                    let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(((chatMessage?.contents[indexPathWithoutNilWithRecording].fileSize)!)) / 1000000)) Mo)", attributes: underlineAttribute)
 					downloadView.downloadButtonLabel.attributedText = underlineAttributedString
 					downloadView.downloadButtonLabel.onClick {
-                        self.chatMessage?.contents[indexPathWithoutNil].filePath = LinphoneManager.imagesDirectory() + (((self.chatMessage?.contents[indexPathWithoutNil].name)!))
-                        let _ = self.chatMessage!.downloadContent(content: (self.chatMessage?.contents[indexPathWithoutNil])!)
+                        self.chatMessage?.contents[indexPathWithoutNilWithRecording].filePath = LinphoneManager.imagesDirectory() + (((self.chatMessage?.contents[indexPathWithoutNilWithRecording].name)!))
+                        let _ = self.chatMessage!.downloadContent(content: (self.chatMessage?.contents[indexPathWithoutNilWithRecording])!)
 					}
 					downloadView.downloadButtonLabel.isUserInteractionEnabled = true
 					
@@ -1632,7 +1692,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					let myImageView = UIImageView()
 					
 					
-				   	myImageView.image = getImageFrom(chatMessage?.contents[indexPathWithoutNil], forReplyBubble: false)
+				   	myImageView.image = getImageFrom(chatMessage?.contents[indexPathWithoutNilWithRecording], forReplyBubble: false)
 					
 					myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
 					viewCell.addSubview(myImageView)
@@ -1640,13 +1700,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					myImageView.contentMode = .scaleAspectFill
 					myImageView.clipsToBounds = true
 					
-					if (chatMessage?.isOutgoing == true && (chatMessage?.contents[indexPathWithoutNil].filePath == "" || chatMessage?.isFileTransferInProgress == true)){
+					if (chatMessage?.isOutgoing == true && (chatMessage?.contents[indexPathWithoutNilWithRecording].filePath == "" || chatMessage?.isFileTransferInProgress == true)){
 						let  uploadView = UploadMessageCell()
 						uploadContentCollection.append(uploadView)
-						uploadView.content = chatMessage?.contents[indexPathWithoutNil]
+						uploadView.content = chatMessage?.contents[indexPathWithoutNilWithRecording]
 						uploadView.size(w: 138, h: 138).done()
 						
-						if(chatMessage?.contents[indexPathWithoutNil].type == "video"){
+						if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video"){
 							var imagePlay = UIImage()
 							if #available(iOS 13.0, *) {
 								imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1663,7 +1723,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 
 					}
 				}
-				if(chatMessage?.contents[indexPathWithoutNil].type == "video"){
+				if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video"){
 					var imagePlay = UIImage()
 					if #available(iOS 13.0, *) {
 						imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1675,7 +1735,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
 					myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
 				}
-				if chatMessage?.contents[indexPathWithoutNil].filePath != "" {
+				if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != "" {
 					viewCell.onClick {
 						ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
 					}
@@ -1839,12 +1899,12 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	func file_transfer_progress_indication_recv(message: ChatMessage, content: Content, offset: Int, total: Int) {
 		let p =  Float(offset) / Float(total)
-		if ((imagesGridCollectionView.count) > 0){
+		if ((imagesGridCollectionView.count) > 0 && !content.isVoiceRecording){
 			if  !message.isOutgoing {
 				if (indexTransferProgress == -1) {
 					for indexItem in 0...(imagesGridCollectionView.count) - 1 {
 						if chatMessage?.contents[indexItem].name == content.name {
-							indexTransferProgress = indexItem - imagesGridCollectionViewNil
+							indexTransferProgress = indexItem - imagesGridCollectionViewNil - (messageWithRecording ? 1 : 0)
 							break
 						}
 					}
@@ -1910,7 +1970,12 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							indexTransferProgress = -1
 						}
 					} else {
-						if (indexTransferProgress > -1 && downloadContentCollection[indexTransferProgress] != nil) {
+						if (indexTransferProgress > -1 && downloadContentCollection[indexTransferProgress] != nil && indexTransferProgress > -1) {
+							downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+						}
+						if (indexTransferProgress == -1 && imagesGridCollectionView.count == 1 && messageWithRecording){
+							indexTransferProgress = 0
+							downloadContentCollection[indexTransferProgress]!.circularProgressBarView.isHidden = false
 							downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)
 						}
 					}
@@ -1920,7 +1985,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					if (indexUploadTransferProgress == -1) {
 						for indexItem in 0...(imagesGridCollectionView.count) - 1 {
 							if chatMessage?.contents[indexItem].filePath == content.filePath {
-								indexUploadTransferProgress = indexItem - imagesGridCollectionViewNil
+								indexUploadTransferProgress = indexItem - imagesGridCollectionViewNil - (messageWithRecording ? 1 : 0)
 								break
 							}
 						}
@@ -1930,7 +1995,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							if(indexUploadTransferProgress >= 0){
 								uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = true
 							}
-							if indexUploadTransferProgress <= (imagesGridCollectionView.count) {
+							if indexUploadTransferProgress <= (imagesGridCollectionView.count) + (messageWithRecording ? 1 : 0) {
 								indexUploadTransferProgress += 1
 							}else{
 								indexUploadTransferProgress = -1
@@ -1939,10 +2004,15 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								}
 							}
                         } else {
-							if((imagesGridCollectionView.count) > 0){
+							if((imagesGridCollectionView.count) > 0 && indexUploadTransferProgress > -1){
 						  		uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
 								uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
 					  		}
+							if (indexUploadTransferProgress == -1 && imagesGridCollectionView.count == 1 && messageWithRecording){
+								indexUploadTransferProgress = 0
+								uploadContentCollection[indexUploadTransferProgress]!.circularProgressBarView.isHidden = false
+								uploadContentCollection[indexUploadTransferProgress]!.setUpCircularProgressBarView(toValue: p)
+							}
                         }
                     })
                 }
