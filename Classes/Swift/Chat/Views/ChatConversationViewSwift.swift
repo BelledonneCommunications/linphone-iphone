@@ -1338,6 +1338,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func onVrStart() {
+		/*
 		self.recordingWaveImageMask.isHidden = false
 		recordingWaveView.progress = 0.0
 		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
@@ -1347,6 +1348,12 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		} else {
 			startVoiceRecording()
 		}
+		 */
+		
+		messageView.messageText.emojiPIcker = true
+		messageView.messageText.becomeFirstResponder()
+		//messageView.messageText.emojiPIcker = false
+		
 	}
 	
 	func startVoiceRecording() {

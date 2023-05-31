@@ -33,7 +33,7 @@ class MessageView:  UIView, UITextViewDelegate {
 	let voiceRecordButton = CallControlButton(buttonTheme:VoipTheme.nav_button("vr_off"))
 	let sendButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
 	let messageTextView = UIView()
-	let messageText = UITextView()
+	let messageText = EmojiTextField()
 	let ephemeralIndicator = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
 	var fileContext = false
 	var isComposing = false
@@ -104,5 +104,23 @@ class MessageView:  UIView, UITextViewDelegate {
 
 			sendButton.isEnabled = true
 		}
+	}
+}
+
+class EmojiTextField: UITextView {
+	var emojiPIcker = false
+
+	// required for iOS 13
+	override var textInputContextIdentifier: String? { "" } // return non-nil to show the Emoji keyboard ¯\_(ツ)_/¯
+
+	override var textInputMode: UITextInputMode? {
+		for mode in UITextInputMode.activeInputModes {
+			if !emojiPIcker {
+				return mode
+			} else if mode.primaryLanguage == "emoji" {
+				return mode
+			}
+		}
+		return nil
 	}
 }
