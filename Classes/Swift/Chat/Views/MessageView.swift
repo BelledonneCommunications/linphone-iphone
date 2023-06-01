@@ -32,8 +32,10 @@ class MessageView:  UIView, UITextViewDelegate {
 	let pictureButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
 	let voiceRecordButton = CallControlButton(buttonTheme:VoipTheme.nav_button("vr_off"))
 	let sendButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
+	let emojisButton = CallControlButton(buttonTheme:VoipTheme.nav_button("emoji"))
 	let messageTextView = UIView()
-	let messageText = EmojiTextField()
+	let messageWithEmojiView = UIView()
+	let messageText = UITextView()
 	let ephemeralIndicator = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
 	var fileContext = false
 	var isComposing = false
@@ -79,13 +81,21 @@ class MessageView:  UIView, UITextViewDelegate {
 		addSubview(messageTextView)
 		messageTextView.toRightOf(voiceRecordButton, withLeftMargin: 5).toLeftOf(sendButton).matchParentHeight().done()
 		
-		messageTextView.addSubview(messageText)
-		messageText.matchParentDimmensions(insetedByDx: 10).done()
+		messageTextView.addSubview(messageWithEmojiView)
+		messageWithEmojiView.matchParentDimmensions(insetedByDx: 10).done()
+		messageWithEmojiView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+		
+		messageWithEmojiView.addSubview(messageText)
+		messageText.matchParentHeight().alignParentLeft().alignParentRight(withMargin: 40).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
 		messageText.delegate = self
 		
+		messageWithEmojiView.addSubview(emojisButton)
+		emojisButton.alignParentRight().matchParentHeight().done()
+		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+			self.messageWithEmojiView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
 	}
 	
@@ -104,23 +114,5 @@ class MessageView:  UIView, UITextViewDelegate {
 
 			sendButton.isEnabled = true
 		}
-	}
-}
-
-class EmojiTextField: UITextView {
-	var emojiPIcker = false
-
-	// required for iOS 13
-	override var textInputContextIdentifier: String? { "" } // return non-nil to show the Emoji keyboard ¯\_(ツ)_/¯
-
-	override var textInputMode: UITextInputMode? {
-		for mode in UITextInputMode.activeInputModes {
-			if !emojiPIcker {
-				return mode
-			} else if mode.primaryLanguage == "emoji" {
-				return mode
-			}
-		}
-		return nil
 	}
 }

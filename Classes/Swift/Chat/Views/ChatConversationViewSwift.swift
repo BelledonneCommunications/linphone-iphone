@@ -24,15 +24,9 @@ import linphonesw
 import DropDown
 import PhotosUI
 import AVFoundation
-import EmojiPicker
+import MCEmojiPicker
 
-class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, EmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{
-	// Replaces ChatConversationView
-	
-	func didGetEmoji(emoji: String) {
-		//emojiButton.setTitle(emoji, for: .normal)
-		messageView.voiceRecordButton.setTitle(emoji, for: .normal)
-	}
+class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, MCEmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
 	static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	
@@ -249,9 +243,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 		messageView.sendButton.onClickAction = onSendClick
 		messageView.pictureButton.onClickAction = alertAction
-		messageView.voiceRecordButton.addTarget(self,action:#selector(openEmojiPickerModule),
-							  for:.touchUpInside)
-		//messageView.voiceRecordButton.onClickAction = openEmojiPickerModule
+		messageView.voiceRecordButton.onClickAction = onVrStart
+		messageView.emojisButton.addTarget(self,action:#selector(openEmojiPickerModule),
+										   for:.touchUpInside)
 		recordingDeleteButton.onClickAction = cancelVoiceRecording
 		recordingPlayButton.onClickAction = onvrPlayPauseStop
 		recordingStopButton.onClickAction = onvrPlayPauseStop
@@ -1347,7 +1341,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func onVrStart() {
-		/*
 		self.recordingWaveImageMask.isHidden = false
 		recordingWaveView.progress = 0.0
 		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
@@ -1357,19 +1350,19 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		} else {
 			startVoiceRecording()
 		}
-		 */
-		
-		messageView.messageText.emojiPIcker = true
-		messageView.messageText.becomeFirstResponder()
-		messageView.messageText.emojiPIcker = false
-		
 	}
 	
 	@objc private func openEmojiPickerModule(sender: UIButton) {
-		let viewController = EmojiPickerViewController()
+		messageView.messageText.resignFirstResponder()
+		let viewController = MCEmojiPickerViewController()
 		viewController.delegate = self
 		viewController.sourceView = sender
-		present(viewController, animated: true)
+		viewController.isDismissAfterChoosing = false
+		present(viewController, animated: true, completion: nil)
+	}
+	
+	func didGetEmoji(emoji: String) {
+		messageView.messageText.text = messageView.messageText.text + emoji
 	}
 	
 	func startVoiceRecording() {
