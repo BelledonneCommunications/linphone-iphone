@@ -24,8 +24,15 @@ import linphonesw
 import DropDown
 import PhotosUI
 import AVFoundation
+import EmojiPicker
 
-class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
+class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, EmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{
+	// Replaces ChatConversationView
+	
+	func didGetEmoji(emoji: String) {
+		//emojiButton.setTitle(emoji, for: .normal)
+		messageView.voiceRecordButton.setTitle(emoji, for: .normal)
+	}
 	
 	static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	
@@ -242,7 +249,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 		messageView.sendButton.onClickAction = onSendClick
 		messageView.pictureButton.onClickAction = alertAction
-		messageView.voiceRecordButton.onClickAction = onVrStart
+		messageView.voiceRecordButton.addTarget(self,action:#selector(openEmojiPickerModule),
+							  for:.touchUpInside)
+		//messageView.voiceRecordButton.onClickAction = openEmojiPickerModule
 		recordingDeleteButton.onClickAction = cancelVoiceRecording
 		recordingPlayButton.onClickAction = onvrPlayPauseStop
 		recordingStopButton.onClickAction = onvrPlayPauseStop
@@ -1352,8 +1361,15 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 		messageView.messageText.emojiPIcker = true
 		messageView.messageText.becomeFirstResponder()
-		//messageView.messageText.emojiPIcker = false
+		messageView.messageText.emojiPIcker = false
 		
+	}
+	
+	@objc private func openEmojiPickerModule(sender: UIButton) {
+		let viewController = EmojiPickerViewController()
+		viewController.delegate = self
+		viewController.sourceView = sender
+		present(viewController, animated: true)
 	}
 	
 	func startVoiceRecording() {

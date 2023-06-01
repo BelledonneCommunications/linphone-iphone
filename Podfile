@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '11.2'
 source "https://gitlab.linphone.org/BC/public/podspec.git"
 source "https://github.com/CocoaPods/Specs.git"
 
@@ -30,6 +30,7 @@ target 'linphone' do
 	pod 'DropDown'
 	pod 'IQKeyboardManager'
 	pod 'SwipeCellKit' # License: https://github.com/SwipeCellKit/SwipeCellKit/blob/develop/LICENSE
+	pod 'EmojiPicker', :git => 'https://github.com/htmlprogrammist/EmojiPicker'
 	all_pods
 
 end
