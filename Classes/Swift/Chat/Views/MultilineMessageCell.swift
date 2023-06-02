@@ -524,7 +524,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			recordingWaveView.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
 			recordingWaveView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			recordingWaveView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
-			recordingWaveImage.bottomAnchor.constraint(equalTo: recordingWaveView.bottomAnchor, constant: -12)
+			recordingWaveImage.centerYAnchor.constraint(equalTo: recordingWaveView.centerYAnchor)
 		]
 		
 		recordingWaveConstraintsWithMediaGrid = [
@@ -532,7 +532,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			recordingWaveView.bottomAnchor.constraint(equalTo: recordingView.bottomAnchor, constant: -10),
 			recordingWaveView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			recordingWaveView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
-			recordingWaveImage.bottomAnchor.constraint(equalTo: recordingWaveView.bottomAnchor, constant: -7)
+			recordingWaveImage.centerYAnchor.constraint(equalTo: recordingWaveView.centerYAnchor)
 		]
 		
 		recordingWaveView.progressViewStyle = .bar
@@ -1096,7 +1096,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
                         
                         if imagesGridCollectionView.count == 0 {
-                            imagesGridCollectionView.append(nil)
+							//imagesGridCollectionView.append(nil)
                             imagesGridCollectionViewNil += 1
                         }
 						
@@ -1686,7 +1686,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					if((linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1 && self.chatMessage!.isFileTransferInProgress) || self.chatMessage!.isOutgoing){
 						downloadView.downloadButtonLabel.isHidden = true
 					}
-				} else {
+				} else if imagesGridCollectionView[indexPathWithoutNil] != nil {
 					downloadContentCollection.append(nil)
 					
 					let myImageView = UIImageView()
@@ -1723,21 +1723,23 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 
 					}
 				}
-				if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video"){
-					var imagePlay = UIImage()
-					if #available(iOS 13.0, *) {
-						imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
-					} else {
-						imagePlay = UIImage(named: "vr_play")!
+				if(imagesGridCollectionView[indexPathWithoutNil] != nil){
+					if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video"){
+						var imagePlay = UIImage()
+						if #available(iOS 13.0, *) {
+							imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
+						} else {
+							imagePlay = UIImage(named: "vr_play")!
+						}
+						let myImagePlayView = UIImageView(image: imagePlay)
+						viewCell.addSubview(myImagePlayView)
+						myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
+						myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
 					}
-					let myImagePlayView = UIImageView(image: imagePlay)
-					viewCell.addSubview(myImagePlayView)
-					myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
-					myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
-				}
-				if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != "" {
-					viewCell.onClick {
-						ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
+					if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != "" {
+						viewCell.onClick {
+							ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
+						}
 					}
 				}
 			}

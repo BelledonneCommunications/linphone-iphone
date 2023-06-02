@@ -17,7 +17,7 @@ class UploadMessageCell: UIView {
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-
+		self.layer.zPosition = 10
 		addSubview(circularProgressBarView)
 		circularProgressBarView.isHidden = true
 		circularProgressBarLabel.text = "0%"

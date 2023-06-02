@@ -27,8 +27,6 @@ import AVFoundation
 
 class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
-	let controlsView = ControlsView(showVideo: true, controlsViewModel: ChatConversationViewModel.sharedModel)
-	
 	static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -1071,11 +1069,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				if(ChatConversationViewModel.sharedModel.mediaCollectionView.count == 0){
 					self.messageView.fileContext = false
 					self.selectionMedia()
-					if self.messageView.messageText.text.isEmpty{
-						self.messageView.sendButton.isEnabled = false
-					} else {
-						self.messageView.sendButton.isEnabled = true
-					}
+					self.setSendButtonState()
 				}
 				self.collectionViewMedia.reloadData()
 			}
@@ -1416,7 +1410,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func setSendButtonState() {
-		self.messageView.sendButton.isEnabled = !ChatConversationViewModel.sharedModel.isVoiceRecording && ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || self.messageView.messageText.text.count > 0 || ChatConversationViewModel.sharedModel.fileContext.count > 0)
+		self.messageView.sendButton.isEnabled = ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || self.messageView.messageText.text.count > 0 || ChatConversationViewModel.sharedModel.fileContext.count > 0)
 	}
 	
 	func onvrPlayPauseStop() {

@@ -212,7 +212,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 		linphone_content_unref(content);
 	}
 
-	BOOL basic = linphone_chat_message_get_chat_room(rootMessage);
+	BOOL basic = [ChatConversationViewSwift isBasicChatRoom:linphone_chat_message_get_chat_room(rootMessage)];
 	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
 	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
 
