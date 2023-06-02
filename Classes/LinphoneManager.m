@@ -536,8 +536,8 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 			   	}
 				*/
 			   
-			   LOGI(@"Setting the sip 'expires' parameters of existing account to 1 month (2629800 seconds)");
-			   linphone_account_params_set_expires(newAccountParams, 2629800);
+			   LOGI(@"Setting the sip 'expires' parameters of existing account to 1 year (31536000 seconds)");
+			   linphone_account_params_set_expires(newAccountParams, 31536000);
 		   }
 		   linphone_account_params_unref(newAccountParams);
 		   accounts = accounts->next;
