@@ -111,14 +111,16 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			let friend = userInfo!["friend"]
 			
 			let indexPathsVisible = self.collectionView.indexPathsForVisibleItems
-			for i in 0...indexPathsVisible.count-1 {
-				let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
-				if (contact != nil){
-					let uri = "sip:" + contact!.username + "@" + contact!.domain
+			if indexPathsVisible.count > 0 {
+				for i in 0...indexPathsVisible.count-1 {
+					let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
+					if (contact != nil){
+						let uri = "sip:" + contact!.username + "@" + contact!.domain
 
-					if(uri == friend as! String){
-						let indexPath = indexPathsVisible[i]
-						collectionView.reloadItems(at: [indexPath])
+						if(uri == friend as! String){
+							let indexPath = indexPathsVisible[i]
+							collectionView.reloadItems(at: [indexPath])
+						}
 					}
 				}
 			}
@@ -148,7 +150,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
                 collectionView.reloadData()
                 ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 			} else if isDisplayingBottomOfTable {
-                self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
+				if self.collectionView.numberOfItems(inSection: 0) > 2 {
+					self.collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .top, animated: false)
+				}
                 collectionView.reloadData()
                 self.scrollToBottom(animated: true)
 			} else if !isOutgoing {
@@ -182,7 +186,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			}
 		}else{
 			collectionView.reloadData()
-			ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+			if(ChatConversationViewModel.sharedModel.chatRoom != nil){
+				ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+			}
 		}
 	}
     
@@ -218,8 +224,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
             
 			if (event.chatMessage != nil){
 				cell.onLongClickOneClick {
-					self.initDataSource(message: event.chatMessage!)
-					self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, event: event, preContentSize: cell.preContentViewBubble.frame.size.height)
+					if(event.chatMessage != nil && ChatConversationViewModel.sharedModel.chatRoom != nil){
+						self.initDataSource(message: event.chatMessage!)
+						self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, event: event, preContentSize: cell.preContentViewBubble.frame.size.height)
+					}
 				}
 			}
 			
@@ -405,18 +413,20 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         
 		menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_reply)
         
-        let chatroom = message.chatRoom
-        if (chatroom!.nbParticipants > 1) {
-            menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_infos)
-        }
-        
-        let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
-        if (!message.isOutgoing && FastAddressBook.getContactWith(message.fromAddress?.getCobject) == nil
-            && !isOneToOneChat && !ConfigManager.instance().lpConfigBoolForKey(key: "read_only_native_address_book")) {
-            menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_add_to_contact)
-        }
-        
-		menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_delete)
+        let chatroom = ChatConversationViewModel.sharedModel.chatRoom
+		if chatroom != nil {
+			if (chatroom!.nbParticipants > 1) {
+				menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_infos)
+			}
+			
+			let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
+			if (!message.isOutgoing && FastAddressBook.getContactWith(message.fromAddress?.getCobject) == nil
+				&& !isOneToOneChat && !ConfigManager.instance().lpConfigBoolForKey(key: "read_only_native_address_book")) {
+				menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_add_to_contact)
+			}
+			
+			menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_delete)
+		}
 	}
     
     func resendMessage(message: ChatMessage){
@@ -475,7 +485,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				ChatConversationTableViewModel.sharedModel.messageListSelected.value!.remove(at: indexDeletedMessage)
 				ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
 			}
-			messageChat?.chatRoom?.deleteMessage(message: messageChat!)
+			let chatRoom = ChatConversationViewModel.sharedModel.chatRoom
+			if chatRoom != nil {
+				chatRoom!.deleteMessage(message: messageChat!)
+			}
 		} else {
 			message.deleteFromDatabase()
 		}
