@@ -30,7 +30,7 @@ target 'linphone' do
 	pod 'DropDown'
 	pod 'IQKeyboardManager'
 	pod 'SwipeCellKit' #License: https://github.com/SwipeCellKit/SwipeCellKit/blob/develop/LICENSE
-	pod 'MCEmojiPicker' #License: https://github.com/izyumkin/MCEmojiPicker/blob/main/LICENSE
+	pod 'EmojiPicker', :git => 'https://github.com/htmlprogrammist/EmojiPicker'
 	all_pods
 
 end

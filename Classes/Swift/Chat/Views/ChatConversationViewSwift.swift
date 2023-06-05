@@ -24,9 +24,9 @@ import linphonesw
 import DropDown
 import PhotosUI
 import AVFoundation
-import MCEmojiPicker
+import EmojiPicker
 
-class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, MCEmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
+class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, EmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
 	static let compositeDescription = UICompositeViewDescription(ChatConversationViewSwift.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	
@@ -1354,10 +1354,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	@objc private func openEmojiPickerModule(sender: UIButton) {
 		messageView.messageText.resignFirstResponder()
-		let viewController = MCEmojiPickerViewController()
+		let viewController = EmojiPickerViewController()
 		viewController.delegate = self
 		viewController.sourceView = sender
-		viewController.isDismissAfterChoosing = false
+		viewController.isDismissedAfterChoosing = false
 		present(viewController, animated: true, completion: nil)
 	}
 	
