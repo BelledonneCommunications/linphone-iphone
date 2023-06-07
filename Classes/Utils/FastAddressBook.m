@@ -153,7 +153,7 @@
 }
 
 + (BOOL)isAuthorized {
-	return ![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"] || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
+	return ![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"] || [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts] == CNAuthorizationStatusAuthorized;
 }
 
 - (FastAddressBook *)init {

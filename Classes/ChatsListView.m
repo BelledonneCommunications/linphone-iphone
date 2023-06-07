@@ -156,8 +156,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddGroupChatClick:(id)event {
     [self newChatCreate:TRUE];
-    if (IPAD)
-        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+    //if (IPAD)
+        //[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
 }
 
 - (IBAction)onChatRoomSwiftClick:(id)event {
@@ -166,8 +166,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddClick:(id)event {
 	[self newChatCreate:FALSE];
-    if (IPAD)
-        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+    //if (IPAD)
+        //[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {

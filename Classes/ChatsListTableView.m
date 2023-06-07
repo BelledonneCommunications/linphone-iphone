@@ -95,9 +95,11 @@
 	[super viewDidAppear:animated];
 	// we cannot do that in viewWillAppear because we will change view while previous transition
 	// was not finished, leading to "[CALayer retain]: message sent to deallocated instance" error msg
+	/*
 	if (IPAD && [self totalNumberOfItems] > 0) {
 		[PhoneMainView.instance changeCurrentView:ChatConversationView.compositeViewDescription];
 	}
+	*/
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -158,6 +160,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	_data = [self sortChatRooms];
 	[super loadData];
 
+	/*
 	if (IPAD) {
 		int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 		// if conversation view is using a chatroom that does not exist anymore, update it
@@ -175,6 +178,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		}
 	}
+	*/
 }
 
 - (void)updateEventEntry:(LinphoneChatMessage *)msg {
@@ -190,10 +194,12 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
 	int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+	/*
 	if (IPAD) {
 		UIChatCell *cell = (UIChatCell *)[self.tableView cellForRowAtIndexPath:indexPath];
 		[cell updateUnreadBadge];
 	}
+	*/
 }
 
 #pragma mark - UITableViewDataSource Functions
