@@ -222,6 +222,30 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				self.action2Delete.isEnabled = false
 			}
 		}
+		
+		let notificationCenter = NotificationCenter.default
+		notificationCenter.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)	}
+	
+	@objc func appMovedToForeground() {
+		if(PhoneMainView.instance().currentView == ChatConversationViewSwift.compositeViewDescription()){
+			let lc: Core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
+			if(lc.globalState.rawValue == LinphoneGlobalOn.rawValue){
+				do {
+					let peerAddress = try Factory.Instance.createAddress(addr: (ChatConversationViewModel.sharedModel.chatRoom?.peerAddress?.asStringUriOnly())!)
+					let localAddress = try Factory.Instance.createAddress(addr: (ChatConversationViewModel.sharedModel.chatRoom?.localAddress?.asStringUriOnly())!)
+					if (peerAddress.isValid && localAddress.isValid) {
+						ChatConversationViewModel.sharedModel.chatRoom = lc.searchChatRoom(params: nil, localAddr: localAddress, remoteAddr: peerAddress, participants: nil)
+						if (ChatConversationViewModel.sharedModel.chatRoom != nil) {
+							ChatConversationViewModel.sharedModel.createChatConversation()
+							PhoneMainView.instance().currentRoom = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
+							tableControllerSwift.refreshDataAfterForeground()
+						}
+					}
+				}catch{
+					
+				}
+			}
+		}
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -253,8 +277,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
 		}
 	
-		
-		
 		handlePendingTransferIfAny()
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()

@@ -125,13 +125,19 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			let indexPathsVisible = self.collectionView.indexPathsForVisibleItems
 			if indexPathsVisible.count > 0 {
 				for i in 0...indexPathsVisible.count-1 {
-					let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
-					if (contact != nil){
-						let uri = "sip:" + contact!.username + "@" + contact!.domain
+					let cell = self.collectionView.cellForItem(at: indexPathsVisible[i])
+					if cell != nil {
+						let multilineCell = cell as! MultilineMessageCell
+						if multilineCell.imageUser.isHidden == false {
+							let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
+							if (contact != nil){
+								let uri = "sip:" + contact!.username + "@" + contact!.domain
 
-						if(uri == friend as! String){
-							let indexPath = indexPathsVisible[i]
-							collectionView.reloadItems(at: [indexPath])
+								if(uri == friend as! String){
+									let indexPath = indexPathsVisible[i]
+									collectionView.reloadItems(at: [indexPath])
+								}
+							}
 						}
 					}
 				}
@@ -154,6 +160,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		scrollBadge!.text = "0"
 	}
 	
+	func refreshDataAfterForeground(){
+		DispatchQueue.main.async {
+			self.collectionView.reloadData()
+		}
+	}
+	
 	func refreshData(isOutgoing: Bool){
 		if (ChatConversationTableViewModel.sharedModel.getNBMessages() > 1){
 			let isDisplayingBottomOfTable = collectionView.contentOffset.y <= 20
@@ -168,26 +180,25 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
                 collectionView.reloadData()
                 self.scrollToBottom(animated: true)
 			} else if !isOutgoing {
-				let selectedCellIndex = collectionView.indexPathsForVisibleItems.sorted().first!
-				let selectedCell = collectionView.cellForItem(at: selectedCellIndex)
-				let visibleRect = collectionView.convert(collectionView.bounds, to: selectedCell)
-				
-				UIView.performWithoutAnimation {
-                    collectionView.reloadData()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
-                        let newSelectedCell = self.collectionView.cellForItem(at: IndexPath(row: selectedCellIndex.row + 1, section: 0))
-                        let updatedVisibleRect = self.collectionView.convert(self.collectionView.bounds, to: newSelectedCell)
+				if !collectionView.indexPathsForVisibleItems.isEmpty {
+					let selectedCellIndex = collectionView.indexPathsForVisibleItems.sorted().first!
+					let selectedCell = collectionView.cellForItem(at: selectedCellIndex)
+					let visibleRect = collectionView.convert(collectionView.bounds, to: selectedCell)
+					
+					UIView.performWithoutAnimation {
+						collectionView.reloadData()
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
+							let newSelectedCell = self.collectionView.cellForItem(at: IndexPath(row: selectedCellIndex.row + 1, section: 0))
+							let updatedVisibleRect = self.collectionView.convert(self.collectionView.bounds, to: newSelectedCell)
 
-                        var contentOffset = self.collectionView.contentOffset
-                        contentOffset.y = contentOffset.y + (visibleRect.origin.y - updatedVisibleRect.origin.y)
-                        self.collectionView.contentOffset = contentOffset
-                    }
+							var contentOffset = self.collectionView.contentOffset
+							contentOffset.y = contentOffset.y + (visibleRect.origin.y - updatedVisibleRect.origin.y)
+							self.collectionView.contentOffset = contentOffset
+						}
+					}
+					scrollBadge!.isHidden = false
+					scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
 				}
-				
-				
-				scrollBadge!.isHidden = false
-				scrollBadge!.text = "\(ChatConversationViewModel.sharedModel.chatRoom?.unreadMessagesCount ?? 0)"
-				
 			} else {
                 collectionView.reloadData()
                 self.scrollToBottom(animated: false)
