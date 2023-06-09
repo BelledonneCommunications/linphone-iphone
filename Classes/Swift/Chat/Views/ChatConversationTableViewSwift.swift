@@ -132,7 +132,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
 							if (contact != nil){
 								let uri = "sip:" + contact!.username + "@" + contact!.domain
-
 								if(uri == friend as! String){
 									let indexPath = indexPathsVisible[i]
 									collectionView.reloadItems(at: [indexPath])
