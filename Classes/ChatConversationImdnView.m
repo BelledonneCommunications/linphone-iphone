@@ -101,10 +101,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)fitContent {
 	LinphoneChatMessage *_msg = linphone_event_log_get_chat_message(_event);
 	CGSize messageSize = [UIChatBubbleTextCell ViewHeightForMessage:_msg withWidth:self.view.frame.size.width];
-	[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
-								  _msgView.frame.origin.y,
-								  self.view.frame.size.width,
-								  messageSize.height+5)];
+	if (messageSize.height > self.view.bounds.size.height/2) {
+		[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
+									  _msgView.frame.origin.y,
+									  self.view.frame.size.width,
+									  self.view.bounds.size.height/2 +5)];
+	} else {
+		[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
+									  _msgView.frame.origin.y,
+									  self.view.frame.size.width,
+									  messageSize.height+5)];
+	}
 	
 	[_tableView setFrame:CGRectMake(_tableView.frame.origin.x,
 									_msgView.frame.origin.y + _msgView.frame.size.height + 10,
