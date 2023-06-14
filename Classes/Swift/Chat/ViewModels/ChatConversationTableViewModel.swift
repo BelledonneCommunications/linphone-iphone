@@ -22,7 +22,7 @@ import Foundation
 import linphonesw
 
 
-class ChatConversationTableViewModel: ControlsViewModel {
+class ChatConversationTableViewModel {
 	
 	static let sharedModel = ChatConversationTableViewModel()
  
@@ -40,10 +40,6 @@ class ChatConversationTableViewModel: ControlsViewModel {
 	var messageListSelected = MutableLiveData<[Bool]>([])
 	
 	var messageListToDelete : [EventLog] = []
-	
-	override init() {
-		super.init()
-	}
 
 	func getMessage(index: Int) -> EventLog? {
 		if (chatRoom != nil) {

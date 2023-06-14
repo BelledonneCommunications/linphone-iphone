@@ -22,7 +22,7 @@ import Foundation
 import linphonesw
 
 
-class ChatConversationViewModel: ControlsViewModel {
+class ChatConversationViewModel {
 	
 	static let sharedModel = ChatConversationViewModel()
 	
@@ -76,10 +76,6 @@ class ChatConversationViewModel: ControlsViewModel {
 	var indexPathVM = MutableLiveData<Int>()
 	var shareFileURL = MutableLiveData<String>()
 	var shareFileName = MutableLiveData<String>()
-	
-	override init() {
-		super.init()
-	}
 	
 	func resetViewModel(){
 		chatRoom?.removeDelegate(delegate: chatRoomDelegate!)

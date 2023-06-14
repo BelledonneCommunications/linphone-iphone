@@ -21,7 +21,7 @@ import Foundation
 import linphonesw
 
 
-class AudioPlayer: ControlsViewModel {
+class AudioPlayer {
 	static let sharedModel = AudioPlayer()
 	
 	static var linphonePlayer : Player? = nil
