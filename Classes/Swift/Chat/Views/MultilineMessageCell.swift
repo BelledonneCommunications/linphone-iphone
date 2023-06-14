@@ -998,7 +998,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				meetingView.isHidden = true
                 
 				event.chatMessage!.contents.forEach { content in
-					if (content.isFileTransfer && content.name != "") {
+					if (content.isFileTransfer && content.name != "" && !content.isVoiceRecording) {
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
                         collectionViewImagesGrid.reloadData()
                         
@@ -1009,7 +1009,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						imageViewBubble.isHidden = true
                     }
 					
-					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true) {
+					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true && !content.isVoiceRecording) {
 						var filePath = ""
 						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 							filePath = content.exportPlainFile()
@@ -1521,15 +1521,19 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	func createThumbnailOfVideoFromFileURL(videoURL: String) -> UIImage? {
 		if let urlEncoded = videoURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
-			if let urlVideo = URL(string: "file://" + urlEncoded){
-				let asset = AVAsset(url: urlVideo)
-				let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-				assetImgGenerate.appliesPreferredTrackTransform = true
-				do {
-					let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
-					let thumbnail = UIImage(cgImage: img)
-					return thumbnail
-				} catch _{
+			if !urlEncoded.isEmpty {
+				if let urlVideo = URL(string: "file://" + urlEncoded){
+					do {
+						let asset = AVAsset(url: urlVideo)
+						let assetImgGenerate = AVAssetImageGenerator(asset: asset)
+						assetImgGenerate.appliesPreferredTrackTransform = true
+						let img = try assetImgGenerate.copyCGImage(at: CMTimeMake(value: 1, timescale: 10), actualTime: nil)
+						let thumbnail = UIImage(cgImage: img)
+						return thumbnail
+					} catch _{
+						return nil
+					}
+				} else {
 					return nil
 				}
 			} else {

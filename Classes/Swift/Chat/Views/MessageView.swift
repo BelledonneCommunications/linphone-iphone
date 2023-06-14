@@ -40,6 +40,7 @@ class MessageView:  UIView, UITextViewDelegate {
 	var fileContext = false
 	var isComposing = false
 	var isLoading = false
+	var lastNumLines = 0.0
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -103,7 +104,29 @@ class MessageView:  UIView, UITextViewDelegate {
 		let chatRoom = ChatRoom.getSwiftObject(cObject: PhoneMainView.instance().currentRoom)
 		if ((messageText.text.isEmpty && !fileContext) || isLoading)  {
 			sendButton.isEnabled = false
+			emojisButton.isHidden = false
+			messageText.setWidth(80)
+			NotificationCenter.default.post(name: Notification.Name("LinphoneTextViewSize"), object: self)
+			lastNumLines = 0
 		} else {
+			if (messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
+				var onlyEmojis = true
+				messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
+					if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
+						onlyEmojis = false
+					}
+				}
+				if onlyEmojis {
+					emojisButton.isHidden = false
+					messageText.setWidth(100)
+				} else {
+					emojisButton.isHidden = true
+					messageText.setWidth(80)
+				}
+			} else {
+					emojisButton.isHidden = true
+				messageText.setWidth(80)
+			}
 			if !isComposing {
 				chatRoom.compose()
 				let timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
@@ -113,6 +136,29 @@ class MessageView:  UIView, UITextViewDelegate {
 			isComposing = true
 
 			sendButton.isEnabled = true
+			
+			let numLines = (messageText.contentSize.height / messageText.font!.lineHeight)
+			if(Int(numLines) != Int(lastNumLines)){
+				NotificationCenter.default.post(name: Notification.Name("LinphoneTextViewSize"), object: self)
+			}
+			lastNumLines = numLines
+		}
+	}
+}
+
+extension UIView {
+	func setWidth(_ h:CGFloat, animateTime:TimeInterval?=nil) {
+		if let c = self.constraints.first(where: { $0.firstAttribute == .width && $0.relation == .equal }) {
+			c.constant = CGFloat(h)
+
+			if let animateTime = animateTime {
+				UIView.animate(withDuration: animateTime, animations:{
+					self.superview?.layoutIfNeeded()
+				})
+			}
+			else {
+				self.superview?.layoutIfNeeded()
+			}
 		}
 	}
 }

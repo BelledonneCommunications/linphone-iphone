@@ -240,7 +240,7 @@ class BackActionsNavigationView:  UIViewController {
 		mediaSelector.isHidden = true
 
 		stackView.addArrangedSubview(messageView)
-		messageView.alignParentBottom().height(top_bar_height).matchParentSideBorders().done()
+		messageView.alignParentBottom().height(66).matchParentSideBorders().done()
 		
 		stackView.translatesAutoresizingMaskIntoConstraints = false;
 		view.addSubview(stackView)
@@ -276,6 +276,7 @@ class BackActionsNavigationView:  UIViewController {
 		}
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(self.changeSizeOfTextView), name: Notification.Name("LinphoneTextViewSize"), object: nil)
     }
 	
 	func resetRecordingProgressBar(){
@@ -395,5 +396,31 @@ class BackActionsNavigationView:  UIViewController {
 	}
 	
 	func deleteSelected(){
+	}
+	
+	@objc func changeSizeOfTextView(){
+		let numLines = (messageView.messageText.contentSize.height / messageView.messageText.font!.lineHeight)
+		if numLines >= 3 && numLines <= 6 {
+			messageView.setHeight(33*numLines - 33, animateTime: 0.1)
+		} else if numLines < 3 {
+			messageView.setHeight(66, animateTime: 0.1)
+		}
+	}
+}
+
+extension UIView {
+	func setHeight(_ h:CGFloat, animateTime:TimeInterval?=nil) {
+		if let c = self.constraints.first(where: { $0.firstAttribute == .height && $0.relation == .equal }) {
+			c.constant = CGFloat(h)
+
+			if let animateTime = animateTime {
+				UIView.animate(withDuration: animateTime, animations:{
+					self.superview?.layoutIfNeeded()
+				})
+			}
+			else {
+				self.superview?.layoutIfNeeded()
+			}
+		}
 	}
 }
