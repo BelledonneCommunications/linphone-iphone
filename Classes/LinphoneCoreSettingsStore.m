@@ -537,6 +537,7 @@
 		[self setBool:ANIMATED forKey:@"animations_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"screenshot_preference" withDefault:NO] forKey:@"screenshot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
 		[self setBool:[lm lpConfigBoolForKey:@"use_rls_presence" withDefault:YES] forKey:@"use_rls_presence"];
@@ -1110,6 +1111,9 @@
 		// advanced section
 		BOOL animations = [self boolForKey:@"animations_preference"];
 		[lm lpConfigSetInt:animations forKey:@"animations_preference"];
+		
+		BOOL screenshot = [self boolForKey:@"screenshot_preference"];
+		[lm lpConfigSetInt:screenshot forKey:@"screenshot_preference"];
 
 		UIDevice *device = [UIDevice currentDevice];
 		BOOL backgroundSupported = [device respondsToSelector:@selector(isMultitaskingSupported)] && [device isMultitaskingSupported];

@@ -223,4 +223,5 @@ import UIKit
 	static let ok =  NSLocalizedString("ok",comment:"")
 	static let conference_info_confirm_removal_delete = NSLocalizedString("DELETE",comment:"")
 	static let conference_unable_to_share_via_calendar = NSLocalizedString("Unable to add event to calendar. Check permissions",comment:"")
+	static let screenshot_restrictions = NSLocalizedString("Can't take a screenshot due to app restrictions", comment: "")
 }

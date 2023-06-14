@@ -49,6 +49,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
     var friend: Friend? = nil
     var friendDelegate: FriendDelegate? = nil
 	
+	let field = UITextField()
+	
 	var collectionViewMedia: UICollectionView = {
 		let top_bar_height = 66.0
 		let width = UIScreen.main.bounds.width * 0.9
@@ -150,6 +152,23 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		setupViews()
 		markAsRead = true
 		
+		UIApplication.shared.keyWindow?.makeSecure(field: field)
+		
+		NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
+			if (ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && self.floatingButton.isHidden == false) {
+				let popupView = UIAlertController(title: VoipTexts.screenshot_restrictions, message: nil, preferredStyle: .alert)
+				
+				let defaultAction = UIAlertAction(
+					title: NSLocalizedString("Ok", comment: ""),
+					style: .default)
+				popupView.addAction(defaultAction)
+				self.present(popupView, animated: true, completion:{
+					popupView.view.superview?.isUserInteractionEnabled = true
+					popupView.view.superview?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutsideOrCancel)))
+				})
+			}
+		}
+		
 		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
 			if((compose! && self.isComposingView.isHidden)||(!compose! && !self.isComposingView.isHidden)){
 				self.setComposingVisible(compose!, withDelay: 0.3)
@@ -224,7 +243,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		
 		let notificationCenter = NotificationCenter.default
-		notificationCenter.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)	}
+		notificationCenter.addObserver(self, selector: #selector(appMovedToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+	}
 	
 	@objc func appMovedToForeground() {
 		if(PhoneMainView.instance().currentView == ChatConversationViewSwift.compositeViewDescription()){
@@ -280,6 +300,12 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		handlePendingTransferIfAny()
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()
+		
+		if ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && floatingButton.isHidden == false {
+			UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: true)
+		}else{
+			UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: false)
+		}
 	}
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -287,6 +313,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
             friend?.removeDelegate(delegate: friendDelegate!)
         }
         AvatarBridge.removeAllObserver()
+		
+		UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: false)
     }
 	
 	override func viewDidDisappear(_ animated: Bool) {
@@ -1523,5 +1551,22 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		let chatRoomSwift = ChatRoom.getSwiftObject(cObject: chatRoom!)
 		chatRoomSwift.markAsRead()
 		PhoneMainView.instance().updateApplicationBadgeNumber()
+	}
+}
+
+extension UIView {
+	func makeSecure(field: UITextField) {
+		DispatchQueue.main.async {
+			field.isSecureTextEntry = false
+			self.addSubview(field)
+			field.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+			field.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+			self.layer.superlayer?.addSublayer(field.layer)
+			field.layer.sublayers?.first?.addSublayer(self.layer)
+		}
+	}
+	
+	func changeSecure(field: UITextField, isSecure: Bool){
+		field.isSecureTextEntry = isSecure
 	}
 }
