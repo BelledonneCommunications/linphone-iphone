@@ -61,7 +61,7 @@ class MessageView:  UIView, UITextViewDelegate {
 		pictureButton.setImage(UIImage(named:"chat_attachment_over.png"), for: .highlighted)
 		
 		addSubview(voiceRecordButton)
-		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: 10).matchParentHeight().done()
+		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: -2).matchParentHeight().done()
 		voiceRecordButton.size(w: 30, h: 30).done()
 		voiceRecordButton.setImage(UIImage(named:"vr_off.png"), for: .normal)
 		voiceRecordButton.setImage(UIImage(named:"vr_on.png"), for: .selected)
@@ -80,7 +80,7 @@ class MessageView:  UIView, UITextViewDelegate {
 		sendButton.onClickAction = action2
 		
 		addSubview(messageTextView)
-		messageTextView.toRightOf(voiceRecordButton, withLeftMargin: 5).toLeftOf(sendButton).matchParentHeight().done()
+		messageTextView.toRightOf(voiceRecordButton, withLeftMargin: -2).toLeftOf(sendButton, withRightMargin: -8).matchParentHeight().done()
 		
 		messageTextView.addSubview(messageWithEmojiView)
 		messageWithEmojiView.matchParentDimmensions(insetedByDx: 10).done()
