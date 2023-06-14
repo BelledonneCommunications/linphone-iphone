@@ -34,7 +34,7 @@ class MessageView:  UIView, UITextViewDelegate {
 	let sendButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
 	let emojisButton = CallControlButton(buttonTheme:VoipTheme.nav_button("emoji"))
 	let messageTextView = UIView()
-	let messageWithEmojiView = UIView()
+	let messageWithEmojiView = UIStackView()
 	let messageText = UITextView()
 	let ephemeralIndicator = UIImageView(image: UIImage(named: "ephemeral_messages_color_A.png"))
 	var fileContext = false
@@ -86,12 +86,12 @@ class MessageView:  UIView, UITextViewDelegate {
 		messageWithEmojiView.matchParentDimmensions(insetedByDx: 10).done()
 		messageWithEmojiView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		
-		messageWithEmojiView.addSubview(messageText)
+		messageWithEmojiView.addArrangedSubview(messageText)
 		messageText.matchParentHeight().alignParentLeft().alignParentRight(withMargin: 40).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
 		messageText.delegate = self
 		
-		messageWithEmojiView.addSubview(emojisButton)
+		messageWithEmojiView.addArrangedSubview(emojisButton)
 		emojisButton.alignParentRight().matchParentHeight().done()
 		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
@@ -105,8 +105,7 @@ class MessageView:  UIView, UITextViewDelegate {
 		if ((messageText.text.isEmpty && !fileContext) || isLoading)  {
 			sendButton.isEnabled = false
 			emojisButton.isHidden = false
-			messageText.setWidth(80)
-			NotificationCenter.default.post(name: Notification.Name("LinphoneTextViewSize"), object: self)
+			NotificationCenter.default.post(name: Notification.Name("LinphoneResetTextViewSize"), object: self)
 			lastNumLines = 0
 		} else {
 			if (messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
@@ -118,14 +117,11 @@ class MessageView:  UIView, UITextViewDelegate {
 				}
 				if onlyEmojis {
 					emojisButton.isHidden = false
-					messageText.setWidth(100)
 				} else {
 					emojisButton.isHidden = true
-					messageText.setWidth(80)
 				}
 			} else {
-					emojisButton.isHidden = true
-				messageText.setWidth(80)
+				emojisButton.isHidden = true
 			}
 			if !isComposing {
 				chatRoom.compose()
@@ -147,17 +143,17 @@ class MessageView:  UIView, UITextViewDelegate {
 }
 
 extension UIView {
-	func setWidth(_ h:CGFloat, animateTime:TimeInterval?=nil) {
+	func setWidth(_ w:CGFloat, animateTime:TimeInterval?=nil) {
 		if let c = self.constraints.first(where: { $0.firstAttribute == .width && $0.relation == .equal }) {
-			c.constant = CGFloat(h)
+			c.constant = CGFloat(w)
 
 			if let animateTime = animateTime {
 				UIView.animate(withDuration: animateTime, animations:{
-					self.superview?.layoutIfNeeded()
+					self.layoutIfNeeded()
 				})
 			}
 			else {
-				self.superview?.layoutIfNeeded()
+				self.layoutIfNeeded()
 			}
 		}
 	}

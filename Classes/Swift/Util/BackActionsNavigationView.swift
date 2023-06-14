@@ -277,6 +277,7 @@ class BackActionsNavigationView:  UIViewController {
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(self.changeSizeOfTextView), name: Notification.Name("LinphoneTextViewSize"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(self.resetSizeOfTextView), name: Notification.Name("LinphoneResetTextViewSize"), object: nil)
     }
 	
 	func resetRecordingProgressBar(){
@@ -400,11 +401,17 @@ class BackActionsNavigationView:  UIViewController {
 	
 	@objc func changeSizeOfTextView(){
 		let numLines = (messageView.messageText.contentSize.height / messageView.messageText.font!.lineHeight)
+		print("changeSizeOfTextViewchangeSizeOfTextView \(numLines)")
+
 		if numLines >= 3 && numLines <= 6 {
 			messageView.setHeight(33*numLines - 33, animateTime: 0.1)
 		} else if numLines < 3 {
 			messageView.setHeight(66, animateTime: 0.1)
 		}
+	}
+	
+	@objc func resetSizeOfTextView(){
+		messageView.setHeight(66, animateTime: 0.1)
 	}
 }
 
