@@ -29,9 +29,9 @@ class MessageView:  UIView, UITextViewDelegate {
 	var action2 : (() -> Void)? = nil
 	var action3 : (() -> Void)? = nil
 	
-	let pictureButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
-	let voiceRecordButton = CallControlButton(buttonTheme:VoipTheme.nav_button("vr_off"))
-	let sendButton = CallControlButton(buttonTheme:VoipTheme.nav_button(""))
+	let pictureButton = CallControlButton(buttonTheme:VoipTheme.nav_button("new_chat_attachment_default"))
+	let voiceRecordButton = CallControlButton(buttonTheme:VoipTheme.nav_button("new_vr_off"))
+	let sendButton = CallControlButton(buttonTheme:VoipTheme.nav_button("new_chat_send_default"))
 	let emojisButton = CallControlButton(buttonTheme:VoipTheme.nav_button("emoji"))
 	let messageTextView = UIView()
 	let messageWithEmojiView = UIStackView()
@@ -57,31 +57,23 @@ class MessageView:  UIView, UITextViewDelegate {
 		
 		addSubview(pictureButton)
 		pictureButton.alignParentLeft(withMargin: side_buttons_margin).matchParentHeight().done()
-		pictureButton.setImage(UIImage(named:"chat_attachment_default.png"), for: .normal)
-		pictureButton.setImage(UIImage(named:"chat_attachment_over.png"), for: .highlighted)
 		
 		addSubview(voiceRecordButton)
-		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: -2).matchParentHeight().done()
-		voiceRecordButton.size(w: 30, h: 30).done()
-		voiceRecordButton.setImage(UIImage(named:"vr_off.png"), for: .normal)
-		voiceRecordButton.setImage(UIImage(named:"vr_on.png"), for: .selected)
+		voiceRecordButton.toRightOf(pictureButton, withLeftMargin: -8).matchParentHeight().done()
 		voiceRecordButton.onClickAction = action3
 
 		addSubview(ephemeralIndicator)
 		ephemeralIndicator.alignParentRight(withMargin: 4).alignParentTop(withMargin: 4).size(w: 9, h: 10).done()
 		ephemeralIndicator.isHidden = true
 		
-		
 		addSubview(sendButton)
 		sendButton.alignParentRight(withMargin: side_buttons_margin).matchParentHeight().done()
-		sendButton.setImage(UIImage(named:"chat_send_default.png"), for: .normal)
-		sendButton.setImage(UIImage(named:"chat_send_over.png"), for: .highlighted)
 		sendButton.isEnabled = false
 		sendButton.onClickAction = action2
 		
 		addSubview(messageTextView)
-		messageTextView.toRightOf(voiceRecordButton, withLeftMargin: -2).toLeftOf(sendButton, withRightMargin: -8).matchParentHeight().done()
-		
+		messageTextView.toRightOf(voiceRecordButton, withLeftMargin: -8).toLeftOf(sendButton, withRightMargin: -8).matchParentHeight().done()
+
 		messageTextView.addSubview(messageWithEmojiView)
 		messageWithEmojiView.matchParentDimmensions(insetedByDx: 10).done()
 		messageWithEmojiView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
