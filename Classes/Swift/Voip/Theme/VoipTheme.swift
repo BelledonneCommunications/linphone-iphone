@@ -45,6 +45,8 @@ import UIKit
 	// General colors (used by VoIP)
 	
 	@objc static let primary_color = UIColor(hex:"#ff5e00")
+	@objc static let primary_light_color = UIColor(hex:"#ffdfcc")
+	@objc static let gray_light_color = UIColor(hex:"#e1e1e1")
 	static let primary_dark_color = UIColor(hex:"#e65000")
 	static let green_color = UIColor(hex:"#96c11f")
 	static let dark_green_color = UIColor(hex:"#7d9f21")
@@ -56,8 +58,8 @@ import UIKit
 	static let voip_conference_invite_out = UIColor(hex:"ffeee5")
 	static let voip_conference_invite_in = header_background_color
 	static let voip_conference_updated = UIColor(hex:"#EFAE00")
-	static let  voip_conference_cancelled_bg_color = UIColor(hex:"#FFE6E6")
-	static let  voip_dark_color5 = UIColor(hex:"#353B3F")
+	static let voip_conference_cancelled_bg_color = UIColor(hex:"#FFE6E6")
+	static let voip_dark_color5 = UIColor(hex:"#353B3F")
 
 	
 	
@@ -152,6 +154,7 @@ import UIKit
 	static let chat_conversation_reply_content = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 14.0)
 	static let chat_conversation_recording_duration = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)
 	static let chat_conversation_forward_label = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 12.0)
+	static let chat_conversation_black_text = TextStyle(fgColor: LightDarkColor(.black,.black), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 12.0)
     
     static let chat_conversation_download_button = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 14.0)
 	static let chat_conversation_download_progress_text = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Regular", size: 12.0)

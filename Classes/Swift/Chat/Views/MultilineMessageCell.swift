@@ -75,11 +75,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	var forwardView = UIView()
 	var forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
-	var forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var forwardLabel = StyledLabel(VoipTheme.chat_conversation_black_text)
 	
 	var replyView = UIView()
 	var replyIcon = UIImageView(image: UIImage(named: "menu_reply_default"))
-	var replyLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
+	var replyLabel = StyledLabel(VoipTheme.chat_conversation_black_text)
 	var replyContent = UIView()
 	var replyColorContent = UIView()
 	var replyLabelContent = StyledLabel(VoipTheme.chat_conversation_forward_label)
@@ -468,6 +468,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	//Text
 		label.numberOfLines = 0
 		label.lineBreakMode = .byWordWrapping
+		label.textColor = .black
 		
 		contentViewBubble.addSubview(label)
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -702,10 +703,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		eventMessageLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 		forwardView = UIView()
 		forwardIcon = UIImageView(image: UIImage(named: "menu_forward_default"))
-		forwardLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 		replyView = UIView()
 		replyIcon = UIImageView(image: UIImage(named: "menu_reply_default"))
-		replyLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 		replyContent = UIView()
 		replyColorContent = UIView()
 		replyLabelContent = StyledLabel(VoipTheme.chat_conversation_forward_label)
@@ -825,7 +824,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					contactDateLabel.size(w: 200, h: 0).done()
 				}
 
-				bubble.backgroundColor = UIColor("D").withAlphaComponent(0.2)
+				bubble.backgroundColor = VoipTheme.gray_light_color//.withAlphaComponent(0.2)
 			}else{
 				constraintLeadingBubble?.isActive = false
 				constraintTrailingBubble?.isActive = true
@@ -843,7 +842,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					contactDateLabel.size(w: 200, h: 0).done()
 				}
 				
-				bubble.backgroundColor = UIColor("A").withAlphaComponent(0.2)
+				bubble.backgroundColor = VoipTheme.primary_light_color//.withAlphaComponent(0.2)
                 displayImdnStatus(message: event.chatMessage!, state: event.chatMessage!.state)
 			}
 			
