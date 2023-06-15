@@ -143,7 +143,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	
 	var isPlayingVoiceRecording = false
-    
+	
+	var eventMessage: EventLog?
     var chatMessage: ChatMessage?
 	var chatMessageDelegate: ChatMessageDelegate? = nil
 	
@@ -778,6 +779,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	func configure(event: EventLog, selfIndexPathConfigure: IndexPath, editMode: Bool, selected: Bool) {
 		selfIndexMessage = selfIndexPathConfigure.row
+		eventMessage = event
         chatMessage = event.chatMessage
 		addMessageDelegate()
         imagesGridCollectionView.removeAll()

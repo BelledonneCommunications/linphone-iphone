@@ -235,7 +235,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MultilineMessageCell.reuseId, for: indexPath) as! MultilineMessageCell
 		cell.delegate = self
 		if let event = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPath.row){
-
 			if(ChatConversationTableViewModel.sharedModel.editModeOn.value! && indexPath.row >= ChatConversationTableViewModel.sharedModel.messageListSelected.value!.count){
 				for _ in ChatConversationTableViewModel.sharedModel.messageListSelected.value!.count...indexPath.row {
 					ChatConversationTableViewModel.sharedModel.messageListSelected.value!.append(false)
@@ -243,28 +242,28 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			}
 			
 			cell.configure(event: event, selfIndexPathConfigure: indexPath, editMode: ChatConversationTableViewModel.sharedModel.editModeOn.value!, selected: ChatConversationTableViewModel.sharedModel.editModeOn.value! ? ChatConversationTableViewModel.sharedModel.messageListSelected.value![indexPath.row] : false)
-            
-			if (event.chatMessage != nil){
+			
+			if (event.chatMessage != nil && ChatConversationViewModel.sharedModel.chatRoom != nil){
 				cell.onLongClickOneClick {
-					if(event.chatMessage != nil && ChatConversationViewModel.sharedModel.chatRoom != nil){
-						self.initDataSource(message: event.chatMessage!)
-						self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, event: event, preContentSize: cell.preContentViewBubble.frame.size.height)
+					if(cell.chatMessage != nil && ChatConversationViewModel.sharedModel.chatRoom != nil){
+						self.initDataSource(message: cell.chatMessage!)
+						self.tapChooseMenuItemMessage(contentViewBubble: cell.contentViewBubble, event: cell.eventMessage!, preContentSize: cell.preContentViewBubble.frame.size.height)
 					}
 				}
 			}
 			
 			if (!cell.replyContent.isHidden && event.chatMessage?.replyMessage != nil){
 				cell.replyContent.onClick {
-					self.scrollToMessage(message: (event.chatMessage?.replyMessage)!)
+					self.scrollToMessage(message: (cell.chatMessage?.replyMessage)!)
 				}
 			}
 			
 			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden){
 				cell.imageViewBubble.onClick {
-					self.onImageClick(chatMessage: event.chatMessage!, index: indexPath.row)
+					self.onImageClick(chatMessage: cell.chatMessage!, index: indexPath.row)
 				}
 				cell.imageVideoViewBubble.onClick {
-					self.onImageClick(chatMessage: event.chatMessage!, index: indexPath.row)
+					self.onImageClick(chatMessage: cell.chatMessage!, index: indexPath.row)
 				}
 			}
 		}
