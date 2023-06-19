@@ -152,7 +152,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		setupViews()
 		markAsRead = true
 		
-		UIApplication.shared.keyWindow?.makeSecure(field: field)
+		PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
 		
 		NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
 			if (ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && self.floatingButton.isHidden == false) {
