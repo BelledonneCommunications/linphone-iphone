@@ -152,7 +152,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		setupViews()
 		markAsRead = true
 		
-		PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
+		//PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
 		
 		NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
 			if (ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && self.floatingButton.isHidden == false) {
@@ -301,11 +301,13 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()
 		
+		/*
 		if ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && floatingButton.isHidden == false {
-			UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: true)
+			PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: true)
 		}else{
-			UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: false)
+			PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
 		}
+		 */
 	}
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -314,7 +316,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
         }
         AvatarBridge.removeAllObserver()
 		
-		UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: false)
+		//PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
     }
 	
 	override func viewDidDisappear(_ animated: Bool) {

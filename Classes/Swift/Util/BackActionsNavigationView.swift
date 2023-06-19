@@ -402,14 +402,14 @@ class BackActionsNavigationView:  UIViewController {
 	@objc func changeSizeOfTextView(){
 		let numLines = (messageView.messageText.contentSize.height / messageView.messageText.font!.lineHeight)
 		if numLines >= 3 && numLines <= 6 {
-			messageView.setHeight(33*numLines - 33, animateTime: 0.1)
+			messageView.setHeight(33*numLines - 33)
 		} else if numLines < 3 {
-			messageView.setHeight(66, animateTime: 0.1)
+			messageView.setHeight(66)
 		}
 	}
 	
 	@objc func resetSizeOfTextView(){
-		messageView.setHeight(66, animateTime: 0.1)
+		messageView.setHeight(66)
 	}
 }
 
