@@ -105,7 +105,7 @@
 				contact = [_ldapAndProvisioningContactAddressBookMap objectForKey:key];
 			}
 			
-			if (contact.friend != nil) {
+			if (contact.friend != nil && linphone_friend_get_address(contact.friend) != nil) {
 				char *curi = linphone_address_as_string_uri_only(linphone_friend_get_address(contact.friend));
 				NSString *uri = [NSString stringWithUTF8String:curi];
 
