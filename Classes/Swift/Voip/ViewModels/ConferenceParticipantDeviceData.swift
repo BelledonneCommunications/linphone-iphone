@@ -26,6 +26,9 @@ class ConferenceParticipantDeviceData  {
 	let isMe:Bool
 	
 	let videoEnabled = MutableLiveData<Bool>()
+	let videoAvailable = MutableLiveData<Bool>()
+	let isSendingVideo = MutableLiveData<Bool>()
+
 	let isSpeaking = MutableLiveData<Bool>()
 	let micMuted = MutableLiveData<Bool>()
 	
@@ -63,15 +66,15 @@ class ConferenceParticipantDeviceData  {
 			},
 			onStreamCapabilityChanged: { (participantDevice, direction, streamType) in
 				Log.i("[Conference Participant Device] Participant \(participantDevice.address?.asStringUriOnly()) video stream direction changed: \(direction)")
-				self.videoEnabled.value = direction == MediaDirection.SendOnly || direction == MediaDirection.SendRecv
 				if (streamType == StreamType.Video) {
+					self.isSendingVideo.value = direction == MediaDirection.SendRecv || direction == MediaDirection.SendOnly
 					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video capability changed to \(direction)")
 				}
 			},
 			onStreamAvailabilityChanged: { (participantDevice, available, streamType) in
 				if (streamType == StreamType.Video) {
 					Log.i("[Conference Participant Device] Participant [\(participantDevice.address?.asStringUriOnly())] video availability changed to \(available)")
-					self.videoEnabled.value = available
+					self.videoAvailable.value = available
 				}
 			}
 			
@@ -81,10 +84,17 @@ class ConferenceParticipantDeviceData  {
 		isSpeaking.value = false
 		micMuted.value = participantDevice.isMuted
 		
-		videoEnabled.value = participantDevice.getStreamAvailability(streamType: .Video)
-		
+		let videoCapability = participantDevice.getStreamCapability(streamType: StreamType.Video)
+		isSendingVideo.value = videoCapability == MediaDirection.SendRecv || videoCapability == MediaDirection.SendOnly
+		videoAvailable.value = participantDevice.getStreamAvailability(streamType: .Video)
+		videoAvailable.readCurrentAndObserve { _ in
+			self.videoEnabled.value = self.isVideoAvailableAndSendReceive()
+		}
+		isSendingVideo.observe { _ in
+			self.videoEnabled.value = self.isVideoAvailableAndSendReceive()
+		}
+
 		isInConference.value = participantDevice.isInConference
-		let videoCapability = participantDevice.getStreamCapability(streamType: .Video)
 		
 		isJoining.value = [.Joining,.Alerting].contains(participantDevice.state)
 		
@@ -121,5 +131,9 @@ class ConferenceParticipantDeviceData  {
 		} else {
 			participantDevice.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
 		}
+	}
+	
+	private func isVideoAvailableAndSendReceive() -> Bool {
+		return videoAvailable.value == true && isSendingVideo.value == true
 	}
 }
