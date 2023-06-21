@@ -62,8 +62,8 @@ class StyledValuePicker: UIView {
 
 		
 		
-		DropDown.appearance().textFont = formattedLabel.font
-		DropDown.appearance().cellHeight = form_input_height
+		dropDown.textFont = formattedLabel.font
+		dropDown.cellHeight = form_input_height
 		
 		dropDown.anchorView = self
 		dropDown.bottomOffset = CGPoint(x: 0, y:(dropDown.anchorView?.plainView.bounds.height)!)
@@ -93,10 +93,10 @@ class StyledValuePicker: UIView {
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			chevron.image = UIImage(named: "chevron_list_close")?.tinted(with: VoipTheme.voipDrawableColor.get())
 			self.formattedLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
-			DropDown.appearance().textColor = VoipTheme.conference_scheduling_font.fgColor.get()
-			DropDown.appearance().selectedTextColor = VoipTheme.conference_scheduling_font.fgColor.get()
-			DropDown.appearance().backgroundColor = VoipTheme.voipFormBackgroundColor.get()
-			DropDown.appearance().selectionBackgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.dropDown.textColor = VoipTheme.conference_scheduling_font.fgColor.get()
+			self.dropDown.selectedTextColor = VoipTheme.conference_scheduling_font.fgColor.get()
+			self.dropDown.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			self.dropDown.selectionBackgroundColor = VoipTheme.backgroundWhiteBlack.get()
 			self.dropDown.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 			self.setFormInputBackground(readOnly:readOnly)
 		}
