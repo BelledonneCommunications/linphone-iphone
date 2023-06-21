@@ -546,7 +546,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			Log.i("Messsage not delivered")
 		} else {
 			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
-				let view: ImageView = VIEW(ImageView.compositeViewDescription())
+				let view: ImageViewer = VIEW(ImageViewer.compositeViewDescription())
 				
 				var image = UIImage()
 				if chatMessage.contents.first!.type == "image" {
@@ -562,8 +562,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 						image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)!
 					}
 				}
+				
+				
 				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
-				view.image = image
+				view.imageViewer = image
 			} else {
 				let previewController = QLPreviewController()
 				self.previewItems = []

@@ -45,8 +45,6 @@ import Foundation
 
 		shareButton.addTarget(self, action: #selector(shareTextButton), for: .touchUpInside)
 		
-		super.backButton.isHidden = UIDevice.ipad()
-		
 		textViewViewer.isScrollEnabled = true
 		textViewViewer.isUserInteractionEnabled = true
 		textViewViewer.frame = CGRect(x: 0, y: top_bar_height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height-top_bar_height*2-32.0)
