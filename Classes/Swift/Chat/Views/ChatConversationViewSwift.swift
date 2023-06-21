@@ -152,8 +152,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		setupViews()
 		markAsRead = true
 		
-		//PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
-		UIApplication.shared.keyWindow?.makeSecure(field: field)
+		PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
 		
 		NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
 			if (ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && self.floatingButton.isHidden == false) {
@@ -302,13 +301,13 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		configureMessageField()
 		ChatConversationViewModel.sharedModel.shareFile()
 		
+		field.isUserInteractionEnabled = false
+		
 		if UIApplication.shared.keyWindow != nil {
 			if ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && floatingButton.isHidden == false {
-				//PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: true)
-				UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: true)
+				PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: true)
 			}else{
-				//PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
-				UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: false)
+				PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
 			}
 		}
 	}
@@ -319,10 +318,11 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
         }
         AvatarBridge.removeAllObserver()
 		
-		//PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
 		if UIApplication.shared.keyWindow != nil {
-			UIApplication.shared.keyWindow?.changeSecure(field: field, isSecure: false)
+			PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
 		}
+		
+		field.isUserInteractionEnabled = true
     }
 	
 	override func viewDidDisappear(_ animated: Bool) {
