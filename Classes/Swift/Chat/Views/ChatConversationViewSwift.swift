@@ -425,23 +425,27 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func displayGroupInfo() {
 		let contactsArray: NSMutableArray = []
+		let contactsArrayCopy: NSMutableArray = []
 		let admins: NSMutableArray = []
+		let adminsCopy: NSMutableArray = []
 		let participants = ChatConversationViewModel.sharedModel.chatRoom?.participants
 		participants?.forEach{ participant in
 			let curi = linphone_address_as_string_uri_only(linphone_participant_get_address(participant.getCobject))
 			let uri = String(utf8String: curi!)
 			contactsArray.add(uri!)
+			contactsArrayCopy.add(uri!)
 			if (linphone_participant_is_admin(participant.getCobject) != 0) {
 				admins.add(uri!)
+				adminsCopy.add(uri!)
 			}
 		}
 		
 		let view: ChatConversationInfoView = self.VIEW(ChatConversationInfoView.compositeViewDescription())
 		view.create = false
 		view.contacts = contactsArray
-		view.oldContacts = contactsArray
+		view.oldContacts = contactsArrayCopy
 		view.admins = admins
-		view.oldAdmins = admins
+		view.oldAdmins = adminsCopy
 		view.oldSubject = String(utf8String: linphone_chat_room_get_subject(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)) ?? LINPHONE_DUMMY_SUBJECT
 		view.room = ChatConversationViewModel.sharedModel.chatRoom?.getCobject
 		
