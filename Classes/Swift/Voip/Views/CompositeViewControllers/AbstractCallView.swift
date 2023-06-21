@@ -83,6 +83,8 @@ import linphonesw
 		
 		// Extra Buttons
 		let showextraButtons = CallControlButton(imageInset:AbstractIncomingOutgoingCallView.answer_decline_inset, buttonTheme: VoipTheme.call_more, onClickAction: {
+			self.view.bringSubviewToFront(self.shadingMask)
+			self.view.bringSubviewToFront(self.extraButtonsView)
 			self.showModalSubview(view: self.extraButtonsView)
 			ControlsViewModel.shared.audioRoutesSelected.value = false
 		})
@@ -101,6 +103,8 @@ import linphonesw
 		shadingMask.onClick {
 			if (!self.extraButtonsView.isHidden) {
 				self.hideModalSubview(view: self.extraButtonsView)
+			} else if (self.extraButtonsView.isHidden && !self.shadingMask.isHidden && ControlsViewModel.shared.numpadVisible.value == false && ControlsViewModel.shared.callStatsVisible.value == false){
+				self.shadingMask.isHidden = true
 			}
 			ControlsViewModel.shared.audioRoutesSelected.value = false
 		}
