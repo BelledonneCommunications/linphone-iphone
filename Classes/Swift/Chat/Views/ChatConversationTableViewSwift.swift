@@ -563,9 +563,11 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					}
 				}
 				
-				
-				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 				view.imageViewer = image
+				view.imageNameViewer = chatMessage.contents.first!.name.isEmpty ? "" : chatMessage.contents.first!.name
+				view.imagePathViewer = chatMessage.contents.first!.exportPlainFile()
+				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+
 			} else {
 				let previewController = QLPreviewController()
 				self.previewItems = []

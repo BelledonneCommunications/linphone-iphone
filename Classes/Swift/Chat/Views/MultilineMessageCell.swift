@@ -1516,8 +1516,12 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		let cellsPerRow = 1
 		let minimumInterItemSpacing = 1.0
-		let marginsAndInsets = window!.safeAreaInsets.left + window!.safeAreaInsets.right + minimumInterItemSpacing * CGFloat(cellsPerRow - 1)
-		layoutAttributes.bounds.size.width = ((window!.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
+		if window != nil {
+			let marginsAndInsets = window!.safeAreaInsets.left + window!.safeAreaInsets.right + minimumInterItemSpacing * CGFloat(cellsPerRow - 1)
+			layoutAttributes.bounds.size.width = ((window!.bounds.size.width - marginsAndInsets) / CGFloat(cellsPerRow)).rounded(.down)
+		} else {
+			layoutAttributes.bounds.size.width = (UIScreen.main.bounds.size.width / CGFloat(cellsPerRow)).rounded(.down)
+		}
 		return layoutAttributes
 	}
 	
