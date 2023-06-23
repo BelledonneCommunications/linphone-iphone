@@ -39,6 +39,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 	let imageScrollView = UIScrollView()
 	
 	//Video
+	var player: AVPlayer? = AVPlayer()
 
 	override func viewDidLoad() {
 		super.viewDidLoad(
@@ -55,7 +56,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		shareButton.alignParentRight(withMargin: side_buttons_margin).alignParentBottom(withMargin: 18).alignParentTop(withMargin: 18).done()
 
 		shareButton.addTarget(self, action: #selector(shareMediaButton), for: .touchUpInside)
-		
+		try! AVAudioSession.sharedInstance().setCategory(.playback)
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
 		}
@@ -65,7 +66,6 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		newImageView.removeFromSuperview()
 		imageViewViewer.removeFromSuperview()
 		imageScrollView.removeFromSuperview()
-		playerContainerView.removeFromSuperview()
 		if contentType == "image" {
 			setUpImageView()
 		} else if contentType == "video" {
@@ -154,11 +154,13 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		if let urlEncoded = imagePathViewer.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
 			if !urlEncoded.isEmpty {
 				if let urlVideo = URL(string: "file://" + urlEncoded){
-					let player = AVPlayer(url: urlVideo)
+					player = AVPlayer(url: urlVideo)
 					let playerLayer = AVPlayerLayer(player: player)
 					playerLayer.frame = CGRectMake(0, 66, vWidth, vHeight)
 					self.view.layer.addSublayer(playerLayer)
-					player.play()
+					if player != nil {
+						player!.play()
+					}
 				}
 			}
 		}
