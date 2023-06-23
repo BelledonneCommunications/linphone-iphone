@@ -303,7 +303,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 		field.isUserInteractionEnabled = false
 		
-		if UIApplication.shared.keyWindow != nil {
+		let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+		if keyWindow != nil {
 			if ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && floatingButton.isHidden == false {
 				PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: true)
 			}else{
@@ -318,7 +319,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
         }
         AvatarBridge.removeAllObserver()
 		
-		if UIApplication.shared.keyWindow != nil {
+		let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+		if keyWindow != nil {
 			PhoneMainView.instance()!.mainViewController.view.changeSecure(field: field, isSecure: false)
 		}
 		
