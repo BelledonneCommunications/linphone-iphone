@@ -944,7 +944,6 @@
 		D7097B35296D684900AEF6C5 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7097B34296D684900AEF6C5 /* FileType.swift */; };
 		D71418E329C9B4E0002EEF75 /* DownloadMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71418E229C9B4E0002EEF75 /* DownloadMessageCell.swift */; };
 		D71418E529C9E2CD002EEF75 /* CircularProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71418E429C9E2CD002EEF75 /* CircularProgressBarView.swift */; };
-		D73567CC2A433B76004E049F /* ImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73567CB2A433B76004E049F /* ImageViewer.swift */; };
 		D7421D9E29228A5200290CAB /* ChatConversationViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */; };
 		D74A44912923BAF90017D063 /* BackActionsNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */; };
 		D768763529CDA88200570747 /* UploadMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D768763429CDA88200570747 /* UploadMessageCell.swift */; };
@@ -954,6 +953,7 @@
 		D779D39C29A76DE6007B8087 /* ChatConversationTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */; };
 		D779D39E29AC9E93007B8087 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39D29AC9E92007B8087 /* AudioPlayer.swift */; };
 		D779D3A229B5E365007B8087 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D3A129B5E365007B8087 /* UIImageExtension.swift */; };
+		D780FF7D2A459CE3001535E6 /* MediaViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D780FF7C2A459CE3001535E6 /* MediaViewer.swift */; };
 		D7A4C0082A3B135800EFBD1B /* new_chat_attachment_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D7A4C0052A3B135800EFBD1B /* new_chat_attachment_default.png */; };
 		D7A4C0092A3B135800EFBD1B /* new_vr_off.png in Resources */ = {isa = PBXBuildFile; fileRef = D7A4C0062A3B135800EFBD1B /* new_vr_off.png */; };
 		D7A4C00A2A3B135800EFBD1B /* new_chat_send_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D7A4C0072A3B135800EFBD1B /* new_chat_send_default.png */; };
@@ -2192,7 +2192,6 @@
 		D7097B34296D684900AEF6C5 /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
 		D71418E229C9B4E0002EEF75 /* DownloadMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMessageCell.swift; sourceTree = "<group>"; };
 		D71418E429C9E2CD002EEF75 /* CircularProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBarView.swift; sourceTree = "<group>"; };
-		D73567CB2A433B76004E049F /* ImageViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewer.swift; sourceTree = "<group>"; };
 		D7421D9D29228A5200290CAB /* ChatConversationViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationViewSwift.swift; sourceTree = "<group>"; };
 		D74A44902923BAF90017D063 /* BackActionsNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackActionsNavigationView.swift; sourceTree = "<group>"; };
 		D768763429CDA88200570747 /* UploadMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMessageCell.swift; sourceTree = "<group>"; };
@@ -2202,6 +2201,7 @@
 		D779D39B29A76DE6007B8087 /* ChatConversationTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatConversationTableViewModel.swift; sourceTree = "<group>"; };
 		D779D39D29AC9E92007B8087 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		D779D3A129B5E365007B8087 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
+		D780FF7C2A459CE3001535E6 /* MediaViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaViewer.swift; sourceTree = "<group>"; };
 		D7A4C0052A3B135800EFBD1B /* new_chat_attachment_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_chat_attachment_default.png; sourceTree = "<group>"; };
 		D7A4C0062A3B135800EFBD1B /* new_vr_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_vr_off.png; sourceTree = "<group>"; };
 		D7A4C0072A3B135800EFBD1B /* new_chat_send_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_chat_send_default.png; sourceTree = "<group>"; };
@@ -3878,7 +3878,7 @@
 			isa = PBXGroup;
 			children = (
 				D7DA18702A02598700FABA0D /* TextViewer.swift */,
-				D73567CB2A433B76004E049F /* ImageViewer.swift */,
+				D780FF7C2A459CE3001535E6 /* MediaViewer.swift */,
 			);
 			path = Viewers;
 			sourceTree = "<group>";
@@ -5046,7 +5046,6 @@
 				22E0A822111C44E100B04932 /* AboutView.m in Sources */,
 				633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
-				D73567CC2A433B76004E049F /* ImageViewer.swift in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
 				633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */,
 				C63F7245285A24B10066163B /* VoipConferenceAudioOnlyView.swift in Sources */,
@@ -5242,6 +5241,7 @@
 				C63F724C285A24B10066163B /* ActiveCallView.swift in Sources */,
 				C63F7225285A24B10066163B /* UIImageExtensions.swift in Sources */,
 				C64A854E2667B67200252AD2 /* EphemeralSettingsView.m in Sources */,
+				D780FF7D2A459CE3001535E6 /* MediaViewer.swift in Sources */,
 				8C92ABF31FA773E50006FB5D /* UIChatNotifiedEventCell.m in Sources */,
 				C63F726E285A24B10066163B /* VFSUtil.swift in Sources */,
 				633FEF581D3CD5E00014B822 /* UIAvatarPresence.m in Sources */,

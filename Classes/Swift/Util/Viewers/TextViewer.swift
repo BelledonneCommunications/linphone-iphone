@@ -19,8 +19,8 @@
 
 import Foundation
 
-@objc class TextViewer:  BackNextNavigationView, UICompositeViewDelegate {
-
+class TextViewer: BackNextNavigationView, UICompositeViewDelegate  {
+	
 	static let compositeDescription = UICompositeViewDescription(TextViewer.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
@@ -43,7 +43,7 @@ import Foundation
 		super.topBar.addSubview(shareButton)
 		shareButton.alignParentRight(withMargin: side_buttons_margin).alignParentBottom(withMargin: 18).alignParentTop(withMargin: 18).done()
 
-		shareButton.addTarget(self, action: #selector(shareTextButton), for: .touchUpInside)
+		shareButton.addTarget(self, action: #selector(shareMediaButton), for: .touchUpInside)
 		
 		textViewViewer.isScrollEnabled = true
 		textViewViewer.isUserInteractionEnabled = true
@@ -62,21 +62,20 @@ import Foundation
 		textViewViewer.text = textViewer
 	}
 	
-	@IBAction func shareTextButton(_ sender: UIButton) {
-			
-			// text to share
-			let text = textViewer
-			
-			// set up activity view controller
-			let textToShare = [ text ]
-			let activityViewController = UIActivityViewController(activityItems: textToShare, applicationActivities: nil)
-			activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
-			
-			// exclude some activity types from the list (optional)
-			activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.airDrop, UIActivity.ActivityType.postToFacebook ]
-			
-			// present the view controller
-			self.present(activityViewController, animated: true, completion: nil)
-			
-		}
+	@objc func shareMediaButton(_ sender: UIButton) {
+		// text to share
+		let text = textViewer
+		
+		// set up activity view controller
+		let textToShare = [ text ]
+		let activityViewController = UIActivityViewController(activityItems: textToShare, applicationActivities: nil)
+		activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
+		
+		// exclude some activity types from the list (optional)
+		activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.airDrop, UIActivity.ActivityType.postToFacebook ]
+		
+		// present the view controller
+		self.present(activityViewController, animated: true, completion: nil)
+		
+	}
 }
