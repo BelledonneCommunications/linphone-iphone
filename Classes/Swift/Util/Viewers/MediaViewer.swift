@@ -79,19 +79,24 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		titleLabel.toRightOf(backButton).toLeftOf(shareButton).done()
 	}
 	
+	override func viewDidAppear(_ animated: Bool) {
+		self.navigationController?.isNavigationBarHidden = false
+		self.tabBarController?.tabBar.isHidden = false
+		PhoneMainView.instance().hideStatusBar(false)
+	}
+	
 	override func viewWillDisappear(_ animated: Bool) {
 		stopPlayer()
 	}
 	
 	func stopPlayer() {
 		if let play = player {
-			print("viewWillDisappearviewWillDisappear stopped")
 			play.pause()
 			play.replaceCurrentItem(with: nil)
 			try! AVAudioSession.sharedInstance().setActive(false)
-			print("viewWillDisappearviewWillDisappear player deallocated")
+			print("Player deallocated")
 		} else {
-			print("viewWillDisappearviewWillDisappear player was already deallocated")
+			print("Player was already deallocated")
 		}
 	}
 	
@@ -182,6 +187,25 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 					self.view.layer.addSublayer(playerLayer)
 					if player != nil {
 						player!.play()
+					}
+					
+					let pictureTap = UITapGestureRecognizer(target: self, action: #selector(videoTapped))
+					self.view.addGestureRecognizer(pictureTap)
+					self.view.isUserInteractionEnabled = true
+				}
+			}
+		}
+	}
+	
+	@objc func videoTapped(){
+		if let urlEncoded = imagePathViewer.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+			if !urlEncoded.isEmpty {
+				if let urlVideo = URL(string: "file://" + urlEncoded){
+					let player = AVPlayer(url: urlVideo)
+					let playerViewController = AVPlayerViewController()
+					playerViewController.player = player
+					self.present(playerViewController, animated: true) {
+						playerViewController.player!.play()
 					}
 				}
 			}
