@@ -32,6 +32,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 	var imageViewer = UIImage()
 	var previewItems : [QLPreviewItem?] = []
 	var contentType : String?
+	let shareButton = CallControlButton(buttonTheme:VoipTheme.nav_button("voip_export"))
 	
 	//Image
 	var newImageView = UIImageView()
@@ -40,6 +41,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 	
 	//Video
 	var player: AVPlayer? = AVPlayer()
+	var playerLayer = AVPlayerLayer()
 
 	override func viewDidLoad() {
 		super.viewDidLoad(
@@ -51,7 +53,6 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 			title:"")
 		super.nextButton.isHidden = true
 		
-		let shareButton = CallControlButton(buttonTheme:VoipTheme.nav_button("voip_export"))
 		super.topBar.addSubview(shareButton)
 		shareButton.alignParentRight(withMargin: side_buttons_margin).alignParentBottom(withMargin: 18).alignParentTop(withMargin: 18).done()
 
@@ -66,15 +67,37 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		newImageView.removeFromSuperview()
 		imageViewViewer.removeFromSuperview()
 		imageScrollView.removeFromSuperview()
+		playerLayer.removeFromSuperlayer()
 		if contentType == "image" {
 			setUpImageView()
 		} else if contentType == "video" {
 			setUpPlayerContainerView()
 		}
+		
+		try! AVAudioSession.sharedInstance().setActive(true)
+		titleLabel.text = imageNameViewer
+		titleLabel.toRightOf(backButton).toLeftOf(shareButton).done()
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		stopPlayer()
+	}
+	
+	func stopPlayer() {
+		if let play = player {
+			print("viewWillDisappearviewWillDisappear stopped")
+			play.pause()
+			play.replaceCurrentItem(with: nil)
+			try! AVAudioSession.sharedInstance().setActive(false)
+			print("viewWillDisappearviewWillDisappear player deallocated")
+		} else {
+			print("viewWillDisappearviewWillDisappear player was already deallocated")
+		}
 	}
 	
 	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
 		dismissFullscreenImageRotated()
+		stopPlayer()
 		self.viewWillAppear(true)
 	}
 	
@@ -145,7 +168,6 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		imageViewViewer.isUserInteractionEnabled = true
 		
 		imageViewViewer.image = imageViewer
-		titleLabel.text = imageNameViewer
 	}
 	
 	private func setUpPlayerContainerView() {
@@ -155,7 +177,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 			if !urlEncoded.isEmpty {
 				if let urlVideo = URL(string: "file://" + urlEncoded){
 					player = AVPlayer(url: urlVideo)
-					let playerLayer = AVPlayerLayer(player: player)
+					playerLayer = AVPlayerLayer(player: player)
 					playerLayer.frame = CGRectMake(0, 66, vWidth, vHeight)
 					self.view.layer.addSublayer(playerLayer)
 					if player != nil {
