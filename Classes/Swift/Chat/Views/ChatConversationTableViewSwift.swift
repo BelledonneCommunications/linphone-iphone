@@ -603,25 +603,30 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			Log.i("Messsage not delivered")
 		} else {
 			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
-				let view: ImageView = VIEW(ImageView.compositeViewDescription())
+				var viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
 				
 				var image = UIImage()
-				if chatMessage!.contents[index].type == "image" {
-					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-						var plainFile = chatMessage!.contents[index].exportPlainFile()
-						
-						image = UIImage(contentsOfFile: plainFile)!
-						
-						ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
-						plainFile = ""
-						
-					}else {
-						image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)!
+				if chatMessage != nil {
+					if chatMessage!.contents[index].type == "image" {
+						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+							var plainFile = chatMessage!.contents[index].exportPlainFile()
+							
+							image = UIImage(contentsOfFile: plainFile)!
+							
+							ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+							plainFile = ""
+							
+						}else {
+							image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)!
+						}
 					}
+					
+					viewer.imageViewer = image
+					viewer.imageNameViewer = chatMessage!.contents[index].name.isEmpty ? "" : chatMessage!.contents[index].name
+					viewer.imagePathViewer = chatMessage!.contents[index].exportPlainFile()
+					viewer.contentType = chatMessage!.contents[index].type
+					PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
 				}
-				
-				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
-				view.image = image
 			} else {
 				let previewController = QLPreviewController()
 				self.previewItems = []

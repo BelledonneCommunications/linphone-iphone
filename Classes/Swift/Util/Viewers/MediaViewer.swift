@@ -20,6 +20,7 @@
 import Foundation
 import AVFoundation
 import AVKit
+import PDFKit
 
 class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollViewDelegate, QLPreviewControllerDelegate, QLPreviewControllerDataSource {
 	
@@ -72,6 +73,35 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 			setUpImageView()
 		} else if contentType == "video" {
 			setUpPlayerContainerView()
+		} else if contentType == "file" {
+			if imageNameViewer.lowercased().components(separatedBy: ".").last == "pdf" {
+				/*
+				let pdfView = PDFView()
+
+				//pdfView.translatesAutoresizingMaskIntoConstraints = false
+				view.addSubview(pdfView)
+				pdfView.backgroundColor = .red
+				pdfView.frame = CGRectMake(0, 0, UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height-20)
+				*/
+				
+				let pdfView = PDFView()
+
+				pdfView.translatesAutoresizingMaskIntoConstraints = false
+				view.addSubview(pdfView)
+
+				pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+				pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+				pdfView.topAnchor.constraint(equalTo: super.topBar.bottomAnchor).isActive = true
+				pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+				
+				if let urlEncoded = imagePathViewer.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+					if let urlPDF = URL(string: urlEncoded){
+						if let document = PDFDocument(url: urlPDF) {
+							pdfView.document = document
+						}
+					}
+				}
+			}
 		}
 		
 		try! AVAudioSession.sharedInstance().setActive(true)
