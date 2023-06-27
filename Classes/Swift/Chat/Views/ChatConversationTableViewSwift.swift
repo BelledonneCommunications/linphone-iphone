@@ -217,16 +217,20 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffsetY = scrollView.contentOffset.y
         if contentOffsetY <= 20{
-            floatingScrollButton?.isHidden = true
-            floatingScrollBackground?.isHidden = true
-            scrollBadge?.text = "0"
-            ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+			if floatingScrollButton != nil && floatingScrollBackground != nil {
+				floatingScrollButton?.isHidden = true
+				floatingScrollBackground?.isHidden = true
+				scrollBadge?.text = "0"
+				ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+			}
         } else {
-            floatingScrollButton?.isHidden = false
-            floatingScrollBackground?.isHidden = false;
-            if(scrollBadge?.text ==  "0"){
-                scrollBadge?.isHidden = true
-            }
+			if floatingScrollButton != nil && floatingScrollBackground != nil {
+				floatingScrollButton?.isHidden = false
+				floatingScrollBackground?.isHidden = false;
+				if(scrollBadge?.text ==  "0"){
+					scrollBadge?.isHidden = true
+				}
+			}
         }
     }
 	

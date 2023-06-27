@@ -1000,7 +1000,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				meetingView.isHidden = true
                 
 				event.chatMessage!.contents.forEach { content in
+					print("chatMessagecontentschatMessagecontents content.type \(eventMessage?.chatMessage?.contentType)")
 					if (content.isFileTransfer && content.name != "" && !content.isVoiceRecording) {
+						print("chatMessagecontentschatMessagecontents 1")
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
                         collectionViewImagesGrid.reloadData()
                         
@@ -1012,6 +1014,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                     }
 					
 					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true && !content.isVoiceRecording) {
+						print("chatMessagecontentschatMessagecontents 2")
 						var filePath = ""
 						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 							filePath = content.exportPlainFile()
@@ -1098,8 +1101,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 					}
                     
-					if content.type == "text"{
-						//label.text = content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines)
+					if content.type == "text" && !content.isFile{
+						print("chatMessagecontentschatMessagecontents 3 text \(content.isFile)")
 						if event.chatMessage!.contents.count > 1 {
 							NSLayoutConstraint.deactivate(labelConstraints)
 							NSLayoutConstraint.activate(labelTopConstraints)
@@ -1107,36 +1110,32 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							NSLayoutConstraint.activate(labelConstraints)
 							NSLayoutConstraint.deactivate(labelTopConstraints)
 						}
-                        
-                        if imagesGridCollectionView.count == 0 {
+						
+						if imagesGridCollectionView.count == 0 {
 							//imagesGridCollectionView.append(nil)
-                            imagesGridCollectionViewNil += 1
-                        }
+							imagesGridCollectionViewNil += 1
+						}
 						
 						label.font = label.font.withSize(17)
-                        
-                        if (content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
-                            var onlyEmojis = true
-                            content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
-                                if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
-                                    onlyEmojis = false
-                                }
-                            }
-                            if onlyEmojis {
-                                label.font = label.font.withSize(51)
-                            }
-                        }
 						
-						
+						if (content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
+							var onlyEmojis = true
+							content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
+								if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
+									onlyEmojis = false
+								}
+							}
+							if onlyEmojis {
+								label.font = label.font.withSize(51)
+							}
+						}
 						
 						checkIfIsLinkOrPhoneNumber(content: content.utf8Text)
 						
-						
-                        
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
-						
 					}else if content.type == "image"{
+						print("chatMessagecontentschatMessagecontents 4 image")
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
@@ -1171,6 +1170,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 
 					}else if content.type == "video"{
+						print("chatMessagecontentschatMessagecontents 5 video")
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
@@ -1205,6 +1205,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 						
 					}else if content.isVoiceRecording {
+						print("chatMessagecontentschatMessagecontents 6 recording")
 						recordingView.subviews.forEach({ view in
 							view.removeFromSuperview()
 						})
@@ -1213,6 +1214,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							messageWithRecording = true
 						}
 					}else{
+						print("chatMessagecontentschatMessagecontents 7 file")
 						if(content.isFile && !content.isText){
 							var filePath = ""
 							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
@@ -1308,9 +1310,35 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								imageViewBubble.image = nil
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageViewBubble.isHidden = true
+							} else {
+								var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? content.exportPlainFile() : content.filePath
+								if let urlEncoded = filePathString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+									if !urlEncoded.isEmpty {
+										if let urlFile = URL(string: "file://" + urlEncoded){
+											do {
+												let text = try String(contentsOf: urlFile, encoding: .utf8)
+												
+												print("chatMessagecontentschatMessagecontents filetextfiletext \(text)")
+												imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
+												collectionViewImagesGrid.reloadData()
+												
+												collectionViewImagesGrid.isHidden = false
+												NSLayoutConstraint.activate(imagesGridConstraints)
+												imageViewBubble.image = nil
+												NSLayoutConstraint.deactivate(imageConstraints)
+												imageViewBubble.isHidden = true
+											} catch {}
+										}
+									}
+								}
+								if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePathString)
+									filePathString = ""
+								}
 							}
 						}
-					}}
+					}
+				}
 				if imagesGridCollectionView.count > 0 {
 					self.collectionViewImagesGrid.layoutIfNeeded()
 				}

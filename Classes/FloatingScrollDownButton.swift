@@ -70,7 +70,7 @@ extension ChatConversationTableViewSwift {
 			keyWindow.addSubview(self.floatingScrollBackground!)
 			keyWindow.addSubview(floatingButton)
 			keyWindow.trailingAnchor.constraint(equalTo: floatingButton.trailingAnchor, constant: Constants.trailingValue).isActive = true
-			floatingButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -25).isActive = true
+			floatingButton.bottomAnchor.constraint(equalTo: keyWindow.bottomAnchor, constant: -25).isActive = true
 			floatingButton.widthAnchor.constraint(equalToConstant:
 													Constants.buttonWidth).isActive = true
 			floatingButton.heightAnchor.constraint(equalToConstant:

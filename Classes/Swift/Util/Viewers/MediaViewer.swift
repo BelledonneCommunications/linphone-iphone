@@ -44,6 +44,9 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 	var player: AVPlayer? = AVPlayer()
 	var playerLayer = AVPlayerLayer()
 
+	//PDF
+	let pdfView = PDFView()
+
 	override func viewDidLoad() {
 		super.viewDidLoad(
 			backAction: {
@@ -69,38 +72,14 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		imageViewViewer.removeFromSuperview()
 		imageScrollView.removeFromSuperview()
 		playerLayer.removeFromSuperlayer()
+		pdfView.removeFromSuperview()
 		if contentType == "image" {
 			setUpImageView()
 		} else if contentType == "video" {
 			setUpPlayerContainerView()
 		} else if contentType == "file" {
 			if imageNameViewer.lowercased().components(separatedBy: ".").last == "pdf" {
-				/*
-				let pdfView = PDFView()
-
-				//pdfView.translatesAutoresizingMaskIntoConstraints = false
-				view.addSubview(pdfView)
-				pdfView.backgroundColor = .red
-				pdfView.frame = CGRectMake(0, 0, UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height-20)
-				*/
-				
-				let pdfView = PDFView()
-
-				pdfView.translatesAutoresizingMaskIntoConstraints = false
-				view.addSubview(pdfView)
-
-				pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-				pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-				pdfView.topAnchor.constraint(equalTo: super.topBar.bottomAnchor).isActive = true
-				pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-				
-				if let urlEncoded = imagePathViewer.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
-					if let urlPDF = URL(string: urlEncoded){
-						if let document = PDFDocument(url: urlPDF) {
-							pdfView.document = document
-						}
-					}
-				}
+				displayPDF()
 			}
 		}
 		
@@ -222,6 +201,30 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 					let pictureTap = UITapGestureRecognizer(target: self, action: #selector(videoTapped))
 					self.view.addGestureRecognizer(pictureTap)
 					self.view.isUserInteractionEnabled = true
+				}
+			}
+		}
+	}
+	
+	func displayPDF() {
+		if let urlEncoded = imagePathViewer.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+			if !urlEncoded.isEmpty {
+				pdfView.translatesAutoresizingMaskIntoConstraints = false
+				view.addSubview(pdfView)
+
+				pdfView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+				pdfView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+				pdfView.topAnchor.constraint(equalTo: super.topBar.bottomAnchor).isActive = true
+				pdfView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+				pdfView.autoScales = true
+				
+				if let urlEncoded = imagePathViewer.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+					if let path =  URL(string: "file://" + urlEncoded) {
+						if let document = PDFDocument(url: path) {
+							pdfView.document = document
+						}
+					}
+
 				}
 			}
 		}
