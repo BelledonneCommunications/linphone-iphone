@@ -1317,8 +1317,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 										if let urlFile = URL(string: "file://" + urlEncoded){
 											do {
 												let text = try String(contentsOf: urlFile, encoding: .utf8)
-												
-												print("chatMessagecontentschatMessagecontents filetextfiletext \(text)")
 												imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
 												collectionViewImagesGrid.reloadData()
 												

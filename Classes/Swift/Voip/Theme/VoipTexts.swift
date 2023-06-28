@@ -214,6 +214,10 @@ import UIKit
     @objc static let chat_room_presence_last_seen_online = NSLocalizedString("Online on ",comment:"")
     @objc static let chat_room_presence_away = NSLocalizedString("Away",comment:"")
 	
+	@objc static let chat_message_cant_open_file_in_app_dialog_title = NSLocalizedString("It seems we can't display the file",comment:"")
+	@objc static let chat_message_cant_open_file_in_app_dialog_message = NSLocalizedString("Would you like to open it as text or export it (unencrypted) to a third party app if available?",comment:"")
+	@objc static let chat_message_cant_open_file_in_app_dialog_export_button = NSLocalizedString("Export",comment:"")
+	
 	// FROM ANDROID END
 	
 	

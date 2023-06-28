@@ -323,6 +323,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				LpConfig *conf = LinphoneManager.instance.configDb;
 				char *config = linphone_config_dump(conf);
 				view.textViewer = [NSString stringWithUTF8String: config];
+				view.textNameViewer = @"";
 				[PhoneMainView.instance popToView:view.compositeViewDescription];
 			}];
 

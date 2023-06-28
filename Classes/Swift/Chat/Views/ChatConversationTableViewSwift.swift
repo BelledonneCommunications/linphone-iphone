@@ -607,30 +607,93 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			Log.i("Messsage not delivered")
 		} else {
 			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
-				var viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
 				
-				var image = UIImage()
-				if chatMessage != nil {
-					if chatMessage!.contents[index].type == "image" {
-						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-							var plainFile = chatMessage!.contents[index].exportPlainFile()
-							
-							image = UIImage(contentsOfFile: plainFile)!
-							
-							ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
-							plainFile = ""
-							
-						}else {
-							image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)!
+				var text = ""
+				var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? chatMessage!.contents[index].exportPlainFile() : chatMessage!.contents[index].filePath
+				if let urlEncoded = filePathString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+					if !urlEncoded.isEmpty {
+						if let urlFile = URL(string: "file://" + urlEncoded){
+							do {
+								text = try String(contentsOf: urlFile, encoding: .utf8)
+								let viewer: TextViewer = VIEW(TextViewer.compositeViewDescription())
+								
+								if chatMessage != nil {
+									
+									viewer.textViewer = text
+									viewer.textNameViewer = chatMessage!.contents[index].name.isEmpty ? "" : chatMessage!.contents[index].name
+									PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
+								}
+
+							} catch {
+								if text == "" && (chatMessage!.contents[index].type == "image" || chatMessage!.contents[index].type == "video" || chatMessage!.contents[index].name.lowercased().components(separatedBy: ".").last == "pdf"){
+									let viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
+									
+									var image = UIImage()
+									if chatMessage != nil {
+										if chatMessage!.contents[index].type == "image" {
+											if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+												var plainFile = chatMessage!.contents[index].exportPlainFile()
+												
+												image = UIImage(contentsOfFile: plainFile)!
+												
+												ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
+												plainFile = ""
+												
+											}else {
+												image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)!
+											}
+										}
+										
+										viewer.imageViewer = image
+										viewer.imageNameViewer = chatMessage!.contents[index].name.isEmpty ? "" : chatMessage!.contents[index].name
+										viewer.imagePathViewer = chatMessage!.contents[index].exportPlainFile()
+										viewer.contentType = chatMessage!.contents[index].type
+										PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
+									}
+								} else {
+									let exportView = UIAlertController(
+										title: VoipTexts.chat_message_cant_open_file_in_app_dialog_title,
+										message: VoipTexts.chat_message_cant_open_file_in_app_dialog_message,
+										preferredStyle: .alert)
+									
+									let cancelAction = UIAlertAction(
+										title: VoipTexts.cancel,
+										style: .default,
+										handler: { action in
+										})
+									
+									let exportAction = UIAlertAction(
+										title: VoipTexts.chat_message_cant_open_file_in_app_dialog_export_button,
+										style: .destructive,
+										handler: { action in
+											let previewController = QLPreviewController()
+											self.previewItems = []
+											
+											self.previewItems.append(self.getPreviewItem(filePath: filePathString))
+											
+											
+											self.afterPreviewIndex = indexMessage
+											
+											previewController.dataSource = self
+											previewController.currentPreviewItemIndex = index
+											previewController.delegate = self
+											PhoneMainView.instance().mainViewController.present(previewController, animated: true, completion: nil)
+										})
+
+									exportView.addAction(cancelAction)
+									exportView.addAction(exportAction)
+									PhoneMainView.instance()!.present(exportView, animated: true)
+								}
+							}
 						}
 					}
-					
-					viewer.imageViewer = image
-					viewer.imageNameViewer = chatMessage!.contents[index].name.isEmpty ? "" : chatMessage!.contents[index].name
-					viewer.imagePathViewer = chatMessage!.contents[index].exportPlainFile()
-					viewer.contentType = chatMessage!.contents[index].type
-					PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
 				}
+				/*
+				if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+					ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePathString)
+					filePathString = ""
+				}
+				 */
 			} else {
 				let previewController = QLPreviewController()
 				self.previewItems = []

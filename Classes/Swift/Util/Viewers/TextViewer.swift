@@ -26,6 +26,7 @@ class TextViewer: BackNextNavigationView, UICompositeViewDelegate  {
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
 	@objc var textViewer = ""
+	@objc var textNameViewer = ""
 	let textViewViewer = UITextView()
 	
 	override func viewDidLoad() {
@@ -60,21 +61,18 @@ class TextViewer: BackNextNavigationView, UICompositeViewDelegate  {
 	
 	override func viewDidAppear(_ animated: Bool) {
 		textViewViewer.text = textViewer
+		titleLabel.text = textNameViewer
 	}
 	
 	@objc func shareMediaButton(_ sender: UIButton) {
-		// text to share
 		let text = textViewer
 		
-		// set up activity view controller
 		let textToShare = [ text ]
 		let activityViewController = UIActivityViewController(activityItems: textToShare, applicationActivities: nil)
 		activityViewController.popoverPresentationController?.sourceView = self.view // so that iPads won't crash
 		
-		// exclude some activity types from the list (optional)
 		activityViewController.excludedActivityTypes = [ UIActivity.ActivityType.airDrop, UIActivity.ActivityType.postToFacebook ]
 		
-		// present the view controller
 		self.present(activityViewController, animated: true, completion: nil)
 		
 	}
