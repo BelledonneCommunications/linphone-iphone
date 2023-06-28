@@ -1000,9 +1000,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				meetingView.isHidden = true
                 
 				event.chatMessage!.contents.forEach { content in
-					print("chatMessagecontentschatMessagecontents content.type \(eventMessage?.chatMessage?.contentType)")
 					if (content.isFileTransfer && content.name != "" && !content.isVoiceRecording) {
-						print("chatMessagecontentschatMessagecontents 1")
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
                         collectionViewImagesGrid.reloadData()
                         
@@ -1014,7 +1012,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
                     }
 					
 					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true && !content.isVoiceRecording) {
-						print("chatMessagecontentschatMessagecontents 2")
 						var filePath = ""
 						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 							filePath = content.exportPlainFile()
@@ -1102,7 +1099,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					}
                     
 					if content.type == "text" && !content.isFile{
-						print("chatMessagecontentschatMessagecontents 3 text \(content.isFile)")
 						if event.chatMessage!.contents.count > 1 {
 							NSLayoutConstraint.deactivate(labelConstraints)
 							NSLayoutConstraint.activate(labelTopConstraints)
@@ -1135,7 +1131,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
 					}else if content.type == "image"{
-						print("chatMessagecontentschatMessagecontents 4 image")
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
@@ -1170,7 +1165,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 
 					}else if content.type == "video"{
-						print("chatMessagecontentschatMessagecontents 5 video")
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
 								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
@@ -1205,7 +1199,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 						
 					}else if content.isVoiceRecording {
-						print("chatMessagecontentschatMessagecontents 6 recording")
 						recordingView.subviews.forEach({ view in
 							view.removeFromSuperview()
 						})
@@ -1214,7 +1207,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							messageWithRecording = true
 						}
 					}else{
-						print("chatMessagecontentschatMessagecontents 7 file")
 						if(content.isFile && !content.isText){
 							var filePath = ""
 							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
