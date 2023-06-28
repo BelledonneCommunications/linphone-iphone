@@ -152,8 +152,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		setupViews()
 		markAsRead = true
 		
-		PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
-		
+		//PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
+		/*
 		NotificationCenter.default.addObserver(forName: UIApplication.userDidTakeScreenshotNotification, object: nil, queue: OperationQueue.main) { notification in
 			if (ConfigManager.instance().lpConfigBoolForKey(key: "screenshot_preference") == false && self.floatingButton.isHidden == false) {
 				let popupView = UIAlertController(title: VoipTexts.screenshot_restrictions, message: nil, preferredStyle: .alert)
@@ -168,6 +168,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				})
 			}
 		}
+		 */
 		
 		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
 			if((compose! && self.isComposingView.isHidden)||(!compose! && !self.isComposingView.isHidden)){
