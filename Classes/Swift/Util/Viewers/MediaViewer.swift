@@ -118,7 +118,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 	@IBAction func imageTapped(_ sender: UITapGestureRecognizer) {
 		let imageView = sender.view as! UIImageView
 		newImageView = UIImageView(image: imageView.image)
-		newImageView.frame = CGRectMake(0, 0, UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height-20)
+		newImageView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height-20)
 		newImageView.backgroundColor = .black
 		newImageView.contentMode = .scaleAspectFit
 		newImageView.isUserInteractionEnabled = true
@@ -164,7 +164,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		let vHeight = self.view.bounds.size.height-66
 		
 		imageScrollView.delegate = self
-		imageScrollView.frame = CGRectMake(0, 66, vWidth, vHeight)
+		imageScrollView.frame = CGRect(x: 0, y: 66, width: vWidth, height: vHeight)
 		imageScrollView.showsVerticalScrollIndicator = true
 
 		imageScrollView.minimumZoomScale = 1.0
@@ -192,7 +192,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 				if let urlVideo = URL(string: "file://" + urlEncoded){
 					player = AVPlayer(url: urlVideo)
 					playerLayer = AVPlayerLayer(player: player)
-					playerLayer.frame = CGRectMake(0, 66, vWidth, vHeight)
+					playerLayer.frame = CGRect(x: 0, y: 66, width: vWidth, height: vHeight)
 					self.view.layer.addSublayer(playerLayer)
 					if player != nil {
 						player!.play()
