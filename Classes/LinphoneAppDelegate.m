@@ -676,10 +676,12 @@
 				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 				if (room) {
 					[PhoneMainView.instance resetBeforeGoToChatRoomSwift];
+					[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 					[PhoneMainView.instance goToChatRoomSwift:room];
 					return;
+				} else {
+					[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 				}
-				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
 			if (!call) return;
