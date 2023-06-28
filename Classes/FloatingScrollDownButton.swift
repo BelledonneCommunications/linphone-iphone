@@ -65,12 +65,14 @@ extension ChatConversationTableViewSwift {
 	
 	private func constrainFloatingButtonToWindow() {
 		DispatchQueue.main.async {
-			guard let keyWindow = PhoneMainView.instance()!.mainViewController.view,
+			guard let keyWindow = self.view,
 				  let floatingButton = self.floatingScrollButton else { return }
 			keyWindow.addSubview(self.floatingScrollBackground!)
 			keyWindow.addSubview(floatingButton)
 			keyWindow.trailingAnchor.constraint(equalTo: floatingButton.trailingAnchor, constant: Constants.trailingValue).isActive = true
-			floatingButton.bottomAnchor.constraint(equalTo: keyWindow.bottomAnchor, constant: -(25 + 66)).isActive = true
+			
+			floatingButton.bottomAnchor.constraint(equalTo: keyWindow.bottomAnchor, constant: -25).isActive = true
+			
 			floatingButton.widthAnchor.constraint(equalToConstant:
 													Constants.buttonWidth).isActive = true
 			floatingButton.heightAnchor.constraint(equalToConstant:
