@@ -399,6 +399,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			imageViewBubble.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
 		]
 		
+		imageViewBubble.contentMode = .scaleAspectFit
+		
 		imageViewBubble.addSubview(circularProgressBarImageView)
 		progressBarImageConstraints = [
 			circularProgressBarImageView.centerXAnchor.constraint(equalTo: imageViewBubble.centerXAnchor),
@@ -422,6 +424,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			imageVideoViewBubble.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			imageVideoViewBubble.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
+		
+		imageVideoViewBubble.contentMode = .scaleAspectFit
+		
 		if #available(iOS 13.0, *) {
 			imagePlayViewBubble.image = (UIImage(named: "vr_play")!.withTintColor(.white))
 		}
