@@ -667,7 +667,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 		let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		
-		AudioPlayer.stopSharedPlayer()
 		AudioPlayer.initSharedPlayer()
 		
 		if (!isOneToOneChat) {
