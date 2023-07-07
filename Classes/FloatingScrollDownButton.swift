@@ -8,66 +8,90 @@
 import Foundation
 import UIKit
 
-public extension ChatConversationTableView {
+extension ChatConversationTableViewSwift {
 
 	private enum Constants {
-		static let trailingValue: CGFloat = 20.0
+		static let trailingValue: CGFloat = 30.0
 		static let leadingValue: CGFloat = 85.0
-		static let buttonHeight: CGFloat = 40.0
-		static let buttonWidth: CGFloat = 40.0
+		static let buttonHeight: CGFloat = 16.0
+		static let buttonWidth: CGFloat = 16.0
 	}
 	
+	/*
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		tableView.tableFooterView = UIView()
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
 		createFloatingButton()
 	}
+	 */
 	
-	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-		if let lastCellRowIndex = tableView.indexPathsForVisibleRows?.last?.row {
-			if( lastCellRowIndex != self.totalNumberOfItems() - 1) {
-				self.floatingScrollButton?.isHidden = false
-				self.scrollBadge?.isHidden = (self.scrollBadge?.text == nil)
-			} else {
-				self.floatingScrollButton?.isHidden = true
-				self.scrollBadge?.text = nil
-			}
-		}
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		self.floatingScrollButton?.removeFromSuperview()
+		self.floatingScrollBackground?.removeFromSuperview()
 	}
 	
-	private func createFloatingButton() {
+	func createFloatingButton() {
 		self.floatingScrollButton = UIButton(type: .custom)
+		self.floatingScrollBackground = UIButton(type: .custom)
 		self.floatingScrollButton?.translatesAutoresizingMaskIntoConstraints = false
+		self.floatingScrollBackground?.translatesAutoresizingMaskIntoConstraints = false
 		constrainFloatingButtonToWindow()
-		self.floatingScrollButton?.setImage(UIImage(named: "scroll_to_bottom_default"), for: .normal)
-		self.floatingScrollButton?.addTarget(self, action: #selector(scrollToBottomButtonAction(_:)), for: .touchUpInside)
+		var imageFloatingScrollButton = UIImage()
+		if #available(iOS 13.0, *) {
+			imageFloatingScrollButton = UIImage(named: "scroll_to_bottom_default")!.withTintColor(.darkGray)
+		} else {
+			imageFloatingScrollButton = UIImage(named: "scroll_to_bottom_default")!
+		}
+		self.floatingScrollButton?.setImage(imageFloatingScrollButton, for: .normal)
 		self.floatingScrollButton?.isHidden = true;
-		addBadgeToButon(badge: nil)
+		self.floatingScrollBackground?.backgroundColor = .lightGray
+		self.floatingScrollBackground?.layer.cornerRadius = 25
+		self.floatingScrollBackground?.isHidden = true;
+		
+		self.floatingScrollButton?.onClick(action: {
+			self.scrollToBottomButtonAction()
+		})
+		self.floatingScrollBackground?.onClick(action: {
+			self.scrollToBottomButtonAction()
+		})
+		addBadgeToButton(badge: nil)
 	}
 	
 	private func constrainFloatingButtonToWindow() {
 		DispatchQueue.main.async {
-			guard let keyWindow = UIApplication.shared.keyWindow,
+			guard let keyWindow = self.view,
 				  let floatingButton = self.floatingScrollButton else { return }
+			keyWindow.addSubview(self.floatingScrollBackground!)
 			keyWindow.addSubview(floatingButton)
-			keyWindow.trailingAnchor.constraint(equalTo: floatingButton.trailingAnchor,
-												constant: Constants.trailingValue).isActive = true
-			keyWindow.bottomAnchor.constraint(equalTo: floatingButton.bottomAnchor,
-											  constant: Constants.leadingValue).isActive = true
+			keyWindow.trailingAnchor.constraint(equalTo: floatingButton.trailingAnchor, constant: Constants.trailingValue).isActive = true
+			
+			floatingButton.bottomAnchor.constraint(equalTo: keyWindow.bottomAnchor, constant: -25).isActive = true
+			
 			floatingButton.widthAnchor.constraint(equalToConstant:
 													Constants.buttonWidth).isActive = true
 			floatingButton.heightAnchor.constraint(equalToConstant:
 													Constants.buttonHeight).isActive = true
+			self.floatingScrollBackground?.centerYAnchor.constraint(equalTo: floatingButton.centerYAnchor).isActive = true
+			self.floatingScrollBackground?.centerXAnchor.constraint(equalTo: floatingButton.centerXAnchor).isActive = true
+			self.floatingScrollBackground!.widthAnchor.constraint(equalToConstant:
+																	Constants.buttonHeight*3).isActive = true
+			self.floatingScrollBackground!.heightAnchor.constraint(equalToConstant:
+																	Constants.buttonHeight*3).isActive = true
 		}
 	}
 	
-	@IBAction private func scrollToBottomButtonAction(_ sender: Any) {
-		scroll(toBottom: true)
+	@IBAction private func scrollToBottomButtonAction() {
+		scrollToBottom(animated: false)
 	}
 	
 	
-	private func addBadgeToButon(badge: String?) {
+	private func addBadgeToButton(badge: String?) {
 		self.scrollBadge = UILabel()
 		self.scrollBadge?.text = badge
 		self.scrollBadge?.textColor = UIColor.white
@@ -86,8 +110,8 @@ public extension ChatConversationTableView {
 			vertical = Double(badgeInset.top) - Double(badgeInset.bottom)
 			horizontal = Double(badgeInset.left) - Double(badgeInset.right)
 			
-			let x = (Double(scrollButton.bounds.size.width) - 10 + horizontal!)
-			let y = -(Double(badgeSize.height) / 2) - 10 + vertical!
+			let x = (Double(scrollButton.bounds.size.width) + 34 + horizontal!)
+			let y = -(Double(badgeSize.height) / 2) - 38 + vertical!
 			self.scrollBadge?.frame = CGRect(x: x, y: y, width: width, height: height)
 			
 			self.scrollBadge!.layer.cornerRadius = self.scrollBadge!.frame.height/2

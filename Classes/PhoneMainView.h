@@ -114,6 +114,8 @@
 - (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted;
 - (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup;
 - (void)goToChatRoom:(LinphoneChatRoom *)cr;
+- (void)goToChatRoomSwift:(LinphoneChatRoom *)cr;
+- (void)resetBeforeGoToChatRoomSwift;
 + (PhoneMainView*) instance;
 
 - (BOOL)isIphoneXDevice;
@@ -123,3 +125,4 @@
 @end
 
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState);
+void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);

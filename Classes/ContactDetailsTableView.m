@@ -139,7 +139,7 @@
 }
 
 - (BOOL)isValid {
-	BOOL hasName = (_contact.firstName.length + _contact.lastName.length > 0);
+	BOOL hasName = (_contact.firstName.length + _contact.lastName.length + _contact.organizationName.length > 0);
         BOOL hasAddr =
             (_contact.phones.count + _contact.sipAddresses.count) > 0;
         return hasName && hasAddr;
@@ -156,19 +156,19 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == ContactSections_FirstName || section == ContactSections_LastName) {
+	if (section == ContactSections_FirstName || section == ContactSections_LastName || section == ContactSections_Organization) {
 		/*first and last name only when editting */
 		return (self.tableView.isEditing) ? 1 : 0;
 	} else if (section == ContactSections_Sip) {
-		return _contact.createdFromLdap ? 0 : _contact.sipAddresses.count;
+		return [_contact getSipAddressesWithoutDuplicatePhoneNumbers].count;
 	} else if (section == ContactSections_Number) {
-          return _contact.phones.count;
-        } else if (section == ContactSections_Email) {
-          BOOL showEmails = [LinphoneManager.instance
-              lpConfigBoolForKey:@"show_contacts_emails_preference"];
-          return showEmails ? _contact.emails.count : 0;
-        }
-        return 0;
+		return _contact.phones.count;
+	} else if (section == ContactSections_Email) {
+		BOOL showEmails = [LinphoneManager.instance
+						   lpConfigBoolForKey:@"show_contacts_emails_preference"];
+		return showEmails ? _contact.emails.count : 0;
+	}
+	return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -192,6 +192,9 @@
 	} else if (indexPath.section == ContactSections_LastName) {
 		value = _contact.lastName;
 		[cell hideDeleteButton:YES];
+	} else if (indexPath.section == ContactSections_Organization) {
+		value = _contact.organizationName;
+		[cell hideDeleteButton:YES];
 	} else if ([indexPath section] == ContactSections_Number) {
 		value = _contact.phones[indexPath.row];
 		[cell.editTextfield setKeyboardType:UIKeyboardTypePhonePad];
@@ -200,7 +203,7 @@
 		LinphoneAddress *addr = NULL;
 		if ([LinphoneManager.instance
 			 lpConfigBoolForKey:@"contact_display_username_only"] &&
-			(addr = linphone_core_interpret_url(LC, [value UTF8String]))) {
+			(addr = linphone_core_interpret_url_2(LC, [value UTF8String], YES))) {
 			value =
 			[NSString stringWithCString:linphone_address_get_username(addr)
 							   encoding:[NSString defaultCStringEncoding]];
@@ -279,11 +282,14 @@
 	} else if (section == ContactSections_LastName && self.tableView.isEditing) {
 		text = NSLocalizedString(@"Last name", nil);
 		canAddEntry = NO;
+	} else if (section == ContactSections_Organization && self.tableView.isEditing) {
+		text = NSLocalizedString(@"Organization", nil);
+		canAddEntry = NO;
 	} else if ([self getSectionData:section].count > 0 || self.tableView.isEditing) {
 		if (section == ContactSections_Number) {
 			text = NSLocalizedString(@"Phone numbers", nil);
 			addEntryName = NSLocalizedString(@"Add new phone number", nil);
-		} else if (section == ContactSections_Sip && !_contact.createdFromLdap) {
+		} else if (section == ContactSections_Sip && !_contact.createdFromLdapOrProvisioning) {
 			text = NSLocalizedString(@"SIP addresses", nil);
 			addEntryName = NSLocalizedString(@"Add new SIP address", nil);
 		} else if (section == ContactSections_Email &&
@@ -358,7 +364,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	if (section == 0 ||
-		(!self.tableView.isEditing && (section == ContactSections_FirstName || section == ContactSections_LastName))) {
+		(!self.tableView.isEditing && (section == ContactSections_FirstName || section == ContactSections_LastName || section == ContactSections_LastName))) {
 		return 1e-5;
 	}
 	return [self tableView:tableView viewForHeaderInSection:section].frame.size.height;
@@ -389,6 +395,9 @@
 				break;
 			case ContactSections_LastName:
 				_contact.lastName = value;
+				break;
+			case ContactSections_Organization:
+				_contact.organizationName = value;
 				break;
 			case ContactSections_Sip:
 				[_contact setSipAddress:value atIndex:path.row];

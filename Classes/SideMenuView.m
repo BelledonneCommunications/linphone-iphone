@@ -70,7 +70,9 @@
 		_addressLabel.text = str ? [NSString stringWithUTF8String:str] : NSLocalizedString(@"No address", nil);
 		if (str) ms_free(str);
 	} else {
-		_nameLabel.text = linphone_core_get_account_list(LC) ? NSLocalizedString(@"No default account", nil) : NSLocalizedString(@"No account", nil);
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		_nameLabel.text = accounts ? NSLocalizedString(@"No default account", nil) : NSLocalizedString(@"No account", nil);
+		bctbx_free(accounts);
 		// display direct IP:port address so that we can be reached
 		LinphoneAddress *addr = linphone_core_get_primary_contact_parsed(LC);
 		if (addr) {

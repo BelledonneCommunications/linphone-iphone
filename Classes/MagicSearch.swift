@@ -20,6 +20,7 @@ import linphonesw
 	var previousFilter : String?
 	var magicSearch : MagicSearch
 	var magicSearchDelegate : MagicSearchDelegate?
+	var lastSearch : [SearchResult]?
 	
 	
 	override init() {
@@ -30,10 +31,12 @@ import linphonesw
 		magicSearchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
 			self.needUpdateLastSearchContacts = true
 			self.ongoingSearch = false
+			self.lastSearch = magicSearch.lastSearch
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Contact magic search -- filter = \(String(describing: self.previousFilter)) -- \(magicSearch.lastSearch.count) contact founds")
 			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchFinished), object: self)
 		}, onLdapHaveMoreResults: { (magicSearch: MagicSearch, ldap: Ldap) in
 			Log.directLog(BCTBX_LOG_MESSAGE, text: "Ldap have more result")
+			NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchMoreAvailable), object: self)
 		})
 		
 		magicSearch.addDelegate(delegate: magicSearchDelegate!)
@@ -47,17 +50,26 @@ import linphonesw
 		return theMagicSearchSingleton!
 	}
 	
+	@objc static func destroyInstance() {
+		theMagicSearchSingleton = nil
+	}
+	
 	
 	func getContactFromAddr(addr: Address) -> Contact? {
 		return LinphoneManager.instance().fastAddressBook.addressBookMap.object(forKey: addr.asStringUriOnly() as Any) as? Contact
 	}
 	func getContactFromPhoneNb(phoneNb: String) -> Contact? {
-		let contactKey =  FastAddressBook.localizedLabel(FastAddressBook.normalizeSipURI( lc?.defaultAccount?.normalizePhoneNumber(username: phoneNb) ?? phoneNb))
+		let contactKey =  FastAddressBook.localizedLabel(FastAddressBook.normalizeSipURI(lc?.defaultAccount?.normalizePhoneNumber(username: phoneNb) ?? phoneNb, use_prefix: true))
 		return LinphoneManager.instance().fastAddressBook.addressBookMap.object(forKey: contactKey as Any) as? Contact
 	}
 	
 	func searchAndAddMatchingContact(searchResult: SearchResult) -> Contact? {
 		if let friend = searchResult.friend {
+			if (searchResult.sourceFlags == MagicSearchSource.LdapServers.rawValue), let newContact = Contact(friend: friend.getCobject) {
+				// Contact comes from LDAP, creating a new one
+				newContact.createdFromLdapOrProvisioning = true
+				return newContact
+			}
 			if let addr = friend.address, let foundContact = getContactFromAddr(addr: addr) {
 				return foundContact
 			}
@@ -65,11 +77,6 @@ import linphonesw
 				if let foundContact = getContactFromPhoneNb(phoneNb: phoneNb) {
 					return foundContact
 				}
-			}
-			// No contacts found (searchResult likely comes from LDAP), creating a new one
-			if let newContact = Contact(friend: friend.getCobject) {
-				newContact.createdFromLdap = true
-				return newContact
 			}
 		}
 		
@@ -81,6 +88,11 @@ import linphonesw
 			return foundContact
 		}
 		
+		// Friend comes from provisioning
+		if let addr = searchResult.address, let friend = searchResult.friend, let newContact = Contact(friend: friend.getCobject) {
+			newContact.createdFromLdapOrProvisioning = true
+			return newContact
+		}
 		return nil
 	}
 	
@@ -91,8 +103,10 @@ import linphonesw
 	@objc func getLastSearchResults() -> UnsafeMutablePointer<bctbx_list_t>? {
 		
 		var cList: UnsafeMutablePointer<bctbx_list_t>? = nil
-		for data in magicSearch.lastSearch {
-			cList = bctbx_list_append(cList, UnsafeMutableRawPointer(data.getCobject))
+		if let search = lastSearch {
+			for data in search {
+				cList = bctbx_list_append(cList, UnsafeMutableRawPointer(data.getCobject))
+			}
 		}
 		return cList
 	}
@@ -100,13 +114,9 @@ import linphonesw
 	@objc func getLastSearchContacts() -> [Contact] {
 		if (needUpdateLastSearchContacts) {
 			lastSearchContacts = []
-			var addedContactNames : [String] = []
 			for res in magicSearch.lastSearch {
 				if let contact = searchAndAddMatchingContact(searchResult: res) {
-					if (!addedContactNames.contains(contact.displayName)) {
-						addedContactNames.append(contact.displayName)
-						lastSearchContacts.append(contact)
-					}
+					lastSearchContacts.append(contact)
 				}
 			}
 			needUpdateLastSearchContacts = false

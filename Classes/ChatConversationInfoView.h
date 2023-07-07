@@ -35,6 +35,7 @@
 @property(nonatomic) LinphoneChatRoom *room;
 @property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
 @property(nonatomic) const char *peerAddress;
+@property(nonatomic) const char *localAddress;
 
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;
 @property (weak, nonatomic) IBOutlet UIRoundBorderedButton *quitButton;

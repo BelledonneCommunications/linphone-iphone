@@ -55,7 +55,7 @@ class PausedCallOrConferenceView: UIView {
 		icon!.contentMode = .scaleAspectFit
 		centeredView.addSubview(icon!)
 		icon!.square(icon_size).centerX().done()
-        icon?.accessibilityIdentifier = "paused_call_view_icon"
+        icon!.accessibilityIdentifier = "paused_call_view_icon"
 
 		title.numberOfLines = 0
 		centeredView.addSubview(title)
@@ -74,6 +74,11 @@ class PausedCallOrConferenceView: UIView {
         icon!.onClick {
             self.onClickAction?()
         }
+		
+		self.onClickAction = onClickAction
+		icon!.onClick {
+			self.onClickAction?()
+		}
 		
 		self.onClickAction = onClickAction
 		icon!.onClick {

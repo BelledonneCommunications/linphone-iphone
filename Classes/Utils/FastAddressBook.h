@@ -55,11 +55,12 @@
 + (BOOL)isSipURIValid:(NSString*)addr;
 
 + (NSString *)displayNameForContact:(Contact *)person;
++ (NSString *)ogrganizationForContact:(Contact *)person;
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
 
 + (BOOL)isSipURI:(NSString *)address;
 + (BOOL)isSipAddress:(CNLabeledValue<CNInstantMessageAddress *> *)sipAddr;
-+ (NSString *)normalizeSipURI:(NSString *)address;
++ (NSString *)normalizeSipURI:(NSString *)address use_prefix:(BOOL)use_prefix;
 
 + (NSString *)localizedLabel:(NSString *)label;
 - (void)registerAddrsFor:(Contact *)contact;

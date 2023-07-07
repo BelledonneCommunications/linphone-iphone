@@ -35,6 +35,8 @@
 #import <IntentsUI/IntentsUI.h>
 #import "linphoneapp-Swift.h"
 
+#import "SVProgressHUD.h"
+
 
 #ifdef USE_CRASHLYTICS
 #include "FIRApp.h"
@@ -61,6 +63,9 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
+	if([LinphoneManager.instance lpConfigBoolForKey:@"account_push_presence_preference"]){
+		linphone_core_set_consolidated_presence(LC, LinphoneConsolidatedPresenceOffline);
+	}
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
 		[LinphoneManager.instance enterBackgroundMode];
 		[LinphoneManager.instance.fastAddressBook clearFriends];
@@ -73,6 +78,7 @@
 			// To avoid crash
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
+		
 		[CallManager.instance stopLinphoneCore];
 	}
 	[SwiftUtil resetCachedAsset];
@@ -83,14 +89,24 @@
 	
     [LinphoneManager.instance startLinphoneCore];
     [LinphoneManager.instance.fastAddressBook reloadFriends];
+	[AvatarBridge clearFriends];
+    if([LinphoneManager.instance lpConfigBoolForKey:@"account_push_presence_preference"]){
+        linphone_core_set_consolidated_presence(LC, LinphoneConsolidatedPresenceOnline);
+    }
 	
     [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
+	
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	LinphoneCall *call = linphone_core_get_current_call(LC);
-
+	
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	if (defaults) {
+		[defaults setBool:false forKey:@"appactive"];
+	}
+	
 	if (!call)
 		return;
 
@@ -113,7 +129,12 @@
 	}
 	LinphoneManager *instance = LinphoneManager.instance;
 	[instance becomeActive];
-
+	
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+	if (defaults) {
+		[defaults setBool:true forKey:@"appactive"];
+	}
+		
 	if (instance.fastAddressBook.needToUpdate) {
 		//Update address book for external changes
 		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
@@ -137,7 +158,6 @@
 			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
 					linphone_call_accept(call);
-					[PhoneMainView.instance changeCurrentView:ActiveCallOrConferenceView.compositeViewDescription];
 				} else {
 					[PhoneMainView.instance displayIncomingCall:call];
 				}
@@ -156,7 +176,9 @@
         [self handleShortcut:_shortcutItem];
         _shortcutItem = nil;
     }
-	
+
+#if TARGET_IPHONE_SIMULATOR
+#else
 	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
 																		completionHandler:^(BOOL granted, NSError *_Nullable error) {
 		if (error)
@@ -182,6 +204,16 @@
 		}
 		
 	}];
+#endif
+
+	
+	if ([UIDeviceBridge switchedDisplayMode]) {
+		[AvatarBridge prepareIt];
+		[NSNotificationCenter.defaultCenter postNotificationName:kDisplayModeChanged object:nil];
+		[PhoneMainView.instance.mainViewController removeEntryFromCache:ChatConversationCreateView.compositeViewDescription.name];
+		[PhoneMainView.instance.mainViewController changeView:PhoneMainView.instance.currentView];
+		[UIDeviceBridge notifyDisplayModeSwitch];
+	}
 	
 }
 
@@ -331,8 +363,9 @@
         return NO;
     }
 
-	[PhoneMainView.instance.mainViewController getCachedController:ActiveCallOrConferenceView.compositeViewDescription.name]; // This will create the single instance of the ActiveCallOrConferenceView including listeneres
-	
+	[PhoneMainView.instance.mainViewController getCachedController:SingleCallView.compositeViewDescription.name]; // This will create the single instance of the SingleCallView including listeneres
+	[PhoneMainView.instance.mainViewController getCachedController:ConferenceCallView.compositeViewDescription.name]; // This will create the single instance of the ConferenceCallView including listeneres
+	[CallsViewModelBridge setupCallsViewNavigation];
 	return YES;
 }
 
@@ -365,31 +398,39 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options{
 	NSString *scheme = [[url scheme] lowercaseString];
-	if ([scheme isEqualToString:@"linphone-config"] || [scheme isEqualToString:@"linphone-config"]) {
+	if ([scheme isEqualToString:@"linphone-config"]) {
 		NSString *encodedURL =
-			[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config://" withString:@""];
+			[[url absoluteString] stringByReplacingOccurrencesOfString:@"linphone-config:" withString:@""];
 		self.configURL = [encodedURL stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Remote configuration", nil)
-																		 message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?", nil)
-																  preferredStyle:UIAlertControllerStyleAlert];
 
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", nil)
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
-
-		UIAlertAction* yesAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
-																style:UIAlertActionStyleDefault
-														  handler:^(UIAlertAction * action) {
-															  [self showWaitingIndicator];
-															  [self attemptRemoteConfiguration];
-														  }];
-
-		[errView addAction:defaultAction];
-		[errView addAction:yesAction];
-
-		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+		BOOL auto_apply_provisioning = 	[LinphoneManager.instance lpConfigBoolForKey:@"auto_apply_provisioning_config_uri_handler" inSection:@"app" withDefault:FALSE];
+		if (auto_apply_provisioning) {
+			[SVProgressHUD show];
+			[self attemptRemoteConfiguration];
+			[SVProgressHUD dismiss];
+		} else {
+			NSString *msg = [NSString stringWithFormat:NSLocalizedString(@" Do you want to download and apply configuration from this URL?\n\n%@", nil), encodedURL];
+			UIConfirmationDialog* remoteConfigurationDialog =[UIConfirmationDialog ShowWithMessage:msg
+																					 cancelMessage:nil
+																					confirmMessage:NSLocalizedString(@"APPLY", nil)
+																					 onCancelClick:^() {}
+																			   onConfirmationClick:^() {
+				[SVProgressHUD show];
+				[self attemptRemoteConfiguration];
+				[SVProgressHUD dismiss];
+			}];
+			[remoteConfigurationDialog setSpecialColor];
+		}
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
-        [PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+		if ([[PhoneMainView.instance currentView] equal:ChatsListView.compositeViewDescription]) {
+			VIEW(ChatConversationViewSwift).sharingMedia = TRUE;
+			ChatsListView *view = VIEW(ChatsListView);
+			[view mediaSharing];
+		}else{
+			[SVProgressHUD dismiss];
+			VIEW(ChatConversationViewSwift).sharingMedia = TRUE;
+			[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+		}
     } else if ([scheme isEqualToString:@"sip"]||[scheme isEqualToString:@"sips"]) {
         // remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
         // trailing "/"
@@ -414,8 +455,8 @@
             linphone_address_unref(peer);
             linphone_address_unref(local);
             // TODO : Find a better fix
-            VIEW(ChatConversationView).markAsRead = FALSE;
-            [PhoneMainView.instance goToChatRoom:cr];
+            VIEW(ChatConversationViewSwift).markAsRead = FALSE;
+            [PhoneMainView.instance goToChatRoomSwift:cr];
         }
     }
     return YES;
@@ -504,33 +545,57 @@
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
 	// If an app extension launch a user notif while app is in fg, it is catch by the app
-    NSString *category = [[[notification request] content] categoryIdentifier];
-    if (category && [category isEqualToString:@"app_active"]) {
-        return;
-    }
-
+	NSString *category = [[[notification request] content] categoryIdentifier];
+	if (category && [category isEqualToString:@"app_active"]) {
+		return;
+	}
+	
 	if (category && [category isEqualToString:@"msg_cat"] && [UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
 		if ((PhoneMainView.instance.currentView == ChatsListView.compositeViewDescription))
 			return;
-
-		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription) {
+		
+		if (PhoneMainView.instance.currentView == ChatConversationViewSwift.compositeViewDescription) {
 			NSDictionary *userInfo = [[[notification request] content] userInfo];
 			NSString *peerAddress = userInfo[@"peer_addr"];
 			NSString *localAddress = userInfo[@"local_addr"];
 			if (peerAddress && localAddress) {
 				LinphoneAddress *peer = linphone_core_create_address([LinphoneManager getLc], peerAddress.UTF8String);
 				LinphoneAddress *local = linphone_core_create_address([LinphoneManager getLc], localAddress.UTF8String);
-				LinphoneChatRoom *room = linphone_core_find_chat_room([LinphoneManager getLc], peer, local);
+				LinphoneChatRoom *room = linphone_core_search_chat_room([LinphoneManager getLc], NULL, local, peer, NULL);
 				if (room == PhoneMainView.instance.currentRoom) return;
 			}
 		}
 	}
-
+	
 	completionHandler(UNNotificationPresentationOptionAlert);
 }
 
 -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+	LOGD(@"didReceiveRemoteNotification -- backgroundPush");
+	if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
+		[LinphoneManager.instance startLinphoneCore];
+		[LinphoneManager.instance.fastAddressBook reloadFriends];
+	}
 	
+	const MSList *accounts = linphone_core_get_account_list(LC);
+	while (accounts) {
+		LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+		linphone_account_refresh_register(account);
+		accounts = accounts->next;
+	}
+	
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:kLinphoneMsgNotificationAppGroupId];
+		NSMutableDictionary *chatroomsPushStatus = [[NSMutableDictionary alloc] initWithDictionary:[defaults dictionaryForKey:@"appactive"]];
+		
+		if ([defaults boolForKey:@"appactive"] != TRUE) {
+			linphone_core_enter_background(LC);
+			if (linphone_core_get_calls_nb(LC) == 0) {
+				linphone_core_stop(LC);
+			}
+		}
+		completionHandler(UIBackgroundFetchResultNewData);
+	});
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
@@ -570,7 +635,7 @@
 	  	LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 	  	LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 	  	if (room)
-		  	[ChatConversationView markAsRead:room];
+		  	[ChatConversationViewSwift markAsRead:room];
 
 	  	linphone_address_unref(peer);
 	  	linphone_address_unref(local);
@@ -610,14 +675,16 @@
 				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 				if (room) {
-					[PhoneMainView.instance goToChatRoom:room];
+					[PhoneMainView.instance resetBeforeGoToChatRoomSwift];
+					[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+					[PhoneMainView.instance goToChatRoomSwift:room];
 					return;
+				} else {
+					[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 				}
-				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			}
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"video_request"]) {
 			if (!call) return;
-				[PhoneMainView.instance changeCurrentView:ActiveCallOrConferenceView.compositeViewDescription];
 		  	NSTimer *videoDismissTimer = nil;
 		  	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:response.notification.request.content.body
 																  cancelMessage:nil
@@ -718,7 +785,7 @@
 				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 				if (room)
-					[ChatConversationView markAsRead:room];
+					[ChatConversationViewSwift markAsRead:room];
 
 				linphone_address_unref(peer);
 				linphone_address_unref(local);
@@ -799,23 +866,7 @@
 	}
 }
 
-- (void)showWaitingIndicator {
-	_waitingIndicator = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Fetching remote configuration...", nil)
-															message:@""
-													 preferredStyle:UIAlertControllerStyleAlert];
-
-	UIActivityIndicatorView *progress = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(125, 60, 30, 30)];
-	progress.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-
-	[_waitingIndicator setValue:progress forKey:@"accessoryView"];
-	[progress setColor:[UIColor blackColor]];
-
-	[progress startAnimating];
-	[PhoneMainView.instance presentViewController:_waitingIndicator animated:YES completion:nil];
-}
-
 - (void)attemptRemoteConfiguration {
-
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(ConfigurationStateUpdateEvent:)
 											   name:kLinphoneConfiguringStateUpdate
@@ -823,7 +874,7 @@
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
 	[LinphoneManager.instance launchLinphoneCore];
-        [LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
+	[LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 #pragma mark - Prevent ImagePickerView from rotating

@@ -20,7 +20,6 @@
 #import "LinphoneManager.h"
 #import "ChatConversationTableView.h"
 #import "ChatConversationImdnView.h"
-#import "UIChatBubbleTextCell.h"
 #import "UIChatBubblePhotoCell.h"
 #import "UIChatNotifiedEventCell.h"
 #import "PhoneMainView.h"
@@ -84,7 +83,6 @@
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
 	bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
 	bctbx_list_t *chatRoomEvents = linphone_chat_room_get_history_events(_chatRoom, 0);
-	
 	int unread_count = 0;
 	
 	bctbx_list_t *head = chatRoomEvents;
@@ -142,12 +140,11 @@
 
 - (void)addEventEntry:(LinphoneEventLog *)event {
 	[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
-    [totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+	[totalEventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
 	int pos = (int)eventList.count - 1;
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
 	[self.tableView beginUpdates];
 	[self.tableView insertRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView reloadData];
 	[self.tableView endUpdates];
 }
 
@@ -171,9 +168,9 @@
 	//[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]];
 	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 						  atScrollPosition:UITableViewScrollPositionBottom
-								  animated:YES];
+								  animated:animated];
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		[ChatConversationView markAsRead:_chatRoom];
+		[ChatConversationViewSwift markAsRead:_chatRoom];
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
@@ -203,7 +200,7 @@
 		index = (int)count - 1;
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		[ChatConversationView markAsRead:_chatRoom];
+		[ChatConversationViewSwift markAsRead:_chatRoom];
 
 	// Scroll to unread
 	if (index < 0)
@@ -331,28 +328,32 @@ static const int BASIC_EVENT_LIST=15;
 	}
 }
 
+-(UIChatBubbleTextCell *)buildMessageCell:(LinphoneEventLog *) event {
+	NSString *kCellId = nil;
+	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+	BOOL isConferenceIcs = [ICSBubbleView isConferenceInvitationMessageWithCmessage:chat];
+	if (!isConferenceIcs && (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)))
+					kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
+	else
+		kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
+	// To use less memory and to avoid overlapping. To be improved.
+	UIChatBubbleTextCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kCellId];
+	cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
+	[cell setEvent:event];
+	return cell;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = nil;
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
+		UIChatBubbleTextCell *cell = [self buildMessageCell:event];
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-		BOOL isConferenceIcs = [ICSBubbleView isConferenceInvitationMessageWithCmessage:chat];
-		if (!isConferenceIcs && (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)))
-            kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
-		else
-			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
-
-		// To use less memory and to avoid overlapping. To be improved.
-		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-
-		[cell setEvent:event];
-        if (chat) {
-            cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
-            cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];
-            [cell update];
-        }
-
+		if (chat) {
+				cell.isFirst = [self isFirstIndexInTableView:indexPath chat:chat];
+				cell.isLast = [self isLastIndexInTableView:indexPath chat:chat];
+				[cell update];
+		}
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -376,6 +377,13 @@ static const int BASIC_EVENT_LIST=15;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	[_chatRoomDelegate tableViewIsScrolling];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
+		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+			[ChatConversationViewSwift markAsRead:_chatRoom];
+	}
 }
 
 static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
@@ -423,7 +431,7 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 																		 title:NSLocalizedString(@"Reply", nil)
 																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
 		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-		[VIEW(ChatConversationView) initiateReplyViewForMessage:msg];
+		[VIEW(ChatConversationViewSwift) initiateReplyViewForMessage:msg];
 		[self scrollToBottom:TRUE];
 	}];
 	
@@ -443,12 +451,11 @@ static const CGFloat MESSAGE_SPACING_PERCENTAGE = 1.f;
 	
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	UIContextualAction *imdnAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
-																		 title:NSLocalizedString(@"Info", nil)
-																	   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-		LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
-														   ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
-														   view.msg = msg;
-														   [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+																			 title:NSLocalizedString(@"Info", nil)
+																		   handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+		ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+		view.event = event;
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}];
 	
 	UISwipeActionsConfiguration *swipeActionConfig;

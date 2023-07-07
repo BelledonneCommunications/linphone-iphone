@@ -20,6 +20,7 @@
 #import "HistoryDetailsView.h"
 #import "PhoneMainView.h"
 #import "FastAddressBook.h"
+#import "linphoneapp-Swift.h"
 
 @implementation HistoryDetailsView
 
@@ -68,6 +69,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_headerView addGestureRecognizer:headerTapGesture];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self update];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	_waitView.hidden = YES;
@@ -87,11 +94,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector: @selector(deviceOrientationDidChange:)
 												 name: UIDeviceOrientationDidChangeNotification
 											   object: nil];
+	
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receivePresenceNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		[self update];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 #pragma mark - Event Functions
@@ -144,7 +167,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	_addContactButton.hidden = ([FastAddressBook getContactWithAddress:addr] != nil);
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr withAddressLabel:_addressLabel];
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr]];
     Contact *contact = [FastAddressBook getContactWithAddress:addr];
     const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model(contact.friend) : NULL;
     _linphoneImage.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"] ||
@@ -158,7 +181,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)shouldHideEncryptedChatView:(BOOL)hasLime {
-    _encryptedChatView.hidden = !hasLime;
+    _encryptedChatView.hidden = !hasLime || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
     CGRect newFrame = _optionsView.frame;
     if (!hasLime) {
         newFrame.origin.x = _encryptedChatView.frame.size.width * 2/3;

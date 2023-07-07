@@ -65,6 +65,8 @@ extern NSString *const kLinphoneConfStateParticipantListChanged;
 extern NSString *const kLinphoneConfStateChanged;
 extern NSString *const kLinphoneMagicSearchStarted;
 extern NSString *const kLinphoneMagicSearchFinished;
+extern NSString *const kLinphoneMagicSearchMoreAvailable;
+extern NSString *const kDisplayModeChanged;
 
 
 extern NSString *const kLinphoneMsgNotificationAppGroupId;
@@ -174,6 +176,7 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)silentPushFailed:(NSTimer*)timer;
 
+- (MSList *) createAccountsNotHiddenList; // needs to be unref
 - (void)removeAllAccounts;
 
 + (BOOL)isMyself:(const LinphoneAddress *)addr;
@@ -193,6 +196,8 @@ typedef struct _LinphoneManagerSounds {
 - (void)checkLocalNetworkPermission;
 - (void)setDnsServer;
 
++ (BOOL) getChatroomPushEnabled:(LinphoneChatRoom *)chatroom;
++ (void) setChatroomPushEnabled:(LinphoneChatRoom *)chatroom withPushEnabled:(BOOL)enabled;
 
 @property (readonly) BOOL isTesting;
 @property(readonly, strong) FastAddressBook *fastAddressBook;

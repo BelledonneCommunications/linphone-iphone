@@ -52,79 +52,97 @@ class NotificationService: UNNotificationServiceExtension {
 	}
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-        self.contentHandler = contentHandler
-        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        NSLog("[msgNotificationService] start msgNotificationService extension")
+			self.contentHandler = contentHandler
+			bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+			NSLog("[msgNotificationService] start msgNotificationService extension")
 
-		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
-			VFSUtil.log("[VFS] Error unable to activate.", .error)
-		}
-		
-		if let bestAttemptContent = bestAttemptContent {
-			createCore()
-			NotificationService.log.message(message: "received push payload : \(bestAttemptContent.userInfo.debugDescription)")
-
-			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
-				NotificationService.log.message(message: "fetch chat room for invite, addr: \(chatRoomInviteAddr)")
-				let chatRoom = lc!.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
-
-				if let chatRoom = chatRoom {
-					stopCore()
-					NotificationService.log.message(message: "chat room invite received")
-					bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
-					if (chatRoom.hasCapability(mask:ChatRoomCapabilities.OneToOne.rawValue)) {
-						if (chatRoom.peerAddress?.displayName.isEmpty != true) {
-							bestAttemptContent.body = chatRoom.peerAddress!.displayName
-						} else {
-							bestAttemptContent.body = chatRoom.peerAddress!.username
-						}
-					} else {
-						bestAttemptContent.body = chatRoom.subject
-					}
-
-					bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
-					contentHandler(bestAttemptContent)
-					return
-				}
-			} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
-				NotificationService.log.message(message: "fetch msg for callid ["+callId+"]")
-				let message = lc!.getNewMessageFromCallid(callId: callId)
-
-				if let message = message {
-					let msgData = parseMessage(message: message)
-
-					// Extension only upates app's badge when main shared core is Off = extension's core is On.
-					// Otherwise, the app will update the badge.
-					if lc?.globalState == GlobalState.On, let badge = updateBadge() as NSNumber? {
-						bestAttemptContent.badge = badge
-					}
-
-					stopCore()
-
-					bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
-					bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
-					if let subtitle = msgData?.subtitle {
-						bestAttemptContent.subtitle = subtitle
-					}
-					if let body = msgData?.body {
-						bestAttemptContent.body = body
-					}
-
-					bestAttemptContent.categoryIdentifier = "msg_cat"
-
-					bestAttemptContent.userInfo.updateValue(msgData?.callId as Any, forKey: "CallId")
-					bestAttemptContent.userInfo.updateValue(msgData?.from as Any, forKey: "from")
-					bestAttemptContent.userInfo.updateValue(msgData?.peerAddr as Any, forKey: "peer_addr")
-					bestAttemptContent.userInfo.updateValue(msgData?.localAddr as Any, forKey: "local_addr")
-
-					contentHandler(bestAttemptContent)
-					return
-				} else {
-					NotificationService.log.message(message: "Message not found for callid ["+callId+"]")
-				}
+			if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
+				VFSUtil.log("[VFS] Error unable to activate.", .error)
 			}
-			serviceExtensionTimeWillExpire()
-        }
+			
+			if let bestAttemptContent = bestAttemptContent {
+				createCore()
+				
+				if (!(lc!.config?.getBool(section: "app", key: "disable_chat_feature", defaultValue: true))!){
+					NotificationService.log.message(message: "received push payload : \(bestAttemptContent.userInfo.debugDescription)")
+
+					
+					let defaults = UserDefaults.init(suiteName: APP_GROUP_ID)
+					if let chatroomsPushStatus = defaults?.dictionary(forKey: "chatroomsPushStatus") {
+						let aps = bestAttemptContent.userInfo["aps"] as? NSDictionary
+						let alert = aps?["alert"] as? NSDictionary
+						let fromAddresses = alert?["loc-args"] as? [String]
+						
+						if let from = fromAddresses?.first {
+							if ((chatroomsPushStatus[from] as? String) == "disabled") {
+								NotificationService.log.message(message: "message comes from a muted chatroom, ignore it")
+								contentHandler(UNNotificationContent())
+							}
+						}
+					}
+					
+					if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
+						NotificationService.log.message(message: "fetch chat room for invite, addr: \(chatRoomInviteAddr)")
+						let chatRoom = lc!.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
+
+						if let chatRoom = chatRoom {
+							stopCore()
+							NotificationService.log.message(message: "chat room invite received")
+							bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
+							if (chatRoom.hasCapability(mask:ChatRoomCapabilities.OneToOne.rawValue)) {
+								if (chatRoom.peerAddress?.displayName.isEmpty != true) {
+									bestAttemptContent.body = chatRoom.peerAddress!.displayName
+								} else {
+									bestAttemptContent.body = chatRoom.peerAddress!.username
+								}
+							} else {
+								bestAttemptContent.body = chatRoom.subject
+							}
+
+							bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
+							contentHandler(bestAttemptContent)
+							return
+						}
+					} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
+						NotificationService.log.message(message: "fetch msg for callid ["+callId+"]")
+						let message = lc!.getNewMessageFromCallid(callId: callId)
+
+						if let message = message {
+							let msgData = parseMessage(message: message)
+
+							// Extension only upates app's badge when main shared core is Off = extension's core is On.
+							// Otherwise, the app will update the badge.
+							if lc?.globalState == GlobalState.On, let badge = updateBadge() as NSNumber? {
+								bestAttemptContent.badge = badge
+							}
+
+							stopCore()
+
+							bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
+							bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
+							if let subtitle = msgData?.subtitle {
+								bestAttemptContent.subtitle = subtitle
+							}
+							if let body = msgData?.body {
+								bestAttemptContent.body = body
+							}
+
+							bestAttemptContent.categoryIdentifier = "msg_cat"
+
+							bestAttemptContent.userInfo.updateValue(msgData?.callId as Any, forKey: "CallId")
+							bestAttemptContent.userInfo.updateValue(msgData?.from as Any, forKey: "from")
+							bestAttemptContent.userInfo.updateValue(msgData?.peerAddr as Any, forKey: "peer_addr")
+							bestAttemptContent.userInfo.updateValue(msgData?.localAddr as Any, forKey: "local_addr")
+
+							contentHandler(bestAttemptContent)
+							return
+						} else {
+							NotificationService.log.message(message: "Message not found for callid ["+callId+"]")
+						}
+					}
+				}
+				serviceExtensionTimeWillExpire()
+			}
     }
 
     override func serviceExtensionTimeWillExpire() {
@@ -149,7 +167,18 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
 	func parseMessage(message: PushNotificationMessage) -> MsgData? {
-		let content = message.isIcalendar ? NSLocalizedString("You are invited to a conference", comment: "") :  message.isText ? message.textContent : "🗻"
+		
+		var content = ""
+		if (message.isConferenceInvitationNew) {
+			content = NSLocalizedString("📅 You are invited to a meeting", comment: "")
+		} else if (message.isConferenceInvitationUpdate) {
+			content =  NSLocalizedString("📅 Meeting has been modified", comment: "")
+		} else if (message.isConferenceInvitationCancellation) {
+			content =  NSLocalizedString("📅 Meeting has been cancelled", comment: "")
+		} else {
+			content = message.isText ? message.textContent : "🗻"
+		}
+		
 		let fromAddr = message.fromAddr?.username
 		let callId = message.callId
 		let localUri = message.localAddr?.asStringUriOnly()
@@ -227,7 +256,12 @@ class NotificationService: UNNotificationServiceExtension {
 				return nil
 			}
 
-			if let simpleAddr = lc?.interpretUrl(url: sipAddr) {
+			var usePrefix = true;
+			if let account = lc?.defaultAccount, let params = account.params {
+				usePrefix = params.useInternationalPrefixForCallsAndChats
+			}
+			
+			if let simpleAddr = lc?.interpretUrl(url: sipAddr, applyInternationalPrefix: usePrefix) {
 				simpleAddr.clean()
 				let nomalSipaddr = simpleAddr.asString()
 				if let displayName = addressBook?[nomalSipaddr] as? String {

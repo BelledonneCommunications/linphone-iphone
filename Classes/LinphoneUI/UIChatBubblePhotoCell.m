@@ -192,14 +192,20 @@
 	_voiceRecordingFile = nil;
 	LinphoneContent *voiceContent = [UIChatBubbleTextCell voiceContent:self.message];
 	if (voiceContent) {
-		_voiceRecordingFile = [NSString stringWithUTF8String:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] ? linphone_content_get_plain_file_path(voiceContent) : linphone_content_get_file_path(voiceContent)];
-		if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId])
+		const char *fileName = ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] ? linphone_content_get_plain_file_path(voiceContent) : linphone_content_get_file_path(voiceContent));
+		if (fileName == nil) {
+			linphone_content_set_file_path(voiceContent, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]].UTF8String);
+			linphone_chat_message_download_content(self.message, voiceContent);
+		}
+		_voiceRecordingFile = fileName ? [NSString stringWithUTF8String:fileName] : nil;
+		if (fileName && [VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 			[encrptedFilePaths setValue:_voiceRecordingFile forKey:[NSString stringWithUTF8String:linphone_content_get_name(voiceContent)]];
+		}
 		_vrTimerLabel.text =  [self formattedDuration:linphone_content_get_file_duration(voiceContent)/1000];
 		_vrWaveMaskPlayback.frame = CGRectZero;
 		_vrWaveMaskPlayback.backgroundColor = linphone_chat_message_is_outgoing(self.message) ? UIColor.orangeColor : UIColor.grayColor;
 	}
-	
+
 	const bctbx_list_t *contents = linphone_chat_message_get_contents(self.message);
 
 	size_t contentCount = bctbx_list_size(contents);

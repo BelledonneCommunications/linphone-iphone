@@ -20,6 +20,7 @@
 #import "ContactDetailsView.h"
 #import "PhoneMainView.h"
 #import "UIContactDetailsCell.h"
+#import "linphoneapp-Swift.h"
 
 @implementation ContactDetailsView
 
@@ -63,7 +64,7 @@
 	}
 
 	LOGI(@"Reset data to contact %p", _contact);
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 	[_tableController setContact:_contact];
 	_emptyLabel.hidden = YES;
 	_avatarImage.hidden = !_emptyLabel.hidden;
@@ -91,24 +92,25 @@
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
-        PhoneMainView.instance.currentName = _contact.displayName;
-        _nameLabel.text = PhoneMainView.instance.currentName;
-
-    // fix no sipaddresses in contact.friend
-    const MSList *sips = linphone_friend_get_addresses(_contact.friend);
-    while (sips) {
-        linphone_friend_remove_address(_contact.friend, sips->data);
-        sips = sips->next;
-    }
-    
-    for (NSString *sipAddr in _contact.sipAddresses) {
-        LinphoneAddress *addr = linphone_core_interpret_url(LC, sipAddr.UTF8String);
-        if (addr) {
-            linphone_friend_add_address(_contact.friend, addr);
-            linphone_address_destroy(addr);
-        }
-    }
-        [LinphoneManager.instance.fastAddressBook saveContact:_contact];
+	PhoneMainView.instance.currentName = _contact.displayName;
+	_nameLabel.text = PhoneMainView.instance.currentName;
+	_organizationLabel.text = _contact.organizationName;
+	
+	// fix no sipaddresses in contact.friend
+	const MSList *sips = linphone_friend_get_addresses(_contact.friend);
+	while (sips) {
+		linphone_friend_remove_address(_contact.friend, sips->data);
+		sips = sips->next;
+	}
+	
+	for (NSString *sipAddr in _contact.sipAddresses) {
+		LinphoneAddress *addr = linphone_core_interpret_url_2(LC, sipAddr.UTF8String, true);
+		if (addr) {
+			linphone_friend_add_address(_contact.friend, addr);
+			linphone_address_destroy(addr);
+		}
+	}
+	[LinphoneManager.instance.fastAddressBook saveContact:_contact];
 }
 
 - (void)selectContact:(Contact *)acontact andReload:(BOOL)reload {
@@ -119,11 +121,12 @@
 	_contact = acontact;
 	_emptyLabel.hidden = (_contact != NULL);
 	_avatarImage.hidden = !_emptyLabel.hidden;
-	_deleteButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdap];
-	_editButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdap];
+	_deleteButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdapOrProvisioning];
+	_editButton.hidden = !_emptyLabel.hidden || [_contact createdFromLdapOrProvisioning];
 
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
+	_organizationLabel.text = _contact.organizationName;
 	[_tableController setContact:_contact];
 
 	if (reload) {
@@ -146,7 +149,7 @@
 }
 
 - (void)addCurrentContactContactField:(NSString *)address {
-	LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, address.UTF8String);
+	LinphoneAddress *linphoneAddress = linphone_core_interpret_url_2(LC, address.UTF8String, true);
 	NSString *username =
 		linphoneAddress ? [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)] : address;
 
@@ -284,6 +287,9 @@
 	if (IPAD && self.contact == NULL) {
 		_editButton.hidden = TRUE;
 		_deleteButton.hidden = TRUE;
+	} else if (self.contact != NULL && self.contact.createdFromLdapOrProvisioning) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
 	}
 	PhoneMainView.instance.currentName = _nameLabel.text;
 	// Update presence for contact
@@ -296,6 +302,21 @@
 	[_editButton setImage:[UIImage imageNamed:@"valid_default.png"] forState:UIControlStateSelected];
 	
 	[self updateBackOrCancelButton];
+	[self recomputeTableViewSize:FALSE];
+	
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receivePresenceNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		[self resetData];
+	}
 }
 
 - (void)deviceOrientationDidChange:(NSNotification*)notif {
@@ -310,9 +331,14 @@
 		}
 	}
 	
+	if (self.contact != NULL && self.contact.createdFromLdapOrProvisioning) {
+		_editButton.hidden = TRUE;
+		_deleteButton.hidden = TRUE;
+	}
+	_nameLabel.hidden = self.tableController.isEditing;
+	_organizationLabel.hidden = self.tableController.isEditing;
 	[self updateBackOrCancelButton];
-    
-    [self recomputeTableViewSize:_editButton.hidden];
+	[self recomputeTableViewSize:self.tableController.isEditing];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -343,6 +369,9 @@
 	if (rm) {
 		[LinphoneManager.instance.fastAddressBook deleteContact:_contact];
 	}
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -397,7 +426,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_cancelButton.hidden = !editing;
 	_backButton.hidden = editing;
 	_nameLabel.hidden = editing;
+	_organizationLabel.hidden = editing;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
+	_organizationLabel.text = _contact.organizationName;
 
     [self recomputeTableViewSize:editing];
 
@@ -408,10 +439,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)recomputeTableViewSize:(BOOL)editing {
     CGRect frame = _tableController.tableView.frame;
-    frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
     if ([self viewIsCurrentlyPortrait] && !editing) {
-        frame.origin.y += _nameLabel.frame.size.height;
-    }
+		frame.origin.y = _organizationLabel.frame.origin.y + _organizationLabel.frame.size.height;
+	} else {
+		frame.origin.y = _avatarImage.frame.size.height + _avatarImage.frame.origin.y;
+	}
     
     frame.size.height = _tableController.tableView.contentSize.height;
     _tableController.tableView.frame = frame;
@@ -442,7 +474,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_contact.firstName = _tmpContact.firstName.copy;
 		_contact.lastName = _tmpContact.lastName.copy;
 		_contact.avatar = _tmpContact.avatar.copy;
-		[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 		
 		while (_contact.sipAddresses.count > 0) {
 			[_contact removeSipAddressAtIndex:0];
@@ -514,11 +546,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	
 	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
-	if ([previous isEqualToString:@"ContactsListView"] || [previous isEqualToString:@"ImagePickerView"]) {
-		ContactsListView *view = VIEW(ContactsListView);
+	if ([previous isEqualToString:@"HistoryDetailsView"]) {
+		HistoryDetailsView *view = VIEW(HistoryDetailsView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
-		HistoryDetailsView *view = VIEW(HistoryDetailsView);
+		ContactsListView *view = VIEW(ContactsListView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
 }
@@ -588,7 +620,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[store unifiedContactWithIdentifier:contactToCheck.identifier keysToFetch:keysToFetch error:nil] mutableCopy];
 	if(mCNContact == NULL){
 		for(NSString *address in contactToCheck.sipAddresses){
-			NSString *name = [FastAddressBook normalizeSipURI:address];
+			NSString *name = [FastAddressBook normalizeSipURI:address use_prefix:TRUE];
 			if([LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:name]){
 				return TRUE;
 			}
@@ -619,7 +651,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_contact setAvatar:image];
 
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact] bordered:NO withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact]];
 }
 
 - (void)imagePickerDelegateVideo:(NSURL*)url info:(NSDictionary *)info {

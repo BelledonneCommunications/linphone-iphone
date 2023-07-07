@@ -27,6 +27,7 @@ typedef enum _ContactSections {
 	ContactSections_None = 0, // first section is empty because we cannot set header for first section
 	ContactSections_FirstName,
 	ContactSections_LastName,
+	ContactSections_Organization,
 	ContactSections_Sip,
 	ContactSections_Number,
 	ContactSections_Email,

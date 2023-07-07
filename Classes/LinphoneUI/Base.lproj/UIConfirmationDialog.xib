@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -11,11 +11,14 @@
             <connections>
                 <outlet property="authButton" destination="lWW-wB-FMR" id="C7W-JM-WFQ"/>
                 <outlet property="authView" destination="CCn-Oz-I0M" id="fSM-6k-paN"/>
+                <outlet property="backgroundColor" destination="cqN-1f-6SE" id="gjg-LB-xLT"/>
                 <outlet property="cancelButton" destination="B1K-CB-3of" id="KKi-Xc-ldA"/>
                 <outlet property="confirmationButton" destination="SbQ-re-fGQ" id="yiv-a9-o8E"/>
+                <outlet property="firstView" destination="ef9-Iu-Bcb" id="hKx-op-r7Z"/>
                 <outlet property="forwardImage" destination="1Wh-Yi-cUe" id="YQq-bt-pk1"/>
                 <outlet property="groupCallImage" destination="SVn-4k-9yc" id="sAP-8V-ttn"/>
                 <outlet property="securityImage" destination="bbo-g3-bGy" id="qZa-li-yrl"/>
+                <outlet property="subscribeLabel" destination="Xbl-Qs-GaE" id="Qnf-pA-nL0"/>
                 <outlet property="titleLabel" destination="jLz-g1-cTe" id="qaj-OB-2r1"/>
                 <outlet property="view" destination="2Vb-Xy-rci" id="nNw-EJ-AY3"/>
             </connections>
@@ -25,27 +28,32 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" alpha="0.89999999999999991" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="color_C.png" translatesAutoresizingMaskIntoConstraints="NO" id="cqN-1f-6SE" userLabel="backgroundColor">
-                    <rect key="frame" x="0.0" y="0.0" width="377" height="667"/>
+                <view contentMode="scaleToFill" id="ef9-Iu-Bcb" userLabel="firstView">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                </imageView>
-                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2BQ-o9-xv2">
-                    <rect key="frame" x="28" y="139" width="320" height="365"/>
+                </view>
+                <view contentMode="scaleToFill" id="2BQ-o9-xv2">
+                    <rect key="frame" x="25" y="114" width="325" height="440"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="color_C.png" translatesAutoresizingMaskIntoConstraints="NO" id="cqN-1f-6SE" userLabel="backgroundColor">
+                            <rect key="frame" x="-17" y="-17" width="360" height="474"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <color key="backgroundColor" red="0.26666668059999998" green="0.26666668059999998" blue="0.26666668059999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </imageView>
                         <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" image="security_2_indicator.png" translatesAutoresizingMaskIntoConstraints="NO" id="bbo-g3-bGy" userLabel="securityImage">
-                            <rect key="frame" x="130" y="0.0" width="56" height="68"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="130" y="15" width="64" height="68"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Are you sure you want to delete all your selection?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="jLz-g1-cTe" userLabel="titleLabel">
-                            <rect key="frame" x="-10" y="15" width="336" height="279"/>
+                            <rect key="frame" x="-8" y="15" width="347" height="350"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="21"/>
                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B1K-CB-3of" userLabel="cancelButton" customClass="UIRoundBorderedButton">
-                            <rect key="frame" x="8" y="308" width="139" height="42"/>
+                            <rect key="frame" x="16" y="383" width="139" height="36"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <state key="normal" title="CANCEL" backgroundImage="color_H.png">
                                 <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -57,11 +65,11 @@
                             </connections>
                         </button>
                         <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CCn-Oz-I0M" userLabel="authView">
-                            <rect key="frame" x="61" y="273" width="240" height="27"/>
+                            <rect key="frame" x="65" y="345" width="243" height="25"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lWW-wB-FMR" userLabel="authButton">
-                                    <rect key="frame" x="26" y="2" width="17" height="22"/>
+                                    <rect key="frame" x="24" y="0.0" width="22" height="24"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <state key="normal" image="checkbox_unchecked.png"/>
                                     <state key="selected" image="checkbox_checked.png"/>
@@ -70,7 +78,7 @@
                                     </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Do not show again" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dQL-Sf-slc">
-                                    <rect key="frame" x="55" y="2" width="176" height="21"/>
+                                    <rect key="frame" x="57" y="10" width="173" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -79,7 +87,7 @@
                             </subviews>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SbQ-re-fGQ" userLabel="confirmationButton" customClass="UIRoundBorderedButton">
-                            <rect key="frame" x="169" y="308" width="143" height="42"/>
+                            <rect key="frame" x="177" y="383" width="136" height="36"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <state key="normal" title="DELETE" backgroundImage="color_I.png">
                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -91,20 +99,34 @@
                             </connections>
                         </button>
                         <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="forward_message_default.png" translatesAutoresizingMaskIntoConstraints="NO" id="1Wh-Yi-cUe">
-                            <rect key="frame" x="89" y="50" width="138" height="54"/>
+                            <rect key="frame" x="100" y="50" width="136" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="voip_conference_new.png" translatesAutoresizingMaskIntoConstraints="NO" id="SVn-4k-9yc">
-                            <rect key="frame" x="89" y="50" width="138" height="54"/>
+                            <rect key="frame" x="100" y="50" width="136" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
+                        <label hidden="YES" opaque="NO" tag="13" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="https://subscribe.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xbl-Qs-GaE" userLabel="subscribeLabel">
+                            <rect key="frame" x="-42" y="291" width="414" height="29"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="0.98766469960000003" green="0.27512490750000002" blue="0.029739789660000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="tfG-O1-yfD" appends="YES" id="Jcg-KH-U5B"/>
+                            </connections>
+                        </label>
                     </subviews>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
-            <point key="canvasLocation" x="871.20000000000005" y="261.31934032983509"/>
+            <point key="canvasLocation" x="548" y="34"/>
         </view>
+        <tapGestureRecognizer id="tfG-O1-yfD" userLabel="onSubscribeTap">
+            <connections>
+                <action selector="onSubscribeTap:" destination="-1" id="Zq2-mP-ccM"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="checkbox_checked.png" width="27.200000762939453" height="27.200000762939453"/>

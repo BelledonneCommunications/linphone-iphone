@@ -119,16 +119,21 @@
 }
 
 - (void)setChatMessageForCbs:(LinphoneChatMessage *)amessage {
-	if (!amessage || amessage == _message) {
+	if (amessage == _message) {
 		return;
 	}
-
+	if (_message){
+		linphone_chat_message_unref(_message);
+	}
 	_message = amessage;
-	linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
-	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
-    linphone_chat_message_cbs_set_participant_imdn_state_changed(cbs, participant_imdn_status);
-	linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
+	if (amessage){
+		linphone_chat_message_ref(amessage);
+		linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
+		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
+		linphone_chat_message_cbs_set_participant_imdn_state_changed(cbs, participant_imdn_status);
+		linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
+	}
 }
 
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message {
@@ -196,9 +201,7 @@
         _avatarImage.hidden = TRUE;
         
     } else {
-        [_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_from_address(_message)]
-                      bordered:NO
-             withRoundedRadius:YES];
+        [_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_from_address(_message)]];
         _contactDateLabel.text = [self.class ContactDateForChat:_message];
         _contactDateLabel.textAlignment = NSTextAlignmentLeft;
         _avatarImage.hidden = !_isFirst;
@@ -321,11 +324,13 @@
 
 - (void)onDelete {
 	if (_message != NULL) {
-		UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
+		/*
+		UITableView *tableView = VIEW(ChatConversationViewSwift).tableController.tableView;
 		NSIndexPath *indexPath = [tableView indexPathForCell:self];
 		[tableView.dataSource tableView:tableView
 					 commitEditingStyle:UITableViewCellEditingStyleDelete
 					  forRowAtIndexPath:indexPath];
+		 */
 	}
 }
 
@@ -337,15 +342,17 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	
 	if (!linphone_chat_message_is_outgoing(msg) || (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateFileTransferInProgress)) {
 		LinphoneEventLog *event = (LinphoneEventLog *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
-		ChatConversationView *view = VIEW(ChatConversationView);
-		[view.tableController updateEventEntry:event];
-		[view.tableController scrollToBottom:true];
+		ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
+		//[view.tableController updateEventEntry:event];
+		//[view.tableController scrollToBottom:true];
 	}
 }
 
 static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
-    ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
-    [imdnView updateImdnList];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
+		[imdnView updateImdnList];
+	});
 }
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
@@ -762,7 +769,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	if (_message != nil) {
-		UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
+		//UITableView *tableView = VIEW(ChatConversationViewSwift).tableController.tableView;
 		BOOL is_outgoing = linphone_chat_message_is_outgoing(_message);
 		CGRect bubbleFrame = _bubbleView.frame;
 		int available_width = self.frame.size.width;
@@ -773,11 +780,13 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 			bubbleFrame.size.width = MAX(bubbleFrame.size.width, 300);
 		}
 
+		/*
 		if (tableView.isEditing) {
 			origin_x = 0;
 		} else {
 			origin_x = (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
 		}
+		 */
 		
 		CGRect r = _messageText.frame;
 		r.origin.y = linphone_chat_message_is_reply(_message) ? _replyView.view.frame.origin.y + _replyView.view.frame.size.height + 5 : 3;
@@ -848,10 +857,13 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 -(void) buildActions {
 	LinphoneChatMessage *message = self.message;
+	LinphoneEventLog *event = self.event;
+
 	_messageActionsTitles = [[NSMutableArray alloc] init];
 	_messageActionsBlocks = [[NSMutableArray alloc] init];
 	_messageActionsIcons = [[NSMutableArray alloc] init];
-
+	
+	[VIEW(ChatConversationView).messageField resignFirstResponder];
 	UIChatBubbleTextCell *thiz = self;
 	
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
@@ -883,7 +895,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsIcons addObject:@"menu_forward_default"];
 	[_messageActionsBlocks addObject:^{
 		[thiz dismissPopup];
-		VIEW(ChatConversationView).pendingForwardMessage = linphone_chat_message_ref(message);
+		VIEW(ChatConversationViewSwift).pendingForwardMessage = message;
 		[PhoneMainView.instance changeCurrentView:VIEW(ChatsListView).compositeViewDescription];
 	}];
 	 
@@ -893,17 +905,44 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsIcons addObject:@"menu_reply_default"];
 	[_messageActionsBlocks addObject:^{
 		[thiz dismissPopup];
-		[VIEW(ChatConversationView) initiateReplyViewForMessage:message];
+		[VIEW(ChatConversationViewSwift) initiateReplyViewForMessage:message];
 	}];
 	
-	if (linphone_chat_message_is_outgoing(self.message) && linphone_chat_room_get_nb_participants(linphone_chat_message_get_chat_room(self.message)) > 1) {
+	LinphoneChatRoom *chatroom = linphone_chat_message_get_chat_room(self.message);
+	
+	if (linphone_chat_room_get_nb_participants(chatroom) > 1) {
 		[_messageActionsTitles addObject:NSLocalizedString(@"Infos", nil)];
 		[_messageActionsIcons addObject:@"menu_info"];
 		[_messageActionsBlocks addObject:^{
 			[thiz dismissPopup];
 			ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
-			view.msg = message;
+			view.event = event;
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		}];
+	}
+
+	if (!linphone_chat_message_is_outgoing(self.message)
+		&& [FastAddressBook getContactWithAddress:linphone_chat_message_get_from_address(self.message)] == nil
+		&& !(linphone_chat_room_get_capabilities(chatroom) & LinphoneChatRoomCapabilitiesOneToOne) ) {
+		
+		LinphoneAddress *fromAddress = linphone_address_clone(linphone_chat_message_get_from_address(self.message));
+		[_messageActionsTitles addObject:NSLocalizedString(@"Add to contact", nil)];
+		[_messageActionsIcons addObject:@"contact_add_default"];
+		[_messageActionsBlocks addObject:^{
+			[thiz dismissPopup];
+			linphone_address_clean(fromAddress);
+			char *lAddress = linphone_address_as_string_uri_only(fromAddress);
+			if (lAddress != NULL) {
+				NSString *normSip = [NSString stringWithUTF8String:lAddress];
+				normSip = [normSip hasPrefix:@"sip:"] ? [normSip substringFromIndex:4] : normSip;
+				normSip = [normSip hasPrefix:@"sips:"] ? [normSip substringFromIndex:5] : normSip;
+				[ContactSelection setAddAddress:normSip];
+				[ContactSelection setSelectionMode:ContactSelectionModeEdit];
+				[ContactSelection enableSipFilter:FALSE];
+				[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
+				ms_free(lAddress);
+			}
+			linphone_address_unref(fromAddress);
 		}];
 	}
 	
@@ -912,7 +951,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	[_messageActionsBlocks addObject:^{
 		[thiz dismissPopup];
 		linphone_chat_room_delete_message(linphone_chat_message_get_chat_room(message), message);
-		[VIEW(ChatConversationView).tableController reloadData];
+		//[VIEW(ChatConversationViewSwift).tableController reloadData];
 	}];
 }
 
@@ -924,7 +963,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		return;
 
 	
-	[VIEW(ChatConversationView).tableController dismissMessagesPopups];
+	//[VIEW(ChatConversationViewSwift).tableController dismissMessagesPopups];
 	[self buildActions];
 	int width = 250;
 	int cellHeight = 45;
@@ -932,17 +971,19 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	CGRect screenRect = UIScreen.mainScreen.bounds;
 	int menuHeight = numberOfItems * cellHeight;
 	
+	/*
 	CGRect frame = CGRectMake(
 							  linphone_chat_message_is_outgoing(self.message) ? screenRect.size.width - width - 10 : 10,
-							  (self.frame.origin.y + self.frame.size.height) - [VIEW(ChatConversationView).tableController .tableView contentOffset].y > screenRect.size.height /2 ? self.frame.origin.y - menuHeight - 10:  self.frame.origin.y + self.frame.size.height,
+							  (self.frame.origin.y + self.frame.size.height) - [VIEW(ChatConversationViewSwift).tableController .tableView contentOffset].y > screenRect.size.height /2 ? self.frame.origin.y - menuHeight - 10:  self.frame.origin.y + self.frame.size.height,
 							  width,
-							  menuHeight);
+							  menuHeight);*/
 	
-	_popupMenu = [[UITableView alloc]initWithFrame:frame];
+	//_popupMenu = [[UITableView alloc]initWithFrame:frame];
 	_popupMenu.scrollEnabled = false;
 	_popupMenu.dataSource = self;
 	_popupMenu.delegate = self;
-	
+	_popupMenu.separatorStyle = UITableViewCellSeparatorStyleNone;
+
 	_popupMenu.layer.masksToBounds = false;
 	
 	_popupMenu.layer.shadowColor = [UIColor darkGrayColor].CGColor;
@@ -955,11 +996,11 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	_popupMenu.editing = NO;
 	_popupMenu.userInteractionEnabled  = true;
 	[_popupMenu reloadData];
-	[VIEW(ChatConversationView).tableController.view addSubview:_popupMenu];
+	//[VIEW(ChatConversationViewSwift).tableController.view addSubview:_popupMenu];
 	UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOutsideMenu:)];
 	tapGestureRecognizer.cancelsTouchesInView = NO;
 	tapGestureRecognizer.numberOfTapsRequired = 1;
-	[VIEW(ChatConversationView).tableController.view  addGestureRecognizer:tapGestureRecognizer];
+	//[VIEW(ChatConversationViewSwift).tableController.view  addGestureRecognizer:tapGestureRecognizer];
 }
 
 -(void) dismissPopup {
@@ -972,10 +1013,12 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 
 
 -(void) tapOutsideMenu:(UITapGestureRecognizer *) g {
-	CGPoint p = [g locationInView:VIEW(ChatConversationView).tableController.view];
+	/*
+	CGPoint p = [g locationInView:VIEW(ChatConversationViewSwift).tableController.view];
 	if (!CGRectContainsPoint(_popupMenu.frame,p)) {
 		[self dismissPopup];
 	}
+	 */
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

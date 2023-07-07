@@ -84,6 +84,7 @@
 - (UIViewController *)getCurrentViewController;
 - (UIInterfaceOrientation)currentOrientation;
 - (void)clearCache:(NSArray *)exclude;
+- (void)removeEntryFromCache:(NSString *)key;
 - (IBAction)onRightSwipe:(id)sender;
 
 

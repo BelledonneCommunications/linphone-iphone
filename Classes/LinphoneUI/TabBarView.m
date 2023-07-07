@@ -76,16 +76,20 @@
 - (void)update:(BOOL)appear {
 	[self updateSelectedButton:[PhoneMainView.instance currentView]];
 	[self updateMissedCall:linphone_core_get_missed_calls_count(LC) appear:appear];
-	[self updateUnreadMessage:appear];
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"]) {
+		[self updateUnreadMessage:appear];
+	}
 }
 
 - (void)updateUnreadMessage:(BOOL)appear {
 	int unreadMessage = [LinphoneManager unreadMessageCount];
-	if (unreadMessage > 0) {
-		_chatNotificationLabel.text = [NSString stringWithFormat:@"%i", unreadMessage];
-		[_chatNotificationView startAnimating:appear];
-	} else {
-		[_chatNotificationView stopAnimating:appear];
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"]) {
+		if (unreadMessage > 0) {
+			_chatNotificationLabel.text = [NSString stringWithFormat:@"%i", unreadMessage];
+			[_chatNotificationView startAnimating:appear];
+		} else {
+			[_chatNotificationView stopAnimating:appear];
+		}
 	}
 }
 
@@ -109,7 +113,25 @@
 						   [view equal:ChatConversationCreateView.compositeViewDescription] ||
 						   [view equal:ChatConversationInfoView.compositeViewDescription] ||
 						   [view equal:ChatConversationImdnView.compositeViewDescription] ||
-						   [view equal:ChatConversationView.compositeViewDescription];
+	[view equal:ChatConversationViewSwift.compositeViewDescription];
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"] && [self viewIsCurrentlyPortrait]) {
+		CGFloat itemWidth = [UIScreen mainScreen].bounds.size.width/3;
+		[_chatButton setEnabled:false];
+		[_chatButton setHidden:true];
+		[_chatNotificationView setHidden:true];
+		_historyButton.frame = CGRectMake(0, 0, itemWidth, 66);
+		_contactsButton.frame = CGRectMake(itemWidth, 0, itemWidth, 66);
+		_dialerButton.frame = CGRectMake(itemWidth*2, 0, itemWidth, 66);
+		_selectedButtonImage.frame = CGRectMake(_selectedButtonImage.frame.origin.x, _selectedButtonImage.frame.origin.y, itemWidth, 3);
+	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"] && ![self viewIsCurrentlyPortrait]) {
+		[_chatButton setEnabled:false];
+		[_chatButton setHidden:true];
+		[_chatNotificationView setHidden:true];
+		_historyButton.frame = CGRectMake(0, 20, 90, 90);
+		_contactsButton.frame = CGRectMake(0, 120, 90, 90);
+		_dialerButton.frame = CGRectMake(0, 220, 90, 90);
+		_selectedButtonImage.frame = CGRectMake(_selectedButtonImage.frame.origin.x, _selectedButtonImage.frame.origin.y, 3, 90);
+	}
 	CGRect selectedNewFrame = _selectedButtonImage.frame;
 	if ([self viewIsCurrentlyPortrait]) {
 		selectedNewFrame.origin.x =

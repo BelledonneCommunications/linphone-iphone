@@ -16,4 +16,5 @@
 #import "UICamSwitch.h"
 #import "UIChatBubbleTextCell.h"
 #import "ChatConversationTableView.h"
-
+#import "EphemeralSettingsView.h"
+#import "FileTransferDelegate.h"

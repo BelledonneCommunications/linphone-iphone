@@ -53,10 +53,16 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
 				model.conferenceParticipantDevices.clearObservers()
-				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
-					self.reloadData()
+				model.conferenceParticipantDevices.readCurrentAndObserve { (devices) in
+					if (devices!.count > model.maxParticipantsForMosaicLayout && model.conference.value?.currentParams?.videoEnabled == true && model.conferenceDisplayMode.value == .Grid) {
+						Log.w("[Conference] \(model.conference) More than \(model.maxParticipantsForMosaicLayout) participants \(devices!.count), forcing active speaker layout from Grid")
+						model.conferenceDisplayMode.value = .ActiveSpeaker
+						model.changeLayout(layout: .ActiveSpeaker)
+						VoipDialog.toast(message: VoipTexts.conference_too_many_participants_for_mosaic_layout)
+					} else {
+						self.reloadData()
+					}
 				}
-				model.isConferenceLocallyPaused.clearObservers()
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
 						$0.isSelected = paused == true
@@ -113,6 +119,8 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 			self.conferenceViewModel?.toggleRecording()
 		})
 		
+		recordCall.isHidden = true;
+		
 		let recordPauseView = UIStackView()
 		recordPauseView.spacing = record_pause_button_margin
 		recordCallButtons.append(recordCall)
@@ -156,7 +164,7 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 		}
 		
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
+			if (self.superview?.superview?.superview == nil || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .Grid) {
 				return
 			}
 			self.gridContainer.removeConstraints().done()
@@ -175,6 +183,13 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 				self.reloadData()
 			}
 		}
+		
+		//Appearance
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.gridContainer.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
+			self.reloadData()
+		}
+		
 	}
 	
 	
@@ -183,7 +198,10 @@ class VoipConferenceGridView: UIView, UICollectionViewDataSource, UICollectionVi
 	func reloadData() {
 		conferenceViewModel?.conferenceParticipantDevices.value?.forEach {
 			$0.clearObservers()
-		}		
+		}
+		if let participantCount = conferenceViewModel?.conferenceParticipantDevices.value!.count, participantCount > conferenceViewModel!.maxParticipantsForMosaicLayout {
+			return
+		}
 		if (self.isHidden) {
 			self.grid.reloadData()
 			return

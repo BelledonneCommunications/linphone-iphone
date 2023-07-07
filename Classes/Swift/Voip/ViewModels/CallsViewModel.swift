@@ -33,9 +33,9 @@ class CallsViewModel {
 	let callConnectedEvent = MutableLiveData<Call>()
 	let callUpdateEvent = MutableLiveData<Call>()
 	let noMoreCallEvent = MutableLiveData(false)
-
+	
 	var core : Core { get { Core.get() } }
-
+	
 	static let shared = CallsViewModel()
 	
 	private var coreDelegate :  CoreDelegateStub?
@@ -44,7 +44,11 @@ class CallsViewModel {
 		coreDelegate = CoreDelegateStub(
 			onCallStateChanged : { (core: Core, call: Call, state: Call.State, message:String) -> Void in
 				Log.i("[Calls] Call state changed: \(call) : \(state)")
+				if (state == .IncomingEarlyMedia || state == .IncomingReceived || state == .OutgoingInit) {
+					self.addCallToList(call:call)
+				}
 				let currentCall = core.currentCall
+				Log.i("[Calls] Current call is \(currentCall)")
 				if (currentCall != nil && self.currentCallData.value??.call.getCobject != currentCall?.getCobject) {
 					self.updateCurrentCallData(currentCall: currentCall)
 				} else if (currentCall == nil && core.callsNb > 0) {
@@ -61,20 +65,21 @@ class CallsViewModel {
 					let localVideo = call.currentParams?.videoEnabled == true
 					let autoAccept = call.core?.videoActivationPolicy?.automaticallyAccept == true
 					if (remoteVideo && !localVideo && !autoAccept) {
-						if (core.videoCaptureEnabled || core.videoDisplayEnabled) {
+						if (core.videoCaptureEnabled || core.videoDisplayEnabled) && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false {
 							try?call.deferUpdate()
 							self.callUpdateEvent.value =  call
 						} else {
 							call.answerVideoUpdateRequest(accept: false)
 						}
 					}
-				}else if (state == Call.State.Connected) {
+				} else if (state == Call.State.Connected) {
 					self.callConnectedEvent.value = call
 				} else if (state == Call.State.StreamsRunning) {
 					self.callUpdateEvent.value = call
 				}
 				self.updateInactiveCallsCount()
 				self.callsData.notifyValue()
+				self.currentCallData.notifyValue()
 			},
 			
 			onMessageReceived : { (core: Core, room: ChatRoom, message: ChatMessage) -> Void in
@@ -120,13 +125,17 @@ class CallsViewModel {
 		if let removeCandidate = callsData.value?.filter{$0.call.getCobject == call.getCobject}.first {
 			removeCandidate.destroy()
 		}
-
+		
 		callsData.value = callsData.value?.filter(){$0.call.getCobject != call.getCobject}
 		callsData.notifyValue()
 	}
 	
 	private func addCallToList(call: Call) {
 		Log.i("[Calls] Adding call \(call) to calls list")
+		guard self.callsData.value?.filter({$0.call.getCobject == call.getCobject}).first == nil else {
+			Log.i("[Calls] \(call) already present in the list")
+			return
+		}
 		callsData.value?.append(CallData(call: call))
 		callsData.notifyValue()
 	}
@@ -162,29 +171,65 @@ class CallsViewModel {
 		var callToUse = currentCall
 		if (currentCall == nil) {
 			Log.w("[Calls] Current call is now null")
+			
+			if (Core.get().callsNb == 1) {
+				let firstData = callsData.value?.first
+				if (firstData != nil && currentCallData.value??.call.getCobject != firstData?.call.getCobject) {
+					Log.i("[Calls] Only one call in Core and the current call data doesn't match it, updating it")
+					currentCallData.value = firstData
+				}
+				return
+			}
 
-			let firstCall = core.calls.first
+			let firstCall = core.calls.filter {$0.state != .Error && $0.state != .End && $0.state != .Released}.first
 			if (firstCall != nil && currentCallData.value??.call.getCobject != firstCall?.getCobject) {
-				Log.i("[Calls] Using first call as \"current\" call")
+				Log.i("[Calls] Using \(firstCall?.callLog?.callId) as \"current\" call")
 				callToUse = firstCall
 			}
 		}
-
+		
 		guard let callToUse = callToUse else {
 			Log.w("[Calls] No call found to be used as \"current\"")
 			return
 		}
-
-		let firstToUse = callsData.value?.filter{$0.call.getCobject != callToUse.getCobject}.first
+		
+		let firstToUse = callsData.value?.filter{$0.call.getCobject == callToUse.getCobject}.first
 		if (firstToUse != nil) {
+			Log.i("[Calls] Updating current call to : \(firstToUse?.call)")
 			currentCallData.value = firstToUse
 		} else {
-			Log.w("[Calls] Call not found in calls data list, shouldn't happen!")
+			Log.w("[Calls] Call not found in calls data list, shouldn't happen! currentCallData is \(callToUse)")
 			currentCallData.value = CallData(call: callToUse)
 		}
-
-		updateUnreadChatCount()
+		ControlsViewModel.shared.updateMicState()
+		//updateUnreadChatCount()
 	}
-	
+}
 
+@objc class CallsViewModelBridge : NSObject {
+	@objc static func callViewToDisplay() -> UICompositeViewDescription? {
+		if let call = CallsViewModel.shared.currentCallData.value??.call {
+			if (call.conference != nil) {
+				return ConferenceCallView.compositeDescription
+			} else {
+				return SingleCallView.compositeDescription
+			}
+		} else {
+			return DialerView.compositeViewDescription()
+		}
+	}
+	@objc static func setupCallsViewNavigation() {
+		CallsViewModel.shared.currentCallData.readCurrentAndObserve { currentCallData in
+			guard currentCallData != nil && currentCallData??.call != nil && currentCallData??.isOutgoing.value != true && currentCallData??.isIncoming.value != true else {
+				PhoneMainView.instance().popView(SingleCallView.compositeDescription)
+				PhoneMainView.instance().popView(ConferenceCallView.compositeDescription)
+				return
+			}
+			if (currentCallData??.call.conference != nil) {
+			   PhoneMainView.instance().pop(toView:ConferenceCallView.compositeDescription)
+		   } else {
+			   PhoneMainView.instance().pop(toView:SingleCallView.compositeDescription)
+		   }
+		}
+	}
 }

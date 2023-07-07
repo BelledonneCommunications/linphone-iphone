@@ -22,7 +22,7 @@ import UIKit
 import linphonesw
 
 
-@objc class ConferenceWaitingRoomFragment: UIViewController, UICompositeViewDelegate { // Replaces CallView
+@objc class ConferenceWaitingRoomView: UIViewController, UICompositeViewDelegate { // Replaces CallView
 	
 	// Layout constants
 	let common_margin = 17.0
@@ -54,14 +54,13 @@ import linphonesw
 	let layoutPickerView = ConferenceLayoutPickerView(orientation: UIDevice.current.orientation)
 
 
-	static let compositeDescription = UICompositeViewDescription(ConferenceWaitingRoomFragment.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
+	static let compositeDescription = UICompositeViewDescription(ConferenceWaitingRoomView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		view.backgroundColor = VoipTheme.voipBackgroundColor.get()
 		
 		view.addSubview(subject)
 		subject.centerX().alignParentTop(withMargin: common_margin).done()
@@ -109,6 +108,12 @@ import linphonesw
 			}
 		}
 		
+		self.view.onClick{
+			if (ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value == true) {
+				ConferenceWaitingRoomViewModel.sharedModel.showLayoutPicker.value = false
+			}
+		}
+		
 		// Form buttons
 		buttonsView.axis = .horizontal
 		buttonsView.spacing = button_spacing
@@ -141,9 +146,12 @@ import linphonesw
 			//self.localVideo.isHidden = joining == true (UX question as video window goes black by the core, better black or hidden ?)
 			self.noVideoLabel.isHidden = joining == true
 			self.layoutPicker?.isHidden = joining == true
+			if (Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true) {
+				self.layoutPicker!.isHidden = true
+			}
 			if (joining == true) {
 				self.view.addSubview(self.conferenceJoinSpinner)
-				self.conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
+				self.conferenceJoinSpinner.square(AbstractIncomingOutgoingCallView.spinner_size).center().done()
 				self.conferenceJoinSpinner.startRotation()
 				self.controlsView.isHidden = true
 			} else {
@@ -192,6 +200,10 @@ import linphonesw
 	
 		layoutRotatableElements()
 		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundColor.get()
+		}
+		
 	}
 	
 	func layoutRotatableElements() {
@@ -215,6 +227,11 @@ import linphonesw
 	override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
 		super.didRotate(from: fromInterfaceOrientation)
 		self.layoutRotatableElements()
+		Core.get().videoPreviewEnabled = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true
+	}
+	
+	override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+		Core.get().videoPreviewEnabled = false
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {

@@ -24,13 +24,23 @@ publish_presence=0
 backgroundmode_preference=1
 use_rls_presence=1
 use_callkit=1
+use_in_app_file_viewer_for_non_encrypted_files=0
 
 accept_early_media=0
 
+force_lime_chat_rooms=0
+disable_chat_feature=0
+enable_native_address_book=1
+
+hide_link_phone_number=0
+
+[rtp]
+accept_any_encryption=1
 
 [sip]
 deliver_imdn=1
 linphone_specs=groupchat,lime
+zrtp_key_agreements_suites=MS_ZRTP_KEY_AGREEMENT_K255_KYB512
 
 [misc]
 version_check_url_root=https://linphone.org/releases
@@ -42,4 +52,7 @@ eq_location=mic
 
 [account_creator]
 backend=0
+
+[video]
+max_conference_size=vga
 

@@ -18,27 +18,31 @@
  */
 
 #import "UIChatCreateCollectionViewCell.h"
+#import "linphoneapp-Swift.h"
 
 @implementation UIChatCreateCollectionViewCell
-- (void)awakeFromNib {
-    [super awakeFromNib];
-}
 
-- (id)initWithName:(NSString *)identifier {
-	if (self != nil) {
-		NSArray *arrayOfViews =
-		[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
-		if ([arrayOfViews count] >= 1) {
-			UIChatCreateCollectionViewCell *sub = ((UIChatCreateCollectionViewCell *)[arrayOfViews objectAtIndex:0]);
-			[self addSubview:sub];
-			_nameLabel = sub.nameLabel;
-		}
-	}
-	[_nameLabel setText:identifier];
-
+- (id)initWithFrame:(CGRect)frame {
+	self = [super initWithFrame:frame];
+	self.contentView.translatesAutoresizingMaskIntoConstraints = false;
+	[SnapkitBridge matchParentDimensionsWithView:self.contentView topInset:10];
+	
+	self.nameLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+	self.nameLabel.numberOfLines = 1;
+	[self.contentView addSubview:self.nameLabel];
+	[SnapkitBridge matchParentDimensionsWithView:self.nameLabel leftInset:20];
+	[SnapkitBridge heightWithView:self heiht:50];
+	
+	UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"conference_delete"]];
+	image.contentMode = UIViewContentModeScaleAspectFit;
+	[self.contentView addSubview:image];
+	[SnapkitBridge squareWithView:image size:15];
+	[SnapkitBridge alignParentLeftWithView:image];
+	[SnapkitBridge centerYWithView:image];
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onDelete)];
 	tap.numberOfTouchesRequired = 1;
-	[self addGestureRecognizer:tap];
+	[image addGestureRecognizer:tap];
+	image.userInteractionEnabled = true;
 	return self;
 }
 
@@ -60,4 +64,6 @@
 	[_controller.tableController.tableView reloadData];
 	_controller.nextButton.enabled = (_controller.tableController.contactsGroup.count > 0) || _controller.isForEditing;
 }
+
+
 @end

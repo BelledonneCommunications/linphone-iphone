@@ -30,6 +30,7 @@ class ControlsViewModel {
 	let isMicrophoneMuted = MutableLiveData<Bool>()
 	let isMuteMicrophoneEnabled = MutableLiveData<Bool>()
 	let isBluetoothHeadsetSelected = MutableLiveData<Bool>()
+	let isBluetoothHeadsetAvailable = MutableLiveData<Bool>()
 	let nonEarpieceOutputAudioDevice = MutableLiveData<Bool>()
 	let audioRoutesSelected = MutableLiveData<Bool>()
 	let audioRoutesEnabled = MutableLiveData<Bool>()
@@ -71,6 +72,9 @@ class ControlsViewModel {
 				self.nonEarpieceOutputAudioDevice.value = audioDevice.type != AudioDeviceType.Microphone // on iOS Earpiece = Microphone
 				self.updateSpeakerState()
 				self.updateBluetoothHeadsetState()
+			},
+			onAudioDevicesListUpdated : { (core: Core) -> Void in
+				self.isBluetoothHeadsetAvailable.value = !core.audioDevices.filter { [.Bluetooth,.BluetoothA2DP].contains($0.type)}.isEmpty
 			}
 		)
 		Core.get().addDelegate(delegate: coreDelegate!)
@@ -88,6 +92,7 @@ class ControlsViewModel {
 		ConferenceViewModel.shared.conferenceDisplayMode.readCurrentAndObserve { _ in
 			self.updateVideoAvailable()
 		}
+		self.isBluetoothHeadsetAvailable.value = !core.audioDevices.filter { [.Bluetooth,.BluetoothA2DP].contains($0.type)}.isEmpty
 	}
 	
 	private func setAudioRoutes(_ call:Call,_ state:Call.State) {
@@ -110,7 +115,7 @@ class ControlsViewModel {
 				}
 			}
 			
-			if (ConfigManager.instance().lpConfigBoolForKey(key: "route_audio_to_speaker_when_video_enabled",defaultValue:true) && call.currentParams?.videoEnabled == true) {
+			if (ConfigManager.instance().lpConfigBoolForKey(key: "route_audio_to_speaker_when_video_enabled",defaultValue:true) && call.currentParams?.videoEnabled == true && call.conference == nil) {
 				// Do not turn speaker on when video is enabled if headset or bluetooth is used
 				if (!AudioRouteUtils.isHeadsetAudioRouteAvailable() &&
 					!AudioRouteUtils.isBluetoothAudioRouteCurrentlyUsed(call: call)
@@ -141,7 +146,9 @@ class ControlsViewModel {
 	func toggleVideo() {
 		if let currentCall = core.currentCall {
 			if (currentCall.conference != nil) {
-				if let params = try?core.createCallParams(call: currentCall) {
+				if (ConferenceViewModel.shared.conferenceDisplayMode.value == .AudioOnly) {
+					ConferenceViewModel.shared.changeLayout(layout: .ActiveSpeaker, sendVideo:Core.get().videoActivationPolicy?.automaticallyInitiate == true)
+				} else if let params = try?core.createCallParams(call: currentCall) {
 					isVideoUpdateInProgress.value = true
 					params.videoDirection = params.videoDirection == MediaDirection.RecvOnly ? MediaDirection.SendRecv : MediaDirection.RecvOnly
 					try?currentCall.update(params: params)
@@ -194,11 +201,10 @@ class ControlsViewModel {
 	private func updateVideoAvailable() {
 		let currentCall = core.currentCall
 		isVideoAvailable.value =
-			(core.videoCaptureEnabled || core.videoPreviewEnabled) &&
+			((core.videoCaptureEnabled || core.videoPreviewEnabled) &&
 			currentCall?.state != .Paused &&
 			currentCall?.state != .PausedByRemote &&
-		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true)) &&
-		(ConferenceViewModel.shared.conferenceExists.value != true || ConferenceViewModel.shared.conferenceDisplayMode.value != .AudioOnly)
+		((currentCall != nil && currentCall?.mediaInProgress() != true) || (core.conference?.isIn == true))) && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false
 	}
 	
 	private func updateVideoEnabled() {
@@ -217,13 +223,14 @@ class ControlsViewModel {
 	
 	func isVideoCallOrConferenceActive() -> Bool {
 		if let currentCall = core.currentCall, let params = currentCall.params {
-			return params.videoEnabled && (currentCall.conference  == nil || params.videoDirection == MediaDirection.SendRecv)
+			return currentCall.state != .PausedByRemote &&  params.videoEnabled && (currentCall.conference  == nil || params.videoDirection == MediaDirection.SendRecv)
 		} else {
 			return false
 		}
 	}
 	
 	func toggleFullScreen() {
+		ControlsViewModel.shared.audioRoutesSelected.value = false
 		fullScreenMode.value = fullScreenMode.value != true
 	}
 	
@@ -278,12 +285,15 @@ class ControlsViewModel {
 	
 }
 
-
 @objc class ControlsViewModelBridge: NSObject {
 	@objc static func showParticipants() {
 		ControlsViewModel.shared.goToConferenceParticipantsListEvent.value = true
 	}
-	@objc static func toggleStatsVisibility() {
-		ControlsViewModel.shared.callStatsVisible.value = !(ControlsViewModel.shared.callStatsVisible.value ?? false)
+	@objc static func toggleStatsVisibility() -> Void {
+			if (ControlsViewModel.shared.callStatsVisible.value == true) {
+					ControlsViewModel.shared.callStatsVisible.value = false
+			} else {
+					ControlsViewModel.shared.callStatsVisible.value = true
+			}
 	}
 }

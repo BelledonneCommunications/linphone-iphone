@@ -63,6 +63,7 @@
 @property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
 @property(nonatomic) Boolean markAsRead;
 @property(nonatomic) const char *peerAddress;
+@property(nonatomic) const char *localAddress;
 
 @property (strong, nonatomic) FileDataSource *FileDataSource;
 
@@ -112,6 +113,7 @@
 @property LinphonePlayer *sharedVoicePlayer;
 @property BOOL showVoiceRecorderView;
 @property BOOL preservePendingActions;
+@property BOOL *sharingMedia;
 
 // Reply
 @property (weak, nonatomic) IBOutlet UIView *replyView;

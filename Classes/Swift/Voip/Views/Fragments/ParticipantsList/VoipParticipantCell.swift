@@ -133,7 +133,8 @@ class VoipParticipantCell: UITableViewCell {
 		isAdminView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor).isActive = true
 		isAdminView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
 		isAdminView.matchParentHeight().toRightOf(nameAddress).alignParentRight(withMargin: dismiss_right_margin).done()
-		
+		contentView.backgroundColor = .clear
+		backgroundColor = .clear
 	}
 	
 	required init?(coder: NSCoder) {

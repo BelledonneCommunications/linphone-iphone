@@ -29,13 +29,16 @@ import SVProgressHUD
 	
 	let participantsListTableView = UITableView()
 	
-	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .date, readOnly:true)
+	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date, readOnly:true)
 	let timeZoneValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}), readOnly:true)
 	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}), readOnly:true)
-	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDateTime,pickerMode: .time, readOnly:true)
+	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledTime,pickerMode: .time, readOnly:true)
+	let descriptionLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_description_hint)
 	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description, readOnly:true)
 	let createButton = FormButton(backgroundStateColors: VoipTheme.primary_colors_background)
-
+	let leftColumn = UIView()
+	let rightColumn = UIView()
+	let scheduleForm = UIView()
 
 	static let compositeDescription = UICompositeViewDescription(ConferenceSchedulingSummaryView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -76,13 +79,10 @@ import SVProgressHUD
 		schedulingStack.alignUnder(view: subjectInput,withMargin: 3*form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
 		
 
-		let scheduleForm = UIView()
 		schedulingStack.addArrangedSubview(scheduleForm)
-		scheduleForm.matchParentSideBorders().done()
-		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in scheduleForm.isHidden = forLater != true }
+		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (forLater) in self.scheduleForm.isHidden = forLater != true }
 		
 		// Left column (Date & Time)
-		let leftColumn = UIView()
 		scheduleForm.addSubview(leftColumn)
 		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft().alignParentTop(withMargin: form_margin).done()
 		
@@ -104,7 +104,6 @@ import SVProgressHUD
 
 		
 		// Right column (Duration & Timezone)
-		let rightColumn = UIView()
 		scheduleForm.addSubview(rightColumn)
 		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight().alignParentTop().done()
 		
@@ -125,16 +124,10 @@ import SVProgressHUD
 		rightColumn.wrapContentY().done()
 		
 		// Description
-		let descriptionLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_description_title)
 		scheduleForm.addSubview(descriptionLabel)
-		descriptionLabel.alignUnder(view: leftColumn,withMargin: form_margin).alignUnder(view: rightColumn,withMargin: form_margin).matchParentSideBorders().done()
-		
 		descriptionInput.textContainer.maximumNumberOfLines = 5
 		descriptionInput.textContainer.lineBreakMode = .byWordWrapping
 		scheduleForm.addSubview(descriptionInput)
-		descriptionInput.alignUnder(view: descriptionLabel,withMargin: form_margin).matchParentSideBorders().height(description_height).alignParentBottom(withMargin: form_margin*2).done()
-
-		scheduleForm.wrapContentY().done()
 		
 		// Sending method
 		let viaChatLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_chat_summary)
@@ -147,9 +140,8 @@ import SVProgressHUD
 			
 		// Participants
 		let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_participants_list)
-		participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(participantsLabel)
-		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin*2).done()
+		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin).done()
 		participantsLabel.textAlignment = .left
 		
 		
@@ -162,7 +154,7 @@ import SVProgressHUD
 			participantsListTableView.allowsFocus = false
 		}
 		participantsListTableView.separatorStyle = .singleLine
-		participantsListTableView.separatorColor = VoipTheme.light_grey_color
+		participantsListTableView.backgroundColor = .clear
 		
 		ConferenceSchedulingViewModel.shared.selectedAddresses.readCurrentAndObserve { (addresses) in
 			self.participantsListTableView.reloadData()
@@ -173,6 +165,7 @@ import SVProgressHUD
 		
 		// Create / Schedule
 		contentView.addSubview(createButton)
+		createButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).width(0).done()
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { _ in
 			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
 			self.createButton.addSidePadding()
@@ -217,19 +210,38 @@ import SVProgressHUD
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (later) in
 			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
       viaChatLabel.isHidden = later != true || ConferenceSchedulingViewModel.shared.sendInviteViaChat.value != true
+			viaChatLabel.removeConstraints().matchParentSideBorders(insetedByDx: self.form_margin).alignUnder(view: schedulingStack,withMargin: (viaChatLabel.isHidden ? 0 : 1)*self.form_margin).done()
+			if (viaChatLabel.isHidden) {
+				viaChatLabel.height(0).done()
+			}
+
 			self.createButton.addSidePadding()
 		}
 		
-		createButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).done()
-		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			self.participantsListTableView.separatorColor = VoipTheme.separatorColor.get()
+		}
+				
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
-		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
+		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDate
 		timeZoneValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledTimeZone.value!)
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
-		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDateTime
+		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledTime
+		
 		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
+		descriptionLabel.removeConstraints().alignUnder(view: leftColumn,withMargin: form_margin).alignUnder(view: rightColumn,withMargin: form_margin).matchParentSideBorders().done()
+		descriptionInput.removeConstraints().alignUnder(view: descriptionLabel,withMargin: form_margin).matchParentSideBorders().height(description_height).alignParentBottom(withMargin: form_margin*2).done()
+		if (ConferenceSchedulingViewModel.shared.description.value == nil || ConferenceSchedulingViewModel.shared.description.value!.count == 0) {
+			descriptionLabel.height(0).done()
+			descriptionInput.height(0).done()
+		}
+		// Wrap form
+		scheduleForm.removeConstraints().matchParentSideBorders().wrapContentY().done()
+		
 		createButton.addSidePadding()
 		super.viewWillAppear(animated)
 	}

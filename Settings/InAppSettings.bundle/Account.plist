@@ -270,6 +270,16 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>apply_international_prefix_for_calls_and_chats</string>
+			<key>Title</key>
+			<string>Apply prefix for outgoing calls and chat</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<false/>
 			<key>Key</key>
 			<string>account_substitute_+_by_00_preference</string>
@@ -277,6 +287,16 @@
 			<string>Substitute + in phone numbers</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Bundle Mode</string>
+			<key>Key</key>
+			<string>account_bundle_mode_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Key</key>

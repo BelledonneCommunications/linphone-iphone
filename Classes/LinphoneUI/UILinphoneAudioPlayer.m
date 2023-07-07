@@ -92,12 +92,6 @@
     [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPlay:[UIColor blackColor]] forState:UIControlStateNormal];
     [_stopButton setTitle:@"" forState:UIControlStateNormal];
     [_stopButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemRefresh:[UIColor blackColor]] forState:UIControlStateNormal];
-	if (linphone_player_get_is_video_available(player)) {
-		linphone_player_set_window_id(player, (__bridge void *)VIEW(RecordingsListView).videoView);
-		VIEW(RecordingsListView).videoView.hidden = NO;
-	} else {
-		VIEW(RecordingsListView).videoView.hidden = YES;
-	}
 }
 
 - (BOOL)isOpened {
@@ -195,6 +189,12 @@ void on_eof_reached(LinphonePlayer *pl) {
             [_playButton setTitle:@"" forState:UIControlStateNormal];
             [_playButton setImage:[UIImage imageFromSystemBarButton:UIBarButtonSystemItemPause:[UIColor blackColor]] forState:UIControlStateNormal];
             linphone_player_start(player);
+			if (linphone_player_get_is_video_available(player)) {
+				linphone_player_set_window_id(player, (__bridge void *)VIEW(RecordingsListView).videoView);
+				VIEW(RecordingsListView).videoView.hidden = NO;
+			} else {
+				VIEW(RecordingsListView).videoView.hidden = YES;
+			}
             break;
         case LinphonePlayerPlaying:
             NSLog(@"Pause");

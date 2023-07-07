@@ -56,7 +56,6 @@ class VoipConferenceAudioOnlyView: UIView, UICollectionViewDataSource, UICollect
 				model.conferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
 				}
-				model.isConferenceLocallyPaused.clearObservers()
 				model.isConferenceLocallyPaused.readCurrentAndObserve { (paused) in
 					self.pauseCallButtons.forEach {
 						$0.isSelected = paused == true
@@ -113,6 +112,8 @@ class VoipConferenceAudioOnlyView: UIView, UICollectionViewDataSource, UICollect
 			self.conferenceViewModel?.toggleRecording()
 		})
 		
+		recordCall.isHidden = true;
+		
 		let recordPauseView = UIStackView()
 		recordPauseView.spacing = record_pause_button_margin
 		recordCallButtons.append(recordCall)
@@ -148,7 +149,13 @@ class VoipConferenceAudioOnlyView: UIView, UICollectionViewDataSource, UICollect
 		grid.matchParentDimmensions().done()
 	
 		headerView.matchParentSideBorders().alignParentTop().done()
-				
+			
+		//Appearance
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.gridContainer.backgroundColor = VoipTheme.voipBackgroundColor.get()
+			self.reloadData()
+		}
+		
 	}
 	
 	

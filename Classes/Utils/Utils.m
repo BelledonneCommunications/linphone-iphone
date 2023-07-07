@@ -467,14 +467,15 @@
     	return NULL;
 
 	LinphoneAccount *account = linphone_core_get_default_account(LC);
-  	const char *normvalue;
+  	char *normvalue;
 	normvalue = linphone_account_is_phone_number(account, value.UTF8String)
 	  	? linphone_account_normalize_phone_number(account, value.UTF8String)
-		: value.UTF8String;
+		: bctbx_strdup(value.UTF8String);
 
   	LinphoneAddress *addr = linphone_account_normalize_sip_uri(account, normvalue);
   	// first try to find a friend with the given address
   	Contact *c = [FastAddressBook getContactWithAddress:addr];
+	bctbx_free(normvalue);
 
   	if (c && c.friend) {
     	LinphoneFriend *f = c.friend;
@@ -496,8 +497,11 @@
 	// numbers by default
 	if (addr && account) {
 		const char *username = linphone_account_params_get_dial_escape_plus_enabled(linphone_account_get_params(account)) ? normvalue : value.UTF8String;
-		if (linphone_account_is_phone_number(account, username))
-			linphone_address_set_username(addr, linphone_account_normalize_phone_number(account, username));
+		if (linphone_account_is_phone_number(account, username)){
+			char *normalized = linphone_account_normalize_phone_number(account, username);
+			linphone_address_set_username(addr, normalized);
+			bctbx_free(normalized);
+		}
 	 }
 	return addr;
 }

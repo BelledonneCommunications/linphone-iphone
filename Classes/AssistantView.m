@@ -127,7 +127,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (!mustRestoreView) {
 		new_account = NULL;
-		number_of_accounts_before = bctbx_list_size(linphone_core_get_account_list(LC));
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		number_of_accounts_before = bctbx_list_size(accounts);
+		bctbx_free(accounts);
 		[self resetTextFields];
 		[self changeView:_welcomeView back:FALSE animation:FALSE];
 	}
@@ -519,6 +521,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
 	linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
 	
+	if (strcmp(creatorDomain, "sip.linphone.org")==0) {
+		linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
+	}
+	
 	new_account = linphone_core_create_account(LC, accountParams);
 	linphone_account_params_unref(accountParams);
  
@@ -705,7 +711,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAccount *default_account = linphone_core_create_account(LC, default_account_params);
 	const char *identity = linphone_account_params_get_identity(linphone_account_get_params(default_account));
 	if (identity) {
-		LinphoneAddress *default_addr = linphone_core_interpret_url(LC, identity);
+		LinphoneAddress *default_addr = linphone_core_interpret_url_2(LC, identity, false);
 		if (default_addr) {
 			const char *domain = linphone_address_get_domain(default_addr);
 			const char *username = linphone_address_get_username(default_addr);
@@ -1011,10 +1017,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[LinphoneManager.instance lpConfigSetInt:[NSDate new].timeIntervalSince1970
 											  forKey:@"must_link_account_time"];
 			[LinphoneManager.instance configurePushProviderForAccounts];
-			if (number_of_accounts_before < bctbx_list_size(linphone_core_get_account_list(LC))) {
+			
+			MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+			if (number_of_accounts_before < bctbx_list_size(accounts)) {
 				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
 			}
+			bctbx_free(accounts);
 			
 			_waitView.hidden = true;
 			if (nextView == nil) {
@@ -1149,7 +1158,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_outgoingView = DialerView.compositeViewDescription;
 			[self configureAccount];
 		} else if (status == LinphoneAccountCreatorStatusAccountExist) {
-			_outgoingView = AssistantLinkView.compositeViewDescription;
+			if([LinphoneManager.instance lpConfigIntForKey:@"hide_link_phone_number"]){
+				_outgoingView = DialerView.compositeViewDescription;
+			}else{
+				_outgoingView = AssistantLinkView.compositeViewDescription;
+			}
 			[self configureAccount];
 		} else {
 			if (resp) {
@@ -1568,7 +1581,6 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
         _waitView.hidden = NO;
-        [LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
         [self configureAccount];
     });
 }
@@ -1584,10 +1596,11 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 				
 			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction * action) {}];
+																handler:^(UIAlertAction * action) {}];
 			
 			[errView addAction:defaultAction];
 			[self presentViewController:errView animated:YES completion:nil];
+			_waitView.hidden = TRUE;
 		} else {
 			linphone_core_set_provisioning_uri(LC,  [self addSchemeToProvisiionninUriIMissing:[self findTextField:ViewElement_URL].text].UTF8String);
 			[self resetLiblinphone:TRUE];

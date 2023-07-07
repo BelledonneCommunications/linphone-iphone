@@ -19,6 +19,7 @@
 
 import Foundation
 import UIKit
+import linphonesw
 
 class ControlsView: UIStackView {
 	
@@ -71,8 +72,13 @@ class ControlsView: UIStackView {
 			routes.isHidden = !speaker.isHidden
 		}
 		
+		controlsViewModel.isBluetoothHeadsetAvailable.readCurrentAndObserve { available in
+			speaker.isHidden = available == true
+			routes.isHidden = !speaker.isHidden
+		}
+		
 		// Video
-		if (showVideo) {
+		if (showVideo && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false) {
 			let video = CallControlButton(buttonTheme: VoipTheme.call_video, onClickAction: {
 				if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
 					controlsViewModel.toggleVideo()

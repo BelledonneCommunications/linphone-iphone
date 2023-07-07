@@ -20,7 +20,7 @@
 #import "ChatsListTableView.h"
 #import "UIChatCell.h"
 #import "FileTransferDelegate.h"
-
+#import "linphoneapp-Swift.h"
 #import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -41,6 +41,11 @@
 	return self;
 }
 
+
+- (void)dealloc {
+	bctbx_list_free(_data);
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -48,15 +53,53 @@
 	self.tableView.accessibilityIdentifier = @"Chat list";
 	[self loadData];
 	_chatRooms = NULL;
+
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receivePresenceNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+		for (int i = 0; i < bctbx_list_size(_data); i++)
+		{
+			LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, i);
+			
+			bctbx_list_t *participants = linphone_chat_room_get_participants(chatRoom);
+			if (linphone_chat_room_get_nb_participants(chatRoom) == 1) {
+				LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+				
+				char *curi = linphone_address_as_string_uri_only(linphone_participant_get_address(firstParticipant));
+				NSString *uri = [NSString stringWithUTF8String:curi];
+				
+				LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chatRoom);
+				bool oneToOne = capabilities & LinphoneChatRoomCapabilitiesOneToOne;
+				if(oneToOne && [uri isEqual:friend]){
+					NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+					NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+					[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+				}
+			}
+		}
+	}
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	// we cannot do that in viewWillAppear because we will change view while previous transition
 	// was not finished, leading to "[CALayer retain]: message sent to deallocated instance" error msg
+	/*
 	if (IPAD && [self totalNumberOfItems] > 0) {
 		[PhoneMainView.instance changeCurrentView:ChatConversationView.compositeViewDescription];
 	}
+	*/
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -72,6 +115,9 @@
 		}
 		_chatRooms = _chatRooms->next;
 	}
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 - (void)layoutSubviews {
@@ -114,6 +160,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	_data = [self sortChatRooms];
 	[super loadData];
 
+	/*
 	if (IPAD) {
 		int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 		// if conversation view is using a chatroom that does not exist anymore, update it
@@ -131,15 +178,28 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		}
 	}
+	*/
+}
+
+- (void)updateEventEntry:(LinphoneChatMessage *)msg {
+    int idx = bctbx_list_index(_data, linphone_chat_message_get_chat_room(msg));
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+    if (idx < 0) {
+        LOGW(@"event entry doesn't exist");
+        return;
+    }
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:FALSE];
 }
 
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
 	int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+	/*
 	if (IPAD) {
 		UIChatCell *cell = (UIChatCell *)[self.tableView cellForRowAtIndexPath:indexPath];
 		[cell updateUnreadBadge];
 	}
+	*/
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -164,7 +224,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
-	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+	BOOL forwardMode = VIEW(ChatConversationViewSwift).pendingForwardMessage != nil;
 	cell.forwardIcon.hidden = !forwardMode;
 	if (forwardMode) {
 		cell.ephemeral.hidden = true;
@@ -186,12 +246,12 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		return;
 
 	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
-	[PhoneMainView.instance goToChatRoom:chatRoom];
+	[PhoneMainView.instance goToChatRoomSwift:chatRoom];
 }
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_current_callbacks(cr);
-	ChatsListTableView *view = (__bridge ChatsListTableView *)linphone_chat_room_cbs_get_user_data(cbs) ?: NULL;
+	ChatsListTableView *view =cbs ?  ((__bridge ChatsListTableView *)linphone_chat_room_cbs_get_user_data(cbs) ?: NULL) : NULL;
 	if (!view)
 		return;
 	
@@ -232,7 +292,9 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 			}
 		}
 		[ftdToDelete cancel];
-
+		
+		// Re-enable push notification after deleting the chatroom, in order to get the notification if we are re-invited, or for secure 1-to-1 chatrooms.
+		[LinphoneManager setChatroomPushEnabled:chatRoom withPushEnabled:TRUE];
 		linphone_core_delete_chat_room(LC, chatRoom);
 		chatRooms = chatRooms->next;
 	}

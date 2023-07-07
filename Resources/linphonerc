@@ -18,7 +18,16 @@ auto_download_incoming_files_max_size=0
 lime_migration_done=0
 use_rls_presence=1
 use_callkit=1
+use_in_app_file_viewer_for_non_encrypted_files=0
 unexpected_pushkit=0
+force_lime_chat_rooms=0
+disable_chat_feature=0
+disable_video_feature=0
+
+enable_native_address_book=1
+read_only_native_address_book=0
+only_show_sip_contacts_list=0
+hide_sip_contacts_list=0
 
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application
@@ -50,6 +59,7 @@ reg_expires=1314000
 
 [misc]
 file_transfer_server_url=https://www.linphone.org:444/lft.php
+log_collection_upload_server_url=https://www.linphone.org:444/lft.php
 real_early_media=1
 prefer_basic_chat_room=-1
 conference_layout=1
@@ -69,6 +79,7 @@ video_jitt_comp=60
 video_rtp_port=9200-9299
 
 [sip]
+update_presence_model_timestamp_before_publish_expires_refresh=1
 contact="Linphone iPhone" <sip:linphone.iphone@unknown-host>
 guess_hostname=1
 inc_timeout=45

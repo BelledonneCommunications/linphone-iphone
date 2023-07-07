@@ -22,6 +22,7 @@
 #import "ChatConversationInfoView.h"
 #import "PhoneMainView.h"
 #import "UIChatConversationInfoTableViewCell.h"
+#import "linphoneapp-Swift.h"
 
 #import "linphone/core.h"
 
@@ -84,6 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_room = NULL;
 	_chatRoomCbs = NULL;
 	_peerAddress = NULL;
+	_localAddress = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -95,10 +97,45 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(onLinphoneCoreReady:)
 											   name:kLinphoneGlobalStateUpdate
 											 object:nil];
+	
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receivePresenceNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+		for (int i = 0; i < _contacts.count; i++)
+		{
+			
+			NSString *uri = _contacts[i];
+			LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+			
+			if (addr != nil) {
+				char *curi = linphone_address_as_string_uri_only(addr);
+				NSString *uri = [NSString stringWithUTF8String:curi];
+
+				if([uri isEqual:friend]){
+					NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+					NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+					[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+				}
+			}
+		}
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 	if (!_room || !_chatRoomCbs)
 		return;
 
@@ -153,10 +190,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)onLinphoneCoreReady:(NSNotification *)notif {
 	if ((LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue] == LinphoneGlobalOn) {
-		if (!_create && _peerAddress) {
+		if (!_create && _peerAddress && _localAddress) {
 			LinphoneAddress *peerAddr = linphone_core_create_address([LinphoneManager getLc], _peerAddress);
-			if (peerAddr) {
-				_room = linphone_core_get_chat_room([LinphoneManager getLc], peerAddr);
+			LinphoneAddress *localAddr = linphone_core_create_address([LinphoneManager getLc], _localAddress);
+			if (peerAddr && localAddr) {
+				_room = linphone_core_search_chat_room([LinphoneManager getLc], NULL, localAddr, peerAddr, NULL);
 			}
 			[self configure];
 		}
@@ -181,7 +219,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)onValidate {
-	ChatConversationView *view = VIEW(ChatConversationView);
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 	// Change subject if necessary
 	if (![_oldSubject isEqualToString:_nameLabel.text])
 		linphone_chat_room_set_subject(_room, _nameLabel.text.UTF8String);
@@ -277,7 +315,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		view.isForVoipConference = FALSE;
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
-		ChatConversationView *view = VIEW(ChatConversationView);
+		ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
 }
@@ -326,7 +364,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	cell.uri = _contacts[indexPath.row];
 	LinphoneAddress *addr = linphone_address_new(cell.uri.UTF8String);
 	cell.nameLabel.text = (addr == nil? cell.uri : [FastAddressBook displayNameForAddress:addr]);
-	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:YES withRoundedRadius:YES];
+	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr]];
 	cell.controllerView = self;
 	if(![_admins containsObject:cell.uri]) {
 		cell.adminLabel.enabled	= FALSE;

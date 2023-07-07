@@ -75,7 +75,9 @@ import EventKitUI
 		
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
-		backgroundColor = VoipTheme.voip_light_gray
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.backgroundColor = VoipTheme.chatBubbleBGColor.get()
+		}
 		
 		let rows = UIStackView()
 		rows.axis = .vertical
@@ -106,7 +108,7 @@ import EventKitUI
 		joinShare.alignParentBottom(withMargin: inner_padding).width(join_share_width).alignParentRight(withMargin: inner_padding).done()
 		
 		join.onClick {
-			let view : ConferenceWaitingRoomFragment = self.VIEW(ConferenceWaitingRoomFragment.compositeViewDescription())
+			let view : ConferenceWaitingRoomView = self.VIEW(ConferenceWaitingRoomView.compositeViewDescription())
 			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 			view.setDetails(subject: (self.conferenceData?.subject.value)!, url: (self.conferenceData?.address.value)!)
 		}
@@ -190,6 +192,34 @@ import EventKitUI
 			if (content.isIcalendar) {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
 					subject = conferenceInfo.subject
+				}
+			}
+		}
+		return subject
+	}
+	
+	@objc static func getConferenceInfo(cmessage: OpaquePointer) -> OpaquePointer? {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		var result : OpaquePointer? = nil
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					result =  conferenceInfo.getCobject
+				}
+			}
+		}
+		return result
+	}
+	
+	@objc static func getConferenceSummary(cmessage: OpaquePointer) -> String? {
+		let message = ChatMessage.getSwiftObject(cObject: cmessage)
+		var subject:String? = nil
+		message.contents.forEach { content in
+			if (content.isIcalendar) {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+					subject = conferenceInfo.state == .New ? VoipTexts.conference_invite_title + conferenceInfo.subject :
+					conferenceInfo.state == .Updated ? VoipTexts.conference_update_title + conferenceInfo.subject :
+					VoipTexts.conference_cancel_title + conferenceInfo.subject
 				}
 			}
 		}

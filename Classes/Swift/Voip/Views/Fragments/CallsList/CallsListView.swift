@@ -81,7 +81,6 @@ import linphonesw
 			callsListTableView.allowsFocus = false
 		}
 		callsListTableView.separatorStyle = .singleLine
-		callsListTableView.separatorColor = .white
 		callsListTableView.onClick {
 			self.hideMenu()
 		}
@@ -90,6 +89,13 @@ import linphonesw
 		super.contentView.addSubview(menuView)
 		
 		menuView.isHidden = true
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			super.contentView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.callsListTableView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.callsListTableView.separatorColor = VoipTheme.separatorColor.get()
+			self.callsListTableView.reloadData()
+		}
 		
 	}
 	
@@ -107,7 +113,7 @@ import linphonesw
 	
 	func mergeToConferencePossible() -> Bool { // 2 calls or more not in conf or 1 call or more and 1 conf
 		let callsNotInConf = numberOfCallsNotInConf()
-		return (ConferenceViewModel.shared.conferenceExists.value == true && callsNotInConf >= 1) || (ConferenceViewModel.shared.conferenceExists.value != true && callsNotInConf >= 2 )
+		return (ConferenceViewModel.shared.conferenceExists.value == true && callsNotInConf >= 1 && ConferenceViewModel.shared.conference.value?.me?.isAdmin == true) || (ConferenceViewModel.shared.conferenceExists.value != true && callsNotInConf >= 2 )
 	}
 
 	

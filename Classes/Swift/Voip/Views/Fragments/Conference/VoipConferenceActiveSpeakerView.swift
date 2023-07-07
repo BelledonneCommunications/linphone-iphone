@@ -40,8 +40,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	let subjectLabel = StyledLabel(VoipTheme.call_display_name_duration)
 	let duration = CallTimer(nil, VoipTheme.call_display_name_duration)
 	let muted = MicMuted(VoipActiveSpeakerParticipantCell.mute_size)
-
-	
+	let pause = UIImageView(image: UIImage(named: "voip_pause")?.tinted(with: .white))
 	let remotelyRecording =  RemotelyRecordingView(height: ActiveCallView.remote_recording_height,text: VoipTexts.call_remote_recording)
 	var recordCallButtons : [CallControlButton] = []
 	var pauseCallButtons :  [CallControlButton] = []
@@ -57,28 +56,33 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 
 	let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 	var fullScreenOpaqueMasqForNotchedDevices =  UIView()
-	let conferenceJoinSpinner = RotatingSpinner()
+	let conferenceJoinSpinner = RotatingSpinner(color:VoipTheme.dark_grey_color)
 
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
 			if let model = conferenceViewModel {
-				self.setJoininngSpeakerState(enabled: true)
+				self.activeSpeakerVideoView.isHidden = true
+				self.activeSpeakerVideoViewAlone.isHidden = true
+				self.setJoininngSpeakerState(enabled: false)
 				self.activeSpeakerAvatar.showAsAvatarIcon()
 				model.subject.readCurrentAndObserve { (subject) in
 					self.subjectLabel.text = subject
 				}
 				duration.conference = model.conference.value
 				self.remotelyRecording.isRemotelyRecorded = model.isRemotelyRecorded
-				model.conferenceParticipantDevices.readCurrentAndObserve { value in
-					model.activeSpeakerConferenceParticipantDevices.value = Array((value!.dropFirst()))
+				
+				model.conferenceParticipantDevices.readCurrentAndObserve { _ in
+					model.updateActiveSpeakerConferenceParticipantDevices()
+				}
+				model.speakingParticipant.readCurrentAndObserve { _ in
+					model.updateActiveSpeakerConferenceParticipantDevices()
 				}
 				model.activeSpeakerConferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
-					let otherSpeakersCount = model.activeSpeakerConferenceParticipantDevices.value!.count
+					let otherSpeakersCount = model.conferenceParticipantDevices.value!.count - 1
 					self.switchCamera.isHidden = true
 					if (otherSpeakersCount == 0) {
-						Core.get().nativePreviewWindow = self.activeSpeakerVideoViewAlone
 						self.layoutRotatableElements()
 						self.meGrid.isHidden = true
 						self.grid.isHidden = true
@@ -89,8 +93,22 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						model.meParticipant.value?.micMuted.readCurrentAndObserve { muted in
 							self.muted.isHidden = muted != true
 						}
+						model.meParticipant.value?.isInConference.readCurrentAndObserve { isIn in
+							self.pause.isHidden = isIn == true
+							if (isIn != true) {
+								self.activeSpeakerVideoView.isHidden = true
+								self.activeSpeakerVideoViewAlone.isHidden = true
+							}
+						}
 					} else if (otherSpeakersCount == 1) {
-						if let data =  model.activeSpeakerConferenceParticipantDevices.value!.first {
+						if let data =  model.conferenceParticipantDevices.value!.last {
+							data.isInConference.readCurrentAndObserve { isIn in
+								self.pause.isHidden = isIn == true || data.isJoining.value == true
+								if (isIn != true) {
+									self.activeSpeakerVideoView.isHidden = true
+									self.activeSpeakerVideoViewAlone.isHidden = true
+								}
+							}
 							data.videoEnabled.readCurrentAndObserve { video in
 								self.fillActiveSpeakerSpace(data: data,video: video == true)
 							}
@@ -124,10 +142,17 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					}
 				}
 				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
-					if (model.activeSpeakerConferenceParticipantDevices.value!.count > 1) {
+					if (model.conferenceParticipantDevices.value!.count - 1 > 1) {
 						speakingParticipant?.videoEnabled.readCurrentAndObserve { video in
 							self.fillActiveSpeakerSpace(data: speakingParticipant,video: video == true)
 							self.muted.isHidden = true
+						}
+						speakingParticipant?.isInConference.readCurrentAndObserve { isIn in
+							self.pause.isHidden = isIn == true
+							if (isIn != true) {
+								self.activeSpeakerVideoView.isHidden = true
+								self.activeSpeakerVideoViewAlone.isHidden = true
+							}
 						}
 					}
 				}
@@ -170,9 +195,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	}
 	
 	func reloadData() {
-		conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value?.forEach {
-			$0.clearObservers()
-		}
 		self.grid.reloadData()
 		self.meGrid.reloadData()
 	}
@@ -224,6 +246,8 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		let recordCall = CallControlButton(width: record_pause_button_size, height: record_pause_button_size, imageInset:record_pause_button_inset, buttonTheme: VoipTheme.call_record, onClickAction: {
 			self.conferenceViewModel?.toggleRecording()
 		})
+		
+		recordCall.isHidden = true;
 		
 		let recordPauseView = UIStackView()
 		recordPauseView.spacing = record_pause_button_margin
@@ -280,12 +304,18 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		muted.alignParentLeft(withMargin: switch_camera_button_margins).alignParentTop(withMargin:switch_camera_button_margins).done()
 		
 		activeSpeakerView.addSubview(conferenceJoinSpinner)
-		conferenceJoinSpinner.square(IncomingOutgoingCommonView.spinner_size).center().done()
+		conferenceJoinSpinner.square(AbstractIncomingOutgoingCallView.spinner_size).center().done()
 
 		switchCamera.alignParentTop(withMargin: switch_camera_button_margins).alignParentRight(withMargin: switch_camera_button_margins).square(switch_camera_button_size).done()
 		
 		activeSpeakerView.addSubview(activeSpeakerDisplayName)
 		activeSpeakerDisplayName.alignParentLeft(withMargin:ActiveCallView.bottom_displayname_margin_left).alignParentRight().alignParentBottom(withMargin:ActiveCallView.bottom_displayname_margin_bottom).done()
+
+		activeSpeakerAvatar.addSubview(pause)
+		pause.isHidden = true
+		pause.backgroundColor = activeSpeakerAvatar.backgroundColor
+		pause.matchParentDimmensions().done()
+		pause.contentMode = .scaleAspectFit
 		
 		// CollectionViews
 		grid.dataSource = self
@@ -309,7 +339,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		}
 		
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden) {
+			if (self.superview?.superview?.superview == nil || self.conferenceViewModel?.conference.value?.call?.params?.conferenceVideoLayout != .ActiveSpeaker) {
 				return
 			}
 			fullScreenMutableView.removeConstraints().done()
@@ -341,6 +371,15 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		
 		//Rotation
 		layoutRotatableElements()
+		
+		//Appearance
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			fullScreenMutableView.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
+			self.fullScreenOpaqueMasqForNotchedDevices.backgroundColor = fullScreenMutableView.backgroundColor
+			self.activeSpeakerView.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
+			self.pause.backgroundColor = self.activeSpeakerAvatar.backgroundColor
+			self.reloadData()
+		}
 	
 	}
 	
@@ -359,7 +398,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		meGrid.removeConstraints().done()
 		activeSpeakerView.removeConstraints().done()
 		activeSpeakerAvatar.removeConstraints().done()
-		let otherParticipantsCount = conferenceViewModel?.activeSpeakerConferenceParticipantDevices.value!.count
+		var otherParticipantsCount = (conferenceViewModel?.conferenceParticipantDevices.value!.count ?? 0) > 0 ? conferenceViewModel!.conferenceParticipantDevices.value!.count - 1 : 0
 		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
 			if (otherParticipantsCount == 0) {
 				activeSpeakerView.matchParentDimmensions().done()
@@ -375,12 +414,12 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 				meGrid.alignParentRight(withMargin: ActiveCallView.center_view_margin_top).height(grid_height).width(grid_height).alignParentBottom(withMargin: ActiveCallView.center_view_margin_top).done()
 			} else {
-				activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: ActiveCallOrConferenceView.content_inset).done()
+				activeSpeakerView.alignParentTop().alignParentBottom().alignParentLeft().toLeftOf(grid,withRightMargin: SharedLayoutConstants.content_inset).done()
 				if (UIDevice.current.orientation == .landscapeLeft) { // work around some constraints issues with Notch on the left.
 					bounceGrids()
 				}
-				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentBottom().alignParentRight().done()
-				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: ActiveCallOrConferenceView.content_inset).alignParentTop().alignAbove(view: meGrid, withMargin: ActiveCallOrConferenceView.content_inset).alignParentRight().done()
+				meGrid.width(grid_height).height(grid_height).toRightOf(activeSpeakerView,withLeftMargin: SharedLayoutConstants.content_inset).alignParentBottom().alignParentRight().done()
+				grid.width(grid_height).toRightOf(activeSpeakerView,withLeftMargin: SharedLayoutConstants.content_inset).alignParentTop().alignAbove(view: meGrid, withMargin: SharedLayoutConstants.content_inset).alignParentRight().done()
 				layout.scrollDirection = .vertical
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views_land).center().done()
 			}
@@ -396,7 +435,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
 				activeSpeakerView.matchParentSideBorders().alignParentTop().done()
 				meGrid.alignParentLeft().height(grid_height).width(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
-				grid.toRightOf(meGrid,withLeftMargin: ActiveCallOrConferenceView.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				grid.toRightOf(meGrid,withLeftMargin: SharedLayoutConstants.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
 				layout.scrollDirection = .horizontal
 			}
 		}

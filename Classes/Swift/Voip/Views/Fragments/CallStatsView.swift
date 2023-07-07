@@ -25,9 +25,9 @@ import linphonesw
 	
 	// Layout constants
 	let side_margins = 10.0
-	let margin_top = 50
+	let margin_top = 25
 	let corner_radius = 20.0
-	let audio_video_margin = 20
+	let audio_video_margin = 13
 	
 	init(superView:UIView, callData:CallData, marginTop:CGFloat, above:UIView, onDismissAction : @escaping ()->Void) {
 		super.init(frame:.zero)
@@ -35,9 +35,9 @@ import linphonesw
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
 		superView.addSubview(self)
-		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignParentBottom().done()
-        accessibilityIdentifier = "call_stats_view"
-        accessibilityViewIsModal = true
+		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignAbove(view: above,withMargin: SharedLayoutConstants.buttons_bottom_margin).done()
+		accessibilityIdentifier = "call_stats_view"
+		accessibilityViewIsModal = true
 		
 		callData.callState.observe { state in
 			if (state == Call.State.End) {
@@ -56,11 +56,21 @@ import linphonesw
 
 		// Audio Stats Title
 		let model = CallStatisticsData(call: callData.call)
+		let encryptionTitle = StyledLabel(VoipTheme.call_stats_font_title,NSLocalizedString("Encryption", comment: ""))
+		addSubview(encryptionTitle)
+		encryptionTitle.matchParentSideBorders().alignParentTop(withMargin: margin_top).done()
+		
+		let encryptionStats = StyledLabel(VoipTheme.call_stats_font)
+		
+		encryptionStats.numberOfLines = 0
+		addSubview(encryptionStats)
+		encryptionStats.matchParentSideBorders().alignUnder(view: encryptionTitle).done()
+		
+		
 		let audioTitle = StyledLabel(VoipTheme.call_stats_font_title,NSLocalizedString("Audio", comment: ""))
 		addSubview(audioTitle)
-		audioTitle.matchParentSideBorders().alignParentTop(withMargin: margin_top).done()
-        
-        // Audio Stats Corp
+		audioTitle.alignUnder(view: encryptionStats, withMargin:audio_video_margin).matchParentSideBorders().done()
+
 		let audioStats = StyledLabel(VoipTheme.call_stats_font)
 		audioStats.numberOfLines = 0
 		addSubview(audioStats)
@@ -93,6 +103,25 @@ import linphonesw
 				stats += "\n\($0.getTypeTitle())\($0.value.value ?? "n/a")"
 			}
 			videoStats.text = stats
+			
+			if let mediaEncryption = model.call.currentParams?.mediaEncryption {
+				stats = ""
+				switch (mediaEncryption) {
+				case MediaEncryption.None: stats += "\nNone"
+				case MediaEncryption.SRTP: stats += "\nSRTP"
+				case MediaEncryption.DTLS: stats += "\nDTLS"
+				case MediaEncryption.ZRTP:
+					if let callstats = model.call.audioStats {
+						stats += callstats.isZrtpKeyAgreementAlgoPostQuantum ? "\nPost Quantum ZRTP" : "\nZRTP"
+						stats += "\nCipher algorithm: \(callstats.zrtpCipherAlgo)"
+						stats += "\nKey agreement algorithm: \(callstats.zrtpKeyAgreementAlgo)"
+						stats += "\nHash algorithm: \(callstats.zrtpHashAlgo)"
+						stats += "\nAuth tag algorithm: \(callstats.zrtpAuthTagAlgo)"
+						stats += "\nSas algorithm: \(callstats.zrtpSasAlgo)"
+					}
+				}
+				encryptionStats.text = stats
+			}
 		}
 				
 	}

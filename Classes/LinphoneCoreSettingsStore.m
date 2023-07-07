@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 @implementation LinphoneCoreSettingsStore
 
 - (id)init {
@@ -141,7 +142,9 @@
 }
 
 - (void)transformAccountToKeys:(NSString *)username {
-	const MSList *accountList = linphone_core_get_account_list(LC);
+	//const MSList *accountList = linphone_core_get_account_list(LC);
+	MSList *accountListToBeFreed = [LinphoneManager.instance createAccountsNotHiddenList];
+	MSList *accountList = accountListToBeFreed;
 	while (username && accountList &&
 		   strcmp(username.UTF8String,
 				  linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(accountList->data)))) != 0) {
@@ -152,6 +155,7 @@
 	// default values
 	{
 		[self setBool:NO forKey:@"account_pushnotification_preference"];
+		[self setBool:NO forKey:@"account_bundle_mode_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_username_preference"];
 		[self setObject:@"" forKey:@"account_mandatory_domain_preference"];
 		[self setCString:"" forKey:@"account_display_name_preference"];
@@ -168,6 +172,7 @@
 		[self setInteger:-1 forKey:@"account_expire_preference"];
 		[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 		[self setCString:"" forKey:@"account_prefix_preference"];
+		[self setBool:YES forKey:@"apply_international_prefix_for_calls_and_chats"];
 		[self setBool:NO forKey:@"account_substitute_+_by_00_preference"];
 		[self setBool:NO forKey:@"account_ice_preference"];
 		[self setCString:"" forKey:@"account_stun_preference"];
@@ -180,10 +185,13 @@
 		{
 			BOOL pushEnabled = linphone_account_params_get_push_notification_allowed(accountParams);
 			[self setBool:pushEnabled forKey:@"account_pushnotification_preference"];
-
+			
+			BOOL bundleModeEnabled = linphone_account_params_rtp_bundle_enabled(accountParams);
+			[self setBool:bundleModeEnabled forKey:@"account_bundle_mode_preference"];
+			
 			const LinphoneAddress *identity_addr = linphone_account_params_get_identity_address(accountParams);
 			const char *server_addr = linphone_account_params_get_server_addr(accountParams);
-			LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
+			LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, server_addr, false);
 			if (identity_addr && proxy_addr) {
 				int port = linphone_address_get_port(proxy_addr);
 
@@ -234,9 +242,11 @@
 				[self setCString:linphone_auth_info_get_algorithm(ai) forKey:@"ha1_algo_preference"];
 			}
 
+			MSList *accountsList = [LinphoneManager.instance createAccountsNotHiddenList];
 			int idx = (int)bctbx_list_index(linphone_core_get_account_list(LC), account);
 			[self setInteger:idx forKey:@"current_proxy_config_preference"];
-
+			bctbx_list_free(accountsList);
+			
 			int expires = linphone_account_params_get_expires(accountParams);
 			[self setInteger:expires forKey:@"account_expire_preference"];
 
@@ -251,10 +261,13 @@
 		{
 			const char *dial_prefix = linphone_account_params_get_international_prefix(accountParams);
 			[self setCString:dial_prefix forKey:@"account_prefix_preference"];
+			BOOL apply_prefix = linphone_account_params_get_use_international_prefix_for_calls_and_chats(accountParams);
+			[self setBool:apply_prefix forKey:@"apply_international_prefix_for_calls_and_chats"];
 			BOOL dial_escape_plus = linphone_account_params_get_dial_escape_plus_enabled(accountParams);
 			[self setBool:dial_escape_plus forKey:@"account_substitute_+_by_00_preference"];
 		}
 	}
+	bctbx_list_free(accountListToBeFreed);
 }
 
 
@@ -343,15 +356,17 @@
 
 	// root section
 	{
-		const bctbx_list_t *accounts = linphone_core_get_account_list(LC);
-		size_t count = bctbx_list_size(accounts);
-		for (size_t i = 1; i <= count; i++, accounts = accounts->next) {
+		MSList *accountsListToBeFreed = [lm createAccountsNotHiddenList];
+		MSList *accountsList = accountsListToBeFreed;
+		size_t count = bctbx_list_size(accountsList);
+		for (size_t i = 1; i <= count; i++, accountsList = accountsList->next) {
 			NSString *key = [NSString stringWithFormat:@"menu_account_%lu", i];
-			LinphoneAccount *account = (LinphoneAccount *)accounts->data;
+			LinphoneAccount *account = (LinphoneAccount *)accountsList->data;
 			[self setCString:linphone_address_get_username(linphone_account_params_get_identity_address(linphone_account_get_params(account)))
 					  forKey:key];
 		}
-
+		bctbx_free(accountsListToBeFreed);
+		
 		[self setBool:linphone_core_video_display_enabled(LC) forKey:@"enable_video_preference"];
 		[self setBool:[LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]
 			   forKey:@"enable_auto_answer_preference"];
@@ -430,10 +445,10 @@
 	{
 		[self setCString:linphone_core_get_file_transfer_server(LC) forKey:@"file_transfer_server_url_preference"];
         int maxSize = linphone_core_get_max_size_for_auto_download_incoming_files(LC);
-        [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Nerver" : @"Customize") forKey:@"auto_download_mode"];
+        [self setObject:maxSize==0 ? @"Always" : (maxSize==-1 ? @"Never" : @"Customize") forKey:@"auto_download_mode"];
         [self setInteger:maxSize forKey:@"auto_download_incoming_files_max_size"];
 		[self setBool:[VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] forKey:@"vfs_enabled_mode"];
-		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:YES] forKey:@"auto_write_to_gallery_mode"];
+		[self setBool:[lm lpConfigBoolForKey:@"auto_write_to_gallery_preference" withDefault:NO] forKey:@"auto_write_to_gallery_mode"];
 	}
 
 	// network section
@@ -485,7 +500,7 @@
 				val = "None";
 				break;
 		}
-		[self setCString:val forKey:@"media_encryption_preference"];
+		[self setCString:val forKey:linphone_core_get_post_quantum_available() ? @"media_encryption_preference_pq_enabled" : @"media_encryption_preference"];
 		[self setInteger:linphone_core_get_upload_bandwidth(LC) forKey:@"upload_bandwidth_preference"];
 		[self setInteger:linphone_core_get_download_bandwidth(LC) forKey:@"download_bandwidth_preference"];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(LC) forKey:@"adaptive_rate_control_preference"];
@@ -509,8 +524,11 @@
 	}
 	
 	// contacts section
-	if (linphone_core_ldap_available(LC)) {
-		[self transformLdapToKeys:nil];
+	{
+		[self setInteger:[lm lpConfigBoolForKey:@"account_push_presence_preference" withDefault:YES] forKey:@"account_push_presence_preference"];
+		if (linphone_core_ldap_available(LC)) {
+			[self transformLdapToKeys:nil];
+		}
 	}
 
 	// advanced section
@@ -519,6 +537,7 @@
 		[self setBool:ANIMATED forKey:@"animations_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"screenshot_preference" withDefault:NO] forKey:@"screenshot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
 		[self setBool:[lm lpConfigBoolForKey:@"use_rls_presence" withDefault:YES] forKey:@"use_rls_presence"];
@@ -603,7 +622,9 @@
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
 		BOOL pushnotification = [self boolForKey:@"account_pushnotification_preference"];
+		BOOL bundlemode = [self boolForKey:@"account_bundle_mode_preference"];
 		NSString *prefix = [self stringForKey:@"account_prefix_preference"];
+		BOOL use_prefix = [self boolForKey:@"apply_international_prefix_for_calls_and_chats"];
 		NSString *proxyAddress = [self stringForKey:@"account_proxy_preference"];
 
 		if ((!proxyAddress || [proxyAddress length] < 1) && domain) {
@@ -614,7 +635,7 @@
 			proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
 		}
 
-		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxyAddress.UTF8String);
+		LinphoneAddress *proxy_addr = linphone_core_interpret_url_2(LC, proxyAddress.UTF8String, false);
 
 		if (proxy_addr) {
 			LinphoneTransportType type = LinphoneTransportUdp;
@@ -625,9 +646,11 @@
 
 			linphone_address_set_transport(proxy_addr, type);
 		}
-
-		account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
+		
+		MSList *accountList= [LinphoneManager.instance createAccountsNotHiddenList];
+		account = bctbx_list_nth_data(accountList,
 									   [self integerForKey:@"current_proxy_config_preference"]);
+		bctbx_free(accountList);
 		
 		// if account was deleted, it is not present anymore
 		if (account == NULL)
@@ -670,10 +693,8 @@
 		linphone_nat_policy_set_stun_server(policy, stun_preference.UTF8String);
 		linphone_account_params_set_nat_policy(newAccountParams, policy);
 
-		if ([prefix length] > 0) {
-			linphone_account_params_set_international_prefix(newAccountParams, [prefix UTF8String]);
-		}
-
+		linphone_account_params_set_international_prefix(newAccountParams, [prefix UTF8String]);
+		linphone_account_params_set_use_international_prefix_for_calls_and_chats(newAccountParams, use_prefix);
 		if ([self objectForKey:@"account_substitute_+_by_00_preference"]) {
 			bool substitute_plus_by_00 = [self boolForKey:@"account_substitute_+_by_00_preference"];
 			linphone_account_params_set_dial_escape_plus_enabled(newAccountParams, substitute_plus_by_00);
@@ -681,8 +702,10 @@
 
 		// use empty string "" instead of NULL to avoid being overwritten by default proxy config values
 		linphone_account_params_set_push_notification_allowed(newAccountParams, pushnotification);
+		linphone_account_params_enable_rtp_bundle(newAccountParams, bundlemode);
+		linphone_account_params_set_push_notification_allowed(newAccountParams, pushnotification);
 		linphone_account_params_set_remote_push_notification_allowed(newAccountParams, pushnotification);
-
+		
 		linphone_account_params_set_register_enabled(newAccountParams, is_enabled);
 		linphone_account_params_set_avpf_mode(newAccountParams, use_avpf);
 		linphone_account_params_set_expires(newAccountParams, expire);
@@ -713,7 +736,7 @@
 		}
 
 		char *identity = linphone_address_as_string(linphoneAddress);
-		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
+		LinphoneAddress *from = linphone_core_interpret_url_2(LC, identity, false);
 		ms_free(identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
@@ -805,7 +828,7 @@
 	linphone_ldap_params_set_bind_dn(newLdapParams, [self stringForKey:@"ldap_bind_dn"].UTF8String);
 	linphone_ldap_params_set_password(newLdapParams, [self stringForKey:@"ldap_password"].UTF8String);
 	
-	LinphoneLdapAuthMethod authMethod = [[self stringForKey:@"ldap_verification_method"] isEqualToString:@"simple"] ? LinphoneLdapAuthMethodSimple : LinphoneLdapAuthMethodAnonymous;
+	LinphoneLdapAuthMethod authMethod = [[self stringForKey:@"ldap_auth_method"] isEqualToString:@"simple"] ? LinphoneLdapAuthMethodSimple : LinphoneLdapAuthMethodAnonymous;
 	linphone_ldap_params_set_auth_method(newLdapParams, authMethod);
 	linphone_ldap_params_enable_tls(newLdapParams, [self boolForKey:@"ldap_tls_enabled"]);
 	
@@ -829,8 +852,8 @@
 	
 	
 	// Analysis parameters
-	linphone_ldap_params_set_name_attribute(newLdapParams, [self stringForKey:@"ldap_name_attributes"].UTF8String);
-	linphone_ldap_params_set_sip_attribute(newLdapParams, [self stringForKey:@"ldap_sip_attributes"].UTF8String);
+	linphone_ldap_params_set_name_attribute(newLdapParams, [self stringForKey:@"ldap_name_attribute"].UTF8String);
+	linphone_ldap_params_set_sip_attribute(newLdapParams, [self stringForKey:@"ldap_sip_attribute"].UTF8String);
 	linphone_ldap_params_set_sip_domain(newLdapParams, [self stringForKey:@"ldap_sip_domain"].UTF8String);
 	
 	// Miscellaneous parameters
@@ -1018,7 +1041,7 @@
 		[LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&videoMinPort maxPort:&videoMaxPort];
 		linphone_core_set_video_port_range(LC, videoMinPort, videoMaxPort);
 
-		NSString *menc = [self stringForKey:@"media_encryption_preference"];
+		NSString *menc = [self stringForKey:linphone_core_get_post_quantum_available() ? @"media_encryption_preference_pq_enabled" : @"media_encryption_preference"];
 		if (menc && [menc compare:@"SRTP"] == NSOrderedSame)
 			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
 		else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
@@ -1071,7 +1094,13 @@
 		}
 
 		// contacts section
-
+		BOOL push_presence = [self boolForKey:@"account_push_presence_preference"];
+		if (push_presence) {
+			linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOnline);
+		} else {
+			linphone_core_set_consolidated_presence([LinphoneManager getLc], LinphoneConsolidatedPresenceOffline);
+		}
+		[lm lpConfigSetInt:push_presence forKey:@"account_push_presence_preference"];
 		
 		BOOL ldap_changed = NO;
 		for (NSString *key in self->changedDict) {
@@ -1086,6 +1115,9 @@
 		// advanced section
 		BOOL animations = [self boolForKey:@"animations_preference"];
 		[lm lpConfigSetInt:animations forKey:@"animations_preference"];
+		
+		BOOL screenshot = [self boolForKey:@"screenshot_preference"];
+		[lm lpConfigSetInt:screenshot forKey:@"screenshot_preference"];
 
 		UIDevice *device = [UIDevice currentDevice];
 		BOOL backgroundSupported = [device respondsToSelector:@selector(isMultitaskingSupported)] && [device isMultitaskingSupported];
@@ -1100,7 +1132,9 @@
 			NSString *rls_uri = [lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
 			LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
 			const char *rls_domain = linphone_address_get_domain(rls_addr);
-			const MSList *accounts = linphone_core_get_account_list(LC);
+			
+			MSList *accountListToBeFreed = [LinphoneManager.instance createAccountsNotHiddenList];
+			const MSList *accounts = accountListToBeFreed;
 			if (!accounts) // Enable it if no proxy config for first launch of app
 				[self setInteger:1 forKey:@"use_rls_presence"];
 			else {
@@ -1114,6 +1148,7 @@
 				}
 			}
 			linphone_address_unref(rls_addr);
+			bctbx_free(accountListToBeFreed);
 		}
 
 		[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
@@ -1155,8 +1190,11 @@
 }
 
 - (void)removeAccount {
-	LinphoneAccount *account = bctbx_list_nth_data(linphone_core_get_account_list(LC),
+	
+	MSList *accountList = [LinphoneManager.instance createAccountsNotHiddenList];
+	LinphoneAccount *account = bctbx_list_nth_data(accountList,
 													  [self integerForKey:@"current_proxy_config_preference"]);
+	
 	
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
@@ -1178,11 +1216,12 @@
 
 	if (isDefault) {
 		// if we removed the default proxy config, set another one instead
-		if (linphone_core_get_account_list(LC) != NULL) {
-			linphone_core_set_default_account(LC, (LinphoneAccount *)(linphone_core_get_account_list(LC)->data));
+		if (accountList != NULL) {
+			linphone_core_set_default_account(LC, (LinphoneAccount *)(accountList->data));
 		}
 	}
 	[self transformLinphoneCoreToKeys];
+	bctbx_free(accountList);
 }
 
 - (void)removeLdap {

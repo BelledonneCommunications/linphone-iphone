@@ -32,7 +32,7 @@
     NSString *messageText;
 }
 
-@property(nonatomic) LinphoneChatMessage *msg;
+@property(nonatomic) LinphoneEventLog *event;
 @property(nonatomic) bctbx_list_t *displayedList;
 @property(nonatomic) bctbx_list_t *receivedList;
 @property(nonatomic) bctbx_list_t *notReceivedList;

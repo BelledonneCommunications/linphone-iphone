@@ -22,7 +22,7 @@
 
 @interface UIChatConversationImdnTableViewCell : UITableViewCell
 
-@property (weak, nonatomic) IBOutlet UIRoundedImageView *avatar;
+@property (weak, nonatomic) IBOutlet UIImageView *avatar;
 @property (weak, nonatomic) IBOutlet UILabel *displayName;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 - (id)initWithIdentifier:(NSString *)identifier;

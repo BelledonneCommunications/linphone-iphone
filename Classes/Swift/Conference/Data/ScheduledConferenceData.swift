@@ -57,10 +57,8 @@ class ScheduledConferenceData {
 		rawDate = Date(timeIntervalSince1970:TimeInterval(conferenceInfo.dateTime))
 		
 		let durationFormatter = DateComponentsFormatter()
-		durationFormatter.unitsStyle = .positional
-		durationFormatter.allowedUnits = [.minute, .second ]
-		durationFormatter.zeroFormattingBehavior = [ .pad ]
-		duration.value = conferenceInfo.duration > 0 ? durationFormatter.string(from: TimeInterval(conferenceInfo.duration)) : nil
+		durationFormatter.unitsStyle = .abbreviated
+		duration.value = conferenceInfo.duration > 0 ? durationFormatter.string(from: TimeInterval(conferenceInfo.duration*60)) : nil
 		
 		organizer.value = conferenceInfo.organizer?.addressBookEnhancedDisplayName()
 		
@@ -99,12 +97,10 @@ class ScheduledConferenceData {
 			String(describing: participant.addressBookEnhancedDisplayName())+" ("+String(describing: participant.asStringUriOnly())+")"
 		}.joined(separator: "\n")
 	}
-	
+
 	func gotoAssociatedChat() {
 		
 	}
-	
-	
 	
 	func deleteConference() {
 		conferenceSchedulerDelegate = ConferenceSchedulerDelegateStub(

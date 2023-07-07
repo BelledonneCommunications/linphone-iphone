@@ -19,7 +19,7 @@
 
 #import "UIConfirmationDialog.h"
 #import "PhoneMainView.h"
-#import "linphoneapp-Swift.h""
+#import "linphoneapp-Swift.h"
 
 @implementation UIConfirmationDialog
 + (UIConfirmationDialog *)initDialog:(NSString *)cancel
@@ -33,6 +33,8 @@
     dialog.view.frame = PhoneMainView.instance.mainViewController.view.frame;
     [controller.view addSubview:dialog.view];
     [controller addChildViewController:dialog];
+    dialog.backgroundColor.layer.cornerRadius = 10;
+    dialog.backgroundColor.layer.masksToBounds = true;
     
     dialog->onCancelCb = onCancel;
     dialog->onConfirmCb = onConfirm;
@@ -48,8 +50,20 @@
     [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
     dialog.cancelButton.layer.borderColor =
     [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
+	if (linphone_core_get_post_quantum_available()) {
+		[dialog.securityImage setImage:[UIImage imageNamed:@"post_quantum_secure.png"]];
+	}
     return dialog;
 }
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                        action:@selector(onCancelClick:)];
+    tapGestureRecognizer.delegate = self;
+    [self.firstView addGestureRecognizer:tapGestureRecognizer];
+}
+
 
 + (UIConfirmationDialog *)ShowWithMessage:(NSString *)message
 							cancelMessage:(NSString *)cancel
@@ -130,5 +144,13 @@
 
 - (void)dismiss {
 	[self onCancelClick:nil];
+}
+
+- (IBAction)onSubscribeTap:(id)sender {
+	UIGestureRecognizer *gest = sender;
+	NSString *url = ((UILabel *)gest.view).text;
+	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
+		LOGE(@"Failed to open %@, invalid URL", url);
+	}
 }
 @end

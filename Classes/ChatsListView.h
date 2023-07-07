@@ -40,7 +40,10 @@
 
 - (IBAction)onAddGroupChatClick:(id)event;
 - (IBAction)onAddClick:(id)event;
+- (IBAction)onChatRoomSwiftClick:(id)event;
 - (IBAction)onEditionChangeClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
+
+-(void) mediaSharing;
 
 @end

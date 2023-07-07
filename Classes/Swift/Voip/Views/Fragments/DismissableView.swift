@@ -52,6 +52,10 @@ class DismissableView:  UIView {
 		
 		self.addSubview(contentView)
 		contentView.alignUnder(view: headerView).matchParentSideBorders().alignParentBottom().done()
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.headerView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		}
 
 	}
 	

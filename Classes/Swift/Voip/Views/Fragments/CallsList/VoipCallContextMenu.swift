@@ -106,7 +106,7 @@ class VoipCallContextMenu: UIStackView {
 			self.isHidden = true
 			guard let call = self.callData?.call else { return }
 			if (CallManager.callKitEnabled()) {
-				CallManager.instance().setHeld(call:call,hold:false);
+				CallManager.instance().setHeld(call:call.getCobject!,hold:false);
 			} else {
 				try?call.resume()
 			}
@@ -138,7 +138,7 @@ class VoipCallContextMenu: UIStackView {
 		terminate.onClick {
 			self.isHidden = true
 			guard let call = self.callData?.call else { return }
-			try?call.terminate()
+			CallManager.instance().terminateCall(call: call.getCobject)
 		}
 	}
 	

@@ -60,6 +60,7 @@ static BOOL addAddressFromOthers = FALSE;
 @synthesize allButton;
 @synthesize linphoneButton;
 @synthesize addButton;
+@synthesize deleteButton;
 @synthesize topBar;
 
 typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
@@ -96,7 +97,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (![[PhoneMainView.instance  getPreviousViewName] isEqualToString:@"ContactDetailsView"]) {
 		_searchBar.text = @"";
 	}
-	[self changeView:ContactsAll];
+	
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"only_show_sip_contacts_list"]) {
+		_switchView.hidden = true;
+		[self changeView:ContactsLinphone];
+	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"hide_sip_contacts_list"]){
+		_switchView.hidden = true;
+		[self changeView:ContactsAll];
+	} else {
+		[self changeView:ContactsAll];
+	}
 	
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
 								   initWithTarget:self
@@ -142,6 +152,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	 selector:@selector(onMagicSearchFinished:)
 	 name:kLinphoneMagicSearchFinished
 	 object:nil];
+	[[NSNotificationCenter defaultCenter]
+	 addObserver:self
+	 selector:@selector(onMagicSearchMoreAvailable:)
+	 name:kLinphoneMagicSearchMoreAvailable
+	 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(displayModeChanged)
+																						 name:kDisplayModeChanged
+																					 object:nil];
 }
 
 - (void)onMagicSearchStarted:(NSNotification *)k {
@@ -149,6 +168,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 - (void)onMagicSearchFinished:(NSNotification *)k {
 	_loadingView.hidden = TRUE;
+}
+- (void)onMagicSearchMoreAvailable:(NSNotification *)k {
+	_ldapMoreResultsLabel.hidden = FALSE;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -225,7 +247,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)refreshButtons {
-	[addButton setHidden:FALSE];
+	[addButton setHidden:![LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"] || [LinphoneManager.instance lpConfigBoolForKey:@"read_only_native_address_book"]];
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"read_only_native_address_book"]) {
+		addButton.hidden = true;
+		deleteButton.hidden = true;
+	}
 	[self changeView:[ContactSelection getSipFilterEnabled] ? ContactsLinphone : ContactsAll];
 }
 
@@ -250,6 +276,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void)displayModeChanged{
+	[self.tableController.tableView reloadData];
+}
+
 - (IBAction)onDeleteClick:(id)sender {
 	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected contacts?\nThey will also be deleted from your phone's address book.", nil)];
 	[LinphoneManager.instance setContactsUpdated:TRUE];
@@ -268,6 +298,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditionChangeClick:(id)sender {
 	allButton.hidden = linphoneButton.hidden = _selectedButtonImage.hidden = addButton.hidden =	self.tableController.isEditing;
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_native_address_book"]) {
+		addButton.hidden = self.tableController.isEditing;
+	}
+	if ([LinphoneManager.instance lpConfigBoolForKey:@"read_only_native_address_book"]) {
+		addButton.hidden = true;
+		deleteButton.hidden = true;
+	}
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -292,6 +329,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (searchText.length == 0) {
 			[LinphoneManager.instance setContactsUpdated:TRUE];
 		}
+		_ldapMoreResultsLabel.hidden = TRUE;
 		[tableController loadDataWithFilter:searchText];
 	}
 }

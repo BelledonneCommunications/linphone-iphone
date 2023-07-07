@@ -50,28 +50,34 @@
 		normAddr = linphone_account_normalize_phone_number(account,
 																_addressLabel.text.UTF8String);
 	}
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
+	LinphoneAddress *addr = linphone_core_interpret_url_2(LC, normAddr, true);
 	_chatButton.enabled = _callButton.enabled = _encryptedChatButton.enabled = (addr != NULL);
 
 	_chatButton.accessibilityLabel =
 		[NSString stringWithFormat:NSLocalizedString(@"Chat with %@", nil), _addressLabel.text];
 	_callButton.accessibilityLabel = [NSString stringWithFormat:NSLocalizedString(@"Call %@", nil), _addressLabel.text];
 	// Test presence
-	Contact *contact;
-	contact = addr ? [FastAddressBook getContactWithAddress:(addr)] : NULL;
-
+	Contact *contact = addr ? [FastAddressBook getContactWithAddress:(addr)] : NULL;
+	LinphoneFriend *contactFriend = NULL;
+	if (contact && contact.friend) {
+		contactFriend = contact.friend;
+	} else if (addr) {
+		contactFriend = linphone_core_find_friend(LC, addr);
+	}
+	
+	ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
 	_linphoneImage.hidden = TRUE;
-	if (contact) {
-        const LinphonePresenceModel *model = contact.friend ? linphone_friend_get_presence_model_for_uri_or_tel(contact.friend, _addressLabel.text.UTF8String) : NULL;
-        
+	if (contactFriend) {
+		const LinphonePresenceModel *model = contactFriend ? linphone_friend_get_presence_model_for_uri_or_tel(contactFriend, _addressLabel.text.UTF8String) : NULL;
+		
 		self.linphoneImage.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"hide_linphone_contacts" inSection:@"app"] ||
 			!((model && linphone_presence_model_get_basic_status(model) == LinphonePresenceBasicStatusOpen) ||
 			  (account && !linphone_account_is_phone_number(account,
 													  _addressLabel.text.UTF8String) &&
 			   [FastAddressBook isSipURIValid:_addressLabel.text]));
-        ContactDetailsView *contactDetailsView = VIEW(ContactDetailsView);
-        self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
+		self.inviteButton.hidden = !ENABLE_SMS_INVITE || [[contactDetailsView.contact sipAddresses] count] > 0 || !self.linphoneImage.hidden;
 		[self shouldHideEncryptedChatView:account && linphone_account_params_get_conference_factory_uri(linphone_account_get_params(account)) && model && linphone_presence_model_has_capability(model, LinphoneFriendCapabilityLimeX3dh)];
+		_chatButton.hidden = [LinphoneManager.instance lpConfigBoolForKey:@"force_lime_chat_rooms"] || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
 	}
 
 	if (addr) {
@@ -80,7 +86,7 @@
 }
 
 - (void)shouldHideEncryptedChatView:(BOOL)hasLime {
-    _encryptedChatView.hidden = !hasLime;
+    _encryptedChatView.hidden = !hasLime || [LinphoneManager.instance lpConfigBoolForKey:@"disable_chat_feature"];
     CGRect newFrame = _optionsView.frame;
     if (!hasLime) {
         newFrame.origin.x = _addressLabel.frame.origin.x + _callButton.frame.size.width * 2/3;
@@ -103,7 +109,7 @@
 		normAddr = linphone_account_normalize_phone_number(account,
 																_addressLabel.text.UTF8String);
 	}
-	LinphoneAddress *addr = linphone_core_interpret_url(LC, normAddr);
+	LinphoneAddress *addr = linphone_core_interpret_url_2(LC, normAddr, true);
 
 	// Test presence
 	Contact *contact = [FastAddressBook getContactWithAddress:(addr)];

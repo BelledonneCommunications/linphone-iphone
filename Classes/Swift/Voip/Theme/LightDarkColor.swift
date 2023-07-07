@@ -19,7 +19,7 @@
 
 import Foundation
 
-class LightDarkColor {
+@objc class LightDarkColor : NSObject {
 	var light: UIColor
 	var dark : UIColor
 	init(_ l:UIColor,_ d:UIColor){
@@ -27,7 +27,7 @@ class LightDarkColor {
 		dark = d
 	}
 	
-	func get() -> UIColor {
+	@objc func get() -> UIColor {
 		if #available(iOS 13.0, *) {
 			if UITraitCollection.current.userInterfaceStyle == .light {
 				return light

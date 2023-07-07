@@ -76,6 +76,9 @@ class CallControlButton : ButtonWithStateBackgrounds {
 		onClick {
 			self.onClickAction?()
 		}
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.applyTintedIcons(tintedIcons: buttonTheme.tintableStateIcons)
+		}
 		
 	}
 	

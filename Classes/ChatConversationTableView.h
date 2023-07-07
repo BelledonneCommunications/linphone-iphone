@@ -25,6 +25,7 @@
 
 #import "UICheckBoxTableView.h"
 
+
 @interface FileContext : NSObject
 @property NSMutableArray <NSString *> *typesArray;
 @property NSMutableArray <NSData *> *datasArray;
@@ -60,6 +61,7 @@
 @property(nonatomic) NSTimer *ephemeralDisplayTimer;
 @property (nullable, nonatomic) UIButton *floatingScrollButton;
 @property (nullable, nonatomic) UILabel *scrollBadge;
+@property (nullable, nonatomic) UIButton *floatingScrollBackground;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;
@@ -70,5 +72,6 @@
 - (void) dismissMessagesPopups;
 - (void) scrollToMessage:(LinphoneChatMessage *)message;
 - (int) indexOfMesssage:(LinphoneChatMessage *)message;
+- (void *)buildMessageCell:(LinphoneEventLog *) event;
 
 @end

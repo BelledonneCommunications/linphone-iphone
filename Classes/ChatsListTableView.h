@@ -31,4 +31,5 @@
 
 - (void)loadData;
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom;
+- (void)updateEventEntry:(LinphoneChatMessage *)msg;
 @end

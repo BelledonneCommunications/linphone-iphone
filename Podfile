@@ -1,11 +1,11 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '10.0'
+platform :ios, '11.2'
 source "https://gitlab.linphone.org/BC/public/podspec.git"
 source "https://github.com/CocoaPods/Specs.git"
 
 def all_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk', '~>5.2.0-alpha'
+		pod 'linphone-sdk', '~>5.2.79'
 	else
 		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # local sdk
 	end
@@ -27,8 +27,12 @@ target 'linphone' do
   # Pods for linphone
 	pod 'SVProgressHUD'
 	pod 'SnapKit', '~> 5.6.0'
-        pod 'DropDown'
-        pod 'IQKeyboardManager'
+	pod 'DropDown'
+	pod 'IQKeyboardManager'
+	pod 'SwipeCellKit'
+		#License: https://github.com/SwipeCellKit/SwipeCellKit/blob/develop/LICENSE
+	pod 'EmojiPicker', :git => 'https://github.com/htmlprogrammist/EmojiPicker'
+		#License: https://github.com/htmlprogrammist/EmojiPicker/blob/main/LICENSE
 	all_pods
 
 end
@@ -103,6 +107,12 @@ post_install do |installer|
 			end
 
 			app_project.save
+		end
+	end
+	
+	installer.pods_project.targets.each do |target| 
+		target.build_configurations.each do |config| 
+			config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.2'
 		end
 	end
 end

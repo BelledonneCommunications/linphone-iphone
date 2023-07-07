@@ -20,6 +20,7 @@
 #import "EphemeralSettingsView.h"
 #import "PhoneMainView.h"
 #import "UIDeviceCell.h"
+#import "linphoneapp-Swift.h"
 
 
 
@@ -74,14 +75,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 - (IBAction)onBackClick:(id)sender {
-    ChatConversationView *view = VIEW(ChatConversationView);
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
     [PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
 
 - (IBAction)onSaveClick:(id)sender {
 	[self setRoomSettingsBasedOnIndex];
-	ChatConversationView *view = VIEW(ChatConversationView);
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 

@@ -21,6 +21,7 @@
 #import "PhoneMainView.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @implementation UIChatCell
 
@@ -38,6 +39,10 @@
 		[self addSubview:sub];
 	}
 	[_imdmIcon setHidden:TRUE];
+	_unreadCountView.backgroundColor = VoipTheme.primary_color;
+	_unreadCountView.layer.cornerRadius = 10;
+	_unreadCountView.clipsToBounds = true;
+	_unreadCountLabel.textAlignment = NSTextAlignmentCenter;
 	return self;
 }
 
@@ -73,14 +78,15 @@
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(chatRoom);
 		if (addr) {
 			[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-			[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+			[_avatarImage setImage:[FastAddressBook imageForAddress:addr]];
 		} else {
 			_addressLabel.text = [NSString stringWithUTF8String:LINPHONE_DUMMY_SUBJECT];
 		}
+		bctbx_list_free(participants);
 	} else {
 		const char *subject = linphone_chat_room_get_subject(chatRoom);
 		_addressLabel.text = [NSString stringWithUTF8String:subject ?: LINPHONE_DUMMY_SUBJECT];
-		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"]];
 	}
     // TODO update security image when security level changed
     [_securityImage setImage:[FastAddressBook imageForSecurityLevel:linphone_chat_room_get_security_level(chatRoom)]];
@@ -89,11 +95,11 @@
 
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
-        BOOL imdnInSnap = FALSE;
+        BOOL imdnInSnap = TRUE;
         if (imdnInSnap) {
             BOOL outgoing = linphone_chat_message_is_outgoing(last_msg);
             NSString *text = [UIChatBubbleTextCell TextMessageForChat:last_msg];
-            if (outgoing) {
+            if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
                 // shorten long messages
                 /*if ([text length] > 50)
                     text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];*/
@@ -117,6 +123,13 @@
                 _chatContentLabel.attributedText = boldText;
             }
 
+            if (outgoing){
+                linphone_chat_message_set_user_data(last_msg, (void *)CFBridgingRetain(self));
+                LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(last_msg);
+                linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
+                linphone_chat_message_cbs_set_participant_imdn_state_changed(cbs, participant_imdn_status);
+                linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
+            }
             
             LinphoneChatMessageState state = linphone_chat_message_get_state(last_msg);
             if (outgoing && (state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed || state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError)) {
@@ -132,7 +145,8 @@
                 _chatContentLabel.frame = newFrame;
             }
         } else {
-            NSString *text = [[FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)]
+					NSString  *conferenceInfo = [ICSBubbleView getConferenceSummaryWithCmessage:last_msg];
+					NSString *text =  conferenceInfo != nil ? conferenceInfo : [[FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)]
                               stringByAppendingFormat:@" : %@", [UIChatBubbleTextCell TextMessageForChat:last_msg]];
             // shorten long messages
             /*if ([text length] > 50)
@@ -212,6 +226,24 @@
     } else {
         [_imdmIcon setHidden:TRUE];
     }
+}
+
+static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
+    LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
+    if (state == LinphoneChatMessageStateFileTransferInProgress)
+        return;
+    
+    if (!linphone_chat_message_is_outgoing(msg) || (state != LinphoneChatMessageStateFileTransferDone && state != LinphoneChatMessageStateFileTransferInProgress)) {
+        ChatsListView *view = VIEW(ChatsListView);
+        [view.tableController updateEventEntry:msg];
+    }
+}
+
+static void participant_imdn_status(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ChatConversationImdnView *imdnView = VIEW(ChatConversationImdnView);
+        [imdnView updateImdnList];
+    });
 }
 
 @end

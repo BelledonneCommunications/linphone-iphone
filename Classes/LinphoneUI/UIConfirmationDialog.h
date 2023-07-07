@@ -17,11 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UIRoundBorderedButton.h"
+#import <UIKit/UIKit.h>
+
+#import "UICompositeView.h"
+#import "UIRoundBorderedButton.h"
 
 typedef void (^UIConfirmationBlock)(void);
 
-@interface UIConfirmationDialog : UIViewController {
+@interface UIConfirmationDialog : UIViewController <UICompositeViewDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>{
 	UIConfirmationBlock onCancelCb;
 	UIConfirmationBlock onConfirmCb;
 }
@@ -49,13 +52,18 @@ typedef void (^UIConfirmationBlock)(void);
 @property (weak, nonatomic) IBOutlet UIImageView *groupCallImage;
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *confirmationButton;
 @property (weak, nonatomic) IBOutlet UIView *authView;
+@property (weak, nonatomic) IBOutlet UIImageView *backgroundColor;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property(weak, nonatomic) IBOutlet UIView *firstView;
 @property (weak, nonatomic) IBOutlet UIButton *authButton;
+@property(weak, nonatomic) IBOutlet UILabel *subscribeLabel;
+
 
 - (void)setSpecialColor;
 -(void) setWhiteCancel;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onConfirmationClick:(id)sender;
 - (IBAction)onAuthClick:(id)sender;
+- (IBAction)onSubscribeTap:(id)sender;
 - (void)dismiss;
 @end

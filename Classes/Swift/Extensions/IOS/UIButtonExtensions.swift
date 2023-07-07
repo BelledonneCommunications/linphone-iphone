@@ -22,9 +22,9 @@ import SnapKit
 import UIKit
 
 extension UIButton {
-	func addSidePadding(p:CGFloat = 10) {
+	func addSidePadding(p:CGFloat = 10) { // Requires a width to be set prior to this ! SnapKit does not support updateOrCreate.
 		if let w = titleLabel?.textWidth {
-			width(w+2*p).done()
+			updateWidth(w+2*p).done()
 		}
 	}
 	

@@ -22,6 +22,7 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @interface FileTransferDelegate ()
 @property(strong) NSMutableData *data;
@@ -51,7 +52,7 @@ static void file_transfer_progress_indication_recv(LinphoneChatMessage *message,
 		NSString *name = [NSString stringWithUTF8String: linphone_content_get_name(content) ? : ""];
 		LOGI(@"Transfer of %@ (%d bytes): download finished", name, total);
 		NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
-		NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:name];
+		NSString *key = [ChatConversationViewSwift getKeyFromFileType:fileType fileName:name];
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[LinphoneManager setValueInMessageAppData:name
@@ -59,7 +60,7 @@ static void file_transfer_progress_indication_recv(LinphoneChatMessage *message,
 										inMessage:message];
 			dispatch_async(dispatch_get_main_queue(), ^{
 				if (![VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId] && [ConfigManager.instance lpConfigBoolForKeyWithKey:@"auto_write_to_gallery_preference"]) {
-					[ChatConversationView writeMediaToGallery:name fileType:fileType];
+					[ChatConversationViewSwift writeMediaToGalleryFromName:name fileType:fileType];
 				}
 			});
 		});
@@ -109,7 +110,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 		return;
 	}
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
-	[ChatConversationView writeFileInImagesDirectory:data name:name];
+	[ChatConversationViewSwift writeFileInImagesDirectory:data name:name];
 
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
 	linphone_content_set_type(content, [type UTF8String]);
@@ -120,7 +121,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	linphone_chat_message_add_file_content(_message, content);
 	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
 	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
-	BOOL basic = [ChatConversationView isBasicChatRoom:linphone_chat_message_get_chat_room(_message)];
+	BOOL basic = [ChatConversationViewSwift isBasicChatRoom:linphone_chat_message_get_chat_room(_message)];
 
 	if ((!basic || cpimEnabled) && (_text!=nil && ![_text isEqualToString:@""]))
 		linphone_chat_message_add_utf8_text_content(_message, [_text UTF8String]);
@@ -166,7 +167,7 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 		linphone_content_unref(content);
 	}
 
-	BOOL basic = [ChatConversationView isBasicChatRoom:linphone_chat_message_get_chat_room(rootMessage)];
+	BOOL basic = [ChatConversationViewSwift isBasicChatRoom:linphone_chat_message_get_chat_room(rootMessage)];
 	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
 	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
 
@@ -184,6 +185,61 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 	}
 }
 
+- (void)uploadFileContentForSwift: (NSArray<NSData *>*)context urlList:(NSArray<NSURL *>*)urls forChatRoom:(LinphoneChatRoom *)chatRoom  rootMessage:(LinphoneChatMessage *)rootMessage{
+	[LinphoneManager.instance.fileTransferDelegates addObject:self];
+	
+	_message = rootMessage;
+	NSMutableArray<NSString *> *names = [[NSMutableArray alloc] init];
+	NSMutableArray<NSString *> *types = [[NSMutableArray alloc] init];
+
+	int i = 0;
+	for (i = 0; i < [context count]; ++i) {
+		LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
+		//NSString *type = @"image";//[urls objectAtIndex:i].pathExtension;
+		
+		NSString *type = [self getTypeForFileTransferDelegate:[urls objectAtIndex:i].pathExtension.localizedLowercaseString];
+		NSString *name = [urls objectAtIndex:i].lastPathComponent;
+		NSData *data = [context objectAtIndex:i];
+		[ChatConversationViewSwift writeFileInImagesDirectory:data name:name];
+		
+		linphone_content_set_type(content, [type UTF8String]);
+		linphone_content_set_subtype(content, [name.pathExtension UTF8String]);
+		linphone_content_set_name(content, [name UTF8String]);
+		linphone_content_set_file_path(content, [[LinphoneManager imagesDirectory] stringByAppendingPathComponent:name].UTF8String);
+		[names addObject:name];
+		[types addObject:type];
+		linphone_chat_message_add_file_content(_message, content);
+		linphone_content_unref(content);
+	}
+
+	BOOL basic = [ChatConversationViewSwift isBasicChatRoom:linphone_chat_message_get_chat_room(rootMessage)];
+	const LinphoneAccountParams *params = linphone_account_get_params(linphone_core_get_default_account(LC));
+	BOOL cpimEnabled = linphone_account_params_cpim_in_basic_chat_room_enabled(params);
+
+	if ((!basic || cpimEnabled) && _text!=nil && ![_text isEqualToString:@""])
+		linphone_chat_message_add_utf8_text_content(_message, [_text UTF8String]);
+
+	// todo indication progress
+	[LinphoneManager setValueInMessageAppData:names forKey:@"multiparts" inMessage:_message];
+	[LinphoneManager setValueInMessageAppData:types forKey:@"multipartstypes" inMessage:_message];
+
+	LOGI(@"%p Uploading content from message %p", self, _message);
+	linphone_chat_message_send(_message);
+	if (basic && !cpimEnabled && _text!=nil && ![_text isEqualToString:@""]) {
+		linphone_chat_message_send(linphone_chat_room_create_message_from_utf8(linphone_chat_message_get_chat_room(rootMessage), _text.UTF8String));
+	}
+}
+
+- (NSString*)getTypeForFileTransferDelegate:(NSString *)type {
+	if([type isEqual:@"png"] || [type isEqual:@"jpg"] || [type isEqual:@"jpeg"] || [type isEqual:@"bmp"] || [type isEqual:@"heic"] || [type isEqual:@"file_picture_default"]){
+			return @"image";
+	}else if([type isEqual:@"mkv"] || [type isEqual:@"avi"] || [type isEqual:@"mov"] || [type isEqual:@"mp4"] || [type isEqual:@"file_video_default"]){
+		return @"video";
+	}else{
+		return @"file";
+	}
+}
+
 
 - (void)uploadImage:(UIImage *)image forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
 	NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
@@ -193,10 +249,10 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 
 
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name rootMessage:(LinphoneChatMessage *)rootMessage {
-	NSURL *url = [ChatConversationView getFileUrl:name];
+	NSURL *url = [ChatConversationViewSwift getFileUrl:name];
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
 	NSString *fileType = [[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0 ? @"video" : @"file";
-	NSString *key = [ChatConversationView getKeyFromFileType:fileType fileName:name];
+	NSString *key = [ChatConversationViewSwift getKeyFromFileType:fileType fileName:name];
 
 	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key rootMessage:rootMessage];
 }

@@ -31,11 +31,12 @@
 @property(nonatomic, retain) NSString *identifier;
 @property(nonatomic, retain) NSString *firstName;
 @property(nonatomic, retain) NSString *lastName;
+@property(nonatomic, retain) NSString *organizationName;
 @property(nonatomic, retain) NSString *displayName;
 @property(nonatomic, strong) NSMutableArray *sipAddresses;
 @property(nonatomic, strong) NSMutableArray *emails;
 @property(nonatomic, strong) NSMutableArray *phones;
-@property BOOL createdFromLdap;
+@property BOOL createdFromLdapOrProvisioning;
 @property BOOL added;
 
 - (void)setAvatar:(UIImage *)avatar;
@@ -58,4 +59,6 @@
 - (BOOL)removeSipAddressAtIndex:(NSInteger)index;
 - (BOOL)removePhoneNumberAtIndex:(NSInteger)index;
 - (BOOL)removeEmailAtIndex:(NSInteger)index;
+
+- (NSMutableArray*)getSipAddressesWithoutDuplicatePhoneNumbers;
 @end

@@ -21,6 +21,7 @@
 #import "PhoneMainView.h"
 
 #import "ChatConversationCreateView.h"
+#import "linphoneapp-Swift.h"
 @implementation ChatsListView
 
 #pragma mark - ViewController Functions
@@ -39,6 +40,10 @@
 										   selector:@selector(ephemeralDeleted:)
 											   name:kLinphoneEphemeralMessageDeletedInRoom
 											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+																				 selector:@selector(displayModeChanged)
+																						 name:kDisplayModeChanged
+																					 object:nil];
 	[_backToCallButton update];
 	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
@@ -54,20 +59,43 @@
         forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];*/
 	
-	BOOL forwardMode = VIEW(ChatConversationView).pendingForwardMessage != nil;
+	[self mediaSharing];
 
+}
+
+- (void)mediaSharing{
+	BOOL forwardMode;
+	
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+	NSDictionary *dict = [defaults valueForKey:@"photoData"];
+	NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
+	NSDictionary *dictUrl = [defaults valueForKey:@"url"];
+	if(dict||dictFile||dictUrl) VIEW(ChatConversationViewSwift).sharingMedia = TRUE;
+
+	if(VIEW(ChatConversationViewSwift).sharingMedia == false){
+		forwardMode = VIEW(ChatConversationViewSwift).pendingForwardMessage != nil;
+	}else{
+		forwardMode = VIEW(ChatConversationViewSwift).sharingMedia != false;
+	}
 	_tableController.editButton.hidden = forwardMode;
-	_forwardTitle.text =  NSLocalizedString(@"Select a discussion or create a new one",nil);
+	if(VIEW(ChatConversationViewSwift).sharingMedia == false){
+		_forwardTitle.text =  NSLocalizedString(@"Select a discussion or create a new one",nil);
+	}
+	else{
+		_forwardTitle.text =  NSLocalizedString(@"Select or create a conversation to share the file(s)",nil);
+	}
 	_forwardTitle.hidden = !forwardMode;
 	_cancelForwardButton.hidden = !forwardMode;
 	
 	_tableController.tableView.frame = CGRectMake(0, 66 + (forwardMode ? _forwardTitle.frame.size.height : 0), _tableController.tableView.frame.size.width,  self.view.frame.size.height - 66 - ( forwardMode ? _forwardTitle.frame.size.height : 0 ));
 	_addButton.frame = CGRectMake(forwardMode ? 82 : 0 , _addButton.frame.origin.y, _addButton.frame.size.width, _addButton.frame.size.height);
 	_addGroupChatButton.frame = CGRectMake(forwardMode ? 164 : 82 , _addGroupChatButton.frame.origin.y, _addGroupChatButton.frame.size.width, _addGroupChatButton.frame.size.height);
-
 }
 
-
+- (void)displayModeChanged{
+	[self.tableController.tableView reloadData];
+}
 
 - (void)ephemeralDeleted:(NSNotification *)notif {
 	//LinphoneChatRoom *r =[[notif.userInfo objectForKey:@"room"] intValue];
@@ -128,14 +156,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddGroupChatClick:(id)event {
     [self newChatCreate:TRUE];
-    if (IPAD)
-        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+    //if (IPAD)
+        //[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+}
+
+- (IBAction)onChatRoomSwiftClick:(id)event {
+    [PhoneMainView.instance changeCurrentView:ChatConversationViewSwift.compositeViewDescription];
 }
 
 - (IBAction)onAddClick:(id)event {
 	[self newChatCreate:FALSE];
-    if (IPAD)
-        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
+    //if (IPAD)
+        //[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneChatCreateViewChange object:VIEW(ChatConversationCreateView) userInfo:nil];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
@@ -173,8 +205,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCancelForwardClicked:(id)sender {
-	VIEW(ChatConversationView).pendingForwardMessage = nil;
+	VIEW(ChatConversationViewSwift).sharingMedia = false;
+	VIEW(ChatConversationViewSwift).pendingForwardMessage = nil;
+	NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+	NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+	[defaults removeObjectForKey:@"photoData"];
+	[defaults removeObjectForKey:@"icloudData"];
+	[defaults removeObjectForKey:@"url"];
 	[PhoneMainView.instance popCurrentView];
 }
+
+
 
 @end

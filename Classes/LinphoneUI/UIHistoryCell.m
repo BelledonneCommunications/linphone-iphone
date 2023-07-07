@@ -91,7 +91,7 @@
 	// Set up the cell...
 	if (linphone_call_log_was_conference(callLog)) {
 		const char *subject = linphone_conference_info_get_subject(linphone_call_log_get_conference_info(callLog));
-		displayNameLabel.text = [NSString stringWithFormat:@"%s",subject];
+		displayNameLabel.text = [NSString stringWithUTF8String:subject];
 		[_avatarImage setImage:[UIImage imageNamed:@"voip_multiple_contacts_avatar"]];
 		_stateImage.hidden = true;
 	} else {
@@ -118,7 +118,7 @@
 			[displayNameLabel.text stringByAppendingString:[NSString stringWithFormat:@" (%lu)", count]];
 		}
 		
-		[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[FastAddressBook imageForAddress:addr]];
 	}
 }
 

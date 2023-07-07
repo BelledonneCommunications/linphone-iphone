@@ -192,7 +192,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		
 		if (UIApplication.shared.applicationState != .active) {
 			CallManager.instance().backgroundContextCall = call
-			CallManager.instance().backgroundContextCameraIsEnabled = call!.params?.videoEnabled ?? false
+			CallManager.instance().backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
 			call?.cameraEnabled = false // Disable camera while app is not on foreground
 		}
 		CallManager.instance().callkitAudioSessionActivated = false
@@ -205,8 +205,10 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 		let call = CallManager.instance().callByCallId(callId: callId)
-		action.fulfill()
+		
 		if (call == nil) {
+			Log.directLog(BCTBX_LOG_ERROR, text: "CXSetHeldCallAction: no call !")
+			action.fail()
 			return
 		}
 
@@ -215,33 +217,52 @@ extension ProviderDelegate: CXProviderDelegate {
 				try CallManager.instance().lc?.leaveConference()
 				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: call-id: [\(String(describing: callId))] leaving conference")
 				NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
-				return
-			}
-
-			let state = action.isOnHold ? "Paused" : "Resumed"
-			Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Call  with call-id: [\(String(describing: callId))] and UUID: [\(uuid)] paused status changed to: [\(state)]")
-			if (action.isOnHold) {
-				if (call!.params?.localConferenceMode ?? false) {
-					return
-				}
-				CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
-				try call!.pause()
-			} else {
-				if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
-					try CallManager.instance().lc?.enterConference()
-					NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+				action.fulfill()
+			}else{
+				let state = action.isOnHold ? "Paused" : "Resumed"
+				Log.directLog(BCTBX_LOG_DEBUG, text: "CallKit: Call  with call-id: [\(String(describing: callId))] and UUID: [\(uuid)] paused status changed to: [\(state)]")
+				if (action.isOnHold) {
+					CallManager.instance().speakerBeforePause = CallManager.instance().isSpeakerEnabled()
+					try call!.pause()
+					// fullfill() the action now to indicate to Callkit that this call is no longer active, even if the
+					// SIP transaction is not completed yet. At this stage, the media streams are off.
+					// If callkit is not aware that the pause action is completed, it will terminate this call if we
+					// attempt to resume another one.
+					action.fulfill()
 				} else {
-					try call!.resume()
+					if (CallManager.instance().lc?.conference != nil && CallManager.instance().lc?.callsNb ?? 0 > 1) {
+						try CallManager.instance().lc?.enterConference()
+						action.fulfill()
+						NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+					} else {
+						try call!.resume()
+						// We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point
+						// where we actually start the media streams.
+						CallManager.instance().actionToFulFill = action;
+						// HORRIBLE HACK HERE - PLEASE APPLE FIX THIS !!
+						// When resuming a SIP call after a native call has ended remotely, didActivate: audioSession
+						// is never called.
+						// It looks like in this case, it is implicit.
+						// As a result we have to notify the Core that the AudioSession is active.
+						// The SpeakerBox demo application written by Apple exhibits this behavior.
+						// https://developer.apple.com/documentation/callkit/making_and_receiving_voip_calls_with_callkit
+						// We can clearly see there that startAudio() is called immediately in the CXSetHeldCallAction
+						// handler, while it is called from didActivate: audioSession otherwise.
+						// Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
+						//
+						Log.directLog(BCTBX_LOG_DEBUG, text: "Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
+						CallManager.instance().lc?.activateAudioSession(actived: true)
+						CallManager.instance().callkitAudioSessionActivated = true
+					}
 				}
 			}
 		} catch {
 			Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: Call set held (paused or resumed) \(uuid) failed because \(error)")
+			action.fail()
 		}
 	}
 
 	func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
-		
-		
 		do {
 						
 			let uuid = action.callUUID

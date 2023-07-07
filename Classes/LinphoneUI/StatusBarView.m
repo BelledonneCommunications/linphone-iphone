@@ -194,11 +194,13 @@
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (account == NULL) {
 		state = LinphoneRegistrationNone;
-		if (linphone_core_get_account_list(LC) != NULL) {
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		if (accounts != NULL) {
 			message = NSLocalizedString(@"No default account", nil);
 		} else {
 			message = NSLocalizedString(@"No account configured", nil);
 		}
+		bctbx_free(accounts);
 
 	} else {
 		state = linphone_account_get_state(account);
@@ -330,14 +332,9 @@
 					correspondantCode = [code substringToIndex:2];
 					myCode = [code substringFromIndex:2];
 				}
-				NSString *message =
-					[NSString stringWithFormat:NSLocalizedString(@"\nConfirmation security\n\n"
-                                                                 @"Say: %@\n"
-                                                                 @"Confirm that your interlocutor\n"
-																 @"says: %@",
-																 nil),
-											   myCode.uppercaseString, correspondantCode.uppercaseString];
-                
+				NSString *message = [NSString stringWithFormat:NSLocalizedString(@"\nCommunication security:\n\nTo raise the security level, you can check the following codes with your correspondent.\n\nSay:  %1$@\n\nYour correspondent must say:  %2$@", nil),
+				 myCode.uppercaseString, correspondantCode.uppercaseString];
+				
 				if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive &&
 					floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 					UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
@@ -369,14 +366,14 @@
                         UIFont *baseFont = [UIFont systemFontOfSize:21.0];
                         [attrString addAttribute:NSFontAttributeName value:baseFont range:NSMakeRange(0, length)];
                         UIFont *boldFont = [UIFont boldSystemFontOfSize:23.0];
-                        [attrString addAttribute:NSFontAttributeName value:boldFont range:[message rangeOfString:@"Confirmation security"]];
+                        [attrString addAttribute:NSFontAttributeName value:boldFont range:[message rangeOfString:@"Communication security"]];
                         UIColor *color = [UIColor colorWithRed:(150 / 255.0) green:(193 / 255.0) blue:(31 / 255.0) alpha:1.0];
                         [attrString addAttribute:NSForegroundColorAttributeName value:color range:[message rangeOfString:myCode.uppercaseString]];
                         [attrString addAttribute:NSForegroundColorAttributeName value:color range:[message rangeOfString:correspondantCode.uppercaseString]];
                         
 						securityDialog = [UIConfirmationDialog ShowWithAttributedMessage:attrString
-							cancelMessage:NSLocalizedString(@"DENY", nil)
-							confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+							cancelMessage:NSLocalizedString(@"Later", nil)
+							confirmMessage:NSLocalizedString(@"Correct", nil)
 							onCancelClick:^() {
 							  if (linphone_core_get_current_call(LC) == call) {
 								  linphone_call_set_authentication_token_verified(call, NO);
@@ -394,6 +391,7 @@
                         
                         securityDialog.securityImage.hidden = FALSE;
 						[securityDialog setSpecialColor];
+                        [securityDialog setWhiteCancel];
 					}
 				}
 			}
@@ -405,7 +403,6 @@
 	[ControlsViewModelBridge toggleStatsVisibility];
 }
 
-
 - (IBAction)onSideMenuClick:(id)sender {
 	UICompositeView *cvc = PhoneMainView.instance.mainViewController;
 	[cvc hideSideMenu:(cvc.sideMenuView.frame.origin.x == 0)];
@@ -415,10 +412,15 @@
 - (IBAction)onRegistrationStateClick:(id)sender {
 	if (linphone_core_get_default_account(LC)) {
 		linphone_core_refresh_registers(LC);
-	} else if (linphone_core_get_account_list(LC)) {
-		[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
 	} else {
-		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
+		
+		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
+		if (accounts) {
+			[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
+		} else {
+			[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
+		}
+		bctbx_free(accounts);
 	}
 }
 

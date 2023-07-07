@@ -67,7 +67,6 @@
 	if (addressField && (!dtmf || !linphone_core_in_call(LC))) {
 		NSString *newAddress = [NSString stringWithFormat:@"%@%c", addressField.text, digit];
 		[addressField setText:newAddress];
-		linphone_core_play_dtmf(LC, digit, -1);
 	} else {
 		linphone_call_send_dtmf(linphone_core_get_current_call(LC), digit);
 		linphone_core_play_dtmf(LC, digit, 100);

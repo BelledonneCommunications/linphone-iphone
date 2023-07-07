@@ -61,7 +61,7 @@ class VoipExtraButtonsView: UIStackView {
 		
 		// First row
 		let numpad = VoipExtraButton(text: VoipTexts.call_action_numpad, buttonTheme: VoipTheme.call_action("voip_call_numpad"),onClickAction: {
-			ControlsViewModel.shared.numpadVisible.value = true
+            ControlsViewModel.shared.numpadVisible.value = true
 		})
 		row1.addArrangedSubview(numpad)
         numpad.accessibilityIdentifier = "active_call_extra_buttons_numpad"
@@ -88,11 +88,15 @@ class VoipExtraButtonsView: UIStackView {
 		row2.distribution = .fillEqually
 		row2.alignment = .center
 		
-		let transfer = VoipExtraButton(text: VoipTexts.call_action_transfer_call, buttonTheme: VoipTheme.call_action("voip_call_forward"),onClickAction: {
-			let view: DialerView = self.VIEW(DialerView.compositeViewDescription());
-			view.setAddress("")
-			CallManager.instance().nextCallIsTransfer = true
-			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+		var transfer = VoipExtraButton(text: CallsViewModel.shared.inactiveCallsCount.value! < 1 ? VoipTexts.call_action_transfer_call : VoipTexts.call_context_action_attended_transfer, buttonTheme: VoipTheme.call_action("voip_call_forward"),onClickAction: {
+			if CallsViewModel.shared.inactiveCallsCount.value! < 1 {
+				let view: DialerView = self.VIEW(DialerView.compositeViewDescription());
+				view.setAddress("")
+				CallManager.instance().nextCallIsTransfer = true
+				PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
+			}else{
+				self.attendedTransfer()
+			}
 		})
 		row2.addArrangedSubview(transfer)
         transfer.accessibilityIdentifier = "active_call_extra_buttons_transfer"
@@ -116,8 +120,15 @@ class VoipExtraButtonsView: UIStackView {
 			ControlsViewModel.shared.goToConferenceLayoutSettings.notifyAllObservers(with: true)
 		})
 		row2.addArrangedSubview(layoutselect)
-        layoutselect.accessibilityIdentifier = "active_call_extra_buttons_layout_select"
-			
+		
+		if (Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true) {
+			layoutselect.isEnabled = false
+			layoutselect.setTitleColor(.gray, for: .disabled)
+			if #available(iOS 13.0, *) {
+				layoutselect.setImage(UIImage(named: "voip_conference_mosaic")!.withTintColor(.gray), for: .disabled)
+			}
+		}
+		
 		let calls = VoipExtraButton(text: VoipTexts.call_action_calls_list, buttonTheme: VoipTheme.call_action("voip_calls_list"), withbBoucinCounterDataSource: CallsViewModel.shared.inactiveCallsCount, onClickAction: {
 			ControlsViewModel.shared.goToCallsListEvent.notifyAllObservers(with: true)
 		})
@@ -134,6 +145,9 @@ class VoipExtraButtonsView: UIStackView {
 			addcall.isHidden = isIn == true
 		}
 		
+		CallsViewModel.shared.inactiveCallsCount.readCurrentAndObserve { title in
+			transfer.setTitle(title! < 1 ? VoipTexts.call_action_transfer_call : VoipTexts.call_context_action_attended_transfer, for: .normal)
+		}
 	}
 	
 	func refresh() {
@@ -141,6 +155,37 @@ class VoipExtraButtonsView: UIStackView {
 		CallsViewModel.shared.inactiveCallsCount.notifyValue()
 	}
 	
-	
+	func attendedTransfer() {
+		var core = CallManager.instance().lc
+		var currentCall = core?.currentCall
 
+		if (currentCall == nil) {
+			Log.e("[Call Controls] Can't do an attended transfer without a current call")
+			return
+		}
+		
+		if let callsNb = core?.callsNb, callsNb <= 1 {
+			Log.e("[Call Controls] Need at least two calls to do an attended transfer")
+			return
+		}
+		
+		var callToTransferTo = core!.calls.last { call in
+			call.state == Call.State.Paused
+		}
+		
+		if (callToTransferTo == nil) {
+			Log.e("[Call Controls] Couldn't find a call in Paused state to transfer current call to")
+			return
+		}
+
+		Log.i(
+			"[Call Controls] Doing an attended transfer between active call [${currentCall.remoteAddress.asStringUriOnly()}] and paused call [${callToTransferTo.remoteAddress.asStringUriOnly()}]"
+		)
+		
+		do{
+			try callToTransferTo?.transferToAnother(dest: currentCall!)
+		}catch{
+			Log.e("[Call Controls] Attended transfer failed!")
+		}
+	}
 }

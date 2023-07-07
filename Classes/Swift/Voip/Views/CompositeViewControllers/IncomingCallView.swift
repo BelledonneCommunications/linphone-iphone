@@ -22,7 +22,7 @@ import UIKit
 import Foundation
 import linphonesw
 
-@objc class IncomingCallView: IncomingOutgoingCommonView, UICompositeViewDelegate {
+@objc class IncomingCallView: AbstractIncomingOutgoingCallView, UICompositeViewDelegate {
 	
 	// Layout constants
 	let buttons_distance_from_center_x = 38
@@ -38,7 +38,7 @@ import linphonesw
 		super.viewDidLoad(forCallType: VoipTexts.call_incoming_title)
 		
 		// Accept
-		let accept = CallControlButton(width: CallControlButton.hungup_width, imageInset:IncomingOutgoingCommonView.answer_decline_inset, buttonTheme: VoipTheme.call_accept, onClickAction: {
+		let accept = CallControlButton(width: CallControlButton.hungup_width, imageInset:AbstractIncomingOutgoingCallView.answer_decline_inset, buttonTheme: VoipTheme.call_accept, onClickAction: {
 			self.callData.map { CallManager.instance().acceptCall(call: $0.call.getCobject, hasVideo: false)}
 		})
 		view.addSubview(accept)
@@ -47,7 +47,7 @@ import linphonesw
         accept.accessibilityLabel = "Accept"
         
 		// Decline
-		let decline = CallControlButton(width: CallControlButton.hungup_width, imageInset:IncomingOutgoingCommonView.answer_decline_inset,  buttonTheme: VoipTheme.call_terminate, onClickAction: {
+		let decline = CallControlButton(width: CallControlButton.hungup_width, imageInset:AbstractIncomingOutgoingCallView.answer_decline_inset,  buttonTheme: VoipTheme.call_terminate, onClickAction: {
 			self.callData.map { CallManager.instance().terminateCall(call: $0.call.getCobject)}
 		})
 		view.addSubview(decline)

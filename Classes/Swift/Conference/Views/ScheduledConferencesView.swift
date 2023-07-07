@@ -28,6 +28,7 @@ import linphonesw
 	let noConference = StyledLabel(VoipTheme.empty_list_font,VoipTexts.conference_no_schedule)
 	let filters = UIStackView()
 	let selectAllButton = CallControlButton(buttonTheme:VoipTheme.nav_button("deselect_all"))
+	let separator = UIView()
 
 	static let compositeDescription = UICompositeViewDescription(ScheduledConferencesView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: SideMenuView.self, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -52,6 +53,7 @@ import linphonesw
 			},
 			nextActionEnableCondition: MutableLiveData(),
 			title:VoipTexts.conference_scheduled)
+		super.titleLabel.applyStyle(VoipTheme.navigation_header_font)
 		
 		// Select all
 		selectAllButton.setImage(UIImage(named: "deselect_all"), for: .selected)
@@ -86,7 +88,9 @@ import linphonesw
 		filters.spacing = 10
 		filters.alignParentLeft(withMargin: 10).alignUnder(view: super.topBar,withMargin: self.form_margin).done()
 
-		
+		self.view.addSubview(separator)
+		separator.matchParentSideBorders().height(1).alignUnder(view: filters,withMargin: self.form_margin).done()
+
 		// Conference list
 		
 		self.view.addSubview(conferenceListView)
@@ -101,7 +105,7 @@ import linphonesw
 			conferenceListView.allowsFocus = false
 		}
 		conferenceListView.separatorStyle = .singleLine
-		conferenceListView.separatorColor = .white
+		conferenceListView.backgroundColor = .clear
 		
 		view.addSubview(noConference)
 		noConference.center().done()
@@ -110,16 +114,14 @@ import linphonesw
 			if (editing == true) {
 				self.selectAllButton.isSelected = false
 				self.selectAllButton.isHidden = false
-				super.nextButton.setImage(UIImage(named: "delete_default"), for: .normal)
-				super.nextButton.setImage(UIImage(named: "delete_disabled"), for: .disabled)
-				super.nextButton.setImage(UIImage(named: "delete_default"), for: .highlighted)
-				super.backButton.setImage(UIImage(named: "cancel_edit_default"), for: .normal)
+				super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.generic_delete_button)
+				super.backButton.applyTintedIcons(tintedIcons: VoipTheme.generic_cancel)
 				self.nextButton.isEnabled = ScheduledConferencesViewModel.shared.conferences.value?.filter{$0.selectedForDeletion.value == true}.count ?? 0 > 0
 			} else {
 				self.selectAllButton.isHidden = true
 				ScheduledConferencesViewModel.shared.conferences.value?.forEach {$0.selectedForDeletion.value = false}
 				super.nextButton.applyTintedIcons(tintedIcons: VoipTheme.conference_create_button)
-				super.backButton.setImage(UIImage(named: "back_default"), for: .normal)
+				super.backButton.applyTintedIcons(tintedIcons: VoipTheme.generic_back)
 				self.nextButton.isEnabled = true
 			}
 		}
@@ -129,6 +131,12 @@ import linphonesw
 			ScheduledConferencesViewModel.shared.conferences.value?.forEach {$0.selectedForDeletion.value = selectIt}
 		}
 		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.separator.backgroundColor  = VoipTheme.separatorColor.get()
+			self.conferenceListView.separatorColor = .clear
+			self.conferenceListView.reloadData()
+		}
 	}
 	
 	func getFilterButton(title:String) -> UIButton {
@@ -141,6 +149,7 @@ import linphonesw
 		button.layer.cornerRadius = filter_button_height / 2
 		button.clipsToBounds = true
 		button.applyTitleStyle(VoipTheme.conf_list_filter_button_font)
+		button.width(0).done()
 		button.addSidePadding()
 		return button
 	}
@@ -151,7 +160,7 @@ import linphonesw
 		super.viewWillAppear(animated)
 		self.conferenceListView.reloadData()
 		self.conferenceListView.removeConstraints().done()
-		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: filters,withMargin: self.form_margin).alignParentBottom().done()
+		self.conferenceListView.matchParentSideBorders(insetedByDx: 10).alignUnder(view: separator).alignParentBottom().done()
 		noConference.isHidden = !ScheduledConferencesViewModel.shared.daySplitted.isEmpty
 		super.nextButton.isEnabled = Core.get().defaultAccount != nil
 		ScheduledConferencesViewModel.shared.editionEnabled.value = false

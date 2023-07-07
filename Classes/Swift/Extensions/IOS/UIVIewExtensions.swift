@@ -70,6 +70,14 @@ extension UIView {
 		return self
 	}
 	
+	func updateSize(w:CGFloat,h:CGFloat) -> UIView {
+		snp.updateConstraints { (make) in
+			make.width.equalTo(w)
+			make.height.equalTo(h)
+		}
+		return self
+	}
+	
 	func height(_ h:CGFloat) -> UIView {
 		snp.makeConstraints { (make) in
 			make.height.equalTo(h)
@@ -88,6 +96,13 @@ extension UIView {
 		return self
 	}
 	
+	func updateWidth(_ h:CGFloat) -> UIView {
+		snp.updateConstraints { (make) in
+			make.width.equalTo(h)
+		}
+		return self
+	}
+	
 	func width(_ h:Int) -> UIView {
 		return width(CGFloat(h))
 	}
@@ -95,6 +110,13 @@ extension UIView {
 	func maxHeight(_ h:CGFloat) -> UIView {
 		snp.makeConstraints { (make) in
 			make.height.lessThanOrEqualTo(h)
+		}
+		return self
+	}
+	
+	func maxWidth(_ h:CGFloat) -> UIView {
+		snp.makeConstraints { (make) in
+			make.width.lessThanOrEqualTo(h)
 		}
 		return self
 	}
@@ -480,6 +502,19 @@ extension UIView {
 	}
 	@objc func handleLongClick(_ sender: LongPressGestureRecognizer) {
 		sender.action!()
+	}
+	
+	func onLongClickOneClick(action : @escaping ()->Void ){
+		let tap = LongPressGestureRecognizer(target: self , action: #selector(self.handleLongClickOneClick(_:)))
+		tap.action = action
+		tap.cancelsTouchesInView = false
+		self.addGestureRecognizer(tap)
+		self.isUserInteractionEnabled = true
+	}
+	@objc func handleLongClickOneClick(_ sender: LongPressGestureRecognizer) {
+		if (sender.state == .began){
+			sender.action!()
+		}
 	}
 	
 	func VIEW<T>( _ desc: UICompositeViewDescription) -> T{

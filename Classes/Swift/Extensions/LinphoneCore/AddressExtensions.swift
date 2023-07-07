@@ -23,15 +23,16 @@ import linphonesw
 extension Address {
 	
 	func initials() -> String? {
-		var initials = initials(displayName: addressBookEnhancedDisplayName())
+		var initials = Address.initials(displayName: addressBookEnhancedDisplayName())
 		if (initials == nil || initials!.isEmpty) {
 			initials = String(username.prefix(1))
 		}
 		return initials
 	}
 	
-	private func initials(displayName: String?) -> String?  { // Basic ImproveMe
-		return displayName?.components(separatedBy: " ")
+	static func initials(displayName: String?) -> String?  { // Basic ImproveMe
+		let separator =  displayName?.contains(" ") == true ? " " : "."
+		return displayName?.components(separatedBy: separator)
 			.reduce("") {
 				($0.isEmpty ? "" : "\($0.first?.uppercased() ?? "")") +
 				($1.isEmpty ? "" : "\($1.first?.uppercased() ?? "")")

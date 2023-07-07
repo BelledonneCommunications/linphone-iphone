@@ -22,7 +22,7 @@ import UIKit
 import Foundation
 import linphonesw
 
-@objc class OutgoingCallView: IncomingOutgoingCommonView, UICompositeViewDelegate {
+@objc class OutgoingCallView: AbstractIncomingOutgoingCallView, UICompositeViewDelegate {
 		
 	// Layout constants
 	let numpad_icon_padding = 10.0
@@ -40,7 +40,7 @@ import linphonesw
 		super.viewDidLoad(forCallType: VoipTexts.call_outgoing_title)
 		
 		// Cancel
-		let cancelCall = CallControlButton(width: CallControlButton.hungup_width, imageInset:IncomingOutgoingCommonView.answer_decline_inset, buttonTheme: VoipTheme.call_terminate, onClickAction: {
+		let cancelCall = CallControlButton(width: CallControlButton.hungup_width, imageInset:AbstractIncomingOutgoingCallView.answer_decline_inset, buttonTheme: VoipTheme.call_terminate, onClickAction: {
 			self.callData.map { CallManager.instance().terminateCall(call: $0.call.getCobject)}
 		})
 		view.addSubview(cancelCall)
@@ -86,6 +86,9 @@ import linphonesw
 	override func viewWillAppear(_ animated: Bool) {
 		ControlsViewModel.shared.audioRoutesSelected.value = false
 		super.viewWillAppear(animated)
+		if (Core.get().callsNb == 0) {
+			PhoneMainView.instance().popView(self.compositeViewDescription())
+		}
 	}
 	
 	@objc override func setCall(call:OpaquePointer) {

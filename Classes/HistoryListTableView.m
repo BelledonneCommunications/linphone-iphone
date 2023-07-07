@@ -71,6 +71,36 @@
 											   name:kLinphoneCoreUpdate
 											 object:nil];
 	[self loadData];
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receivePresenceNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+		const MSList *list = linphone_core_get_call_logs(LC);
+		int i = 0;
+		while (list != NULL) {
+			LinphoneCallLog *log = (LinphoneCallLog *)list->data;
+			const char *curi = linphone_address_as_string_uri_only(linphone_call_log_get_remote_address(log));
+			NSString *uri = [NSString stringWithUTF8String:curi];
+			
+			if([uri isEqual:friend]){
+				NSIndexPath* indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+				NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+				[self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+			}
+			i = i + 1;
+			list = list->next;
+		}
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -79,6 +109,8 @@
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCoreUpdate object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+    [AvatarBridge removeAllObserver];
 }
 
 #pragma mark - Event Functions
@@ -272,9 +304,9 @@
 						[ConferenceViewModelBridge showCancelledMeetingWithCConferenceInfo:confInfo];
 						return;
 					}
-					ConferenceWaitingRoomFragment *view = VIEW(ConferenceWaitingRoomFragment);
+					ConferenceWaitingRoomView *view = VIEW(ConferenceWaitingRoomView);
 					[view setDetailsWithSubject:[NSString stringWithUTF8String:linphone_conference_info_get_subject(confInfo)] url:[NSString stringWithUTF8String:linphone_address_as_string(linphone_conference_info_get_uri(confInfo))]];
-					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomFragment.compositeViewDescription];
+					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomView.compositeViewDescription];
 				} else {
 					const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 					[tableView deselectRowAtIndexPath:indexPath animated:NO];

@@ -26,5 +26,5 @@ class SharedLayoutConstants {
 	}
 	static let margin_call_view_side_controls_buttons = 12
 	static let bottom_margin_notch_clearance = UIDevice.hasNotch() ? 30.0 : 0.0
-
+	static let content_inset = 12.0
 }

@@ -60,6 +60,60 @@
 			[view setContact:nil];
 		}
 	}
+	NSDictionary* userInfo;
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector: @selector(receivePresenceNotification:)
+											   name: @"LinphoneFriendPresenceUpdate"
+											 object: userInfo];
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [AvatarBridge removeAllObserver];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+	[super viewDidDisappear:animated];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
+}
+
+-(void) receivePresenceNotification:(NSNotification*)notification
+{
+	if ([notification.name isEqualToString:@"LinphoneFriendPresenceUpdate"])
+	{
+		NSDictionary* userInfo = notification.userInfo;
+		NSString* friend = (NSString*)userInfo[@"friend"];
+		
+        NSArray<NSIndexPath *> *indexPathsVisible = self.tableView.indexPathsForVisibleRows;
+		
+		for (int i = 0; i < indexPathsVisible.count; i++)
+		{
+			NSMutableArray *subAr = [addressBookMap objectForKey:[addressBookMap keyAtIndex:indexPathsVisible[i].section]];
+			Contact *contact = subAr[indexPathsVisible[i].row];
+
+            if (contact.sipAddresses.count > 0){
+                for (NSString *sip in contact.sipAddresses) {
+                    NSString *uri = [@"sip:" stringByAppendingString:sip];
+
+                    if([uri isEqual:friend]){
+                        NSIndexPath* indexPath = indexPathsVisible[i];
+                        NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+                        [self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+                    }
+                }
+            }else if (contact.phones.count > 0){
+                for (NSString *phone in contact.phones) {
+                    NSString *uri = phone;
+
+                    if([uri isEqual:friend]){
+                        NSIndexPath* indexPath = indexPathsVisible[i];
+                        NSArray* indexArray = [NSArray arrayWithObjects:indexPath, nil];
+                        [self.tableView reloadRowsAtIndexPaths:indexArray withRowAnimation:UITableViewRowAnimationFade];
+                    }
+                }
+            }
+		}
+	}
 }
 
 - (id)init {
@@ -231,7 +285,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 	// Cached avatar
 	UIImage *image = [FastAddressBook imageForContact:contact];
-	[cell.avatarImage setImage:image bordered:NO withRoundedRadius:YES];
+	[cell.avatarImage setImage:image];
 	[cell setContact:contact];
 	[super accessoryForCell:cell atPath:indexPath];
 	cell.contentView.userInteractionEnabled = false;

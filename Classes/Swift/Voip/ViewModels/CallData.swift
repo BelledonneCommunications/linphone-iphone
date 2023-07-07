@@ -102,8 +102,14 @@ class CallData  {
 		
 		updateConferenceInfo()
 
-		isOutgoing.value = isOutGoing()
-		isIncoming.value = isInComing()
+		let outgoing = isOutGoing()
+		if (outgoing != isOutgoing.value) {
+			isOutgoing.value = outgoing
+		}
+		let incoming = isInComing()
+		if (incoming != isIncoming.value) {
+			isIncoming.value = incoming
+		}
 		
 		if (call.mediaInProgress()) {
 			DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
@@ -150,7 +156,7 @@ class CallData  {
 	
 	func getConferenceAddress(call: Call) -> Address? {
 		let remoteContact = call.remoteContact
-		return call.dir == .Incoming ? (remoteContact != nil ? Core.get().interpretUrl(url: remoteContact) : nil) : call.remoteAddress
+		return call.dir == .Incoming ? (remoteContact != nil ? Core.get().interpretUrl(url: remoteContact, applyInternationalPrefix: CallManager.instance().applyInternationalPrefix()) : nil) : call.remoteAddress
 	}
 	
 	func sendDTMF(dtmf:String) {
@@ -199,5 +205,13 @@ class CallData  {
 		isPaused.value = isCallPaused()
 	}
 	
+	func isOngoingSingleCall() -> Bool {
+		return !isOutGoing() && !isInComing() && call.conference == nil && call.callLog?.wasConference() != true
+	}
+	
+	func isOngoingConference() -> Bool {
+		return !isOutGoing() && !isInComing() && (call.conference != nil || call.callLog?.wasConference() == true)
+	}
+
 
 }

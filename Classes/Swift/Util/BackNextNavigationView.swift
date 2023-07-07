@@ -79,14 +79,9 @@ import linphonesw
 		scrollView.alignUnder(view: topBar, withMargin: content_margin_top).alignParentBottom().matchParentSideBorders().done()
 		scrollView.addSubview(contentView)
 		contentView.matchBordersOf(view: view).alignParentBottom().alignParentTop().done() // don't forget a bottom constraint b/w last element of contentview and contentview
-			
-	}
-	
-	
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+		}
 	}
 	
 }

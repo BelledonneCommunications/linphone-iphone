@@ -69,14 +69,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   object:nil];
 
 	// Update on show
-	const MSList *list = linphone_core_get_account_list([LinphoneManager getLc]);
+	MSList *list = [LinphoneManager.instance createAccountsNotHiddenList];
 	if (list != NULL) {
 		LinphoneAccount *account = (LinphoneAccount *)list->data;
 		if (account) {
 			[self registrationUpdate:linphone_account_get_state(account)];
 		}
 	}
-
+	bctbx_list_free(list);
+	
 	if (account_creator) {
 		linphone_account_creator_unref(account_creator);
 	}

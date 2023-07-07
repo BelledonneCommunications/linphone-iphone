@@ -41,9 +41,9 @@ import linphonesw
 		layer.cornerRadius = corner_radius
 		clipsToBounds = true
 		superView.addSubview(self)
-		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignParentBottom().done()
-        accessibilityIdentifier = "call_numpad_view"
-        accessibilityViewIsModal = true
+		accessibilityIdentifier = "call_numpad_view"
+		accessibilityViewIsModal = true
+		matchParentSideBorders(insetedByDx: side_margins).alignParentTop(withMargin: marginTop).alignAbove(view: above,withMargin: SharedLayoutConstants.buttons_bottom_margin).done()
 
 		callData.callState.observe { state in
 			if (state == Call.State.End) {

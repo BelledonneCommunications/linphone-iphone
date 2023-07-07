@@ -24,7 +24,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *addressLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedImage;
 @property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
-@property (weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property (weak, nonatomic) IBOutlet UIImageView *avatarImage;
 @property (weak, nonatomic) IBOutlet UIImageView *securityImage;
 @property (weak, nonatomic) IBOutlet UIView *greyView;
 

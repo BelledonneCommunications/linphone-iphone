@@ -305,6 +305,9 @@
 	return nil;
 }
 
+- (void)removeEntryFromCache:(NSString *)key {
+	[viewControllerCache removeObjectForKey:key];
+}
 
 - (void)clearCache:(NSArray *)exclude {
 	
@@ -313,7 +316,7 @@
 		bool remove = true;
 
 		/*ImagePickerView can be used as popover and we do NOT want to free it*/;
-		if ([key isEqualToString:ImagePickerView.compositeViewDescription.name] || [key isEqualToString:ActiveCallOrConferenceView.compositeViewDescription.name]) {
+		if ([key isEqualToString:ImagePickerView.compositeViewDescription.name] || [key isEqualToString:SingleCallView.compositeViewDescription.name]  || [key isEqualToString:ConferenceCallView.compositeViewDescription.name]) {
 			remove = false;
 		} else if (exclude != nil) {
 			for (UICompositeViewDescription *description in exclude) {
@@ -336,6 +339,9 @@
 }
 
 - (IBAction)onRightSwipe:(id)sender {
+	if (linphone_core_get_calls_nb(LC) > 0) {
+		return;
+	}
 	[self hideSideMenu:NO];
 }
 
@@ -657,6 +663,8 @@
 	// 4. side menu
 	self.sideMenuView.frame = sideMenuFrame;
 	self.sideMenuViewController.view.frame = self.sideMenuView.bounds;
+	[PhoneMainView.instance.mainViewController.view bringSubviewToFront:_sideMenuView];
+	[PhoneMainView.instance.mainViewController.view bringSubviewToFront:_sideMenuViewController.view];
 
 	// Commit animation
 	if (tabBar != nil || statusBar != nil || sideMenu != nil || fullscreen != nil) {

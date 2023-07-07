@@ -107,7 +107,6 @@ import linphonesw
 		
 		// Organiser
 		
-		organiserLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(organiserLabel)
 		organiserLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: schedulingStack,withMargin: form_margin*2).done()
 		organiserLabel.textAlignment = .left
@@ -121,12 +120,10 @@ import linphonesw
 			organizerTableView.allowsFocus = false
 		}
 		organizerTableView.separatorStyle = .singleLine
-		organizerTableView.separatorColor = VoipTheme.light_grey_color
 		organizerTableView.tag = 1;
 		organizerTableView.matchParentSideBorders().height(VoipParticipantCell.cell_height).alignUnder(view: organiserLabel,withMargin: form_margin).done()
 		
 		// Participants
-		participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 		contentView.addSubview(participantsLabel)
 		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: organizerTableView,withMargin: form_margin).done()
 		participantsLabel.textAlignment = .left
@@ -140,7 +137,6 @@ import linphonesw
 			participantsListTableView.allowsFocus = false
 		}
 		participantsListTableView.separatorStyle = .singleLine
-		participantsListTableView.separatorColor = VoipTheme.light_grey_color
 				
 		// Goto chat - v2
 		/*
@@ -153,6 +149,14 @@ import linphonesw
 		
 		chatButton.centerX().alignParentBottom(withMargin: 3*self.form_margin).alignUnder(view: participantsListTableView,withMargin: 3*self.form_margin).done()
 		 */
+		
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			self.organiserLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			self.organizerTableView.separatorColor = VoipTheme.separatorColor.get()
+			self.participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			self.participantsListTableView.separatorColor = VoipTheme.separatorColor.get()
+			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+		}
 		 
 	}
 	

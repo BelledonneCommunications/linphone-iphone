@@ -68,12 +68,6 @@ class ConferenceViewModel {
 			onParticipantAdded: { (conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) Participant \(participant) added")
 				self.updateParticipantsList(conference)
-				let count = self.conferenceParticipantDevices.value!.count
-				if (count > self.maxParticipantsForMosaicLayout && conference.currentParams?.videoEnabled == true && conference.call?.currentParams?.conferenceVideoLayout == .Grid) {
-					Log.w("[Conference] \(conference) More than \(self.maxParticipantsForMosaicLayout) participants \(count), forcing active speaker layout from Grid")
-					self.conferenceDisplayMode.value = .ActiveSpeaker
-					self.changeLayout(layout: .ActiveSpeaker)
-				}
 			},
 			onParticipantRemoved: {(conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) \(participant) Participant removed")
@@ -118,7 +112,6 @@ class ConferenceViewModel {
 				self.isVideoConference.value = conference.currentParams?.videoEnabled
 				if (state == .Created) {
 					self.configureConference(conference)
-					self.conferenceCreationPending.value = false
 				}
 				if (state == .TerminationPending) {
 					self.terminateConference(conference)
@@ -127,17 +120,17 @@ class ConferenceViewModel {
 			onSubjectChanged: { (conference: Conference, subject: String) in
 				self.subject.value = subject
 			},
-			onParticipantDeviceIsSpeakingChanged: { (conference: Conference, participantDevice: ParticipantDevice, isSpeaking:Bool) in
-				Log.i("[Conference] Participant [\(participantDevice.address!.asStringUriOnly())] is speaking = \(isSpeaking)")
-				if (isSpeaking) {
-					if let device = self.conferenceParticipantDevices.value?.filter ({
-						$0.participantDevice.address!.weakEqual(address2: participantDevice.address!) && !$0.isMe // TODO: FIXME: remove, this is a temporary workaround to not have your name displayed above someone else video in active speaker layout when you talk
-					}).first {
+			onActiveSpeakerParticipantDevice: { (conference: Conference, participantDevice: ParticipantDevice) in
+				Log.i("[Conference] Participant [\(participantDevice.address?.asStringUriOnly())] is currently being displayed as active speaker")
+				if let device = self.conferenceParticipantDevices.value?.filter ({
+					$0.participantDevice.address!.weakEqual(address2: participantDevice.address!)
+				}).first {
+					if (device.participantDevice.address?.asString() != self.speakingParticipant.value?.participantDevice.address?.asString()) {
+						Log.i("[Conference] Found actively speaking participant device")
 						self.speakingParticipant.value = device
-					} else {
-						Log.w("[Conference] Participant device [\((participantDevice.address?.asStringUriOnly()).orNil)] is speaking but couldn't find it in devices list")
 					}
-					
+				} else {
+					Log.w("[Conference] Participant device [\((participantDevice.address?.asStringUriOnly()).orNil)] is the active speaker but couldn't find it in devices list")
 				}
 			}
 		)
@@ -148,7 +141,10 @@ class ConferenceViewModel {
 				if (state == Conference.State.Instantiated) {
 					self.conferenceCreationPending.value = true
 					self.initConference(conference)
-					
+				} else if (state == Conference.State.Created) {
+					if (self.conferenceCreationPending.value == true) {
+						self.conferenceCreationPending.value = false
+					}
 				}
 			}
 		)
@@ -172,6 +168,12 @@ class ConferenceViewModel {
 		
 	}
 	
+	func updateActiveSpeakerConferenceParticipantDevices () {
+		activeSpeakerConferenceParticipantDevices.value = self.conferenceParticipantDevices.value!.filter { data in // Filter me and speaking device
+			data.isMe != true && speakingParticipant.value?.participantDevice.address?.weakEqual(address2: data.participantDevice.address!) != true
+		}
+	}
+	
 	func notifyAdminStatusChanged(participantData:ConferenceParticipantData) {
 		if let participantName = participantData.participant.address?.addressBookEnhancedDisplayName() {
 			let message = (participantData.participant.isAdmin ?	VoipTexts.conference_admin_set : VoipTexts.conference_admin_unset).replacingOccurrences(of: "%s", with: participantName)
@@ -180,12 +182,12 @@ class ConferenceViewModel {
 	}
 	
 	func pauseConference() {
-		Log.i("[Conference] Leaving conference with address \(conference) temporarily")
+		Log.i("[Conference] Leaving conference with address \(conference.value) temporarily")
 		let _ = conference.value?.leave()
 	}
 	
 	func resumeConference() {
-		Log.i("[Conference] entering conference with address \(conference)")
+		Log.i("[Conference] entering conference with address \(conference.value)")
 		let _ = conference.value?.enter()
 	}
 	
@@ -240,18 +242,19 @@ class ConferenceViewModel {
 				try? conf.addParticipant(call: call)
 			}
 		}
-		if (conf.isIn) {
+		if (!conf.isIn) {
 			Log.i("[Conference] Conference was paused, resuming it")
 			let _ = conf.enter()
 		}
 	}
 	
 	
-	func changeLayout(layout: ConferenceDisplayMode) {
+	func changeLayout(layout: ConferenceDisplayMode, sendVideo:Bool = false) {
 		Log.i("[Conference] Trying to change conference layout to $layout")
 		if let conference = conference.value, let call = conference.call, let params = try?call.core?.createCallParams(call: call) {
 			params.videoEnabled = layout != .AudioOnly
 			params.conferenceVideoLayout = layout == ConferenceDisplayMode.Grid ? .Grid : .ActiveSpeaker
+			params.videoDirection = sendVideo ? .SendRecv : .RecvOnly
 			try?call.update(params: params)
 			
 			conferenceDisplayMode.value = layout
@@ -264,7 +267,7 @@ class ConferenceViewModel {
 	
 	private func updateConferenceLayout(conference: Conference) {
 		if let call = conference.call, let params = call.params {
-			conferenceDisplayMode.value = !params.videoEnabled ? ConferenceDisplayMode.AudioOnly :  params.conferenceVideoLayout == .Grid ? .Grid : .ActiveSpeaker
+			conferenceDisplayMode.value = !params.videoEnabled || Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == true ? ConferenceDisplayMode.AudioOnly :  params.conferenceVideoLayout == .Grid ? .Grid : .ActiveSpeaker
 			let list = sortDevicesDataList(devices: conferenceParticipantDevices.value!)
 			conferenceParticipantDevices.value = list
 			Log.i("[Conference] Conference current layout is: \(conferenceDisplayMode.value)")
@@ -285,8 +288,8 @@ class ConferenceViewModel {
 		conferenceParticipants.value = []
 		conferenceParticipantDevices.clearObservers()
 		conferenceParticipantDevices.value = []
-		speakingParticipant.value = nil
 		meParticipant.value = nil
+		isConferenceLocallyPaused.value = false
 	}
 	
 	

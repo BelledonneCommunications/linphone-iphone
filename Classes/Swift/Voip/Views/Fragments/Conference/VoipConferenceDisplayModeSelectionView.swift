@@ -39,9 +39,16 @@ import linphonesw
 		optionsListView.delegate = self
 		optionsListView.register(ConferenceDisplayModeSelectionCell.self, forCellReuseIdentifier: "ConferenceDisplayModeSelectionCell")
 		optionsListView.separatorStyle = .singleLine
-		optionsListView.separatorColor = VoipTheme.light_grey_color
+		optionsListView.separatorColor = VoipTheme.separatorColor.get()
 		optionsListView.isScrollEnabled = false
-		super.contentView.backgroundColor = .white
+	
+		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
+			super.contentView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.optionsListView.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.optionsListView.separatorColor = VoipTheme.separatorColor.get()
+			self.optionsListView.reloadData()
+		}
+		
 	}
 	
 	// TableView datasource delegate
@@ -63,6 +70,7 @@ import linphonesw
 				ConferenceViewModel.shared.conferenceDisplayMode.value = .Grid
 			}, image:(UIImage(named: "voip_conference_mosaic")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
 			cell.isUserInteractionEnabled = ConferenceViewModel.shared.conferenceParticipantDevices.value!.count <= ConferenceViewModel.shared.maxParticipantsForMosaicLayout
+			cell.isSelected = ConferenceViewModel.shared.conferenceDisplayMode.value == .Grid
 		}
 		if (indexPath.row == 1) {
 			cell.setOption(title: VoipTexts.conference_display_mode_active_speaker, onSelectAction:  {
@@ -70,6 +78,7 @@ import linphonesw
 				ConferenceViewModel.shared.conferenceDisplayMode.value = .ActiveSpeaker
 			}, image:(UIImage(named: "voip_conference_active_speaker")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
 			cell.isUserInteractionEnabled = true
+			cell.isSelected = ConferenceViewModel.shared.conferenceDisplayMode.value == .ActiveSpeaker
 		}
 		
 		if (indexPath.row == 2) {
@@ -78,6 +87,7 @@ import linphonesw
 				ConferenceViewModel.shared.conferenceDisplayMode.value = .AudioOnly
 			}, image:(UIImage(named: "voip_conference_audio_only")?.tinted(with: VoipTheme.voipDrawableColor.get())!)!)
 			cell.isUserInteractionEnabled = true
+			cell.isSelected = ConferenceViewModel.shared.conferenceDisplayMode.value == .AudioOnly
 		}
 	
 		cell.separatorInset = .zero
@@ -146,6 +156,8 @@ class ConferenceDisplayModeSelectionCell : UITableViewCell {
 		contentView.addSubview(icon)
 		icon.size(w: icon_size, h: icon_size).alignParentRight(withMargin: side_margins).centerY().done()
 		radio.isUserInteractionEnabled = false
+		contentView.backgroundColor = .clear
+		backgroundColor = .clear
 	}
 	
 	required init?(coder: NSCoder) {

@@ -28,8 +28,8 @@ extension Call {
 		}
 		if (accept) {
 			params.videoEnabled = true
-			core?.videoCaptureEnabled = true
-			core?.videoDisplayEnabled = true
+			core?.videoCaptureEnabled = true && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false
+			core?.videoDisplayEnabled = true && Core.get().config?.getBool(section: "app", key: "disable_video_feature", defaultValue: false) == false
 		} else {
 			params.videoEnabled = false
 		}
@@ -39,10 +39,7 @@ extension Call {
 
 extension Call : CustomStringConvertible {
 	public var description: String {
-		if let callId = callLog?.callId {
-			return "<Call-ID: \(callId)>"
-		}
-		return "<Raw pointer:\(Unmanaged.passUnretained(self).toOpaque())>"
+		return "<Call-ID: \(callLog?.callId ?? "pending") pointer:\(Unmanaged.passUnretained(self).toOpaque()) is conference:\(conference != nil) >"
  }
 }
 

@@ -122,11 +122,11 @@ typedef enum {
 
 @end
 
-@interface UIImage (ForceDecode)
+//@interface UIImage (ForceDecode)
 
-+ (UIImage *)decodedImageWithImage:(UIImage *)image;
+//+ (UIImage *)decodedImageWithImage:(UIImage *)image;
 
-@end
+//@end
 
 @interface UIImage (ResizeAndThumbnail)
 

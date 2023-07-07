@@ -22,13 +22,14 @@
 import Foundation
 import UIKit
 import AVFoundation
+import linphonesw
 
 extension UIDevice {
 	static func ipad() -> Bool {
 		return UIDevice.current.userInterfaceIdiom == .pad
 	}
 	static func vibrate() {
-		if (!ipad()) {
+		if (!ipad() || Core.get().config?.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) == false) {
 			AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
 		}
 	}
@@ -54,4 +55,26 @@ extension UIDevice {
 		return [.landscapeRight,.landscapeLeft].contains(UIDevice.current.orientation) ? sidePadding : topPadding
 	}
 	
+	static func switchedDisplayMode() -> Bool {
+		let displayMode = UserDefaults.standard.string(forKey: "displayMode")
+		if #available(iOS 13.0, *) {
+			if UITraitCollection.current.userInterfaceStyle == .light {
+				UserDefaults.standard.set("light", forKey: "displayMode")
+			} else {
+				UserDefaults.standard.set("dark", forKey: "displayMode")
+			}
+		}
+		return displayMode != nil && displayMode != UserDefaults.standard.string(forKey: "displayMode")
+	}
+	
+}
+
+@objc class UIDeviceBridge : NSObject {
+	static let displayModeSwitched = MutableLiveData<Bool>()
+	@objc static func switchedDisplayMode() -> Bool {
+		return UIDevice.switchedDisplayMode()
+	}
+	@objc static func notifyDisplayModeSwitch() {
+		displayModeSwitched.notifyValue()
+	}
 }

@@ -48,7 +48,7 @@
 }
 
 - (IBAction)onBackToCallClick:(id)sender {
-	[PhoneMainView.instance popToView:ActiveCallOrConferenceView.compositeViewDescription];
+	[PhoneMainView.instance popToView:[CallsViewModelBridge callViewToDisplay]];
 }
 
 @end

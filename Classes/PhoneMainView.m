@@ -307,9 +307,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 	if (linphone_chat_message_is_outgoing(msg))
 		return;
 
-	ChatConversationView *view = VIEW(ChatConversationView);
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
 	// if we already are in the conversation, we should not ring/vibrate
-	if (view.chatRoom && _currentRoom == view.chatRoom)
+	if (view.linphoneChatRoom && _currentRoom == view.linphoneChatRoom)
 		return;
 
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
@@ -375,7 +375,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		case LinphoneCallOutgoingInit:
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallOutgoingProgress:
 		case LinphoneCallOutgoingRinging: {
@@ -387,7 +386,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		case LinphoneCallPausedByRemote:
+		case LinphoneCallPausedByRemote:break;
 		case LinphoneCallConnected: {
 			if (![LinphoneManager.instance isCTCallCenterExist]) {
 				/*only register CT call center CB for connected call*/
@@ -419,6 +418,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 		case LinphoneCallUpdating:
 			break;
+
 	}
 	if (state == LinphoneCallEnd || state == LinphoneCallError || floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		[self updateApplicationBadgeNumber];
@@ -454,9 +454,19 @@ static RootViewManager *rootViewManagerInstance = nil;
 		LinphoneManager *lm = LinphoneManager.instance;
 		LOGI(@"%s", linphone_global_state_to_string(linphone_core_get_global_state(LC)));
 		
+		NSString* groupName = [NSString stringWithFormat:@"group.%@.linphoneExtension",[[NSBundle mainBundle] bundleIdentifier]];
+
+
+		NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
+		NSDictionary *dict = [defaults valueForKey:@"photoData"];
+		NSDictionary *dictFile = [defaults valueForKey:@"icloudData"];
+		NSDictionary *dictUrl = [defaults valueForKey:@"url"];
+		
 		// If we've been started by a remote push notification,
 		// we'll already be on the corresponding chat conversation view, no need to go anywhere else
-		if (![[self currentView].name isEqualToString:@"ChatConversationView"]) {
+		if (dict||dictFile||dictUrl){
+			[self changeCurrentView:ChatsListView.compositeViewDescription];
+		}else if (![[self currentView].name isEqualToString:@"ChatConversationViewSwift"]) {
 
 			if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
 				[self changeCurrentView:DialerView.compositeViewDescription];
@@ -608,7 +618,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 	[self _changeCurrentView:viewStack.lastObject ?: DialerView.compositeViewDescription
 				  transition:[PhoneMainView getBackwardTransition]
-					animated:ANIMATED];
+					animated:ANIMATED
+			  addViewToStack:FALSE];
 	return [mainViewController getCurrentViewController];
 }
 
@@ -622,18 +633,19 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view {
-	[self _changeCurrentView:view transition:nil animated:ANIMATED];
+	[self _changeCurrentView:view transition:nil animated:ANIMATED addViewToStack:TRUE];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
-								animated:(BOOL)animated {
+								animated:(BOOL)animated
+						  addViewToStack:(BOOL)addViewToStack {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
 		[self setPreviousViewName:vc.currentView.name];
 		NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-		[viewStack addObject:view];
+		if (addViewToStack) [viewStack addObject:view];
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
@@ -654,7 +666,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	while (viewStack.count > 0 && ![[viewStack lastObject] equal:view]) {
 		[viewStack removeLastObject];
 	}
-	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED];
+	BOOL addView = (viewStack.count == 0); // if we couldn't find the view in the stack, we need to add it
+	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED addViewToStack:addView];
 }
 
 - (void) setPreviousViewName:(NSString*)previous{
@@ -842,7 +855,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		return;
 	}
 
-	[self goToChatRoom:room];
+	[self goToChatRoomSwift:room];
 }
 
 - (LinphoneChatRoom *)createChatRoom:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView isEncrypted:(BOOL)isEncrypted isGroup:(BOOL)isGroup{
@@ -865,7 +878,7 @@ static RootViewManager *rootViewManagerInstance = nil;
             return nil;
         }
 		LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
-        [self goToChatRoom:basicRoom];
+        [self goToChatRoomSwift:basicRoom];
         return nil;
     }
     
@@ -888,6 +901,7 @@ static RootViewManager *rootViewManagerInstance = nil;
     
     LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
     linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
+	linphone_chat_room_cbs_set_conference_joined(cbs, main_view_chat_room_conference_joined);
     linphone_chat_room_add_callbacks(room, cbs);
     
     return room;
@@ -905,31 +919,50 @@ static RootViewManager *rootViewManagerInstance = nil;
         [view clearMessageView];
 	view.chatRoom = cr;
     view.peerAddress = linphone_address_as_string(linphone_chat_room_get_peer_address(cr));
+	view.localAddress = linphone_address_as_string(linphone_chat_room_get_local_address(cr));
 	self.currentRoom = view.chatRoom;
+	
 	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
 		[view configureForRoom:FALSE];
 	else
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
+
+- (void)goToChatRoomSwift:(LinphoneChatRoom *)cr {
+	_waitView.hidden = YES;
+	_waitView = NULL;
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
+	self.currentRoom = view.linphoneChatRoom;
+	[view initChatRoomWithCChatRoom:cr];
+	
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (void)resetBeforeGoToChatRoomSwift{
+	ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
+	[view resetView];
+}
+
+void main_view_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	PhoneMainView *view = PhoneMainView.instance;
+	LOGI(@"Chat room [%p] conference joined.", cr);
+	linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
+	[view goToChatRoomSwift:cr];
+	if (!IPAD)
+		return;
+	
+	if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationViewSwift.compositeViewDescription)
+		return;
+	
+	ChatsListView *mainView = VIEW(ChatsListView);
+	[mainView.tableController loadData];
+	[mainView.tableController selectFirstRow];
+}
+
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	PhoneMainView *view = PhoneMainView.instance;
 	switch (newState) {
-		case LinphoneChatRoomStateCreated: {
-			LOGI(@"Chat room [%p] created on server.", cr);
-			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
-			[view goToChatRoom:cr];
-			if (!IPAD)
-				break;
-
-			if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription)
-				break;
-
-			ChatsListView *mainView = VIEW(ChatsListView);
-			[mainView.tableController loadData];
-			[mainView.tableController selectFirstRow];
-			break;
-		}
 		case LinphoneChatRoomStateCreationFailed:
 			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
@@ -938,7 +971,7 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 			break;
 		case LinphoneChatRoomStateTerminated:
 			LOGI(@"Chat room [%p] has been terminated.", cr);
-			[view goToChatRoom:cr];
+			[view goToChatRoomSwift:cr];
 			break;
 		default:
 			break;
@@ -960,6 +993,10 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 	} else {
 		return false;
 	}
+}
+
+-(void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+	[UIDeviceBridge notifyDisplayModeSwitch];
 }
 
 @end

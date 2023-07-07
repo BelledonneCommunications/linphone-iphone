@@ -103,7 +103,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 - (IBAction)onBackClick:(id)sender {
-    ChatConversationView *view = VIEW(ChatConversationView);
+    ChatConversationViewSwift *view = VIEW(ChatConversationViewSwift);
     [PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 

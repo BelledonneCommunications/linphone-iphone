@@ -57,8 +57,11 @@ class ActiveCallView: UIView { // = currentCall
 
 	var callData: CallData? = nil {
 		didSet {
-			duration.call = callData?.call
-			callData?.call.remoteAddress.map {
+			guard let callData = callData else {
+				return
+			}
+			duration.call = callData.call
+			callData.call.remoteAddress.map {
 				avatar.fillFromAddress(address: $0)
 				if let displayName = $0.addressBookEnhancedDisplayName() {
 					displayNameTop.text = displayName+" - "
@@ -66,13 +69,13 @@ class ActiveCallView: UIView { // = currentCall
 				}
 				sipAddress.text = $0.asStringUriOnly()
 			}
-			self.remotelyRecordedIndicator.isRemotelyRecorded = callData?.isRemotelyRecorded
-			callData?.isRecording.readCurrentAndObserve { (selected) in
+			self.remotelyRecordedIndicator.isRemotelyRecorded = callData.isRemotelyRecorded
+			callData.isRecording.readCurrentAndObserve { (selected) in
 				self.recordCallButtons.forEach {
 					$0.isSelected = selected == true
 				}
 			}
-			callData?.isPaused.readCurrentAndObserve { (paused) in
+			callData.isPaused.readCurrentAndObserve { (paused) in
 				self.pauseCallButtons.forEach {
 					$0.isSelected = paused == true
 				}
@@ -80,13 +83,11 @@ class ActiveCallView: UIView { // = currentCall
 					self.localVideo.isHidden = true
 				}
 			}
-			callData?.isRemotelyRecorded.readCurrentAndObserve { (remotelyRecorded) in
-                self.centerSection.removeConstraints().matchParentSideBorders().alignUnder(view:remotelyRecorded == true ? self.remotelyRecordedIndicator : self.upperSection ,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
+			callData.isRemotelyRecorded.readCurrentAndObserve { (remotelyRecorded) in
+				self.centerSection.removeConstraints().matchParentSideBorders().alignUnder(view:remotelyRecorded == true ? self.remotelyRecordedIndicator : self.upperSection ,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 				self.setNeedsLayout()
 			}
-			
-
-			
+						
 			Core.get().nativeVideoWindow = remoteVideo
 			Core.get().nativePreviewWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(localVideo).toOpaque())
 			
@@ -97,6 +98,7 @@ class ActiveCallView: UIView { // = currentCall
 				self.pauseCallButtons.first?.isHidden = video != true
 				self.recordCallButtons.last?.isHidden = video == true
 				self.pauseCallButtons.last?.isHidden = video == true
+				UIApplication.shared.isIdleTimerDisabled = video == true
 			}
 
 		}
@@ -188,7 +190,6 @@ class ActiveCallView: UIView { // = currentCall
 		
 		// Avatar
 		centerSection.addSubview(avatar)
-		avatar.square(Avatar.diameter_for_call_views).center().done()
 		
 		// Remote Video Display
 		centerSection.addSubview(remoteVideo)
@@ -207,7 +208,7 @@ class ActiveCallView: UIView { // = currentCall
 			ControlsViewModel.shared.toggleFullScreen()
 		}
 		ControlsViewModel.shared.fullScreenMode.observe { (fullScreen) in
-			if (self.isHidden) {
+			if (self.superview?.superview?.superview == nil) {
 				return
 			}
 			self.remoteVideo.removeConstraints().done()
@@ -247,8 +248,8 @@ class ActiveCallView: UIView { // = currentCall
 			avatar.square(Avatar.diameter_for_call_views_land).center().done()
 		} else {
 			avatar.square(Avatar.diameter_for_call_views).center().done()
-
 		}
+		localVideo.updateSizeConstraint()
 	}
 	
 	required init?(coder: NSCoder) {

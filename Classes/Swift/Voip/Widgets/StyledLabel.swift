@@ -29,6 +29,9 @@ class StyledLabel: UILabel {
 		super.init(frame: .zero)
 		self.text = text
 		applyStyle(style)
+		UIDeviceBridge.displayModeSwitched.observe { _ in
+			self.applyStyleColors(style)
+		}
    }
 
 }
