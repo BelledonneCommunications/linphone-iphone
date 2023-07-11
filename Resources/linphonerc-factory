@@ -51,7 +51,9 @@ prefer_basic_chat_room=-1
 eq_location=mic
 
 [account_creator]
-backend=0
+backend=1
+url=https://subscribe.linphone.org/api/
+# TODO: replace above URL by https://subscribe.linphone.org/api/
 
 [video]
 max_conference_size=vga
