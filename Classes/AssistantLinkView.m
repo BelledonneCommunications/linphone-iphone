@@ -62,11 +62,13 @@
 	}
 
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_link_account(linphone_account_creator_get_callbacks(account_creator),
-												  assistant_link_phone_number_with_account);
-	linphone_account_creator_cbs_set_activate_alias(linphone_account_creator_get_callbacks(account_creator),
-													assistant_activate_phone_number_link);
-
+	
+	LinphoneAccountCreatorCbs * cbs = linphone_factory_create_account_creator_cbs(linphone_factory_get());
+	linphone_account_creator_cbs_set_link_account(cbs, assistant_link_phone_number_with_account);
+	linphone_account_creator_cbs_set_activate_alias(cbs, assistant_activate_phone_number_link);
+	linphone_account_creator_add_callbacks(account_creator, cbs);
+	linphone_account_creator_cbs_unref(cbs);
+	
 	LinphoneAccount *acc = linphone_core_get_default_account(LC);
 	LinphoneAccountParams const *accParams = (acc) ? linphone_account_get_params(acc) : NULL;
 	if (acc &&

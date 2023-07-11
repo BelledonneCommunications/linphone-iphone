@@ -28,6 +28,13 @@
 #import "UIAssistantTextField.h"
 #import "UITextField+DoneButton.h"
 #import "LinphoneAppDelegate.h"
+#import "SVProgressHUD.h"
+
+#ifdef DEBUG
+#define PROVIDER_NAME "apns.dev"
+#else
+#define PROVIDER_NAME "apns"
+#endif
 
 typedef enum _ViewElement {
 	ViewElement_Username = 100,
@@ -94,7 +101,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onContactTap {
 	NSString *url = @"https://www.linphone.org/contact";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"Failed to open %@, invalid URL", url);
+		LOGE(@"[Assistant] Failed to open %@, invalid URL", url);
 	}
 }
 
@@ -118,12 +125,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(configuringUpdate:)
 											   name:kLinphoneConfiguringStateUpdate
 											 object:nil];
-	if (!account_creator) {
-		account_creator = linphone_account_creator_new(
-			LC,
-			[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
-				.UTF8String);
-	}
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onAccountAuthenticationTokenReception:)
+											   name:kLinphoneAccountCreationAuthenticationTokenReceived
+											 object:nil];
 
 	if (!mustRestoreView) {
 		new_account = NULL;
@@ -185,6 +190,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Utils
 
 - (void)resetLiblinphone:(BOOL)core {
+	
+	//reset for test
+	[LinphoneManager.instance lpConfigSetString:@"" forKey:@"account_creation_token" inSection:@"app"];
+	
 	if (account_creator) {
 		linphone_account_creator_unref(account_creator);
 		account_creator = NULL;
@@ -196,21 +205,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 				.UTF8String);
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
-	linphone_account_creator_cbs_set_is_account_exist(linphone_account_creator_get_callbacks(account_creator),
-													  assistant_is_account_used);
-	linphone_account_creator_cbs_set_create_account(linphone_account_creator_get_callbacks(account_creator),
-													assistant_create_account);
-	linphone_account_creator_cbs_set_activate_account(linphone_account_creator_get_callbacks(account_creator),
-													assistant_activate_account);
-	linphone_account_creator_cbs_set_is_account_activated(linphone_account_creator_get_callbacks(account_creator),
-													   assistant_is_account_activated);
-	linphone_account_creator_cbs_set_recover_account(linphone_account_creator_get_callbacks(account_creator),
-													 assistant_recover_phone_account);
-	linphone_account_creator_cbs_set_is_account_linked(linphone_account_creator_get_callbacks(account_creator),
-													   assistant_is_account_linked);
-	linphone_account_creator_cbs_set_login_linphone_account(linphone_account_creator_get_callbacks(account_creator), assistant_login_linphone_account);
 	
+	LinphoneAccountCreatorCbs * cbs = linphone_factory_create_account_creator_cbs(linphone_factory_get());
+	
+	linphone_account_creator_cbs_set_is_account_exist(cbs, assistant_is_account_used);
+	linphone_account_creator_cbs_set_create_account(cbs, assistant_create_account);
+	linphone_account_creator_cbs_set_activate_account(cbs, assistant_activate_account);
+	linphone_account_creator_cbs_set_is_account_activated(cbs,
+													   assistant_is_account_activated);
+	linphone_account_creator_cbs_set_recover_account(cbs,
+													 assistant_recover_phone_account);
+	linphone_account_creator_cbs_set_is_account_linked(cbs,
+													   assistant_is_account_linked);
+	linphone_account_creator_cbs_set_login_linphone_account(cbs, assistant_login_linphone_account);
+	linphone_account_creator_cbs_set_send_token(cbs, assistant_request_auth_token_cb);
+	
+	linphone_account_creator_add_callbacks(account_creator, cbs);
+	linphone_account_creator_cbs_unref(cbs);
 }
+
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	linphone_core_load_config_from_xml(LC,
 									   [LinphoneManager bundleFile:rcFilename].UTF8String);
@@ -304,7 +317,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return NSLocalizedString(@"There is no network connection available, enable "
 								 @"WIFI or WWAN prior to configure an account.",
 								 nil);
-
+	if IS(ERROR_PUSH_UNAVAILABLE)
+		return NSLocalizedString(@"Push parameters are not available, and are required in order to create an account through an iPhone.\n Please enable them or create your account on https://subscribe.linphone.org", nil);
+	
+	if IS(ERROR_AUTH_TOKEN_NOT_RECEIVED)
+		return NSLocalizedString(@"Failed to get an auth token from account manager server", nil);
+	
 	return NSLocalizedString(@"Unknown error, please try again later.", nil);
 }
 
@@ -514,11 +532,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_address_unref(identity);
 	
 	LinphonePushNotificationConfig *pushConfig = linphone_account_params_get_push_notification_config(accountParams);
-#ifdef DEBUG
-#define PROVIDER_NAME "apns.dev"
-#else
-#define PROVIDER_NAME "apns"
-#endif
 	linphone_push_notification_config_set_provider(pushConfig, PROVIDER_NAME);
 	
 	if (strcmp(creatorDomain, "sip.linphone.org")==0) {
@@ -690,6 +703,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// every UITextField subviews with phone keyboard must be tweaked to have a done button
 	[self addDoneButtonRecursivelyInView:self.view];
 	[self prepareErrorLabels];
+	
+	if (view == _createAccountView) {
+		NSString *token = [LinphoneManager.instance lpConfigStringForKey:@"account_creation_token" inSection:@"app" withDefault:@""];
+		if ([token length] > 0) {
+			linphone_account_creator_set_token(account_creator, [token UTF8String]);
+			LOGI(@"[Assistant] Account creation token already available, saving it in the account creator");
+		} else {
+			const LinphonePushNotificationConfig * core_push_config = linphone_core_get_push_notification_config(LC);
+			
+			linphone_account_creator_set_pn_provider(account_creator, PROVIDER_NAME);
+			//extract ".remote" from core pn_param which is of the form : VABCD1234.org.linphone.phone.voip&remote
+			NSString *formatedPnParam = [NSString stringWithUTF8String:linphone_push_notification_config_get_param(core_push_config)];
+			formatedPnParam = [formatedPnParam stringByReplacingOccurrencesOfString:@"voip&remote" withString:@"remote"];
+			linphone_account_creator_set_pn_param(account_creator, [formatedPnParam UTF8String]);
+			
+			//extract REMOTETOKENID from core pn_prid which is of the form : VOIPTOKENID:voip&REMOTETOKENID:remote
+			const char* core_remote_token =  linphone_push_notification_config_get_remote_token(core_push_config);
+			NSString *formatedRemoteToken=@"";
+			if (core_remote_token) {
+				formatedRemoteToken = [[NSString stringWithUTF8String:core_remote_token] substringToIndex:64];
+				linphone_account_creator_set_pn_prid(account_creator, [formatedRemoteToken UTF8String]);
+			} else {
+				LOGW(@"[Assistant] - No remote push token available in core for account creator configuration");
+				[self showErrorPopup:"ERROR_PUSH_UNAVAILABLE"];
+			}
+			LOGI(@"[Assistant] Found push notification info: provider [%s], param [%@] and prid [%@]", PROVIDER_NAME, formatedPnParam, formatedRemoteToken);
+		}
+	}
 }
 
 - (void)addDoneButtonRecursivelyInView:(UIView *)subview {
@@ -1020,7 +1061,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			
 			MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
 			if (number_of_accounts_before < bctbx_list_size(accounts)) {
-				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
+				LOGI(@"[Assistant] A proxy config was set up with the remote provisioning, skip assistant");
 				[self onDialerClick:nil];
 			}
 			bctbx_free(accounts);
@@ -1056,7 +1097,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void)onAccountAuthenticationTokenReception:(NSNotification *)notif {
+	receivedAuthToken = TRUE;
+	NSString *token = [LinphoneManager.instance lpConfigStringForKey:@"account_creation_token" inSection:@"app"];
+	linphone_account_creator_set_token(account_creator, [token UTF8String]);
+	linphone_account_creator_is_account_exist(account_creator);
+}
+
 - (void)showErrorPopup:(const char *)error {
+	[SVProgressHUD dismiss];
 	const char *err = error ? error : "";
 	if (strcmp(err, "ERROR_BAD_CREDENTIALS") == 0) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Connection failure", nil)
@@ -1133,6 +1182,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		defaultAction.accessibilityLabel = @"PopUpResp";
 		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
+	} else if (strcmp(err, "ERROR_PUSH_UNAVAILABLE") == 0) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Push unavailable", nil)
+																		 message:[AssistantView StringForXMLRPCError:err]
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		defaultAction.accessibilityLabel = @"PopUpResp";
+		[self presentViewController:errView animated:YES completion:nil];
+	} else if (strcmp(err, "ERROR_AUTH_TOKEN_NOT_RECEIVED") == 0) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Authentication token error", nil)
+																		 message:[AssistantView StringForXMLRPCError:err]
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		defaultAction.accessibilityLabel = @"PopUpResp";
 		[self presentViewController:errView animated:YES completion:nil];
 	} else {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Account configuration issue", nil)
@@ -1225,6 +1296,7 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorStatusAccountCreated) {
+		[SVProgressHUD dismiss];
 		if (linphone_account_creator_get_phone_number(creator)) {
 			NSString* phoneNumber = [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(creator)];
 			thiz.activationSMSText.text = [NSString stringWithFormat:NSLocalizedString(@"We have sent a SMS with a validation code to %@. To complete your phone number verification, please enter the 4 digit code below:", nil), phoneNumber];
@@ -1268,6 +1340,24 @@ void assistant_activate_account(LinphoneAccountCreator *creator, LinphoneAccount
 		linphone_account_creator_activate_alias(creator);
 	} else {
 		[thiz showErrorPopup:resp];
+	}
+}
+
+void assistant_request_auth_token_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status,
+									  const char *resp) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	
+	if (status == LinphoneAccountCreatorStatusMissingArguments) {
+		[thiz showErrorPopup:"ERROR_PUSH_UNAVAILABLE"];
+	} else if (status == LinphoneAccountCreatorStatusUnexpectedError) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Unknown error", nil)
+																		 message:NSLocalizedString(@"Failed to request an authentication token from account manager", nil)
+																  preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		[errView addAction:defaultAction];
+		[thiz presentViewController:errView animated:YES completion:nil];
 	}
 }
 
@@ -1442,7 +1532,31 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 		ONCLICKBUTTON(sender, 100, {
 			_activationTitle.text = @"CREATE ACCOUNT";
 			_waitView.hidden = NO;
-			linphone_account_creator_is_account_exist(account_creator);
+			
+			
+			UIAssistantTextField *createUsername = [self findTextField:ViewElement_Username];
+			
+			if ([createUsername.text length] == 0) {
+				linphone_account_creator_set_username(account_creator, linphone_account_creator_get_phone_number(account_creator));
+			}
+			
+			if (linphone_account_creator_get_token(account_creator)) {
+				linphone_account_creator_is_account_exist(account_creator);
+			} else {
+				[SVProgressHUD show];
+				receivedAuthToken = FALSE;
+				LinphoneAccountCreatorStatus requestStatus = linphone_account_creator_request_auth_token(account_creator);
+				if (requestStatus == LinphoneAccountCreatorStatusRequestOk) {
+					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+						if (!receivedAuthToken) {
+							[self showErrorPopup:"ERROR_AUTH_TOKEN_NOT_RECEIVED"];
+							[SVProgressHUD dismiss];
+						}
+					});
+				} else {
+					[self showErrorPopup:"ERROR_PUSH_UNAVAILABLE"];
+				}
+			}
 		});
 	}
 }
@@ -1454,21 +1568,20 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 			account_creator,
 			((UITextField *)[self findView:ViewElement_SMSCode inView:_contentView ofType:UITextField.class])
 				.text.UTF8String);
-		if (linphone_account_creator_get_password(account_creator) == NULL &&
-			linphone_account_creator_get_ha1(account_creator) == NULL) {
-			if ([_activationTitle.text isEqualToString:@"USE LINPHONE ACCOUNT"]) {
-				linphone_account_creator_login_linphone_account(account_creator);
-			} else {
-				linphone_account_creator_activate_account(account_creator);
-			}
+		
+		if ([_activationTitle.text isEqualToString:@"USE LINPHONE ACCOUNT"]) {
+			linphone_account_creator_login_linphone_account(account_creator);
 		} else {
+			linphone_account_creator_activate_account(account_creator);
+		} /* else {
 			NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
 			linphone_account_creator_set_language(account_creator, [[language substringToIndex:2] UTF8String]);
 			linphone_account_creator_link_account(account_creator);
 			linphone_account_creator_activate_alias(account_creator);
-		}
+		} */
     });
 }
+
 
 - (IBAction)onCreateAccountCheckActivatedClick:(id)sender {
 	ONCLICKBUTTON(sender, 100, {
@@ -1785,7 +1898,7 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 - (IBAction)onLinkTap:(id)sender {
 	NSString *url = @"https://subscribe.linphone.org";
 	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"Failed to open %@, invalid URL", url);
+		LOGE(@"[Assistant] Failed to open %@, invalid URL", url);
 	}
 }
 

@@ -111,4 +111,4 @@ show_local=0
 size=vga
 
 [account_creator]
-backend=0
+backend=1
