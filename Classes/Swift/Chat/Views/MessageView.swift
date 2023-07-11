@@ -82,7 +82,9 @@ class MessageView:  UIView, UITextViewDelegate {
 		messageText.matchParentHeight().alignParentLeft().alignParentRight(withMargin: 40).done()
 		messageText.font = UIFont.systemFont(ofSize: 18)
 		messageText.delegate = self
-		
+		messageText.textColor = UIColor.lightGray
+		messageText.text = "Message"
+		messageText.inputAccessoryView = UIView()
 		messageWithEmojiView.addArrangedSubview(emojisButton)
 		emojisButton.alignParentRight().matchParentHeight().done()
 		
@@ -93,43 +95,59 @@ class MessageView:  UIView, UITextViewDelegate {
 	}
 	
 	func textViewDidChangeSelection(_ textView: UITextView) {
-		let chatRoom = ChatRoom.getSwiftObject(cObject: PhoneMainView.instance().currentRoom)
-		if ((messageText.text.isEmpty && !fileContext) || isLoading)  {
-			sendButton.isEnabled = false
-			emojisButton.isHidden = false
-			NotificationCenter.default.post(name: Notification.Name("LinphoneResetTextViewSize"), object: self)
-			lastNumLines = 0
-		} else {
-			if (messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
-				var onlyEmojis = true
-				messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
-					if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
-						onlyEmojis = false
+		if messageText.textColor != UIColor.lightGray {
+			let chatRoom = ChatRoom.getSwiftObject(cObject: PhoneMainView.instance().currentRoom)
+			if ((messageText.text.isEmpty && !fileContext) || isLoading)  {
+				sendButton.isEnabled = false
+				emojisButton.isHidden = false
+				NotificationCenter.default.post(name: Notification.Name("LinphoneResetTextViewSize"), object: self)
+				lastNumLines = 0
+			} else {
+				if (messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
+					var onlyEmojis = true
+					messageText.text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
+						if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
+							onlyEmojis = false
+						}
 					}
-				}
-				if onlyEmojis {
-					emojisButton.isHidden = false
+					if onlyEmojis {
+						emojisButton.isHidden = false
+					} else {
+						emojisButton.isHidden = true
+					}
 				} else {
 					emojisButton.isHidden = true
 				}
-			} else {
-				emojisButton.isHidden = true
-			}
-			if !isComposing {
-				chatRoom.compose()
-				let timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
-					self.isComposing = false
+				if !isComposing {
+					chatRoom.compose()
+					let timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { timer in
+						self.isComposing = false
+					}
 				}
-			}
-			isComposing = true
+				isComposing = true
 
-			sendButton.isEnabled = true
-			
-			let numLines = (messageText.contentSize.height / messageText.font!.lineHeight)
-			if(Int(numLines) != Int(lastNumLines)){
-				NotificationCenter.default.post(name: Notification.Name("LinphoneTextViewSize"), object: self)
+				sendButton.isEnabled = true
+				
+				let numLines = (messageText.contentSize.height / messageText.font!.lineHeight)
+				if(Int(numLines) != Int(lastNumLines)){
+					NotificationCenter.default.post(name: Notification.Name("LinphoneTextViewSize"), object: self)
+				}
+				lastNumLines = numLines
 			}
-			lastNumLines = numLines
+		}
+	}
+	
+	func textViewDidBeginEditing(_ textView: UITextView) {
+		if messageText.textColor == UIColor.lightGray {
+			messageText.text = nil
+			messageText.textColor = UIColor.black
+		}
+	}
+	
+	func textViewDidEndEditing(_ textView: UITextView) {
+		if messageText.text.isEmpty {
+			messageText.textColor = UIColor.lightGray
+			messageText.text = "Message"
 		}
 	}
 }
