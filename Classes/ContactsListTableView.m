@@ -69,12 +69,12 @@
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
     [AvatarBridge removeAllObserver];
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
 	[super viewDidDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"LinphoneFriendPresenceUpdate" object:nil];
 }
 
 -(void) receivePresenceNotification:(NSNotification*)notification
