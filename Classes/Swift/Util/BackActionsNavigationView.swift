@@ -169,7 +169,6 @@ class BackActionsNavigationView:  UIViewController {
 		stackView.alignment = .center;
 		stackView.spacing = 1;
 		
-		//stackView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(stackView)
 		
 		stackView.alignParentTop().done()
@@ -271,8 +270,6 @@ class BackActionsNavigationView:  UIViewController {
 		constraintLandscapeFloatingButton = floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -56)
 		if UIDevice.current.orientation.isLandscape {
 			constraintLandscapeFloatingButton!.isActive = true
-		} else {
-			constraintFloatingButton!.isActive = true
 		}
 		constraintFloatingButton!.isActive = true
 		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height).isActive = true
@@ -351,7 +348,7 @@ class BackActionsNavigationView:  UIViewController {
 		if UIDevice.current.orientation.isLandscape {
 			constraintLandscapeFloatingButton!.isActive = true
 			constraintFloatingButton!.isActive = false
-		} else {
+		} else if UIDevice.current.orientation.isPortrait {
 			constraintLandscapeFloatingButton!.isActive = false
 			constraintFloatingButton!.isActive = true
 		}
