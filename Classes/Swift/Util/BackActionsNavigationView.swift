@@ -82,6 +82,11 @@ class BackActionsNavigationView:  UIViewController {
 	
 	var stackView = UIStackView()
 	var stackViewReply = UIStackView()
+	
+	let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+	
+	var constraintKeyboard : NSLayoutConstraint? = nil
+	var constraintKeyboardHidden : NSLayoutConstraint? = nil
     
     func viewDidLoad(backAction : @escaping () -> Void,
                      action1 : @escaping () -> Void,
@@ -95,7 +100,6 @@ class BackActionsNavigationView:  UIViewController {
         self.action2 = action2
 		
         self.view.addSubview(topBar)
-        //topBar.alignParentTop().height(top_bar_height).matchParentSideBorders().done()
 		topBar.alignParentTop().height(top_bar_height).done()
 		topBar.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
 		topBar.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
@@ -165,15 +169,20 @@ class BackActionsNavigationView:  UIViewController {
 		stackView.alignment = .center;
 		stackView.spacing = 1;
 		
-		stackView.translatesAutoresizingMaskIntoConstraints = false
+		//stackView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(stackView)
 		
-		//stackView.alignParentTop().alignParentBottom().matchParentSideBorders().done()
-		let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-		if keyWindow != nil {
-			stackView.alignParentTop().alignParentBottom(withMargin: keyWindow!.safeAreaInsets.top/3).done()
+		stackView.alignParentTop().done()
+		if keyWindow != nil && keyWindow!.safeAreaInsets.bottom != 0.0 {
+			if constraintKeyboardHidden == nil {
+				constraintKeyboardHidden = stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyWindow!.safeAreaInsets.bottom/2)
+			}
+			constraintKeyboardHidden?.isActive = true
 		}else{
-			stackView.alignParentTop().alignParentBottom().done()
+			if constraintKeyboardHidden == nil {
+				constraintKeyboardHidden = stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+			}
+			constraintKeyboardHidden?.isActive = true
 		}
 		stackView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
 		stackView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
@@ -248,8 +257,8 @@ class BackActionsNavigationView:  UIViewController {
 		mediaSelector.isHidden = true
 
 		stackView.addArrangedSubview(messageView)
-		if keyWindow != nil {
-			message_height = 66 - ((keyWindow!.safeAreaInsets.top/3)/2)
+		if keyWindow != nil && keyWindow!.safeAreaInsets.bottom != 0.0 {
+			message_height = 66 - ((keyWindow!.safeAreaInsets.bottom/2)/2)
 		}
 		
 		messageView.alignParentBottom().height(message_height).matchParentSideBorders().done()
@@ -439,21 +448,22 @@ class BackActionsNavigationView:  UIViewController {
 	}
 	
 	@objc func keyboardWillShow(notification: NSNotification) {
-		if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-			if topBar.frame.origin.y == 0 {
-				let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-				if keyWindow != nil {
-					topBar.frame.origin.y += keyboardSize.height - keyWindow!.safeAreaInsets.top/3
-				}else{
-					topBar.frame.origin.y += keyboardSize.height
-				}
+		if constraintKeyboardHidden?.isActive != false {
+			constraintKeyboardHidden?.isActive = false
+			if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+				constraintKeyboard = stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -keyboardSize.height)
+				constraintKeyboard?.isActive = true
+			} else {
+				constraintKeyboard = stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+				constraintKeyboard?.isActive = true
 			}
 		}
 	}
 
 	@objc func keyboardWillHide(notification: NSNotification) {
-		if topBar.frame.origin.y != 0 {
-			topBar.frame.origin.y = 0
+		if constraintKeyboard?.isActive != false {
+			constraintKeyboard?.isActive = false
+			constraintKeyboardHidden?.isActive = true
 		}
 	}
 }

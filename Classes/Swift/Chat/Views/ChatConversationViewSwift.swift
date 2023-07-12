@@ -24,6 +24,7 @@ import DropDown
 import PhotosUI
 import AVFoundation
 import EmojiPicker
+import IQKeyboardManager
 
 class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, EmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
@@ -314,6 +315,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			}
 		}
 		 */
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		IQKeyboardManager.shared().isEnabled = false
 	}
     
     override func viewWillDisappear(_ animated: Bool) {
