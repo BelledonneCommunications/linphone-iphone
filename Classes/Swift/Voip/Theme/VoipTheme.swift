@@ -68,6 +68,7 @@ import UIKit
 	static let voipBackgroundColor = LightDarkColor(voip_gray_blue_color,voip_dark_color)
 	@objc static let voipBackgroundBWColor = LightDarkColor(.white,voip_dark_color)
 	@objc static let backgroundWhiteBlack = LightDarkColor(.white,.black)
+	@objc static let backgroundBlackWhite = LightDarkColor(.black,.white)
 	static let voipParticipantBackgroundColor = LightDarkColor(voip_gray_background,voip_dark_color2)
 	static let voipParticipantMeBackgroundColor = LightDarkColor(voip_dark_color3,voip_dark_color3)
 	static let voipExtraButtonsBackgroundColor = LightDarkColor(voip_gray,voip_dark_color3)
