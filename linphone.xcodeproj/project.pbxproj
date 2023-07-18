@@ -961,6 +961,7 @@
 		D779D39E29AC9E93007B8087 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D39D29AC9E92007B8087 /* AudioPlayer.swift */; };
 		D779D3A229B5E365007B8087 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779D3A129B5E365007B8087 /* UIImageExtension.swift */; };
 		D780FF7D2A459CE3001535E6 /* MediaViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D780FF7C2A459CE3001535E6 /* MediaViewer.swift */; };
+		D783D9BA2A669A9E00293E87 /* ContentMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D783D9B92A669A9E00293E87 /* ContentMessageView.swift */; };
 		D7A4C0082A3B135800EFBD1B /* new_chat_attachment_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D7A4C0052A3B135800EFBD1B /* new_chat_attachment_default.png */; };
 		D7A4C0092A3B135800EFBD1B /* new_vr_off.png in Resources */ = {isa = PBXBuildFile; fileRef = D7A4C0062A3B135800EFBD1B /* new_vr_off.png */; };
 		D7A4C00A2A3B135800EFBD1B /* new_chat_send_default.png in Resources */ = {isa = PBXBuildFile; fileRef = D7A4C0072A3B135800EFBD1B /* new_chat_send_default.png */; };
@@ -2215,6 +2216,7 @@
 		D779D39D29AC9E92007B8087 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		D779D3A129B5E365007B8087 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		D780FF7C2A459CE3001535E6 /* MediaViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaViewer.swift; sourceTree = "<group>"; };
+		D783D9B92A669A9E00293E87 /* ContentMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentMessageView.swift; sourceTree = "<group>"; };
 		D7A4C0052A3B135800EFBD1B /* new_chat_attachment_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_chat_attachment_default.png; sourceTree = "<group>"; };
 		D7A4C0062A3B135800EFBD1B /* new_vr_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_vr_off.png; sourceTree = "<group>"; };
 		D7A4C0072A3B135800EFBD1B /* new_chat_send_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_chat_send_default.png; sourceTree = "<group>"; };
@@ -3523,6 +3525,7 @@
 				D7A7544F29507038005C9D4A /* CustomAlertController.swift */,
 				D779D39D29AC9E92007B8087 /* AudioPlayer.swift */,
 				D779D3A129B5E365007B8087 /* UIImageExtension.swift */,
+				D783D9B92A669A9E00293E87 /* ContentMessageView.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -4968,6 +4971,7 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				C63F725C285A24B10066163B /* IncomingCallView.swift in Sources */,
 				C63F726B285A24B10066163B /* ButtonWithStateBackgrounds.swift in Sources */,
+				D783D9BA2A669A9E00293E87 /* ContentMessageView.swift in Sources */,
 				C63F7218285A24B10066163B /* ScheduledConferencesCell.swift in Sources */,
 				C63F722E285A24B10066163B /* IceState.swift in Sources */,
 				6135761C240E81BB005304D4 /* UIInterfaceStyleButton.m in Sources */,

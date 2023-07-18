@@ -349,7 +349,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         }
 		
 		let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
-		view.messageView.endEditing(true)
+		view.contentMessageView.messageView.endEditing(true)
         
 		menu!.show()
 		menu!.selectionAction = { [weak self] (index: Int, item: String) in
@@ -476,8 +476,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     
     func replyMessage(message: ChatMessage){
         let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
-		if (view.messageView.messageText.text == "" && view.stackView.arrangedSubviews[3].isHidden && view.stackView.arrangedSubviews[4].isHidden){
-			view.messageView.messageText.becomeFirstResponder()
+		if (view.contentMessageView.messageView.messageText.textColor == UIColor.lightGray && view.contentMessageView.stackView.arrangedSubviews[3].isHidden && view.contentMessageView.stackView.arrangedSubviews[4].isHidden){
+			view.contentMessageView.messageView.messageText.becomeFirstResponder()
 		}
         view.initiateReplyView(forMessage: message.getCobject)
     }

@@ -1,15 +1,27 @@
-//
-//  TopBarNavigationView.swift
-//  linphone
-//
-//  Created by Benoît Martins on 18/07/2023.
-//
+/*
+ * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import UIKit
 
 class ContentMessageView:  UIViewController {
+	var message_height = 66.0
 	let top_bar_height = 66.0
-	
 	let contentView = UIView()
 	let isComposingView = UIView()
 	let isComposingTextView = StyledLabel(VoipTheme.chat_conversation_is_composing_text)
@@ -46,6 +58,9 @@ class ContentMessageView:  UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		view.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
+
 		stackView.axis = .vertical;
 		stackView.distribution = .fill;
 		stackView.alignment = .center;
@@ -54,8 +69,13 @@ class ContentMessageView:  UIViewController {
 		stackView.translatesAutoresizingMaskIntoConstraints = false
 		view.addSubview(stackView)
 		
-		//stackView.alignParentTop().alignParentBottom().matchParentSideBorders().done()
-		stackView.alignParentTop().alignParentBottom().done()
+		let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+		if keyWindow != nil {
+			stackView.alignParentTop().alignParentBottom(withMargin: keyWindow!.safeAreaInsets.bottom/2).done()
+		}else{
+			stackView.alignParentTop().alignParentBottom().done()
+		}
+
 		stackView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
 		stackView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
 		
@@ -129,7 +149,11 @@ class ContentMessageView:  UIViewController {
 		mediaSelector.isHidden = true
 
 		stackView.addArrangedSubview(messageView)
-		messageView.alignParentBottom().height(66).matchParentSideBorders().done()
+		if keyWindow != nil {
+			message_height = 66 - ((keyWindow!.safeAreaInsets.bottom/2)/2)
+		}
+				
+		messageView.alignParentBottom().height(message_height).matchParentSideBorders().done()
 		
 		stackView.translatesAutoresizingMaskIntoConstraints = false;
 		view.addSubview(stackView)
@@ -149,6 +173,7 @@ class ContentMessageView:  UIViewController {
 		stackView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
 		stackView.centerYAnchor.constraint(equalTo:self.view.centerYAnchor).isActive = true
 		
+		self.dismissKeyboard()
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(self.changeSizeOfTextView), name: Notification.Name("LinphoneTextViewSize"), object: nil)
@@ -213,17 +238,26 @@ class ContentMessageView:  UIViewController {
 	
 	@objc func changeSizeOfTextView(){
 		let numLines = (messageView.messageText.contentSize.height / messageView.messageText.font!.lineHeight)
-		if numLines >= 3 && numLines <= 6 {
-			messageView.setHeight(33*numLines - 33)
-		} else if numLines < 3 {
-			messageView.setHeight(66)
+		if numLines >= 2 && numLines <= 6 {
+			messageView.setHeight((message_height * numLines)/2)
+		} else if numLines < 2 {
+			messageView.setHeight(message_height)
 		}
 	}
 	
 	@objc func resetSizeOfTextView(){
-		messageView.setHeight(66)
+		messageView.setHeight(message_height)
 	}
 	
+	func dismissKeyboard() {
+		let tap: UITapGestureRecognizer = UITapGestureRecognizer( target: self, action: #selector(self.dismissKeyboardTouchOutside))
+		tap.cancelsTouchesInView = false
+		view.addGestureRecognizer(tap)
+	}
+	
+	@objc private func dismissKeyboardTouchOutside() {
+		view.endEditing(true)
+	}
 	
 	func changeSecureLevel(secureLevel: Bool, imageBadge: UIImage?){
 		isSecure = secureLevel

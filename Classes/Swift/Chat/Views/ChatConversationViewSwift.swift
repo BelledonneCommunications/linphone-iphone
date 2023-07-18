@@ -24,6 +24,7 @@ import DropDown
 import PhotosUI
 import AVFoundation
 import EmojiPicker
+import IQKeyboardManager
 
 class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControllerDelegate, UIDocumentPickerDelegate, UICompositeViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIImagePickerControllerDelegate, EmojiPickerDelegate, CoreDelegate & UINavigationControllerDelegate{ // Replaces ChatConversationView
 	
@@ -151,6 +152,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		)
 		setupViews()
 		markAsRead = true
+	
+		IQKeyboardManager.shared().disabledDistanceHandlingClasses.add(BackActionsNavigationView.self)
 		
 		//PhoneMainView.instance()!.mainViewController.view.makeSecure(field: field)
 		/*
@@ -171,7 +174,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		 */
 		
 		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
-			if((compose! && self.isComposingView.isHidden)||(!compose! && !self.isComposingView.isHidden)){
+			if((compose! && self.contentMessageView.isComposingView.isHidden)||(!compose! && !self.contentMessageView.isComposingView.isHidden)){
 				self.setComposingVisible(compose!, withDelay: 0.3)
 			}
 		}
@@ -189,7 +192,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.secureLevelChanged.observe { secure in
 			self.updateParticipantLabel()
 			self.tableControllerSwift.refreshData(isOutgoing: false)
-			self.changeSecureLevel(secureLevel: ChatConversationViewModel.sharedModel.secureLevel != nil, imageBadge: ChatConversationViewModel.sharedModel.secureLevel)
+			self.contentMessageView.changeSecureLevel(secureLevel: ChatConversationViewModel.sharedModel.secureLevel != nil, imageBadge: ChatConversationViewModel.sharedModel.secureLevel)
 		}
 		
 		ChatConversationViewModel.sharedModel.subjectChanged.observe { subject in
@@ -211,23 +214,23 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.indexPathVM.observe { index in
 			self.collectionViewMedia.reloadData()
 			if(ChatConversationViewModel.sharedModel.mediaCollectionView.count > 0){
-				self.messageView.sendButton.isEnabled = true
+				self.contentMessageView.messageView.sendButton.isEnabled = true
 			}
 			self.loadingView.isHidden = true
-			self.messageView.isLoading = false
+			self.contentMessageView.messageView.isLoading = false
 			self.loading.stopRotation()
 			
-			self.messageView.sendButton.isEnabled = true
-			self.messageView.pictureButton.isEnabled = true
+			self.contentMessageView.messageView.sendButton.isEnabled = true
+			self.contentMessageView.messageView.pictureButton.isEnabled = true
 		}
 		
 		ChatConversationViewModel.sharedModel.shareFileName.observe { name in
-			self.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
+			self.contentMessageView.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
 			self.confirmShare(ChatConversationViewModel.sharedModel.nsDataRead(), url: nil, fileName: name)
 		}
 		
 		ChatConversationViewModel.sharedModel.shareFileURL.observe { url in
-			self.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
+			self.contentMessageView.messageView.messageText.text = ChatConversationViewModel.sharedModel.shareFileMessage
 			self.confirmShare(ChatConversationViewModel.sharedModel.nsDataRead(), url: url, fileName: nil)
 		}
 		
@@ -274,31 +277,33 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		IQKeyboardManager.shared().isEnabled = true
+		IQKeyboardManager.shared().isEnableAutoToolbar = false
 		ChatConversationViewModel.sharedModel.createChatConversation()
 	
 		topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-		self.contentView.addSubview(tableControllerSwift.view)
+		self.contentMessageView.contentView.addSubview(tableControllerSwift.view)
 		
 		// Setup Autolayout constraints
 		tableControllerSwift.view.translatesAutoresizingMaskIntoConstraints = false
-		tableControllerSwift.view.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: 0).isActive = true
-		tableControllerSwift.view.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 0).isActive = true
-		tableControllerSwift.view.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 0).isActive = true
-		tableControllerSwift.view.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.bottomAnchor.constraint(equalTo: self.contentMessageView.contentView.bottomAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.leftAnchor.constraint(equalTo: self.contentMessageView.contentView.leftAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.topAnchor.constraint(equalTo: self.contentMessageView.contentView.topAnchor, constant: 0).isActive = true
+		tableControllerSwift.view.rightAnchor.constraint(equalTo: self.contentMessageView.contentView.rightAnchor, constant: 0).isActive = true
 		
 		ChatConversationTableViewModel.sharedModel.chatRoom = ChatConversationViewModel.sharedModel.chatRoom
 		
-		messageView.sendButton.onClickAction = onSendClick
-		messageView.pictureButton.onClickAction = alertAction
-		messageView.voiceRecordButton.onClickAction = onVrStart
-		messageView.emojisButton.addTarget(self,action:#selector(openEmojiPickerModule),
+		contentMessageView.messageView.sendButton.onClickAction = onSendClick
+		contentMessageView.messageView.pictureButton.onClickAction = alertAction
+		contentMessageView.messageView.voiceRecordButton.onClickAction = onVrStart
+		contentMessageView.messageView.emojisButton.addTarget(self,action:#selector(openEmojiPickerModule),
 										   for:.touchUpInside)
-		recordingDeleteButton.onClickAction = cancelVoiceRecording
-		recordingPlayButton.onClickAction = onvrPlayPauseStop
-		recordingStopButton.onClickAction = onvrPlayPauseStop
+		contentMessageView.recordingDeleteButton.onClickAction = cancelVoiceRecording
+		contentMessageView.recordingPlayButton.onClickAction = onvrPlayPauseStop
+		contentMessageView.recordingStopButton.onClickAction = onvrPlayPauseStop
 		
 		if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
-			messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
+			contentMessageView.messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
 		}
 	
 		handlePendingTransferIfAny()
@@ -333,6 +338,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		 */
 		
 		field.isUserInteractionEnabled = true
+		
+		IQKeyboardManager.shared().isEnabled = false
     }
 	
 	override func viewDidDisappear(_ animated: Bool) {
@@ -343,32 +350,32 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.resetViewModel()
 		linphoneChatRoom = nil
 		editModeOff()
-		if(self.isComposingView.isHidden == false){
-			self.isComposingView.isHidden = true
+		if(self.contentMessageView.isComposingView.isHidden == false){
+			self.contentMessageView.isComposingView.isHidden = true
 		}
-		if(self.mediaSelector.isHidden == false){
-			self.mediaSelector.isHidden = true
+		if(self.contentMessageView.mediaSelector.isHidden == false){
+			self.contentMessageView.mediaSelector.isHidden = true
 		}
-		if(self.replyBubble.isHidden == false){
-			self.replyBubble.isHidden = true
+		if(self.contentMessageView.replyBubble.isHidden == false){
+			self.contentMessageView.replyBubble.isHidden = true
 		}
 		
 		cancelVoiceRecording()
 
 		ChatConversationViewModel.sharedModel.mediaCollectionView = []
 		ChatConversationViewModel.sharedModel.replyCollectionView.removeAll()
-		self.messageView.fileContext = false
+		self.contentMessageView.messageView.fileContext = false
 		ChatConversationViewModel.sharedModel.imageT = []
 		self.collectionViewMedia.reloadData()
 		self.collectionViewReply.reloadData()
-		if self.messageView.messageText.text.isEmpty{
-			self.messageView.sendButton.isEnabled = false
+		if contentMessageView.messageView.messageText.textColor == UIColor.lightGray || self.contentMessageView.messageView.messageText.text.isEmpty{
+			self.contentMessageView.messageView.sendButton.isEnabled = false
 		} else {
-			self.messageView.sendButton.isEnabled = true
+			self.contentMessageView.messageView.sendButton.isEnabled = true
 		}
-		self.messageView.pictureButton.isEnabled = true
+		self.contentMessageView.messageView.pictureButton.isEnabled = true
 		
-		isComposingTextView.text = ""
+		contentMessageView.isComposingTextView.text = ""
 	}
 	
 	func goBackChatListView() {
@@ -553,7 +560,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		menu.dataSource.append(VoipTexts.dropdown_menu_chat_conversation_delete_messages)
 		
 		if !ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
-			messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
+			contentMessageView.messageView.ephemeralIndicator.isHidden = !ChatConversationViewModel.sharedModel.chatRoom!.ephemeralEnabled
 		}
 	}
 	
@@ -592,7 +599,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			action1BisButton.isEnabled = false
 		}
 		let secureLevel = FastAddressBook.image(for: linphone_chat_room_get_security_level(cChatRoom))
-		changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
+		contentMessageView.changeSecureLevel(secureLevel: secureLevel != nil, imageBadge: secureLevel)
 		initDataSource(groupeChat: !isOneToOneChat, secureLevel: secureLevel != nil, cChatRoom: cChatRoom)
 	}
 	
@@ -794,14 +801,21 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 
 	
 	func sendMessageInMessageField(rootMessage: ChatMessage?) {
-		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.text.trimmingCharacters(in: .whitespacesAndNewlines), withExterlBodyUrl: nil, rootMessage: rootMessage) {
-			messageView.messageText.text = ""
-			messageView.isComposing = false
+		if ChatConversationViewModel.sharedModel.sendMessage(message: contentMessageView.messageView.messageText.textColor != UIColor.lightGray ? contentMessageView.messageView.messageText.text.trimmingCharacters(in: .whitespacesAndNewlines) : "", withExterlBodyUrl: nil, rootMessage: rootMessage) {
+			if !contentMessageView.messageView.messageText.isFirstResponder{
+				contentMessageView.messageView.messageText.textColor = UIColor.lightGray
+				contentMessageView.messageView.messageText.text = "Message"
+					} else {
+						contentMessageView.messageView.messageText.text = ""
+					}
+			contentMessageView.messageView.emojisButton.isHidden = false
+			contentMessageView.messageView.isComposing = false
 		}
+		setSendButtonState()
 	}
 	
 	func onSendClick() {
-		let rootMessage = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+		let rootMessage = !contentMessageView.replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 		
 		if ChatConversationViewModel.sharedModel.isVoiceRecording {
 			stopVoiceRecording()
@@ -815,8 +829,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			if (linphone_chat_room_get_capabilities(ChatConversationViewModel.sharedModel.chatRoom?.getCobject) != 0) && conference {
 				linphone_chat_message_add_content(rootMessage, voiceContent)
 			}else{
-				if messageView.messageText.text != "" {
-					let rootMessageText = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
+				if contentMessageView.messageView.messageText.textColor != UIColor.lightGray {
+					let rootMessageText = !contentMessageView.replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 					let result = ChatMessage.getSwiftObject(cObject: rootMessageText!)
 					sendMessageInMessageField(rootMessage: result)
 					
@@ -835,29 +849,29 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				for i in 0..<(ChatConversationViewModel.sharedModel.fileContext.count) {
 					startUploadData(ChatConversationViewModel.sharedModel.fileContext[i], withType: FileType.init(ChatConversationViewModel.sharedModel.mediaURLCollection[i].pathExtension)?.getGroupTypeFromFile(), withName: ChatConversationViewModel.sharedModel.mediaURLCollection[i].lastPathComponent, andMessage: nil, rootMessage: nil)
 				}
-				if messageView.messageText.text != "" {
+				if contentMessageView.messageView.messageText.textColor != UIColor.lightGray {
 					let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 					sendMessageInMessageField(rootMessage: result)
 				}
 			}
 			
 			ChatConversationViewModel.sharedModel.fileContext = []
-			messageView.fileContext = false
+			contentMessageView.messageView.fileContext = false
 			ChatConversationViewModel.sharedModel.mediaCollectionView = []
 			ChatConversationViewModel.sharedModel.mediaURLCollection = []
-			if(self.mediaSelector.isHidden == false){
-				self.mediaSelector.isHidden = true
+			if(self.contentMessageView.mediaSelector.isHidden == false){
+				self.contentMessageView.mediaSelector.isHidden = true
 			}
-			if(self.replyBubble.isHidden == false){
-				self.replyBubble.isHidden = true
+			if(self.contentMessageView.replyBubble.isHidden == false){
+				self.contentMessageView.replyBubble.isHidden = true
 			}
 	 		return
  		}
-		if(self.mediaSelector.isHidden == false){
-			self.mediaSelector.isHidden = true
+		if(self.contentMessageView.mediaSelector.isHidden == false){
+			self.contentMessageView.mediaSelector.isHidden = true
 		}
-		if(self.replyBubble.isHidden == false){
-			self.replyBubble.isHidden = true
+		if(self.contentMessageView.replyBubble.isHidden == false){
+			self.contentMessageView.replyBubble.isHidden = true
 		}
 		let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 		sendMessageInMessageField(rootMessage: result)
@@ -865,9 +879,22 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startMultiFilesUpload(_ rootMessage: ChatMessage?) -> Bool {
 		let fileTransfer = FileTransferDelegate()
-		fileTransfer.text = messageView.messageText.text
+		if contentMessageView.messageView.messageText.textColor != UIColor.lightGray {
+			fileTransfer.text = contentMessageView.messageView.messageText.text
+		} else {
+			fileTransfer.text = ""
+		}
 		fileTransfer.uploadFileContent(forSwift: ChatConversationViewModel.sharedModel.fileContext, urlList: ChatConversationViewModel.sharedModel.mediaURLCollection, for: ChatConversationViewModel.sharedModel.chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
-		messageView.messageText.text = ""
+		if fileTransfer.text.isEmpty && !contentMessageView.messageView.messageText.isFirstResponder{
+			contentMessageView.messageView.messageText.textColor = UIColor.lightGray
+			contentMessageView.messageView.messageText.text = "Message"
+			contentMessageView.messageView.emojisButton.isHidden = false
+		} else {
+			contentMessageView.messageView.messageText.text = ""
+			contentMessageView.messageView.emojisButton.isHidden = false
+		}
+		contentMessageView.messageView.sendButton.isEnabled = false
+
 		tableControllerSwift.refreshData(isOutgoing: true)
 		return true
 	}
@@ -895,7 +922,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			if addresses.count == 1 {
 
 				composingAddresses = FastAddressBook.displayName(for: addresses.first?.getCobject)
-				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ is writing...", comment: ""), composingAddresses!)
+				contentMessageView.isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ is writing...", comment: ""), composingAddresses!)
 			} else {
 				addresses.forEach({ addressItem in
 					if composingAddresses != "" {
@@ -903,23 +930,23 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 					}
 					composingAddresses = composingAddresses! + FastAddressBook.displayName(for: addressItem.getCobject)
 				})
-				isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
+				contentMessageView.isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
 			}
 		}
 		UIView.animate(withDuration: 0.3, animations: {
-			self.isComposingView.isHidden = !self.isComposingView.isHidden
+			self.contentMessageView.isComposingView.isHidden = !self.contentMessageView.isComposingView.isHidden
 	   	})
 	}
 	
 	func selectionMedia() {
 		UIView.animate(withDuration: 0.3, animations: {
-			self.mediaSelector.isHidden = !self.mediaSelector.isHidden
+			self.contentMessageView.mediaSelector.isHidden = !self.contentMessageView.mediaSelector.isHidden
 		})
 	}
 	
 	func setRecordingVisible(visible : Bool) {
 		UIView.animate(withDuration: 0.3, animations: {
-			self.recordingView.isHidden = visible
+			self.contentMessageView.recordingView.isHidden = visible
 		})
 	}
 	
@@ -927,18 +954,18 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		if visible {
 			let addresses = ChatMessage.getSwiftObject(cObject: message!).fromAddress
 			let composingAddresses : String? = FastAddressBook.displayName(for: addresses?.getCobject)
-			replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), composingAddresses!)
+			contentMessageView.replyLabelTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@", comment: ""), composingAddresses!)
 			
 			let isIcal = ICSBubbleView.isConferenceInvitationMessage(cmessage: message!)
 			let content : String? = (isIcal ? ICSBubbleView.getSubjectFromContent(cmessage: message!) : ChatMessage.getSwiftObject(cObject: message!).utf8Text)
 
-			replyContentTextView.text = content
-			replyContentForMeetingTextView.text = content
-			backgroundReplyColor.backgroundColor = (linphone_chat_message_is_outgoing(message) != 0) ? UIColor("A").withAlphaComponent(0.2) : UIColor("D").withAlphaComponent(0.2)
+			contentMessageView.replyContentTextView.text = content
+			contentMessageView.replyContentForMeetingTextView.text = content
+			contentMessageView.backgroundReplyColor.backgroundColor = (linphone_chat_message_is_outgoing(message) != 0) ? UIColor("A").withAlphaComponent(0.2) : UIColor("D").withAlphaComponent(0.2)
 			
-			replyDeleteButton.isHidden = false
-			replyDeleteButton.onClickAction = {
-				self.replyDeleteButton.isHidden = true
+			contentMessageView.replyDeleteButton.isHidden = false
+			contentMessageView.replyDeleteButton.onClickAction = {
+				self.contentMessageView.replyDeleteButton.isHidden = true
 				self.initReplyView(false, message: nil)
 				ChatConversationViewModel.sharedModel.replyURLCollection.removeAll()
 				ChatConversationViewModel.sharedModel.replyCollectionView.removeAll()
@@ -948,17 +975,17 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			let contentList = linphone_chat_message_get_contents(message)
 
 			if(isIcal){
-				replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
-				replyMeetingSchedule.isHidden = false
-				replyContentForMeetingTextView.isHidden = false
-				replyContentTextView.isHidden = true
-				mediaSelectorReply.isHidden = true
-				replyContentTextSpacing.isHidden = true
+				contentMessageView.replyMeetingSchedule.image = UIImage(named: "voip_meeting_schedule")
+				contentMessageView.replyMeetingSchedule.isHidden = false
+				contentMessageView.replyContentForMeetingTextView.isHidden = false
+				contentMessageView.replyContentTextView.isHidden = true
+				contentMessageView.mediaSelectorReply.isHidden = true
+				contentMessageView.replyContentTextSpacing.isHidden = true
 			}else{
 
 				if(bctbx_list_size(contentList) > 1 || content == ""){
-					mediaSelectorReply.isHidden = false
-					replyContentTextSpacing.isHidden = true
+					contentMessageView.mediaSelectorReply.isHidden = false
+					contentMessageView.replyContentTextSpacing.isHidden = true
 					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
 						if(content.isFile){
 							let indexPath = IndexPath(row: ChatConversationViewModel.sharedModel.replyCollectionView.count, section: 0)
@@ -979,22 +1006,22 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 							
 							collectionViewReply.reloadData()
 						}else if(content.isText){
-							replyContentTextSpacing.isHidden = false
+							contentMessageView.replyContentTextSpacing.isHidden = false
 			 			}
 					})
 					
 				}else{
-					mediaSelectorReply.isHidden = true
+					contentMessageView.mediaSelectorReply.isHidden = true
 				}
-				replyMeetingSchedule.isHidden = true
-				replyContentForMeetingTextView.isHidden = true
-				replyContentTextView.isHidden = false
+				contentMessageView.replyMeetingSchedule.isHidden = true
+				contentMessageView.replyContentForMeetingTextView.isHidden = true
+				contentMessageView.replyContentTextView.isHidden = false
 				
 			}
 			
 		}
 		UIView.animate(withDuration: 0.3, animations: {
-			self.replyBubble.isHidden = !self.replyBubble.isHidden
+			self.contentMessageView.replyBubble.isHidden = !self.contentMessageView.replyBubble.isHidden
 	   	})
 	}
 	
@@ -1097,14 +1124,14 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func setupViews() {
-		mediaSelector.addSubview(collectionViewMedia)
+		contentMessageView.mediaSelector.addSubview(collectionViewMedia)
 		collectionViewMedia.dataSource = self
 		collectionViewMedia.delegate = self
 		collectionViewMedia.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
 		
 		
 		loadingView.backgroundColor = UIColor(red: 0.77, green: 0.77, blue: 0.77, alpha: 0.80)
-		mediaSelector.addSubview(loadingView)
+		contentMessageView.mediaSelector.addSubview(loadingView)
 		loadingView.matchParentEdges().done()
 		
 		loadingText.text = VoipTexts.operation_in_progress_wait
@@ -1113,7 +1140,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		loadingText.alignParentLeft(withMargin: 10).alignParentRight(withMargin: 10).alignParentBottom(withMargin: 30).alignVerticalCenterWith(loadingView).done()
 		loading.square(Int(top_bar_height)).alignVerticalCenterWith(loadingView).alignParentTop(withMargin: 20).done()
 		
-		mediaSelectorReply.addSubview(collectionViewReply)
+		contentMessageView.mediaSelectorReply.addSubview(collectionViewReply)
 		collectionViewReply.dataSource = self
 		collectionViewReply.delegate = self
 		collectionViewReply.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellReply")
@@ -1142,7 +1169,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				ChatConversationViewModel.sharedModel.imageT.remove(at: indexPath.row)
 				ChatConversationViewModel.sharedModel.data.remove(at: indexPath.row)
 				if(ChatConversationViewModel.sharedModel.mediaCollectionView.count == 0){
-					self.messageView.fileContext = false
+					self.contentMessageView.messageView.fileContext = false
 					self.selectionMedia()
 					self.setSendButtonState()
 				}
@@ -1315,23 +1342,23 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	public func initListMedia(sequenceCount : Int){
 		if(ChatConversationViewModel.sharedModel.mediaCollectionView.count == 0 && sequenceCount >= 1){
 			self.selectionMedia()
-			self.messageView.sendButton.isEnabled = !messageView.isLoading
-			self.messageView.fileContext = true
+			self.contentMessageView.messageView.sendButton.isEnabled = !contentMessageView.messageView.isLoading
+			self.contentMessageView.messageView.fileContext = true
 			ChatConversationViewModel.sharedModel.urlFile = []
 			ChatConversationViewModel.sharedModel.imageT = []
 			ChatConversationViewModel.sharedModel.data = []
 		}
 		if(ChatConversationViewModel.sharedModel.mediaCollectionView.count > 0){
-			self.messageView.sendButton.isEnabled = !messageView.isLoading
+			self.contentMessageView.messageView.sendButton.isEnabled = !contentMessageView.messageView.isLoading
 		}
 		
 		if(sequenceCount >= 1){
 			loadingView.isHidden = false
-			messageView.isLoading = true
+			contentMessageView.messageView.isLoading = true
 			loading.startRotation()
 			
-			self.messageView.sendButton.isEnabled = false
-			self.messageView.pictureButton.isEnabled = false
+			self.contentMessageView.messageView.sendButton.isEnabled = false
+			self.contentMessageView.messageView.pictureButton.isEnabled = false
 			
 			ChatConversationViewModel.sharedModel.mediaCount = ChatConversationViewModel.sharedModel.mediaCollectionView.count
 			ChatConversationViewModel.sharedModel.newMediaCount = sequenceCount
@@ -1363,7 +1390,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			sheet!.addButton(
 				withTitle: NSLocalizedString("Send to this conversation", comment: "")) { [self] in
 					do{
-						if messageView.messageText.text != "" {
+						if contentMessageView.messageView.messageText.textColor != UIColor.lightGray {
 							try sendMessageInMessageField(rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}
 						if let sUrl = url {
@@ -1392,8 +1419,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	@objc func initiateReplyView(forMessage: OpaquePointer?) {
-		if(replyBubble.isHidden == false){
-			replyBubble.isHidden = true
+		if(contentMessageView.replyBubble.isHidden == false){
+			contentMessageView.replyBubble.isHidden = true
 		}
 		ChatConversationViewModel.sharedModel.replyURLCollection.removeAll()
 		ChatConversationViewModel.sharedModel.replyCollectionView.removeAll()
@@ -1413,10 +1440,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func onVrStart() {
-		self.recordingWaveImageMask.isHidden = false
-		recordingWaveView.progress = 0.0
-		recordingWaveView.setProgress(recordingWaveView.progress, animated: false)
-		self.messageView.sendButton.isEnabled = true
+		self.contentMessageView.recordingWaveImageMask.isHidden = false
+		contentMessageView.recordingWaveView.progress = 0.0
+		contentMessageView.recordingWaveView.setProgress(contentMessageView.recordingWaveView.progress, animated: false)
+		self.contentMessageView.messageView.sendButton.isEnabled = true
 		if ChatConversationViewModel.sharedModel.isVoiceRecording {
 			stopVoiceRecording()
 		} else {
@@ -1425,7 +1452,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	@objc private func openEmojiPickerModule(sender: UIButton) {
-		messageView.messageText.resignFirstResponder()
+		contentMessageView.messageView.messageText.resignFirstResponder()
 		let viewController = EmojiPickerViewController()
 		viewController.delegate = self
 		viewController.sourceView = sender
@@ -1434,18 +1461,24 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func didGetEmoji(emoji: String) {
-		messageView.messageText.text = messageView.messageText.text + emoji
+		if contentMessageView.messageView.messageText.textColor != UIColor.lightGray {
+			contentMessageView.messageView.messageText.text = contentMessageView.messageView.messageText.text + emoji
+		} else {
+			contentMessageView.messageView.messageText.textColor = VoipTheme.backgroundBlackWhite.get()
+			contentMessageView.messageView.messageText.text = emoji
+		}
+
 	}
 	
 	func startVoiceRecording() {
 		ChatConversationViewModel.sharedModel.startVoiceRecording()
 		setRecordingVisible(visible: false)
-		messageView.voiceRecordButton.isSelected = true
-		recordingStopButton.isHidden = false
-		recordingPlayButton.isHidden = true
-		self.recordingWaveImageMask.transform = CGAffineTransform.identity
-		recordingDurationTextView.isHidden = false
-		recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
+		contentMessageView.messageView.voiceRecordButton.isSelected = true
+		contentMessageView.recordingStopButton.isHidden = false
+		contentMessageView.recordingPlayButton.isHidden = true
+		self.contentMessageView.recordingWaveImageMask.transform = CGAffineTransform.identity
+		contentMessageView.recordingDurationTextView.isHidden = false
+		contentMessageView.recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
 		ChatConversationViewModel.sharedModel.vrRecordTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
 			self.voiceRecordTimerUpdate()
 		}
@@ -1457,10 +1490,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			Log.i("[Chat Message Sending] Max duration for voice recording exceeded, stopping. (max = \(LinphoneManager.instance().lpConfigInt(forKey: "voice_recording_max_duration", withDefault: 59999))")
 			stopVoiceRecording()
 		} else {
-			recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
+			contentMessageView.recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
 			
 			UIView.animate(withDuration: 10.0, delay: 0.0, options: [.repeat], animations: {
-				self.recordingWaveImageMask.transform = CGAffineTransform(translationX: 98, y: 0).scaledBy(x: 0.01, y: 1)
+				self.contentMessageView.recordingWaveImageMask.transform = CGAffineTransform(translationX: 98, y: 0).scaledBy(x: 0.01, y: 1)
 			})
 			
 		}
@@ -1469,16 +1502,16 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	func stopVoiceRecording() {
 		ChatConversationViewModel.sharedModel.stopVoiceRecording()
 		if (ChatConversationViewModel.sharedModel.voiceRecorder != nil) && linphone_recorder_get_state(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) == LinphoneRecorderRunning {
-			recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
+			contentMessageView.recordingDurationTextView.text = ChatConversationViewModel.sharedModel.formattedDuration(Int(linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject)))
 		}
 		if LinphoneManager.instance().lpConfigBool(forKey: "voice_recording_send_right_away", withDefault: false) {
 			onSendClick()
 		}
-		recordingStopButton.isHidden = true
-		recordingPlayButton.isHidden = false
+		contentMessageView.recordingStopButton.isHidden = true
+		contentMessageView.recordingPlayButton.isHidden = false
 		
-		messageView.voiceRecordButton.isSelected = false
-		recordingWaveImageMask.layer.removeAllAnimations()
+		contentMessageView.messageView.voiceRecordButton.isSelected = false
+		contentMessageView.recordingWaveImageMask.layer.removeAllAnimations()
 		
 		setSendButtonState()
 
@@ -1486,10 +1519,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func cancelVoiceRecording() {
 		setRecordingVisible(visible: true)
-		recordingStopButton.isHidden = false
-		recordingPlayButton.isHidden = true
-		recordingWaveImageMask.layer.removeAllAnimations()
-		messageView.voiceRecordButton.isSelected = false
+		contentMessageView.recordingStopButton.isHidden = false
+		contentMessageView.recordingPlayButton.isHidden = true
+		contentMessageView.recordingWaveImageMask.layer.removeAllAnimations()
+		contentMessageView.messageView.voiceRecordButton.isSelected = false
 		
 		ChatConversationViewModel.sharedModel.cancelVoiceRecordingVM()
 		
@@ -1498,7 +1531,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func setSendButtonState() {
-		self.messageView.sendButton.isEnabled = ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || self.messageView.messageText.text.count > 0 || ChatConversationViewModel.sharedModel.fileContext.count > 0)
+		self.contentMessageView.messageView.sendButton.isEnabled = ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || (contentMessageView.messageView.messageText.textColor != UIColor.lightGray && self.contentMessageView.messageView.messageText.text.count > 0) || ChatConversationViewModel.sharedModel.fileContext.count > 0)
 	}
 	
 	func onvrPlayPauseStop() {
@@ -1514,15 +1547,15 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	 
 	func playRecordedMessage() {
-		self.recordingWaveImageMask.isHidden = true
-		self.recordingPlayButton.isHidden = true
-		self.recordingStopButton.isHidden = false
+		self.contentMessageView.recordingWaveImageMask.isHidden = true
+		self.contentMessageView.recordingPlayButton.isHidden = true
+		self.contentMessageView.recordingStopButton.isHidden = false
 		
 		ChatConversationViewModel.sharedModel.initSharedPlayer()
 		AudioPlayer.sharedModel.fileChanged.value = ChatConversationViewModel.sharedModel.voiceRecorder?.file
 		ChatConversationViewModel.sharedModel.startSharedPlayer(ChatConversationViewModel.sharedModel.voiceRecorder?.file)
 		
-		recordingWaveView.progress = 0.0
+		contentMessageView.recordingWaveView.progress = 0.0
 		ChatConversationViewModel.sharedModel.isPlayingVoiceRecording = true
 		
 		AudioPlayer.sharedModel.fileChanged.observe { file in
@@ -1531,9 +1564,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			}
 		}
 		
-		recordingWaveView.progress = 1.0
+		contentMessageView.recordingWaveView.progress = 1.0
 		UIView.animate(withDuration: TimeInterval(Double(AudioPlayer.getSharedPlayer()!.duration) / 1000.00), delay: 0.0, options: .curveLinear, animations: {
-			self.recordingWaveView.layoutIfNeeded()
+			self.contentMessageView.recordingWaveView.layoutIfNeeded()
 		}, completion: { (finished: Bool) in
 			if (ChatConversationViewModel.sharedModel.isPlayingVoiceRecording) {
 				self.stopVoiceRecordPlayer()
@@ -1542,28 +1575,28 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func stopVoiceRecordPlayer() {
-		recordingView.subviews.forEach({ view in
+		contentMessageView.recordingView.subviews.forEach({ view in
 			view.removeFromSuperview()
 		})
 		resetRecordingProgressBar()
-		self.recordingWaveView.progress = 0.0
-		self.recordingWaveView.setProgress(self.recordingWaveView.progress, animated: false)
+		self.contentMessageView.recordingWaveView.progress = 0.0
+		self.contentMessageView.recordingWaveView.setProgress(self.contentMessageView.recordingWaveView.progress, animated: false)
 		ChatConversationViewModel.sharedModel.stopSharedPlayer()
-		self.recordingWaveImageMask.isHidden = false
-		self.recordingPlayButton.isHidden = false
-		self.recordingStopButton.isHidden = true
+		self.contentMessageView.recordingWaveImageMask.isHidden = false
+		self.contentMessageView.recordingPlayButton.isHidden = false
+		self.contentMessageView.recordingStopButton.isHidden = true
 		ChatConversationViewModel.sharedModel.isPlayingVoiceRecording = false
 	}
 	
 	func configureMessageField() {
 		let isOneToOneChat = ChatConversationViewModel.sharedModel.chatRoom!.hasCapability(mask: Int(LinphoneChatRoomCapabilitiesOneToOne.rawValue))
 		if isOneToOneChat {
-			messageView.isHidden = false
+			contentMessageView.messageView.isHidden = false
 			if ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly {
 				ChatConversationViewModel.sharedModel.chatRoom!.addParticipant(addr: (ChatConversationViewModel.sharedModel.chatRoom?.me?.address)!)
 			}
 		} else {
-			messageView.isHidden = ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly
+			contentMessageView.messageView.isHidden = ChatConversationViewModel.sharedModel.chatRoom!.isReadOnly
 		}
 	}
 		
