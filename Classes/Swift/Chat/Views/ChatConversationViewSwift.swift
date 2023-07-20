@@ -249,9 +249,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	@objc func appMovedToForeground() {
-		if (tableControllerSwift.menu != nil && !tableControllerSwift.menu!.isHidden) {
-			tableControllerSwift.menu!.hide()
-		}
 		if(PhoneMainView.instance().currentView == ChatConversationViewSwift.compositeViewDescription()){
 			let lc: Core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
 			if(lc.globalState.rawValue == LinphoneGlobalOn.rawValue){
