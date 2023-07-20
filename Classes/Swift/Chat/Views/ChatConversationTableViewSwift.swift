@@ -476,7 +476,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     
     func replyMessage(message: ChatMessage){
         let view: ChatConversationViewSwift = self.VIEW(ChatConversationViewSwift.compositeViewDescription())
-		if (view.messageView.messageText.textColor == UIColor.lightGray && view.stackView.arrangedSubviews[3].isHidden && view.stackView.arrangedSubviews[4].isHidden){
+		if (view.messageView.messageText.text == "" && view.stackView.arrangedSubviews[3].isHidden && view.stackView.arrangedSubviews[4].isHidden){
 			view.messageView.messageText.becomeFirstResponder()
 		}
         view.initiateReplyView(forMessage: message.getCobject)
