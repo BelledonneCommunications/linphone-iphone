@@ -139,10 +139,9 @@ class ContentMessageView:  UIViewController {
 		constraintLandscapeFloatingButton = floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -56)
 		if UIDevice.current.orientation.isLandscape {
 			constraintLandscapeFloatingButton!.isActive = true
-		} else {
+		} else if UIDevice.current.orientation.isPortrait {
 			constraintFloatingButton!.isActive = true
 		}
-		constraintFloatingButton!.isActive = true
 		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height).isActive = true
 		floatingButton.setImage(UIImage(named:"security_alert_indicator.png"), for: .normal)
 		floatingButton.imageEdgeInsets = UIEdgeInsets(top: 42, left: 42, bottom: 42, right: 42)
@@ -206,7 +205,7 @@ class ContentMessageView:  UIViewController {
 		if UIDevice.current.orientation.isLandscape {
 			constraintLandscapeFloatingButton!.isActive = true
 			constraintFloatingButton!.isActive = false
-		} else {
+		} else if UIDevice.current.orientation.isPortrait {
 			constraintLandscapeFloatingButton!.isActive = false
 			constraintFloatingButton!.isActive = true
 		}
