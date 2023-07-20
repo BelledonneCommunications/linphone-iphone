@@ -792,9 +792,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func sendMessageInMessageField(rootMessage: ChatMessage?) {
 		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.text.trimmingCharacters(in: .whitespacesAndNewlines), withExterlBodyUrl: nil, rootMessage: rootMessage) {
-			//messageView.messageText.textColor = UIColor.lightGray
 			messageView.messageText.text = ""
-			messageView.emojisButton.isHidden = false
 			messageView.isComposing = false
 		}
 	}
@@ -814,7 +812,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			if (linphone_chat_room_get_capabilities(ChatConversationViewModel.sharedModel.chatRoom?.getCobject) != 0) && conference {
 				linphone_chat_message_add_content(rootMessage, voiceContent)
 			}else{
-				if messageView.messageText.textColor != UIColor.lightGray {
+				if messageView.messageText.text != "" {
 					let rootMessageText = !replyBubble.isHidden ? linphone_chat_room_create_reply_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject, ChatConversationViewModel.sharedModel.replyMessage) : linphone_chat_room_create_empty_message(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
 					let result = ChatMessage.getSwiftObject(cObject: rootMessageText!)
 					sendMessageInMessageField(rootMessage: result)
@@ -834,7 +832,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				for i in 0..<(ChatConversationViewModel.sharedModel.fileContext.count) {
 					startUploadData(ChatConversationViewModel.sharedModel.fileContext[i], withType: FileType.init(ChatConversationViewModel.sharedModel.mediaURLCollection[i].pathExtension)?.getGroupTypeFromFile(), withName: ChatConversationViewModel.sharedModel.mediaURLCollection[i].lastPathComponent, andMessage: nil, rootMessage: nil)
 				}
-				if messageView.messageText.textColor != UIColor.lightGray {
+				if messageView.messageText.text != "" {
 					let result = ChatMessage.getSwiftObject(cObject: rootMessage!)
 					sendMessageInMessageField(rootMessage: result)
 				}
@@ -864,21 +862,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startMultiFilesUpload(_ rootMessage: ChatMessage?) -> Bool {
 		let fileTransfer = FileTransferDelegate()
-		if messageView.messageText.textColor != UIColor.lightGray {
-			fileTransfer.text = messageView.messageText.text
-		} else {
-			fileTransfer.text = ""
-		}
+		fileTransfer.text = messageView.messageText.text
 		fileTransfer.uploadFileContent(forSwift: ChatConversationViewModel.sharedModel.fileContext, urlList: ChatConversationViewModel.sharedModel.mediaURLCollection, for: ChatConversationViewModel.sharedModel.chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
-		if fileTransfer.text.isEmpty {
-			messageView.messageText.textColor = UIColor.lightGray
-			messageView.messageText.text = "Message"
-			messageView.emojisButton.isHidden = false
-		} else {
-			messageView.messageText.text = ""
-			messageView.emojisButton.isHidden = false
-		}
-
+		messageView.messageText.text = ""
 		tableControllerSwift.refreshData(isOutgoing: true)
 		return true
 	}
@@ -1374,7 +1360,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			sheet!.addButton(
 				withTitle: NSLocalizedString("Send to this conversation", comment: "")) { [self] in
 					do{
-						if messageView.messageText.textColor != UIColor.lightGray {
+						if messageView.messageText.text != "" {
 							try sendMessageInMessageField(rootMessage: ChatConversationViewModel.sharedModel.chatRoom?.createEmptyMessage())
 						}
 						if let sUrl = url {
@@ -1445,12 +1431,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func didGetEmoji(emoji: String) {
-		if messageView.messageText.textColor != UIColor.lightGray {
-			messageView.messageText.text = messageView.messageText.text + emoji
-		} else {
-			messageView.messageText.textColor = UIColor.black
-			messageView.messageText.text = emoji
-		}
+		messageView.messageText.text = messageView.messageText.text + emoji
 	}
 	
 	func startVoiceRecording() {

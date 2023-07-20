@@ -27,7 +27,6 @@ class BackActionsNavigationView:  UIViewController {
     
     
     let top_bar_height = 66.0
-	var message_height = 66.0
     let side_buttons_margin = 5
         
     let titleLabel = StyledLabel(VoipTheme.chat_conversation_title)
@@ -158,8 +157,6 @@ class BackActionsNavigationView:  UIViewController {
         
         super.viewDidLoad()
 		
-		view.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
-		
 		stackView.axis = .vertical;
 		stackView.distribution = .fill;
 		stackView.alignment = .center;
@@ -169,12 +166,7 @@ class BackActionsNavigationView:  UIViewController {
 		view.addSubview(stackView)
 		
 		//stackView.alignParentTop().alignParentBottom().matchParentSideBorders().done()
-		let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-		if keyWindow != nil {
-			stackView.alignParentTop().alignParentBottom(withMargin: keyWindow!.safeAreaInsets.top/3).done()
-		}else{
-			stackView.alignParentTop().alignParentBottom().done()
-		}
+		stackView.alignParentTop().alignParentBottom().done()
 		stackView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
 		stackView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
 		
@@ -248,11 +240,7 @@ class BackActionsNavigationView:  UIViewController {
 		mediaSelector.isHidden = true
 
 		stackView.addArrangedSubview(messageView)
-		if keyWindow != nil {
-			message_height = 66 - ((keyWindow!.safeAreaInsets.top/3)/2)
-		}
-		
-		messageView.alignParentBottom().height(message_height).matchParentSideBorders().done()
+		messageView.alignParentBottom().height(66).matchParentSideBorders().done()
 		
 		stackView.translatesAutoresizingMaskIntoConstraints = false;
 		view.addSubview(stackView)
@@ -276,8 +264,6 @@ class BackActionsNavigationView:  UIViewController {
 		
 		view.bringSubviewToFront(topBar)
 		
-		self.dismissKeyboard()
-		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.topBar.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 			self.titleParticipants.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
@@ -292,8 +278,6 @@ class BackActionsNavigationView:  UIViewController {
 		NotificationCenter.default.addObserver(self, selector: #selector(self.rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(self.changeSizeOfTextView), name: Notification.Name("LinphoneTextViewSize"), object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(self.resetSizeOfTextView), name: Notification.Name("LinphoneResetTextViewSize"), object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 	
 	func resetRecordingProgressBar(){
@@ -417,44 +401,15 @@ class BackActionsNavigationView:  UIViewController {
 	
 	@objc func changeSizeOfTextView(){
 		let numLines = (messageView.messageText.contentSize.height / messageView.messageText.font!.lineHeight)
-		if numLines >= 2 && numLines <= 6 {
-			messageView.setHeight((message_height * numLines)/2)
-		} else if numLines < 2 {
-			messageView.setHeight(message_height)
+		if numLines >= 3 && numLines <= 6 {
+			messageView.setHeight(33*numLines - 33)
+		} else if numLines < 3 {
+			messageView.setHeight(66)
 		}
 	}
 	
 	@objc func resetSizeOfTextView(){
-		messageView.setHeight(message_height)
-	}
-	
-	func dismissKeyboard() {
-		let tap: UITapGestureRecognizer = UITapGestureRecognizer( target: self, action: #selector(self.dismissKeyboardTouchOutside))
-		tap.cancelsTouchesInView = false
-		view.addGestureRecognizer(tap)
-	}
-	
-	@objc private func dismissKeyboardTouchOutside() {
-		view.endEditing(true)
-	}
-	
-	@objc func keyboardWillShow(notification: NSNotification) {
-		if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-			if topBar.frame.origin.y == 0 {
-				let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-				if keyWindow != nil {
-					topBar.frame.origin.y += keyboardSize.height - keyWindow!.safeAreaInsets.top/3
-				}else{
-					topBar.frame.origin.y += keyboardSize.height
-				}
-			}
-		}
-	}
-
-	@objc func keyboardWillHide(notification: NSNotification) {
-		if topBar.frame.origin.y != 0 {
-			topBar.frame.origin.y = 0
-		}
+		messageView.setHeight(66)
 	}
 }
 
