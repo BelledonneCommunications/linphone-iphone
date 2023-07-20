@@ -147,21 +147,19 @@ class Avatar : UIView {
 			}
 		}
 		if delegatePresence == false {
-			if contactAddress.friend != nil {
-				friend.append(Friend.getSwiftObject(cObject: (contactAddress.friend)!))
-				let newFriendDelegate = FriendDelegateStub(
-					onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-						if (linphoneFriend.address?.asStringUriOnly()) != nil {
-							let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
-							if(presenceModel != nil && presenceModel?.consolidatedPresence != nil){
-								NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel!.consolidatedPresence.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
-							}
+			friend.append(Friend.getSwiftObject(cObject: (contactAddress.friend)!))
+			let newFriendDelegate = FriendDelegateStub(
+				onPresenceReceived: { (linphoneFriend: Friend) -> Void in
+                    if (linphoneFriend.address?.asStringUriOnly()) != nil {
+                        let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
+						if(presenceModel != nil && presenceModel?.consolidatedPresence != nil){
+							NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel!.consolidatedPresence.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
 						}
-					}
-				)
-				friendDelegate.append(newFriendDelegate)
-				friend.last?.addDelegate(delegate: friendDelegate.last!)
-			}
+                    }
+				}
+			)
+			friendDelegate.append(newFriendDelegate)
+			friend.last?.addDelegate(delegate: friendDelegate.last!)
 		}
 	}
     
@@ -204,8 +202,12 @@ class Avatar : UIView {
         let contactAddress = Address.getSwiftObject(cObject: address).contact()
         var iconPresenceView = UIImageView()
         if (contactAddress != nil) {
+            
+			
 			shared?.addDelegate(contactAddress: contactAddress!)
+			
 			iconPresenceView = updatePresenceImage(contact: contactAddress!)
+			
 			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
 			avatarWithPresence.addSubview(iconPresenceView)
 			iconPresenceView.frame = CGRect(x: 36, y: 36, width: 14, height: 14)
