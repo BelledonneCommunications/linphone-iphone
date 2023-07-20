@@ -358,7 +358,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		ChatConversationViewModel.sharedModel.imageT = []
 		self.collectionViewMedia.reloadData()
 		self.collectionViewReply.reloadData()
-		if messageView.messageText.textColor == UIColor.lightGray || self.messageView.messageText.text.isEmpty{
+		if self.messageView.messageText.text.isEmpty{
 			self.messageView.sendButton.isEnabled = false
 		} else {
 			self.messageView.sendButton.isEnabled = true
@@ -791,18 +791,12 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 
 	
 	func sendMessageInMessageField(rootMessage: ChatMessage?) {
-		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.textColor != UIColor.lightGray ? messageView.messageText.text.trimmingCharacters(in: .whitespacesAndNewlines) : "", withExterlBodyUrl: nil, rootMessage: rootMessage) {
-			if !messageView.messageText.isFirstResponder{
-				messageView.messageText.textColor = UIColor.lightGray
-				messageView.messageText.text = "Message"
-			} else {
-				messageView.messageText.text = ""
-			}
+		if ChatConversationViewModel.sharedModel.sendMessage(message: messageView.messageText.text.trimmingCharacters(in: .whitespacesAndNewlines), withExterlBodyUrl: nil, rootMessage: rootMessage) {
+			//messageView.messageText.textColor = UIColor.lightGray
+			messageView.messageText.text = ""
 			messageView.emojisButton.isHidden = false
 			messageView.isComposing = false
 		}
-		
-		setSendButtonState()
 	}
 	
 	func onSendClick() {
@@ -876,7 +870,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			fileTransfer.text = ""
 		}
 		fileTransfer.uploadFileContent(forSwift: ChatConversationViewModel.sharedModel.fileContext, urlList: ChatConversationViewModel.sharedModel.mediaURLCollection, for: ChatConversationViewModel.sharedModel.chatRoom?.getCobject, rootMessage: rootMessage?.getCobject)
-		if fileTransfer.text.isEmpty && !messageView.messageText.isFirstResponder{
+		if fileTransfer.text.isEmpty {
 			messageView.messageText.textColor = UIColor.lightGray
 			messageView.messageText.text = "Message"
 			messageView.emojisButton.isHidden = false
@@ -884,8 +878,6 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			messageView.messageText.text = ""
 			messageView.emojisButton.isHidden = false
 		}
-		
-		messageView.sendButton.isEnabled = false
 
 		tableControllerSwift.refreshData(isOutgoing: true)
 		return true
@@ -1522,7 +1514,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func setSendButtonState() {
-		self.messageView.sendButton.isEnabled = ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || (messageView.messageText.textColor != UIColor.lightGray && self.messageView.messageText.text.count > 0) || ChatConversationViewModel.sharedModel.fileContext.count > 0)
+		self.messageView.sendButton.isEnabled = ((ChatConversationViewModel.sharedModel.isPendingVoiceRecord && linphone_recorder_get_duration(ChatConversationViewModel.sharedModel.voiceRecorder?.getCobject) > 0) || self.messageView.messageText.text.count > 0 || ChatConversationViewModel.sharedModel.fileContext.count > 0)
 	}
 	
 	func onvrPlayPauseStop() {
