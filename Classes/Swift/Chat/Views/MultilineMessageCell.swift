@@ -2176,21 +2176,28 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			self.ephemeralTimerLabel.isHidden = false
 			self.ephemeralIcon.isHidden = false
 			ephemeralTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-				let duration = self.chatMessage?.ephemeralExpireTime == 0 ? self.chatMessage?.ephemeralLifetime : self.chatMessage!.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
-				if(duration! > 86400){
-					f.allowedUnits = [.day]
-				}else if(duration! > 3600){
-					f.allowedUnits = [.hour]
-				}else{
-					f.allowedUnits = [.minute, .second]
+				var duration = 0
+				if self.chatMessage != nil && self.chatMessage?.ephemeralLifetime != nil {
+					duration = self.chatMessage?.ephemeralExpireTime == 0 ? self.chatMessage!.ephemeralLifetime : self.chatMessage!.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
+					if(duration > 86400){
+						f.allowedUnits = [.day]
+					}else if(duration > 3600){
+						f.allowedUnits = [.hour]
+					}else{
+						f.allowedUnits = [.minute, .second]
+					}
+				} else {
+					duration = 0
 				}
 				
 				let textDuration = f.string(for: DateComponents(second: duration))?.capitalized ?? ""
 				self.ephemeralTimerLabel.text = textDuration
 				self.ephemeralTimerLabel.isHidden = false
 				self.ephemeralIcon.isHidden = false
-				if(duration! <= 0){
-					self.ephemeralTimer!.invalidate()
+				if(duration <= 0){
+					if self.ephemeralTimer != nil {
+						self.ephemeralTimer!.invalidate()
+					}
 					ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 				}
 			}
