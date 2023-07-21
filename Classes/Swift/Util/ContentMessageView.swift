@@ -163,7 +163,7 @@ class ContentMessageView:  UIViewController {
 		constraintLandscapeFloatingButton = floatingButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -56)
 		if UIDevice.current.orientation.isLandscape {
 			constraintLandscapeFloatingButton!.isActive = true
-		} else if UIDevice.current.orientation.isPortrait {
+		} else {
 			constraintFloatingButton!.isActive = true
 		}
 		floatingButton.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor, constant: top_bar_height).isActive = true

@@ -173,6 +173,8 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		}
 		 */
 		
+		contentMessageView.floatingButton.addTarget(self, action: #selector(self.alertActionGoToDevicesList), for: .touchUpInside)
+		
 		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
 			if((compose! && self.contentMessageView.isComposingView.isHidden)||(!compose! && !self.contentMessageView.isComposingView.isHidden)){
 				self.setComposingVisible(compose!, withDelay: 0.3)
@@ -709,7 +711,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		
 	}
 	
-	func alertActionGoToDevicesList() {
+	@objc func alertActionGoToDevicesList() {
 		
 		let notAskAgain = ConfigManager.instance().lpConfigBoolForKey(key: "confirmation_dialog_before_sas_call_not_ask_again");
 		if(!notAskAgain){
