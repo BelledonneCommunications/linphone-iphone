@@ -504,7 +504,7 @@ class ChatConversationViewModel {
 		let core = Core.getSwiftObject(cObject: LinphoneManager.getLc())
 		do{
 			let p = try core.createRecorderParams()
-			p.fileFormat = RecorderFileFormat.Mkv
+			p.fileFormat = Recorder.FileFormat.Mkv
 			ChatConversationViewModel.sharedModel.voiceRecorder = try core.createRecorder(params: p)
 		}catch{
 			Log.e(error.localizedDescription)

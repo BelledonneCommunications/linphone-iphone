@@ -95,7 +95,7 @@ class ConferenceViewModel {
 					Log.w("[Conference] Failed to find participant [\(participant.address!.asStringUriOnly())] in conferenceParticipants list")
 				}
 			},
-			onParticipantDeviceStateChanged: { (conference: Conference, device: ParticipantDevice, state: ParticipantDeviceState) in
+			onParticipantDeviceStateChanged: { (conference: Conference, device: ParticipantDevice, state: ParticipantDevice.State) in
 				if (conference.isMe(uri: device.address!)) {
 					if (state == .Present) {
 						Log.i("[Conference] Entered conference")

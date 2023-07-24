@@ -89,7 +89,7 @@ class NotificationService: UNNotificationServiceExtension {
 							stopCore()
 							NotificationService.log.message(message: "chat room invite received")
 							bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
-							if (chatRoom.hasCapability(mask:ChatRoomCapabilities.OneToOne.rawValue)) {
+							if (chatRoom.hasCapability(mask:ChatRoom.Capabilities.OneToOne.rawValue)) {
 								if (chatRoom.peerAddress?.displayName.isEmpty != true) {
 									bestAttemptContent.body = chatRoom.peerAddress!.displayName
 								} else {

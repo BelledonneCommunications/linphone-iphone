@@ -145,12 +145,12 @@ import AVFoundation
 	}
 	
 	@objc func changeRouteToSpeaker() {
-		lc?.outputAudioDevice = lc?.audioDevices.first { $0.type == AudioDeviceType.Speaker }
+		lc?.outputAudioDevice = lc?.audioDevices.first { $0.type == AudioDevice.Kind.Speaker }
 		UIDevice.current.isProximityMonitoringEnabled = false
 	}
 	
 	@objc func changeRouteToBluetooth() {
-		lc?.outputAudioDevice = lc?.audioDevices.first { $0.type == AudioDeviceType.BluetoothA2DP || $0.type == AudioDeviceType.Bluetooth }
+		lc?.outputAudioDevice = lc?.audioDevices.first { $0.type == AudioDevice.Kind.BluetoothA2DP || $0.type == AudioDevice.Kind.Bluetooth }
 		UIDevice.current.isProximityMonitoringEnabled = (lc!.callsNb > 0)
 	}
 	
@@ -160,7 +160,7 @@ import AVFoundation
 	
 	@objc func isBluetoothAvailable() -> Bool {
 		for device in lc!.audioDevices {
-			if (device.type == AudioDeviceType.Bluetooth || device.type == AudioDeviceType.BluetoothA2DP) {
+			if (device.type == AudioDevice.Kind.Bluetooth || device.type == AudioDevice.Kind.BluetoothA2DP) {
 				return true;
 			}
 		}
@@ -169,21 +169,21 @@ import AVFoundation
 	
 	@objc func isSpeakerEnabled() -> Bool {
 		if let outputDevice = lc!.outputAudioDevice {
-			return outputDevice.type == AudioDeviceType.Speaker
+			return outputDevice.type == AudioDevice.Kind.Speaker
 		}
 		return false
 	}
 	
 	@objc func isBluetoothEnabled() -> Bool {
 		if let outputDevice = lc!.outputAudioDevice {
-			return (outputDevice.type == AudioDeviceType.Bluetooth || outputDevice.type == AudioDeviceType.BluetoothA2DP)
+			return (outputDevice.type == AudioDevice.Kind.Bluetooth || outputDevice.type == AudioDevice.Kind.BluetoothA2DP)
 		}
 		return false
 	}
 	
 	@objc func isReceiverEnabled() -> Bool {
 		if let outputDevice = lc!.outputAudioDevice {
-			return outputDevice.type == AudioDeviceType.Microphone
+			return outputDevice.type == AudioDevice.Kind.Microphone
 		}
 		return false
 	}

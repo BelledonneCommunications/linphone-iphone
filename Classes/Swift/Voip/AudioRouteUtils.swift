@@ -26,7 +26,7 @@ import linphonesw
 	
 	static var core : Core { get { Core.get() } }
 
-	static private func applyAudioRouteChange( call: Call?, types: [AudioDeviceType], output: Bool = true) {
+	static private func applyAudioRouteChange( call: Call?, types: [AudioDevice.Kind], output: Bool = true) {
 		let typesNames = types.map { String(describing: $0) }.joined(separator: "/")
 		
 		let currentCall = core.callsNb > 0 ? (call != nil) ? call : core.currentCall != nil ? core.currentCall : core.calls[0] : nil
@@ -34,7 +34,7 @@ import linphonesw
 			Log.w("[Audio Route Helper] No call found, setting audio route on Core")
 		}
 		let conference = core.conference
-		let capability = output ? AudioDeviceCapabilities.CapabilityPlay : AudioDeviceCapabilities.CapabilityRecord
+		let capability = output ? AudioDevice.Capabilities.CapabilityPlay : AudioDevice.Capabilities.CapabilityRecord
 
 		var found = false
 		
@@ -75,21 +75,21 @@ import linphonesw
 		}
 	}
 	
-	static private func changeCaptureDeviceToMatchAudioRoute(call: Call?, types: [AudioDeviceType]) {
+	static private func changeCaptureDeviceToMatchAudioRoute(call: Call?, types: [AudioDevice.Kind]) {
 		switch (types.first) {
 		case .Bluetooth :if (isBluetoothAudioRecorderAvailable()) {
 			Log.i("[Audio Route Helper] Bluetooth device is able to record audio, also change input audio device")
-			applyAudioRouteChange(call: call, types: [AudioDeviceType.Bluetooth], output: false)
+			applyAudioRouteChange(call: call, types: [AudioDevice.Kind.Bluetooth], output: false)
 		}
 		case .Headset, .Headphones : if (isHeadsetAudioRecorderAvailable()) {
 			Log.i("[Audio Route Helper] Headphones/headset device is able to record audio, also change input audio device")
-			applyAudioRouteChange(call:call,types: [AudioDeviceType.Headphones, AudioDeviceType.Headset], output:false)
+			applyAudioRouteChange(call:call,types: [AudioDevice.Kind.Headphones, AudioDevice.Kind.Headset], output:false)
 		}
-		default: applyAudioRouteChange(call:call,types: [AudioDeviceType.Microphone], output:false)
+		default: applyAudioRouteChange(call:call,types: [AudioDevice.Kind.Microphone], output:false)
 		}
 	}
 	
-	static private func routeAudioTo( call: Call?, types: [AudioDeviceType]) {
+	static private func routeAudioTo( call: Call?, types: [AudioDevice.Kind]) {
 		let currentCall = call != nil ? call : core.currentCall != nil ? core.currentCall : (core.callsNb > 0 ? core.calls[0] : nil)
 		if (call != nil || currentCall != nil) {
 			let callToUse = call != nil ? call : currentCall
@@ -102,23 +102,23 @@ import linphonesw
 	}
 	
 	static func routeAudioToEarpiece(call: Call? = nil) {
-		routeAudioTo(call: call, types: [AudioDeviceType.Microphone]) // on iOS Earpiece = Microphone
+		routeAudioTo(call: call, types: [AudioDevice.Kind.Microphone]) // on iOS Earpiece = Microphone
 	}
 	
 	static func routeAudioToSpeaker(call: Call? = nil) {
-		routeAudioTo(call: call, types: [AudioDeviceType.Speaker])
+		routeAudioTo(call: call, types: [AudioDevice.Kind.Speaker])
 	}
 	
 	@objc static func routeAudioToSpeaker() {
-		routeAudioTo(call: nil, types: [AudioDeviceType.Speaker])
+		routeAudioTo(call: nil, types: [AudioDevice.Kind.Speaker])
 	}
 	
 	static func routeAudioToBluetooth(call: Call? = nil) {
-		routeAudioTo(call: call, types: [AudioDeviceType.Bluetooth])
+		routeAudioTo(call: call, types: [AudioDevice.Kind.Bluetooth])
 	}
 	
 	static func routeAudioToHeadset(call: Call? = nil) {
-		routeAudioTo(call: call, types: [AudioDeviceType.Headphones, AudioDeviceType.Headset])
+		routeAudioTo(call: call, types: [AudioDevice.Kind.Headphones, AudioDevice.Kind.Headset])
 	}
 	
 	static func isSpeakerAudioRouteCurrentlyUsed(call: Call? = nil) -> Bool {
@@ -131,7 +131,7 @@ import linphonesw
 		let conference = core.conference
 		let audioDevice = conference != nil && conference?.isIn == true ? conference!.outputAudioDevice : currentCall != nil ? currentCall!.outputAudioDevice : core.outputAudioDevice
 		Log.i("[Audio Route Helper] Playback audio currently in use is [\(audioDevice?.deviceName ?? "n/a")] with type (\(audioDevice?.type ?? .Unknown)")
-		return audioDevice?.type == AudioDeviceType.Speaker
+		return audioDevice?.type == AudioDevice.Kind.Speaker
 	}
 	
 	static func isBluetoothAudioRouteCurrentlyUsed(call: Call? = nil) -> Bool {
@@ -144,11 +144,11 @@ import linphonesw
 		
 		let audioDevice =  conference != nil && conference?.isIn == true ? conference!.outputAudioDevice : currentCall?.outputAudioDevice
 		Log.i("[Audio Route Helper] Playback audio device currently in use is [\(audioDevice?.deviceName ?? "n/a")] with type (\(audioDevice?.type  ?? .Unknown)")
-		return audioDevice?.type == AudioDeviceType.Bluetooth
+		return audioDevice?.type == AudioDevice.Kind.Bluetooth
 	}
 	
 	static func isBluetoothAudioRouteAvailable() -> Bool {
-		if let device = core.audioDevices.first(where: { $0.type == AudioDeviceType.Bluetooth &&  $0.hasCapability(capability: .CapabilityPlay) }) {
+		if let device = core.audioDevices.first(where: { $0.type == AudioDevice.Kind.Bluetooth &&  $0.hasCapability(capability: .CapabilityPlay) }) {
 			Log.i("[Audio Route Helper] Found bluetooth audio device [\(device.deviceName)]")
 			return true
 		}
@@ -156,7 +156,7 @@ import linphonesw
 	}
 	
 	static private func isBluetoothAudioRecorderAvailable() -> Bool {
-		if let device = core.audioDevices.first(where: { $0.type == AudioDeviceType.Bluetooth &&  $0.hasCapability(capability: .CapabilityRecord) }) {
+		if let device = core.audioDevices.first(where: { $0.type == AudioDevice.Kind.Bluetooth &&  $0.hasCapability(capability: .CapabilityRecord) }) {
 			Log.i("[Audio Route Helper] Found bluetooth audio recorder [\(device.deviceName)]")
 			return true
 		}
@@ -164,7 +164,7 @@ import linphonesw
 	}
 	
 	static func isHeadsetAudioRouteAvailable() -> Bool {
-		if let device = core.audioDevices.first(where: { ($0.type == AudioDeviceType.Headset||$0.type == AudioDeviceType.Headphones) &&  $0.hasCapability(capability: .CapabilityPlay) }) {
+		if let device = core.audioDevices.first(where: { ($0.type == AudioDevice.Kind.Headset||$0.type == AudioDevice.Kind.Headphones) &&  $0.hasCapability(capability: .CapabilityPlay) }) {
 			Log.i("[Audio Route Helper] Found headset/headphones audio device  [\(device.deviceName)]")
 			return true
 		}
@@ -172,7 +172,7 @@ import linphonesw
 	}
 	
 	static private func isHeadsetAudioRecorderAvailable() -> Bool {
-		if let device = core.audioDevices.first(where: { ($0.type == AudioDeviceType.Headset||$0.type == AudioDeviceType.Headphones) &&  $0.hasCapability(capability: .CapabilityRecord) }) {
+		if let device = core.audioDevices.first(where: { ($0.type == AudioDevice.Kind.Headset||$0.type == AudioDevice.Kind.Headphones) &&  $0.hasCapability(capability: .CapabilityRecord) }) {
 			Log.i("[Audio Route Helper] Found headset/headphones audio recorder  [\(device.deviceName)]")
 			return true
 		}
@@ -183,7 +183,7 @@ import linphonesw
 	
 	static func isReceiverEnabled() -> Bool {
 		if let outputDevice = core.outputAudioDevice {
-			return outputDevice.type == AudioDeviceType.Microphone
+			return outputDevice.type == AudioDevice.Kind.Microphone
 		}
 		return false
 	}

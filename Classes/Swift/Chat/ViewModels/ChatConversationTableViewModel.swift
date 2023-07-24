@@ -82,7 +82,7 @@ class ChatConversationTableViewModel {
 		return chatRoom!.historyEventsSize
 	}
 	
-	func eventTypeIsOfInterestForOne(toOneRoom type: EventLogType) -> Bool {
+	func eventTypeIsOfInterestForOne(toOneRoom type: EventLog.Kind) -> Bool {
 		return type.rawValue == LinphoneEventLogTypeConferenceChatMessage.rawValue || type.rawValue == LinphoneEventLogTypeConferenceEphemeralMessageEnabled.rawValue || type.rawValue == LinphoneEventLogTypeConferenceEphemeralMessageDisabled.rawValue || type.rawValue == LinphoneEventLogTypeConferenceEphemeralMessageLifetimeChanged.rawValue
 	}
     

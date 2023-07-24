@@ -65,7 +65,7 @@ import linphonesw
 	
 	func searchAndAddMatchingContact(searchResult: SearchResult) -> Contact? {
 		if let friend = searchResult.friend {
-			if (searchResult.sourceFlags == MagicSearchSource.LdapServers.rawValue), let newContact = Contact(friend: friend.getCobject) {
+			if (searchResult.sourceFlags == MagicSearch.Source.LdapServers.rawValue), let newContact = Contact(friend: friend.getCobject) {
 				// Contact comes from LDAP, creating a new one
 				newContact.createdFromLdapOrProvisioning = true
 				return newContact
@@ -142,7 +142,7 @@ import linphonesw
 				NotificationCenter.default.post(name: Notification.Name(kLinphoneMagicSearchStarted), object: self)
 			}
 		}
-		magicSearch.getContactsListAsync(filter: currentFilter, domain: domain, sourceFlags: sourceFlags, aggregation: MagicSearchAggregation.Friend)
+		magicSearch.getContactsListAsync(filter: currentFilter, domain: domain, sourceFlags: sourceFlags, aggregation: MagicSearch.Aggregation.Friend)
 	}
 	
 	

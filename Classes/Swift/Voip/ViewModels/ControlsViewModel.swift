@@ -69,7 +69,7 @@ class ControlsViewModel {
 			},
 			onAudioDeviceChanged : { (core: Core, audioDevice: AudioDevice) -> Void in
 				Log.i("[Call Controls] Audio device changed: \(audioDevice.deviceName)")
-				self.nonEarpieceOutputAudioDevice.value = audioDevice.type != AudioDeviceType.Microphone // on iOS Earpiece = Microphone
+				self.nonEarpieceOutputAudioDevice.value = audioDevice.type != AudioDevice.Kind.Microphone // on iOS Earpiece = Microphone
 				self.updateSpeakerState()
 				self.updateBluetoothHeadsetState()
 			},

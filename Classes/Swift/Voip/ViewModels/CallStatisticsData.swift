@@ -132,7 +132,7 @@ struct StatItemData  {
 		case StatType.DOWNLOAD_BW: value.value = "\(stats.downloadBandwidth) kbits/s"
 		case StatType.UPLOAD_BW: value.value = "\(stats.uploadBandwidth) kbits/s"
 		case StatType.ICE: value.value = stats.iceState.toString()
-		case StatType.IP_FAM: value.value = stats.ipFamilyOfRemote == AddressFamily.Inet6 ?  "IPv6" : "IPv4"
+		case StatType.IP_FAM: value.value = stats.ipFamilyOfRemote == Address.Family.Inet6 ?  "IPv6" : "IPv4"
 		case StatType.SENDER_LOSS: value.value = String(format: "%.2f%",stats.senderLossRate)
 		case StatType.RECEIVER_LOSS: value.value = String(format: "%.2f%",stats.receiverLossRate)
 		case StatType.JITTER: value.value = String(format: "%.2f ms",stats.jitterBufferSizeMs)
