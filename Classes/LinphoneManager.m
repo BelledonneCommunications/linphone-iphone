@@ -1556,8 +1556,11 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 			[ftd stopAndDestroyAndRemove:FALSE];
 		}
 		[_fileTransferDelegates removeAllObjects];
-
-		linphone_core_destroy(theLinphoneCore);
+		
+		if (linphone_core_get_global_state(LC) != LinphoneGlobalOff) {
+			linphone_core_stop(LC);
+		}
+		linphone_core_unref(theLinphoneCore);
 		LOGI(@"Destroy linphonecore %p", theLinphoneCore);
 		theLinphoneCore = nil;
 
