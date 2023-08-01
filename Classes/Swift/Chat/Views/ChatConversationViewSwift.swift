@@ -1577,9 +1577,11 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func stopVoiceRecordPlayer() {
-		contentMessageView.recordingView.subviews.forEach({ view in
+		// Commented because this seemed to be what caused the breaking of the voice recording view
+		/*
+		 contentMessageView.recordingView.subviews.forEach({ view in
 			view.removeFromSuperview()
-		})
+		})*/
 		resetRecordingProgressBar()
 		self.contentMessageView.recordingWaveView.progress = 0.0
 		self.contentMessageView.recordingWaveView.setProgress(self.contentMessageView.recordingWaveView.progress, animated: false)
