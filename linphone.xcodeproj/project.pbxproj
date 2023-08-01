@@ -617,6 +617,7 @@
 		6643501C28D1CD3300AEA777 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F71BE285A24B10066163B /* UIColorExtensions.swift */; };
 		66631CE728D37A2400115E36 /* ExtraMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B06652886F0DB00E41889 /* ExtraMenuUITests.swift */; };
 		66631CE828D37AA300115E36 /* ExtraMenuActiveCallActionsUITestsMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B06672886F16300E41889 /* ExtraMenuActiveCallActionsUITestsMethods.swift */; };
+		662B73332A73C331002135F3 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B73322A73C331002135F3 /* CopyableLabel.swift */; };
 		667A423C293A4BAD00C4306C /* post_quantum_secure@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 667A423B293A4BAD00C4306C /* post_quantum_secure@3x.png */; };
 		6693A1D328D0FCE400489A39 /* ActiveCallUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B065F2886E38100E41889 /* ActiveCallUITests.swift */; };
 		6693A1D428D0FCE900489A39 /* ActiveCallViewUITestsMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B065B2886DA8500E41889 /* ActiveCallViewUITestsMethods.swift */; };
@@ -1777,6 +1778,7 @@
 		66495D0C289014E2002780DE /* PauseMode_extended.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = PauseMode_extended.xctestplan; sourceTree = "<group>"; };
 		664F8220289A66ED00D8C470 /* Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Debug.xctestplan; sourceTree = "<group>"; };
 		66689D3F28A2443A0054E633 /* UITestsScreenshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestsScreenshots.swift; sourceTree = "<group>"; };
+		662B73322A73C331002135F3 /* CopyableLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
 		666D795C283E67E300B07215 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		667A423B293A4BAD00C4306C /* post_quantum_secure@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "post_quantum_secure@3x.png"; sourceTree = "<group>"; };
 		669B140727A1821F0012220A /* scroll_to_bottom_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = scroll_to_bottom_default.png; sourceTree = "<group>"; };
@@ -3550,6 +3552,7 @@
 		C63F71B3285A24B10066163B /* IOS */ = {
 			isa = PBXGroup;
 			children = (
+				662B73322A73C331002135F3 /* CopyableLabel.swift */,
 				C684F1F92913D65500736775 /* SnapkitBridge.swift */,
 				C63F71B4285A24B10066163B /* UIApplication+Extension.swift */,
 				C63F71B6285A24B10066163B /* UIVIewControllerExtensions.swift */,
@@ -5059,6 +5062,7 @@
 				D35E7597159460580066B1C1 /* ChatsListView.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsView.m in Sources */,
 				C63F7216285A24B10066163B /* ScheduledConferencesView.swift in Sources */,
+				662B73332A73C331002135F3 /* CopyableLabel.swift in Sources */,
 				C63F7255285A24B10066163B /* VoipCallCell.swift in Sources */,
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				C63F7211285A24B10066163B /* ScheduledConferencesViewModel.swift in Sources */,
