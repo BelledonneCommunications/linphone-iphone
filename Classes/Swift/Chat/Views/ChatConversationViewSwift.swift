@@ -946,9 +946,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		})
 	}
 	
-	func setRecordingVisible(visible : Bool) {
+	func setRecordingVisible(hidden : Bool) {
 		UIView.animate(withDuration: 0.3, animations: {
-			self.contentMessageView.recordingView.isHidden = visible
+			self.contentMessageView.recordingView.isHidden = hidden
 		})
 	}
 	
@@ -1474,7 +1474,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	
 	func startVoiceRecording() {
 		ChatConversationViewModel.sharedModel.startVoiceRecording()
-		setRecordingVisible(visible: false)
+		setRecordingVisible(hidden: false)
 		contentMessageView.messageView.voiceRecordButton.isSelected = true
 		contentMessageView.recordingStopButton.isHidden = false
 		contentMessageView.recordingPlayButton.isHidden = true
@@ -1520,7 +1520,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 	}
 	
 	func cancelVoiceRecording() {
-		setRecordingVisible(visible: true)
+		setRecordingVisible(hidden: true)
 		contentMessageView.recordingStopButton.isHidden = false
 		contentMessageView.recordingPlayButton.isHidden = true
 		contentMessageView.recordingWaveImageMask.layer.removeAllAnimations()
