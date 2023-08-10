@@ -176,6 +176,7 @@
 		case LinphoneRegistrationNone:
 			return [UIImage imageNamed:@"led_disconnected.png"];
 		case LinphoneRegistrationProgress:
+		case LinphoneRegistrationRefreshing:
 			return [UIImage imageNamed:@"led_inprogress.png"];
 		case LinphoneRegistrationOk:
 			return [UIImage imageNamed:@"led_connected.png"];
@@ -207,6 +208,7 @@
 
 		switch (state) {
 			case LinphoneRegistrationOk:
+			case LinphoneRegistrationRefreshing:
 				message = NSLocalizedString(@"Connected", nil);
 				break;
 			case LinphoneRegistrationNone:
