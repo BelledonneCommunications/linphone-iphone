@@ -33,9 +33,7 @@ class CallsViewModel {
 	let callConnectedEvent = MutableLiveData<Call>()
 	let callUpdateEvent = MutableLiveData<Call>()
 	let noMoreCallEvent = MutableLiveData(false)
-	
-	var core : Core { get { Core.get() } }
-	
+		
 	static let shared = CallsViewModel()
 	
 	private var coreDelegate :  CoreDelegateStub?
@@ -97,7 +95,7 @@ class CallsViewModel {
 		
 		Core.get().addDelegate(delegate: coreDelegate!)
 		
-		if let currentCall = core.currentCall {
+		if let currentCall = Core.get().currentCall {
 			currentCallData.value??.destroy()
 			currentCallData.value = CallData(call:currentCall)
 		}
@@ -117,7 +115,7 @@ class CallsViewModel {
 	}
 	
 	private func initCallList() {
-		core.calls.forEach { addCallToList(call: $0) }
+		Core.get().calls.forEach { addCallToList(call: $0) }
 	}
 	
 	private func removeCallFromList(call: Call) {
@@ -149,7 +147,7 @@ class CallsViewModel {
 	}
 	
 	private func updateInactiveCallsCount() {
-		inactiveCallsCount.value = core.callsNb - 1
+		inactiveCallsCount.value = Core.get().callsNb - 1
 	}
 	
 	private func updateCallsAndChatCount() {
@@ -181,7 +179,7 @@ class CallsViewModel {
 				return
 			}
 
-			let firstCall = core.calls.filter {$0.state != .Error && $0.state != .End && $0.state != .Released}.first
+			let firstCall = Core.get().calls.filter {$0.state != .Error && $0.state != .End && $0.state != .Released}.first
 			if (firstCall != nil && currentCallData.value??.call.getCobject != firstCall?.getCobject) {
 				Log.i("[Calls] Using \(firstCall?.callLog?.callId) as \"current\" call")
 				callToUse = firstCall
@@ -204,9 +202,18 @@ class CallsViewModel {
 		ControlsViewModel.shared.updateMicState()
 		//updateUnreadChatCount()
 	}
+	func updateCore() {
+		Core.get().removeDelegate(delegate: coreDelegate!)
+		Core.get().addDelegate(delegate: coreDelegate!)
+	}
 }
 
 @objc class CallsViewModelBridge : NSObject {
+	
+	@objc static func updateCore() {
+		CallsViewModel.shared.updateCore()
+	}
+	
 	@objc static func callViewToDisplay() -> UICompositeViewDescription? {
 		if let call = CallsViewModel.shared.currentCallData.value??.call {
 			if (call.conference != nil) {
