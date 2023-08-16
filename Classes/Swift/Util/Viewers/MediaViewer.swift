@@ -77,7 +77,7 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 			setUpImageView()
 		} else if contentType == "video" {
 			setUpPlayerContainerView()
-		} else if contentType == "file" {
+		} else if contentType == "file" || contentType == "application"{
 			if imageNameViewer.lowercased().components(separatedBy: ".").last == "pdf" {
 				displayPDF()
 			}
