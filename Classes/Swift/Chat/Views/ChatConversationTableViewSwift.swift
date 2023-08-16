@@ -119,28 +119,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	@objc func receivePresenceNotification(notification: NSNotification) {
 		if (notification.name.rawValue == "LinphoneFriendPresenceUpdate"){
-			let userInfo = notification.userInfo
-			let friend = userInfo!["friend"]
-			
-			let indexPathsVisible = self.collectionView.indexPathsForVisibleItems
-			if indexPathsVisible.count > 0 {
-				for i in 0...indexPathsVisible.count-1 {
-					let cell = self.collectionView.cellForItem(at: indexPathsVisible[i])
-					if cell != nil {
-						let multilineCell = cell as! MultilineMessageCell
-						if multilineCell.imageUser.isHidden == false {
-							let contact = ChatConversationTableViewModel.sharedModel.getMessage(index: indexPathsVisible[i].row)?.chatMessage?.fromAddress
-							if (contact != nil){
-								let uri = "sip:" + contact!.username + "@" + contact!.domain
-								if(uri == friend as! String){
-									let indexPath = indexPathsVisible[i]
-									collectionView.reloadItems(at: [indexPath])
-								}
-							}
-						}
-					}
-				}
-			}
+			collectionView.reloadData()
 		}
  	}
     
@@ -519,10 +498,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		}
 		collectionView.reloadData()
 	}
-    
-    public func reloadCollectionViewCell(indexPath: IndexPath){
-        collectionView.reloadItems(at: [indexPath])
-    }
 	
 	func getPreviewItem(filePath: String) -> NSURL{
 		let url = NSURL(fileURLWithPath: filePath)
