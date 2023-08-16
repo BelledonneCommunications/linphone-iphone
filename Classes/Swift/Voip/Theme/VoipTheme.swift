@@ -153,7 +153,7 @@ import UIKit
 	static let chat_conversation_operation_in_progress_wait = TextStyle(fgColor: LightDarkColor(primary_color,primary_color), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .center, font: fontName+"-Bold", size: 18.0)
 	static let chat_conversation_reply_label = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)
 	static let chat_conversation_reply_content = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 14.0)
-	static let chat_conversation_recording_duration = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)
+	static let chat_conversation_recording_duration = TextStyle(fgColor: LightDarkColor(voip_dark_gray, voip_dark_gray), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 18.0)
 	static let chat_conversation_forward_label = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 12.0)
 	static let chat_conversation_black_text = TextStyle(fgColor: LightDarkColor(.black,.black), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 12.0)
     
