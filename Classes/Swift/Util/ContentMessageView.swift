@@ -186,6 +186,7 @@ class ContentMessageView:  UIViewController {
 			self.isComposingView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 			self.recordingWaveView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 			self.recordingWaveImageMask.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			self.view.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		}
 	}
 	
