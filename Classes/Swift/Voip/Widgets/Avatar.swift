@@ -235,28 +235,32 @@ class Avatar : UIView {
 	}
 	
     @objc static func updatePresenceImage(contact:Contact) -> UIImageView {
+		if contact.friend != nil {
+			let friend = Friend.getSwiftObject(cObject: contact.friend)
+			
+			var presenceModel : PresenceModel?
+			var hasPresence : Bool? = false
+			
+			var imageName = "";
+			
+			if friend.address?.asStringUriOnly() != nil {
+				presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
+				hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
+			}
+			
+			if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
+				imageName = "led_connected";
+			} else  if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Busy){
+				imageName = "led_inprogress";
+			} else {
+				imageName = "";
+			}
 
-        let friend = Friend.getSwiftObject(cObject: contact.friend)
-        
-        var presenceModel : PresenceModel?
-        var hasPresence : Bool? = false
-        
-        var imageName = "";
-        
-        if friend.address?.asStringUriOnly() != nil {
-            presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
-            hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
-        }
-		
-        if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
-            imageName = "led_connected";
-        } else  if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Busy){
-            imageName = "led_inprogress";
+			return UIImageView(image: UIImage(named:imageName))
 		} else {
-			imageName = "";
+			return UIImageView(image: UIImage(named:""))
 		}
 
-        return UIImageView(image: UIImage(named:imageName))
     }
 	
 	@objc static func clearFriends(){
