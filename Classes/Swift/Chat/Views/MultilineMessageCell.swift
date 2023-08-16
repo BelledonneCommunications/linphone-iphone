@@ -574,10 +574,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		let img = message.isOutgoing ? UIImage.withColor(UIColor("A")) : UIImage.withColor(UIColor("D"))
 		recordingWaveView.progressImage = img
 		
-		recordingDurationTextView.text = recordingDuration(message.contents.first?.filePath)
+		var filePathRecording = message.contents.first?.filePath
+		
+		if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+			filePathRecording = message.contents.first?.exportPlainFile()
+		}
+		
+		recordingDurationTextView.text = recordingDuration(filePathRecording)
 		
 		recordingPlayButton.onClickAction = {
-			self.playRecordedMessage(voiceRecorder: message.contents.first?.filePath, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+			self.playRecordedMessage(voiceRecorder: filePathRecording, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 		}
 		recordingStopButton.onClickAction = {
 			self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
