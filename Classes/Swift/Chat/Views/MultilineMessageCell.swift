@@ -530,8 +530,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
 	
 	func initPlayerAudio(message: ChatMessage){
-		let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_play"))
-		let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_black_button("vr_stop"))
+		let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_color_button("vr_play"))
+		let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_color_button("vr_stop"))
 		let recordingWaveView = UIProgressView()
 		let recordingDurationTextView = StyledLabel(VoipTheme.chat_conversation_recording_duration)
 		let recordingWaveImage = UIImageView(image: UIImage(named: "vr_wave.png"))

@@ -27,6 +27,9 @@ import SVProgressHUD
 	
 	let CONFERENCE_CREATION_TIME_OUT_SEC = 15.0
 	
+	let viaChatLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_chat_summary)
+	let speakersLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_speakers_list)
+	let speakersListTableView = UITableView()
 	let participantsListTableView = UITableView()
 	
 	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date, readOnly:true)
@@ -52,7 +55,7 @@ import SVProgressHUD
 			},nextAction: {
 			},
 			nextActionEnableCondition: ConferenceSchedulingViewModel.shared.continueEnabled,
-			title:VoipTexts.conference_schedule_summary)
+			title: ConferenceSchedulingViewModel.shared.getMode() == 0 ? VoipTexts.conference_schedule_summary : VoipTexts.conference_schedule_broadcast_summary)
 		super.nextButton.isHidden = true
 	
 		let subjectLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_subject_title)
@@ -130,18 +133,34 @@ import SVProgressHUD
 		scheduleForm.addSubview(descriptionInput)
 		
 		// Sending method
-		let viaChatLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_send_invite_chat_summary)
 		contentView.addSubview(viaChatLabel)
 		viaChatLabel.matchParentSideBorders(insetedByDx: form_margin).alignUnder(view: schedulingStack,withMargin: 2*form_margin).done()
 		viaChatLabel.numberOfLines = 2
 		ConferenceSchedulingViewModel.shared.sendInviteViaChat.readCurrentAndObserve { (sendChat) in
-      viaChatLabel.isHidden = sendChat != true || ConferenceSchedulingViewModel.shared.scheduleForLater.value != true
+			self.viaChatLabel.isHidden = sendChat != true || ConferenceSchedulingViewModel.shared.scheduleForLater.value != true
 		}
-			
+		
+		// Speaker
+		contentView.addSubview(speakersLabel)
+		speakersLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin).done()
+		speakersLabel.textAlignment = .left
+		
+		
+		contentView.addSubview(speakersListTableView)
+		speakersListTableView.isScrollEnabled = false
+		speakersListTableView.dataSource = self
+		speakersListTableView.register(VoipSpeakerCell.self, forCellReuseIdentifier: "VoipSpeakerCellSSchedule")
+		speakersListTableView.allowsSelection = false
+		if #available(iOS 15.0, *) {
+			speakersListTableView.allowsFocus = false
+		}
+		speakersListTableView.separatorStyle = .singleLine
+		speakersListTableView.backgroundColor = .clear
+		
 		// Participants
 		let participantsLabel = StyledLabel(VoipTheme.conference_scheduling_font, "  "+VoipTexts.conference_schedule_participants_list)
 		contentView.addSubview(participantsLabel)
-		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin).done()
+		participantsLabel.matchParentSideBorders().height(form_input_height).alignUnder(view: speakersListTableView,withMargin: form_margin).done()
 		participantsLabel.textAlignment = .left
 		
 		
@@ -155,6 +174,23 @@ import SVProgressHUD
 		}
 		participantsListTableView.separatorStyle = .singleLine
 		participantsListTableView.backgroundColor = .clear
+		
+		ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.readCurrentAndObserve { (addresses) in
+			self.speakersListTableView.reloadData()
+			self.speakersListTableView.removeConstraints().done()
+			self.speakersListTableView.matchParentSideBorders().alignUnder(view: self.speakersLabel,withMargin: self.form_margin).done()
+			self.speakersListTableView.height((addresses!.count > 0 ? Double(addresses!.count) : 0.5) * VoipParticipantCell.cell_height).done()
+			if addresses!.count == 0 {
+				let emptyLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
+				emptyLabel.text = VoipTexts.conference_schedule_speakers_list_empty
+				emptyLabel.textAlignment = NSTextAlignment.center
+				self.speakersListTableView.backgroundView = emptyLabel
+				self.speakersListTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+				self.speakersListTableView.backgroundView?.isHidden = false
+			} else {
+				self.speakersListTableView.backgroundView?.isHidden = true
+			}
+		}
 		
 		ConferenceSchedulingViewModel.shared.selectedAddresses.readCurrentAndObserve { (addresses) in
 			self.participantsListTableView.reloadData()
@@ -209,10 +245,10 @@ import SVProgressHUD
 		}
 		ConferenceSchedulingViewModel.shared.scheduleForLater.readCurrentAndObserve { (later) in
 			self.createButton.title = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit.uppercased() : VoipTexts.conference_schedule_start.uppercased() : VoipTexts.conference_group_call_create.uppercased()
-      viaChatLabel.isHidden = later != true || ConferenceSchedulingViewModel.shared.sendInviteViaChat.value != true
-			viaChatLabel.removeConstraints().matchParentSideBorders(insetedByDx: self.form_margin).alignUnder(view: schedulingStack,withMargin: (viaChatLabel.isHidden ? 0 : 1)*self.form_margin).done()
-			if (viaChatLabel.isHidden) {
-				viaChatLabel.height(0).done()
+			self.viaChatLabel.isHidden = later != true || ConferenceSchedulingViewModel.shared.sendInviteViaChat.value != true
+			self.viaChatLabel.removeConstraints().matchParentSideBorders(insetedByDx: self.form_margin).alignUnder(view: schedulingStack,withMargin: (self.viaChatLabel.isHidden ? 0 : 1)*self.form_margin).done()
+			if (self.viaChatLabel.isHidden) {
+				self.viaChatLabel.height(0).done()
 			}
 
 			self.createButton.addSidePadding()
@@ -220,6 +256,8 @@ import SVProgressHUD
 		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+			self.speakersLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
+			self.speakersListTableView.separatorColor = VoipTheme.separatorColor.get()
 			participantsLabel.backgroundColor = VoipTheme.voipFormBackgroundColor.get()
 			self.participantsListTableView.separatorColor = VoipTheme.separatorColor.get()
 		}
@@ -227,6 +265,8 @@ import SVProgressHUD
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
+		titleLabel.text = ConferenceSchedulingViewModel.shared.getMode() == 0 ? VoipTexts.conference_schedule_summary : VoipTexts.conference_schedule_broadcast_summary
+		
 		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDate
 		timeZoneValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledTimeZone.value!)
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)
@@ -243,6 +283,35 @@ import SVProgressHUD
 		scheduleForm.removeConstraints().matchParentSideBorders().wrapContentY().done()
 		
 		createButton.addSidePadding()
+		
+		speakersLabel.removeConstraints().matchParentSideBorders().height(form_input_height).alignUnder(view: viaChatLabel,withMargin: form_margin).done()
+		
+		speakersListTableView.removeConstraints().done()
+		speakersListTableView.matchParentSideBorders().alignUnder(view: self.speakersLabel,withMargin: self.form_margin).done()
+		speakersListTableView.height(Double(ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value!.count) * VoipParticipantCell.cell_height).done()
+		
+		if ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value?.count == 0 {
+			self.speakersListTableView.reloadData()
+			self.speakersListTableView.removeConstraints().done()
+			self.speakersListTableView.matchParentSideBorders().alignUnder(view: self.speakersLabel,withMargin: self.form_margin).done()
+			self.speakersListTableView.height(0.5 * VoipParticipantCell.cell_height).done()
+			let emptyLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: self.view.bounds.size.height))
+			emptyLabel.text = VoipTexts.conference_schedule_speakers_list_empty
+			emptyLabel.textAlignment = NSTextAlignment.center
+			self.speakersListTableView.backgroundView = emptyLabel
+			self.speakersListTableView.separatorStyle = UITableViewCell.SeparatorStyle.none
+		}
+		
+		if ConferenceSchedulingViewModel.shared.getMode() == 0 {
+			speakersLabel.isHidden = true
+			speakersListTableView.isHidden = true
+			speakersLabel.height(0).done()
+			speakersListTableView.height(0).done()
+		} else {
+			speakersLabel.isHidden = false
+			speakersListTableView.isHidden = false
+		}
+		
 		super.viewWillAppear(animated)
 	}
 		
@@ -251,6 +320,13 @@ import SVProgressHUD
 	func goBackParticipantsListSelection() {
 		let view: ChatConversationCreateView = VIEW(ChatConversationCreateView.compositeViewDescription())
 		view.unfragmentCompositeDescription()
+		
+		ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value!.forEach { address in
+			ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append(address)
+		}
+		
+		ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value!.removeAll()
+		
 		let addresses =  ConferenceSchedulingViewModel.shared.selectedAddresses.value!.map { (address) in String(address.asStringUriOnly()) }
 		view.tableController.contactsGroup = (addresses as NSArray).mutableCopy() as? NSMutableArray
 		view.tableController.notFirstTime = true
@@ -271,22 +347,69 @@ import SVProgressHUD
 	
 	// TableView datasource delegate
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		guard let participants = ConferenceSchedulingViewModel.shared.selectedAddresses.value else {
-			return 0
+		if(tableView == speakersListTableView){
+			guard let speakers = ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value else {
+				return 0
+			}
+			return speakers.count
+		} else {
+			guard let participants = ConferenceSchedulingViewModel.shared.selectedAddresses.value else {
+				return 0
+			}
+			return participants.count
 		}
-		return participants.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell:VoipParticipantCell = tableView.dequeueReusableCell(withIdentifier: "VoipParticipantCellSSchedule") as! VoipParticipantCell
-		guard let participant = ConferenceSchedulingViewModel.shared.selectedAddresses.value?[indexPath.row] else {
+		if(tableView == speakersListTableView){
+			let cell:VoipSpeakerCell = tableView.dequeueReusableCell(withIdentifier: "VoipSpeakerCellSSchedule") as! VoipSpeakerCell
+			guard let speaker = ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value?[indexPath.row] else {
+				return cell
+			}
+			cell.selectionStyle = .none
+			cell.scheduleConfSpeakerAddress = speaker
+			cell.limeBadge.isHidden = ConferenceSchedulingViewModel.shared.isEncrypted.value != true
+			
+			cell.deleteButton.addTarget(self, action: #selector(deleteButtonPressed), for: .touchUpInside)
+			cell.deleteButton.tag = indexPath.row
+			
+			return cell
+		} else {
+			let cell:VoipParticipantCell = tableView.dequeueReusableCell(withIdentifier: "VoipParticipantCellSSchedule") as! VoipParticipantCell
+			guard let participant = ConferenceSchedulingViewModel.shared.selectedAddresses.value?[indexPath.row] else {
+				return cell
+			}
+			cell.selectionStyle = .none
+			cell.scheduleConfParticipantAddress = participant
+			cell.limeBadge.isHidden = ConferenceSchedulingViewModel.shared.isEncrypted.value != true
+			
+			if ConferenceSchedulingViewModel.shared.getMode() == 0 {
+				cell.addButton.isHidden = true
+			} else {
+				cell.addButton.isHidden = false
+				cell.addButton.addTarget(self, action: #selector(addButtonPressed), for: .touchUpInside)
+				cell.addButton.tag = indexPath.row
+			}
 			return cell
 		}
-		cell.selectionStyle = .none
-		cell.scheduleConfParticipantAddress = participant
-		cell.limeBadge.isHidden = ConferenceSchedulingViewModel.shared.isEncrypted.value != true
-		return cell
 	}
 	
+	@objc func addButtonPressed(sender:UIButton!) {
+		if(ConferenceSchedulingViewModel.shared.selectedAddresses.value?[sender.tag] != nil) {
+			ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value?.append((ConferenceSchedulingViewModel.shared.selectedAddresses.value?[sender.tag])!)
+			ConferenceSchedulingViewModel.shared.selectedAddresses.value?.remove(at: sender.tag)
+		}
+		speakersListTableView.reloadData()
+		participantsListTableView.reloadData()
+	}
+	
+	@objc func deleteButtonPressed(sender:UIButton!) {
+		if(ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value?[sender.tag] != nil) {
+			ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append((ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value?[sender.tag])!)
+			ConferenceSchedulingViewModel.shared.selectedSpeakerAddresses.value?.remove(at: sender.tag)
+		}
+		speakersListTableView.reloadData()
+		participantsListTableView.reloadData()
+	}
 	
 }

@@ -29,7 +29,7 @@ class ContentMessageView:  UIViewController {
 	let replyContentTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
 	let replyContentTextSpacing = UIView()
 	let replyContentForMeetingTextView = StyledLabel(VoipTheme.chat_conversation_reply_content)
-	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
+	let replyDeleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_color_button("reply_cancel"))
 	let replyMeetingSchedule = UIImageView()
 	let recordingView = UIView()
 	let recordingDeleteButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_button("delete_default"))

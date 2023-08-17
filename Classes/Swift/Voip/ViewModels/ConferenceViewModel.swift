@@ -36,6 +36,7 @@ class ConferenceViewModel {
 	
 	let conference = MutableLiveData<Conference>()
 	let conferenceCreationPending = MutableLiveData<Bool>()
+	let conferenceSpeakers = MutableLiveData<[ConferenceSpeakerData]>()
 	let conferenceParticipants = MutableLiveData<[ConferenceParticipantData]>()
 	let conferenceParticipantDevices = MutableLiveData<[ConferenceParticipantDeviceData]>()
 	let conferenceDisplayMode = MutableLiveData<ConferenceDisplayMode>()

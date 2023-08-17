@@ -23,7 +23,7 @@ import Foundation
 import SnapKit
 import linphonesw
 
-class VoipParticipantCell: UITableViewCell {
+class VoipSpeakerCell: UITableViewCell {
 	
 	// Layout Constants
 	
@@ -45,17 +45,17 @@ class VoipParticipantCell: UITableViewCell {
 	let isAdminCheck = UIImageView(image: UIImage(named:("check_unselected")))
 	let removePart = CallControlButton(imageInset:dismiss_icon_inset,buttonTheme: VoipTheme.voip_cancel, onClickAction: {})
 
-	let addButton = CallControlButton(buttonTheme:VoipTheme.nav_color_button("add_field_default"))
+	let deleteButton = CallControlButton(buttonTheme:VoipTheme.nav_color_button("delete_field_default"))
 	
-	var owningParticpantsListView : ParticipantsListView? = nil
+	var owningParticpantsListView : SpeakersListView? = nil
 	
-	var participantData: ConferenceParticipantData? = nil {
+	var speakerData: ConferenceSpeakerData? = nil {
 		didSet {
-			if let data = participantData {
+			if let data = speakerData {
 				limeBadge.isHidden = true
-				avatar.fillFromAddress(address: data.participant.address!)
-				displayName.text = data.participant.address?.addressBookEnhancedDisplayName()
-				sipAddress.text = data.participant.address?.asStringUriOnly()
+				avatar.fillFromAddress(address: data.speaker.address!)
+				displayName.text = data.speaker.address?.addressBookEnhancedDisplayName()
+				sipAddress.text = data.speaker.address?.asStringUriOnly()
 				data.isAdmin.readCurrentAndObserve { _ in
 					self.setAdminStatus(data: data)
 				}
@@ -63,18 +63,18 @@ class VoipParticipantCell: UITableViewCell {
 					self.setAdminStatus(data: data)
 				}
 				self.isAdminView.onClick {
-					data.conference.setParticipantAdminStatus(participant: data.participant, isAdmin: data.isAdmin.value != true)
-					self.owningParticpantsListView?.participantsListTableView.reloadData()
+					data.conference.setParticipantAdminStatus(participant: data.speaker, isAdmin: data.isAdmin.value != true)
+					self.owningParticpantsListView?.speakersListTableView.reloadData()
 				}
 				self.removePart.onClick {
-					try?data.conference.removeParticipant(participant: data.participant)
-					self.owningParticpantsListView?.participantsListTableView.reloadData()
+					try?data.conference.removeParticipant(participant: data.speaker)
+					self.owningParticpantsListView?.speakersListTableView.reloadData()
 				}
 			}
 		}
 	}
 	
-	func setAdminStatus(data:ConferenceParticipantData) {
+	func setAdminStatus(data:ConferenceSpeakerData) {
 		let isAdmin = data.isAdmin.value!
 		let isMeAdmin = data.isMeAdmin.value!
 		self.removePart.isHidden = !isMeAdmin
@@ -83,9 +83,9 @@ class VoipParticipantCell: UITableViewCell {
 		self.isAdminView.isHidden = !isAdmin && !isMeAdmin // Non admin don't see status of others non admin (they just see admins)
 	}
 	
-	var scheduleConfParticipantAddress: Address?  = nil {
+	var scheduleConfSpeakerAddress: Address?  = nil {
 		didSet {
-			if let address = scheduleConfParticipantAddress {
+			if let address = scheduleConfSpeakerAddress {
 				avatar.fillFromAddress(address: address)
 				displayName.text = address.addressBookEnhancedDisplayName()
 				sipAddress.text = address.asStringUriOnly()
@@ -98,7 +98,7 @@ class VoipParticipantCell: UITableViewCell {
 	
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
-		contentView.height(VoipParticipantCell.cell_height).matchParentSideBorders().done()
+		contentView.height(VoipSpeakerCell.cell_height).matchParentSideBorders().done()
 	
 		addSubview(avatar)
 		avatar.size(w: VoipCallCell.avatar_size, h: VoipCallCell.avatar_size).centerY().alignParentLeft(withMargin: avatar_left_margin).done()
@@ -137,10 +137,10 @@ class VoipParticipantCell: UITableViewCell {
 		contentView.backgroundColor = .clear
 		backgroundColor = .clear
 		
-		// Add button for broadcast mode
-		addSubview(addButton)
-		addButton.alignParentRight(withMargin: 10).matchParentHeight().done()
-		addButton.isEnabled = true
+		// Delete button for broadcast mode
+		addSubview(deleteButton)
+		deleteButton.alignParentRight(withMargin: 10).matchParentHeight().done()
+		deleteButton.isEnabled = true
 	}
 	
 	required init?(coder: NSCoder) {

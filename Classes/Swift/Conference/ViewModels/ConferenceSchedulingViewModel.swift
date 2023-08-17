@@ -30,6 +30,9 @@ class ConferenceSchedulingViewModel  {
 	let subject = MutableLiveData<String>()
 	let description = MutableLiveData<String>()
 	
+	let mode = MutableLiveData<Int>()
+	static let modeList: [Mode] = computeModeList()
+	
 	let scheduleForLater = MutableLiveData<Bool>()
 	let scheduledDate = MutableLiveData<Date>()
 	let scheduledTime = MutableLiveData<Date>()
@@ -55,6 +58,7 @@ class ConferenceSchedulingViewModel  {
 	let continueEnabled: MutableLiveData<Bool> = MutableLiveData()
 	
 	let selectedAddresses = MutableLiveData<[Address]>([])
+	let selectedSpeakerAddresses = MutableLiveData<[Address]>([])
 	
 	private var conferenceScheduler: ConferenceScheduler? = nil
 	
@@ -156,6 +160,10 @@ class ConferenceSchedulingViewModel  {
 		sendInviteViaEmail.value = false
 		scheduledDate.value = nil
 		scheduledTime.value = nil
+		
+		mode.value = ConferenceSchedulingViewModel.modeList.indices.filter {
+			ConferenceSchedulingViewModel.modeList[$0].value == 0
+		}.first
 
 		scheduledTimeZone.value = ConferenceSchedulingViewModel.timeZones.indices.filter {
 			ConferenceSchedulingViewModel.timeZones[$0].timeZone.identifier == NSTimeZone.default.identifier
@@ -243,6 +251,10 @@ class ConferenceSchedulingViewModel  {
 		}.sorted()
 	}
 	
+	private static func computeModeList() -> [Mode] {
+		return [Mode(value: 0, display: "Meeting"), Mode(value: 1, display: "Broadcast")]
+	}
+	
 	private static func computeDurationList() -> [Duration] {
 		return [Duration(value: 30, display: "30min"), Duration(value: 60, display: "1h"), Duration(value: 120, display: "2h")]
 	}
@@ -258,5 +270,12 @@ class ConferenceSchedulingViewModel  {
 		return nil
 	}
 	
+	func getMode() -> Int {
+		if mode.value != nil {
+			return mode.value!
+		} else {
+			return 0
+		}
+	}
 	
 }

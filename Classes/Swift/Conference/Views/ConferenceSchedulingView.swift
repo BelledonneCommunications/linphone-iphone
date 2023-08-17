@@ -30,6 +30,7 @@ import IQKeyboardManager
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
+	let modeValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.mode,options: ConferenceSchedulingViewModel.modeList.map({ (mode: Mode) -> String in mode.display}))
 	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date)
 	let timeZoneValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}))
 	let durationValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledDuration,options: ConferenceSchedulingViewModel.durationList.map({ (duration: Duration) -> String in duration.display}))
@@ -81,10 +82,18 @@ import IQKeyboardManager
 		schedulingStack.addArrangedSubview(scheduleForm)
 		scheduleForm.matchParentSideBorders().done()
 		
+		// Mode
+		let modeLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_mode)
+		scheduleForm.addSubview(modeLabel)
+		modeLabel.alignParentTop(withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
+		
+		scheduleForm.addSubview(modeValue)
+		modeValue.alignUnder(view: modeLabel, withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
+		
 		// Left column (Date & Time)
 		let leftColumn = UIView()
 		scheduleForm.addSubview(leftColumn)
-		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft(withMargin: form_margin).alignParentTop(withMargin: form_margin).done()
+		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft(withMargin: form_margin).alignUnder(view: modeValue, withMargin: form_margin).done()
 		
 		let dateLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_date)
 		dateLabel.addIndicatorIcon(iconName: "voip_mandatory")
@@ -108,7 +117,7 @@ import IQKeyboardManager
 		// Right column (Duration & Timezone)
 		let rightColumn = UIView()
 		scheduleForm.addSubview(rightColumn)
-		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight(withMargin: form_margin).alignParentTop().done()
+		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight(withMargin: form_margin).alignUnder(view: modeValue, withMargin: form_margin).done()
 		
 		let durationLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_duration)
 		rightColumn.addSubview(durationLabel)
@@ -219,6 +228,7 @@ import IQKeyboardManager
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		modeValue.setIndex(index: ConferenceSchedulingViewModel.shared.mode.value!)
 		datePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledDate
 		timeZoneValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledTimeZone.value!)
 		durationValue.setIndex(index: ConferenceSchedulingViewModel.shared.scheduledDuration.value!)

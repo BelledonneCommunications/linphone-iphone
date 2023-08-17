@@ -407,7 +407,7 @@ import UIKit
 		backgroundStateColors: [:])
 	}
 	
-	static func nav_black_button(_ iconName:String) -> ButtonTheme {
+	static func nav_color_button(_ iconName:String) -> ButtonTheme {
 		return ButtonTheme(
 		tintableStateIcons:[
 			UIButton.State.normal.rawValue : TintableIcon(name: iconName),

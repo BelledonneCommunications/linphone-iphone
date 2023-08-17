@@ -1161,7 +1161,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 			let viewCell: UIView = UIView(frame: cell.contentView.frame)
 			cell.addSubview(viewCell)
 			
-			let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_black_button("reply_cancel"))
+			let deleteButton = CallControlButton(width: 22, height: 22, buttonTheme:VoipTheme.nav_color_button("reply_cancel"))
 			
 			deleteButton.onClickAction = {
 				ChatConversationViewModel.sharedModel.mediaCollectionView.remove(at: indexPath.row)
