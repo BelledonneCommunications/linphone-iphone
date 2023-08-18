@@ -10,6 +10,26 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [5.1.0] - 2023-21-08
+### Added
+- In contacts and chat conversations view, show short term presence for contacts whom publish it + added setting to disable it (enabled by default for sip.linphone.org accounts)
+- Advanced settings - option to prevent the taking of screenshot
+- Emoji picker in chat conversations
+- Add Organization label to contacts, and the possibility to filter through it
+- Possibility to make an attended transfer from one call to another
+- Contact names, phone numbers and sip addresses are now copyable through with long press action
+
+### Changed
+- Switched Account Creator backend from XMLRPC to FlexiAPI, it now requires to be able to receive a push notification
+- Chat conversation view (one-to-one and group) completely remade with Swift, with various quality of life improvements.
+- Minimum iOS version is now 11.2
+- Update linphone SDK to 5.2.95
+
+### Fixed
+- Several crashes in the chat conversation view and background mode
+- Url scheme handler : can now properly do a remote configuration when opening a linphone-config:URL from another app
+- Bug that could cause push notification to stop working after killing the app manually
+
 ## [5.0.2] - 2023-16-03
 
 ### Changed
