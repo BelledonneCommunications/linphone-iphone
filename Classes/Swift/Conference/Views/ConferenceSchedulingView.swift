@@ -30,6 +30,7 @@ import IQKeyboardManager
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
 	func compositeViewDescription() -> UICompositeViewDescription! { return type(of: self).compositeDescription }
 	
+	let modeLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_mode)
 	let modeValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.mode,options: ConferenceSchedulingViewModel.modeList.map({ (mode: Mode) -> String in mode.display}))
 	let datePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledDate,pickerMode: .date)
 	let timeZoneValue = StyledValuePicker(liveIndex: ConferenceSchedulingViewModel.shared.scheduledTimeZone,options: ConferenceSchedulingViewModel.timeZones.map({ (tzd: TimeZoneData) -> String in tzd.descWithOffset()}))
@@ -83,7 +84,6 @@ import IQKeyboardManager
 		scheduleForm.matchParentSideBorders().done()
 		
 		// Mode
-		let modeLabel = StyledLabel(VoipTheme.conference_scheduling_font, VoipTexts.conference_schedule_mode)
 		scheduleForm.addSubview(modeLabel)
 		modeLabel.alignParentTop(withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
 		
@@ -216,6 +216,21 @@ import IQKeyboardManager
     }
 		ConferenceSchedulingViewModel.shared.existingConfInfo.readCurrentAndObserve { (confInfo) in
 			super.titleLabel.text = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit :  VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
+			if ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil {
+				print("modeValue.isHidden.modeValue.isHidden if \(self.modeLabel.frame.height) \(self.modeValue.frame.height)")
+				self.modeLabel.isHidden = true
+				self.modeValue.isHidden = true
+				self.modeLabel.height(0).done()
+				self.modeValue.height(0).done()
+			} else {
+				print("modeValue.isHidden.modeValue.isHidden else \(self.modeLabel.frame.height) \(self.modeValue.frame.height)")
+				self.modeLabel.isHidden = false
+				self.modeValue.isHidden = false
+				self.modeLabel.removeConstraints().alignParentTop(withMargin: self.form_margin).matchParentSideBorders(insetedByDx: self.form_margin).done()
+				self.modeValue.removeConstraints().alignUnder(view: self.modeLabel, withMargin: self.form_margin).matchParentSideBorders(insetedByDx: self.form_margin).done()
+				self.modeLabel.height(20).done()
+				self.modeValue.height(38).done()
+			}
 		}
 		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
