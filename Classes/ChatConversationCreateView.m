@@ -78,6 +78,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableController.controllerNextButton = _nextButton;
 	_isForEditing = FALSE;
 	_voipTitle.text = VoipTexts.call_action_participants_list;
+	_topBar.backgroundColor = [VoipTheme.voipToolbarBackgroundColor get];
 
 }
 
@@ -133,13 +134,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)displayModeChanged{
 	[self.tableController.tableView reloadData];
 	if (_isForVoipConference) {
-		_topBar.backgroundColor = [VoipTheme.voipToolbarBackgroundColor get];
 		self.view.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
 		_tableController.tableView.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
 		_tableController.searchBar.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
 		_tableController.collectionView.backgroundColor = [VoipTheme.voipBackgroundBWColor get];
 	} else {
-		_topBar.backgroundColor = UIColor.secondarySystemBackgroundColor;
 		self.view.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
 		_tableController.tableView.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
 		_tableController.searchBar.backgroundColor = [VoipTheme.backgroundWhiteBlack get];
