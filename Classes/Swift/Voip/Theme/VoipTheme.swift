@@ -131,6 +131,7 @@ import UIKit
 	static let conference_mode_title = TextStyle(fgColor: LightDarkColor(dark_grey_color,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 17.0)
 	static let conference_mode_title_selected = conference_mode_title.boldEd()
 	static let conference_scheduling_font = TextStyle(fgColor: voipTextColor, bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 17.0)
+	static let conference_invite_participant_title_font = TextStyle(fgColor: LightDarkColor(dark_grey_color,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)
 	static let conference_invite_desc_font = TextStyle(fgColor: LightDarkColor(dark_grey_color,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Regular", size: 14.0)
 	static let conference_invite_desc_title_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)
 	static let conference_invite_subject_font = TextStyle(fgColor: LightDarkColor(voip_dark_gray,.white), bgColor: LightDarkColor(.clear,.clear), allCaps: false, align: .left, font: fontName+"-Bold", size: 14.0)

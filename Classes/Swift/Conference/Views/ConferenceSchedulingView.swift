@@ -217,13 +217,11 @@ import IQKeyboardManager
 		ConferenceSchedulingViewModel.shared.existingConfInfo.readCurrentAndObserve { (confInfo) in
 			super.titleLabel.text = ConferenceSchedulingViewModel.shared.scheduleForLater.value == true ? ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil ? VoipTexts.conference_schedule_edit :  VoipTexts.conference_schedule_title : VoipTexts.conference_group_call_title
 			if ConferenceSchedulingViewModel.shared.existingConfInfo.value != nil {
-				print("modeValue.isHidden.modeValue.isHidden if \(self.modeLabel.frame.height) \(self.modeValue.frame.height)")
 				self.modeLabel.isHidden = true
 				self.modeValue.isHidden = true
 				self.modeLabel.height(0).done()
 				self.modeValue.height(0).done()
 			} else {
-				print("modeValue.isHidden.modeValue.isHidden else \(self.modeLabel.frame.height) \(self.modeValue.frame.height)")
 				self.modeLabel.isHidden = false
 				self.modeValue.isHidden = false
 				self.modeLabel.removeConstraints().alignParentTop(withMargin: self.form_margin).matchParentSideBorders(insetedByDx: self.form_margin).done()

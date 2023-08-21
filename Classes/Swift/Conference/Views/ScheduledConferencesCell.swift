@@ -35,12 +35,16 @@ class ScheduledConferencesCell: UITableViewCell {
 	let subject = StyledLabel(VoipTheme.conference_list_subject_font)
 	let cancelledLabel = StyledLabel(VoipTheme.conference_cancelled_title_font)
 	let participantsIcon = UIImageView()
+	let participantsGuestIcon = UIImageView()
+	let participantsTitle = StyledLabel(VoipTheme.conference_invite_participant_title_font)
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
+	let participantsGuestTitle = StyledLabel(VoipTheme.conference_invite_participant_title_font)
+	let participantsGuest = StyledLabel(VoipTheme.conference_invite_desc_font)
 	let infoConf = UIButton()
 	
 	let descriptionTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_description_title)
 	let descriptionValue = StyledLabel(VoipTheme.conference_list_address_desc_font)
-	let urlTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_title)
+	var urlTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_title)
 	let urlValue = StyledLabel(VoipTheme.conference_scheduling_font)
 	let copyLink  = CallControlButton(width:button_size,height:button_size,buttonTheme: VoipTheme.scheduled_conference_action("voip_copy"))
 	let joinConf = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
@@ -51,13 +55,15 @@ class ScheduledConferencesCell: UITableViewCell {
 	let expandedRows = UIStackView()
 	let selectionCheckBox = StyledCheckBox()
 	let myContentView = UIView()
+	
+	let isBroadcast = true
 
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
 			if let data = conferenceData {
 				timeDuration.text = "\(data.time.value)"+(data.duration.value != nil ? " (\(data.duration.value))" : "")
 				organiser.text = VoipTexts.conference_schedule_organizer+data.organizer.value!
-				subject.text = data.subject.value!
+				subject.text = (isBroadcast ? VoipTexts.conference_scheduled_title_broadcast_cell : VoipTexts.conference_scheduled_title_meeting_cell) + data.subject.value!
 				cancelledLabel.text = data.isConferenceCancelled.value == true ? ( data.canEdit.value == true ? VoipTexts.conference_scheduled_cancelled_by_me:  VoipTexts.conference_scheduled_cancelled_by_organizer)  : nil
 				cancelledLabel.isHidden = data.isConferenceCancelled.value != true
 				descriptionValue.text = data.description.value!
@@ -75,7 +81,11 @@ class ScheduledConferencesCell: UITableViewCell {
 					self.descriptionTitle.isHidden = expanded != true || self.descriptionValue.text?.count == 0
 					self.descriptionValue.isHidden = expanded != true  || self.descriptionValue.text?.count == 0
 					self.infoConf.isSelected = expanded == true
+					self.participantsTitle.text = self.isBroadcast ? VoipTexts.conference_scheduled_title_speakers_cell : VoipTexts.conference_scheduled_title_participant_cell
+					self.participantsGuestTitle.text = VoipTexts.conference_scheduled_title_guests_cell
+					self.participantsTitle.isHidden = expanded != true
 					self.participants.text = expanded == true ? data.participantsExpanded.value : data.participantsShort.value
+					self.participantsGuest.text = data.participantsExpanded.value
 					self.participants.numberOfLines = expanded == true ? 6 : 2
 					self.expandedRows.isHidden = expanded != true
 					self.joinEditDelete.isHidden = expanded != true
@@ -84,7 +94,31 @@ class ScheduledConferencesCell: UITableViewCell {
 					} else {
 						self.editConf.isHidden = true
 					}
-					self.participants.removeConstraints().alignUnder(view: self.subject,withMargin: 10).toRightOf(self.participantsIcon,withLeftMargin:10).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+					
+					if expanded != nil && expanded! {
+						self.participantsTitle.removeConstraints().alignUnder(view: self.subject,withMargin: 10).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+						self.participants.removeConstraints().alignUnder(view: self.participantsTitle, withMargin: 4).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+						
+						if self.isBroadcast {
+							self.participantsGuestIcon.removeConstraints().alignUnder(view: self.participants,withMargin: 5).square(25).alignParentLeft(withMargin: 10).done()
+							self.participantsGuestIcon.isHidden = false
+							
+							self.participantsGuestTitle.removeConstraints().alignUnder(view: self.participants,withMargin: 10).toRightOf(self.participantsGuestIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+							self.participantsGuestTitle.isHidden = false
+							
+							self.participantsGuest.removeConstraints().alignUnder(view: self.participantsGuestTitle, withMargin: 10).toRightOf(self.participantsGuestIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+							self.participantsGuest.isHidden = false
+						}
+					} else {
+						self.participants.removeConstraints().alignUnder(view: self.subject,withMargin: 10).toRightOf(self.participantsIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+						self.participantsGuestIcon.isHidden = true
+						self.participantsGuestTitle.isHidden = true
+						self.participantsGuest.isHidden = true
+					}
+					
+					self.isBroadcast ? self.expandedRows.removeConstraints().alignUnder(view: self.participantsGuest,withMargin: 15).matchParentSideBorders(insetedByDx:10).done() : self.expandedRows.removeConstraints().alignUnder(view: self.participants,withMargin: 15).matchParentSideBorders(insetedByDx:10).done()
+					
+					
 					self.joinEditDelete.removeConstraints().alignUnder(view: self.expandedRows,withMargin: 10).alignParentRight(withMargin: 10).done()
 					if (expanded == true) {
 						self.joinEditDelete.alignParentBottom(withMargin: 10).done()
@@ -140,9 +174,33 @@ class ScheduledConferencesCell: UITableViewCell {
 		infoConf.alignUnder(view: subject,withMargin: 5).square(25).alignParentRight(withMargin: 10).done()
 		infoConf.applyTintedIcons(tintedIcons: VoipTheme.conference_info_button)
 		
+		myContentView.addSubview(participantsTitle)
+		participantsTitle.alignUnder(view: subject,withMargin: 10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
 		
 		myContentView.addSubview(participants)
-		participants.alignUnder(view: subject,withMargin: 10).toRightOf(participantsIcon,withLeftMargin:10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
+		participants.alignUnder(view: participantsTitle, withMargin: 10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
+		
+		
+		
+		
+		
+		myContentView.addSubview(participantsGuestIcon)
+		participantsGuestIcon.alignUnder(view: participants,withMargin: 5).square(25).alignParentLeft(withMargin: 10).done()
+		participantsGuestIcon.isHidden = true
+		
+		myContentView.addSubview(participantsGuestTitle)
+		participantsGuestTitle.alignUnder(view: participants,withMargin: 10).toRightOf(participantsGuestIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
+		participantsGuestTitle.isHidden = true
+		
+		myContentView.addSubview(participantsGuest)
+		participantsGuest.alignUnder(view: participantsGuestTitle, withMargin: 10).toRightOf(participantsGuestIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
+		participantsGuest.isHidden = true
+		
+		
+		
+		
+		
+		
 		
 		expandedRows.axis = .vertical
 		expandedRows.spacing = 10
@@ -151,6 +209,8 @@ class ScheduledConferencesCell: UITableViewCell {
 		
 		expandedRows.addArrangedSubview(descriptionTitle)
 		expandedRows.addArrangedSubview(descriptionValue)
+		
+		urlTitle = isBroadcast ? StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_broadcast_title) : StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_title)
 		
 		expandedRows.addArrangedSubview(urlTitle)
 		let urlAndCopy = UIStackView()
@@ -163,7 +223,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		expandedRows.addArrangedSubview(urlAndCopy)
 		copyLink.onClick {
 			UIPasteboard.general.string = self.conferenceData?.address.value!
-			VoipDialog.toast(message: VoipTexts.conference_schedule_address_copied_to_clipboard)
+			self.isBroadcast ? VoipDialog.toast(message: VoipTexts.conference_schedule_address_broadcast_copied_to_clipboard) : VoipDialog.toast(message: VoipTexts.conference_schedule_address_copied_to_clipboard)
 		}
 		
 		joinEditDelete.axis = .horizontal
@@ -222,6 +282,7 @@ class ScheduledConferencesCell: UITableViewCell {
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.clockIcon.image = UIImage(named: "conference_schedule_time_default")?.tinted(with: VoipTheme.voipDrawableColor.get())
 			self.participantsIcon.image = UIImage(named: "conference_schedule_participants_default")?.tinted(with: VoipTheme.voipDrawableColor.get())
+			self.participantsGuestIcon.image = UIImage(named: "conference_schedule_participants_default")?.tinted(with: VoipTheme.voipDrawableColor.get())
 		}
 	}
 	
