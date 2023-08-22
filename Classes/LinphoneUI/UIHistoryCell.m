@@ -77,7 +77,7 @@
 
 - (NSString *)accessibilityValue {
 	BOOL incoming = linphone_call_log_get_dir(callLog) == LinphoneCallIncoming;
-	BOOL missed = linphone_call_log_get_status(callLog) == LinphoneCallMissed;
+	BOOL missed = [SwiftUtil isCallLogMissedWithCLog:callLog];
 	NSString *call_type = incoming ? (missed ? @"Missed" : @"Incoming") : @"Outgoing";
 	return [NSString stringWithFormat:@"%@ call from %@", call_type, displayNameLabel.text];
 }
@@ -99,7 +99,7 @@
 		const LinphoneAddress *addr;
 		UIImage *image;
 		if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
-			if (linphone_call_log_get_status(callLog) != LinphoneCallMissed) {
+			if (![SwiftUtil isCallLogMissedWithCLog:callLog]) {
 				image = [UIImage imageNamed:@"call_status_incoming.png"];
 			} else {
 				image = [UIImage imageNamed:@"call_status_missed.png"];

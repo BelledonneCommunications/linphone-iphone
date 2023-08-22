@@ -20,6 +20,7 @@
 #import "HistoryDetailsTableView.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
+#import "linphoneapp-Swift.h"
 
 @implementation HistoryDetailsTableView
 
@@ -89,7 +90,7 @@
 										   [LinphoneUtils durationToString:duration]]];
 	BOOL outgoing = (linphone_call_log_get_dir(log) == LinphoneCallOutgoing);
 
-	if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
+	if ([SwiftUtil isCallLogMissedWithCLog:log]) {
 		cell.imageView.image = [UIImage imageNamed:@"call_missed.png"];
 	} else if (outgoing) {
 		cell.imageView.image = [UIImage imageNamed:@"call_outgoing.png"];

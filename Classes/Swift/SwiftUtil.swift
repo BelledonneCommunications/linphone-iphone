@@ -115,6 +115,11 @@ import linphonesw
 		return  (message.isOutgoing && [.Delivered, .DeliveredToUser, .Displayed].contains(message.state)) ||  (!message.isOutgoing && [.Displayed].contains(message.state))
 	}
 	
+	// Call Log
+	@objc static func isCallLogMissed(cLog:OpaquePointer) -> Bool {
+		let log = CallLog.getSwiftObject(cObject: cLog)
+		return log.dir == .Incoming && [.Missed,.Aborted,.EarlyAborted].contains(log.status)
+	}
 	
 }
 
