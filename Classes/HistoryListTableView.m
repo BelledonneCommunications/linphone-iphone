@@ -185,7 +185,7 @@
 	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
-		BOOL keepIt = (!missedFilter || linphone_call_log_get_status(log) == LinphoneCallMissed) && (!confFilter||linphone_call_log_was_conference(log)) ;
+		BOOL keepIt = (!missedFilter || [SwiftUtil isCallLogMissedWithCLog:log]) && (!confFilter||linphone_call_log_was_conference(log)) ;
 		if (keepIt) {
 			NSDate *startDate = [self
 				dateAtBeginningOfDayForDate:[NSDate
