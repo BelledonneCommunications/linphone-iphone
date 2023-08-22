@@ -259,7 +259,9 @@ import IQKeyboardManager
 	func gotoParticipantsListSelection() {
 		let view: ChatConversationCreateView = self.VIEW(ChatConversationCreateView.compositeViewDescription())
 		view.unfragmentCompositeDescription()
-		let addresses =  ConferenceSchedulingViewModel.shared.selectedAddresses.value!.map { (address) in String(address.asStringUriOnly()) }
+		let addresses =  ConferenceSchedulingViewModel.shared.selectedParticipants.value!.map { (address) in
+			address.address != nil ? String(address.address!.asStringUriOnly()) : ""
+		}
 		view.tableController.contactsGroup = (addresses as NSArray).mutableCopy() as? NSMutableArray
 		view.isForEditing = false
 		view.isForVoipConference = true

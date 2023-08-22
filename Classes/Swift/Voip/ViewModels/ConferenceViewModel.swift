@@ -504,9 +504,18 @@ class ConferenceViewModel {
 	
 	@objc static func scheduleFromGroupChat(cChatRoom: OpaquePointer ) {
 		ConferenceSchedulingViewModel.shared.reset()
-		ChatRoom.getSwiftObject(cObject: cChatRoom).participants.forEach {
-			ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append($0.address!)
+		
+		do {
+			try ChatRoom.getSwiftObject(cObject: cChatRoom).participants.forEach {
+				ConferenceSchedulingViewModel.shared.selectedParticipants.value?.append(
+					try Factory.Instance.createParticipantInfo(address: $0.address!)
+			 	)
+				ConferenceSchedulingViewModel.shared.selectedParticipants.value?.last?.role = .Listener
+		 	}
+		} catch {
+			Log.e("[ScheduleFromGroupChat] unable to create ParticipantInfo \(error)")
 		}
+	
 		ConferenceSchedulingViewModel.shared.scheduleForLater.value = true
 	}
 	

@@ -44,7 +44,7 @@ class ScheduledConferencesCell: UITableViewCell {
 	
 	let descriptionTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_description_title)
 	let descriptionValue = StyledLabel(VoipTheme.conference_list_address_desc_font)
-	var urlTitle = StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_title)
+	var urlTitle = StyledLabel(VoipTheme.conference_list_address_desc_font)
 	let urlValue = StyledLabel(VoipTheme.conference_scheduling_font)
 	let copyLink  = CallControlButton(width:button_size,height:button_size,buttonTheme: VoipTheme.scheduled_conference_action("voip_copy"))
 	let joinConf = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
@@ -56,11 +56,12 @@ class ScheduledConferencesCell: UITableViewCell {
 	let selectionCheckBox = StyledCheckBox()
 	let myContentView = UIView()
 	
-	let isBroadcast = true
+	var isBroadcast = false
 
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
 			if let data = conferenceData {
+				isBroadcast = data.conferenceInfo.participantInfos.filter({$0.role == .Speaker}).count != 0 && data.conferenceInfo.participantInfos.filter({$0.role == .Listener}).count != 0
 				timeDuration.text = "\(data.time.value)"+(data.duration.value != nil ? " (\(data.duration.value))" : "")
 				organiser.text = VoipTexts.conference_schedule_organizer+data.organizer.value!
 				subject.text = (isBroadcast ? VoipTexts.conference_scheduled_title_broadcast_cell : VoipTexts.conference_scheduled_title_meeting_cell) + data.subject.value!
@@ -85,8 +86,9 @@ class ScheduledConferencesCell: UITableViewCell {
 					self.participantsGuestTitle.text = VoipTexts.conference_scheduled_title_guests_cell
 					self.participantsTitle.isHidden = expanded != true
 					self.participants.text = expanded == true ? data.participantsExpanded.value : data.participantsShort.value
-					self.participantsGuest.text = data.participantsExpanded.value
-					self.participants.numberOfLines = expanded == true ? 6 : 2
+					self.participantsGuest.text = data.participantsGuestExpanded.value
+					self.participants.numberOfLines = expanded == true ? 10 : 2
+					self.participantsGuest.numberOfLines = expanded == true ? 10 : 2
 					self.expandedRows.isHidden = expanded != true
 					self.joinEditDelete.isHidden = expanded != true
 					if let myAddress = Core.get().defaultAccount?.params?.identityAddress {
@@ -106,7 +108,7 @@ class ScheduledConferencesCell: UITableViewCell {
 							self.participantsGuestTitle.removeConstraints().alignUnder(view: self.participants,withMargin: 10).toRightOf(self.participantsGuestIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
 							self.participantsGuestTitle.isHidden = false
 							
-							self.participantsGuest.removeConstraints().alignUnder(view: self.participantsGuestTitle, withMargin: 10).toRightOf(self.participantsGuestIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
+							self.participantsGuest.removeConstraints().alignUnder(view: self.participantsGuestTitle, withMargin: 4).toRightOf(self.participantsGuestIcon,withLeftMargin:10).toLeftOf(self.infoConf,withRightMargin: 15).done()
 							self.participantsGuest.isHidden = false
 						}
 					} else {
@@ -118,6 +120,7 @@ class ScheduledConferencesCell: UITableViewCell {
 					
 					self.isBroadcast ? self.expandedRows.removeConstraints().alignUnder(view: self.participantsGuest,withMargin: 15).matchParentSideBorders(insetedByDx:10).done() : self.expandedRows.removeConstraints().alignUnder(view: self.participants,withMargin: 15).matchParentSideBorders(insetedByDx:10).done()
 					
+					self.urlTitle.text = self.isBroadcast ? VoipTexts.conference_schedule_address_broadcast_title : VoipTexts.conference_schedule_address_title
 					
 					self.joinEditDelete.removeConstraints().alignUnder(view: self.expandedRows,withMargin: 10).alignParentRight(withMargin: 10).done()
 					if (expanded == true) {
@@ -180,10 +183,6 @@ class ScheduledConferencesCell: UITableViewCell {
 		myContentView.addSubview(participants)
 		participants.alignUnder(view: participantsTitle, withMargin: 10).toRightOf(participantsIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
 		
-		
-		
-		
-		
 		myContentView.addSubview(participantsGuestIcon)
 		participantsGuestIcon.alignUnder(view: participants,withMargin: 5).square(25).alignParentLeft(withMargin: 10).done()
 		participantsGuestIcon.isHidden = true
@@ -196,12 +195,6 @@ class ScheduledConferencesCell: UITableViewCell {
 		participantsGuest.alignUnder(view: participantsGuestTitle, withMargin: 10).toRightOf(participantsGuestIcon,withLeftMargin:10).toLeftOf(infoConf,withRightMargin: 15).done()
 		participantsGuest.isHidden = true
 		
-		
-		
-		
-		
-		
-		
 		expandedRows.axis = .vertical
 		expandedRows.spacing = 10
 		myContentView.addSubview(expandedRows)
@@ -209,8 +202,6 @@ class ScheduledConferencesCell: UITableViewCell {
 		
 		expandedRows.addArrangedSubview(descriptionTitle)
 		expandedRows.addArrangedSubview(descriptionValue)
-		
-		urlTitle = isBroadcast ? StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_broadcast_title) : StyledLabel(VoipTheme.conference_list_address_desc_font, VoipTexts.conference_schedule_address_title)
 		
 		expandedRows.addArrangedSubview(urlTitle)
 		let urlAndCopy = UIStackView()
@@ -257,9 +248,14 @@ class ScheduledConferencesCell: UITableViewCell {
 			ConferenceSchedulingViewModel.shared.subject.value = confData.subject.value
 			ConferenceSchedulingViewModel.shared.scheduledDuration.value = ConferenceSchedulingViewModel.durationList.firstIndex(where: {$0.value == confData.conferenceInfo.duration})
 			ConferenceSchedulingViewModel.shared.scheduleForLater.value = true
-			ConferenceSchedulingViewModel.shared.selectedAddresses.value = []
-			confData.conferenceInfo.participants.forEach {
-				ConferenceSchedulingViewModel.shared.selectedAddresses.value?.append($0)
+			ConferenceSchedulingViewModel.shared.selectedParticipants.value = []
+			do {
+				try confData.conferenceInfo.participants.forEach {
+					ConferenceSchedulingViewModel.shared.selectedParticipants.value?.append(try Factory.Instance.createParticipantInfo(address: $0))
+					ConferenceSchedulingViewModel.shared.selectedParticipants.value?.last?.role = .Listener
+				}
+			} catch {
+				Log.e("[ScheduleFromGroupChat] unable to create ParticipantInfo \(error)")
 			}
 			ConferenceSchedulingViewModel.shared.existingConfInfo.value = confData.conferenceInfo
 			// TOODO TimeZone (as Android 14.6.2022) ConferenceSchedulingViewModel.shared.scheduledTimeZone.value = self.conferenceData?.timezone

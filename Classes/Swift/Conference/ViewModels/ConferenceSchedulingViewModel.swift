@@ -57,8 +57,7 @@ class ConferenceSchedulingViewModel  {
 	
 	let continueEnabled: MutableLiveData<Bool> = MutableLiveData()
 	
-	let selectedAddresses = MutableLiveData<[Address]>([])
-	let selectedSpeakerAddresses = MutableLiveData<[Address]>([])
+	let selectedParticipants = MutableLiveData<[ParticipantInfo]>([])
 	
 	private var conferenceScheduler: ConferenceScheduler? = nil
 	
@@ -173,13 +172,10 @@ class ConferenceSchedulingViewModel  {
 			ConferenceSchedulingViewModel.durationList[$0].value == 60
 		}.first
 		continueEnabled.value = false
-    selectedAddresses.value = []
+    	selectedParticipants.value = []
 		existingConfInfo.value = nil
 		description.value = ""
-    
 	}
-	
-	
 	
 	func destroy() {
 		conferenceScheduler?.removeDelegate(delegate: conferenceSchedulerDelegate!)
@@ -192,7 +188,7 @@ class ConferenceSchedulingViewModel  {
 		
 	func createConference() {
 		
-		if (selectedAddresses.value?.count == 0) {
+		if (selectedParticipants.value?.count == 0) {
 			Log.e("[Conference Creation] Couldn't create conference without any participant!")
 			return
 		}
@@ -214,7 +210,7 @@ class ConferenceSchedulingViewModel  {
 			conferenceInfo.organizer = localAddress
 			subject.value.map { conferenceInfo.subject = $0}
 			description.value.map { conferenceInfo.description = $0}
-			conferenceInfo.participants = selectedAddresses.value!
+			conferenceInfo.participantInfos = selectedParticipants.value!
 			if (scheduleForLater.value == true) {
 				let timestamp = getConferenceStartTimestamp()
 				conferenceInfo.dateTime = time_t(timestamp)
@@ -228,8 +224,6 @@ class ConferenceSchedulingViewModel  {
 			Log.e("[Conference Creation] Failed \(error)")
 		}
 	}
-	
-	
 	
 	private func allMandatoryFieldsFilled() -> Bool {
 		return subject.value != nil && subject.value!.count > 0 && (scheduleForLater.value != true || (scheduledDate.value != nil && scheduledTime.value != nil) );

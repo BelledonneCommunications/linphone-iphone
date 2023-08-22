@@ -35,6 +35,7 @@ class ScheduledConferenceData {
 	let organizer = MutableLiveData<String>()
 	let participantsShort = MutableLiveData<String>()
 	let participantsExpanded = MutableLiveData<String>()
+	let participantsGuestExpanded = MutableLiveData<String>()
 	let rawDate : Date
 	let isConferenceCancelled = MutableLiveData(false)
 	let canEdit = MutableLiveData(false)
@@ -42,6 +43,8 @@ class ScheduledConferenceData {
 	let selectedForDeletion = MutableLiveData(false)
 	private var conferenceSchedulerDelegate : ConferenceSchedulerDelegateStub? = nil
 	private var conferenceScheduler : ConferenceScheduler? = nil
+	
+	var isBroadcast = false
 	
 	init (conferenceInfo: ConferenceInfo, isFinished: Bool = false) {
 		self.conferenceInfo = conferenceInfo
@@ -93,8 +96,20 @@ class ScheduledConferenceData {
 			participantsShort.value = " "
 		}
 		
-		participantsExpanded.value = conferenceInfo.participants.map {(participant) in
-			String(describing: participant.addressBookEnhancedDisplayName())+" ("+String(describing: participant.asStringUriOnly())+")"
+		isBroadcast = conferenceInfo.participantInfos.filter({$0.role == .Speaker}).count != 0 && conferenceInfo.participantInfos.filter({$0.role == .Listener}).count != 0
+		
+		if isBroadcast {
+			participantsExpanded.value = conferenceInfo.participantInfos.filter({$0.role == .Speaker}).map {(participant) in
+				String(describing: participant.address!.addressBookEnhancedDisplayName())+" ("+String(describing: participant.address!.asStringUriOnly())+")"
+			}.joined(separator: "\n")
+		} else {
+			participantsExpanded.value = conferenceInfo.participantInfos.map {(participant) in
+				String(describing: participant.address!.addressBookEnhancedDisplayName())+" ("+String(describing: participant.address!.asStringUriOnly())+")"
+			}.joined(separator: "\n")
+		}
+
+		participantsGuestExpanded.value = conferenceInfo.participantInfos.filter({$0.role == .Listener}).map {(participant) in
+			String(describing: participant.address!.addressBookEnhancedDisplayName())+" ("+String(describing: participant.address!.asStringUriOnly())+")"
 		}.joined(separator: "\n")
 	}
 

@@ -38,6 +38,9 @@ import EventKitUI
 	let inviteTitle = StyledLabel(VoipTheme.conference_invite_title_font, VoipTexts.conference_invite_title)
 	let inviteCancelled = StyledLabel(VoipTheme.conference_cancelled_title_font, VoipTexts.conference_cancel_title)
 	let inviteUpdated = StyledLabel(VoipTheme.conference_updated_title_font, VoipTexts.conference_update_title)
+	let inviteBroadcastTitle = StyledLabel(VoipTheme.conference_invite_title_font, VoipTexts.conference_invite_broadcast_title)
+	let inviteBroadcastCancelled = StyledLabel(VoipTheme.conference_cancelled_title_font, VoipTexts.conference_cancel_broadcast_title)
+	let inviteBroadcastUpdated = StyledLabel(VoipTheme.conference_updated_title_font, VoipTexts.conference_update_broadcast_title)
 
 	let subject = StyledLabel(VoipTheme.conference_invite_subject_font)
 	let participants = StyledLabel(VoipTheme.conference_invite_desc_font)
@@ -48,12 +51,33 @@ import EventKitUI
 	let joinShare = UIStackView()
 	let join = FormButton(title:VoipTexts.conference_invite_join.uppercased(), backgroundStateColors: VoipTheme.button_green_background)
 	let share = UIImageView(image:UIImage(named:"voip_export")?.tinted(with: VoipTheme.primaryTextColor.get()))
+	
+	var isBroadcast = false
+	var isMe = false
 		
 	var conferenceData: ScheduledConferenceData? = nil {
 		didSet {
 			if let data = conferenceData {
+				isBroadcast = data.conferenceInfo.participantInfos.filter({$0.role == .Speaker}).count != 0 && data.conferenceInfo.participantInfos.filter({$0.role == .Listener}).count != 0
 				subject.text = data.subject.value
-				participants.text = VoipTexts.conference_invite_participants_count.replacingOccurrences(of: "%d", with: String(data.conferenceInfo.participants.count+1))
+				data.conferenceInfo.participantInfos.forEach { participant in
+					if participant.address != nil && participant.address!.isMe() {
+						isMe = true
+					}
+				}
+				
+				participants.text = VoipTexts.conference_invite_participants_count.replacingOccurrences(of: "%d", with: String(data.conferenceInfo.participants.count + (isMe ? 0 : 1)))
+				if isBroadcast && participants.text != nil {
+					var isMeSpeaker = false
+					data.conferenceInfo.participantInfos.filter({$0.role == .Speaker}).forEach { participant in
+						if isMe && participant.address != nil && participant.address!.isMe() {
+							isMeSpeaker = true
+						}
+					}
+					if isMeSpeaker || !isMe {
+						participants.text! += " (" + VoipTexts.conference_you_are_speaker + ")"
+					}
+				}
 				participants.addIndicatorIcon(iconName: "conference_schedule_participants_default",padding : 0.0, y: -indicator_y, trailing: false)
 				date.text = TimestampUtils.dateToString(date: data.rawDate)
 				date.addIndicatorIcon(iconName: "conference_schedule_calendar_default", padding: 0.0, y:-indicator_y, trailing:false)
@@ -62,9 +86,22 @@ import EventKitUI
 				descriptionTitle.isHidden = data.description.value == nil || data.description.value!.count == 0
 				descriptionValue.isHidden = descriptionTitle.isHidden
 				descriptionValue.text = data.description.value
-				inviteTitle.isHidden = [.Cancelled,.Updated].contains(data.conferenceInfo.state)
-				inviteCancelled.isHidden = data.conferenceInfo.state != .Cancelled
-				inviteUpdated.isHidden = data.conferenceInfo.state != .Updated
+				if isBroadcast {
+					inviteTitle.isHidden = true
+					inviteCancelled.isHidden = true
+					inviteUpdated.isHidden = true
+					inviteBroadcastTitle.isHidden = [.Cancelled,.Updated].contains(data.conferenceInfo.state)
+					inviteBroadcastCancelled.isHidden = data.conferenceInfo.state != .Cancelled
+					inviteBroadcastUpdated.isHidden = data.conferenceInfo.state != .Updated
+				} else {
+					inviteTitle.isHidden = [.Cancelled,.Updated].contains(data.conferenceInfo.state)
+					inviteCancelled.isHidden = data.conferenceInfo.state != .Cancelled
+					inviteUpdated.isHidden = data.conferenceInfo.state != .Updated
+					inviteBroadcastTitle.isHidden = true
+					inviteBroadcastCancelled.isHidden = true
+					inviteBroadcastUpdated.isHidden = true
+				}
+
 				join.isEnabled = data.isConferenceCancelled.value != true
 			}
 		}
@@ -88,6 +125,9 @@ import EventKitUI
 		rows.addArrangedSubview(inviteTitle)
 		rows.addArrangedSubview(inviteCancelled)
 		rows.addArrangedSubview(inviteUpdated)
+		rows.addArrangedSubview(inviteBroadcastTitle)
+		rows.addArrangedSubview(inviteBroadcastCancelled)
+		rows.addArrangedSubview(inviteBroadcastUpdated)
 		rows.addArrangedSubview(subject)
 		rows.addArrangedSubview(participants)
 		rows.addArrangedSubview(date)
