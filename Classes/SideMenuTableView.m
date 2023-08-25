@@ -169,7 +169,6 @@
 		cell.transform = CGAffineTransformMakeScale(-1.0, 1.0);
 		cell.textLabel.transform = CGAffineTransformMakeScale(-1.0, 1.0);
 		cell.imageView.transform = CGAffineTransformMakeScale(-1.0, 1.0);
-		cell.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_G.png"]];
 	} else {
 		SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
 		cell.imageView.image = entry->img;
