@@ -315,7 +315,7 @@ class ConferenceViewModel {
 		self.conferenceParticipantDevices.value?.forEach{ $0.destroy()}
 		var devices :[ConferenceParticipantDeviceData] = []
 		
-		let participantsList = conference.participantList
+		let participantsList = conference.participantList.filter({$0.role == .Speaker})
 		Log.i("[Conference] \(conference) Conference has \(participantsList.count) participants")
 		
 		participantsList.forEach { (participant) in
@@ -334,13 +334,14 @@ class ConferenceViewModel {
 			speakingParticipant.value = devices.first
 		}
 		
-		conference.me?.devices.forEach { (device) in
-			Log.i("[Conference] \(conference) Participant device for myself found: \(device.name)  (\(device.address!.asStringUriOnly()))")
-			let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: true)
-			devices.append(deviceData)
-			meParticipant.value = deviceData
+		if conference.me?.role == .Speaker{
+			conference.me?.devices.forEach { (device) in
+				Log.i("[Conference] \(conference) Participant device for myself found: \(device.name)  (\(device.address!.asStringUriOnly()))")
+				let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: true)
+				devices.append(deviceData)
+				meParticipant.value = deviceData
+			}
 		}
-		
 		
 		conferenceParticipantDevices.value = devices
 	}
@@ -355,33 +356,37 @@ class ConferenceViewModel {
 		}
 		
 		Log.i("[Conference] New participant device found: \(device.name) (\((device.address?.asStringUriOnly()).orNil)")
-		let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: false)
-		devices.append(deviceData)
-		
-		let sortedDevices = sortDevicesDataList(devices: devices)
-		
-		if (speakingParticipant.value == nil) {
-			speakingParticipant.value = deviceData
+		if (device.address != nil && conference.value?.findParticipant(uri: device.address!)?.role == .Speaker){
+			let deviceData = ConferenceParticipantDeviceData(participantDevice: device, isMe: false)
+			devices.append(deviceData)
+			
+			let sortedDevices = sortDevicesDataList(devices: devices)
+			
+			if (speakingParticipant.value == nil) {
+				speakingParticipant.value = deviceData
+			}
+			
+			conferenceParticipantDevices.value = sortedDevices
 		}
-		
-		conferenceParticipantDevices.value = sortedDevices
 	}
 	
 	private func removeParticipantDevice(device: ParticipantDevice) {
 		let devices = conferenceParticipantDevices.value?.filter {
 			$0.participantDevice.address?.asStringUriOnly() != device.address?.asStringUriOnly()
 		}
-		conferenceParticipantDevices.value?.filter {
-			$0.participantDevice.address?.asStringUriOnly() == device.address?.asStringUriOnly()
-		}.first?.destroy()
-		
-		if (devices?.count == conferenceParticipantDevices.value?.count) {
-			Log.e("[Conference] Failed to remove participant device: \(device.name) (\((device.address?.asStringUriOnly()).orNil)")
-		} else {
-			Log.i("[Conference] Participant device removed: \(device.name) (\((device.address?.asStringUriOnly()).orNil)")
+		if (device.address != nil && conference.value?.findParticipant(uri: device.address!)?.role == .Speaker){
+			conferenceParticipantDevices.value?.filter {
+				$0.participantDevice.address?.asStringUriOnly() == device.address?.asStringUriOnly()
+			}.first?.destroy()
+			
+			if (devices?.count == conferenceParticipantDevices.value?.count) {
+				Log.e("[Conference] Failed to remove participant device: \(device.name) (\((device.address?.asStringUriOnly()).orNil)")
+			} else {
+				Log.i("[Conference] Participant device removed: \(device.name) (\((device.address?.asStringUriOnly()).orNil)")
+			}
+			
+			conferenceParticipantDevices.value = devices
 		}
-		
-		conferenceParticipantDevices.value = devices
 	}
 	
 	
@@ -418,7 +423,7 @@ class ConferenceViewModel {
 			// Adding new participants first, because if we remove all of them (or all of them except one)
 			// It will terminate the conference first and we won't be able to add new participants after
 			try addresses.forEach { address in
-				let participant = conference.participantList.filter { $0.address?.asStringUriOnly() == address.asStringUriOnly() }.first
+				let participant = conference.participantList.filter {$0.address?.asStringUriOnly() == address.asStringUriOnly() }.first
 				if (participant == nil) {
 					Log.i("[Conference Participants] Participant \(address.asStringUriOnly()) will be added to group")
 					try conference.addParticipant(uri: address)

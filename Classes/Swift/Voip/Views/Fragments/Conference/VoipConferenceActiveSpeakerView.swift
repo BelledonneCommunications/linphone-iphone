@@ -58,9 +58,11 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	var fullScreenOpaqueMasqForNotchedDevices =  UIView()
 	let conferenceJoinSpinner = RotatingSpinner(color:VoipTheme.dark_grey_color)
 
+	var imSpeaker = true
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
+			imSpeaker = conferenceViewModel?.conference.value?.me?.role == .Speaker
 			if let model = conferenceViewModel {
 				self.activeSpeakerVideoView.isHidden = true
 				self.activeSpeakerVideoViewAlone.isHidden = true
@@ -80,7 +82,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				}
 				model.activeSpeakerConferenceParticipantDevices.readCurrentAndObserve { (_) in
 					self.reloadData()
-					let otherSpeakersCount = model.conferenceParticipantDevices.value!.count - 1
+					let otherSpeakersCount = model.conferenceParticipantDevices.value!.count - (self.imSpeaker ? 1 : 0)
 					self.switchCamera.isHidden = true
 					if (otherSpeakersCount == 0) {
 						self.layoutRotatableElements()
@@ -142,7 +144,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 					}
 				}
 				model.speakingParticipant.readCurrentAndObserve { speakingParticipant in
-					if (model.conferenceParticipantDevices.value!.count - 1 > 1) {
+					if (model.conferenceParticipantDevices.value!.count - (self.imSpeaker ? 1 : 0) > 1) {
 						speakingParticipant?.videoEnabled.readCurrentAndObserve { video in
 							self.fillActiveSpeakerSpace(data: speakingParticipant,video: video == true)
 							self.muted.isHidden = true
@@ -200,6 +202,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	}
 			
 	init() {
+		imSpeaker = conferenceViewModel?.conference.value?.me?.role == .Speaker
 		
 		layout.minimumInteritemSpacing = 0
 		layout.minimumLineSpacing = 0
@@ -398,7 +401,7 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		meGrid.removeConstraints().done()
 		activeSpeakerView.removeConstraints().done()
 		activeSpeakerAvatar.removeConstraints().done()
-		var otherParticipantsCount = (conferenceViewModel?.conferenceParticipantDevices.value!.count ?? 0) > 0 ? conferenceViewModel!.conferenceParticipantDevices.value!.count - 1 : 0
+		var otherParticipantsCount = (conferenceViewModel?.conferenceParticipantDevices.value!.count ?? 0) > 0 ? conferenceViewModel!.conferenceParticipantDevices.value!.count - (imSpeaker ? 1 : 0) : 0
 		if ([.landscapeLeft, .landscapeRight].contains( UIDevice.current.orientation)) {
 			if (otherParticipantsCount == 0) {
 				activeSpeakerView.matchParentDimmensions().done()

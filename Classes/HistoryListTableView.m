@@ -305,7 +305,7 @@
 						return;
 					}
 					ConferenceWaitingRoomView *view = VIEW(ConferenceWaitingRoomView);
-					[view setDetailsWithSubject:[NSString stringWithUTF8String:linphone_conference_info_get_subject(confInfo)] url:[NSString stringWithUTF8String:linphone_address_as_string(linphone_conference_info_get_uri(confInfo))]];
+					[view setDetailsWithSubject:[NSString stringWithUTF8String:linphone_conference_info_get_subject(confInfo)] url:[NSString stringWithUTF8String:linphone_address_as_string(linphone_conference_info_get_uri(confInfo))] conferenceInfo:(confInfo)];
 					[PhoneMainView.instance changeCurrentView:ConferenceWaitingRoomView.compositeViewDescription];
 				} else {
 					const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);

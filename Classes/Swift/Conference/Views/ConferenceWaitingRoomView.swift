@@ -48,6 +48,7 @@ import linphonesw
 
 	var conferenceUrl : String? = nil
 	let conferenceSubject = MutableLiveData<String>()
+	var conferenceSpeaker : Bool? = false
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ConferenceWaitingRoomViewModel.sharedModel)
 	var layoutPicker : CallControlButton? = nil
@@ -250,9 +251,19 @@ import linphonesw
 		super.viewWillDisappear(animated)
 	}
 	
-	@objc func setDetails(subject:String, url:String) {
+	@objc func setDetails(subject:String, url:String, conferenceInfo:OpaquePointer) {
 		self.conferenceSubject.value = subject
 		self.conferenceUrl = url
+		let confInfo = ConferenceInfo.getSwiftObject(cObject: conferenceInfo)
+		
+		var imSpeaker = false
+		confInfo.participantInfos.forEach { participant in
+			if participant.address != nil && participant.address!.isMe() && participant.role == .Speaker {
+				imSpeaker = true
+			}
+		}
+		
+		self.conferenceSpeaker = imSpeaker
 	}
 	
 }
