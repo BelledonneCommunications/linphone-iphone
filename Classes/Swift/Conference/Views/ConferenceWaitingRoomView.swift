@@ -39,7 +39,7 @@ import linphonesw
 	let subject = StyledLabel(VoipTheme.conference_preview_subject_font)
 	let localVideo = UIView()
 	let switchCamera = UIImageView(image: UIImage(named:"voip_change_camera")?.tinted(with:.white))
-	let noVideoLabel = StyledLabel(VoipTheme.conference_waiting_room_no_video_font, VoipTexts.conference_waiting_room_video_disabled)
+	let noVideoLabel = StyledLabel(VoipTheme.conference_waiting_room_no_video_font)
 
 	let buttonsView = UIStackView()
 	let cancel = FormButton(title: VoipTexts.cancel.uppercased(), backgroundStateColors: VoipTheme.primary_colors_background_gray, bold:false)
@@ -48,7 +48,6 @@ import linphonesw
 
 	var conferenceUrl : String? = nil
 	let conferenceSubject = MutableLiveData<String>()
-	var conferenceSpeaker : Bool? = false
 	
 	let controlsView = ControlsView(showVideo: true, controlsViewModel: ConferenceWaitingRoomViewModel.sharedModel)
 	var layoutPicker : CallControlButton? = nil
@@ -262,8 +261,14 @@ import linphonesw
 				imSpeaker = true
 			}
 		}
-		
-		self.conferenceSpeaker = imSpeaker
+        
+        if imSpeaker {
+            self.noVideoLabel.text = VoipTexts.conference_waiting_room_video_disabled
+        } else {
+            self.noVideoLabel.text = "You're listener"
+        }
+        
+        ControlsViewModel.shared.imSpeaker = imSpeaker
 	}
 	
 }

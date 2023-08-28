@@ -39,10 +39,14 @@ class ControlsView: UIStackView {
 		})
 		addArrangedSubview(mute)
 		controlsViewModel.isMicrophoneMuted.readCurrentAndObserve { (muted) in
-			mute.isSelected = muted == true
+            mute.isSelected = muted == true
 		}
 		controlsViewModel.isMuteMicrophoneEnabled.readCurrentAndObserve { (enabled) in
-			mute.isEnabled = enabled == true
+            if ControlsViewModel.shared.imSpeaker {
+                mute.isEnabled = enabled == true
+            } else {
+                mute.isEnabled = false
+            }
 		}
         mute.accessibilityIdentifier = "call_control_view_mute"
         mute.accessibilityLabel = "Mute"
@@ -95,13 +99,25 @@ class ControlsView: UIStackView {
 			addArrangedSubview(video)
 			video.showActivityIndicatorDataSource = controlsViewModel.isVideoUpdateInProgress
 			controlsViewModel.isVideoEnabled.readCurrentAndObserve { (selected) in
-				video.isSelected = selected == true
+                if ControlsViewModel.shared.imSpeaker {
+                    video.isSelected = selected == true
+                } else {
+                    video.isSelected = false
+                }
 			}
 			controlsViewModel.isVideoAvailable.readCurrentAndObserve { (available) in
-				video.isEnabled = available == true && controlsViewModel.isVideoUpdateInProgress.value != true
+                if ControlsViewModel.shared.imSpeaker {
+                    video.isEnabled = available == true && controlsViewModel.isVideoUpdateInProgress.value != true
+                } else {
+                    video.isEnabled = false
+                }
 			}
 			controlsViewModel.isVideoUpdateInProgress.readCurrentAndObserve { (updateInProgress) in
-				video.isEnabled = updateInProgress != true && controlsViewModel.isVideoAvailable.value == true
+                if ControlsViewModel.shared.imSpeaker {
+                    video.isEnabled = updateInProgress != true && controlsViewModel.isVideoAvailable.value == true
+                } else {
+                    video.isEnabled = false
+                }
 			}
             video.accessibilityIdentifier = "call_control_view_video"
             video.accessibilityLabel = "Video"

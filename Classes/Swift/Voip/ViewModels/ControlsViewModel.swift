@@ -54,7 +54,8 @@ class ControlsViewModel {
 	static let shared = ControlsViewModel()
 	private var coreDelegate :  CoreDelegateStub?
 	private var previousCallState = Call.State.Idle
-
+    
+    var imSpeaker : Bool = true
 	
 	init ()  {
 		coreDelegate = CoreDelegateStub(

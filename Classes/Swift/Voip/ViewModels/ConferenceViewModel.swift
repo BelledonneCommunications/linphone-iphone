@@ -56,6 +56,7 @@ class ConferenceViewModel {
 	let participantAdminStatusChangedEvent = MutableLiveData<ConferenceParticipantData>()
 	
 	let firstToJoinEvent = MutableLiveData(false)
+    let participantAdded = MutableLiveData(false)
 	
 	let allParticipantsLeftEvent = MutableLiveData(false)
 	
@@ -68,6 +69,7 @@ class ConferenceViewModel {
 		conferenceDelegate = ConferenceDelegateStub(
 			onParticipantAdded: { (conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) Participant \(participant) added")
+                self.participantAdded.value = true
 				self.updateParticipantsList(conference)
 			},
 			onParticipantRemoved: {(conference: Conference, participant: Participant) in
