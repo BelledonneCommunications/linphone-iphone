@@ -22,7 +22,7 @@ class UITestsCoreManager {
 		
 		//Config account creator for flexiapi
 		let config: Config! = try! Factory.Instance.createConfig(path: "\(Factory.Instance.getConfigDir(context: nil))/linphonerc")
-		config.setInt(section: "account_creator", key: "backend", value: AccountCreatorBackend.FlexiAPI.rawValue)
+		config.setInt(section: "account_creator", key: "backend", value: AccountCreator.Backend.FlexiAPI.rawValue)
 		config.setString(section: "account_creator", key: "url", value: "http://subscribe.example.org/flexiapi/api/")
 		try! mCore = Factory.Instance.createCoreWithConfig(config: config, systemContext: nil)
 		mCore.dnsServersApp = [dnsServer]
@@ -254,7 +254,7 @@ class UITestsRegisteredLinphoneCore {
 	func toggleSpeaker() {
 		// Get the currently used audio device
 		let currentAudioDevice = mCore.currentCall?.outputAudioDevice
-		let speakerEnabled = currentAudioDevice?.type == AudioDeviceType.Speaker
+		let speakerEnabled = currentAudioDevice?.type == AudioDevice.Kind.Speaker
 		
 		let test = currentAudioDevice?.deviceName
 		// We can get a list of all available audio devices using
@@ -264,10 +264,10 @@ class UITestsRegisteredLinphoneCore {
 			// For IOS, the Speaker is an exception, Linphone cannot differentiate Input and Output.
 			// This means that the default output device, the earpiece, is paired with the default phone microphone.
 			// Setting the output audio device to the microphone will redirect the sound to the earpiece.
-			if (speakerEnabled && audioDevice.type == AudioDeviceType.Microphone) {
+			if (speakerEnabled && audioDevice.type == AudioDevice.Kind.Microphone) {
 				mCore.currentCall?.outputAudioDevice = audioDevice
 				return
-			} else if (!speakerEnabled && audioDevice.type == AudioDeviceType.Speaker) {
+			} else if (!speakerEnabled && audioDevice.type == AudioDevice.Kind.Speaker) {
 				mCore.currentCall?.outputAudioDevice = audioDevice
 				return
 			}
