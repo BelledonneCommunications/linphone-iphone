@@ -30,7 +30,6 @@ import linphonesw
 	var conferenceAudioOnlyView: VoipConferenceAudioOnlyView? = nil
 	let conferenceJoinSpinner = RotatingSpinner(color:VoipTheme.dark_grey_color)
 	@objc var participantsListView :  ParticipantsListView? = nil
-    let noSpeaker = StyledLabel(VoipTheme.conference_waiting_room_no_video_font, "No speaker has joined the meeting yet")
 	
 	static let compositeDescription = UICompositeViewDescription(ConferenceCallView.self, statusBar: StatusBarView.self, tabBar: nil, sideMenu: nil, fullscreen: false, isLeftFragment: false,fragmentWith: nil)
 	static func compositeViewDescription() -> UICompositeViewDescription! { return compositeDescription }
@@ -46,13 +45,6 @@ import linphonesw
 		view.addSubview(conferencePausedView!)
 		conferencePausedView?.matchParentSideBorders().matchParentHeight().alignAbove(view:controlsView,withMargin:SharedLayoutConstants.buttons_bottom_margin).done()
 		conferencePausedView?.isHidden = true
-        
-        
-        view.addSubview(noSpeaker)
-        noSpeaker.matchParentSideBorders(insetedByDx: 30).height(250).centerY().done()
-        noSpeaker.backgroundColor = VoipTheme.voipParticipantBackgroundColor.get()
-        noSpeaker.isHidden = true
-
 		
 		// Conference grid
 		conferenceGridView = VoipConferenceGridView()
@@ -128,19 +120,14 @@ import linphonesw
 		ConferenceViewModel.shared.allParticipantsLeftEvent.observe { (allLeft) in
 			if (allLeft == true) {
 				VoipDialog.toast(message: VoipTexts.conference_last_user)
+				self.conferenceActiveSpeakerView?.grid.isHidden = true
 			}
 		}
 		ConferenceViewModel.shared.firstToJoinEvent.observe { (first) in
 			if (first == true) {
 				VoipDialog.toast(message: VoipTexts.conference_first_to_join)
-                if !ControlsViewModel.shared.imSpeaker {
-                    self.noSpeaker.isHidden = false
-                }
             }
 		}
-        ConferenceViewModel.shared.participantAdded.observe { (participant) in
-            self.noSpeaker.isHidden = true
-        }
 		
 		view.onClick {
 			ControlsViewModel.shared.audioRoutesSelected.value = false

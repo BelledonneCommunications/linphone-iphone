@@ -257,7 +257,7 @@ import linphonesw
 		
 		var imSpeaker = false
 		confInfo.participantInfos.forEach { participant in
-			if participant.address != nil && participant.address!.isMe() && participant.role == .Speaker {
+			if participant.address != nil && participant.address!.isMe() && (participant.role == .Speaker || participant.role == .Unknown) {
 				imSpeaker = true
 			}
 		}
@@ -265,8 +265,8 @@ import linphonesw
         if imSpeaker {
             self.noVideoLabel.text = VoipTexts.conference_waiting_room_video_disabled
         } else {
-            self.noVideoLabel.text = "You're listener"
-        }
+			self.noVideoLabel.text = "You're listener"
+		}
         
         ControlsViewModel.shared.imSpeaker = imSpeaker
 	}

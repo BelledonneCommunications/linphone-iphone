@@ -48,6 +48,7 @@ class ConferenceViewModel {
 	let maxParticipantsForMosaicLayout = ConfigManager.instance().lpConfigIntForKey(key: "max_conf_part_mosaic_layout",defaultValue: 6)
 	
 	let moreThanTwoParticipants = MutableLiveData<Bool>()
+	let noSpeaker = MutableLiveData<Bool>()
 	
 	let speakingParticipant = MutableLiveData<ConferenceParticipantDeviceData>()
 	
@@ -56,7 +57,6 @@ class ConferenceViewModel {
 	let participantAdminStatusChangedEvent = MutableLiveData<ConferenceParticipantData>()
 	
 	let firstToJoinEvent = MutableLiveData(false)
-    let participantAdded = MutableLiveData(false)
 	
 	let allParticipantsLeftEvent = MutableLiveData(false)
 	
@@ -69,7 +69,6 @@ class ConferenceViewModel {
 		conferenceDelegate = ConferenceDelegateStub(
 			onParticipantAdded: { (conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) Participant \(participant) added")
-                self.participantAdded.value = true
 				self.updateParticipantsList(conference)
 			},
 			onParticipantRemoved: {(conference: Conference, participant: Participant) in
@@ -77,6 +76,18 @@ class ConferenceViewModel {
 				self.updateParticipantsList(conference)
 				if (self.conferenceParticipants.value?.count == 0) {
 					self.allParticipantsLeftEvent.value = true
+				}
+				var noSpeaker = true
+				conference.participantList.forEach { participant in
+					if participant.role == .Speaker {
+						noSpeaker = false
+					}
+				}
+				if conference.me?.role == .Speaker {
+					noSpeaker = false
+				}
+				if noSpeaker {
+					self.noSpeaker.value = noSpeaker
 				}
 			},
 			onParticipantDeviceAdded: {(conference: Conference, participantDevice: ParticipantDevice) in
@@ -86,6 +97,10 @@ class ConferenceViewModel {
 			onParticipantDeviceRemoved: { (conference: Conference, participantDevice: ParticipantDevice) in
 				Log.i("[Conference] \(conference) Participant device \(participantDevice) removed")
 				self.removeParticipantDevice(device: participantDevice)
+			},
+			onParticipantRoleChanged: { (conference: Conference, participant: Participant) in
+				Log.i("[Conference] \(conference) Participant \(participant) added")
+				self.updateParticipantsList(conference)
 			},
 			onParticipantAdminStatusChanged: { (conference: Conference, participant: Participant) in
 				Log.i("[Conference] \(conference) Participant admin status changed")

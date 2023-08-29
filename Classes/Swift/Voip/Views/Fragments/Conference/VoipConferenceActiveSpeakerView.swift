@@ -60,10 +60,26 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 
 	var imSpeaker = true
 	
+	let noSpeakerLabel = StyledLabel(VoipTheme.conference_waiting_room_no_video_font, "No speaker has joined the meeting yet")
+	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
-			imSpeaker = conferenceViewModel?.conference.value?.me?.role == .Speaker
 			if let model = conferenceViewModel {
+				imSpeaker = conferenceViewModel?.conference.value?.me?.role == .Speaker
+				
+				var noSpeaker = true
+				conferenceViewModel?.conference.value?.participantList.forEach({ participant in
+					if participant.role == .Speaker {
+						noSpeaker = false
+					}
+				})
+				
+				if imSpeaker {
+					noSpeaker = false
+				}
+				
+				self.activeSpeakerView.isHidden = noSpeaker
+				
 				self.activeSpeakerVideoView.isHidden = true
 				self.activeSpeakerVideoViewAlone.isHidden = true
 				self.setJoininngSpeakerState(enabled: false)
@@ -156,6 +172,11 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 								self.activeSpeakerVideoViewAlone.isHidden = true
 							}
 						}
+					}
+				}
+				model.noSpeaker.readCurrentAndObserve { noSpeaker in
+					if noSpeaker != nil {
+						self.activeSpeakerView.isHidden = noSpeaker!
 					}
 				}
 			}
@@ -273,13 +294,15 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		headerView.addArrangedSubview(remotelyRecording)
 		remotelyRecording.matchParentSideBorders().alignUnder(view:upperSection, withMargin:ActiveCallView.remote_recording_margin_top).height(CGFloat(ActiveCallView.remote_recording_height)).done()
 		
-		
 		// Container view that can toggle full screen by single tap
 		let fullScreenMutableView = UIView()
 		addSubview(fullScreenMutableView)
 		fullScreenMutableView.backgroundColor = ControlsViewModel.shared.fullScreenMode.value == true ? .black : VoipTheme.voipBackgroundColor.get()
 		fullScreenMutableView.matchParentSideBorders().alignUnder(view:headerView,withMargin: ActiveCallView.center_view_margin_top).alignParentBottom().done()
 		fullScreenOpaqueMasqForNotchedDevices.backgroundColor = fullScreenMutableView.backgroundColor
+		
+		fullScreenMutableView.addSubview(noSpeakerLabel)
+		noSpeakerLabel.matchParentSideBorders().centerY().done()
 		
 		// Active speaker
 		fullScreenMutableView.addSubview(activeSpeakerView)
@@ -481,7 +504,4 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-	
-	
-	
 }

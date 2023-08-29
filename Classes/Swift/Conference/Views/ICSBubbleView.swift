@@ -149,8 +149,8 @@ import EventKitUI
 		
 		join.onClick {
 			let view : ConferenceWaitingRoomView = self.VIEW(ConferenceWaitingRoomView.compositeViewDescription())
-			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 			view.setDetails(subject: (self.conferenceData?.subject.value)!, url: (self.conferenceData?.address.value)!, conferenceInfo: (self.conferenceData?.conferenceInfo.getCobject)!)
+			PhoneMainView.instance().changeCurrentView(view.compositeViewDescription())
 		}
 		
 		share.onClick {
