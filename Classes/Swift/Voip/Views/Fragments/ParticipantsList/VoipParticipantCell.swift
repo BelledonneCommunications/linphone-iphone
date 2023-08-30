@@ -44,6 +44,7 @@ class VoipParticipantCell: UITableViewCell {
 	let isAdminLabel = StyledLabel(VoipTheme.conference_participant_admin_label,VoipTexts.chat_room_group_info_admin)
 	let isAdminCheck = UIImageView(image: UIImage(named:("check_unselected")))
 	let removePart = CallControlButton(imageInset:dismiss_icon_inset,buttonTheme: VoipTheme.voip_cancel, onClickAction: {})
+	let isSpeakerLabel = StyledLabel(VoipTheme.conference_participant_admin_label,VoipTexts.chat_room_group_info_speaker)
 
 	let addButton = CallControlButton(buttonTheme:VoipTheme.nav_color_button("add_field_default"))
 	
@@ -63,8 +64,10 @@ class VoipParticipantCell: UITableViewCell {
 					self.setAdminStatus(data: data)
 				}
 				self.isAdminView.onClick {
-					data.conference.setParticipantAdminStatus(participant: data.participant, isAdmin: data.isAdmin.value != true)
-					self.owningParticpantsListView?.participantsListTableView.reloadData()
+					if !data.isBroadcast.value! {
+						data.conference.setParticipantAdminStatus(participant: data.participant, isAdmin: data.isAdmin.value != true)
+						self.owningParticpantsListView?.participantsListTableView.reloadData()
+					}
 				}
 				self.removePart.onClick {
 					try?data.conference.removeParticipant(participant: data.participant)
@@ -77,10 +80,29 @@ class VoipParticipantCell: UITableViewCell {
 	func setAdminStatus(data:ConferenceParticipantData) {
 		let isAdmin = data.isAdmin.value!
 		let isMeAdmin = data.isMeAdmin.value!
-		self.removePart.isHidden = !isMeAdmin
-		self.isAdminView.isUserInteractionEnabled = isMeAdmin
-		self.isAdminLabel.textColor = !isAdmin ? VoipTheme.primarySubtextLightColor.get() : VoipTheme.primaryTextColor.get()
-		self.isAdminView.isHidden = !isAdmin && !isMeAdmin // Non admin don't see status of others non admin (they just see admins)
+		let isBroadcast = data.isBroadcast.value!
+		let isSpeaker = data.isSpeaker.value!
+		let isExistingConf = data.conference.call?.callLog?.conferenceInfo
+		if isExistingConf != nil {
+			addButton.isHidden = true
+			if isBroadcast {
+				self.removePart.isHidden = !isMeAdmin
+				self.isAdminView.isUserInteractionEnabled = isMeAdmin
+				self.isAdminLabel.isHidden = true
+				self.isSpeakerLabel.isHidden = !isSpeaker
+				self.isAdminCheck.isHidden = !isSpeaker
+				self.isAdminView.isHidden = false
+			} else {
+				self.removePart.isHidden = !isMeAdmin
+				self.isAdminView.isUserInteractionEnabled = isMeAdmin
+				self.isAdminLabel.isHidden = false
+				self.isSpeakerLabel.isHidden = true
+				self.isAdminLabel.textColor = !isAdmin ? VoipTheme.primarySubtextLightColor.get() : VoipTheme.primaryTextColor.get()
+				self.isAdminView.isHidden = !isAdmin && !isMeAdmin // Non admin don't see status of others non admin (they just see admins)
+			}
+		} else {
+			addButton.isHidden = false
+		}
 	}
 	
 	var scheduleConfParticipantAddress: Address?  = nil {
@@ -126,6 +148,9 @@ class VoipParticipantCell: UITableViewCell {
 		
 		isAdminView.addArrangedSubview(isAdminLabel)
 		isAdminLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+		
+		isAdminView.addArrangedSubview(isSpeakerLabel)
+		isSpeakerLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 
 		isAdminView.addArrangedSubview(removePart)
 		removePart.setContentHuggingPriority(.defaultHigh, for: .horizontal)

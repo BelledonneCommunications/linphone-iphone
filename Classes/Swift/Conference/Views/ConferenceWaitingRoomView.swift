@@ -256,19 +256,23 @@ import linphonesw
 		let confInfo = ConferenceInfo.getSwiftObject(cObject: conferenceInfo)
 		
 		var imSpeaker = false
+		var inList = false
 		confInfo.participantInfos.forEach { participant in
 			if participant.address != nil && participant.address!.isMe() && (participant.role == .Speaker || participant.role == .Unknown) {
 				imSpeaker = true
+				inList = true
+			} else if participant.address != nil && participant.address!.isMe() && participant.role == .Listener {
+				inList = true
 			}
 		}
         
-        if imSpeaker {
+        if imSpeaker || !inList {
             self.noVideoLabel.text = VoipTexts.conference_waiting_room_video_disabled
-        } else {
-			self.noVideoLabel.text = "You're listener"
+		} else {
+			self.noVideoLabel.text = VoipTexts.conference_you_are_listener
 		}
         
-        ControlsViewModel.shared.imSpeaker = imSpeaker
+        ControlsViewModel.shared.imSpeaker = imSpeaker || !inList
 	}
 	
 }

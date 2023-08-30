@@ -27,6 +27,8 @@ class ConferenceParticipantData  {
 	
 	let isAdmin = MutableLiveData<Bool>()
 	let isMeAdmin = MutableLiveData<Bool>()
+	let isBroadcast = MutableLiveData<Bool>()
+	let isSpeaker = MutableLiveData<Bool>()
 	
 	private var callDelegate :  CallDelegateStub?
 	
@@ -35,6 +37,17 @@ class ConferenceParticipantData  {
 		self.participant = participant
 		isAdmin.value = participant.isAdmin
 		isMeAdmin.value = conference.me?.isAdmin
+		
+		var isBroadcastTmp = false
+		conference.call?.callLog?.conferenceInfo?.participantInfos.forEach { participant in
+			if participant.role == .Listener {
+				isBroadcastTmp = true
+			}
+		}
+		isBroadcast.value = isBroadcastTmp
+		
+		isSpeaker.value = participant.role != .Listener
+		
 		Log.i("[Conference Participant] Participant \(sipUri!) is admin=\(isAdmin.value!)")
 
 	}

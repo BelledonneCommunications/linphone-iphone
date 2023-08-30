@@ -60,25 +60,12 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 
 	var imSpeaker = true
 	
-	let noSpeakerLabel = StyledLabel(VoipTheme.conference_waiting_room_no_video_font, "No speaker has joined the meeting yet")
+	let noSpeakerLabel = StyledLabel(VoipTheme.conference_waiting_room_no_video_font, VoipTexts.conference_no_speaker)
 	
 	var conferenceViewModel: ConferenceViewModel? = nil {
 		didSet {
 			if let model = conferenceViewModel {
 				imSpeaker = conferenceViewModel?.conference.value?.me?.role == .Speaker
-				
-				var noSpeaker = true
-				conferenceViewModel?.conference.value?.participantList.forEach({ participant in
-					if participant.role == .Speaker {
-						noSpeaker = false
-					}
-				})
-				
-				if imSpeaker {
-					noSpeaker = false
-				}
-				
-				self.activeSpeakerView.isHidden = noSpeaker
 				
 				self.activeSpeakerVideoView.isHidden = true
 				self.activeSpeakerVideoViewAlone.isHidden = true
@@ -220,6 +207,19 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 	func reloadData() {
 		self.grid.reloadData()
 		self.meGrid.reloadData()
+		
+		var noSpeaker = true
+		conferenceViewModel?.conference.value?.participantList.forEach({ participant in
+			if participant.role == .Speaker {
+				noSpeaker = false
+			}
+		})
+		
+		if imSpeaker {
+			noSpeaker = false
+		}
+		
+		self.activeSpeakerView.isHidden = noSpeaker
 	}
 			
 	init() {

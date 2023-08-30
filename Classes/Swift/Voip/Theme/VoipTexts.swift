@@ -80,6 +80,7 @@ import UIKit
 	@objc static let call_video_update_requested_dialog = NSLocalizedString("Correspondent would like to turn the video on",comment:"")
 	@objc static let cancel = NSLocalizedString("Cancel",comment:"")
 	@objc static let chat_room_group_info_admin = NSLocalizedString("Admin",comment:"")
+	@objc static let chat_room_group_info_speaker = NSLocalizedString("Speaker",comment:"")
 	@objc static let conference_creation_failed = NSLocalizedString("Failed to create meeting",comment:"")
 	@objc static let conference_default_title = NSLocalizedString("Remote group call",comment:"")
 	@objc static let conference_description_title = NSLocalizedString("Description",comment:"")
@@ -165,7 +166,9 @@ import UIKit
 	@objc static let conference_scheduled_title_participant_cell = NSLocalizedString("Participants",comment:"")
 	@objc static let conference_scheduled_title_speakers_cell = NSLocalizedString("Speakers",comment:"")
 	@objc static let conference_scheduled_title_guests_cell = NSLocalizedString("Guests",comment:"")
-	@objc static let conference_you_are_speaker = NSLocalizedString("You're Speaker",comment:"")
+	@objc static let conference_you_are_speaker = NSLocalizedString("You're a speaker",comment:"")
+	@objc static let conference_you_are_listener = NSLocalizedString("You're a listener",comment:"")
+	@objc static let conference_no_speaker = NSLocalizedString("No speaker has joined the meeting yet",comment:"")
 	
 	@objc static let image_picker_view_alert_action_title = NSLocalizedString("Select the source",comment:"")
 	@objc static let image_picker_view_alert_action_camera = NSLocalizedString("Camera",comment:"")
