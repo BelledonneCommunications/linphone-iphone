@@ -41,6 +41,7 @@ class DismissableView:  UIView {
 
 		dismiss = CallControlButton(imageInset:dismiss_icon_inset,buttonTheme: VoipTheme.voip_cancel, onClickAction: {
 			self.removeFromSuperview()
+			ControlsViewModel.shared.goToConferenceParticipantsListEvent.value = false
 		})
 		headerView.addSubview(dismiss!)
 		dismiss?.alignParentRight(withMargin: dismiss_right_margin).centerY().done()
@@ -56,11 +57,9 @@ class DismissableView:  UIView {
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.headerView.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 		}
-
 	}
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-	
 }

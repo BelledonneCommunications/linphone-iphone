@@ -108,7 +108,9 @@ class ConferenceViewModel {
 				self.updateParticipantsList(conference)
 				if let participantData = self.conferenceParticipants.value?.filter ({$0.participant.address!.weakEqual(address2: participant.address!)}).first {
 					self.participantAdminStatusChangedEvent.value = participantData
-					self.notifyAdminStatusChanged(participantData: participantData)
+					if(ControlsViewModel.shared.goToConferenceParticipantsListEvent.value!){
+						self.notifyAdminStatusChanged(participantData: participantData)
+					}
 				} else {
 					Log.w("[Conference] Failed to find participant [\(participant.address!.asStringUriOnly())] in conferenceParticipants list")
 				}

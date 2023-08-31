@@ -103,10 +103,12 @@ import linphonesw
 		}
 
 		// Conference Participants List
-		ControlsViewModel.shared.goToConferenceParticipantsListEvent.observe { (_) in
-			self.participantsListView = ParticipantsListView()
-			self.view.addSubview(self.participantsListView!)
-			self.participantsListView?.matchParentDimmensions().done()
+		ControlsViewModel.shared.goToConferenceParticipantsListEvent.observe { goToConferenceParticipantsList in
+			if goToConferenceParticipantsList! {
+				self.participantsListView = ParticipantsListView()
+			 	self.view.addSubview(self.participantsListView!)
+			 	self.participantsListView?.matchParentDimmensions().done()
+			}
 		}
 		
 		// Conference mode selection

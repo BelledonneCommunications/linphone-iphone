@@ -102,7 +102,7 @@ class VoipExtraButtonsView: UIStackView {
         transfer.accessibilityIdentifier = "active_call_extra_buttons_transfer"
 		
 		let participants = VoipExtraButton(text: VoipTexts.call_action_participants_list, buttonTheme: VoipTheme.call_action("voip_call_participants"),onClickAction: {
-			ControlsViewModel.shared.goToConferenceParticipantsListEvent.notifyAllObservers(with: true)
+			ControlsViewModel.shared.goToConferenceParticipantsListEvent.value = true
 		})
 		row2.addArrangedSubview(participants)
         participants.accessibilityIdentifier = "active_call_extra_buttons_participants"
