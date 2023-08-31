@@ -84,9 +84,10 @@ class Avatar : UIView {
 	
 	func imageWithPresence(address:Address){
 		var iconPresenceView = UIImageView()
-		if (address.contact() != nil) {
+		if (address.contact() != nil && address.contact()?.friend != nil) {
+			let friendContact = Friend.getSwiftObject(cObject: (address.contact()?.friend)!)
 			
-			addDelegate(contactAddress: address.contact()!)
+			addDelegate(contactFriend: friendContact)
 			
 			iconPresenceView = updatePresenceImage(contact: address.contact()!)
 			
@@ -99,22 +100,13 @@ class Avatar : UIView {
 	}
 	
 	func updatePresenceImage(contact:Contact) -> UIImageView {
-
 		let friend = Friend.getSwiftObject(cObject: contact.friend)
-		
-		var presenceModel : PresenceModel?
-		var hasPresence : Bool? = false
 		
 		var imageName = "";
 		
-		if friend.address?.asStringUriOnly() != nil {
-			presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
-			hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
-		}
-		
-		if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
+		if (friend.consolidatedPresence == ConsolidatedPresence.Online) {
 			imageName = "led_connected";
-		} else  if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Busy){
+		} else  if (friend.consolidatedPresence == ConsolidatedPresence.Busy){
 			imageName = "led_inprogress";
 		} else {
 			imageName = "";
@@ -138,30 +130,25 @@ class Avatar : UIView {
 		iconImageView.clipsToBounds = true
 	}
 	
-	func addDelegate(contactAddress: Contact){
+	func addDelegate(contactFriend: Friend){
 		var delegatePresence = false
 		
 		friend.forEach { friendForEach in
-			if friendForEach.address?.asStringUriOnly() == Friend.getSwiftObject(cObject: (contactAddress.friend)!).address?.asStringUriOnly() {
+			if friendForEach.address?.asStringUriOnly() == contactFriend.address?.asStringUriOnly() {
 				delegatePresence = true
 			}
 		}
 		if delegatePresence == false {
-			if contactAddress.friend != nil {
-				friend.append(Friend.getSwiftObject(cObject: (contactAddress.friend)!))
-				let newFriendDelegate = FriendDelegateStub(
-					onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-						if (linphoneFriend.address?.asStringUriOnly()) != nil {
-							let presenceModel = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: (linphoneFriend.address?.asStringUriOnly())!)
-							if(presenceModel != nil && presenceModel?.consolidatedPresence != nil){
-								NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel!.consolidatedPresence.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
-							}
-						}
-					}
-				)
-				friendDelegate.append(newFriendDelegate)
-				friend.last?.addDelegate(delegate: friendDelegate.last!)
-			}
+			friend.append(contactFriend)
+			let newFriendDelegate = FriendDelegateStub(
+				onPresenceReceived: { (linphoneFriend: Friend) -> Void in
+					let presenceModel = linphoneFriend.consolidatedPresence
+					print("imageForAddressimageForAddress imageForAddress \(linphoneFriend.consolidatedPresence.rawValue) \(linphoneFriend.address?.displayName) \(linphoneFriend.address?.asStringUriOnly())")
+					NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
+				}
+			)
+			friendDelegate.append(newFriendDelegate)
+			friend.last?.addDelegate(delegate: friendDelegate.last!)
 		}
 	}
     
@@ -203,9 +190,12 @@ class Avatar : UIView {
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
         let contactAddress = Address.getSwiftObject(cObject: address).contact()
         var iconPresenceView = UIImageView()
-        if (contactAddress != nil) {
-			shared?.addDelegate(contactAddress: contactAddress!)
-			iconPresenceView = updatePresenceImage(contact: contactAddress!)
+        if (contactAddress != nil && contactAddress?.friend != nil) {
+			let contactFriend = Friend.getSwiftObject(cObject: (contactAddress?.friend)!)
+			
+			print("imageForAddressimageForAddress imageForAddress \(contactFriend.consolidatedPresence.rawValue) \(contactFriend.address?.displayName) \(contactFriend.address?.asStringUriOnly())")
+			shared?.addDelegate(contactFriend: contactFriend)
+			iconPresenceView = updatePresenceImage(contactFriend: contactFriend)
 			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
 			avatarWithPresence.addSubview(iconPresenceView)
 			iconPresenceView.frame = CGRect(x: 36, y: 36, width: 14, height: 14)
@@ -229,38 +219,34 @@ class Avatar : UIView {
         let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
         let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
 		
-		avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+		if contact.friend != nil {
+			let friendAddress = Friend.getSwiftObject(cObject: contact.friend)
+			print("imageForAddressimageForAddress imageForInitials \(friendAddress.consolidatedPresence.rawValue) \(friendAddress.address?.displayName) \(friendAddress.address?.asStringUriOnly())")
+			
+			var iconPresenceView = UIImageView()
+			
+			shared?.addDelegate(contactFriend: friendAddress)
+			iconPresenceView = updatePresenceImage(contactFriend: friendAddress)
+			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+			avatarWithPresence.addSubview(iconPresenceView)
+			iconPresenceView.frame = CGRect(x: 36, y: 36, width: 14, height: 14)
+		}
 		
         return avatarWithPresence.toImage()
 	}
 	
-    @objc static func updatePresenceImage(contact:Contact) -> UIImageView {
-		if contact.friend != nil {
-			let friend = Friend.getSwiftObject(cObject: contact.friend)
-			
-			var presenceModel : PresenceModel?
-			var hasPresence : Bool? = false
-			
-			var imageName = "";
-			
-			if friend.address?.asStringUriOnly() != nil {
-				presenceModel = friend.getPresenceModelForUriOrTel(uriOrTel: (friend.address?.asStringUriOnly())!)
-				hasPresence = presenceModel != nil && presenceModel!.basicStatus == PresenceBasicStatus.Open
-			}
-			
-			if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Online) {
-				imageName = "led_connected";
-			} else  if (hasPresence! && presenceModel?.consolidatedPresence == ConsolidatedPresence.Busy){
-				imageName = "led_inprogress";
-			} else {
-				imageName = "";
-			}
-
-			return UIImageView(image: UIImage(named:imageName))
+    static func updatePresenceImage(contactFriend:Friend) -> UIImageView {
+		var imageName = "";
+		
+		if (contactFriend.consolidatedPresence == ConsolidatedPresence.Online) {
+			imageName = "led_connected";
+		} else  if (contactFriend.consolidatedPresence == ConsolidatedPresence.Busy){
+			imageName = "led_inprogress";
 		} else {
-			return UIImageView(image: UIImage(named:""))
+			imageName = "";
 		}
 
+		return UIImageView(image: UIImage(named:imageName))
     }
 	
 	@objc static func clearFriends(){
