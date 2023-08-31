@@ -66,7 +66,6 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 		didSet {
 			if let model = conferenceViewModel {
 				imSpeaker = conferenceViewModel?.conference.value?.me?.role == .Speaker
-				
 				self.activeSpeakerVideoView.isHidden = true
 				self.activeSpeakerVideoViewAlone.isHidden = true
 				self.setJoininngSpeakerState(enabled: false)
@@ -125,13 +124,13 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 						self.meGrid.isHidden = false
 						self.grid.isHidden = true
 					} else if (otherSpeakersCount == 2) {
-						self.meGrid.isHidden = false
+						self.meGrid.isHidden = !self.imSpeaker
 						self.grid.isHidden = false
 						self.layoutRotatableElements()
 					} else {
 						self.activeSpeakerVideoView.isHidden = false
 						self.activeSpeakerVideoViewAlone.isHidden = true
-						self.meGrid.isHidden = false
+						self.meGrid.isHidden = !self.imSpeaker
 						self.grid.isHidden = false
 						self.layoutRotatableElements()
 					}
@@ -461,7 +460,11 @@ class VoipConferenceActiveSpeakerView: UIView, UICollectionViewDataSource, UICol
 				activeSpeakerAvatar.square(Avatar.diameter_for_call_views).center().done()
 				activeSpeakerView.matchParentSideBorders().alignParentTop().done()
 				meGrid.alignParentLeft().height(grid_height).width(grid_height).alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
-				grid.toRightOf(meGrid,withLeftMargin: SharedLayoutConstants.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				if self.imSpeaker {
+					grid.toRightOf(meGrid,withLeftMargin: SharedLayoutConstants.content_inset).height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				} else {
+					grid.alignParentLeft().height(grid_height).alignParentRight().alignParentBottom().alignUnder(view: activeSpeakerView, withMargin:ActiveCallView.center_view_margin_top).done()
+				}
 				layout.scrollDirection = .horizontal
 			}
 		}
