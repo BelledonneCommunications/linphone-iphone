@@ -22,6 +22,12 @@
 #import "TPKeyboardAvoidingScrollView.h"
 #import "PhoneMainView.h"
 
+typedef enum _TokenRequestAction {
+	TokenRequestAction_None,
+	TokenRequestAction_CreateAccount,
+	TokenRequestAction_RecoverAccount
+} TokenRequestAction;
+
 @interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate, UITextViewDelegate> {
 
   @private
@@ -33,7 +39,7 @@
 	size_t number_of_accounts_before;
 	BOOL mustRestoreView;
 	long phone_number_length;
-	BOOL receivedAuthToken;
+	TokenRequestAction tokenRequestAction;
 }
 
 @property(nonatomic) UICompositeViewDescription *outgoingView;
