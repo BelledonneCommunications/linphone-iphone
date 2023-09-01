@@ -467,8 +467,9 @@
     	return NULL;
 
 	LinphoneAccount *account = linphone_core_get_default_account(LC);
+	bool dial_escape_plus_enabled = account && linphone_account_get_params(account) && linphone_account_params_get_dial_escape_plus_enabled(linphone_account_get_params(account));
   	char *normvalue;
-	normvalue = linphone_account_is_phone_number(account, value.UTF8String)
+	normvalue = linphone_account_is_phone_number(account, value.UTF8String) && dial_escape_plus_enabled
 	  	? linphone_account_normalize_phone_number(account, value.UTF8String)
 		: bctbx_strdup(value.UTF8String);
 
@@ -496,8 +497,8 @@
 	// since user wants to escape plus, we assume it expects to have phone
 	// numbers by default
 	if (addr && account) {
-		const char *username = linphone_account_params_get_dial_escape_plus_enabled(linphone_account_get_params(account)) ? normvalue : value.UTF8String;
-		if (linphone_account_is_phone_number(account, username)){
+		const char *username = dial_escape_plus_enabled ? normvalue : value.UTF8String;
+		if (linphone_account_is_phone_number(account, username) && dial_escape_plus_enabled){
 			char *normalized = linphone_account_normalize_phone_number(account, username);
 			linphone_address_set_username(addr, normalized);
 			bctbx_free(normalized);
