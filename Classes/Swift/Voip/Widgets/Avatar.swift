@@ -143,7 +143,6 @@ class Avatar : UIView {
 			let newFriendDelegate = FriendDelegateStub(
 				onPresenceReceived: { (linphoneFriend: Friend) -> Void in
 					let presenceModel = linphoneFriend.consolidatedPresence
-					print("imageForAddressimageForAddress imageForAddress \(linphoneFriend.consolidatedPresence.rawValue) \(linphoneFriend.address?.displayName) \(linphoneFriend.address?.asStringUriOnly())")
 					NotificationCenter.default.post(name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil, userInfo: ["friend": linphoneFriend.address?.asStringUriOnly() ?? "", "isOnline": presenceModel.rawValue == LinphoneConsolidatedPresenceOnline.rawValue])
 				}
 			)
@@ -192,8 +191,6 @@ class Avatar : UIView {
         var iconPresenceView = UIImageView()
         if (contactAddress != nil && contactAddress?.friend != nil) {
 			let contactFriend = Friend.getSwiftObject(cObject: (contactAddress?.friend)!)
-			
-			print("imageForAddressimageForAddress imageForAddress \(contactFriend.consolidatedPresence.rawValue) \(contactFriend.address?.displayName) \(contactFriend.address?.asStringUriOnly())")
 			shared?.addDelegate(contactFriend: contactFriend)
 			iconPresenceView = updatePresenceImage(contactFriend: contactFriend)
 			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
@@ -221,7 +218,6 @@ class Avatar : UIView {
 		
 		if contact.friend != nil {
 			let friendAddress = Friend.getSwiftObject(cObject: contact.friend)
-			print("imageForAddressimageForAddress imageForInitials \(friendAddress.consolidatedPresence.rawValue) \(friendAddress.address?.displayName) \(friendAddress.address?.asStringUriOnly())")
 			
 			var iconPresenceView = UIImageView()
 			
