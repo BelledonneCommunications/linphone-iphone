@@ -10,6 +10,14 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [5.1.1] - 2023-04-09
+### Changed
+- Update linphone SDK to 5.2.99
+
+### Fixed
+- Fix bug that could prevent the creation or logging in of a linphone account using a phone number
+- Fix UI bug on dark mode when using multiple accounts simultaneously
+	
 ## [5.1.0] - 2023-21-08
 ### Added
 - In contacts and chat conversations view, show short term presence for contacts whom publish it + added setting to disable it (enabled by default for sip.linphone.org accounts)
