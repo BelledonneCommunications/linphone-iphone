@@ -38,7 +38,7 @@ class Avatar : UIView {
 	
 	let initialsLabel: StyledLabel
 	let iconImageView = UIImageView()
-
+	
 	init (color:LightDarkColor,textStyle:TextStyle) {
 		initialsLabel =  StyledLabel(textStyle)
 		super.init(frame: .zero)
@@ -111,7 +111,7 @@ class Avatar : UIView {
 		} else {
 			imageName = "";
 		}
-
+		
 		return UIImageView(image: UIImage(named:imageName))
 	}
 	
@@ -120,7 +120,7 @@ class Avatar : UIView {
 		initialsLabel.isHidden = true
 		iconImageView.isHidden = false
 	}
-		
+	
 	override func layoutSubviews() {
 		super.layoutSubviews()
 		layer.cornerRadius = self.frame.width / 2.0
@@ -150,17 +150,17 @@ class Avatar : UIView {
 			friend.last?.addDelegate(delegate: friendDelegate.last!)
 		}
 	}
-    
-    func removeAllDelegate(){
-        var i = 0
-        self.friend.forEach { friendForEach in
-            self.friend[i].removeDelegate(delegate: self.friendDelegate[i])
-            i += 1;
-        }
-        
-        self.friendDelegate = []
-        self.friend = []
-    }
+	
+	func removeAllDelegate(){
+		var i = 0
+		self.friend.forEach { friendForEach in
+			self.friend[i].removeDelegate(delegate: self.friendDelegate[i])
+			i += 1;
+		}
+		
+		self.friendDelegate = []
+		self.friend = []
+	}
 }
 
 
@@ -184,25 +184,25 @@ class Avatar : UIView {
 		}
 		let sAddr = Address.getSwiftObject(cObject: address)
 		shared?.fillFromAddress(address: sAddr)
-        
-        let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
-        let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
-        let contactAddress = Address.getSwiftObject(cObject: address).contact()
-        var iconPresenceView = UIImageView()
-        if (contactAddress != nil && contactAddress?.friend != nil) {
+		
+		let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+		let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
+		let contactAddress = Address.getSwiftObject(cObject: address).contact()
+		var iconPresenceView = UIImageView()
+		if (contactAddress != nil && contactAddress?.friend != nil) {
 			let contactFriend = Friend.getSwiftObject(cObject: (contactAddress?.friend)!)
 			shared?.addDelegate(contactFriend: contactFriend)
 			iconPresenceView = updatePresenceImage(contactFriend: contactFriend)
 			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
 			avatarWithPresence.addSubview(iconPresenceView)
 			iconPresenceView.frame = CGRect(x: 36, y: 36, width: 14, height: 14)
-        }else{
-            avatarWithPresence.addSubview(avatarImageWihtoutPresence)
-        }
-        return avatarWithPresence.toImage()
+		}else{
+			avatarWithPresence.addSubview(avatarImageWihtoutPresence)
+		}
+		return avatarWithPresence.toImage()
 	}
 	
-    @objc static func imageForInitials(contact:Contact, displayName:String) -> UIImage? {
+	@objc static func imageForInitials(contact:Contact, displayName:String) -> UIImage? {
 		if (shared == nil) {
 			prepareIt()
 		}
@@ -212,9 +212,9 @@ class Avatar : UIView {
 		shared?.initialsLabel.text = Address.initials(displayName: displayName)
 		shared?.initialsLabel.isHidden = false
 		shared?.iconImageView.isHidden = true
-        
-        let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
-        let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
+		
+		let avatarWithPresence = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+		let avatarImageWihtoutPresence = UIImageView(image: shared?.toImage())
 		
 		if contact.friend != nil {
 			let friendAddress = Friend.getSwiftObject(cObject: contact.friend)
@@ -228,10 +228,10 @@ class Avatar : UIView {
 			iconPresenceView.frame = CGRect(x: 36, y: 36, width: 14, height: 14)
 		}
 		
-        return avatarWithPresence.toImage()
+		return avatarWithPresence.toImage()
 	}
 	
-    static func updatePresenceImage(contactFriend:Friend) -> UIImageView {
+	static func updatePresenceImage(contactFriend:Friend) -> UIImageView {
 		var imageName = "";
 		
 		if (contactFriend.consolidatedPresence == ConsolidatedPresence.Online) {
@@ -241,9 +241,9 @@ class Avatar : UIView {
 		} else {
 			imageName = "";
 		}
-
+		
 		return UIImageView(image: UIImage(named:imageName))
-    }
+	}
 	
 	@objc static func clearFriends(){
 		if shared != nil {
@@ -251,10 +251,10 @@ class Avatar : UIView {
 			shared!.friendDelegate = []
 		}
 	}
-    
-    @objc static func removeAllObserver(){
+	
+	@objc static func removeAllObserver(){
 		if shared != nil {
 			shared!.removeAllDelegate()
 		}
-    }
+	}
 }
