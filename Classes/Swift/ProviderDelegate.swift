@@ -193,7 +193,13 @@ extension ProviderDelegate: CXProviderDelegate {
 		if (UIApplication.shared.applicationState != .active) {
 			CallManager.instance().backgroundContextCall = call
 			CallManager.instance().backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
-			call?.cameraEnabled = false // Disable camera while app is not on foreground
+			if #available(iOS 16.0, *) {
+				if (call?.cameraEnabled == true) {
+					call?.cameraEnabled = AVCaptureSession().isMultitaskingCameraAccessSupported
+				}
+			} else {
+				call?.cameraEnabled = false // Disable camera while app is not on foreground
+			}
 		}
 		CallManager.instance().callkitAudioSessionActivated = false
 		CallManager.instance().lc?.configureAudioSession()
