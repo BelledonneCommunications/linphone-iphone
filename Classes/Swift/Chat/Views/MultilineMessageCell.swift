@@ -32,6 +32,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var contentMediaViewBubble: UIView = UIView(frame: .zero)
 	var contentBubble: UIView = UIView(frame: .zero)
 	var bubble: UIView = UIView(frame: .zero)
+	var bubbleReaction: UIView = UIView(frame: .zero)
 	var imageUser = UIImageView()
 	var contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	var chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
@@ -165,6 +166,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	var messageWithRecording = false
 	
+	var stackViewReactions = UIStackView()
+	var stackViewReactionsItem1 = UILabel()
+	var stackViewReactionsItem2 = UILabel()
+	var stackViewReactionsItem3 = UILabel()
+	var stackViewReactionsItem4 = UILabel()
+	var stackViewReactionsItem5 = UILabel()
+	var stackViewReactionsCounter = UILabel()
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		initCell()
@@ -239,6 +248,61 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		bubble.leadingAnchor.constraint(equalTo: contentBubble.leadingAnchor).isActive = true
 		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor).isActive = true
 		bubble.layer.cornerRadius = 10.0
+		
+
+		
+		
+		
+		contentBubble.addSubview(bubbleReaction)
+		bubbleReaction.translatesAutoresizingMaskIntoConstraints = false
+		bubbleReaction.topAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -10).isActive = true
+		bubbleReaction.layer.cornerRadius = 8.0
+		bubbleReaction.layer.borderWidth = 0.5
+		bubbleReaction.layer.borderColor = VoipTheme.backgroundWhiteBlack.get().cgColor
+		bubbleReaction.isHidden = true
+		
+		bubbleReaction.addSubview(stackViewReactions)
+		stackViewReactions.axis = .horizontal
+		stackViewReactions.distribution = .fill
+		stackViewReactions.alignment = .center
+		stackViewReactions.height(16).done()
+		
+		stackViewReactions.topAnchor.constraint(equalTo: bubbleReaction.topAnchor, constant: 4).isActive = true
+		stackViewReactions.bottomAnchor.constraint(equalTo: bubbleReaction.bottomAnchor, constant: -4).isActive = true
+		stackViewReactions.leadingAnchor.constraint(equalTo: bubbleReaction.leadingAnchor, constant: 4).isActive = true
+		stackViewReactions.trailingAnchor.constraint(equalTo: bubbleReaction.trailingAnchor, constant: -4).isActive = true
+		
+		stackViewReactionsItem1.text = "❤️"
+		stackViewReactionsItem1.font = UIFont.systemFont(ofSize: 12.0)
+		stackViewReactionsItem1.isHidden = true
+		stackViewReactionsItem2.text = "👍"
+		stackViewReactionsItem2.font = UIFont.systemFont(ofSize: 12.0)
+		stackViewReactionsItem2.isHidden = true
+		stackViewReactionsItem3.text = "😂"
+		stackViewReactionsItem3.font = UIFont.systemFont(ofSize: 12.0)
+		stackViewReactionsItem3.isHidden = true
+		stackViewReactionsItem4.text = "😮"
+		stackViewReactionsItem4.font = UIFont.systemFont(ofSize: 12.0)
+		stackViewReactionsItem4.isHidden = true
+		stackViewReactionsItem5.text = "😢"
+		stackViewReactionsItem5.font = UIFont.systemFont(ofSize: 12.0)
+		stackViewReactionsItem5.isHidden = true
+		stackViewReactionsCounter.text = "0"
+		stackViewReactionsCounter.font = UIFont.systemFont(ofSize: 12.0)
+		stackViewReactionsCounter.textColor = .black
+		stackViewReactionsCounter.isHidden = true
+		
+		stackViewReactions.addArrangedSubview(stackViewReactionsItem1)
+		stackViewReactions.addArrangedSubview(stackViewReactionsItem2)
+		stackViewReactions.addArrangedSubview(stackViewReactionsItem3)
+		stackViewReactions.addArrangedSubview(stackViewReactionsItem4)
+		stackViewReactions.addArrangedSubview(stackViewReactionsItem5)
+		stackViewReactions.addArrangedSubview(stackViewReactionsCounter)
+		
+		
+		
+		
+		
 		
 		contentBubble.addSubview(chatRead)
 		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
@@ -1378,6 +1442,67 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					imageVideoViewBubble.image = nil
 					NSLayoutConstraint.deactivate(imageConstraints)
 					imageVideoViewBubble.isHidden = true
+				}
+			}
+			
+			if event.chatMessage!.reactions.count > 0 {
+				bubbleReaction.isHidden = false
+				bubbleReaction.backgroundColor = bubble.backgroundColor
+				if event.chatMessage?.isOutgoing == true {
+					bubbleReaction.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -6).isActive = true
+				} else {
+					
+					bubbleReaction.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: 6).isActive = true
+				}
+				
+				bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -14).isActive = true
+				
+				contentViewBubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -14).isActive = true
+				
+				chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+				
+				var reactionCount = 0
+				event.chatMessage!.reactions.forEach { chatMessageReaction in
+					reactionCount += 1
+					switch chatMessageReaction.body {
+					case "❤️":
+						if stackViewReactionsItem1.isHidden == false {
+							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.isHidden = false
+						} else {
+							stackViewReactionsItem1.isHidden = false
+						}
+					case "👍":
+						if stackViewReactionsItem2.isHidden == false {
+							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.isHidden = false
+						} else {
+							stackViewReactionsItem2.isHidden = false
+						}
+					case "😂":
+						if stackViewReactionsItem3.isHidden == false {
+							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.isHidden = false
+						} else {
+							stackViewReactionsItem3.isHidden = false
+						}
+					case "😮":
+						if stackViewReactionsItem4.isHidden == false {
+							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.isHidden = false
+						} else {
+							stackViewReactionsItem4.isHidden = false
+						}
+					case "😢":
+						if stackViewReactionsItem5.isHidden == false {
+							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.isHidden = false
+						} else {
+							stackViewReactionsItem5.isHidden = false
+						}
+					default:
+						stackViewReactionsItem1.isHidden = false
+					}
 				}
 			}
 		}else{

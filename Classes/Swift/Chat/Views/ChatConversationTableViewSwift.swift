@@ -314,10 +314,10 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
     func tapChooseMenuItemMessage(contentViewBubble: UIView, event: EventLog, preContentSize: CGFloat) {
         
         menu!.anchorView = view
-        menu!.width = 200
+        menu!.width = 240
 
         let coordinateMin = contentViewBubble.convert(contentViewBubble.frame.origin, to: view)
-        let coordinateMax = contentViewBubble.convert(CGPoint(x: contentViewBubble.frame.maxX, y: contentViewBubble.frame.maxY), to: view)
+        let coordinateMax = contentViewBubble.convert(CGPoint(x: contentViewBubble.frame.maxX - 40, y: contentViewBubble.frame.maxY), to: view)
         
         if (coordinateMax.y + CGFloat(menu!.dataSource.count * 44) - preContentSize < view.frame.maxY) {
 			menu!.bottomOffset = CGPoint(x: event.chatMessage!.isOutgoing ? coordinateMax.x - 200 : coordinateMin.x, y: coordinateMax.y - preContentSize)
@@ -334,6 +334,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 		menu!.selectionAction = { [weak self] (index: Int, item: String) in
 			guard let _ = self else { return }
 			switch item {
+			case VoipTexts.bubble_chat_dropDown_emojis:
+				self!.copyMessage(message: event.chatMessage!)
 			case VoipTexts.bubble_chat_dropDown_resend:
 				self!.resendMessage(message: event.chatMessage!)
 			case VoipTexts.bubble_chat_dropDown_copy_text:
@@ -376,6 +378,66 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			}
 			if(index < images.count){
 				switch menu.dataSource[index] {
+				case VoipTexts.bubble_chat_dropDown_emojis:
+					cell.myImageView.image = UIImage(named: images[7])
+					cell.myEmojisView.isHidden = false
+					cell.myImageView.isHidden = true
+					cell.optionLabel.isHidden = true
+					cell.myEmojiButton1.onClick {
+						do {
+							let messageReaction  = try message.createReaction(utf8Reaction: "❤️")
+							messageReaction.send()
+							self.menu!.clearSelection()
+							self.menu?.removeFromSuperview()
+							self.collectionView.reloadData()
+						} catch {
+							Log.e(error.localizedDescription)
+			   			}
+					}
+					cell.myEmojiButton2.onClick {
+						do {
+							let messageReaction  = try message.createReaction(utf8Reaction: "👍")
+							messageReaction.send()
+							self.menu!.clearSelection()
+							self.menu?.removeFromSuperview()
+							self.collectionView.reloadData()
+						} catch {
+							Log.e(error.localizedDescription)
+						}
+					}
+					cell.myEmojiButton3.onClick {
+						do {
+							let messageReaction  = try message.createReaction(utf8Reaction: "😂")
+							messageReaction.send()
+							self.menu!.clearSelection()
+							self.menu?.removeFromSuperview()
+							self.collectionView.reloadData()
+						} catch {
+							Log.e(error.localizedDescription)
+						}
+					}
+					cell.myEmojiButton4.onClick {
+						do {
+							let messageReaction  = try message.createReaction(utf8Reaction: "😮")
+							messageReaction.send()
+							self.menu!.clearSelection()
+							self.menu?.removeFromSuperview()
+							self.collectionView.reloadData()
+						} catch {
+							Log.e(error.localizedDescription)
+						}
+					}
+					cell.myEmojiButton5.onClick {
+						do {
+							let messageReaction  = try message.createReaction(utf8Reaction: "😢")
+							messageReaction.send()
+							self.menu!.clearSelection()
+							self.menu?.removeFromSuperview()
+							self.collectionView.reloadData()
+						} catch {
+							Log.e(error.localizedDescription)
+						}
+					}
 				case VoipTexts.bubble_chat_dropDown_resend:
 					if #available(iOS 13.0, *) {
 						cell.myImageView.image = UIImage(named: images[0])!.withTintColor(.darkGray)
@@ -399,11 +461,14 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				}
 			}
 		}
+		
 		return menu
 	}()
 		
 		menu!.dataSource.removeAll()
         let state = message.state
+		
+		menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_emojis)
         
         if (state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue || state.rawValue == LinphoneChatMessageStateFileTransferError.rawValue) {
             menu!.dataSource.append(VoipTexts.bubble_chat_dropDown_resend)

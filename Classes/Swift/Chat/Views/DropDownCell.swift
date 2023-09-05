@@ -23,10 +23,17 @@ import DropDown
 class MyCell: DropDownCell {
 	
 	@IBOutlet var myImageView: UIImageView!
+	@IBOutlet var myEmojisView: UIView!
+	@IBOutlet var myEmojiButton1: UIButton!
+	@IBOutlet var myEmojiButton2: UIButton!
+	@IBOutlet var myEmojiButton3: UIButton!
+	@IBOutlet var myEmojiButton4: UIButton!
+	@IBOutlet var myEmojiButton5: UIButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()
 		myImageView.contentMode = .scaleAspectFit
+		myEmojisView.isHidden = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

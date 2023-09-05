@@ -190,6 +190,7 @@ import UIKit
 	@objc static let bubble_chat_reply = NSLocalizedString("Answer",comment:"")
     @objc static let bubble_chat_reply_message_does_not_exist = NSLocalizedString("Original message does not exist anymore.",comment:"")
 	
+	@objc static let bubble_chat_dropDown_emojis = NSLocalizedString("Emojis",comment:"")
 	@objc static let bubble_chat_dropDown_resend = NSLocalizedString("Resend",comment:"")
 	@objc static let bubble_chat_dropDown_copy_text = NSLocalizedString("Copy text",comment:"")
 	@objc static let bubble_chat_dropDown_forward = NSLocalizedString("Forward",comment:"")
