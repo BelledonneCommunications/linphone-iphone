@@ -1576,7 +1576,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
     
     @objc func showMyViewControllerInACustomizedSheet(_ sender: UITapGestureRecognizer? = nil) {
-        
+        if #available(iOS 15.0, *) {
+            let sheetViewController = SheetViewController()
+            if let sheetController = sheetViewController.sheetPresentationController {
+              sheetController.detents = [.medium()]
+              sheetController.prefersGrabberVisible = true
+            }
+            PhoneMainView.instance()!.present(sheetViewController, animated: true, completion: nil)
+        }
     }
 	
 	func checkIfIsLinkOrPhoneNumber(content: String){
