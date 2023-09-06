@@ -389,7 +389,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
-							self.collectionView.reloadData()
 						} catch {
 							Log.e(error.localizedDescription)
 			   			}
@@ -400,7 +399,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
-							self.collectionView.reloadData()
 						} catch {
 							Log.e(error.localizedDescription)
 						}
@@ -411,7 +409,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
-							self.collectionView.reloadData()
 						} catch {
 							Log.e(error.localizedDescription)
 						}
@@ -422,7 +419,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
-							self.collectionView.reloadData()
 						} catch {
 							Log.e(error.localizedDescription)
 						}
@@ -433,7 +429,6 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
-							self.collectionView.reloadData()
 						} catch {
 							Log.e(error.localizedDescription)
 						}

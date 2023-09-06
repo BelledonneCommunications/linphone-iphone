@@ -1504,6 +1504,12 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						stackViewReactionsItem1.isHidden = false
 					}
 				}
+                
+                let tap = UITapGestureRecognizer(target: self, action: #selector(self.showMyViewControllerInACustomizedSheet(_:)))
+                bubbleReaction.addGestureRecognizer(tap)
+                
+                
+
 			}
 		}else{
 			contentBubble.isHidden = true
@@ -1568,6 +1574,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			deleteItemCheckBox.width(0).done()
 		}
 	}
+    
+    @objc func showMyViewControllerInACustomizedSheet(_ sender: UITapGestureRecognizer? = nil) {
+        
+    }
 	
 	func checkIfIsLinkOrPhoneNumber(content: String){
 		let input = content
@@ -1653,6 +1663,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		chatMessageDelegate = ChatMessageDelegateStub(
             onMsgStateChanged: { (message: ChatMessage, state: ChatMessage.State) -> Void in
                 self.displayImdnStatus(message: message, state: state)
+            },
+            onNewMessageReaction: { (message: ChatMessage, messageReaction: ChatMessageReaction) -> Void in
+                ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
             },
 			onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) -> Void in
 				self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
