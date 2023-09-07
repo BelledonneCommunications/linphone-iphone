@@ -35,7 +35,19 @@ final class SheetViewController: UIViewController {
     private var currentPosition = 0
     private var tabStyle = SlidingTabStyle.fixed
     private let heightHeader = 40
-    
+	var chatMessage : ChatMessage
+
+	/// Put your custom argument labels here, not inside the `required init?`
+	init(chatMessageInit: ChatMessage) {
+		self.chatMessage = chatMessageInit
+		super.init(nibName: nil, bundle: nil)
+	}
+	
+	/// This is in case the View Controller is loaded from the Storyboard
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -43,24 +55,45 @@ final class SheetViewController: UIViewController {
     
     private func setupUI(){
         // view
-        view.backgroundColor = .white
+        view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
         
         navigationController?.navigationBar.barTintColor = .orange
         navigationController?.navigationBar.isTranslucent = false
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         navigationController?.navigationBar.barStyle = .black
-        
-        // slidingTab
-        addItem(item: SimpleItemViewControllerOne(), title: "REACTIONS")
-        addItem(item: SimpleItemViewControllerOne(), title: "❤️")
-        addItem(item: SimpleItemViewControllerOne(), title: "👍")
-        addItem(item: SimpleItemViewControllerOne(), title: "😂")
-        addItem(item: SimpleItemViewControllerOne(), title: "😮")
-        addItem(item: SimpleItemViewControllerOne(), title: "😢")
-        setHeaderActiveColor(color: .orange) // default blue
-        setStyle(style: .fixed) // default fixed
-        build()
+				
+		if chatMessage.reactions.count <= 1 {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions), title: "\(chatMessage.reactions.count) REACTION")
+		} else {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions), title: "\(chatMessage.reactions.count) REACTIONS")
+		}
+		
+		let reaction1Count = chatMessage.reactions.filter({$0.body == "❤️"}).count
+		let reaction2Count = chatMessage.reactions.filter({$0.body == "👍"}).count
+		let reaction3Count = chatMessage.reactions.filter({$0.body == "😂"}).count
+		let reaction4Count = chatMessage.reactions.filter({$0.body == "😮"}).count
+		let reaction5Count = chatMessage.reactions.filter({$0.body == "😢"}).count
+		
+		if reaction1Count > 0 {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions.filter({$0.body == "❤️"})), title: "❤️ \(reaction1Count)")
+		}
+		if reaction2Count > 0 {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions.filter({$0.body == "👍"})), title: "👍 \(reaction2Count)")
+		}
+		if reaction3Count > 0 {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions.filter({$0.body == "😂"})), title: "😂 \(reaction3Count)")
+		}
+		if reaction4Count > 0 {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions.filter({$0.body == "😮"})), title: "😮 \(reaction4Count)")
+		}
+		if reaction5Count > 0 {
+			addItem(item: SimpleItemViewController(chatMessageReactionsListInit: chatMessage.reactions.filter({$0.body == "😢"})), title: "😢 \(reaction5Count)")
+		}
+		
+		setHeaderActiveColor(color: .orange) // default blue
+		setStyle(style: .fixed) // default fixed
+		build()
     }
     
     func addItem(item: UIViewController, title: String){
@@ -108,13 +141,13 @@ final class SheetViewController: UIViewController {
         
         // collectionHeader
         collectionHeader.translatesAutoresizingMaskIntoConstraints = false
-        collectionHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
+        collectionHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         collectionHeader.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         collectionHeader.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         collectionHeader.heightAnchor.constraint(equalToConstant: CGFloat(heightHeader)).isActive = true
         (collectionHeader.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = .horizontal
         collectionHeader.showsHorizontalScrollIndicator = false
-        collectionHeader.backgroundColor = colorHeaderBackground
+        collectionHeader.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
         collectionHeader.register(HeaderCell.self, forCellWithReuseIdentifier: collectionHeaderIdentifier)
         collectionHeader.delegate = self
         collectionHeader.dataSource = self
@@ -126,7 +159,7 @@ final class SheetViewController: UIViewController {
         collectionPage.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         collectionPage.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         collectionPage.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        collectionPage.backgroundColor = .white
+        collectionPage.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
         collectionPage.showsHorizontalScrollIndicator = false
         (collectionPage.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = .horizontal
         collectionPage.isPagingEnabled = true
@@ -144,6 +177,11 @@ final class SheetViewController: UIViewController {
         var text: String! {
             didSet {
                 label.text = text
+				if label.text!.contains("REACTIONS") {
+					label.font = UIFont.boldSystemFont(ofSize: 8)
+				} else {
+					label.font = UIFont.boldSystemFont(ofSize: 14)
+				}
             }
         }
         
@@ -177,7 +215,7 @@ final class SheetViewController: UIViewController {
             label.translatesAutoresizingMaskIntoConstraints = false
             label.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
             label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-            label.font = UIFont.boldSystemFont(ofSize: 8)
+            label.font = UIFont.boldSystemFont(ofSize: 14)
             
             // indicator
             indicator.translatesAutoresizingMaskIntoConstraints = false
@@ -272,10 +310,22 @@ enum SlidingTabStyle: String {
     case flexible
 }
 
-class SimpleItemViewControllerOne: UIViewController{
-    
-    private let label = UILabel()
-    
+class SimpleItemViewController: UIViewController, UITableViewDataSource {
+	
+	let reactionsListTableView =  UITableView()
+	var chatMessageReactionsList : [ChatMessageReaction] = []
+	
+	init(chatMessageReactionsListInit: [ChatMessageReaction]) {
+		self.chatMessageReactionsList = chatMessageReactionsListInit
+		super.init(nibName: nil, bundle: nil)
+	}
+	
+	/// This is in case the View Controller is loaded from the Storyboard
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -283,14 +333,30 @@ class SimpleItemViewControllerOne: UIViewController{
     
     private func setupUI(){
         // view
-        view.backgroundColor = .white
-        view.addSubview(label)
-        
-        // label
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        label.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        label.text = "First Controller"
+        view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
+		
+		// ParticipantsList
+		view.addSubview(reactionsListTableView)
+		//reactionsListTableView.matchParentDimmensions().done()
+		reactionsListTableView.alignParentTop(withMargin: 10).alignParentBottom().alignParentLeft().alignParentRight().done()
+		reactionsListTableView.dataSource = self
+		reactionsListTableView.register(ReactionCell.self, forCellReuseIdentifier: "ReactionCell")
+		reactionsListTableView.allowsSelection = false
+		if #available(iOS 15.0, *) {
+			reactionsListTableView.allowsFocus = false
+		}
+		reactionsListTableView.separatorStyle = .singleLine
+		reactionsListTableView.separatorColor = .white
     }
-    
+	
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return chatMessageReactionsList.count
+	}
+	
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		let cell:ReactionCell = tableView.dequeueReusableCell(withIdentifier: "ReactionCell") as! ReactionCell
+		cell.selectionStyle = .none
+		cell.reactionData = chatMessageReactionsList[indexPath.row]
+		return cell
+	}
 }

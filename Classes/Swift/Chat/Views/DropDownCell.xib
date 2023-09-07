@@ -36,34 +36,44 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="zqz-hc-78g" userLabel="emoji1">
-                                <rect key="frame" x="5" y="18" width="47" height="35"/>
+                                <rect key="frame" x="10" y="25" width="35" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="❤️"/>
+                                <buttonConfiguration key="configuration" style="plain" title="❤️" buttonSize="large">
+                                    <directionalEdgeInsets key="contentInsets" top="0.0" leading="3" bottom="0.0" trailing="0.0"/>
+                                </buttonConfiguration>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="MZ1-PD-4wS" userLabel="emoji2">
-                                <rect key="frame" x="77" y="18" width="47" height="35"/>
+                                <rect key="frame" x="84" y="25" width="35" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="👍"/>
+                                <buttonConfiguration key="configuration" style="plain" title="👍" buttonSize="large">
+                                    <directionalEdgeInsets key="contentInsets" top="0.0" leading="3" bottom="0.0" trailing="0.0"/>
+                                </buttonConfiguration>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="4hz-YC-t5L" userLabel="emoji3">
-                                <rect key="frame" x="151" y="18" width="47" height="35"/>
+                                <rect key="frame" x="158" y="25" width="35" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="😂"/>
+                                <buttonConfiguration key="configuration" style="plain" title="😂" buttonSize="large">
+                                    <directionalEdgeInsets key="contentInsets" top="0.0" leading="3" bottom="0.0" trailing="0.0"/>
+                                </buttonConfiguration>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="rVf-gM-dFu" userLabel="emoji4">
-                                <rect key="frame" x="225" y="18" width="47" height="35"/>
+                                <rect key="frame" x="231" y="25" width="35" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="😮"/>
+                                <buttonConfiguration key="configuration" style="plain" title="😮" buttonSize="large">
+                                    <directionalEdgeInsets key="contentInsets" top="0.0" leading="3" bottom="0.0" trailing="0.0"/>
+                                </buttonConfiguration>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Jif-0X-Jwc" userLabel="emoji5">
-                                <rect key="frame" x="298" y="18" width="47" height="35"/>
+                                <rect key="frame" x="305" y="25" width="35" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="😢"/>
+                                <buttonConfiguration key="configuration" style="plain" title="😢" buttonSize="large">
+                                    <directionalEdgeInsets key="contentInsets" top="0.0" leading="3" bottom="0.0" trailing="0.0"/>
+                                </buttonConfiguration>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="cIf-Td-6PX"/>

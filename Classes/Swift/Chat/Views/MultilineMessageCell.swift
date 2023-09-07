@@ -1461,41 +1461,39 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				
 				chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
 				
-				var reactionCount = 0
 				event.chatMessage!.reactions.forEach { chatMessageReaction in
-					reactionCount += 1
 					switch chatMessageReaction.body {
 					case "❤️":
 						if stackViewReactionsItem1.isHidden == false {
-							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
 							stackViewReactionsCounter.isHidden = false
 						} else {
 							stackViewReactionsItem1.isHidden = false
 						}
 					case "👍":
 						if stackViewReactionsItem2.isHidden == false {
-							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
 							stackViewReactionsCounter.isHidden = false
 						} else {
 							stackViewReactionsItem2.isHidden = false
 						}
 					case "😂":
 						if stackViewReactionsItem3.isHidden == false {
-							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
 							stackViewReactionsCounter.isHidden = false
 						} else {
 							stackViewReactionsItem3.isHidden = false
 						}
 					case "😮":
 						if stackViewReactionsItem4.isHidden == false {
-							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
 							stackViewReactionsCounter.isHidden = false
 						} else {
 							stackViewReactionsItem4.isHidden = false
 						}
 					case "😢":
 						if stackViewReactionsItem5.isHidden == false {
-							stackViewReactionsCounter.text = String(reactionCount)
+							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
 							stackViewReactionsCounter.isHidden = false
 						} else {
 							stackViewReactionsItem5.isHidden = false
@@ -1577,9 +1575,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
     
     @objc func showMyViewControllerInACustomizedSheet(_ sender: UITapGestureRecognizer? = nil) {
         if #available(iOS 15.0, *) {
-            let sheetViewController = SheetViewController()
+			let sheetViewController = SheetViewController(chatMessageInit: chatMessage!)
             if let sheetController = sheetViewController.sheetPresentationController {
-              sheetController.detents = [.medium()]
+				sheetController.detents = [.medium()]
               sheetController.prefersGrabberVisible = true
             }
             PhoneMainView.instance()!.present(sheetViewController, animated: true, completion: nil)

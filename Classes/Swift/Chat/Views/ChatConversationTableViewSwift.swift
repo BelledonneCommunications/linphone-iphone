@@ -383,6 +383,18 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					cell.myEmojisView.isHidden = false
 					cell.myImageView.isHidden = true
 					cell.optionLabel.isHidden = true
+					
+					cell.myEmojiButton1.layer.cornerRadius = 10
+					cell.myEmojiButton1.backgroundColor = VoipTheme.light_grey_color
+					cell.myEmojiButton2.layer.cornerRadius = 10
+					cell.myEmojiButton2.backgroundColor = VoipTheme.light_grey_color
+					cell.myEmojiButton3.layer.cornerRadius = 10
+					cell.myEmojiButton3.backgroundColor = VoipTheme.light_grey_color
+					cell.myEmojiButton4.layer.cornerRadius = 10
+					cell.myEmojiButton4.backgroundColor = VoipTheme.light_grey_color
+					cell.myEmojiButton5.layer.cornerRadius = 10
+					cell.myEmojiButton5.backgroundColor = VoipTheme.light_grey_color
+					
 					cell.myEmojiButton1.onClick {
 						do {
 							let messageReaction  = try message.createReaction(utf8Reaction: "❤️")
