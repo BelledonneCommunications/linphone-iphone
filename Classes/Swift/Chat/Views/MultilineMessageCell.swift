@@ -249,11 +249,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		bubble.trailingAnchor.constraint(equalTo: contentBubble.trailingAnchor).isActive = true
 		bubble.layer.cornerRadius = 10.0
 		
-
-		
-		
-		
-		contentBubble.addSubview(bubbleReaction)
+		contentView.addSubview(bubbleReaction)
 		bubbleReaction.translatesAutoresizingMaskIntoConstraints = false
 		bubbleReaction.topAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -10).isActive = true
 		bubbleReaction.layer.cornerRadius = 8.0
@@ -1502,12 +1498,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						stackViewReactionsItem1.isHidden = false
 					}
 				}
-                
+				
                 let tap = UITapGestureRecognizer(target: self, action: #selector(self.showMyViewControllerInACustomizedSheet(_:)))
                 bubbleReaction.addGestureRecognizer(tap)
-                
-                
-
 			}
 		}else{
 			contentBubble.isHidden = true
@@ -1672,6 +1665,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
             onNewMessageReaction: { (message: ChatMessage, messageReaction: ChatMessageReaction) -> Void in
                 ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
             },
+			onReactionRemoved: { (message: ChatMessage, address: Address) -> Void in
+				ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+			},
 			onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) -> Void in
 				self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
 			},

@@ -112,23 +112,29 @@ final class SheetViewController: UIViewController {
     func setHeaderInActiveColor(color: UIColor){
         colorHeaderInActive = color
     }
-    
-    func setCurrentPosition(position: Int){
-        currentPosition = position
-        let path = IndexPath(item: currentPosition, section: 0)
-        
-        DispatchQueue.main.async {
-            if self.tabStyle == .flexible {
-                self.collectionHeader.scrollToItem(at: path, at: .centeredHorizontally, animated: true)
-            }
-            
-            self.collectionHeader.reloadData()
-        }
-        
-        DispatchQueue.main.async {
-           self.collectionPage.scrollToItem(at: path, at: .centeredHorizontally, animated: true)
-        }
-    }
+	
+	func setCurrentPosition(position: Int){
+		currentPosition = position
+		let path = IndexPath(item: currentPosition, section: 0)
+		
+		DispatchQueue.main.async {
+			if self.tabStyle == .flexible {
+				self.collectionHeader.scrollToItem(at: path, at: .centeredHorizontally, animated: true)
+			}
+			
+			self.collectionHeader.reloadData()
+		}
+		
+		DispatchQueue.main.async {
+			self.collectionPage.isPagingEnabled = false
+			self.collectionPage.scrollToItem(
+				at: path,
+				at: .centeredHorizontally,
+				animated: true
+			)
+			self.collectionPage.isPagingEnabled = true
+		}
+	}
     
     func setStyle(style: SlidingTabStyle){
         tabStyle = style
@@ -337,7 +343,6 @@ class SimpleItemViewController: UIViewController, UITableViewDataSource {
 		
 		// ParticipantsList
 		view.addSubview(reactionsListTableView)
-		//reactionsListTableView.matchParentDimmensions().done()
 		reactionsListTableView.alignParentTop(withMargin: 10).alignParentBottom().alignParentLeft().alignParentRight().done()
 		reactionsListTableView.dataSource = self
 		reactionsListTableView.register(ReactionCell.self, forCellReuseIdentifier: "ReactionCell")

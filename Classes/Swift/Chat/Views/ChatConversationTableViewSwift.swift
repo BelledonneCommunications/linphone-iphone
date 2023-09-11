@@ -384,20 +384,29 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					cell.myImageView.isHidden = true
 					cell.optionLabel.isHidden = true
 					
-					cell.myEmojiButton1.layer.cornerRadius = 10
-					cell.myEmojiButton1.backgroundColor = VoipTheme.light_grey_color
-					cell.myEmojiButton2.layer.cornerRadius = 10
-					cell.myEmojiButton2.backgroundColor = VoipTheme.light_grey_color
-					cell.myEmojiButton3.layer.cornerRadius = 10
-					cell.myEmojiButton3.backgroundColor = VoipTheme.light_grey_color
-					cell.myEmojiButton4.layer.cornerRadius = 10
-					cell.myEmojiButton4.backgroundColor = VoipTheme.light_grey_color
-					cell.myEmojiButton5.layer.cornerRadius = 10
-					cell.myEmojiButton5.backgroundColor = VoipTheme.light_grey_color
+					switch message.ownReaction?.body {
+					case "❤️":
+						cell.myEmojiButton1.layer.cornerRadius = 10
+						cell.myEmojiButton1.backgroundColor = VoipTheme.light_grey_color
+					case "👍":
+						cell.myEmojiButton2.layer.cornerRadius = 10
+						cell.myEmojiButton2.backgroundColor = VoipTheme.light_grey_color
+					case "😂":
+						cell.myEmojiButton3.layer.cornerRadius = 10
+						cell.myEmojiButton3.backgroundColor = VoipTheme.light_grey_color
+					case "😮":
+						cell.myEmojiButton4.layer.cornerRadius = 10
+						cell.myEmojiButton4.backgroundColor = VoipTheme.light_grey_color
+					case "😢":
+						cell.myEmojiButton5.layer.cornerRadius = 10
+						cell.myEmojiButton5.backgroundColor = VoipTheme.light_grey_color
+					default:
+						print("No reaction")
+					}
 					
 					cell.myEmojiButton1.onClick {
 						do {
-							let messageReaction  = try message.createReaction(utf8Reaction: "❤️")
+							let messageReaction  = try message.ownReaction?.body != "❤️" ? message.createReaction(utf8Reaction: "❤️") : message.createReaction(utf8Reaction: "")
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
@@ -407,7 +416,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					}
 					cell.myEmojiButton2.onClick {
 						do {
-							let messageReaction  = try message.createReaction(utf8Reaction: "👍")
+							let messageReaction  = try message.ownReaction?.body != "👍" ? message.createReaction(utf8Reaction: "👍") : message.createReaction(utf8Reaction: "")
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
@@ -417,7 +426,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					}
 					cell.myEmojiButton3.onClick {
 						do {
-							let messageReaction  = try message.createReaction(utf8Reaction: "😂")
+							let messageReaction  = try message.ownReaction?.body != "😂" ? message.createReaction(utf8Reaction: "😂") : message.createReaction(utf8Reaction: "")
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
@@ -427,7 +436,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					}
 					cell.myEmojiButton4.onClick {
 						do {
-							let messageReaction  = try message.createReaction(utf8Reaction: "😮")
+							let messageReaction  = try message.ownReaction?.body != "😮" ? message.createReaction(utf8Reaction: "😮") : message.createReaction(utf8Reaction: "")
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
@@ -437,7 +446,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					}
 					cell.myEmojiButton5.onClick {
 						do {
-							let messageReaction  = try message.createReaction(utf8Reaction: "😢")
+							let messageReaction  = try message.ownReaction?.body != "😢" ? message.createReaction(utf8Reaction: "😢") : message.createReaction(utf8Reaction: "")
 							messageReaction.send()
 							self.menu!.clearSelection()
 							self.menu?.removeFromSuperview()
