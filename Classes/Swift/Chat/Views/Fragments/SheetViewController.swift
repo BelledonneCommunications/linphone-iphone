@@ -36,6 +36,7 @@ final class SheetViewController: UIViewController {
     private var tabStyle = SlidingTabStyle.fixed
     private let heightHeader = 40
 	var chatMessage : ChatMessage
+	var chatMessageDelegate: ChatMessageDelegate? = nil
 
 	/// Put your custom argument labels here, not inside the `required init?`
 	init(chatMessageInit: ChatMessage) {
@@ -48,11 +49,37 @@ final class SheetViewController: UIViewController {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		if chatMessageDelegate != nil {
+			chatMessage.removeDelegate(delegate: chatMessageDelegate!)
+		}
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+		addMessageDelegate()
     }
     
+	func reloadUI() {
+		items.removeAll()
+		titles.removeAll()
+		setupUI()
+	}
+	
+	func addMessageDelegate(){
+		chatMessageDelegate = ChatMessageDelegateStub(
+			onNewMessageReaction: { (message: ChatMessage, messageReaction: ChatMessageReaction) -> Void in
+				self.reloadUI()
+			},
+			onReactionRemoved: { (message: ChatMessage, address: Address) -> Void in
+				self.reloadUI()
+			}
+		)
+		chatMessage.addDelegate(delegate: chatMessageDelegate!)
+	}
+	
     private func setupUI(){
         // view
         view.backgroundColor = VoipTheme.voipBackgroundBWColor.get()
