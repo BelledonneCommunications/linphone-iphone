@@ -32,13 +32,16 @@
 	}
 
 	if (peer) {
-		const bctbx_list_t *logs = linphone_account_get_call_logs_for_address(linphone_core_get_default_account(LC), peer);
-		while (logs != NULL) {
-			LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
-			if (linphone_address_weak_equal(linphone_call_log_get_remote_address(log), peer)) {
-				[callLogs addObject:[NSValue valueWithPointer:log]];
+		LinphoneAccount *acc = linphone_core_get_default_account(LC);
+		if (acc) {
+			const bctbx_list_t *logs = linphone_account_get_call_logs_for_address(acc, peer);
+			while (logs != NULL) {
+				LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
+				if (linphone_address_weak_equal(linphone_call_log_get_remote_address(log), peer)) {
+					[callLogs addObject:[NSValue valueWithPointer:log]];
+				}
+				logs = bctbx_list_next(logs);
 			}
-			logs = bctbx_list_next(logs);
 		}
 	}
 	[[self tableView] reloadData];
