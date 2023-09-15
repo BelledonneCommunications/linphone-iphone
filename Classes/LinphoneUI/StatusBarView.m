@@ -78,6 +78,16 @@
 	[self accountUpdate:account];
 	[self updateUI:linphone_core_get_calls_nb(LC)];
 	[self updateVoicemail];
+	
+	if (@available(iOS 15.0, *)) {
+		[LocalPushManager.shared addActiveCallBackObserverWithAction:^(BOOL active) {
+			_localpushIndicator.hidden = !active;
+		}];
+	} else {
+		_localpushIndicator.hidden = true;
+	}
+	
+	
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

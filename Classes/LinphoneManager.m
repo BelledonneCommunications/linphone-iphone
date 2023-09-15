@@ -686,6 +686,11 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 	if (state == LinphoneGlobalOn) {
 		// reload friends
 		[self.fastAddressBook fetchContactsInBackGroundThread];
+		if (@available(iOS 15.0, *)) {
+			[LocalPushManager.shared configureLocalPushWithCCoreConfig:linphone_core_get_config(LC)];
+		} else {
+			LOGW(@"Local push notifications not available for this ios version (iOS 15 minimum)");
+		}
 	}
 }
 
@@ -715,6 +720,14 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 			 object:self
 			 userInfo:dict];
 		});
+	
+	if (status == LinphoneConfiguringSuccessful) {
+		if (@available(iOS 15.0, *)) {
+			[LocalPushManager.shared configureLocalPushWithCCoreConfig:linphone_core_get_config(LC)];
+		} else {
+			LOGW(@"Local push notifications not available for this ios version (iOS 15 minimum)");
+		}
+	}
 }
 
 #pragma mark - Registration State Functions

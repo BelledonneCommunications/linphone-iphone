@@ -184,7 +184,7 @@ class NotificationService: UNNotificationServiceExtension {
 		let localUri = message.localAddr?.asStringUriOnly()
 		let peerUri = message.peerAddr?.asStringUriOnly()
 		let from: String
-		if let fromDisplayName = getDisplayNameFromSipAddress(sipAddr: message.fromAddr?.asStringUriOnly()) {
+		if let fromDisplayName = message.fromAddr?.asStringUriOnly().getDisplayNameFromSipAddress(lc: lc!, logger: NotificationService.log, groupId: APP_GROUP_ID) {
 			from = fromDisplayName
 		} else {
 			from = fromAddr!
@@ -242,37 +242,4 @@ class NotificationService: UNNotificationServiceExtension {
         return count
     }
 
-	func getDisplayNameFromSipAddress(sipAddr: String?) -> String? {
-		if let sipAddr = sipAddr {
-			NotificationService.log.message(message: "looking for display name for \(sipAddr)")
-
-			if (sipAddr == "") { return nil }
-
-			let defaults = UserDefaults.init(suiteName: APP_GROUP_ID)
-			let addressBook = defaults?.dictionary(forKey: "addressBook")
-
-			if (addressBook == nil) {
-				NotificationService.log.message(message: "address book not found in userDefaults")
-				return nil
-			}
-
-			var usePrefix = true;
-			if let account = lc?.defaultAccount, let params = account.params {
-				usePrefix = params.useInternationalPrefixForCallsAndChats
-			}
-			
-			if let simpleAddr = lc?.interpretUrl(url: sipAddr, applyInternationalPrefix: usePrefix) {
-				simpleAddr.clean()
-				let nomalSipaddr = simpleAddr.asString()
-				if let displayName = addressBook?[nomalSipaddr] as? String {
-					NotificationService.log.message(message: "display name for \(sipAddr): \(displayName)")
-					return displayName
-				}
-			}
-
-			NotificationService.log.message(message: "display name for \(sipAddr) not found in userDefaults")
-			return nil
-		}
-		return nil
-	}
 }

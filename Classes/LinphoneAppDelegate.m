@@ -121,7 +121,6 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	
 	if (!startedInBackground || PhoneMainView.instance.currentView == nil) {
 		startedInBackground = TRUE;
 		// initialize UI
@@ -294,7 +293,6 @@
 #ifdef USE_CRASHLYTICS
 	[FIRApp configure];
 #endif
-
 	
 	if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 		if (TARGET_IPHONE_SIMULATOR) {

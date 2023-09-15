@@ -18,6 +18,7 @@
 */
 
 import linphonesw
+import os
 #if USE_CRASHLYTICS
 import Firebase
 #endif
@@ -42,6 +43,14 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 			throw LinphoneError.loggingServiceUninitialized
 		}
 	}
+	
+	let levelToOSleLogLevel :[Int: OSLogType] =
+		[LogLevel.Debug.rawValue:.debug,
+		 LogLevel.Trace.rawValue:.info,
+		 LogLevel.Message.rawValue:.info,
+		 LogLevel.Warning.rawValue:.error,
+		 LogLevel.Error.rawValue:.error,
+		 LogLevel.Fatal.rawValue:.fault];
 
 	func onLogMessageWritten(logService: LoggingService, domain: String, level: LogLevel, message: String) {
 		let levelStr: String
@@ -66,6 +75,42 @@ class LinphoneLoggingServiceManager: LoggingServiceDelegate {
 #if USE_CRASHLYTICS
 		Crashlytics.crashlytics().log("\(levelStr) [\(domain)] \(message)\n")
 #endif
-		NSLog("\(levelStr) [\(domain)] \(message)\n")
+		if #available(iOS 10.0, *) {
+			os_log("%{public}@", type: levelToOSleLogLevel[level.rawValue] ?? .info,message)
+		} else {
+			NSLog("\(levelStr) [\(domain)] \(message)\n")
+		}
+	}
+}
+
+extension String {
+	func getDisplayNameFromSipAddress(lc:Core, logger:LoggingService, groupId:String) -> String? {
+		logger.message(message: "looking for display name for \(self)")
+		
+		
+		let defaults = UserDefaults.init(suiteName: groupId)
+		let addressBook = defaults?.dictionary(forKey: "addressBook")
+		
+		if (addressBook == nil) {
+			logger.message(message: "address book not found in userDefaults")
+			return nil
+		}
+		
+		var usePrefix = true;
+		if let account = lc.defaultAccount, let params = account.params {
+			usePrefix = params.useInternationalPrefixForCallsAndChats
+		}
+		
+		if let simpleAddr = lc.interpretUrl(url: self, applyInternationalPrefix: usePrefix) {
+			simpleAddr.clean()
+			let nomalSipaddr = simpleAddr.asString()
+			if let displayName = addressBook?[nomalSipaddr] as? String {
+				logger.message(message: "display name for \(self): \(displayName)")
+				return displayName
+			}
+		}
+		
+		logger.message(message: "display name for \(self) not found in userDefaults")
+		return nil
 	}
 }

@@ -505,6 +505,8 @@
 		[self setInteger:linphone_core_get_download_bandwidth(LC) forKey:@"download_bandwidth_preference"];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(LC) forKey:@"adaptive_rate_control_preference"];
 		[self setObject:[lm lpConfigStringForKey:@"dns_server_ip"] forKey:@"dns_server_preference"];
+		[self setCString:[lm lpConfigStringForKey:@"ssids" inSection:@"local_push"].UTF8String forKey:@"local_push_ssids"];
+		
 	}
 
 	// tunnel section
@@ -1061,6 +1063,13 @@
 			[lm setDnsServer];
 		}
 		
+		[lm lpConfigSetString:[self stringForKey:@"local_push_ssids"] forKey:@"ssids" inSection:@"local_push"];
+		if (@available(iOS 15.0, *)) {
+			[LocalPushManager.shared configureLocalPushWithCCoreConfig:lm.configDb];
+		} else {
+			LOGW(@"Local push notifications not available for this ios version (iOS 15 minimum)");
+		}
+
 
 		// tunnel section
 		if (linphone_core_tunnel_available()) {

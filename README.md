@@ -145,3 +145,16 @@ Any Linphone view is actually presented in the UICompositeView, with or without 
 The UICompositeView consists of 3 areas laid out vertically. From top to bottom: StatusBar, Content and TabBar.
 The TabBar is usually the UIMainBar, which is used as a navigation controller: clicking on each of the buttons will trigger
 a transition to another "view".
+
+
+# Local Push Notifications
+- application local push network extension
+- requires local push entitlement
+- enabled either inside settings/network from app UI
+- by remote provisionning/configuration, section local_push, key ssids (CSV of SSIDs on which to enable)
+- when extension is running under "connected" appears a "local push active" label
+- provisionning profile need to be built on Apple console, the entitlement onboarding on profile is asked at last. (automatic provisionning/signing from Xcode will not pick it up - tested on 14.3.1)
+- If deploying code from Xcode the extension must not be running, otherwise need device will need reboot to run it again. Just disabling wifi prior to deploying code from Xcode does the trick (14.3.1)
+- use a unique uuid to avoid conflict with app core ([misc]uuid)
+- use replica of app config
+

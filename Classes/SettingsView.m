@@ -805,6 +805,12 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	}else{
 		[hiddenKeys addObject:@"vfs_enabled"];
 	}
+	
+	
+	if (@available(iOS 15.0, *)) {} else {
+		[hiddenKeys addObject:@"local_push"];
+		[hiddenKeys addObject:@"local_ssids"];
+	}
 
 	return hiddenKeys;
 }
