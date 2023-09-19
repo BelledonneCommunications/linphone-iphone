@@ -625,7 +625,8 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				}
 				
 				viewer.imageViewer = image
-				viewer.imageNameViewer = chatMessage.contents.first!.name!.isEmpty ? "" : chatMessage.contents.first!.name!
+				viewer.imageNameViewer = (chatMessage.contents.first!.name!.isEmpty ? "" : chatMessage.contents.first!.name)!
+				
 				viewer.imagePathViewer = chatMessage.contents.first!.exportPlainFile()
 				viewer.contentType = chatMessage.contents.first!.type
 				PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
@@ -701,7 +702,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 										}
 										
 										viewer.imageViewer = image
-										viewer.imageNameViewer = chatMessage!.contents[index].name!.isEmpty ? "" : chatMessage!.contents[index].name!
+										viewer.imageNameViewer = (chatMessage!.contents[index].name!.isEmpty ? "" : chatMessage!.contents[index].name)!
 										viewer.imagePathViewer = chatMessage!.contents[index].exportPlainFile()
 										viewer.contentType = chatMessage!.contents[index].type
 										PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())

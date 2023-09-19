@@ -133,8 +133,13 @@ class NotificationService: UNNotificationServiceExtension {
 							bestAttemptContent.userInfo.updateValue(msgData?.from as Any, forKey: "from")
 							bestAttemptContent.userInfo.updateValue(msgData?.peerAddr as Any, forKey: "peer_addr")
 							bestAttemptContent.userInfo.updateValue(msgData?.localAddr as Any, forKey: "local_addr")
-
-							contentHandler(bestAttemptContent)
+							
+							if message.reactionContent != " " {
+								contentHandler(bestAttemptContent)
+							}else {
+								contentHandler(UNNotificationContent())
+							}
+							
 							return
 						} else {
 							NotificationService.log.message(message: "Message not found for callid ["+callId+"]")
@@ -183,6 +188,7 @@ class NotificationService: UNNotificationServiceExtension {
 		let callId = message.callId
 		let localUri = message.localAddr?.asStringUriOnly()
 		let peerUri = message.peerAddr?.asStringUriOnly()
+		let reactionContent = message.reactionContent
 		let from: String
 		if let fromDisplayName = message.fromAddr?.asStringUriOnly().getDisplayNameFromSipAddress(lc: lc!, logger: NotificationService.log, groupId: APP_GROUP_ID) {
 			from = fromDisplayName
@@ -196,7 +202,11 @@ class NotificationService: UNNotificationServiceExtension {
 		if let showMsg = lc!.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
 			if let subject = message.subject as String?, subject != "" {
 				msgData.subtitle = subject
-				msgData.body = from + " : " + content
+				if reactionContent == nil {
+					msgData.body = from + " : " + content
+				} else {
+					msgData.body = from + NSLocalizedString(" has reacted by ", comment: "") + reactionContent! + NSLocalizedString(" to: ", comment: "") + content
+				}
 			} else {
 				msgData.subtitle = from
 				msgData.body = content
