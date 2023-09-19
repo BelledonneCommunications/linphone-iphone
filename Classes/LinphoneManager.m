@@ -1810,7 +1810,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		factory = factoryIpad;
 	}
 	_configDb = linphone_config_new_for_shared_core(kLinphoneMsgNotificationAppGroupId.UTF8String, @"linphonerc".UTF8String, factory.UTF8String);
-	linphone_config_clean_entry(_configDb, "misc", "max_calls");
+	if (linphone_config_has_entry(_configDb, "misc", "max_calls")) { // Not doable on core on iOS (requires CallKit) -> flag moved to app section, and have app handle it in ProviderDelegate
+		linphone_config_set_int(_configDb, "app", "max_calls", linphone_config_get_int(_configDb,"misc", "max_calls",10));
+		linphone_config_clean_entry(_configDb, "misc", "max_calls");
+	}
 }
 #pragma mark - Audio route Functions
 

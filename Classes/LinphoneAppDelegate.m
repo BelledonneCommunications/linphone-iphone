@@ -843,6 +843,11 @@
 - (void)ConfigurationStateUpdateEvent:(NSNotification *)notif {
 	LinphoneConfiguringState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneConfiguringSuccessful) {
+		if (linphone_config_has_entry(LinphoneManager.instance.configDb, "misc", "max_calls")) {  // Not doable on core on iOS (requires CallKit) -> flag moved to app section, and have app handle it in ProviderDelegate
+			linphone_config_set_int(LinphoneManager.instance.configDb, "app", "max_calls", linphone_config_get_int(LinphoneManager.instance.configDb,"misc", "max_calls",10));
+			linphone_config_clean_entry(LinphoneManager.instance.configDb, "misc", "max_calls");
+
+		}
 		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissViewControllerAnimated:YES completion:nil];
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Success", nil)

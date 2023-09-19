@@ -95,9 +95,21 @@ class ProviderDelegate: NSObject {
 		update.remoteHandle = CXHandle(type:.generic, value: handle)
 		update.hasVideo = hasVideo
 		update.localizedCallerName = displayName
-
+		
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId
+		
+		if (ConfigManager.instance().config?.hasEntry(section: "app", key: "max_calls") == 1)  { // moved from misc to app section intentionally upon app start or remote configuration
+			if let maxCalls = ConfigManager.instance().config?.getInt(section: "app",key: "max_calls",defaultValue: 10), Core.get().callsNb > maxCalls {
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: declining call, as max calls (\(maxCalls)) reached  call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
+				decline(uuid: uuid)
+				DispatchQueue.main.async {
+					try?call?.decline(reason: .Busy)
+				}
+				return
+			}
+		}
+		
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: report new incoming call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
 		//CallManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "") 
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
@@ -143,6 +155,10 @@ class ProviderDelegate: NSObject {
 	
 	func endCall(uuid: UUID) {
 		provider.reportCall(with: uuid, endedAt: .init(), reason: .failed)
+	}
+	
+	func decline(uuid: UUID) {
+		provider.reportCall(with: uuid, endedAt: .init(), reason: .unanswered)
 	}
 
 	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
