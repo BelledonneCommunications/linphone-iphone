@@ -46,9 +46,7 @@ let localPushProviderBundleIdentifier = "org.linphone.phone.localpushprovider"
 		super.init()
 		NEAppPushManager.loadAllFromPreferences { managers, error in
 			if let error = error {
-				Log.e("[LocalPushManager] Failed to load all NEAppPushManager's from preferences: \(error)")
-				self.isInitialized.value = true
-				return
+				Log.w("[LocalPushManager] Failed to load all NEAppPushManager's from preferences: \(error)")
 			}
 			self.appPushManager = managers?.first ?? NEAppPushManager()
 			let appPushManager = self.appPushManager!
@@ -89,9 +87,17 @@ let localPushProviderBundleIdentifier = "org.linphone.phone.localpushprovider"
 				.subscribe(self.pushManagerIsActiveSubject)
 			appPushManager.saveToPreferences { error in
 				if (error != nil) {
-					Log.e("[LocalPushManager] error saving Local Push preferences \(String(describing: error))")
+					Log.e("[LocalPushManager] error saving Local Push preferences \(String(describing: error)) enabled=\(String(describing: appPushManager.isEnabled)) ssids=\(String(describing: appPushManager.matchSSIDs))")
 				} else {
 					Log.i("[LocalPushManager] NEAppPushManager saved : enabled=\(String(describing: appPushManager.isEnabled)) ssids=\(String(describing: appPushManager.matchSSIDs))")
+				}
+				appPushManager.loadFromPreferences { error in
+					if (error != nil) {
+						Log.e("[LocalPushManager] error post save reloading Local Push preferences \(String(describing: error)) enabled=\(String(describing: appPushManager.isEnabled)) ssids=\(String(describing: appPushManager.matchSSIDs))")
+					} else {
+						Log.i("[LocalPushManager] NEAppPushManager post save reloaded : enabled=\(String(describing: appPushManager.isEnabled)) ssids=\(String(describing: appPushManager.matchSSIDs))")
+					}
+
 				}
 			}
 		} else {
