@@ -18,7 +18,7 @@ target 'Linphone' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  # Pods for LoginTutorial
+  # Pods for Linphone
 	pod 'SwiftLint'
 	basic_pods
 
