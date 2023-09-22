@@ -1,0 +1,21 @@
+PODS:
+  - "linphone-sdk (5.3.0-alpha.173+990473d73)"
+  - SwiftLint (0.52.4)
+
+DEPENDENCIES:
+  - linphone-sdk (~> 5.3.0-alpha)
+  - SwiftLint
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - SwiftLint
+  https://gitlab.linphone.org/BC/public/podspec.git:
+    - linphone-sdk
+
+SPEC CHECKSUMS:
+  linphone-sdk: 9f39eda481406fdc22ebb406e40ee56e6c12fcc6
+  SwiftLint: 1cc5cd61ba9bacb2194e340aeb47a2a37fda00b3
+
+PODFILE CHECKSUM: bd475905201c295afc656eeac0cc62b9ab7159d5
+
+COCOAPODS: 1.12.1
