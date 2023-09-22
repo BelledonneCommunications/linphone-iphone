@@ -39,19 +39,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1CF963E4850D8355137FE34F /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		D719ABAA2ABC67BF00B41C10 = {
 			isa = PBXGroup;
 			children = (
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
-				1CF963E4850D8355137FE34F /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
