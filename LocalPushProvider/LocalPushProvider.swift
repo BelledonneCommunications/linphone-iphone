@@ -39,12 +39,21 @@ class LocalPushProvider: NEAppPushProvider {
 	var aggretatorTimer:Timer? = nil
 	var aggregagor:[ChatMessage] = []
 	
+	func chatRoomMuted(chatRoom:ChatRoom) -> Bool {
+		if let chatroomsPushStatus = defaults?.dictionary(forKey: "chatroomsPushStatus"),  let from = chatRoom.peerAddress?.asStringUriOnly()  {
+				if ((chatroomsPushStatus[from] as? String) == "disabled") {
+					return true
+				}
+		}
+		return false
+	}
+	
 	func createCore() throws {
 		coreDelegateStub = CoreDelegateStub(
 			onMessageReceived: { (core:Core, chatRoom:ChatRoom, message:ChatMessage) -> Void in
 				if (self.ignoredContentTypes.contains(message.contentType)) {
 					self.log.error(message: "Received unexpected content type.\(message.contentType)")
-				} else {
+				} else if (!self.chatRoomMuted(chatRoom: chatRoom)) {
 					self.aggregagor.append(message)
 				}
 			}
