@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 2010-2023 Belledonne Communications SARL.
 *
-* This file is part of linphone-iphone
+* This file is part of Linphone
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import SwiftUI
+import linphonesw
 
-struct ContentView: View {
+class SharedMainViewModel : ObservableObject {
 	
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
-	
-    var body: some View {
-		AssistantView(accountLoginViewModel: AccountLoginViewModel())
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-		AssistantView(accountLoginViewModel: AccountLoginViewModel())
-    }
+	init() {}
 }

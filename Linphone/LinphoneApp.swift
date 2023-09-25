@@ -23,7 +23,7 @@ import SwiftUI
 struct LinphoneApp: App {
     var body: some Scene {
         WindowGroup {
-			ContentView()
+			ContentView(sharedMainViewModel: SharedMainViewModel())
         }
     }
 }

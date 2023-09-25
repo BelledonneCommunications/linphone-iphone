@@ -21,11 +21,21 @@ import SwiftUI
 
 struct AssistantView: View {
 	
-	var coreContext = CoreContext.shared
+	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject var accountLoginViewModel : AccountLoginViewModel
 	
 	var body: some View {
 		VStack {
+			ZStack {
+				Image("Mountain")
+					.resizable()
+					.frame(width: 1084, height: 108)
+				Text("Login")
+					.font(Font.custom("Noto Sans", size: 20))
+					.foregroundColor(.white)
+			}
+			.padding(.top, 36)
+			.padding(.bottom, 16)
             HStack {
                 Text("Username:")
                     .font(.title)
@@ -36,9 +46,10 @@ struct AssistantView: View {
             HStack {
                 Text("Password:")
                     .font(.title)
-                TextField("", text : $accountLoginViewModel.passwd)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .disabled(coreContext.loggedIn)
+				
+				SecureField("", text : $accountLoginViewModel.passwd)
+					.textFieldStyle(RoundedBorderTextFieldStyle())
+	 				.disabled(coreContext.loggedIn)
             }
             HStack {
                 Text("Domain:")

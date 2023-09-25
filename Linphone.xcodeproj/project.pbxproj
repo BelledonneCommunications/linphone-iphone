@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B416B2E7C90375B792A28AE /* Pods_Linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C08FB4788AD667D35BAE64D /* Pods_Linphone.framework */; };
 		D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */; };
 		D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB82ABC67BF00B41C10 /* ContentView.swift */; };
 		D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */; };
@@ -14,9 +15,18 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
+		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
+		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
+		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
+		D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */; };
+		D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */; };
+		D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */; };
+		D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C08FB4788AD667D35BAE64D /* Pods_Linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC39A28B26EDB00C91AB7756 /* Pods-Linphone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.release.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.release.xcconfig"; sourceTree = "<group>"; };
 		D719ABB32ABC67BF00B41C10 /* Linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneApp.swift; sourceTree = "<group>"; };
 		D719ABB82ABC67BF00B41C10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -26,6 +36,15 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
+		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
+		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
+		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
+		D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Light.ttf"; sourceTree = "<group>"; };
+		D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Bold.ttf"; sourceTree = "<group>"; };
+		D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-ExtraBold.ttf"; sourceTree = "<group>"; };
+		FBDE73581C1DC4F98CC3DF3A /* Pods-Linphone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.debug.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,17 +52,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B416B2E7C90375B792A28AE /* Pods_Linphone.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9FFD5E6302DF1093E1CB7311 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2C08FB4788AD667D35BAE64D /* Pods_Linphone.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A31AF2AB8C6A3D7B7EA3B424 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FBDE73581C1DC4F98CC3DF3A /* Pods-Linphone.debug.xcconfig */,
+				BC39A28B26EDB00C91AB7756 /* Pods-Linphone.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		D719ABAA2ABC67BF00B41C10 = {
 			isa = PBXGroup;
 			children = (
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
+				A31AF2AB8C6A3D7B7EA3B424 /* Pods */,
+				9FFD5E6302DF1093E1CB7311 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,6 +97,8 @@
 		D719ABB52ABC67BF00B41C10 /* Linphone */ = {
 			isa = PBXGroup;
 			children = (
+				D7D24D0C2AC1B4C700C6F35B /* Fonts */,
+				D7A2EDDA2AC19EEC005D90FC /* Info.plist */,
 				D719ABC72ABC6FB200B41C10 /* core */,
 				D719ABC52ABC6EE800B41C10 /* ui */,
 				D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */,
@@ -88,7 +129,7 @@
 		D719ABC62ABC6F0200B41C10 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				D719ABD02ABC7C4F00B41C10 /* viewmodel */,
+				D7A2EDD42AC180FE005D90FC /* viewmodel */,
 				D719ABB82ABC67BF00B41C10 /* ContentView.swift */,
 			);
 			path = main;
@@ -119,11 +160,25 @@
 			path = viewmodel;
 			sourceTree = "<group>";
 		};
-		D719ABD02ABC7C4F00B41C10 /* viewmodel */ = {
+		D7A2EDD42AC180FE005D90FC /* viewmodel */ = {
 			isa = PBXGroup;
 			children = (
+				D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */,
 			);
 			path = viewmodel;
+			sourceTree = "<group>";
+		};
+		D7D24D0C2AC1B4C700C6F35B /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */,
+				D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */,
+				D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */,
+				D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */,
+				D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */,
+				D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -133,9 +188,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "Linphone" */;
 			buildPhases = (
+				5387C360B232ECCFFE549C7A /* [CP] Check Pods Manifest.lock */,
 				D719ABAF2ABC67BF00B41C10 /* Sources */,
 				D719ABB02ABC67BF00B41C10 /* Frameworks */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
+				C6890D9F62DE340F66542619 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -184,12 +241,60 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */,
+				D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */,
+				D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */,
+				D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */,
+				D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */,
 				D719ABBF2ABC67BF00B41C10 /* Preview Assets.xcassets in Resources */,
 				D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */,
+				D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5387C360B232ECCFFE549C7A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Linphone-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C6890D9F62DE340F66542619 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D719ABAF2ABC67BF00B41C10 /* Sources */ = {
@@ -200,6 +305,7 @@
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
+				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -322,6 +428,7 @@
 		};
 		D719ABC32ABC67BF00B41C10 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FBDE73581C1DC4F98CC3DF3A /* Pods-Linphone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -334,6 +441,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Linphone/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -361,6 +469,7 @@
 		};
 		D719ABC42ABC67BF00B41C10 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BC39A28B26EDB00C91AB7756 /* Pods-Linphone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -373,6 +482,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Linphone/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

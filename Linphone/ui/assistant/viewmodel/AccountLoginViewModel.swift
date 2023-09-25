@@ -21,9 +21,10 @@ import linphonesw
 
 class AccountLoginViewModel : ObservableObject {
 	
-	var coreContext = CoreContext.shared
+	private var coreContext = CoreContext.shared
+	
 	@Published var username : String = "user"
-	@Published var passwd : String = "pwd"
+	@Published var passwd : String = ""
 	@Published var domain : String = "sip.example.org"
 	@Published var transportType : String = "TLS"
 	

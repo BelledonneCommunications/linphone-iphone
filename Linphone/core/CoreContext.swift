@@ -27,7 +27,7 @@ class CoreContext : ObservableObject {
 	var mRegistrationDelegate : CoreDelegate!
 	
 	var coreVersion: String = Core.getVersion
-    @Published var loggedIn: Bool = false
+    @Published var loggedIn : Bool = false
 	
 	private init() {
 		
