@@ -30,7 +30,7 @@ struct AssistantView: View {
 				Image("Mountain")
 					.resizable()
 					.frame(width: 1084, height: 108)
-				Text("Login")
+				Text("assistant_account_login")
 					.font(Font.custom("Noto Sans", size: 20))
 					.foregroundColor(.white)
 			}
@@ -97,5 +97,11 @@ struct AssistantView: View {
 			}
 		}
 		.padding()
+	}
+}
+
+struct AssistantView_Previews: PreviewProvider {
+	static var previews: some View {
+		AssistantView(accountLoginViewModel: AccountLoginViewModel())
 	}
 }
