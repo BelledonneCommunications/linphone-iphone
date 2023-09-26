@@ -17,15 +17,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import SwiftUI
 import linphonesw
 
 class AccountLoginViewModel : ObservableObject {
 	
 	private var coreContext = CoreContext.shared
 	
-	@Published var username : String = "user"
+	@Published var username : String = ""
 	@Published var passwd : String = ""
-	@Published var domain : String = "sip.example.org"
+	@Published var domain : String = "sip.linphone.org"
 	@Published var transportType : String = "TLS"
 	
 	init() {}

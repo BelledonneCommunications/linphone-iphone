@@ -80,9 +80,6 @@
     "Create & \nlog in account" : {
 
     },
-    "Domain:" : {
-
-    },
     "Log out & \ndelete account" : {
 
     },
@@ -109,19 +106,10 @@
         }
       }
     },
-    "Password:" : {
-
-    },
     "TCP" : {
 
     },
     "TLS" : {
-
-    },
-    "Transport:" : {
-
-    },
-    "UDP" : {
 
     },
     "Unregistered" : {
@@ -143,9 +131,6 @@
           }
         }
       }
-    },
-    "Username:" : {
-
     }
   },
   "version" : "1.0"
