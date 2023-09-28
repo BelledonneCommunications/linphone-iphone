@@ -4,6 +4,9 @@
     "" : {
 
     },
+    " or " : {
+
+    },
     "%lld Book (Example)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -74,19 +77,13 @@
         }
       }
     },
-    "Core Version is %@" : {
+    "Forgotten password?" : {
 
     },
-    "Create & \nlog in account" : {
+    "Log out" : {
 
     },
-    "Log out & \ndelete account" : {
-
-    },
-    "Login State : " : {
-
-    },
-    "Looged in" : {
+    "Not account yet?" : {
 
     },
     "password" : {
@@ -106,13 +103,19 @@
         }
       }
     },
+    "Register" : {
+
+    },
+    "Scan QR code" : {
+
+    },
     "TCP" : {
 
     },
     "TLS" : {
 
     },
-    "Unregistered" : {
+    "Use SIP Account" : {
 
     },
     "username" : {

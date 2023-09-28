@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2B416B2E7C90375B792A28AE /* Pods_Linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C08FB4788AD667D35BAE64D /* Pods_Linphone.framework */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
+		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
+		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
 		D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */; };
 		D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB82ABC67BF00B41C10 /* ContentView.swift */; };
 		D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */; };
@@ -29,6 +31,8 @@
 		2C08FB4788AD667D35BAE64D /* Pods_Linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC39A28B26EDB00C91AB7756 /* Pods-Linphone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.release.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.release.xcconfig"; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
+		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
 		D719ABB32ABC67BF00B41C10 /* Linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneApp.swift; sourceTree = "<group>"; };
 		D719ABB82ABC67BF00B41C10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -78,6 +82,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		D717071C2AC591EF0037746F /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				D717071D2AC5922E0037746F /* ColorExtension.swift */,
+				D717071F2AC5989C0037746F /* TextExtension.swift */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
 		D719ABAA2ABC67BF00B41C10 = {
 			isa = PBXGroup;
 			children = (
@@ -101,6 +114,7 @@
 			children = (
 				D719ABC72ABC6FB200B41C10 /* core */,
 				D719ABC52ABC6EE800B41C10 /* ui */,
+				D717071C2AC591EF0037746F /* utils */,
 				D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */,
 				D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */,
 				D719ABBC2ABC67BF00B41C10 /* Linphone.entitlements */,
@@ -174,12 +188,12 @@
 		D7D24D0C2AC1B4C700C6F35B /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */,
+				D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */,
+				D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */,
+				D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */,
 				D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */,
 				D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */,
-				D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */,
-				D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */,
-				D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */,
-				D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -305,11 +319,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
+				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
