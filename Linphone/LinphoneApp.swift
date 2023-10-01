@@ -21,9 +21,16 @@ import SwiftUI
 
 @main
 struct LinphoneApp: App {
+	
+	@State private var isActive = false
+	
     var body: some Scene {
         WindowGroup {
-			ContentView(sharedMainViewModel: SharedMainViewModel())
+			if isActive {
+				ContentView(sharedMainViewModel: SharedMainViewModel())
+			}else {
+				SplashScreen(isActive: $isActive)
+			}
         }
     }
 }

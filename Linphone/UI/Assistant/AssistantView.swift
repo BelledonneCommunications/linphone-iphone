@@ -34,7 +34,7 @@ struct AssistantView: View {
             ScrollView(.vertical) {
                 VStack {
                     ZStack {
-                        Image("Mountain")
+                        Image("mountain")
                             .resizable()
                             .scaledToFill()
                             .frame(width: geometry.size.width, height: 100)
@@ -203,7 +203,7 @@ struct AssistantView: View {
                                 .padding(.horizontal, 10)
                             
                             Button(action:  {
-                                
+								
                             }) {
                                 Text("Register")
                                     .default_text_style_orange_600(styleSize: 20)
@@ -230,9 +230,6 @@ struct AssistantView: View {
     }
 }
 
-struct AssistantView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        AssistantView(accountLoginViewModel: AccountLoginViewModel())
-    }
+#Preview {
+	AssistantView(accountLoginViewModel: AccountLoginViewModel())
 }

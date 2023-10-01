@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 2010-2023 Belledonne Communications SARL.
 *
-* This file is part of linphone-iphone
+* This file is part of Linphone
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,20 +17,29 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import SwiftUI
+import linphonesw
 
-struct ContentView: View {
+class SharedMainViewModel : ObservableObject {
 	
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
+	@Published var generalTermsAccepted = false
 	
-    var body: some View {
-		AssistantView(accountLoginViewModel: AccountLoginViewModel())
-    }
-}
+	init() {
+		let preferences = UserDefaults.standard
 
-struct ContentView_Previews: PreviewProvider {
+		let generalTermsKey = "general_terms"
+		
+		if preferences.object(forKey: generalTermsKey) == nil {
+			preferences.set(generalTermsAccepted, forKey: generalTermsKey)
+		} else {
+			generalTermsAccepted = preferences.bool(forKey: generalTermsKey)
+		}
+	}
 	
-    static var previews: some View {
-		AssistantView(accountLoginViewModel: AccountLoginViewModel())
-    }
+	func changeGeneralTerms(){
+		let preferences = UserDefaults.standard
+
+		generalTermsAccepted = true
+		let generalTermsKey = "general_terms"
+		preferences.set(generalTermsAccepted, forKey: generalTermsKey)
+	}
 }

@@ -111,4 +111,19 @@ extension View {
         self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
             .foregroundStyle(Color.orange_main_500)
     }
+	
+	func welcome_text_style_white_800(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func welcome_text_style_gray_800(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+			.foregroundStyle(Color.gray_main2_600)
+	}
+	
+	func welcome_text_style_gray(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Regular", size: styleSize))
+			.foregroundStyle(Color.gray_main2_600)
+	}
 }

@@ -1,7 +1,7 @@
 /*
 * Copyright (c) 2010-2023 Belledonne Communications SARL.
 *
-* This file is part of Linphone
+* This file is part of linphone-iphone
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import linphonesw
+import SwiftUI
 
-class SharedMainViewModel : ObservableObject {
-	
-	init() {}
+struct ContactsView: View {
+    var body: some View {
+		VStack {
+			Spacer()
+			Image("linphone")
+				.padding(.bottom, 20)
+			Text("Contacts View")
+			Spacer()
+		}
+    }
+}
+
+#Preview {
+    ContactsView()
 }

@@ -19,7 +19,7 @@
 
 import linphonesw
 
-class CoreContext : ObservableObject {
+final class CoreContext : ObservableObject {
 	
 	static let shared = CoreContext()
 	
@@ -29,11 +29,14 @@ class CoreContext : ObservableObject {
 	var coreVersion: String = Core.getVersion
     @Published var loggedIn : Bool = false
 	
-	private init() {
-		
+	private init() {}
+	
+	func initialiseCore() async throws {
 		LoggingService.Instance.logLevel = LogLevel.Debug
 		
-		try? mCore = Factory.Instance.createCore(configPath: "", factoryConfigPath: "", systemContext: nil)
+		let factory = Factory.Instance
+		let configDir = factory.getConfigDir(context: nil)
+		try? mCore = Factory.Instance.createCore(configPath: "\(configDir)/MyConfig", factoryConfigPath: "", systemContext: nil)
 		try? mCore.start()
 		
 		// Create a Core listener to listen for the callback we need

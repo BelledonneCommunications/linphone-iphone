@@ -18,6 +18,15 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
+		D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */; };
+		D74C9CFA2ACACF2D0021626A /* WelcomePage2Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF92ACACF2D0021626A /* WelcomePage2Fragment.swift */; };
+		D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CFB2ACACF370021626A /* WelcomePage3Fragment.swift */; };
+		D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CFE2ACAEC5E0021626A /* PopupView.swift */; };
+		D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9D002ACB098C0021626A /* PermissionManager.swift */; };
+		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
+		D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */; };
+		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
+		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
@@ -42,6 +51,15 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
+		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
+		D74C9CF92ACACF2D0021626A /* WelcomePage2Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage2Fragment.swift; sourceTree = "<group>"; };
+		D74C9CFB2ACACF370021626A /* WelcomePage3Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage3Fragment.swift; sourceTree = "<group>"; };
+		D74C9CFE2ACAEC5E0021626A /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
+		D74C9D002ACB098C0021626A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
+		D7A03FBF2ACC2E390081A588 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
@@ -82,13 +100,14 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		D717071C2AC591EF0037746F /* utils */ = {
+		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
 				D717071D2AC5922E0037746F /* ColorExtension.swift */,
 				D717071F2AC5989C0037746F /* TextExtension.swift */,
+				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
 			);
-			path = utils;
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		D719ABAA2ABC67BF00B41C10 = {
@@ -112,10 +131,11 @@
 		D719ABB52ABC67BF00B41C10 /* Linphone */ = {
 			isa = PBXGroup;
 			children = (
-				D719ABC72ABC6FB200B41C10 /* core */,
-				D719ABC52ABC6EE800B41C10 /* ui */,
-				D717071C2AC591EF0037746F /* utils */,
+				D7A03FC52ACC458A0081A588 /* SplashScreen.swift */,
 				D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */,
+				D719ABC72ABC6FB200B41C10 /* Core */,
+				D719ABC52ABC6EE800B41C10 /* UI */,
+				D717071C2AC591EF0037746F /* Utils */,
 				D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */,
 				D719ABBC2ABC67BF00B41C10 /* Linphone.entitlements */,
 				D7A2EDDA2AC19EEC005D90FC /* Info.plist */,
@@ -134,55 +154,102 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		D719ABC52ABC6EE800B41C10 /* ui */ = {
+		D719ABC52ABC6EE800B41C10 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				D719ABCA2ABC761800B41C10 /* assistant */,
-				D719ABC62ABC6F0200B41C10 /* main */,
+				D719ABCA2ABC761800B41C10 /* Assistant */,
+				D719ABC62ABC6F0200B41C10 /* Main */,
+				D7702EF02AC7200600557C00 /* Welcome */,
 			);
-			path = ui;
+			path = UI;
 			sourceTree = "<group>";
 		};
-		D719ABC62ABC6F0200B41C10 /* main */ = {
+		D719ABC62ABC6F0200B41C10 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				D7A2EDD42AC180FE005D90FC /* viewmodel */,
+				D7A03FBB2ACC2D850081A588 /* Contacts */,
+				D74C9CFD2ACAEC150021626A /* Fragments */,
+				D7A03FBE2ACC2E010081A588 /* History */,
+				D7A2EDD42AC180FE005D90FC /* Viewmodel */,
 				D719ABB82ABC67BF00B41C10 /* ContentView.swift */,
 			);
-			path = main;
+			path = Main;
 			sourceTree = "<group>";
 		};
-		D719ABC72ABC6FB200B41C10 /* core */ = {
+		D719ABC72ABC6FB200B41C10 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				D719ABC82ABC6FD700B41C10 /* CoreContext.swift */,
 			);
-			path = core;
+			path = Core;
 			sourceTree = "<group>";
 		};
-		D719ABCA2ABC761800B41C10 /* assistant */ = {
+		D719ABCA2ABC761800B41C10 /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
-				D719ABCD2ABC777600B41C10 /* viewmodel */,
+				D719ABCD2ABC777600B41C10 /* Viewmodel */,
 				D719ABCB2ABC769C00B41C10 /* AssistantView.swift */,
 			);
-			path = assistant;
+			path = Assistant;
 			sourceTree = "<group>";
 		};
-		D719ABCD2ABC777600B41C10 /* viewmodel */ = {
+		D719ABCD2ABC777600B41C10 /* Viewmodel */ = {
 			isa = PBXGroup;
 			children = (
 				D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */,
 			);
-			path = viewmodel;
+			path = Viewmodel;
 			sourceTree = "<group>";
 		};
-		D7A2EDD42AC180FE005D90FC /* viewmodel */ = {
+		D74C9CF62ACACEB70021626A /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */,
+				D74C9CF92ACACF2D0021626A /* WelcomePage2Fragment.swift */,
+				D74C9CFB2ACACF370021626A /* WelcomePage3Fragment.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D74C9CFD2ACAEC150021626A /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D74C9CFE2ACAEC5E0021626A /* PopupView.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D7702EF02AC7200600557C00 /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				D74C9CF62ACACEB70021626A /* Fragments */,
+				D7702EF12AC7205000557C00 /* WelcomeView.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
+		D7A03FBB2ACC2D850081A588 /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
+		D7A03FBE2ACC2E010081A588 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				D7A03FBF2ACC2E390081A588 /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		D7A2EDD42AC180FE005D90FC /* Viewmodel */ = {
 			isa = PBXGroup;
 			children = (
 				D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */,
 			);
-			path = viewmodel;
+			path = Viewmodel;
 			sourceTree = "<group>";
 		};
 		D7D24D0C2AC1B4C700C6F35B /* Fonts */ = {
@@ -322,11 +389,20 @@
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
+				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
+				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
+				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
+				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
+				D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */,
+				D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
+				D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
+				D74C9CFA2ACACF2D0021626A /* WelcomePage2Fragment.swift in Sources */,
+				D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,6 +528,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -462,6 +539,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -493,6 +571,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -503,6 +582,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
