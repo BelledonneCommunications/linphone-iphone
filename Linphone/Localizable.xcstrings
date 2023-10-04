@@ -89,6 +89,15 @@
     "Calls" : {
 
     },
+    "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
+
+    },
+    "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
+
+    },
+    "Close" : {
+
+    },
     "Conditions de service" : {
 
     },
@@ -96,6 +105,12 @@
 
     },
     "Contacts View" : {
+
+    },
+    "Default" : {
+
+    },
+    "Default mode" : {
 
     },
     "Deny all" : {
@@ -115,6 +130,12 @@
 
     },
     "History View" : {
+
+    },
+    "Interoperable" : {
+
+    },
+    "Interoperable mode" : {
 
     },
     "Linphone" : {
@@ -165,6 +186,12 @@
 
     },
     "TCP" : {
+
+    },
+    "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : {
+
+    },
+    "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : {
 
     },
     "TLS" : {

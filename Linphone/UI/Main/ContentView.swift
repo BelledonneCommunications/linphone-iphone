@@ -28,7 +28,7 @@ struct ContentView: View {
 		if UserDefaults.standard.bool(forKey: "general_terms") == false {
 			WelcomeView(sharedMainViewModel: sharedMainViewModel)
 		} else if coreContext.mCore.defaultAccount == nil {
-			AssistantView(accountLoginViewModel: AccountLoginViewModel())
+			AssistantView()
 		} else {
 			TabView {
 				ContactsView()

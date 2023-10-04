@@ -126,4 +126,14 @@ extension View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
 			.foregroundStyle(Color.gray_main2_600)
 	}
+    
+    func profile_mode_text_style_gray_800(styleSize: CGFloat) -> some View {
+        self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+            .foregroundStyle(Color.gray_900)
+    }
+    
+    func profile_mode_text_style_gray(styleSize: CGFloat) -> some View {
+        self.font(Font.custom("NotoSans-Regular", size: styleSize))
+            .foregroundStyle(Color.gray_main2_600)
+    }
 }

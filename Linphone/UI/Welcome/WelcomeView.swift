@@ -112,7 +112,7 @@ struct WelcomeView: View{
 				}
 				
 				if self.isShowPopup {
-					PopupView(isShowPopup: $isShowPopup)
+                    PopupView(isShowPopup: $isShowPopup, title: Text("Conditions de service"), content: Text("En continuant, vous acceptez ces conditions, \(Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()) et \(Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline())."), titleFirstButton: Text("Deny all"), actionFirstButton: {self.isShowPopup.toggle()}, titleSecondButton: Text("Accept all"), actionSecondButton: {permissionManager.photoLibraryRequestPermission()})
 						.background(.black.opacity(0.65))
 						.edgesIgnoringSafeArea(.all)
 						.onTapGesture {

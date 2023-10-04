@@ -25,49 +25,62 @@ struct PopupView: View {
 	var permissionManager = PermissionManager.shared
 	
 	@Binding var isShowPopup: Bool
+    var title: Text
+    var content: Text
+    
+    var titleFirstButton: Text?
+    var actionFirstButton: () -> ()
+    
+    var titleSecondButton: Text?
+    var actionSecondButton: () -> ()
 	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack (alignment: .leading) {
-				Text("Conditions de service")
+                title
 					.default_text_style_800(styleSize: 16)
 					.frame(alignment: .leading)
 					.padding(.bottom, 2)
 				
-				Text("En continuant, vous acceptez ces conditions, \(Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()) et \(Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline()).")
-					.tint(Color.gray_main2_600)
+				content
+                    .tint(Color.gray_main2_600)
 					.default_text_style(styleSize: 15)
 					.padding(.bottom, 20)
 				
-				Button(action:  {
-					self.isShowPopup.toggle()
-				}) {
-					Text("Deny all")
-						.default_text_style_orange_600(styleSize: 20)
-						.frame(height: 35)
-						.frame(maxWidth: .infinity)
-				}
-				.padding(.horizontal, 20)
-				.padding(.vertical, 10)
-				.cornerRadius(60)
-				.overlay(
-					RoundedRectangle(cornerRadius: 60)
-						.inset(by: 0.5)
-						.stroke(Color.orange_main_500, lineWidth: 1)
-				)
-				.padding(.bottom, 10)
-				Button(action:  {
-					permissionManager.photoLibraryRequestPermission()
-				}) {
-					Text("Accept all")
-						.default_text_style_white_600(styleSize: 20)
-						.frame(height: 35)
-						.frame(maxWidth: .infinity)
-				}
-				.padding(.horizontal, 20)
-				.padding(.vertical, 10)
-				.background(Color.orange_main_500)
-				.cornerRadius(60)
+                if titleFirstButton != nil {
+                    Button(action:  {
+                        actionFirstButton()
+                    }) {
+                        titleFirstButton
+                            .default_text_style_orange_600(styleSize: 20)
+                            .frame(height: 35)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .cornerRadius(60)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 60)
+                            .inset(by: 0.5)
+                            .stroke(Color.orange_main_500, lineWidth: 1)
+                    )
+                    .padding(.bottom, 10)
+                }
+
+                if titleSecondButton != nil {
+                    Button(action:  {
+                        actionSecondButton()
+                    }) {
+                        titleSecondButton
+                            .default_text_style_white_600(styleSize: 20)
+                            .frame(height: 35)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(Color.orange_main_500)
+                    .cornerRadius(60)
+                }
 			}
 			.padding(.horizontal, 20)
 			.padding(.vertical, 20)
@@ -78,4 +91,8 @@ struct PopupView: View {
 			.shadow(color: Color.orange_main_500, radius: 0, x: 0, y: 2)
 		}
 	}
+}
+
+#Preview {
+    PopupView(isShowPopup: .constant(true), title: Text("Title"), content: Text("Content"), titleFirstButton: Text("Deny all"), actionFirstButton: {}, titleSecondButton: Text("Accept all"), actionSecondButton: {})
 }

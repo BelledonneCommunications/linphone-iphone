@@ -36,3 +36,7 @@ struct SplashScreen: View {
 		}
 	}
 }
+
+#Preview {
+    SplashScreen(isActive: .constant(true))
+}
