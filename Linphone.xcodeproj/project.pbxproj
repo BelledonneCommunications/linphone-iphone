@@ -18,6 +18,8 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
+		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
+		D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */; };
 		D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */; };
 		D74C9CFA2ACACF2D0021626A /* WelcomePage2Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF92ACACF2D0021626A /* WelcomePage2Fragment.swift */; };
 		D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CFB2ACACF370021626A /* WelcomePage3Fragment.swift */; };
@@ -53,6 +55,8 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
+		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
+		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
 		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
 		D74C9CF92ACACF2D0021626A /* WelcomePage2Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage2Fragment.swift; sourceTree = "<group>"; };
 		D74C9CFB2ACACF370021626A /* WelcomePage3Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage3Fragment.swift; sourceTree = "<group>"; };
@@ -275,6 +279,8 @@
 			children = (
 				D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */,
 				D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */,
+				D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */,
+				D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -411,6 +417,8 @@
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
 				D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */,
+				D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */,
+				D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */,
 				D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,

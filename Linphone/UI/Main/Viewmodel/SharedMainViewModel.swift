@@ -20,7 +20,9 @@
 import linphonesw
 
 class SharedMainViewModel : ObservableObject {
-	
+    
+    @Published var displayProfileMode : Bool = false
+    
 	@Published var generalTermsAccepted = false
 	
 	init() {

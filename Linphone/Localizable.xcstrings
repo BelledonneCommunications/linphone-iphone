@@ -7,6 +7,12 @@
     " or " : {
 
     },
+    "[Forgotten password?](https://subscribe.linphone.org/)" : {
+
+    },
+    "[linphone.org/contact](https://linphone.org/contact)" : {
+
+    },
     "[nos conditions d’utilisation](https://linphone.org/general-terms)" : {
 
     },
@@ -107,6 +113,9 @@
     "Contacts View" : {
 
     },
+    "Continue" : {
+
+    },
     "Default" : {
 
     },
@@ -114,6 +123,12 @@
 
     },
     "Deny all" : {
+
+    },
+    "Display Name" : {
+
+    },
+    "Domain" : {
 
     },
     "En continuant, vous acceptez ces conditions, %@ et %@." : {
@@ -126,10 +141,13 @@
         }
       }
     },
-    "Forgotten password?" : {
+    "History View" : {
 
     },
-    "History View" : {
+    "I prefere create an account" : {
+
+    },
+    "I understand" : {
 
     },
     "Interoperable" : {
@@ -170,6 +188,9 @@
         }
       }
     },
+    "Personnalize your profil mode" : {
+
+    },
     "Register" : {
 
     },
@@ -179,7 +200,13 @@
     "Sécurisé" : {
 
     },
+    "sip.linphone.org" : {
+
+    },
     "Skip" : {
+
+    },
+    "Some features require a Linphone account, such as group messaging, video conferences...\n\nThese features are hidden when you register with a third party SIP account.\n\nTo enable it in a commercial projet, please contact us. " : {
 
     },
     "Start" : {
@@ -200,10 +227,19 @@
     "to Linphone" : {
 
     },
+    "Transport" : {
+
+    },
+    "UDP" : {
+
+    },
     "Une application de communication **sécurisée**, **open source** et **française**." : {
 
     },
     "Une application open source et un **service gratuit** depuis **2001**." : {
+
+    },
+    "Use a SIP account" : {
 
     },
     "Use SIP Account" : {
@@ -230,6 +266,9 @@
 
     },
     "Welcome" : {
+
+    },
+    "You will change this mode later" : {
 
     }
   },

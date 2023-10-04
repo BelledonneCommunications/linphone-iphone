@@ -30,7 +30,7 @@ struct WelcomeView: View{
 	
 	var body: some View {
 		GeometryReader { geometry in
-			ZStack {
+			ScrollView {
 				VStack {
 					ZStack {
 						Image("mountain")
@@ -67,6 +67,8 @@ struct WelcomeView: View{
 					.padding(.top, 35)
 					.padding(.bottom, 10)
 					
+					Spacer()
+					
 					VStack{
 						TabView(selection: $index) {
 							ForEach((0..<3), id: \.self) { index in
@@ -82,10 +84,13 @@ struct WelcomeView: View{
 							}
 						}
 						.tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+						.frame(minHeight: 300)
 						.onAppear {
 							setupAppearance()
 						}
 					}
+					
+					Spacer()
 					
 					Button(action:  {
 						if index < 2 {
@@ -107,18 +112,17 @@ struct WelcomeView: View{
 					.padding(.vertical, 10)
 					.background(Color.orange_main_500)
 					.cornerRadius(60)
-					.padding(.bottom)
 					.padding(.horizontal)
 				}
-				
-				if self.isShowPopup {
-                    PopupView(isShowPopup: $isShowPopup, title: Text("Conditions de service"), content: Text("En continuant, vous acceptez ces conditions, \(Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()) et \(Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline())."), titleFirstButton: Text("Deny all"), actionFirstButton: {self.isShowPopup.toggle()}, titleSecondButton: Text("Accept all"), actionSecondButton: {permissionManager.photoLibraryRequestPermission()})
-						.background(.black.opacity(0.65))
-						.edgesIgnoringSafeArea(.all)
-						.onTapGesture {
-							self.isShowPopup.toggle()
-						}
-				}
+				.frame(minHeight: geometry.size.height)
+			}
+			
+			if self.isShowPopup {
+				PopupView(isShowPopup: $isShowPopup, title: Text("Conditions de service"), content: Text("En continuant, vous acceptez ces conditions, \(Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()) et \(Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline())."), titleFirstButton: Text("Deny all"), actionFirstButton: {self.isShowPopup.toggle()}, titleSecondButton: Text("Accept all"), actionSecondButton: {permissionManager.photoLibraryRequestPermission()})
+					.background(.black.opacity(0.65))
+					.onTapGesture {
+						self.isShowPopup.toggle()
+					}
 			}
 		}
 		.onReceive(permissionManager.$photoLibraryPermissionGranted, perform: { (granted) in

@@ -27,9 +27,9 @@ struct ContentView: View {
 	var body: some View {
 		if UserDefaults.standard.bool(forKey: "general_terms") == false {
 			WelcomeView(sharedMainViewModel: sharedMainViewModel)
-		} else if coreContext.mCore.defaultAccount == nil {
-			AssistantView()
-		} else {
+        } else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
+            AssistantView(sharedMainViewModel: sharedMainViewModel)
+        } else {
 			TabView {
 				ContactsView()
 					.tabItem {
@@ -46,5 +46,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView(sharedMainViewModel: SharedMainViewModel())
+    ContentView(sharedMainViewModel: SharedMainViewModel())
 }

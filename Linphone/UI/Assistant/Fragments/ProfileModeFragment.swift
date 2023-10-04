@@ -21,6 +21,8 @@ import SwiftUI
 
 struct ProfileModeFragment: View {
     
+    @ObservedObject var sharedMainViewModel : SharedMainViewModel
+    
     @State var options: Int = 1
     @State private var isShowPopup = false
     @State private var isShowPopupForDefault = true
@@ -35,9 +37,12 @@ struct ProfileModeFragment: View {
                             .scaledToFill()
                             .frame(width: geometry.size.width, height: 100)
                             .clipped()
-                        Text("assistant_account_login")
+                        Text("Personnalize your profil mode")
                             .default_text_style_white_800(styleSize: 20)
-                            .padding(.top, 20)
+                            .padding(.top, -10)
+                        Text("You will change this mode later")
+                            .default_text_style_white(styleSize: 15)
+                            .padding(.top, 40)
                     }
                     .padding(.top, 35)
                     .padding(.bottom, 10)
@@ -110,12 +115,29 @@ struct ProfileModeFragment: View {
                         .cornerRadius(15)
                     }
                     .padding()
+					
+					Spacer()
+					
+					Button(action:  {
+						sharedMainViewModel.displayProfileMode = false
+					}) {
+						Text("Continue")
+							.default_text_style_white_600(styleSize: 20)
+							.frame(height: 35)
+							.frame(maxWidth: .infinity)
+					}
+					.padding(.horizontal, 20)
+					.padding(.vertical, 10)
+					.background(Color.orange_main_500)
+					.cornerRadius(60)
+					.padding(.horizontal)
                 }
+				.frame(minHeight: geometry.size.height)
             }
+            
             if self.isShowPopup {
                 PopupView(isShowPopup: $isShowPopup, title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"), content: Text(isShowPopupForDefault ? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."), titleFirstButton: nil, actionFirstButton: {}, titleSecondButton: Text("Close"), actionSecondButton: {self.isShowPopup.toggle()})
                     .background(.black.opacity(0.65))
-                    .edgesIgnoringSafeArea(.all)
                     .onTapGesture {
                         self.isShowPopup.toggle()
                     }
@@ -125,5 +147,5 @@ struct ProfileModeFragment: View {
 }
 
 #Preview {
-    ProfileModeFragment()
+    ProfileModeFragment(sharedMainViewModel: SharedMainViewModel())
 }
