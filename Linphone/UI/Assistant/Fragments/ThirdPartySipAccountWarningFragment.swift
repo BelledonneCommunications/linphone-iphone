@@ -44,7 +44,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(Color.gray_main2_500)
-										.frame(width: 20, height: 20, alignment: .leading)
+										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.top, -65)
 										.onTapGesture {
 											withAnimation {
@@ -175,6 +175,7 @@ struct ThirdPartySipAccountWarningFragment: View {
                 }
             }
         }
+		.navigationViewStyle(StackNavigationViewStyle())
         .navigationBarHidden(true)
     }
 }

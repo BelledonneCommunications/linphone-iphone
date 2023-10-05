@@ -22,12 +22,14 @@ import SwiftUI
 @main
 struct LinphoneApp: App {
 	
+	@ObservedObject private var coreContext = CoreContext.shared
 	@State private var isActive = false
 	
     var body: some Scene {
         WindowGroup {
 			if isActive {
 				ContentView(sharedMainViewModel: SharedMainViewModel())
+					.toast(isShowing: $coreContext.configuringSuccessful)
 			}else {
 				SplashScreen(isActive: $isActive)
 			}

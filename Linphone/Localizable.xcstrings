@@ -156,6 +156,12 @@
     "Interoperable mode" : {
 
     },
+    "Invalid QR code!" : {
+
+    },
+    "Invalide URI" : {
+
+    },
     "Linphone" : {
 
     },
@@ -189,6 +195,9 @@
       }
     },
     "Personnalize your profil mode" : {
+
+    },
+    "QR code validated!" : {
 
     },
     "Register" : {

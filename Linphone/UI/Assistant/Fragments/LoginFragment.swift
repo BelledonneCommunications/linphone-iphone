@@ -150,32 +150,33 @@ struct LoginFragment: View {
                                 }
                             }
                             .padding(.bottom, 10)
-                            
-                            Button(action:  {
-                                
-                            }) {
-                                HStack {
-                                    Image("qr-code")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundStyle(Color.orange_main_500)
-                                        .frame(width: 20, height: 20)
-                                    
-                                    Text("Scan QR code")
-                                        .default_text_style_orange_600(styleSize: 20)
-                                        .frame(height: 35)
-                                }
-                                .frame(maxWidth: .infinity)
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .cornerRadius(60)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 60)
-                                    .inset(by: 0.5)
-                                    .stroke(Color.orange_main_500, lineWidth: 1)
-                            )
-                            .padding(.bottom)
+							
+							NavigationLink(destination: {
+								QrCodeScannerFragment()
+							}, label: {
+								HStack {
+									Image("qr-code")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.orange_main_500)
+										.frame(width: 20, height: 20)
+									
+									Text("Scan QR code")
+										.default_text_style_orange_600(styleSize: 20)
+										.frame(height: 35)
+								}
+								.frame(maxWidth: .infinity)
+								
+							})
+							.padding(.horizontal, 20)
+							.padding(.vertical, 10)
+							.cornerRadius(60)
+							.overlay(
+								RoundedRectangle(cornerRadius: 60)
+									.inset(by: 0.5)
+									.stroke(Color.orange_main_500, lineWidth: 1)
+							)
+							.padding(.bottom)
                             
                             NavigationLink(destination: {
                                 ThirdPartySipAccountWarningFragment(accountLoginViewModel: accountLoginViewModel)
@@ -231,6 +232,7 @@ struct LoginFragment: View {
                 }
             }
         }
+		.navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
