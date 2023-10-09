@@ -22,11 +22,13 @@ import Photos
 
 struct PopupView: View {
 	
+	@ObservedObject var sharedMainViewModel : SharedMainViewModel
+	
 	var permissionManager = PermissionManager.shared
 	
 	@Binding var isShowPopup: Bool
     var title: Text
-    var content: Text
+    var content: Text?
     
     var titleFirstButton: Text?
     var actionFirstButton: () -> ()
@@ -42,10 +44,13 @@ struct PopupView: View {
 					.frame(alignment: .leading)
 					.padding(.bottom, 2)
 				
-				content
-                    .tint(Color.gray_main2_600)
-					.default_text_style(styleSize: 15)
-					.padding(.bottom, 20)
+				
+				if content != nil {
+					content
+						.tint(Color.gray_main2_600)
+						.default_text_style(styleSize: 15)
+						.padding(.bottom, 20)
+				}
 				
                 if titleFirstButton != nil {
                     Button(action:  {
@@ -89,10 +94,13 @@ struct PopupView: View {
 			.padding(.horizontal)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orange_main_500, radius: 0, x: 0, y: 2)
+			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
 	}
 }
 
 #Preview {
-    PopupView(isShowPopup: .constant(true), title: Text("Title"), content: Text("Content"), titleFirstButton: Text("Deny all"), actionFirstButton: {}, titleSecondButton: Text("Accept all"), actionSecondButton: {})
+	PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: .constant(true), title: Text("Title"), content: Text("Content"), titleFirstButton: Text("Deny all"), actionFirstButton: {}, titleSecondButton: Text("Accept all"), actionSecondButton: {})
+		.background(.black.opacity(0.65))
 }

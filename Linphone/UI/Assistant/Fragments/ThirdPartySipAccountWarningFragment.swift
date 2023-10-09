@@ -20,7 +20,8 @@
 import SwiftUI
 
 struct ThirdPartySipAccountWarningFragment: View {
-    
+	
+	@ObservedObject var sharedMainViewModel : SharedMainViewModel
     @ObservedObject private var coreContext = CoreContext.shared
     @ObservedObject var accountLoginViewModel : AccountLoginViewModel
     
@@ -134,6 +135,7 @@ struct ThirdPartySipAccountWarningFragment: View {
                             }
                             .padding(.vertical)
                         }
+						.frame(maxWidth: sharedMainViewModel.maxWidth)
                         .padding(.horizontal, 20)
 						
 						Spacer()
@@ -154,10 +156,11 @@ struct ThirdPartySipAccountWarningFragment: View {
 								.inset(by: 0.5)
 								.stroke(Color.orange_main_500, lineWidth: 1)
 						)
+						.frame(maxWidth: sharedMainViewModel.maxWidth)
 						.padding(.horizontal)
 						
 						NavigationLink(destination: {
-							ThirdPartySipAccountLoginFragment(accountLoginViewModel: accountLoginViewModel)
+							ThirdPartySipAccountLoginFragment(sharedMainViewModel: sharedMainViewModel, accountLoginViewModel: accountLoginViewModel)
 						}, label: {
 							Text("I understand")
 								.default_text_style_white_600(styleSize: 20)
@@ -169,7 +172,9 @@ struct ThirdPartySipAccountWarningFragment: View {
 						.padding(.vertical, 10)
 						.background(Color.orange_main_500)
 						.cornerRadius(60)
+						.frame(maxWidth: sharedMainViewModel.maxWidth)
 						.padding(.horizontal)
+						.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
                     }
 					.frame(minHeight: geometry.size.height)
                 }
@@ -181,5 +186,5 @@ struct ThirdPartySipAccountWarningFragment: View {
 }
 
 #Preview {
-    ThirdPartySipAccountWarningFragment(accountLoginViewModel: AccountLoginViewModel())
+	ThirdPartySipAccountWarningFragment(sharedMainViewModel: SharedMainViewModel(), accountLoginViewModel: AccountLoginViewModel())
 }

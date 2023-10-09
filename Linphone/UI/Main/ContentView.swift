@@ -25,7 +25,7 @@ struct ContentView: View {
 	@ObservedObject private var coreContext = CoreContext.shared
 	
 	var body: some View {
-		if UserDefaults.standard.bool(forKey: "general_terms") == false {
+		if !sharedMainViewModel.welcomeViewDisplayed {
 			WelcomeView(sharedMainViewModel: sharedMainViewModel)
         } else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
             AssistantView(sharedMainViewModel: sharedMainViewModel)

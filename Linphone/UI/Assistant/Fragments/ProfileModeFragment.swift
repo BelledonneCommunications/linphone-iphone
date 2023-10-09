@@ -114,12 +114,13 @@ struct ProfileModeFragment: View {
                         .background(Color.gray_100)
                         .cornerRadius(15)
                     }
+					.frame(maxWidth: sharedMainViewModel.maxWidth)
                     .padding()
 					
 					Spacer()
 					
 					Button(action:  {
-						sharedMainViewModel.displayProfileMode = false
+						sharedMainViewModel.changeHideProfileMode()
 					}) {
 						Text("Continue")
 							.default_text_style_white_600(styleSize: 20)
@@ -131,12 +132,17 @@ struct ProfileModeFragment: View {
 					.background(Color.orange_main_500)
 					.cornerRadius(60)
 					.padding(.horizontal)
+					.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
+					.frame(maxWidth: sharedMainViewModel.maxWidth)
                 }
 				.frame(minHeight: geometry.size.height)
             }
+			.onAppear {
+				UserDefaults.standard.set(false, forKey: "display_profile_mode")
+			}
             
             if self.isShowPopup {
-                PopupView(isShowPopup: $isShowPopup, title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"), content: Text(isShowPopupForDefault ? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."), titleFirstButton: nil, actionFirstButton: {}, titleSecondButton: Text("Close"), actionSecondButton: {self.isShowPopup.toggle()})
+				PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup, title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"), content: Text(isShowPopupForDefault ? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."), titleFirstButton: nil, actionFirstButton: {}, titleSecondButton: Text("Close"), actionSecondButton: {self.isShowPopup.toggle()})
                     .background(.black.opacity(0.65))
                     .onTapGesture {
                         self.isShowPopup.toggle()

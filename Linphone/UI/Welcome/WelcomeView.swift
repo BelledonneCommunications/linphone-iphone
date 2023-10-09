@@ -26,7 +26,6 @@ struct WelcomeView: View{
 	var permissionManager = PermissionManager.shared
 	
 	@State private var index = 0
-	@State private var isShowPopup = false
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -48,7 +47,7 @@ struct WelcomeView: View{
 								.onTapGesture {
 									withAnimation {
 										self.index = 2
-										self.isShowPopup.toggle()
+										permissionManager.cameraRequestPermission()
 									}
 								}
 							Text("Welcome")
@@ -98,9 +97,7 @@ struct WelcomeView: View{
 								index += 1
 							}
 						} else if index == 2 {
-							withAnimation{
-								self.isShowPopup.toggle()
-							}
+							permissionManager.cameraRequestPermission()
 						}
 					}) {
 						Text(index == 2 ? "Start" : "Next")
@@ -113,22 +110,16 @@ struct WelcomeView: View{
 					.background(Color.orange_main_500)
 					.cornerRadius(60)
 					.padding(.horizontal)
+					.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
+					.frame(maxWidth: sharedMainViewModel.maxWidth)
 				}
 				.frame(minHeight: geometry.size.height)
-			}
-			
-			if self.isShowPopup {
-				PopupView(isShowPopup: $isShowPopup, title: Text("Conditions de service"), content: Text("En continuant, vous acceptez ces conditions, \(Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()) et \(Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline())."), titleFirstButton: Text("Deny all"), actionFirstButton: {self.isShowPopup.toggle()}, titleSecondButton: Text("Accept all"), actionSecondButton: {permissionManager.cameraRequestPermission()})
-					.background(.black.opacity(0.65))
-					.onTapGesture {
-						self.isShowPopup.toggle()
-					}
 			}
 		}
 		.onReceive(permissionManager.$cameraPermissionGranted, perform: { (granted) in
 			if granted {
 				withAnimation {
-					sharedMainViewModel.changeGeneralTerms()
+					sharedMainViewModel.changeWelcomeView()
 				}
 			}
 		})

@@ -29,7 +29,8 @@ final class CoreContext : ObservableObject {
 	
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn : Bool = false
-	@Published var configuringSuccessful : String = ""
+	@Published var loggingInProgress : Bool = false
+	@Published var toastMessage : String = ""
 	
 	private init() {}
 	
@@ -49,9 +50,9 @@ final class CoreContext : ObservableObject {
 			onConfiguringStatus: { (core: Core, state: Config.ConfiguringState, message: String) in
 				NSLog("New configuration state is \(state) = \(message)\n")
 				if (state == .Successful) {
-					self.configuringSuccessful = "Successful"
+					self.toastMessage = "Successful"
 				} else {
-					self.configuringSuccessful = "Failed"
+					self.toastMessage = "Failed"
 				}
 			},
 			
@@ -60,8 +61,13 @@ final class CoreContext : ObservableObject {
 				// Otherwise, we will be Failed.
 				NSLog("New registration state is \(state) for user id \( String(describing: account.params?.identityAddress?.asString()))\n")
 				if (state == .Ok) {
+					self.loggingInProgress = false
 					self.loggedIn = true
-				} else if (state == .Cleared) {
+				} else if (state == .Progress) {
+					self.loggingInProgress = true
+				} else {
+					self.toastMessage = "Registration failed"
+					self.loggingInProgress = false
 					self.loggedIn = false
 				}
 			}

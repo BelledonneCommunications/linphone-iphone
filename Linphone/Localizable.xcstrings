@@ -141,6 +141,9 @@
         }
       }
     },
+    "Error" : {
+
+    },
     "History View" : {
 
     },
@@ -175,6 +178,9 @@
 
     },
     "Open source" : {
+
+    },
+    "Opération en cours..." : {
 
     },
     "password" : {
@@ -228,6 +234,9 @@
 
     },
     "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : {
+
+    },
+    "The user name or password is incorrects" : {
 
     },
     "TLS" : {

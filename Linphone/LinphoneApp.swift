@@ -29,7 +29,7 @@ struct LinphoneApp: App {
         WindowGroup {
 			if isActive {
 				ContentView(sharedMainViewModel: SharedMainViewModel())
-					.toast(isShowing: $coreContext.configuringSuccessful)
+					.toast(isShowing: $coreContext.toastMessage)
 			}else {
 				SplashScreen(isActive: $isActive)
 			}

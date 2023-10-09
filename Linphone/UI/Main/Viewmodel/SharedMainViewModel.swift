@@ -20,13 +20,23 @@
 import linphonesw
 
 class SharedMainViewModel : ObservableObject {
-    
-    @Published var displayProfileMode : Bool = false
-    
+	
+	@Published var welcomeViewDisplayed = false
 	@Published var generalTermsAccepted = false
+	@Published var displayProfileMode = false
+	
+	var maxWidth = 400.0
 	
 	init() {
 		let preferences = UserDefaults.standard
+
+		let welcomeViewKey = "welcome_view"
+		
+		if preferences.object(forKey: welcomeViewKey) == nil {
+			preferences.set(welcomeViewDisplayed, forKey: welcomeViewKey)
+		} else {
+			welcomeViewDisplayed = preferences.bool(forKey: welcomeViewKey)
+		}
 
 		let generalTermsKey = "general_terms"
 		
@@ -35,6 +45,22 @@ class SharedMainViewModel : ObservableObject {
 		} else {
 			generalTermsAccepted = preferences.bool(forKey: generalTermsKey)
 		}
+		
+		let displayProfileModeKey = "display_profile_mode"
+		
+		if preferences.object(forKey: displayProfileModeKey) == nil {
+			preferences.set(displayProfileMode, forKey: displayProfileModeKey)
+		} else {
+			displayProfileMode = preferences.bool(forKey: displayProfileModeKey)
+		}
+	}
+	
+	func changeWelcomeView(){
+		let preferences = UserDefaults.standard
+
+		welcomeViewDisplayed = true
+		let welcomeViewKey = "welcome_view"
+		preferences.set(welcomeViewDisplayed, forKey: welcomeViewKey)
 	}
 	
 	func changeGeneralTerms(){
@@ -43,5 +69,21 @@ class SharedMainViewModel : ObservableObject {
 		generalTermsAccepted = true
 		let generalTermsKey = "general_terms"
 		preferences.set(generalTermsAccepted, forKey: generalTermsKey)
+	}
+	
+	func changeDisplayProfileMode(){
+		let preferences = UserDefaults.standard
+
+		displayProfileMode = true
+		let displayProfileModeKey = "display_profile_mode"
+		preferences.set(displayProfileMode, forKey: displayProfileModeKey)
+	}
+	
+	func changeHideProfileMode(){
+		let preferences = UserDefaults.standard
+
+		displayProfileMode = false
+		let displayProfileModeKey = "display_profile_mode"
+		preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 	}
 }
