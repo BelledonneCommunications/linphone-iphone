@@ -22,18 +22,18 @@ import SwiftUI
 
 struct WelcomePage2Fragment: View {
 	
-	var body: some View{
+	var body: some View {
 		VStack {
 			Spacer()
 			VStack {
 				Image("secure-image")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(Color.orange_main_500)
+					.foregroundStyle(Color.orangeMain500)
 					.frame(width: 70, height: 100)
 				Text("Sécurisé")
 					.welcome_text_style_gray_800(styleSize: 30)
-					.padding(.bottom,  20)
+					.padding(.bottom, 20)
 				Text("Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**.")
 					.welcome_text_style_gray(styleSize: 15)
 					.multilineTextAlignment(.center)

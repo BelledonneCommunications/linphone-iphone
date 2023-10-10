@@ -21,17 +21,17 @@ import SwiftUI
 
 struct ThirdPartySipAccountWarningFragment: View {
 	
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
-    @ObservedObject private var coreContext = CoreContext.shared
-    @ObservedObject var accountLoginViewModel : AccountLoginViewModel
-    
-    @Environment(\.dismiss) var dismiss
-    
-    var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
-                ScrollView(.vertical) {
-                    VStack {
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
+	
+	@Environment(\.dismiss) var dismiss
+	
+	var body: some View {
+		NavigationView {
+			GeometryReader { geometry in
+				ScrollView(.vertical) {
+					VStack {
 						ZStack {
 							Image("mountain")
 								.resizable()
@@ -39,12 +39,12 @@ struct ThirdPartySipAccountWarningFragment: View {
 								.frame(width: geometry.size.width, height: 100)
 								.clipped()
 							
-							VStack (alignment: .leading) {
+							VStack(alignment: .leading) {
 								HStack {
 									Image("caret-left")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.gray_main2_500)
+										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.top, -65)
 										.onTapGesture {
@@ -67,94 +67,96 @@ struct ThirdPartySipAccountWarningFragment: View {
 						.padding(.bottom, 10)
 						
 						Spacer()
-                        
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Spacer()
-                                HStack(alignment: .center) {
-                                    Image("conversation")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundStyle(Color.gray_main2_500)
-                                        .frame(width: 20, height: 20, alignment: .leading)
-                                        .onTapGesture {
-                                            withAnimation {
-                                                dismiss()
-                                            }
-                                        }
-                                }
-                                .padding(16)
-                                .background(Color.gray_main2_200)
-                                .cornerRadius(40)
-                                .padding(.horizontal)
-                                
-                                HStack(alignment: .center) {
-                                    Image("video-call")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundStyle(Color.gray_main2_500)
-                                        .frame(width: 20, height: 20, alignment: .leading)
-                                        .onTapGesture {
-                                            withAnimation {
-                                                dismiss()
-                                            }
-                                        }
-                                }
-                                .padding(16)
-                                .background(Color.gray_main2_200)
-                                .cornerRadius(40)
-                                .padding(.horizontal)
-                                
-                                Spacer()
-                            }
-                            .padding(.bottom, 40)
-                            
-                            Text("Some features require a Linphone account, such as group messaging, video conferences...\n\nThese features are hidden when you register with a third party SIP account.\n\nTo enable it in a commercial projet, please contact us. ")
-                            .default_text_style(styleSize: 15)
-                            .multilineTextAlignment(.center)
-                            .padding(.bottom)
-                            
-                            HStack {
-                                Spacer()
-                                
-                                HStack {
-                                    Text("[linphone.org/contact](https://linphone.org/contact)")
-                                        .tint(Color.orange_main_500)
-                                        .default_text_style_orange_600(styleSize: 15)
-                                        .frame(height: 35)
-                                }
-                                .padding(.horizontal, 15)
-                                .cornerRadius(60)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 60)
-                                        .inset(by: 0.5)
-                                        .stroke(Color.orange_main_500, lineWidth: 1)
-                                )
-                                
-                                Spacer()
-                            }
-                            .padding(.vertical)
-                        }
+						
+						VStack(alignment: .leading) {
+							HStack {
+								Spacer()
+								HStack(alignment: .center) {
+									Image("conversation")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 20, height: 20, alignment: .leading)
+										.onTapGesture {
+											withAnimation {
+												dismiss()
+											}
+										}
+								}
+								.padding(16)
+								.background(Color.grayMain2c200)
+								.cornerRadius(40)
+								.padding(.horizontal)
+								
+								HStack(alignment: .center) {
+									Image("video-call")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 20, height: 20, alignment: .leading)
+										.onTapGesture {
+											withAnimation {
+												dismiss()
+											}
+										}
+								}
+								.padding(16)
+								.background(Color.grayMain2c200)
+								.cornerRadius(40)
+								.padding(.horizontal)
+								
+								Spacer()
+							}
+							.padding(.bottom, 40)
+							
+							Text("Some features require a Linphone account, such as group messaging, video conferences...\n\n"
+								 + "These features are hidden when you register with a third party SIP account.\n\n"
+								 + "To enable it in a commercial projet, please contact us. ")
+							.default_text_style(styleSize: 15)
+							.multilineTextAlignment(.center)
+							.padding(.bottom)
+							
+							HStack {
+								Spacer()
+								
+								HStack {
+									Text("[linphone.org/contact](https://linphone.org/contact)")
+										.tint(Color.orangeMain500)
+										.default_text_style_orange_600(styleSize: 15)
+										.frame(height: 35)
+								}
+								.padding(.horizontal, 15)
+								.cornerRadius(60)
+								.overlay(
+									RoundedRectangle(cornerRadius: 60)
+										.inset(by: 0.5)
+										.stroke(Color.orangeMain500, lineWidth: 1)
+								)
+								
+								Spacer()
+							}
+							.padding(.vertical)
+						}
 						.frame(maxWidth: sharedMainViewModel.maxWidth)
-                        .padding(.horizontal, 20)
+						.padding(.horizontal, 20)
 						
 						Spacer()
 						
-						Button(action:  {
+						Button(action: {
 							dismiss()
-						}) {
+						}, label: {
 							Text("I prefere create an account")
 								.default_text_style_orange_600(styleSize: 20)
 								.frame(height: 35)
 								.frame(maxWidth: .infinity)
-						}
+						})
 						.padding(.horizontal, 20)
 						.padding(.vertical, 10)
 						.cornerRadius(60)
 						.overlay(
 							RoundedRectangle(cornerRadius: 60)
 								.inset(by: 0.5)
-								.stroke(Color.orange_main_500, lineWidth: 1)
+								.stroke(Color.orangeMain500, lineWidth: 1)
 						)
 						.frame(maxWidth: sharedMainViewModel.maxWidth)
 						.padding(.horizontal)
@@ -170,19 +172,19 @@ struct ThirdPartySipAccountWarningFragment: View {
 						})
 						.padding(.horizontal, 20)
 						.padding(.vertical, 10)
-						.background(Color.orange_main_500)
+						.background(Color.orangeMain500)
 						.cornerRadius(60)
 						.frame(maxWidth: sharedMainViewModel.maxWidth)
 						.padding(.horizontal)
 						.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
-                    }
+					}
 					.frame(minHeight: geometry.size.height)
-                }
-            }
-        }
+				}
+			}
+		}
 		.navigationViewStyle(StackNavigationViewStyle())
-        .navigationBarHidden(true)
-    }
+		.navigationBarHidden(true)
+	}
 }
 
 #Preview {

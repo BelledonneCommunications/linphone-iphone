@@ -23,12 +23,12 @@ struct RegisterFragment: View {
 								.frame(width: geometry.size.width, height: 100)
 								.clipped()
 							
-							VStack (alignment: .leading) {
+							VStack(alignment: .leading) {
 								HStack {
 									Image("caret-left")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.gray_main2_500)
+										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.top, -65)
 										.onTapGesture {
@@ -60,5 +60,5 @@ struct RegisterFragment: View {
 }
 
 #Preview {
-    RegisterFragment()
+	RegisterFragment()
 }

@@ -21,23 +21,23 @@ import SwiftUI
 
 struct ThirdPartySipAccountLoginFragment: View {
 	
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
-    @ObservedObject private var coreContext = CoreContext.shared
-    @ObservedObject var accountLoginViewModel : AccountLoginViewModel
-    
-    @Environment(\.dismiss) var dismiss
-    
-    @State private var isSecured: Bool = true
-    
-    @FocusState var isNameFocused:Bool
-    @FocusState var isPasswordFocused:Bool
-	@FocusState var isDomainFocused:Bool
-	@FocusState var isDisplayNameFocused:Bool
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ScrollView(.vertical) {
-                VStack {
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
+	
+	@Environment(\.dismiss) var dismiss
+	
+	@State private var isSecured: Bool = true
+	
+	@FocusState var isNameFocused: Bool
+	@FocusState var isPasswordFocused: Bool
+	@FocusState var isDomainFocused: Bool
+	@FocusState var isDisplayNameFocused: Bool
+	
+	var body: some View {
+		GeometryReader { geometry in
+			ScrollView(.vertical) {
+				VStack {
 					ZStack {
 						Image("mountain")
 							.resizable()
@@ -45,12 +45,12 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.frame(width: geometry.size.width, height: 100)
 							.clipped()
 						
-						VStack (alignment: .leading) {
+						VStack(alignment: .leading) {
 							HStack {
 								Image("caret-left")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray_main2_500)
+									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 25, height: 25, alignment: .leading)
 									.padding(.top, -65)
 									.onTapGesture {
@@ -73,13 +73,13 @@ struct ThirdPartySipAccountLoginFragment: View {
 					}
 					.padding(.top, 35)
 					.padding(.bottom, 10)
-                    
+					
 					VStack(alignment: .leading) {
 						Text(String(localized: "username")+"*")
 							.default_text_style_700(styleSize: 15)
 							.padding(.bottom, -5)
 						
-						TextField("username", text : $accountLoginViewModel.username)
+						TextField("username", text: $accountLoginViewModel.username)
 							.default_text_style(styleSize: 15)
 							.disabled(coreContext.loggedIn)
 							.frame(height: 25)
@@ -89,7 +89,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.overlay(
 								RoundedRectangle(cornerRadius: 60)
 									.inset(by: 0.5)
-									.stroke(isNameFocused ? Color.orange_main_500 : Color.gray_200, lineWidth: 1)
+									.stroke(isNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 							)
 							.padding(.bottom)
 							.focused($isNameFocused)
@@ -114,13 +114,13 @@ struct ThirdPartySipAccountLoginFragment: View {
 							}
 							Button(action: {
 								isSecured.toggle()
-							}) {
+							}, label: {
 								Image(self.isSecured ? "eye-slash" : "eye")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray_main2_500)
+									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 20, height: 20)
-							}
+							})
 						}
 						.disabled(coreContext.loggedIn)
 						.padding(.horizontal, 20)
@@ -129,7 +129,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 						.overlay(
 							RoundedRectangle(cornerRadius: 60)
 								.inset(by: 0.5)
-								.stroke(isPasswordFocused ? Color.orange_main_500 : Color.gray_200, lineWidth: 1)
+								.stroke(isPasswordFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 						)
 						.padding(.bottom)
 						
@@ -137,7 +137,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.default_text_style_700(styleSize: 15)
 							.padding(.bottom, -5)
 						
-						TextField("sip.linphone.org", text : $accountLoginViewModel.domain)
+						TextField("sip.linphone.org", text: $accountLoginViewModel.domain)
 							.default_text_style(styleSize: 15)
 							.disabled(coreContext.loggedIn)
 							.frame(height: 25)
@@ -147,7 +147,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.overlay(
 								RoundedRectangle(cornerRadius: 60)
 									.inset(by: 0.5)
-									.stroke(isDomainFocused ? Color.orange_main_500 : Color.gray_200, lineWidth: 1)
+									.stroke(isDomainFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 							)
 							.padding(.bottom)
 							.focused($isDomainFocused)
@@ -156,7 +156,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.default_text_style_700(styleSize: 15)
 							.padding(.bottom, -5)
 						
-						TextField("Display Name", text : $accountLoginViewModel.displayName)
+						TextField("Display Name", text: $accountLoginViewModel.displayName)
 							.default_text_style(styleSize: 15)
 							.disabled(coreContext.loggedIn)
 							.frame(height: 25)
@@ -166,7 +166,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.overlay(
 								RoundedRectangle(cornerRadius: 60)
 									.inset(by: 0.5)
-									.stroke(isDisplayNameFocused ? Color.orange_main_500 : Color.gray_200, lineWidth: 1)
+									.stroke(isDisplayNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 							)
 							.padding(.bottom)
 							.focused($isDisplayNameFocused)
@@ -186,7 +186,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							Image("caret-down")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.gray_main2_500)
+								.foregroundStyle(Color.grayMain2c500)
 								.frame(width: 20, height: 20)
 						}
 						.frame(height: 25)
@@ -196,43 +196,40 @@ struct ThirdPartySipAccountLoginFragment: View {
 						.overlay(
 							RoundedRectangle(cornerRadius: 60)
 								.inset(by: 0.5)
-								.stroke(Color.gray_200, lineWidth: 1)
+								.stroke(Color.gray200, lineWidth: 1)
 						)
 						.padding(.bottom)
 						
 						Spacer()
 						
-						Button(action:  {
-							if (self.coreContext.loggedIn){
-								self.accountLoginViewModel.unregister()
-								self.accountLoginViewModel.delete()
-							} else {
-								self.accountLoginViewModel.login()
-							}
-							
+						Button(action: {
+							self.accountLoginViewModel.login()
 							accountLoginViewModel.domain = "sip.linphone.org"
 							accountLoginViewModel.transportType = "TLS"
-						}) {
+						}, label: {
 							Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
 								.default_text_style_white_600(styleSize: 20)
 								.frame(height: 35)
 								.frame(maxWidth: .infinity)
-						}
+						})
 						.padding(.horizontal, 20)
 						.padding(.vertical, 10)
-						.background((accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty || accountLoginViewModel.domain.isEmpty) ? Color.orange_main_100 : Color.orange_main_500)
+						.background(
+							(accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty || accountLoginViewModel.domain.isEmpty)
+							? Color.orangeMain100
+							: Color.orangeMain500)
 						.cornerRadius(60)
 						.disabled(accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty || accountLoginViewModel.domain.isEmpty)
 						.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
 					}
 					.frame(maxWidth: sharedMainViewModel.maxWidth)
-                    .padding(.horizontal, 20)
-                }
+					.padding(.horizontal, 20)
+				}
 				.frame(minHeight: geometry.size.height)
-            }
-        }
-        .navigationBarHidden(true)
-    }
+			}
+		}
+		.navigationBarHidden(true)
+	}
 }
 
 #Preview {

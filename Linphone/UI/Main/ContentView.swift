@@ -21,15 +21,15 @@ import SwiftUI
 
 struct ContentView: View {
 	
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
 	@ObservedObject private var coreContext = CoreContext.shared
 	
 	var body: some View {
 		if !sharedMainViewModel.welcomeViewDisplayed {
 			WelcomeView(sharedMainViewModel: sharedMainViewModel)
-        } else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
-            AssistantView(sharedMainViewModel: sharedMainViewModel)
-        } else {
+		} else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
+			AssistantView(sharedMainViewModel: sharedMainViewModel)
+		} else {
 			TabView {
 				ContactsView()
 					.tabItem {
@@ -46,5 +46,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView(sharedMainViewModel: SharedMainViewModel())
+	ContentView(sharedMainViewModel: SharedMainViewModel())
 }

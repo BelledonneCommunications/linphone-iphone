@@ -20,7 +20,7 @@
 import Foundation
 import Photos
 
-class PermissionManager : ObservableObject {
+class PermissionManager: ObservableObject {
 	
 	static let shared = PermissionManager()
 	
@@ -29,7 +29,7 @@ class PermissionManager : ObservableObject {
 	
 	private init() {}
 	
-	func photoLibraryRequestPermission(){
+	func photoLibraryRequestPermission() {
 		PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: {status in
 			DispatchQueue.main.async {
 				self.photoLibraryPermissionGranted = (status == .authorized || status == .limited || status == .restricted)

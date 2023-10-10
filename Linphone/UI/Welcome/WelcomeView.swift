@@ -19,9 +19,9 @@
 
 import SwiftUI
 
-struct WelcomeView: View{
+struct WelcomeView: View {
 	
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
 	
 	var permissionManager = PermissionManager.shared
 	
@@ -38,7 +38,7 @@ struct WelcomeView: View{
 							.frame(width: geometry.size.width, height: 100)
 							.clipped()
 						
-						VStack (alignment: .trailing) {
+						VStack(alignment: .trailing) {
 							Text("Skip")
 								.underline()
 								.default_text_style_600(styleSize: 15)
@@ -68,7 +68,7 @@ struct WelcomeView: View{
 					
 					Spacer()
 					
-					VStack{
+					VStack {
 						TabView(selection: $index) {
 							ForEach((0..<3), id: \.self) { index in
 								if index == 0 {
@@ -91,7 +91,7 @@ struct WelcomeView: View{
 					
 					Spacer()
 					
-					Button(action:  {
+					Button(action: {
 						if index < 2 {
 							withAnimation {
 								index += 1
@@ -99,15 +99,15 @@ struct WelcomeView: View{
 						} else if index == 2 {
 							permissionManager.cameraRequestPermission()
 						}
-					}) {
+					}, label: {
 						Text(index == 2 ? "Start" : "Next")
 							.default_text_style_white_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)
-					}
+					})
 					.padding(.horizontal, 20)
 					.padding(.vertical, 10)
-					.background(Color.orange_main_500)
+					.background(Color.orangeMain500)
 					.cornerRadius(60)
 					.padding(.horizontal)
 					.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
@@ -126,7 +126,7 @@ struct WelcomeView: View{
 	}
 	
 	func setupAppearance() {
-		UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.orange_main_500)
+		UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.orangeMain500)
 		if #available(iOS 16.0, *) {
 			
 			let dotCurrentImage = UIImage(named: "current-dot")
@@ -140,7 +140,7 @@ struct WelcomeView: View{
 			UIPageControl.appearance().setIndicatorImage(dotImage, forPage: 1)
 			UIPageControl.appearance().setIndicatorImage(dotImage, forPage: 2)
 		}
-		UIPageControl.appearance().pageIndicatorTintColor = UIColor(Color.gray_main2_200)
+		UIPageControl.appearance().pageIndicatorTintColor = UIColor(Color.grayMain2c200)
 	}
 }
 

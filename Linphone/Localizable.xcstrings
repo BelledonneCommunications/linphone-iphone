@@ -4,7 +4,13 @@
     "" : {
 
     },
+    " et " : {
+
+    },
     " or " : {
+
+    },
+    "." : {
 
     },
     "[Forgotten password?](https://subscribe.linphone.org/)" : {
@@ -131,15 +137,8 @@
     "Domain" : {
 
     },
-    "En continuant, vous acceptez ces conditions, %@ et %@." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "En continuant, vous acceptez ces conditions, %1$@ et %2$@."
-          }
-        }
-      }
+    "En continuant, vous acceptez ces conditions, " : {
+
     },
     "Error" : {
 
@@ -221,19 +220,10 @@
     "Skip" : {
 
     },
-    "Some features require a Linphone account, such as group messaging, video conferences...\n\nThese features are hidden when you register with a third party SIP account.\n\nTo enable it in a commercial projet, please contact us. " : {
-
-    },
     "Start" : {
 
     },
     "TCP" : {
-
-    },
-    "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : {
-
-    },
-    "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : {
 
     },
     "The user name or password is incorrects" : {

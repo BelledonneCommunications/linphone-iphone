@@ -22,18 +22,18 @@ import SwiftUI
 
 struct WelcomePage3Fragment: View {
 	
-	var body: some View{
+	var body: some View {
 		VStack {
 			Spacer()
 			VStack {
 				Image("open-source")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(Color.orange_main_500)
+					.foregroundStyle(Color.orangeMain500)
 					.frame(width: 100, height: 100)
 				Text("Open source")
 					.welcome_text_style_gray_800(styleSize: 30)
-					.padding(.bottom,  20)
+					.padding(.bottom, 20)
 				Text("Une application open source et un **service gratuit** depuis **2001**.")
 					.welcome_text_style_gray(styleSize: 15)
 					.multilineTextAlignment(.center)

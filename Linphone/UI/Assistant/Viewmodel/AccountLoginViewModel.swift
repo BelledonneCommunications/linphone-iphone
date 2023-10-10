@@ -1,34 +1,34 @@
 /*
-* Copyright (c) 2010-2023 Belledonne Communications SARL.
-*
-* This file is part of Linphone
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (c) 2010-2023 Belledonne Communications SARL.
+ *
+ * This file is part of Linphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import linphonesw
 import SwiftUI
 
-class AccountLoginViewModel : ObservableObject {
+class AccountLoginViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
 	
-	@Published var username : String = ""
-	@Published var passwd : String = ""
-	@Published var domain : String = "sip.linphone.org"
-	@Published var displayName : String = ""
-	@Published var transportType : String = "TLS"
+	@Published var username: String = ""
+	@Published var passwd: String = ""
+	@Published var domain: String = "sip.linphone.org"
+	@Published var displayName: String = ""
+	@Published var transportType: String = "TLS"
 	
 	init() {}
 	
@@ -37,10 +37,12 @@ class AccountLoginViewModel : ObservableObject {
 			// Get the transport protocol to use.
 			// TLS is strongly recommended
 			// Only use UDP if you don't have the choice
-			var transport : TransportType
-			if (transportType == "TLS") { transport = TransportType.Tls }
-			else if (transportType == "TCP") { transport = TransportType.Tcp }
-			else  { transport = TransportType.Udp }
+			var transport: TransportType
+			if transportType == "TLS" {
+				transport = TransportType.Tls
+			} else if transportType == "TCP" {
+				transport = TransportType.Tcp
+			} else { transport = TransportType.Udp }
 			
 			// To configure a SIP account, we need an Account object and an AuthInfo object
 			// The first one is how to connect to the proxy server, the second one stores the credentials
@@ -58,7 +60,7 @@ class AccountLoginViewModel : ObservableObject {
 			
 			// A SIP account is identified by an identity address that we can construct from the username and domain
 			let identity = try Factory.Instance.createAddress(addr: String("sip:" + username + "@" + domain))
-			try! accountParams.setIdentityaddress(newValue: identity)
+			try accountParams.setIdentityaddress(newValue: identity)
 			
 			// We also need to configure where the proxy server is located
 			let address = try Factory.Instance.createAddress(addr: String("sip:" + domain))

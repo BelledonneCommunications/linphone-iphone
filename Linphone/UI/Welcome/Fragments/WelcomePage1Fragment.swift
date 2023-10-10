@@ -20,20 +20,20 @@
 import Foundation
 import SwiftUI
 
-struct WelcomePage1Fragment: View{
+struct WelcomePage1Fragment: View {
 	
-	var body: some View{
+	var body: some View {
 		VStack {
 			Spacer()
 			VStack {
 				Image("linphone")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(Color.orange_main_500)
+					.foregroundStyle(Color.orangeMain500)
 					.frame(width: 100, height: 100)
 				Text("Linphone")
 					.welcome_text_style_gray_800(styleSize: 30)
-					.padding(.bottom,  20)
+					.padding(.bottom, 20)
 				Text("Une application de communication **sécurisée**, **open source** et **française**.")
 					.welcome_text_style_gray(styleSize: 15)
 					.multilineTextAlignment(.center)

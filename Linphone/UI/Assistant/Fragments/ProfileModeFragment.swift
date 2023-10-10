@@ -20,138 +20,152 @@
 import SwiftUI
 
 struct ProfileModeFragment: View {
-    
-    @ObservedObject var sharedMainViewModel : SharedMainViewModel
-    
-    @State var options: Int = 1
-    @State private var isShowPopup = false
-    @State private var isShowPopupForDefault = true
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ScrollView(.vertical) {
-                VStack {
-                    ZStack {
-                        Image("mountain")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: geometry.size.width, height: 100)
-                            .clipped()
-                        Text("Personnalize your profil mode")
-                            .default_text_style_white_800(styleSize: 20)
-                            .padding(.top, -10)
-                        Text("You will change this mode later")
-                            .default_text_style_white(styleSize: 15)
-                            .padding(.top, 40)
-                    }
-                    .padding(.top, 35)
-                    .padding(.bottom, 10)
-                    
-                    VStack (spacing: 10) {
-                        Button(action: {
-                            options = 1
-                        }) {
-                            HStack {
-                                Image(options == 1 ? "radio-button-fill" : "radio-button")
-                                Text("Default")
-                                    .profile_mode_text_style_gray_800(styleSize: 16)
-                                Image("info")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            self.isShowPopupForDefault = true
-                                            self.isShowPopup.toggle()
-                                        }
-                                    }
-                                Spacer()
-                            }
-                        }
-                        
-                        HStack {
-                            Text("Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards.")
-                                .profile_mode_text_style_gray(styleSize: 15)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 20)
-                        .background(Color.gray_100)
-                        .cornerRadius(15)
-                        .padding(.bottom, 5)
-                        
-                        Image("profile-mode")
-                            .resizable()
-                            .frame(width: 150, height: 60)
-                            .padding()
-                        
-                        Button(action: {
-                            options = 2
-                        }) {
-                            HStack {
-                                Image(options == 2 ? "radio-button-fill" : "radio-button")
-                                Text("Interoperable")
-                                    .profile_mode_text_style_gray_800(styleSize: 16)
-                                Image("info")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            self.isShowPopupForDefault = false
-                                            self.isShowPopup.toggle()
-                                        }
-                                    }
-                                Spacer()
-                            }
-                        }
-                        
-                        HStack {
-                            Text("Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. ")
-                                .profile_mode_text_style_gray(styleSize: 15)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 20)
-                        .background(Color.gray_100)
-                        .cornerRadius(15)
-                    }
+	
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	
+	@State var options: Int = 1
+	@State private var isShowPopup = false
+	@State private var isShowPopupForDefault = true
+	
+	var body: some View {
+		GeometryReader { geometry in
+			ScrollView(.vertical) {
+				VStack {
+					ZStack {
+						Image("mountain")
+							.resizable()
+							.scaledToFill()
+							.frame(width: geometry.size.width, height: 100)
+							.clipped()
+						Text("Personnalize your profil mode")
+							.default_text_style_white_800(styleSize: 20)
+							.padding(.top, -10)
+						Text("You will change this mode later")
+							.default_text_style_white(styleSize: 15)
+							.padding(.top, 40)
+					}
+					.padding(.top, 35)
+					.padding(.bottom, 10)
+					
+					VStack(spacing: 10) {						
+						Button(action: {
+							options = 1
+						}, label: {
+							HStack {
+								Image(options == 1 ? "radio-button-fill" : "radio-button")
+								Text("Default")
+									.profile_mode_text_style_gray_800(styleSize: 16)
+								Image("info")
+									.resizable()
+									.frame(width: 25, height: 25)
+									.onTapGesture {
+										withAnimation {
+											self.isShowPopupForDefault = true
+											self.isShowPopup.toggle()
+										}
+									}
+								Spacer()
+							}
+						})
+						
+						HStack {
+							Text("Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards.")
+								.profile_mode_text_style_gray(styleSize: 15)
+						}
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.padding(.horizontal, 16)
+						.padding(.vertical, 20)
+						.background(Color.gray100)
+						.cornerRadius(15)
+						.padding(.bottom, 5)
+						
+						Image("profile-mode")
+							.resizable()
+							.frame(width: 150, height: 60)
+							.padding()
+						
+						Button(action: {
+							options = 2
+						}, label: {
+							HStack {
+								Image(options == 2 ? "radio-button-fill" : "radio-button")
+								Text("Interoperable")
+									.profile_mode_text_style_gray_800(styleSize: 16)
+								Image("info")
+									.resizable()
+									.frame(width: 25, height: 25)
+									.onTapGesture {
+										withAnimation {
+											self.isShowPopupForDefault = false
+											self.isShowPopup.toggle()
+										}
+									}
+								Spacer()
+							}
+						})
+						
+						HStack {
+							Text("Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. ")
+								.profile_mode_text_style_gray(styleSize: 15)
+						}
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.padding(.horizontal, 16)
+						.padding(.vertical, 20)
+						.background(Color.gray100)
+						.cornerRadius(15)
+					}
 					.frame(maxWidth: sharedMainViewModel.maxWidth)
-                    .padding()
+					.padding()
 					
 					Spacer()
 					
-					Button(action:  {
+					Button(action: {
 						sharedMainViewModel.changeHideProfileMode()
-					}) {
+					}, label: {
 						Text("Continue")
 							.default_text_style_white_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)
-					}
+					})
 					.padding(.horizontal, 20)
 					.padding(.vertical, 10)
-					.background(Color.orange_main_500)
+					.background(Color.orangeMain500)
 					.cornerRadius(60)
 					.padding(.horizontal)
 					.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
 					.frame(maxWidth: sharedMainViewModel.maxWidth)
-                }
+				}
 				.frame(minHeight: geometry.size.height)
-            }
+			}
 			.onAppear {
 				UserDefaults.standard.set(false, forKey: "display_profile_mode")
 			}
-            
-            if self.isShowPopup {
-				PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup, title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"), content: Text(isShowPopupForDefault ? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula." : "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."), titleFirstButton: nil, actionFirstButton: {}, titleSecondButton: Text("Close"), actionSecondButton: {self.isShowPopup.toggle()})
-                    .background(.black.opacity(0.65))
-                    .onTapGesture {
-                        self.isShowPopup.toggle()
-                    }
-            }
-        }
-    }
+			
+			if self.isShowPopup {
+				PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup,
+						  title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"),
+						  content: Text(
+							isShowPopupForDefault
+							? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit."
+							+ "Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."
+							: "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit."
+							+ " Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."),
+						  titleFirstButton: nil,
+						  actionFirstButton: {},
+						  titleSecondButton: Text("Close"),
+						  actionSecondButton: {
+					self.isShowPopup.toggle()
+				}
+				)
+				.background(.black.opacity(0.65))
+				.onTapGesture {
+					self.isShowPopup.toggle()
+				}
+			}
+		}
+	}
 }
 
 #Preview {
-    ProfileModeFragment(sharedMainViewModel: SharedMainViewModel())
+	ProfileModeFragment(sharedMainViewModel: SharedMainViewModel())
 }

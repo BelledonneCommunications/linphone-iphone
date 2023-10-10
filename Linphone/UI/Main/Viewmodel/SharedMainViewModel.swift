@@ -1,25 +1,25 @@
 /*
-* Copyright (c) 2010-2023 Belledonne Communications SARL.
-*
-* This file is part of Linphone
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (c) 2010-2023 Belledonne Communications SARL.
+ *
+ * This file is part of Linphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import linphonesw
 
-class SharedMainViewModel : ObservableObject {
+class SharedMainViewModel: ObservableObject {
 	
 	@Published var welcomeViewDisplayed = false
 	@Published var generalTermsAccepted = false
@@ -29,7 +29,7 @@ class SharedMainViewModel : ObservableObject {
 	
 	init() {
 		let preferences = UserDefaults.standard
-
+		
 		let welcomeViewKey = "welcome_view"
 		
 		if preferences.object(forKey: welcomeViewKey) == nil {
@@ -37,7 +37,7 @@ class SharedMainViewModel : ObservableObject {
 		} else {
 			welcomeViewDisplayed = preferences.bool(forKey: welcomeViewKey)
 		}
-
+		
 		let generalTermsKey = "general_terms"
 		
 		if preferences.object(forKey: generalTermsKey) == nil {
@@ -55,33 +55,33 @@ class SharedMainViewModel : ObservableObject {
 		}
 	}
 	
-	func changeWelcomeView(){
+	func changeWelcomeView() {
 		let preferences = UserDefaults.standard
-
+		
 		welcomeViewDisplayed = true
 		let welcomeViewKey = "welcome_view"
 		preferences.set(welcomeViewDisplayed, forKey: welcomeViewKey)
 	}
 	
-	func changeGeneralTerms(){
+	func changeGeneralTerms() {
 		let preferences = UserDefaults.standard
-
+		
 		generalTermsAccepted = true
 		let generalTermsKey = "general_terms"
 		preferences.set(generalTermsAccepted, forKey: generalTermsKey)
 	}
 	
-	func changeDisplayProfileMode(){
+	func changeDisplayProfileMode() {
 		let preferences = UserDefaults.standard
-
+		
 		displayProfileMode = true
 		let displayProfileModeKey = "display_profile_mode"
 		preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 	}
 	
-	func changeHideProfileMode(){
+	func changeHideProfileMode() {
 		let preferences = UserDefaults.standard
-
+		
 		displayProfileMode = false
 		let displayProfileModeKey = "display_profile_mode"
 		preferences.set(displayProfileMode, forKey: displayProfileModeKey)

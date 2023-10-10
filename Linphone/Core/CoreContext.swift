@@ -19,18 +19,18 @@
 
 import linphonesw
 
-final class CoreContext : ObservableObject {
+final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
 	
 	var mCore: Core!
-	var mRegistrationDelegate : CoreDelegate!
-	var mConfigurationDelegate : CoreDelegate!
+	var mRegistrationDelegate: CoreDelegate!
+	var mConfigurationDelegate: CoreDelegate!
 	
 	var coreVersion: String = Core.getVersion
-	@Published var loggedIn : Bool = false
-	@Published var loggingInProgress : Bool = false
-	@Published var toastMessage : String = ""
+	@Published var loggedIn: Bool = false
+	@Published var loggingInProgress: Bool = false
+	@Published var toastMessage: String = ""
 	
 	private init() {}
 	
@@ -47,23 +47,23 @@ final class CoreContext : ObservableObject {
 		
 		mRegistrationDelegate =
 		CoreDelegateStub(
-			onConfiguringStatus: { (core: Core, state: Config.ConfiguringState, message: String) in
+			onConfiguringStatus: {(_: Core, state: Config.ConfiguringState, message: String) in
 				NSLog("New configuration state is \(state) = \(message)\n")
-				if (state == .Successful) {
+				if state == .Successful {
 					self.toastMessage = "Successful"
 				} else {
 					self.toastMessage = "Failed"
 				}
 			},
 			
-			onAccountRegistrationStateChanged: { (core: Core, account: Account, state: RegistrationState, message: String) in
+			onAccountRegistrationStateChanged: {(_: Core, account: Account, state: RegistrationState, message: String) in
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
-				NSLog("New registration state is \(state) for user id \( String(describing: account.params?.identityAddress?.asString()))\n")
-				if (state == .Ok) {
+				NSLog("New registration state is \(state) for user id \( String(describing: account.params?.identityAddress?.asString())) = \(message)\n")
+				if state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
-				} else if (state == .Progress) {
+				} else if state == .Progress {
 					self.loggingInProgress = true
 				} else {
 					self.toastMessage = "Registration failed"

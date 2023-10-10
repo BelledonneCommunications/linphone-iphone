@@ -21,96 +21,96 @@ import Foundation
 import SwiftUI
 
 extension View {
-    
-    func default_text_style_300(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Light", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
-    
-    func default_text_style(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Regular", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
-    
-    func default_text_style_500(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Medium", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
-    
-    func default_text_style_600(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
-    
-    func default_text_style_700(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Bold", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
-    
-    func default_text_style_800(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
-    
-    func default_text_style_white_300(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Light", size: styleSize))
-            .foregroundStyle(Color.white)
-    }
-    
-    func default_text_style_white(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Regular", size: styleSize))
-            .foregroundStyle(Color.white)
-    }
-    
-    func default_text_style_white_500(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Medium", size: styleSize))
-            .foregroundStyle(Color.white)
-    }
-    
-    func default_text_style_white_600(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
-            .foregroundStyle(Color.white)
-    }
-    
-    func default_text_style_white_700(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Bold", size: styleSize))
-            .foregroundStyle(Color.white)
-    }
-    
-    func default_text_style_white_800(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-            .foregroundStyle(Color.white)
-    }
-    
-    func default_text_style_orange_300(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Light", size: styleSize))
-            .foregroundStyle(Color.orange_main_500)
-    }
-    
-    func default_text_style_orange(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Regular", size: styleSize))
-            .foregroundStyle(Color.orange_main_500)
-    }
-    
-    func default_text_style_orange_500(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Medium", size: styleSize))
-            .foregroundStyle(Color.orange_main_500)
-    }
-    
-    func default_text_style_orange_600(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
-            .foregroundStyle(Color.orange_main_500)
-    }
-    
-    func default_text_style_orange_700(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Bold", size: styleSize))
-            .foregroundStyle(Color.orange_main_500)
-    }
-    
-    func default_text_style_orange_800(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-            .foregroundStyle(Color.orange_main_500)
-    }
+	
+	func default_text_style_300(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Light", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
+	
+	func default_text_style(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Regular", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
+	
+	func default_text_style_500(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Medium", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
+	
+	func default_text_style_600(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
+	
+	func default_text_style_700(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Bold", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
+	
+	func default_text_style_800(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
+	
+	func default_text_style_white_300(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Light", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func default_text_style_white(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Regular", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func default_text_style_white_500(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Medium", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func default_text_style_white_600(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func default_text_style_white_700(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Bold", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func default_text_style_white_800(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+			.foregroundStyle(Color.white)
+	}
+	
+	func default_text_style_orange_300(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Light", size: styleSize))
+			.foregroundStyle(Color.orangeMain500)
+	}
+	
+	func default_text_style_orange(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Regular", size: styleSize))
+			.foregroundStyle(Color.orangeMain500)
+	}
+	
+	func default_text_style_orange_500(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Medium", size: styleSize))
+			.foregroundStyle(Color.orangeMain500)
+	}
+	
+	func default_text_style_orange_600(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
+			.foregroundStyle(Color.orangeMain500)
+	}
+	
+	func default_text_style_orange_700(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Bold", size: styleSize))
+			.foregroundStyle(Color.orangeMain500)
+	}
+	
+	func default_text_style_orange_800(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+			.foregroundStyle(Color.orangeMain500)
+	}
 	
 	func welcome_text_style_white_800(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
@@ -119,21 +119,21 @@ extension View {
 	
 	func welcome_text_style_gray_800(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-			.foregroundStyle(Color.gray_main2_600)
+			.foregroundStyle(Color.grayMain2c600)
 	}
 	
 	func welcome_text_style_gray(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
-			.foregroundStyle(Color.gray_main2_600)
+			.foregroundStyle(Color.grayMain2c600)
 	}
-    
-    func profile_mode_text_style_gray_800(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-            .foregroundStyle(Color.gray_900)
-    }
-    
-    func profile_mode_text_style_gray(styleSize: CGFloat) -> some View {
-        self.font(Font.custom("NotoSans-Regular", size: styleSize))
-            .foregroundStyle(Color.gray_main2_600)
-    }
+	
+	func profile_mode_text_style_gray_800(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
+			.foregroundStyle(Color.gray900)
+	}
+	
+	func profile_mode_text_style_gray(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Regular", size: styleSize))
+			.foregroundStyle(Color.grayMain2c600)
+	}
 }

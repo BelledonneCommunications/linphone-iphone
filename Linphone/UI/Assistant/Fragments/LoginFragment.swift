@@ -22,13 +22,13 @@ import SwiftUI
 struct LoginFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject var accountLoginViewModel : AccountLoginViewModel
-	@ObservedObject var sharedMainViewModel : SharedMainViewModel
+	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
 	
 	@State private var isSecured: Bool = true
 	
-	@FocusState var isNameFocused:Bool
-	@FocusState var isPasswordFocused:Bool
+	@FocusState var isNameFocused: Bool
+	@FocusState var isPasswordFocused: Bool
 	
 	@State private var isShowPopup = false
 	
@@ -62,7 +62,7 @@ struct LoginFragment: View {
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								TextField("username", text : $accountLoginViewModel.username)
+								TextField("username", text: $accountLoginViewModel.username)
 									.default_text_style(styleSize: 15)
 									.disabled(coreContext.loggedIn)
 									.frame(height: 25)
@@ -72,7 +72,7 @@ struct LoginFragment: View {
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(isNameFocused ? Color.orange_main_500 : Color.gray_200, lineWidth: 1)
+											.stroke(isNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 									)
 									.padding(.bottom)
 									.focused($isNameFocused)
@@ -95,15 +95,16 @@ struct LoginFragment: View {
 												.focused($isPasswordFocused)
 										}
 									}
+									
 									Button(action: {
 										isSecured.toggle()
-									}) {
+									}, label: {
 										Image(self.isSecured ? "eye-slash" : "eye")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.gray_main2_500)
+											.foregroundStyle(Color.grayMain2c500)
 											.frame(width: 20, height: 20)
-									}
+									})
 								}
 								.disabled(coreContext.loggedIn)
 								.padding(.horizontal, 20)
@@ -112,26 +113,21 @@ struct LoginFragment: View {
 								.overlay(
 									RoundedRectangle(cornerRadius: 60)
 										.inset(by: 0.5)
-										.stroke(isPasswordFocused ? Color.orange_main_500 : Color.gray_200, lineWidth: 1)
+										.stroke(isPasswordFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 								)
 								.padding(.bottom)
 								
-								Button(action:  {
-									if (self.coreContext.loggedIn){
-										self.accountLoginViewModel.unregister()
-										self.accountLoginViewModel.delete()
-									} else {
-										self.accountLoginViewModel.login()
-									}
-								}) {
+								Button(action: {
+									self.accountLoginViewModel.login()
+								}, label: {
 									Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
 										.default_text_style_white_600(styleSize: 20)
 										.frame(height: 35)
 										.frame(maxWidth: .infinity)
-								}
+								})
 								.padding(.horizontal, 20)
 								.padding(.vertical, 10)
-								.background((accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty) ? Color.orange_main_100 : Color.orange_main_500)
+								.background((accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty) ? Color.orangeMain100 : Color.orangeMain500)
 								.cornerRadius(60)
 								.disabled(accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty)
 								.padding(.bottom)
@@ -139,21 +135,21 @@ struct LoginFragment: View {
 								HStack {
 									Text("[Forgotten password?](https://subscribe.linphone.org/)")
 										.underline()
-										.tint(Color.gray_main2_600)
+										.tint(Color.grayMain2c600)
 										.default_text_style_600(styleSize: 15)
-										.foregroundStyle(Color.gray_main2_500)
+										.foregroundStyle(Color.grayMain2c500)
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.bottom, 30)
 								
 								HStack {
-									VStack{
+									VStack {
 										Divider()
 									}
 									Text(" or ")
 										.default_text_style(styleSize: 15)
-										.foregroundStyle(Color.gray_main2_500)
-									VStack{
+										.foregroundStyle(Color.grayMain2c500)
+									VStack {
 										Divider()
 									}
 								}
@@ -166,7 +162,7 @@ struct LoginFragment: View {
 										Image("qr-code")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.orange_main_500)
+											.foregroundStyle(Color.orangeMain500)
 											.frame(width: 20, height: 20)
 										
 										Text("Scan QR code")
@@ -183,19 +179,21 @@ struct LoginFragment: View {
 								.overlay(
 									RoundedRectangle(cornerRadius: 60)
 										.inset(by: 0.5)
-										.stroke(Color.orange_main_500, lineWidth: 1)
+										.stroke(Color.orangeMain500, lineWidth: 1)
 								)
 								.padding(.bottom)
-								.simultaneousGesture(TapGesture().onEnded{
-									self.linkActive = "QR"
-									if !sharedMainViewModel.generalTermsAccepted {
-										withAnimation {
-											self.isShowPopup.toggle()
+								.simultaneousGesture(
+									TapGesture().onEnded {
+										self.linkActive = "QR"
+										if !sharedMainViewModel.generalTermsAccepted {
+											withAnimation {
+												self.isShowPopup.toggle()
+											}
+										} else {
+											self.isLinkQRActive = true
 										}
-									} else {
-										self.isLinkQRActive = true
 									}
-	 							})
+								)
 								
 								NavigationLink(isActive: $isLinkSIPActive, destination: {
 									ThirdPartySipAccountWarningFragment(sharedMainViewModel: sharedMainViewModel, accountLoginViewModel: accountLoginViewModel)
@@ -213,19 +211,21 @@ struct LoginFragment: View {
 								.overlay(
 									RoundedRectangle(cornerRadius: 60)
 										.inset(by: 0.5)
-										.stroke(Color.orange_main_500, lineWidth: 1)
+										.stroke(Color.orangeMain500, lineWidth: 1)
 								)
 								.padding(.bottom)
-								.simultaneousGesture(TapGesture().onEnded{
-									self.linkActive = "SIP"
-									if !sharedMainViewModel.generalTermsAccepted {
-										withAnimation {
-											self.isShowPopup.toggle()
+								.simultaneousGesture(
+									TapGesture().onEnded {
+										self.linkActive = "SIP"
+										if !sharedMainViewModel.generalTermsAccepted {
+											withAnimation {
+												self.isShowPopup.toggle()
+											}
+										} else {
+											self.isLinkSIPActive = true
 										}
-									} else {
-										self.isLinkSIPActive = true
 									}
-								})
+								)
 								
 								Spacer()
 								
@@ -235,7 +235,7 @@ struct LoginFragment: View {
 									
 									Text("Not account yet?")
 										.default_text_style(styleSize: 15)
-										.foregroundStyle(Color.gray_main2_700)
+										.foregroundStyle(Color.grayMain2c700)
 										.padding(.horizontal, 10)
 									
 									NavigationLink(destination: RegisterFragment(), isActive: $isLinkREGActive, label: {Text("Register")
@@ -249,19 +249,21 @@ struct LoginFragment: View {
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(Color.orange_main_500, lineWidth: 1)
+											.stroke(Color.orangeMain500, lineWidth: 1)
 									)
 									.padding(.horizontal, 10)
-									.simultaneousGesture(TapGesture().onEnded{
-									 	self.linkActive = "REG"
-									 	if !sharedMainViewModel.generalTermsAccepted {
-											withAnimation {
-											self.isShowPopup.toggle()
+									.simultaneousGesture(
+										TapGesture().onEnded {
+											self.linkActive = "REG"
+											if !sharedMainViewModel.generalTermsAccepted {
+												withAnimation {
+													self.isShowPopup.toggle()
+												}
+											} else {
+												self.isLinkREGActive = true
 											}
-									 	} else {
-										 	self.isLinkREGActive = true
-									 	}
-								 	})
+										}
+									)
 									
 									Spacer()
 								}
@@ -274,14 +276,25 @@ struct LoginFragment: View {
 					}
 					
 					if self.isShowPopup {
-						PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup, title: Text("Conditions de service"), content: Text("En continuant, vous acceptez ces conditions, \(Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()) et \(Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline())."), titleFirstButton: Text("Deny all"), actionFirstButton: {self.isShowPopup.toggle()}, titleSecondButton: Text("Accept all"), actionSecondButton: {acceptGeneralTerms()})
-							.background(.black.opacity(0.65))
-							.onTapGesture {
-								self.isShowPopup.toggle()
-							}
+						let contentPopup1 = Text("En continuant, vous acceptez ces conditions, ")
+						let contentPopup2 = Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()
+						let contentPopup3 = Text(" et ")
+						let contentPopup4 = Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline()
+						let contentPopup5 = Text(".")
+						PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup,
+								  title: Text("Conditions de service"),
+								  content: contentPopup1 + contentPopup2 + contentPopup3 + contentPopup4 + contentPopup5,
+								  titleFirstButton: Text("Deny all"),
+								  actionFirstButton: {self.isShowPopup.toggle()},
+								  titleSecondButton: Text("Accept all"),
+								  actionSecondButton: {acceptGeneralTerms()})
+						.background(.black.opacity(0.65))
+						.onTapGesture {
+							self.isShowPopup.toggle()
+						}
 					}
 				}
-				.onAppear{
+				.onAppear {
 					sharedMainViewModel.changeDisplayProfileMode()
 				}
 				
@@ -291,7 +304,7 @@ struct LoginFragment: View {
 				}
 				
 				if !coreContext.loggingInProgress && !coreContext.loggedIn {
-					ZStack{
+					ZStack {
 						
 					}.onAppear {
 						self.accountLoginViewModel.unregister()
@@ -303,7 +316,7 @@ struct LoginFragment: View {
 		.navigationViewStyle(StackNavigationViewStyle())
 	}
 	
-	func acceptGeneralTerms(){
+	func acceptGeneralTerms() {
 		sharedMainViewModel.changeGeneralTerms()
 		self.isShowPopup.toggle()
 		switch linkActive {
