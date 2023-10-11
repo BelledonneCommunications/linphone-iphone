@@ -25,6 +25,18 @@
     "[notre politique de confidentialité](https://linphone.org/privacy-policy)" : {
 
     },
+    "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
+
+    },
+    "**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone." : {
+
+    },
+    "**Micro** : Pour permettre à vos correspondants de vous entendre." : {
+
+    },
+    "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
+
+    },
     "%lld Book (Example)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -122,10 +134,16 @@
     "Continue" : {
 
     },
+    "D'accord" : {
+
+    },
     "Default" : {
 
     },
     "Default mode" : {
+
+    },
+    "Demande d’autorisations" : {
 
     },
     "Deny all" : {
@@ -200,6 +218,12 @@
       }
     },
     "Personnalize your profil mode" : {
+
+    },
+    "Plus tard" : {
+
+    },
+    "Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :" : {
 
     },
     "QR code validated!" : {

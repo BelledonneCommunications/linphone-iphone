@@ -34,7 +34,6 @@ struct LoginFragment: View {
 	
 	@State private var linkActive = ""
 	
-	@State private var isLinkQRActive = false
 	@State private var isLinkSIPActive = false
 	@State private var isLinkREGActive = false
 	
@@ -155,7 +154,7 @@ struct LoginFragment: View {
 								}
 								.padding(.bottom, 10)
 								
-								NavigationLink(isActive: $isLinkQRActive, destination: {
+								NavigationLink(destination: {
 									QrCodeScannerFragment()
 								}, label: {
 									HStack {
@@ -172,7 +171,6 @@ struct LoginFragment: View {
 									.frame(maxWidth: .infinity)
 									
 								})
-								.disabled(!sharedMainViewModel.generalTermsAccepted)
 								.padding(.horizontal, 20)
 								.padding(.vertical, 10)
 								.cornerRadius(60)
@@ -182,18 +180,6 @@ struct LoginFragment: View {
 										.stroke(Color.orangeMain500, lineWidth: 1)
 								)
 								.padding(.bottom)
-								.simultaneousGesture(
-									TapGesture().onEnded {
-										self.linkActive = "QR"
-										if !sharedMainViewModel.generalTermsAccepted {
-											withAnimation {
-												self.isShowPopup.toggle()
-											}
-										} else {
-											self.isLinkQRActive = true
-										}
-									}
-								)
 								
 								NavigationLink(isActive: $isLinkSIPActive, destination: {
 									ThirdPartySipAccountWarningFragment(sharedMainViewModel: sharedMainViewModel, accountLoginViewModel: accountLoginViewModel)
@@ -320,8 +306,6 @@ struct LoginFragment: View {
 		sharedMainViewModel.changeGeneralTerms()
 		self.isShowPopup.toggle()
 		switch linkActive {
-		case "QR":
-			self.isLinkQRActive = true
 		case "SIP":
 			self.isLinkSIPActive = true
 		case "REG":
