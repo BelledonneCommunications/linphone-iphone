@@ -543,6 +543,7 @@
 		[self setBool:[lm lpConfigBoolForKey:@"use_rls_presence" withDefault:YES] forKey:@"use_rls_presence"];
 		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference"]
 			   forKey:@"enable_first_login_view_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"enable_broadcast_conference_feature" withDefault:NO] forKey:@"enable_broadcast_conference_feature"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(LC);
 		if (parsed != NULL) {
 			[self setCString:linphone_address_get_display_name(parsed) forKey:@"primary_displayname_preference"];
@@ -1118,6 +1119,9 @@
 		
 		BOOL screenshot = [self boolForKey:@"screenshot_preference"];
 		[lm lpConfigSetInt:screenshot forKey:@"screenshot_preference"];
+		
+		BOOL broadcast = [self boolForKey:@"enable_broadcast_conference_feature"];
+		[lm lpConfigSetInt:broadcast forKey:@"enable_broadcast_conference_feature"];
 
 		UIDevice *device = [UIDevice currentDevice];
 		BOOL backgroundSupported = [device respondsToSelector:@selector(isMultitaskingSupported)] && [device isMultitaskingSupported];

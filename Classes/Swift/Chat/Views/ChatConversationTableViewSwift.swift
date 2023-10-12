@@ -539,12 +539,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 						plainFile = ""
 						
 					}else {
-						image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath)!
+						image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath!)!
 					}
 				}
 				
 				viewer.imageViewer = image
-				viewer.imageNameViewer = chatMessage.contents.first!.name.isEmpty ? "" : chatMessage.contents.first!.name
+				viewer.imageNameViewer = chatMessage.contents.first!.name!.isEmpty ? "" : chatMessage.contents.first!.name!
 				viewer.imagePathViewer = chatMessage.contents.first!.exportPlainFile()
 				viewer.contentType = chatMessage.contents.first!.type
 				PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
@@ -585,7 +585,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				
 				var text = ""
 				var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? chatMessage!.contents[index].exportPlainFile() : chatMessage!.contents[index].filePath
-				if let urlEncoded = filePathString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+				if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
 					if !urlEncoded.isEmpty {
 						if let urlFile = URL(string: "file://" + urlEncoded){
 							do {
@@ -595,12 +595,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 								if chatMessage != nil {
 									
 									viewer.textViewer = text
-									viewer.textNameViewer = chatMessage!.contents[index].name.isEmpty ? "" : chatMessage!.contents[index].name
+									viewer.textNameViewer = (chatMessage!.contents[index].name!.isEmpty ? "" : chatMessage!.contents[index].name)!
 									PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
 								}
 
 							} catch {
-								if text == "" && (chatMessage!.contents[index].type == "image" || chatMessage!.contents[index].type == "video" || chatMessage!.contents[index].name.lowercased().components(separatedBy: ".").last == "pdf"){
+								if text == "" && (chatMessage!.contents[index].type == "image" || chatMessage!.contents[index].type == "video" || chatMessage!.contents[index].name!.lowercased().components(separatedBy: ".").last == "pdf"){
 									let viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
 									
 									var image = UIImage()
@@ -615,12 +615,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 												plainFile = ""
 												
 											}else {
-												image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath)!
+												image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath!)!
 											}
 										}
 										
 										viewer.imageViewer = image
-										viewer.imageNameViewer = chatMessage!.contents[index].name.isEmpty ? "" : chatMessage!.contents[index].name
+										viewer.imageNameViewer = chatMessage!.contents[index].name!.isEmpty ? "" : chatMessage!.contents[index].name!
 										viewer.imagePathViewer = chatMessage!.contents[index].exportPlainFile()
 										viewer.contentType = chatMessage!.contents[index].type
 										PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
@@ -644,7 +644,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 											let previewController = QLPreviewController()
 											self.previewItems = []
 											
-											self.previewItems.append(self.getPreviewItem(filePath: filePathString))
+											self.previewItems.append(self.getPreviewItem(filePath: filePathString!))
 											
 											
 											self.afterPreviewIndex = indexMessage
@@ -683,7 +683,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 							plainFile = ""
 							
 						}else {
-							self.previewItems.append(self.getPreviewItem(filePath: (content.filePath)))
+							self.previewItems.append(self.getPreviewItem(filePath: (content.filePath!)))
 						}
 					}
 				})

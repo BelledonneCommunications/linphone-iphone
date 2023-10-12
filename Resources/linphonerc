@@ -29,6 +29,8 @@ read_only_native_address_book=0
 only_show_sip_contacts_list=0
 hide_sip_contacts_list=0
 
+enable_broadcast_conference_feature=0
+
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application
 enabled=0

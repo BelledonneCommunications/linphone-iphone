@@ -38,6 +38,9 @@ import IQKeyboardManager
 	let timePicker = StyledDatePicker(liveValue: ConferenceSchedulingViewModel.shared.scheduledTime,pickerMode: .time)
 	let descriptionInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_description_hint,liveValue: ConferenceSchedulingViewModel.shared.description)
 	let subjectInput = StyledTextView(VoipTheme.conference_scheduling_font, placeHolder:VoipTexts.conference_schedule_subject_hint, liveValue: ConferenceSchedulingViewModel.shared.subject,maxLines:1)
+	
+	let leftColumn = UIView()
+	let rightColumn = UIView()
 
 	
 	override func viewDidLoad() {
@@ -91,7 +94,6 @@ import IQKeyboardManager
 		modeValue.alignUnder(view: modeLabel, withMargin: form_margin).matchParentSideBorders(insetedByDx: form_margin).done()
 		
 		// Left column (Date & Time)
-		let leftColumn = UIView()
 		scheduleForm.addSubview(leftColumn)
 		leftColumn.matchParentWidthDividedBy(2.2).alignParentLeft(withMargin: form_margin).alignUnder(view: modeValue, withMargin: form_margin).done()
 		
@@ -115,7 +117,6 @@ import IQKeyboardManager
 
 		
 		// Right column (Duration & Timezone)
-		let rightColumn = UIView()
 		scheduleForm.addSubview(rightColumn)
 		rightColumn.matchParentWidthDividedBy(2.2).alignParentRight(withMargin: form_margin).alignUnder(view: modeValue, withMargin: form_margin).done()
 		
@@ -248,6 +249,21 @@ import IQKeyboardManager
 		timePicker.liveValue = ConferenceSchedulingViewModel.shared.scheduledTime
 		descriptionInput.text = ConferenceSchedulingViewModel.shared.description.value
 		IQKeyboardManager.shared().isEnabled = true
+		
+		
+		if !ConfigManager.instance().lpConfigBoolForKey(key: "enable_broadcast_conference_feature") {
+			self.modeLabel.isHidden = true
+			self.modeValue.isHidden = true
+			self.modeLabel.height(0).done()
+			self.modeValue.height(0).done()
+		} else {
+			self.modeLabel.isHidden = false
+			self.modeValue.isHidden = false
+			self.modeLabel.removeConstraints().alignParentTop(withMargin: self.form_margin).matchParentSideBorders(insetedByDx: self.form_margin).done()
+			self.modeValue.removeConstraints().alignUnder(view: self.modeLabel, withMargin: self.form_margin).matchParentSideBorders(insetedByDx: self.form_margin).done()
+			self.modeLabel.height(20).done()
+			self.modeValue.height(38).done()
+		}
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {

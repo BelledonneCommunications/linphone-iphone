@@ -262,7 +262,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				do {
 					let peerAddress = try Factory.Instance.createAddress(addr: (ChatConversationViewModel.sharedModel.chatRoom?.peerAddress?.asStringUriOnly())!)
 					let localAddress = try Factory.Instance.createAddress(addr: (ChatConversationViewModel.sharedModel.chatRoom?.localAddress?.asStringUriOnly())!)
-					if (peerAddress.isValid && localAddress.isValid) {
+					if (peerAddress.isValid! && (localAddress.isValid != nil)) {
 						ChatConversationViewModel.sharedModel.chatRoom = lc.searchChatRoom(params: nil, localAddr: localAddress, remoteAddr: peerAddress, participants: nil)
 						if (ChatConversationViewModel.sharedModel.chatRoom != nil) {
 							ChatConversationViewModel.sharedModel.createChatConversation()
@@ -1002,7 +1002,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 								plainFile = ""
 								
 							}else{
-								ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!)
+								ChatConversationViewModel.sharedModel.replyURLCollection.append(URL(string: content.filePath!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!)
 								ChatConversationViewModel.sharedModel.replyCollectionView.append(ChatConversationViewModel.sharedModel.getImageFrom(content.getCobject, filePath: content.filePath, forReplyBubble: true)!)
 							}
 							

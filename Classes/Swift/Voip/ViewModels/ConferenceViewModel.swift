@@ -463,7 +463,7 @@ class ConferenceViewModel {
 	}
 	
 	static func getConferenceSubject(conference:Conference) -> String? {
-		if (conference.subject.count > 0) {
+		if (conference.subject!.count > 0) {
 			return conference.subject
 		} else {
 			let conferenceInfo = Core.get().findConferenceInformationFromUri(uri: conference.conferenceAddress!)

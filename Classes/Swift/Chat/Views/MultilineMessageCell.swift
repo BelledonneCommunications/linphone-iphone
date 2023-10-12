@@ -1027,7 +1027,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 							filePath = content.exportPlainFile()
 						}else {
-							filePath = content.filePath
+							filePath = content.filePath!
 						}
 						let name = content.name
 						if filePath == "" {
@@ -1056,7 +1056,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 									plainFile = ""
 								}else{
-									if let imageMessage = UIImage(named: content.filePath){
+									if let imageMessage = UIImage(named: content.filePath!){
 										self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 									}
 								}
@@ -1085,7 +1085,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 									plainFile = ""
 								}else{
-									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath!){
 										imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 									}
 								}
@@ -1125,9 +1125,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 						label.font = label.font.withSize(17)
 						
-						if (content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
+						if (content.utf8Text!.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
 							var onlyEmojis = true
-							content.utf8Text.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
+							content.utf8Text!.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.forEach { emoji in
 								if !emoji.properties.isEmojiPresentation && !emoji.properties.isWhitespace{
 									onlyEmojis = false
 								}
@@ -1137,7 +1137,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							}
 						}
 						
-						checkIfIsLinkOrPhoneNumber(content: content.utf8Text)
+						checkIfIsLinkOrPhoneNumber(content: content.utf8Text!)
 						
 						NSLayoutConstraint.deactivate(labelHiddenConstraints)
 						label.isHidden = false
@@ -1164,7 +1164,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 								plainFile = ""
 							}else{
-								if let imageMessage = UIImage(named: content.filePath){
+								if let imageMessage = UIImage(named: content.filePath!){
 									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 								}
 							}
@@ -1198,7 +1198,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 								plainFile = ""
 							}else{
-								if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+								if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath!){
 									imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 								}
 							}
@@ -1223,7 +1223,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 								filePath = content.exportPlainFile()
 							}else {
-								filePath = content.filePath
+								filePath = content.filePath!
 							}
 							let name = content.name
 							if filePath == "" {
@@ -1252,7 +1252,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 										ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 										plainFile = ""
 									}else{
-										if let imageMessage = UIImage(named: content.filePath){
+										if let imageMessage = UIImage(named: content.filePath!){
 											self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 										}
 									}
@@ -1281,7 +1281,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 										ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 										plainFile = ""
 									}else{
-										if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+										if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath!){
 											imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 										}
 									}
@@ -1315,7 +1315,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								imageViewBubble.isHidden = true
 							} else {
 								var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? content.exportPlainFile() : content.filePath
-								if let urlEncoded = filePathString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+								if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
 									if !urlEncoded.isEmpty {
 										if let urlFile = URL(string: "file://" + urlEncoded){
 											do {
@@ -1684,7 +1684,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				myImageView = UIImageView(image: imageCell)
 			}else{
 				let fileNameText = replyContentCollection[indexPath.row].name
-				let fileName = SwiftUtil.textToImage(drawText:fileNameText, inImage:imageCell, forReplyBubble:true)
+				let fileName = SwiftUtil.textToImage(drawText:fileNameText!, inImage:imageCell, forReplyBubble:true)
 				myImageView = UIImageView(image: fileName)
 			}
 			
@@ -1722,7 +1722,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						downloadView.size(w: 138, h: 138).done()
 						viewCell.addSubview(downloadView)
 
-						downloadView.downloadNameLabel.text = chatMessage?.contents[indexPathWithoutNilWithRecording].name.replacingOccurrences(of: ((chatMessage?.contents[indexPathWithoutNilWithRecording].name.dropFirst(6).dropLast(8))!), with: "...")
+						downloadView.downloadNameLabel.text = chatMessage?.contents[indexPathWithoutNilWithRecording].name!.replacingOccurrences(of: ((chatMessage?.contents[indexPathWithoutNilWithRecording].name!.dropFirst(6).dropLast(8))!), with: "...")
 						downloadView.setFileType(fileName: (chatMessage?.contents[indexPathWithoutNilWithRecording].name)!)
 						
 						let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
@@ -1804,7 +1804,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 			filePath = content!.exportPlainFile()
 		}else {
-			filePath = content!.filePath
+			filePath = content!.filePath!
 		}
 		let type = content?.type
 		let name = content?.name
@@ -1871,19 +1871,19 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		var participant = ""
 		switch (event.type.rawValue) {
 		case Int(LinphoneEventLogTypeConferenceSubjectChanged.rawValue):
-			subject = event.subject
+			subject = event.subject!
 			return VoipTexts.bubble_chat_event_message_new_subject + subject
 		case Int(LinphoneEventLogTypeConferenceParticipantAdded.rawValue):
-			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_joined
 		case Int(LinphoneEventLogTypeConferenceParticipantRemoved.rawValue):
-			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_left
 		case Int(LinphoneEventLogTypeConferenceParticipantSetAdmin.rawValue):
-			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_now_admin
 		case Int(LinphoneEventLogTypeConferenceParticipantUnsetAdmin.rawValue):
-			participant = event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username
+			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_no_longer_admin
 		case Int(LinphoneEventLogTypeConferenceTerminated.rawValue):
 			return VoipTexts.bubble_chat_event_message_left_group
@@ -1894,28 +1894,28 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			let participant = event.securityEventFaultyDeviceAddress!.displayName != "" ? event.securityEventFaultyDeviceAddress!.displayName : event.securityEventFaultyDeviceAddress!.username
 			switch (type.rawValue) {
 			case Int(LinphoneSecurityEventTypeSecurityLevelDowngraded.rawValue):
-				if (participant.isEmpty){
+				if (participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_security_level_decreased
 				}else{
-					return VoipTexts.bubble_chat_event_message_security_level_decreased_because + participant
+					return VoipTexts.bubble_chat_event_message_security_level_decreased_because + participant!
 				}
 			case Int(LinphoneSecurityEventTypeParticipantMaxDeviceCountExceeded.rawValue):
-				if (participant.isEmpty){
+				if (participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_max_participant
 				}else{
-					return VoipTexts.bubble_chat_event_message_max_participant_by + participant
+					return VoipTexts.bubble_chat_event_message_max_participant_by + participant!
 				}
 			case Int(LinphoneSecurityEventTypeEncryptionIdentityKeyChanged.rawValue):
-				if (participant.isEmpty){
+				if (participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_lime_changed
 				}else{
-					return VoipTexts.bubble_chat_event_message_lime_changed_for + participant
+					return VoipTexts.bubble_chat_event_message_lime_changed_for + participant!
 				}
 			case Int(LinphoneSecurityEventTypeManInTheMiddleDetected.rawValue):
-				if (participant.isEmpty){
+				if (participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_attack_detected
 				}else{
-					return VoipTexts.bubble_chat_event_message_attack_detected_for + participant
+					return VoipTexts.bubble_chat_event_message_attack_detected_for + participant!
 				}
 			default:
 				return ""
@@ -1987,7 +1987,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 									plainFile = ""
 								}else{
-									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath){
+									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: content.filePath!){
 										imageVideoViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 										if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
 											ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
@@ -2007,7 +2007,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 									plainFile = ""
 								}else{
-									if let imageMessage = UIImage(named: content.filePath){
+									if let imageMessage = UIImage(named: content.filePath!){
 										imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 										if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1 && !(linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1)){
 											ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
@@ -2076,7 +2076,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 						filePath = content.exportPlainFile()
 					}else {
-						filePath = content.filePath
+						filePath = content.filePath!
 					}
 					
 					let extensionFile = filePath.lowercased().components(separatedBy: ".").last

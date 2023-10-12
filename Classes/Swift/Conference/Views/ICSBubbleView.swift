@@ -231,7 +231,7 @@ import EventKitUI
 		message.contents.forEach { content in
 			if (content.isIcalendar) {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
-					subject = conferenceInfo.subject
+					subject = conferenceInfo.subject!
 				}
 			}
 		}
@@ -257,9 +257,9 @@ import EventKitUI
 		message.contents.forEach { content in
 			if (content.isIcalendar) {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
-					subject = conferenceInfo.state == .New ? VoipTexts.conference_invite_title + conferenceInfo.subject :
-					conferenceInfo.state == .Updated ? VoipTexts.conference_update_title + conferenceInfo.subject :
-					VoipTexts.conference_cancel_title + conferenceInfo.subject
+					subject = conferenceInfo.state == .New ? VoipTexts.conference_invite_title + conferenceInfo.subject! :
+					conferenceInfo.state == .Updated ? VoipTexts.conference_update_title + conferenceInfo.subject! :
+					VoipTexts.conference_cancel_title + conferenceInfo.subject!
 				}
 			}
 		}
@@ -272,7 +272,7 @@ import EventKitUI
 		message.contents.forEach { content in
 			if (content.isIcalendar) {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
-					let description = NSString(string: conferenceInfo.description)
+					let description = NSString(string: conferenceInfo.description!)
 					if (description.length > 0) {
 						let dummyTitle = StyledLabel(VoipTheme.conference_invite_desc_title_font, VoipTexts.conference_description_title)
 						let dummyLabel = StyledLabel(VoipTheme.conference_invite_desc_font)

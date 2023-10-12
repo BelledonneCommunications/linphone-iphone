@@ -83,9 +83,10 @@ import linphonesw
 		if let addr = searchResult.address, let foundContact = getContactFromAddr(addr: addr)  {
 			return foundContact
 		}
-		
-		if let foundContact = getContactFromPhoneNb(phoneNb: searchResult.phoneNumber)  {
-			return foundContact
+		if searchResult.phoneNumber != nil {
+			if let foundContact = getContactFromPhoneNb(phoneNb: searchResult.phoneNumber!)  {
+			 return foundContact
+		 }
 		}
 		
 		// Friend comes from provisioning

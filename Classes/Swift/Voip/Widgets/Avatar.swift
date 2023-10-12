@@ -66,7 +66,7 @@ class Avatar : UIView {
 			initialsLabel.isHidden = true
 			iconImageView.isHidden = false
 		} else {
-			if (Core.get().defaultAccount?.isPhoneNumber(username: address.username) == true) {
+			if (Core.get().defaultAccount?.isPhoneNumber(username: address.username!) == true) {
 				iconImageView.image = Avatar.singleAvatar
 				initialsLabel.isHidden = true
 				iconImageView.isHidden = false

@@ -25,7 +25,7 @@ extension Address {
 	func initials() -> String? {
 		var initials = Address.initials(displayName: addressBookEnhancedDisplayName())
 		if (initials == nil || initials!.isEmpty) {
-			initials = String(username.prefix(1))
+			initials = String(username!.prefix(1))
 		}
 		return initials
 	}
@@ -42,7 +42,7 @@ extension Address {
 	func addressBookEnhancedDisplayName() -> String?  {
 		if let contact = FastAddressBook.getContactWith(getCobject) {
 			return contact.displayName
-		} else if (!displayName.isEmpty) {
+		} else if (displayName != nil && !displayName!.isEmpty) {
 			return displayName
 		} else {
 			return username

@@ -90,13 +90,13 @@ class NotificationService: UNNotificationServiceExtension {
 							NotificationService.log.message(message: "chat room invite received")
 							bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 							if (chatRoom.hasCapability(mask:ChatRoom.Capabilities.OneToOne.rawValue)) {
-								if (chatRoom.peerAddress?.displayName.isEmpty != true) {
-									bestAttemptContent.body = chatRoom.peerAddress!.displayName
+								if (chatRoom.peerAddress?.displayName?.isEmpty != true) {
+									bestAttemptContent.body = chatRoom.peerAddress!.displayName!
 								} else {
-									bestAttemptContent.body = chatRoom.peerAddress!.username
+									bestAttemptContent.body = chatRoom.peerAddress!.username!
 								}
 							} else {
-								bestAttemptContent.body = chatRoom.subject
+								bestAttemptContent.body = chatRoom.subject!
 							}
 
 							bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
@@ -176,7 +176,7 @@ class NotificationService: UNNotificationServiceExtension {
 		} else if (message.isConferenceInvitationCancellation) {
 			content =  NSLocalizedString("📅 Meeting has been cancelled", comment: "")
 		} else {
-			content = message.isText ? message.textContent : "🗻"
+			content = message.isText ? message.textContent! : "🗻"
 		}
 		
 		let fromAddr = message.fromAddr?.username
