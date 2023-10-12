@@ -19,20 +19,32 @@
 
 import SwiftUI
 
-@main
-struct LinphoneApp: App {
+struct ContentView: View {
 	
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
 	@ObservedObject private var coreContext = CoreContext.shared
-	@State private var isActive = false
 	
-	var body: some Scene {
-		WindowGroup {
-			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel())
-					.toast(isShowing: $coreContext.toastMessage)
-			} else {
-				SplashScreen(isActive: $isActive)
+	var body: some View {
+		if !sharedMainViewModel.welcomeViewDisplayed {
+			WelcomeView(sharedMainViewModel: sharedMainViewModel)
+		} else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
+			AssistantView(sharedMainViewModel: sharedMainViewModel)
+		} else {
+			TabView {
+				ContactsView()
+					.tabItem {
+						Label("Contacts", image: "address-book")
+					}
+				
+				HistoryView()
+					.tabItem {
+						Label("Calls", image: "phone")
+					}
 			}
 		}
 	}
+}
+
+#Preview {
+	ContentView(sharedMainViewModel: SharedMainViewModel())
 }

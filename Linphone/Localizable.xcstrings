@@ -1,0 +1,308 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    " et " : {
+
+    },
+    " or " : {
+
+    },
+    "." : {
+
+    },
+    "[Forgotten password?](https://subscribe.linphone.org/)" : {
+
+    },
+    "[linphone.org/contact](https://linphone.org/contact)" : {
+
+    },
+    "[nos conditions d’utilisation](https://linphone.org/general-terms)" : {
+
+    },
+    "[notre politique de confidentialité](https://linphone.org/privacy-policy)" : {
+
+    },
+    "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
+
+    },
+    "**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone." : {
+
+    },
+    "**Micro** : Pour permettre à vos correspondants de vous entendre." : {
+
+    },
+    "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
+
+    },
+    "%lld Book (Example)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "needs_review",
+                  "value" : "%lld Book"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Books"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "No Book"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Livre"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Livres"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Pas de Livre"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Accept all" : {
+
+    },
+    "assistant_account_login" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login en FR"
+          }
+        }
+      }
+    },
+    "Calls" : {
+
+    },
+    "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
+
+    },
+    "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
+
+    },
+    "Close" : {
+
+    },
+    "Conditions de service" : {
+
+    },
+    "Contacts" : {
+
+    },
+    "Contacts View" : {
+
+    },
+    "Continue" : {
+
+    },
+    "D'accord" : {
+
+    },
+    "Default" : {
+
+    },
+    "Default mode" : {
+
+    },
+    "Demande d’autorisations" : {
+
+    },
+    "Deny all" : {
+
+    },
+    "Display Name" : {
+
+    },
+    "Domain" : {
+
+    },
+    "En continuant, vous acceptez ces conditions, " : {
+
+    },
+    "Error" : {
+
+    },
+    "History View" : {
+
+    },
+    "I prefere create an account" : {
+
+    },
+    "I understand" : {
+
+    },
+    "Interoperable" : {
+
+    },
+    "Interoperable mode" : {
+
+    },
+    "Invalid QR code!" : {
+
+    },
+    "Invalide URI" : {
+
+    },
+    "Linphone" : {
+
+    },
+    "Log out" : {
+
+    },
+    "Next" : {
+
+    },
+    "Not account yet?" : {
+
+    },
+    "Open source" : {
+
+    },
+    "Opération en cours..." : {
+
+    },
+    "password" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password en FR"
+          }
+        }
+      }
+    },
+    "Personnalize your profil mode" : {
+
+    },
+    "Plus tard" : {
+
+    },
+    "Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :" : {
+
+    },
+    "QR code validated!" : {
+
+    },
+    "Register" : {
+
+    },
+    "Scan QR code" : {
+
+    },
+    "Sécurisé" : {
+
+    },
+    "sip.linphone.org" : {
+
+    },
+    "Skip" : {
+
+    },
+    "Start" : {
+
+    },
+    "TCP" : {
+
+    },
+    "The user name or password is incorrects" : {
+
+    },
+    "TLS" : {
+
+    },
+    "to Linphone" : {
+
+    },
+    "Transport" : {
+
+    },
+    "UDP" : {
+
+    },
+    "Une application de communication **sécurisée**, **open source** et **française**." : {
+
+    },
+    "Une application open source et un **service gratuit** depuis **2001**." : {
+
+    },
+    "Use a SIP account" : {
+
+    },
+    "Use SIP Account" : {
+
+    },
+    "username" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username en FR"
+          }
+        }
+      }
+    },
+    "Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**." : {
+
+    },
+    "Welcome" : {
+
+    },
+    "You will change this mode later" : {
+
+    }
+  },
+  "version" : "1.0"
+}

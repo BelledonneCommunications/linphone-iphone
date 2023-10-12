@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2023 Belledonne Communications SARL.
  *
- * This file is part of linphone-iphone
+ * This file is part of Linphone
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,36 @@
 
 import SwiftUI
 
-@main
-struct LinphoneApp: App {
+struct SplashScreen: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@State private var isActive = false
+	@Binding var isActive: Bool
 	
-	var body: some Scene {
-		WindowGroup {
-			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel())
-					.toast(isShowing: $coreContext.toastMessage)
-			} else {
-				SplashScreen(isActive: $isActive)
+	var body: some View {
+		GeometryReader { _ in
+			VStack {
+				Spacer()
+				HStack {
+					Spacer()
+					Image("linphone")
+					Spacer()
+				}
+				Spacer()
+			}
+			
+		}
+		.ignoresSafeArea(.all)
+		.onAppear {
+			Task {
+				try await coreContext.initialiseCore()
+				withAnimation {
+					self.isActive = true
+				}
 			}
 		}
 	}
+}
+
+#Preview {
+	SplashScreen(isActive: .constant(true))
 }

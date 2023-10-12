@@ -19,20 +19,18 @@
 
 import SwiftUI
 
-@main
-struct LinphoneApp: App {
-	
-	@ObservedObject private var coreContext = CoreContext.shared
-	@State private var isActive = false
-	
-	var body: some Scene {
-		WindowGroup {
-			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel())
-					.toast(isShowing: $coreContext.toastMessage)
-			} else {
-				SplashScreen(isActive: $isActive)
-			}
+struct ContactsView: View {
+	var body: some View {
+		VStack {
+			Spacer()
+			Image("linphone")
+				.padding(.bottom, 20)
+			Text("Contacts View")
+			Spacer()
 		}
 	}
+}
+
+#Preview {
+	ContactsView()
 }

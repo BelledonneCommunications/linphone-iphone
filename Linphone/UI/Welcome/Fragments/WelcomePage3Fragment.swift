@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2023 Belledonne Communications SARL.
  *
- * This file is part of linphone-iphone
+ * This file is part of Linphone
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +17,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Foundation
 import SwiftUI
 
-@main
-struct LinphoneApp: App {
+struct WelcomePage3Fragment: View {
 	
-	@ObservedObject private var coreContext = CoreContext.shared
-	@State private var isActive = false
-	
-	var body: some Scene {
-		WindowGroup {
-			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel())
-					.toast(isShowing: $coreContext.toastMessage)
-			} else {
-				SplashScreen(isActive: $isActive)
+	var body: some View {
+		VStack {
+			Spacer()
+			VStack {
+				Image("open-source")
+					.renderingMode(.template)
+					.resizable()
+					.foregroundStyle(Color.orangeMain500)
+					.frame(width: 100, height: 100)
+				Text("Open source")
+					.welcome_text_style_gray_800(styleSize: 30)
+					.padding(.bottom, 20)
+				Text("Une application open source et un **service gratuit** depuis **2001**.")
+					.welcome_text_style_gray(styleSize: 15)
+					.multilineTextAlignment(.center)
+				
 			}
+			Spacer()
+			Spacer()
 		}
+		.frame(maxWidth: .infinity)
 	}
+}
+
+#Preview {
+	WelcomePage3Fragment()
 }
