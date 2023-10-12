@@ -34,5 +34,5 @@ struct AssistantView: View {
 }
 
 #Preview {
-	AssistantView(sharedMainViewModel: SharedMainViewModel())
+	LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: SharedMainViewModel())
 }
