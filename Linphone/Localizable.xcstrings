@@ -37,6 +37,9 @@
     "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
 
     },
+    "%lld" : {
+
+    },
     "%lld Book (Example)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -128,9 +131,6 @@
     "Contacts" : {
 
     },
-    "Contacts View" : {
-
-    },
     "Continue" : {
 
     },
@@ -161,7 +161,7 @@
     "Error" : {
 
     },
-    "History View" : {
+    "History Contact fragment" : {
 
     },
     "I prefere create an account" : {
@@ -189,6 +189,12 @@
 
     },
     "Next" : {
+
+    },
+    "No calls for the moment..." : {
+
+    },
+    "No contacts for the moment..." : {
 
     },
     "Not account yet?" : {

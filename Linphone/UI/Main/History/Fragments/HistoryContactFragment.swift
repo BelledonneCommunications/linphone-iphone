@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2023 Belledonne Communications SARL.
  *
- * This file is part of linphone-iphone
+ * This file is part of Linphone
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,16 @@
 
 import SwiftUI
 
-@main
-struct LinphoneApp: App {
-	
-	@ObservedObject private var coreContext = CoreContext.shared
-	@State private var isActive = false
-	
-	var body: some Scene {
-		WindowGroup {
-			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel(), contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
-					.toast(isShowing: $coreContext.toastMessage)
-			} else {
-				SplashScreen(isActive: $isActive)
-			}
+struct HistoryContactFragment: View {
+    var body: some View {
+		VStack {
+			Spacer()
+			Text("History Contact fragment")
+			Spacer()
 		}
-	}
+    }
+}
+
+#Preview {
+    HistoryContactFragment()
 }

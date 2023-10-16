@@ -17,22 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SwiftUI
+import Foundation
 
-@main
-struct LinphoneApp: App {
+class HistoryViewModel: ObservableObject {
 	
-	@ObservedObject private var coreContext = CoreContext.shared
-	@State private var isActive = false
+	@Published var historyTitle: String = ""
 	
-	var body: some Scene {
-		WindowGroup {
-			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel(), contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
-					.toast(isShowing: $coreContext.toastMessage)
-			} else {
-				SplashScreen(isActive: $isActive)
-			}
-		}
-	}
+	init() {}
 }
