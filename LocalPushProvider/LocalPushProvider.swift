@@ -185,7 +185,7 @@ class LocalPushProvider: NEAppPushProvider {
 		if (message.hasConferenceInvitationContent()) {
 			messageContent = NSLocalizedString("📅 You are invited to a meeting", comment: "")
 		} else {
-			messageContent = message.hasTextContent() ? message.utf8Text : "🗻"
+			messageContent = message.hasTextContent() ? message.utf8Text ?? "" : "🗻"
 		}
 		
 		let content = UNMutableNotificationContent()
