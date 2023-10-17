@@ -503,6 +503,8 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		}
 		[self lpConfigSetBool:TRUE forKey:@"publish_enabled_migration_done"];
 	}
+	
+	linphone_core_set_video_codec_priority_policy(LC, LinphoneCodecPriorityPolicyAuto);
 }
 
 - (void)migrationPerAccount {
