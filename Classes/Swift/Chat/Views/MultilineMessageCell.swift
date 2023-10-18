@@ -1375,26 +1375,28 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								imageViewBubble.isHidden = true
 							} else {
 								var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? content.exportPlainFile() : content.filePath
-								if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
-									if !urlEncoded.isEmpty {
-										if let urlFile = URL(string: "file://" + urlEncoded){
-											do {
-												let text = try String(contentsOf: urlFile, encoding: .utf8)
-												imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
-												collectionViewImagesGrid.reloadData()
-												
-												collectionViewImagesGrid.isHidden = false
-												NSLayoutConstraint.activate(imagesGridConstraints)
-												imageViewBubble.image = nil
-												NSLayoutConstraint.deactivate(imageConstraints)
-												imageViewBubble.isHidden = true
-											} catch {}
+								if filePathString != nil {
+									if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+										if !urlEncoded.isEmpty {
+											if let urlFile = URL(string: "file://" + urlEncoded){
+												do {
+													let text = try String(contentsOf: urlFile, encoding: .utf8)
+													imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
+													collectionViewImagesGrid.reloadData()
+													
+													collectionViewImagesGrid.isHidden = false
+													NSLayoutConstraint.activate(imagesGridConstraints)
+													imageViewBubble.image = nil
+													NSLayoutConstraint.deactivate(imageConstraints)
+													imageViewBubble.isHidden = true
+												} catch {}
+											}
 										}
 									}
-								}
-								if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-									ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePathString)
-									filePathString = ""
+									if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
+										ChatConversationViewModel.sharedModel.removeTmpFile(filePath: filePathString)
+										filePathString = ""
+									}
 								}
 							}
 						}
@@ -1914,7 +1916,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 					}
 					if(imagesGridCollectionView[indexPathWithoutNil] != nil){
-						if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video"){
+						var extensionFile = ""
+						if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != nil {
+							extensionFile = chatMessage?.contents[indexPathWithoutNilWithRecording].filePath!.lowercased().components(separatedBy: ".").last ?? ""
+						}
+						if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile))){
 							var imagePlay = UIImage()
 							if #available(iOS 13.0, *) {
 								imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1926,7 +1932,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
 							myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
 						}
-						if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != "" {
+						if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != nil && chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != "" {
 							viewCell.onClick {
 								ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
 							}
@@ -1942,7 +1948,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		var filePath = ""
 		if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 			filePath = content!.exportPlainFile()
-		}else {
+		} else if content?.filePath != nil {
 			filePath = content!.filePath!
 		}
 		let type = content?.type
@@ -2138,7 +2144,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									var plainFile = content.exportPlainFile()
 									if let imageMessage = UIImage(named: plainFile){
 										imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
-										if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1 && !(linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1)){
+										if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
 											ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 										}
 									}
@@ -2148,17 +2154,17 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								}else{
 									if let imageMessage = UIImage(named: content.filePath!){
 										imageViewBubble.image = resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
-										if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1 && !(linphone_core_get_max_size_for_auto_download_incoming_files(LinphoneManager.getLc()) > -1)){
+										if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
 											ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 										}
 									}
 								}
 							} else {
-								collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+								ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 								indexTransferProgress = -1
 							}
 						}else{
-							collectionViewImagesGrid.reloadItems(at: [IndexPath(row: indexTransferProgress, section: 0)])
+							ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 							indexTransferProgress = -1
 						}
 					} else {

@@ -682,7 +682,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 								}
 
 							} catch {
-								if text == "" && (chatMessage!.contents[index].type == "image" || chatMessage!.contents[index].type == "video" || chatMessage!.contents[index].name!.lowercased().components(separatedBy: ".").last == "pdf"){
+								var extensionFile = ""
+								if chatMessage!.contents[index].name != nil {
+									extensionFile = chatMessage!.contents[index].name!.lowercased().components(separatedBy: ".").last ?? ""
+								}
+								
+								if text == "" && (chatMessage!.contents[index].type == "image" || chatMessage!.contents[index].type == "video" || chatMessage!.contents[index].name!.lowercased().components(separatedBy: ".").last == "pdf" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile))){
 									let viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
 									
 									var image = UIImage()

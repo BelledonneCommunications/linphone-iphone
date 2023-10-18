@@ -73,9 +73,11 @@ class MediaViewer:  BackNextNavigationView, UICompositeViewDelegate, UIScrollVie
 		imageScrollView.removeFromSuperview()
 		playerLayer.removeFromSuperlayer()
 		pdfView.removeFromSuperview()
+		var extensionFile = imagePathViewer.lowercased().components(separatedBy: ".").last ?? ""
+		
 		if contentType == "image" {
 			setUpImageView()
-		} else if contentType == "video" {
+		} else if contentType == "video" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile)) {
 			setUpPlayerContainerView()
 		} else if contentType == "file" || contentType == "application"{
 			if imageNameViewer.lowercased().components(separatedBy: ".").last == "pdf" {
