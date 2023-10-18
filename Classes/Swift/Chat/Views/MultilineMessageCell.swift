@@ -172,6 +172,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var stackViewReactionsItem3 = UILabel()
 	var stackViewReactionsItem4 = UILabel()
 	var stackViewReactionsItem5 = UILabel()
+	let newStackViewReactionsItem = UILabel()
 	var stackViewReactionsCounter = UILabel()
 	
 	override init(frame: CGRect) {
@@ -283,6 +284,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		stackViewReactionsItem5.text = "😢"
 		stackViewReactionsItem5.font = UIFont.systemFont(ofSize: 12.0)
 		stackViewReactionsItem5.isHidden = true
+		newStackViewReactionsItem.text = ""
+		newStackViewReactionsItem.font = UIFont.systemFont(ofSize: 12.0)
+		newStackViewReactionsItem.isHidden = true
 		stackViewReactionsCounter.text = "0"
 		stackViewReactionsCounter.font = UIFont.systemFont(ofSize: 12.0)
 		stackViewReactionsCounter.textColor = .black
@@ -293,12 +297,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		stackViewReactions.addArrangedSubview(stackViewReactionsItem3)
 		stackViewReactions.addArrangedSubview(stackViewReactionsItem4)
 		stackViewReactions.addArrangedSubview(stackViewReactionsItem5)
+		stackViewReactions.addArrangedSubview(newStackViewReactionsItem)
 		stackViewReactions.addArrangedSubview(stackViewReactionsCounter)
-		
-		
-		
-		
-		
 		
 		contentBubble.addSubview(chatRead)
 		chatRead.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
@@ -1497,7 +1497,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							stackViewReactionsItem5.isHidden = false
 						}
 					default:
-						stackViewReactionsItem1.isHidden = false
+						print("newStackViewReactionsItemnewStackViewReactionsItem \(chatMessageReaction.body)")
+						if newStackViewReactionsItem.isHidden == false {
+							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
+							stackViewReactionsCounter.isHidden = false
+						} else {
+							newStackViewReactionsItem.text = chatMessageReaction.body
+							newStackViewReactionsItem.isHidden = false
+						}
 					}
 				}
 				
