@@ -36,36 +36,6 @@ struct ContactsView: View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
 				VStack(spacing: 0) {
-					HStack {
-						Image("profile-image-example")
-							.resizable()
-							.frame(width: 40, height: 40)
-							.clipShape(Circle())
-						
-						Text("Contacts")
-							.default_text_style_white_800(styleSize: 20)
-							.padding(.leading, 10)
-						
-						Spacer()
-						
-						Button {
-							
-						} label: {
-							Image("search")
-						}
-						
-						Button {
-							
-						} label: {
-							Image("filtres")
-						}
-						.padding(.leading)
-					}
-					.frame(maxWidth: .infinity)
-					.frame(height: 50)
-					.padding(.horizontal)
-					.background(Color.orangeMain500)
-					
 					VStack {
 						List {
 							ForEach(objects, id: \.self) { index in

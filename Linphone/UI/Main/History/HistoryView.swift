@@ -24,36 +24,6 @@ struct HistoryView: View {
 	var body: some View {
 		NavigationView {
 			VStack(spacing: 0) {
-				HStack {
-					Image("profile-image-example")
-						.resizable()
-						.frame(width: 40, height: 40)
-						.clipShape(Circle())
-					
-					Text("Calls")
-						.default_text_style_white_800(styleSize: 20)
-						.padding(.leading, 10)
-					
-					Spacer()
-					
-					Button {
-						
-					} label: {
-						Image("search")
-					}
-					
-					Button {
-						
-					} label: {
-						Image("more")
-					}
-					.padding(.leading)
-				}
-				.frame(maxWidth: .infinity)
-				.frame(height: 50)
-				.padding(.horizontal)
-				.background(Color.orangeMain500)
-				
 				VStack {
 					Spacer()
 					Image("illus-belledonne1")
