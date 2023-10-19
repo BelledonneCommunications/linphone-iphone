@@ -28,7 +28,7 @@ struct LinphoneApp: App {
 	var body: some Scene {
 		WindowGroup {
 			if isActive {
-				ContentView(sharedMainViewModel: SharedMainViewModel(), contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
+                ContentView(sharedMainViewModel: SharedMainViewModel(), contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
 					.toast(isShowing: $coreContext.toastMessage)
 			} else {
 				SplashScreen(isActive: $isActive)

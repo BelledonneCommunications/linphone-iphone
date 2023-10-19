@@ -37,9 +37,6 @@
     "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
 
     },
-    "%lld" : {
-
-    },
     "%lld Book (Example)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -94,6 +91,9 @@
       }
     },
     "Accept all" : {
+
+    },
+    "All contacts" : {
 
     },
     "assistant_account_login" : {
@@ -159,6 +159,9 @@
 
     },
     "Error" : {
+
+    },
+    "Favourites" : {
 
     },
     "History Contact fragment" : {
@@ -251,6 +254,12 @@
 
     },
     "Sécurisé" : {
+
+    },
+    "See all" : {
+
+    },
+    "See Linphone contact" : {
 
     },
     "sip.linphone.org" : {

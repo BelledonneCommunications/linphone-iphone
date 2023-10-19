@@ -18,252 +18,421 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct ContentView: View {
     
-    @ObservedObject var sharedMainViewModel: SharedMainViewModel
-    @ObservedObject var contactViewModel: ContactViewModel
-    @ObservedObject var historyViewModel: HistoryViewModel
-    @ObservedObject private var coreContext = CoreContext.shared
-    
-    @State var index = 0
-    @State private var orientation = UIDevice.current.orientation
-    @State var menuOpen: Bool = false
-    
-    var body: some View {
-        if !sharedMainViewModel.welcomeViewDisplayed {
-            WelcomeView(sharedMainViewModel: sharedMainViewModel)
-        } else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
-            AssistantView(sharedMainViewModel: sharedMainViewModel)
-        } else {
-            GeometryReader { geometry in
-                ZStack {
-                    VStack(spacing: 0) {
-                        HStack(spacing: 0) {
-                            if orientation == .landscapeLeft 
-                                || orientation == .landscapeRight
-                                || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-                                VStack {
-                                    Group {
-                                        Spacer()
-                                        Button(action: {
-                                            self.index = 0
-                                        }, label: {
-                                            VStack {
-                                                Image("address-book")
-                                                    .renderingMode(.template)
-                                                    .resizable()
-                                                    .foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
-                                                    .frame(width: 25, height: 25)
-                                                if self.index == 0 {
-                                                    Text("Contacts")
-                                                        .default_text_style_700(styleSize: 10)
-                                                } else {
-                                                    Text("Contacts")
-                                                        .default_text_style(styleSize: 10)
+    var contactManager = ContactsManager.shared
+	var magicSearch = MagicSearchSingleton.shared
+	
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var historyViewModel: HistoryViewModel
+	@ObservedObject private var coreContext = CoreContext.shared
+	
+	@State var index = 0
+	@State private var orientation = UIDevice.current.orientation
+	@State var sideMenuIsOpen: Bool = false
+	
+	@State private var searchIsActive = false
+	@State private var text = ""
+	@FocusState private var focusedField: Bool
+    @State var isMenuOpen: Bool = false
+	
+	var body: some View {
+		if !sharedMainViewModel.welcomeViewDisplayed {
+			WelcomeView(sharedMainViewModel: sharedMainViewModel)
+		} else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
+			AssistantView(sharedMainViewModel: sharedMainViewModel)
+		} else {
+			GeometryReader { geometry in
+				ZStack {
+					VStack(spacing: 0) {
+						HStack(spacing: 0) {
+							if orientation == .landscapeLeft
+								|| orientation == .landscapeRight
+								|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+								VStack {
+									Group {
+										Spacer()
+										Button(action: {
+											self.index = 0
+										}, label: {
+											VStack {
+												Image("address-book")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if self.index == 0 {
+													Text("Contacts")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Contacts")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										
+										Spacer()
+										
+										Button(action: {
+											self.index = 1
+											contactViewModel.contactTitle = ""
+										}, label: {
+											VStack {
+												Image("phone")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if self.index == 1 {
+													Text("Calls")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Calls")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										
+										Spacer()
+									}
+								}
+								.frame(width: 75)
+								.padding(.leading,
+										 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
+										 ? -geometry.safeAreaInsets.leading
+										 : 0)
+							}
+							
+							VStack(spacing: 0) {
+								if searchIsActive == false {
+									HStack {
+										Image("profile-image-example")
+											.resizable()
+											.frame(width: 45, height: 45)
+											.clipShape(Circle())
+											.onTapGesture {
+												openMenu()
+											}
+										
+										Text(index == 0 ? "Contacts" : "Calls")
+											.default_text_style_white_800(styleSize: 20)
+											.padding(.leading, 10)
+										
+										Spacer()
+										
+										Button {
+											withAnimation {
+												searchIsActive.toggle()
+											}
+										} label: {
+											Image("search")
+										}
+                                        
+                                        Menu {
+                                            Button {
+                                                isMenuOpen = false
+                                                magicSearch.allContact = true
+                                                magicSearch.searchForContacts(
+                                                    sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+                                            } label: {
+                                                HStack {
+                                                    Text("See all")
+                                                    Spacer()
+                                                    if magicSearch.allContact {
+                                                        Image("green-check")
+                                                    }
                                                 }
                                             }
-                                        })
-                                        
-                                        Spacer()
-                                        
-                                        Button(action: {
-                                            self.index = 1
-                                            contactViewModel.contactTitle = ""
-                                        }, label: {
-                                            VStack {
-                                                Image("phone")
-                                                    .renderingMode(.template)
-                                                    .resizable()
-                                                    .foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
-                                                    .frame(width: 25, height: 25)
-                                                if self.index == 1 {
-                                                    Text("Calls")
-                                                        .default_text_style_700(styleSize: 10)
-                                                } else {
-                                                    Text("Calls")
-                                                        .default_text_style(styleSize: 10)
+                                            
+                                            Button {
+                                                isMenuOpen = false
+                                                magicSearch.allContact = false
+                                                magicSearch.searchForContacts(
+                                                    sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+                                            } label: {
+                                                HStack {
+                                                    Text("See Linphone contact")
+                                                    Spacer()
+                                                    if !magicSearch.allContact {
+                                                        Image("green-check")
+                                                    }
                                                 }
                                             }
-                                        })
-                                        
-                                        Spacer()
-                                    }
-                                }
-                                .frame(width: 75)
-                                .padding(.leading, 
-                                         orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
-                                         ? -geometry.safeAreaInsets.leading
-                                         : 0)
-                            }
-                            
-                            VStack(spacing: 0) {
-                                HStack {
-                                    Image("profile-image-example")
-                                        .resizable()
-                                        .frame(width: 40, height: 40)
-                                        .clipShape(Circle())
+                                        } label: {
+											Image(index == 0 ? "filtres" : "more")
+										}
+										.padding(.leading)
                                         .onTapGesture {
-                                            openMenu()
+                                            isMenuOpen = true
                                         }
-                                    
-                                    Text(index == 0 ? "Contacts" : "Calls")
-                                        .default_text_style_white_800(styleSize: 20)
-                                        .padding(.leading, 10)
-                                    
-                                    Spacer()
-                                    
-                                    Button {
-                                        
-                                    } label: {
-                                        Image("search")
-                                    }
-                                    
-                                    Button {
-                                        
-                                    } label: {
-                                        Image(index == 0 ? "filtres" : "more")
-                                    }
-                                    .padding(.leading)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 50)
-                                .padding(.horizontal)
-                                .background(Color.orangeMain500)
-                                
-                                if self.index == 0 {
-                                    ContactsView(contactViewModel: contactViewModel, historyViewModel: historyViewModel)
-                                } else if self.index == 1 {
-                                    HistoryView()
-                                }
-                            }
-                            .frame(maxWidth:
-                                    (orientation == .landscapeLeft 
-                                     || orientation == .landscapeRight
-                                     || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-                                   ? geometry.size.width/100*40
-                                   : .infinity
-                            )
-                            .background(
-                                Color.white
-                                    .shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
-                                    .mask(Rectangle().padding(.horizontal, -8))
-                            )
-                            
-                            if orientation == .landscapeLeft 
-                                || orientation == .landscapeRight
-                                || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-                                Spacer()
-                            }
-                        }
-                        
-                        if !(orientation == .landscapeLeft 
-                             || orientation == .landscapeRight
-                             || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-                            HStack {
-                                Group {
-                                    Spacer()
-                                    Button(action: {
-                                        self.index = 0
-                                    }, label: {
-                                        VStack {
-                                            Image("address-book")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
-                                                .frame(width: 25, height: 25)
-                                            if self.index == 0 {
-                                                Text("Contacts")
-                                                    .default_text_style_700(styleSize: 10)
-                                            } else {
-                                                Text("Contacts")
-                                                    .default_text_style(styleSize: 10)
-                                            }
-                                        }
-                                    })
-                                    .padding(.top)
-                                    
-                                    Spacer()
-                                    
-                                    Button(action: {
-                                        self.index = 1
-                                        contactViewModel.contactTitle = ""
-                                    }, label: {
-                                        VStack {
-                                            Image("phone")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
-                                                .frame(width: 25, height: 25)
-                                            if self.index == 1 {
-                                                Text("Calls")
-                                                    .default_text_style_700(styleSize: 10)
-                                            } else {
-                                                Text("Calls")
-                                                    .default_text_style(styleSize: 10)
-                                            }
-                                        }
-                                    })
-                                    .padding(.top)
-                                    Spacer()
-                                }
-                            }
-                            .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 15)
-                            .background(
-                                Color.white
-                                    .shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
-                                    .mask(Rectangle().padding(.top, -8))
-                            )
-                        }
+									}
+									.frame(maxWidth: .infinity)
+									.frame(height: 50)
+									.padding(.horizontal)
+                                    .padding(.bottom, 5)
+									.background(Color.orangeMain500)
+								} else {
+									HStack {
+										Button {
+											withAnimation {
+												self.focusedField = false
+												searchIsActive.toggle()
+											}
+											
+											text = ""
+											magicSearch.currentFilter = ""
+                                            magicSearch.searchForContacts(
+                                                sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+										} label: {
+											Image("caret-left")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 25, height: 25, alignment: .leading)
+										}
+										
+										if #available(iOS 16.0, *) {
+											TextEditor(text: Binding(
+												get: {
+													return text
+												},
+												set: { value in
+													var newValue = value
+													if value.contains("\n") {
+														newValue = value.replacingOccurrences(of: "\n", with: "")
+													}
+													text = newValue
+												}
+											))
+											.default_text_style_white_700(styleSize: 15)
+											.padding(.all, 6)
+											.accentColor(.white)
+											.scrollContentBackground(.hidden)
+											.focused($focusedField)
+											.onAppear {
+												self.focusedField = true
+											}
+											.onChange(of: text) { newValue in
+												magicSearch.currentFilter = newValue
+                                                magicSearch.searchForContacts(
+                                                    sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											}
+										} else {
+											TextEditor(text: Binding(
+												get: {
+													return text
+												},
+												set: { value in
+													var newValue = value
+													if value.contains("\n") {
+														newValue = value.replacingOccurrences(of: "\n", with: "")
+													}
+													text = newValue
+												}
+											))
+											.default_text_style_white_700(styleSize: 15)
+											.padding(.all, 6)
+											.accentColor(.white)
+											.focused($focusedField)
+											.onAppear {
+												self.focusedField = true
+											}
+											.onChange(of: text) { newValue in
+												magicSearch.currentFilter = newValue
+                                                magicSearch.searchForContacts(
+                                                    sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											}
+										}
+										
+										Button {
+											text = ""
+										} label: {
+											Image("x")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 25, height: 25, alignment: .leading)
+										}
+										.padding(.leading)
+									}
+									.frame(maxWidth: .infinity)
+									.frame(height: 50)
+									.padding(.horizontal)
+                                    .padding(.bottom, 5)
+									.background(Color.orangeMain500)
+								}
+								
+								if self.index == 0 {
+									ContactsView(contactViewModel: contactViewModel, historyViewModel: historyViewModel)
+								} else if self.index == 1 {
+									HistoryView()
+								}
+							}
+							.frame(maxWidth:
+									(orientation == .landscapeLeft
+									 || orientation == .landscapeRight
+									 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+								   ? geometry.size.width/100*40
+								   : .infinity
+							)
+							.background(
+								Color.white
+									.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
+									.mask(Rectangle().padding(.horizontal, -8))
+							)
+							
+							if orientation == .landscapeLeft
+								|| orientation == .landscapeRight
+								|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+								Spacer()
+							}
+						}
+						
+						if !(orientation == .landscapeLeft
+							 || orientation == .landscapeRight
+							 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) && !searchIsActive {
+							HStack {
+								Group {
+									Spacer()
+									Button(action: {
+										self.index = 0
+									}, label: {
+										VStack {
+											Image("address-book")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
+												.frame(width: 25, height: 25)
+											if self.index == 0 {
+												Text("Contacts")
+													.default_text_style_700(styleSize: 10)
+											} else {
+												Text("Contacts")
+													.default_text_style(styleSize: 10)
+											}
+										}
+									})
+									.padding(.top)
+									
+									Spacer()
+									
+									Button(action: {
+										self.index = 1
+										contactViewModel.contactTitle = ""
+									}, label: {
+										VStack {
+											Image("phone")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+												.frame(width: 25, height: 25)
+											if self.index == 1 {
+												Text("Calls")
+													.default_text_style_700(styleSize: 10)
+											} else {
+												Text("Calls")
+													.default_text_style(styleSize: 10)
+											}
+										}
+									})
+									.padding(.top)
+									Spacer()
+								}
+							}
+							.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 15)
+							.background(
+								Color.white
+									.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
+									.mask(Rectangle().padding(.top, -8))
+							)
+						}
+					}
+					
+					if !contactViewModel.contactTitle.isEmpty || !historyViewModel.historyTitle.isEmpty {
+						HStack(spacing: 0) {
+							Spacer()
+								.frame(maxWidth:
+										(orientation == .landscapeLeft
+										 || orientation == .landscapeRight
+										 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+									   ? (geometry.size.width/100*40) + 75
+									   : 0
+								)
+							if self.index == 0 {
+								ContactFragment(contactViewModel: contactViewModel)
+									.frame(maxWidth: .infinity)
+									.background(Color.gray100)
+									.ignoresSafeArea(.keyboard)
+							} else if self.index == 1 {
+								HistoryContactFragment()
+									.frame(maxWidth: .infinity)
+									.background(Color.gray100)
+									.ignoresSafeArea(.keyboard)
+							}
+						}
+						.onAppear {
+							if !(orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+								&& searchIsActive {
+								self.focusedField = false
+							}
+						}
+						.onDisappear {
+							if !(orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+								&& searchIsActive {
+								self.focusedField = true
+							}
+						}
+						.padding(.leading,
+								 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
+								 ? -geometry.safeAreaInsets.leading
+								 : 0)
+						.transition(.move(edge: .trailing))
+						.zIndex(1)
+					}
+					
+					SideMenu(
+						width: geometry.size.width / 5 * 4,
+						isOpen: self.sideMenuIsOpen,
+						menuClose: self.openMenu,
+						safeAreaInsets: geometry.safeAreaInsets
+					)
+					.ignoresSafeArea(.all)
+					.zIndex(2)
+				}
+			}
+            .overlay {
+                if isMenuOpen {
+                    Color.white.opacity(0.001)
+                    .ignoresSafeArea()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .onTapGesture {
+                        isMenuOpen = false
                     }
-                    
-                    if !contactViewModel.contactTitle.isEmpty || !historyViewModel.historyTitle.isEmpty {
-                        HStack(spacing: 0) {
-                            Spacer()
-                                .frame(maxWidth:
-                                        (orientation == .landscapeLeft 
-                                         || orientation == .landscapeRight
-                                         || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-                                       ? (geometry.size.width/100*40) + 75
-                                       : 0
-                                )
-                            if self.index == 0 {
-                                ContactFragment(contactViewModel: contactViewModel)
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.gray100)
-                            } else if self.index == 1 {
-                                HistoryContactFragment()
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.gray100)
-                            }
-                        }
-                        .padding(.leading, 
-                                 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
-                                 ? -geometry.safeAreaInsets.leading
-                                 : 0)
-                        .transition(.move(edge: .trailing))
-                    }
-                    
-                    SideMenu(
-                        width: geometry.size.width / 5 * 4,
-                        isOpen: self.menuOpen,
-                        menuClose: self.openMenu,
-                        safeAreaInsets: geometry.safeAreaInsets
-                    )
-                    .ignoresSafeArea(.all)
                 }
             }
-            .onRotate { newOrientation in
-                orientation = newOrientation
-            }
-        }
-    }
-    
-    func openMenu() {
-        withAnimation {
-            self.menuOpen.toggle()
-        }
-    }
+			.onRotate { newOrientation in
+				if (!contactViewModel.contactTitle.isEmpty || !historyViewModel.historyTitle.isEmpty) && searchIsActive {
+					self.focusedField = false
+				} else if searchIsActive {
+					self.focusedField = true
+				}
+				orientation = newOrientation
+			}
+		}
+	}
+	
+	func openMenu() {
+		withAnimation {
+			self.sideMenuIsOpen.toggle()
+		}
+	}
 }
 
 #Preview {

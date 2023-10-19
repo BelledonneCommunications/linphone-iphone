@@ -17,11 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+import linphonesw
 
 class ContactViewModel: ObservableObject {
-	
-	@Published var contactTitle: String = ""
+    
+    @Published var contactTitle: String = ""
 	
 	init() {}
 }

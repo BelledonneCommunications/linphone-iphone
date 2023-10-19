@@ -17,36 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SwiftUI
+import linphonesw
 
-struct ContactsView: View {
-	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var historyViewModel: HistoryViewModel
+class FavoriteContactsListViewModel: ObservableObject {
     
-	var body: some View {
-		NavigationView {
-			ZStack(alignment: .bottomTrailing) {
-                
-                ContactsFragment(contactViewModel: contactViewModel)
-				
-				Button {
-					// Action
-				} label: {
-					Image("contacts")
-						.padding()
-						.background(.white)
-						.clipShape(Circle())
-						.shadow(color: .black.opacity(0.2), radius: 4)
-					
-				}
-				.padding()
-			}
-		}
-		.navigationViewStyle(.stack)
-	}
-}
-
-#Preview {
-	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
+    init() {}
 }

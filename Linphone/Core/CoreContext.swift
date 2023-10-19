@@ -40,6 +40,9 @@ final class CoreContext: ObservableObject {
 		let factory = Factory.Instance
 		let configDir = factory.getConfigDir(context: nil)
 		try? mCore = Factory.Instance.createCore(configPath: "\(configDir)/MyConfig", factoryConfigPath: "", systemContext: nil)
+
+        mCore.friendsDatabasePath = "\(configDir)/friends.db"
+        
 		try? mCore.start()
 		
 		// Create a Core listener to listen for the callback we need

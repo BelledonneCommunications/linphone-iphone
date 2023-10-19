@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		886500223A8E518D3EE5FCB7 /* Pods_Linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A334B8FDAD2893691A734BE /* Pods_Linphone.framework */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
@@ -18,6 +19,9 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
+		D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA7E2AE1397200D2E43E /* ContactsListViewModel.swift */; };
+		D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */; };
+		D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */; };
 		D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250622ADE9615008FB426 /* HistoryViewModel.swift */; };
 		D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250682ADFBF2D008FB426 /* SideMenu.swift */; };
 		D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */; };
@@ -34,12 +38,14 @@
 		D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9D002ACB098C0021626A /* PermissionManager.swift */; };
 		D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */; };
 		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
-		D78290B82ADD3910004AA85C /* ContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290B72ADD3910004AA85C /* ContactFragment.swift */; };
+		D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D777DBB22AE12C5900565A99 /* ContactsManager.swift */; };
+		D78290B82ADD3910004AA85C /* ContactsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290B72ADD3910004AA85C /* ContactsFragment.swift */; };
 		D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */; };
 		D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */; };
 		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
 		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
+		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
 		D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */; };
@@ -48,14 +54,15 @@
 		D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */; };
 		D7DA67622ACCB2FA00E95002 /* LoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */; };
 		D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */; };
+		D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D0482AE933AD00A57AAF /* FavoriteContactsListFragment.swift */; };
+		D7E6D04B2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D04A2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift */; };
 		D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */; };
 		D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */; };
-		F4BB8DFBA0FF08430EBA9351 /* Pods_Linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F5B27C5576B1EAED2F205EB /* Pods_Linphone.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		377E0B5C2B1F38192E694334 /* Pods-Linphone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.debug.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.debug.xcconfig"; sourceTree = "<group>"; };
-		6F5B27C5576B1EAED2F205EB /* Pods_Linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A334B8FDAD2893691A734BE /* Pods_Linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DE4CD5FD6E1F01639F27E3B /* Pods-Linphone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.release.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.release.xcconfig"; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
@@ -69,6 +76,9 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
+		D71FCA7E2AE1397200D2E43E /* ContactsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListViewModel.swift; sourceTree = "<group>"; };
+		D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListFragment.swift; sourceTree = "<group>"; };
+		D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFragment.swift; sourceTree = "<group>"; };
 		D72250622ADE9615008FB426 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		D72250682ADFBF2D008FB426 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
 		D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeScannerFragment.swift; sourceTree = "<group>"; };
@@ -85,13 +95,15 @@
 		D74C9D002ACB098C0021626A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupLoadingView.swift; sourceTree = "<group>"; };
 		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
-		D78290B72ADD3910004AA85C /* ContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFragment.swift; sourceTree = "<group>"; };
+		D777DBB22AE12C5900565A99 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
+		D78290B72ADD3910004AA85C /* ContactsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsFragment.swift; sourceTree = "<group>"; };
 		D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		D7A03FBF2ACC2E390081A588 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
 		D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Light.ttf"; sourceTree = "<group>"; };
@@ -100,9 +112,11 @@
 		D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-ExtraBold.ttf"; sourceTree = "<group>"; };
 		D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFragment.swift; sourceTree = "<group>"; };
 		D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModeFragment.swift; sourceTree = "<group>"; };
+		D7E6D0482AE933AD00A57AAF /* FavoriteContactsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteContactsListFragment.swift; sourceTree = "<group>"; };
+		D7E6D04A2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteContactsListViewModel.swift; sourceTree = "<group>"; };
 		D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsFragment.swift; sourceTree = "<group>"; };
 		D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterFragment.swift; sourceTree = "<group>"; };
-		F76FB87556A3109F61F9E2D5 /* Pods-Linphone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.release.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.release.xcconfig"; sourceTree = "<group>"; };
+		FB718F405DAF7B9993AEB878 /* Pods-Linphone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.debug.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,17 +124,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4BB8DFBA0FF08430EBA9351 /* Pods_Linphone.framework in Frameworks */,
+				886500223A8E518D3EE5FCB7 /* Pods_Linphone.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		52EFCC310713B3CA01062945 /* Frameworks */ = {
+		1CD95087B17CAD149119B7C2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6F5B27C5576B1EAED2F205EB /* Pods_Linphone.framework */,
+				1A334B8FDAD2893691A734BE /* Pods_Linphone.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -128,8 +142,8 @@
 		A31AF2AB8C6A3D7B7EA3B424 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				377E0B5C2B1F38192E694334 /* Pods-Linphone.debug.xcconfig */,
-				F76FB87556A3109F61F9E2D5 /* Pods-Linphone.release.xcconfig */,
+				FB718F405DAF7B9993AEB878 /* Pods-Linphone.debug.xcconfig */,
+				1DE4CD5FD6E1F01639F27E3B /* Pods-Linphone.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -140,6 +154,7 @@
 				D717071D2AC5922E0037746F /* ColorExtension.swift */,
 				D717071F2AC5989C0037746F /* TextExtension.swift */,
 				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
+				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -150,7 +165,7 @@
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
 				A31AF2AB8C6A3D7B7EA3B424 /* Pods */,
-				52EFCC310713B3CA01062945 /* Frameworks */,
+				1CD95087B17CAD149119B7C2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -167,6 +182,7 @@
 			children = (
 				D7A03FC52ACC458A0081A588 /* SplashScreen.swift */,
 				D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */,
+				D777DBB12AE12C4000565A99 /* Contacts */,
 				D719ABC72ABC6FB200B41C10 /* Core */,
 				D719ABC52ABC6EE800B41C10 /* UI */,
 				D717071C2AC591EF0037746F /* Utils */,
@@ -285,10 +301,21 @@
 			path = Welcome;
 			sourceTree = "<group>";
 		};
+		D777DBB12AE12C4000565A99 /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				D777DBB22AE12C5900565A99 /* ContactsManager.swift */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
 		D78290B62ADD38F9004AA85C /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
-				D78290B72ADD3910004AA85C /* ContactFragment.swift */,
+				D78290B72ADD3910004AA85C /* ContactsFragment.swift */,
+				D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */,
+				D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */,
+				D7E6D0482AE933AD00A57AAF /* FavoriteContactsListFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -297,6 +324,8 @@
 			isa = PBXGroup;
 			children = (
 				D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */,
+				D71FCA7E2AE1397200D2E43E /* ContactsListViewModel.swift */,
+				D7E6D04A2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -363,12 +392,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "Linphone" */;
 			buildPhases = (
-				6FE8573A5CFC1DA89D3172B5 /* [CP] Check Pods Manifest.lock */,
+				BE9432280D0A11AA770A50FD /* [CP] Check Pods Manifest.lock */,
 				D719ABAF2ABC67BF00B41C10 /* Sources */,
 				D719ABB02ABC67BF00B41C10 /* Frameworks */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
 				D7FB55122AD53FE200A5AB15 /* Run Script */,
-				230129DD87A6EBB04DF458AD /* [CP] Embed Pods Frameworks */,
+				D5CA1ECD620857DB91E334A5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -432,24 +461,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		230129DD87A6EBB04DF458AD /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6FE8573A5CFC1DA89D3172B5 /* [CP] Check Pods Manifest.lock */ = {
+		BE9432280D0A11AA770A50FD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -469,6 +481,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D5CA1ECD620857DB91E334A5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Linphone/Pods-Linphone-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D7FB55122AD53FE200A5AB15 /* Run Script */ = {
@@ -499,16 +528,21 @@
 			files = (
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
+				D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */,
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
+				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
+				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
+				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,
+				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
@@ -522,12 +556,14 @@
 				D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */,
 				D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,
+				D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
-				D78290B82ADD3910004AA85C /* ContactFragment.swift in Sources */,
+				D78290B82ADD3910004AA85C /* ContactsFragment.swift in Sources */,
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,
 				D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
+				D7E6D04B2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift in Sources */,
 				D74C9CFA2ACACF2D0021626A /* WelcomePage2Fragment.swift in Sources */,
 				D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */,
 				D7DA67622ACCB2FA00E95002 /* LoginFragment.swift in Sources */,
@@ -652,7 +688,7 @@
 		};
 		D719ABC32ABC67BF00B41C10 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 377E0B5C2B1F38192E694334 /* Pods-Linphone.debug.xcconfig */;
+			baseConfigurationReference = FB718F405DAF7B9993AEB878 /* Pods-Linphone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -668,7 +704,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Share photos with your friends and customize avatars";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Share photos with your friends and customize avatars";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -696,7 +733,7 @@
 		};
 		D719ABC42ABC67BF00B41C10 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F76FB87556A3109F61F9E2D5 /* Pods-Linphone.release.xcconfig */;
+			baseConfigurationReference = 1DE4CD5FD6E1F01639F27E3B /* Pods-Linphone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -712,7 +749,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Share photos with your friends and customize avatars";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
+				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Share photos with your friends and customize avatars";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

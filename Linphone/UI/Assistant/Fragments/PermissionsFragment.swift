@@ -192,6 +192,7 @@ struct PermissionsFragment: View {
 					.padding(.horizontal)
 					
 					Button {
+                        permissionManager.contactsRequestPermission()
 						permissionManager.cameraRequestPermission()
 					} label: {
 						Text("D'accord")
