@@ -2026,16 +2026,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			subject = event.subject!
 			return VoipTexts.bubble_chat_event_message_new_subject + subject
 		case Int(LinphoneEventLogTypeConferenceParticipantAdded.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_joined
 		case Int(LinphoneEventLogTypeConferenceParticipantRemoved.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_left
 		case Int(LinphoneEventLogTypeConferenceParticipantSetAdmin.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_now_admin
 		case Int(LinphoneEventLogTypeConferenceParticipantUnsetAdmin.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_no_longer_admin
 		case Int(LinphoneEventLogTypeConferenceTerminated.rawValue):
 			return VoipTexts.bubble_chat_event_message_left_group
