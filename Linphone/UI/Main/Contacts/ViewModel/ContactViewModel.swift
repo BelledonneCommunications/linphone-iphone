@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2023 Belledonne Communications SARL.
  *
- * This file is part of Linphone
+ * This file is part of linphone-iphone
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SwiftUI
+import Foundation
 
-struct AssistantView: View {
+class ContactViewModel: ObservableObject {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
-	@ObservedObject private var coreContext = CoreContext.shared
+	@Published var contactTitle: String = ""
 	
-	var body: some View {
-		if sharedMainViewModel.displayProfileMode && coreContext.loggedIn {
-			ProfileModeFragment(sharedMainViewModel: sharedMainViewModel)
-		} else {
-			LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: sharedMainViewModel)
-		}
-	}
-}
-
-#Preview {
-	LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: SharedMainViewModel())
+	init() {}
 }

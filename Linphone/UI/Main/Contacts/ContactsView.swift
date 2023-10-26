@@ -20,17 +20,79 @@
 import SwiftUI
 
 struct ContactsView: View {
+	
+	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var historyViewModel: HistoryViewModel
+	
+	@State private var orientation = UIDevice.current.orientation
+	@State private var selectedIndex = 0
+	
+	var objects: [Int] = [
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+		20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
+	]
+	
 	var body: some View {
-		VStack {
-			Spacer()
-			Image("linphone")
-				.padding(.bottom, 20)
-			Text("Contacts View")
-			Spacer()
+		NavigationView {
+			ZStack(alignment: .bottomTrailing) {
+				VStack(spacing: 0) {
+					VStack {
+						List {
+							ForEach(objects, id: \.self) { index in
+								Button {
+									withAnimation {
+										contactViewModel.contactTitle = String(index)
+									}
+								} label: {
+									Text("\(index)")
+										.frame( maxWidth: .infinity, alignment: .leading)
+										.foregroundStyle(Color.orangeMain500)
+								}
+								.buttonStyle(.borderless)
+								.listRowSeparator(.hidden)
+							}
+						}
+						.listStyle(.plain)
+						.overlay(
+							VStack {
+								if objects.isEmpty {
+									Spacer()
+									Image("illus-belledonne1")
+										.resizable()
+										.scaledToFit()
+										.clipped()
+										.padding(.all)
+									Text("No contacts for the moment...")
+										.default_text_style_800(styleSize: 16)
+									Spacer()
+									Spacer()
+								}
+							}
+								.padding(.all)
+						)
+					}
+				}
+				.onRotate { newOrientation in
+					orientation = newOrientation
+				}
+				
+				Button {
+					// Action
+				} label: {
+					Image("contacts")
+						.padding()
+						.background(.white)
+						.clipShape(Circle())
+						.shadow(color: .black.opacity(0.2), radius: 4)
+					
+				}
+				.padding()
+			}
 		}
+		.navigationViewStyle(.stack)
 	}
 }
 
 #Preview {
-	ContactsView()
+	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
 }

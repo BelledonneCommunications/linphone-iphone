@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
 		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
@@ -17,10 +18,13 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
+		D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250622ADE9615008FB426 /* HistoryViewModel.swift */; };
+		D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250682ADFBF2D008FB426 /* SideMenu.swift */; };
 		D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */; };
 		D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343312ACEFF58009AA24E /* QRScannerController.swift */; };
 		D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343332ACEFFC3009AA24E /* QRScanner.swift */; };
 		D72343362AD037AF009AA24E /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343352AD037AF009AA24E /* ToastView.swift */; };
+		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
 		D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */; };
 		D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */; };
@@ -30,6 +34,8 @@
 		D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9D002ACB098C0021626A /* PermissionManager.swift */; };
 		D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */; };
 		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
+		D78290B82ADD3910004AA85C /* ContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290B72ADD3910004AA85C /* ContactFragment.swift */; };
+		D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */; };
 		D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */; };
 		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
 		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
@@ -50,6 +56,7 @@
 /* Begin PBXFileReference section */
 		377E0B5C2B1F38192E694334 /* Pods-Linphone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Linphone.debug.xcconfig"; path = "Target Support Files/Pods-Linphone/Pods-Linphone.debug.xcconfig"; sourceTree = "<group>"; };
 		6F5B27C5576B1EAED2F205EB /* Pods_Linphone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Linphone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
@@ -62,10 +69,13 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
+		D72250622ADE9615008FB426 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		D72250682ADFBF2D008FB426 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
 		D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeScannerFragment.swift; sourceTree = "<group>"; };
 		D72343312ACEFF58009AA24E /* QRScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerController.swift; sourceTree = "<group>"; };
 		D72343332ACEFFC3009AA24E /* QRScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScanner.swift; sourceTree = "<group>"; };
 		D72343352AD037AF009AA24E /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryContactFragment.swift; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
 		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
 		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
@@ -75,6 +85,8 @@
 		D74C9D002ACB098C0021626A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupLoadingView.swift; sourceTree = "<group>"; };
 		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		D78290B72ADD3910004AA85C /* ContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFragment.swift; sourceTree = "<group>"; };
+		D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		D7A03FBF2ACC2E390081A588 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
@@ -226,6 +238,22 @@
 			path = Viewmodel;
 			sourceTree = "<group>";
 		};
+		D72250612ADE95E4008FB426 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				D72250622ADE9615008FB426 /* HistoryViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		D72992372ADD7F1C003AF125 /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
 		D74C9CF62ACACEB70021626A /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
@@ -242,6 +270,8 @@
 				D74C9CFE2ACAEC5E0021626A /* PopupView.swift */,
 				D72343352AD037AF009AA24E /* ToastView.swift */,
 				D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */,
+				D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */,
+				D72250682ADFBF2D008FB426 /* SideMenu.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -255,9 +285,27 @@
 			path = Welcome;
 			sourceTree = "<group>";
 		};
+		D78290B62ADD38F9004AA85C /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D78290B72ADD3910004AA85C /* ContactFragment.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D78290B92ADD409D004AA85C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		D7A03FBB2ACC2D850081A588 /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
+				D78290B62ADD38F9004AA85C /* Fragments */,
+				D78290B92ADD409D004AA85C /* ViewModel */,
 				D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */,
 			);
 			path = Contacts;
@@ -266,6 +314,8 @@
 		D7A03FBE2ACC2E010081A588 /* History */ = {
 			isa = PBXGroup;
 			children = (
+				D72992372ADD7F1C003AF125 /* Fragments */,
+				D72250612ADE95E4008FB426 /* ViewModel */,
 				D7A03FBF2ACC2E390081A588 /* HistoryView.swift */,
 			);
 			path = History;
@@ -450,13 +500,17 @@
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
+				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
+				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
+				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
+				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
 				D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */,
@@ -468,7 +522,9 @@
 				D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */,
 				D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,
+				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
+				D78290B82ADD3910004AA85C /* ContactFragment.swift in Sources */,
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,
 				D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
@@ -621,8 +677,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -665,8 +721,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";

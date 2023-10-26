@@ -19,20 +19,16 @@
 
 import SwiftUI
 
-struct AssistantView: View {
-	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
-	@ObservedObject private var coreContext = CoreContext.shared
-	
-	var body: some View {
-		if sharedMainViewModel.displayProfileMode && coreContext.loggedIn {
-			ProfileModeFragment(sharedMainViewModel: sharedMainViewModel)
-		} else {
-			LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: sharedMainViewModel)
+struct HistoryContactFragment: View {
+    var body: some View {
+		VStack {
+			Spacer()
+			Text("History Contact fragment")
+			Spacer()
 		}
-	}
+    }
 }
 
 #Preview {
-	LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: SharedMainViewModel())
+    HistoryContactFragment()
 }

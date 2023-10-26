@@ -21,16 +21,25 @@ import SwiftUI
 
 struct HistoryView: View {
 	
-	@ObservedObject private var coreContext = CoreContext.shared
-	
 	var body: some View {
-		VStack {
-			Spacer()
-			Image("linphone")
-				.padding(.bottom, 20)
-			Text("History View")
-			Spacer()
+		NavigationView {
+			VStack(spacing: 0) {
+				VStack {
+					Spacer()
+					Image("illus-belledonne1")
+						.resizable()
+						.scaledToFit()
+						.clipped()
+						.padding(.all)
+					Text("No calls for the moment...")
+						.default_text_style_800(styleSize: 16)
+					Spacer()
+					Spacer()
+				}
+				.padding(.all)
+			}
 		}
+		.navigationViewStyle(.stack)
 	}
 }
 

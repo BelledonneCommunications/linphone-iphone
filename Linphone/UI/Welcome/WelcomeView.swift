@@ -135,6 +135,7 @@ struct WelcomeView: View {
 				}
 			}
 		}
+		.navigationViewStyle(StackNavigationViewStyle())
 	}
 	
 	func setupAppearance() {
