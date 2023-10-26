@@ -64,7 +64,7 @@ struct ContactsListFragment: View {
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
 									case .failure:
-										Image("profile-image-example")
+										Image("profil-picture-default")
 											.resizable()
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
@@ -73,7 +73,7 @@ struct ContactsListFragment: View {
 									}
 								}
 							} else {
-								Image("profile-image-example")
+								Image("profil-picture-default")
 									.resizable()
 									.frame(width: 45, height: 45)
 									.clipShape(Circle())

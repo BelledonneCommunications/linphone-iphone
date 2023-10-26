@@ -23,5 +23,9 @@ class ContactViewModel: ObservableObject {
     
     @Published var contactTitle: String = ""
 	
-	init() {}
+	private var magicSearch = MagicSearchSingleton.shared
+	
+	init() {
+		magicSearch.searchForContacts(
+			sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)}
 }

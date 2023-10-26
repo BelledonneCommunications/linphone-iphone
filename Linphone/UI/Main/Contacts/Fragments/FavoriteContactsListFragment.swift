@@ -29,7 +29,7 @@ struct FavoriteContactsListFragment: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
+				ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
                     Button {
                         withAnimation {
                             contactViewModel.contactTitle = (magicSearch.lastSearch[index].friend?.name)!
@@ -48,7 +48,7 @@ struct FavoriteContactsListFragment: View {
                                             .frame(width: 45, height: 45)
                                             .clipShape(Circle())
                                     case .failure:
-                                        Image("profile-image-example")
+                                        Image("profil-picture-default")
                                             .resizable()
                                             .frame(width: 45, height: 45)
                                             .clipShape(Circle())
@@ -57,7 +57,7 @@ struct FavoriteContactsListFragment: View {
                                     }
                                 }
                             } else {
-                                Image("profile-image-example")
+                                Image("profil-picture-default")
                                     .resizable()
                                     .frame(width: 45, height: 45)
                                     .clipShape(Circle())
@@ -67,7 +67,7 @@ struct FavoriteContactsListFragment: View {
                                 .frame( maxWidth: .infinity, alignment: .center)
                         }
                     }
-                    .frame(maxWidth: 70)
+                    .frame(minWidth: 70, maxWidth: 70)
                 }
             }
             .padding(.all, 10)

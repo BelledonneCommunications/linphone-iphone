@@ -21,11 +21,5 @@ import linphonesw
 
 class ContactsListViewModel: ObservableObject {
     
-    private var magicSearch = MagicSearchSingleton.shared
-    private var coreContext = CoreContext.shared
-    
-    init() {
-        magicSearch.searchForContacts(
-            sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-	}
+    init() {}
 }

@@ -21,6 +21,7 @@ import SwiftUI
 
 struct ContactsFragment: View {
     
+    @ObservedObject var magicSearch = MagicSearchSingleton.shared
     @ObservedObject var contactViewModel: ContactViewModel
     
     @State private var orientation = UIDevice.current.orientation
@@ -29,42 +30,43 @@ struct ContactsFragment: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(alignment: .center) {
-                Text("Favourites")
-                    .default_text_style_800(styleSize: 16)
-                
-                Spacer()
-                
-                Image(isFavoriteOpen ? "caret-up" : "caret-down")
-                    .renderingMode(.template)
-                    .resizable()
-                    .foregroundStyle(Color.grayMain2c600)
-                    .frame(width: 25, height: 25, alignment: .leading)
-            }
-            .padding(.top, 30)
-            .padding(.horizontal, 16)
-            .background(.white)
-            .onTapGesture {
-                withAnimation {
-                    isFavoriteOpen.toggle()
+            if !magicSearch.lastSearch.filter({ $0.friend?.starred == true }).isEmpty {
+                HStack(alignment: .center) {
+                    Text("Favourites")
+                        .default_text_style_800(styleSize: 16)
+                    
+                    Spacer()
+                    
+                    Image(isFavoriteOpen ? "caret-up" : "caret-down")
+                        .renderingMode(.template)
+                        .resizable()
+                        .foregroundStyle(Color.grayMain2c600)
+                        .frame(width: 25, height: 25, alignment: .leading)
                 }
-            }
-            
-            if isFavoriteOpen {
-                FavoriteContactsListFragment(contactViewModel: contactViewModel, favoriteContactsListViewModel: FavoriteContactsListViewModel())
-                    .zIndex(-1)
-                    .transition(.move(edge: .top))
-            }
-            
-            HStack(alignment: .center) {
-                Text("All contacts")
-                    .default_text_style_800(styleSize: 16)
+                .padding(.top, 30)
+                .padding(.horizontal, 16)
+                .background(.white)
+                .onTapGesture {
+                    withAnimation {
+                        isFavoriteOpen.toggle()
+                    }
+                }
                 
-                Spacer()
+                if isFavoriteOpen {
+                    FavoriteContactsListFragment(contactViewModel: contactViewModel, favoriteContactsListViewModel: FavoriteContactsListViewModel())
+                        .zIndex(-1)
+                        .transition(.move(edge: .top))
+                }
+                
+                HStack(alignment: .center) {
+                    Text("All contacts")
+                        .default_text_style_800(styleSize: 16)
+                    
+                    Spacer()
+                }
+                .padding(.top, 10)
+                .padding(.horizontal, 16)
             }
-            .padding(.top, 10)
-            .padding(.horizontal, 16)
-            
             ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel())
         }
         .navigationBarHidden(true)
