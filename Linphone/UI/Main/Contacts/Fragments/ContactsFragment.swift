@@ -22,26 +22,29 @@ import SwiftUI
 struct ContactsFragment: View {
     
     @ObservedObject var contactViewModel: ContactViewModel
+	
+	@Binding var isShowDeletePopup: Bool
     
     @State private var showingSheet = false
     
     var body: some View {
-        if #available(iOS 16.0, *) {
-            ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-                .sheet(isPresented: $showingSheet) {
-                    ContactsListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-                        .presentationDetents([.fraction(0.2)])
-                }
-        } else {
-            ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-                .halfSheet(showSheet: $showingSheet) {
-                    ContactsListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-                } onDismiss: {}
-        }
-        
+		ZStack {
+			if #available(iOS 16.0, *) {
+				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+					.sheet(isPresented: $showingSheet) {
+						ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+							.presentationDetents([.fraction(0.2)])
+					}
+			} else {
+				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+					.halfSheet(showSheet: $showingSheet) {
+						ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+					} onDismiss: {}
+			}
+		}
     }
 }
 
 #Preview {
-    ContactsFragment(contactViewModel: ContactViewModel())
+	ContactsFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false))
 }

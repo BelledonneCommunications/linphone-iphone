@@ -38,7 +38,9 @@ struct FavoriteContactsListFragment: View {
                         VStack {
                             if magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo != nil
                                 && !magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!.isEmpty {
-                                AsyncImage(url: URL(string: magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!)) { image in
+                                AsyncImage(
+                                    url: URL(string: magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!)
+                                ) { image in
                                     switch image {
                                     case .empty:
                                         ProgressView()
@@ -79,7 +81,9 @@ struct FavoriteContactsListFragment: View {
                         TapGesture()
                             .onEnded { _ in
                                 withAnimation {
-                                    contactViewModel.contactTitle = (magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend?.name)!
+                                    contactViewModel.displayedFriend = (
+                                        magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend
+                                    )!
                                 }
                             }
                     )
@@ -92,5 +96,8 @@ struct FavoriteContactsListFragment: View {
 }
 
 #Preview {
-    FavoriteContactsListFragment(contactViewModel: ContactViewModel(), favoriteContactsListViewModel: FavoriteContactsListViewModel(), showingSheet: .constant(false))
+    FavoriteContactsListFragment(
+        contactViewModel: ContactViewModel(),
+        favoriteContactsListViewModel: FavoriteContactsListViewModel(),
+        showingSheet: .constant(false))
 }

@@ -79,11 +79,6 @@ struct PermissionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 20, height: 20, alignment: .leading)
-									.onTapGesture {
-										withAnimation {
-											dismiss()
-										}
-									}
 							}
 							.padding(16)
 							.background(Color.grayMain2c200)
@@ -102,11 +97,6 @@ struct PermissionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 20, height: 20, alignment: .leading)
-									.onTapGesture {
-										withAnimation {
-											dismiss()
-										}
-									}
 							}
 							.padding(16)
 							.background(Color.grayMain2c200)
@@ -125,11 +115,6 @@ struct PermissionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 20, height: 20, alignment: .leading)
-									.onTapGesture {
-										withAnimation {
-											dismiss()
-										}
-									}
 							}
 							.padding(16)
 							.background(Color.grayMain2c200)
@@ -148,11 +133,6 @@ struct PermissionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 20, height: 20, alignment: .leading)
-									.onTapGesture {
-										withAnimation {
-											dismiss()
-										}
-									}
 							}
 							.padding(16)
 							.background(Color.grayMain2c200)

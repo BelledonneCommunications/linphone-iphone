@@ -20,7 +20,6 @@
 import SwiftUI
 
 extension View {
-    //binding show bariable...
     func halfSheet<Content: View>(
         showSheet: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content,
@@ -33,7 +32,6 @@ extension View {
     }
 }
 
-// UIKit integration
 struct HalfSheetHelper<Content: View>: UIViewControllerRepresentable {
     
     var sheetView: Content
@@ -58,7 +56,6 @@ struct HalfSheetHelper<Content: View>: UIViewControllerRepresentable {
         }
     }
     
-    //on dismiss...
     final class Coordinator: NSObject, UISheetPresentationControllerDelegate {
         
         var parent: HalfSheetHelper
@@ -73,7 +70,6 @@ struct HalfSheetHelper<Content: View>: UIViewControllerRepresentable {
     }
 }
 
-// Custom UIHostingController for halfSheet...
 final class CustomHostingController<Content: View>: UIHostingController<Content> {
     override func viewDidLoad() {
         view.backgroundColor = .clear
@@ -82,16 +78,11 @@ final class CustomHostingController<Content: View>: UIHostingController<Content>
                 .medium()
             ]
             
-            //MARK: - sheet grabber visbility
-            presentationController.prefersGrabberVisible = false // i wanted to design my own grabber hehehe
+            presentationController.prefersGrabberVisible = false
             
-            // this allows you to scroll even during medium detent
             presentationController.prefersScrollingExpandsWhenScrolledToEdge = false
             
-            //MARK: - sheet corner radius
             presentationController.preferredCornerRadius = 30
-            
-            // for more sheet customisation check out this great article https://sarunw.com/posts/bottom-sheet-in-ios-15-with-uisheetpresentationcontroller/#scrolling
         }
     }
 }

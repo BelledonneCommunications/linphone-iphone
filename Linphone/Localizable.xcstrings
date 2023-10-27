@@ -28,6 +28,9 @@
     "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
 
     },
+    "**Company :** %@" : {
+
+    },
     "**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone." : {
 
     },
@@ -99,6 +102,9 @@
     "All contacts" : {
 
     },
+    "Appel" : {
+
+    },
     "assistant_account_login" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -116,7 +122,19 @@
         }
       }
     },
+    "Block" : {
+
+    },
+    "Block the address" : {
+
+    },
+    "Block the number" : {
+
+    },
     "Calls" : {
+
+    },
+    "Cancel" : {
 
     },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
@@ -137,6 +155,12 @@
     "Continue" : {
 
     },
+    "Copy address" : {
+
+    },
+    "Copy number" : {
+
+    },
     "D'accord" : {
 
     },
@@ -147,6 +171,12 @@
 
     },
     "Delete" : {
+
+    },
+    "Delete %@?" : {
+
+    },
+    "Delete this contact" : {
 
     },
     "Demande d’autorisations" : {
@@ -161,10 +191,19 @@
     "Domain" : {
 
     },
+    "Edit" : {
+
+    },
     "En continuant, vous acceptez ces conditions, " : {
 
     },
+    "En ligne" : {
+
+    },
     "Error" : {
+
+    },
+    "Error Name" : {
 
     },
     "Favourites" : {
@@ -179,6 +218,9 @@
     "I understand" : {
 
     },
+    "Information" : {
+
+    },
     "Interoperable" : {
 
     },
@@ -191,6 +233,9 @@
     "Invalide URI" : {
 
     },
+    "Invitation" : {
+
+    },
     "Linphone" : {
 
     },
@@ -198,6 +243,12 @@
 
     },
     "Logout" : {
+
+    },
+    "Message" : {
+
+    },
+    "Mute" : {
 
     },
     "My Profile" : {
@@ -215,10 +266,16 @@
     "Not account yet?" : {
 
     },
+    "Ok" : {
+
+    },
     "Open source" : {
 
     },
     "Opération en cours..." : {
+
+    },
+    "Other actions" : {
 
     },
     "password" : {
@@ -239,6 +296,9 @@
       }
     },
     "Personnalize your profil mode" : {
+
+    },
+    "Phone (%@) :" : {
 
     },
     "Plus tard" : {
@@ -274,6 +334,9 @@
     "Share" : {
 
     },
+    "SIP address :" : {
+
+    },
     "sip.linphone.org" : {
 
     },
@@ -287,6 +350,9 @@
 
     },
     "The user name or password is incorrects" : {
+
+    },
+    "This contact will be deleted definitively." : {
 
     },
     "TLS" : {
@@ -329,6 +395,9 @@
           }
         }
       }
+    },
+    "Video Call" : {
+
     },
     "Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**." : {
 

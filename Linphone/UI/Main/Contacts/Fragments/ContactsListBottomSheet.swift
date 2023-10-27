@@ -29,6 +29,8 @@ struct ContactsListBottomSheet: View {
     @State private var orientation = UIDevice.current.orientation
     
     @Environment(\.dismiss) var dismiss
+	
+	@Binding var isShowDeletePopup: Bool
     
     @Binding var showingSheet: Bool
     
@@ -118,9 +120,8 @@ struct ContactsListBottomSheet: View {
             
             Button {
                 if contactViewModel.selectedFriend != nil {
-                    contactViewModel.selectedFriend!.remove()
+					isShowDeletePopup.toggle()
                 }
-                self.magicSearch.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
                 
                 if #available(iOS 16.0, *) {
                     showingSheet.toggle()

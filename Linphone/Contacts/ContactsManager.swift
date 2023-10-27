@@ -179,7 +179,8 @@ final class ContactsManager: ObservableObject {
 				contact.phoneNumbers.forEach { phone in
 					do {
 						if (friendPhoneNumbers.firstIndex(where: {$0.numLabel == phone.numLabel})) == nil {
-							let phoneNumber = try Factory.Instance.createFriendPhoneNumber(phoneNumber: phone.num, label: phone.numLabel)
+                            let labelDrop = String(phone.numLabel.dropFirst(4).dropLast(4))
+                            let phoneNumber = try Factory.Instance.createFriendPhoneNumber(phoneNumber: phone.num, label: labelDrop)
 							friend.addPhoneNumberWithLabel(phoneNumber: phoneNumber)
 							friendPhoneNumbers.append(phone)
 						}
@@ -190,6 +191,8 @@ final class ContactsManager: ObservableObject {
 				
 				let contactImage = result.dropFirst(8)
 				friend.photo = "file:/" + contactImage
+                
+                friend.organization = contact.organizationName
 				
 				friend.done()
 				

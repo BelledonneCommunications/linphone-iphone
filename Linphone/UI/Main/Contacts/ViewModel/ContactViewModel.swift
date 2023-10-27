@@ -21,7 +21,8 @@ import linphonesw
 
 class ContactViewModel: ObservableObject {
     
-    @Published var contactTitle: String = ""
+    @Published var displayedFriend: Friend?
+	var stringToCopy: String = ""
     
     var selectedFriend: Friend?
 	

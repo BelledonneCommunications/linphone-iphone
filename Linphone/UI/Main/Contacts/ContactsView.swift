@@ -23,12 +23,14 @@ struct ContactsView: View {
 	
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
-    
+	
+	@Binding var isShowDeletePopup: Bool
+	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
                 
-                ContactsFragment(contactViewModel: contactViewModel)
+				ContactsFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup)
 				
 				Button {
 					// Action
@@ -48,5 +50,5 @@ struct ContactsView: View {
 }
 
 #Preview {
-	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
+	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel(), isShowDeletePopup: .constant(false))
 }

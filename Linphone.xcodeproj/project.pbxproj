@@ -45,6 +45,8 @@
 		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
 		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
+		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
+		D7C365082AEFAB7F00FE6142 /* ContactListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */; };
 		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
@@ -106,6 +108,8 @@
 		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
+		D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListBottomSheet.swift; sourceTree = "<group>"; };
 		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
@@ -325,6 +329,8 @@
 				D7E6D0482AE933AD00A57AAF /* FavoriteContactsListFragment.swift */,
 				D7E6D0502AEBDBD500A57AAF /* ContactsListBottomSheet.swift */,
 				D7E6D0542AEBFCCE00A57AAF /* ContactsInnerFragment.swift */,
+				D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */,
+				D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -548,6 +554,7 @@
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
+				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
 				D7E6D04D2AEBD77600A57AAF /* CustomBottomSheet.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
@@ -575,6 +582,7 @@
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,
 				D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
+				D7C365082AEFAB7F00FE6142 /* ContactListBottomSheet.swift in Sources */,
 				D7E6D04B2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift in Sources */,
 				D74C9CFA2ACACF2D0021626A /* WelcomePage2Fragment.swift in Sources */,
 				D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */,

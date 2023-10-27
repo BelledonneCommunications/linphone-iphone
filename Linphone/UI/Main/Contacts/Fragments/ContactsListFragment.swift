@@ -36,9 +36,21 @@ struct ContactsListFragment: View {
                     Button {
                     } label: {
                         HStack {
-                            if index == 0 || magicSearch.lastSearch[index].friend?.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).first !=
-                                magicSearch.lastSearch[index-1].friend?.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).first {
-                                Text(String((magicSearch.lastSearch[index].friend?.name!.uppercased().folding(options: .diacriticInsensitive, locale: .current).first)!))
+                            if index == 0 
+                                || magicSearch.lastSearch[index].friend?.name!.lowercased().folding(
+                                    options: .diacriticInsensitive,
+                                    locale: .current
+                                ).first
+                                != magicSearch.lastSearch[index-1].friend?.name!.lowercased().folding(
+                                    options: .diacriticInsensitive,
+                                    locale: .current
+                                ).first {
+                                Text(
+                                    String(
+                                        (magicSearch.lastSearch[index].friend?.name!.uppercased().folding(
+                                            options: .diacriticInsensitive,
+                                            locale: .current
+                                        ).first)!))
                                     .contact_text_style_500(styleSize: 20)
                                     .frame(width: 18)
                                     .padding(.leading, -5)
@@ -79,7 +91,7 @@ struct ContactsListFragment: View {
                             }
                             Text((magicSearch.lastSearch[index].friend?.name)!)
                                 .default_text_style(styleSize: 16)
-                                .frame( maxWidth: .infinity, alignment: .leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .foregroundStyle(Color.orangeMain500)
                         }
                     }
@@ -94,7 +106,7 @@ struct ContactsListFragment: View {
                         TapGesture()
                             .onEnded { _ in
                                 withAnimation {
-                                    contactViewModel.contactTitle =    (magicSearch.lastSearch[index].friend?.name)!
+                                    contactViewModel.displayedFriend = magicSearch.lastSearch[index].friend
                                 }
                             }
                     )

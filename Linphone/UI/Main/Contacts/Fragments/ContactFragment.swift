@@ -20,50 +20,30 @@
 import SwiftUI
 
 struct ContactFragment: View {
-    
-    @ObservedObject var contactViewModel: ContactViewModel
-    
-    @State private var orientation = UIDevice.current.orientation
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            
-            if !(orientation == .landscapeLeft
-                 || orientation == .landscapeRight
-                 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-                HStack {
-                    Image("caret-left")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundStyle(Color.grayMain2c500)
-                        .frame(width: 25, height: 25, alignment: .leading)
-                        .padding(.top, 20)
-                        .onTapGesture {
-                            withAnimation {
-                                contactViewModel.contactTitle = ""
-                            }
-                        }
-                    
-                    Spacer()
-                }
-                .padding(.leading)
-            }
-            
-            Spacer()
-            
-            Text("Contact Fragment " + contactViewModel.contactTitle)
-                .frame(maxWidth: .infinity)
-            
-            Spacer()
-        }
-        .navigationBarHidden(true)
-        .onRotate { newOrientation in
-            orientation = newOrientation
-        }
-
-    }
+	
+	@ObservedObject var contactViewModel: ContactViewModel
+	
+	@Binding var isShowDeletePopup: Bool
+	
+	@State private var showingSheet = false
+	
+	var body: some View {
+		if #available(iOS 16.0, *) {
+			ContactInnerFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+				.sheet(isPresented: $showingSheet) {
+					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+						.presentationDetents([.fraction(0.2)])
+				}
+		} else {
+			ContactInnerFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+				.halfSheet(showSheet: $showingSheet) {
+					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+				} onDismiss: {}
+		}
+		
+	}
 }
 
 #Preview {
-    ContactFragment(contactViewModel: ContactViewModel())
+	ContactFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false))
 }

@@ -53,9 +53,12 @@ struct ContactsInnerFragment: View {
                 }
                 
                 if isFavoriteOpen {
-                    FavoriteContactsListFragment(contactViewModel: contactViewModel, favoriteContactsListViewModel: FavoriteContactsListViewModel(), showingSheet: $showingSheet)
-                        .zIndex(-1)
-                        .transition(.move(edge: .top))
+                    FavoriteContactsListFragment(
+                        contactViewModel: contactViewModel,
+                        favoriteContactsListViewModel: FavoriteContactsListViewModel(),
+                        showingSheet: $showingSheet)
+                    .zIndex(-1)
+                    .transition(.move(edge: .top))
                 }
                 
                 HStack(alignment: .center) {
