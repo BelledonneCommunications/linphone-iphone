@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct FavoriteContactsListFragment: View {
     
@@ -26,18 +27,18 @@ struct FavoriteContactsListFragment: View {
     @ObservedObject var contactViewModel: ContactViewModel
     @ObservedObject var favoriteContactsListViewModel: FavoriteContactsListViewModel
     
+    @Binding var showingSheet: Bool
+    
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-				ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
+                ForEach(0..<magicSearch.lastSearch.filter({ $0.friend?.starred == true }).count, id: \.self) { index in
                     Button {
-                        withAnimation {
-                            contactViewModel.contactTitle = (magicSearch.lastSearch[index].friend?.name)!
-                        }
                     } label: {
                         VStack {
-                            if magicSearch.lastSearch[index].friend!.photo != nil && !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
-                                AsyncImage(url: URL(string: magicSearch.lastSearch[index].friend!.photo!)) { image in
+                            if magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo != nil
+                                && !magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!.isEmpty {
+                                AsyncImage(url: URL(string: magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!)) { image in
                                     switch image {
                                     case .empty:
                                         ProgressView()
@@ -62,11 +63,26 @@ struct FavoriteContactsListFragment: View {
                                     .frame(width: 45, height: 45)
                                     .clipShape(Circle())
                             }
-                            Text((magicSearch.lastSearch[index].friend?.name)!)
+                            Text((magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend?.name)!)
                                 .default_text_style(styleSize: 16)
                                 .frame( maxWidth: .infinity, alignment: .center)
                         }
                     }
+                    .simultaneousGesture(
+                        LongPressGesture()
+                            .onEnded { _ in
+                                contactViewModel.selectedFriend = magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend
+                                showingSheet.toggle()
+                            }
+                    )
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded { _ in
+                                withAnimation {
+                                    contactViewModel.contactTitle = (magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend?.name)!
+                                }
+                            }
+                    )
                     .frame(minWidth: 70, maxWidth: 70)
                 }
             }
@@ -76,5 +92,5 @@ struct FavoriteContactsListFragment: View {
 }
 
 #Preview {
-    FavoriteContactsListFragment(contactViewModel: ContactViewModel(), favoriteContactsListViewModel: FavoriteContactsListViewModel())
+    FavoriteContactsListFragment(contactViewModel: ContactViewModel(), favoriteContactsListViewModel: FavoriteContactsListViewModel(), showingSheet: .constant(false))
 }

@@ -21,95 +21,109 @@ import SwiftUI
 import linphonesw
 
 struct ContactsListFragment: View {
-	
-	@ObservedObject var magicSearch = MagicSearchSingleton.shared
-	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	
-	var body: some View {
-		VStack {
-			List {
-				ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
-					Button {
-						withAnimation {
-							contactViewModel.contactTitle =	(magicSearch.lastSearch[index].friend?.name)!
-						}
-					} label: {
-						HStack {
-							if index == 0 || magicSearch.lastSearch[index].friend?.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).first !=
-								magicSearch.lastSearch[index-1].friend?.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).first {
-								Text(String((magicSearch.lastSearch[index].friend?.name!.uppercased().folding(options: .diacriticInsensitive, locale: .current).first)!))
-									.contact_text_style_500(styleSize: 20)
-									.frame(width: 18)
-									.padding(.leading, -5)
-									.padding(.trailing, 10)
-							} else {
-								Text("")
-									.contact_text_style_500(styleSize: 20)
-									.frame(width: 18)
-									.padding(.leading, -5)
-									.padding(.trailing, 10)
-							}
-							
-							if magicSearch.lastSearch[index].friend!.photo != nil && !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
-								AsyncImage(url: URL(string: magicSearch.lastSearch[index].friend!.photo!)) { image in
-									switch image {
-									case .empty:
-										ProgressView()
-											.frame(width: 45, height: 45)
-									case .success(let image):
-										image
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									case .failure:
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									@unknown default:
-										EmptyView()
-									}
-								}
-							} else {
-								Image("profil-picture-default")
-									.resizable()
-									.frame(width: 45, height: 45)
-									.clipShape(Circle())
-							}
-							Text((magicSearch.lastSearch[index].friend?.name)!)
+    
+    @ObservedObject var magicSearch = MagicSearchSingleton.shared
+    
+    @ObservedObject var contactViewModel: ContactViewModel
+    @ObservedObject var contactsListViewModel: ContactsListViewModel
+    
+    @Binding var showingSheet: Bool
+    
+    var body: some View {
+        VStack {
+            List {
+                ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
+                    Button {
+                    } label: {
+                        HStack {
+                            if index == 0 || magicSearch.lastSearch[index].friend?.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).first !=
+                                magicSearch.lastSearch[index-1].friend?.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current).first {
+                                Text(String((magicSearch.lastSearch[index].friend?.name!.uppercased().folding(options: .diacriticInsensitive, locale: .current).first)!))
+                                    .contact_text_style_500(styleSize: 20)
+                                    .frame(width: 18)
+                                    .padding(.leading, -5)
+                                    .padding(.trailing, 10)
+                            } else {
+                                Text("")
+                                    .contact_text_style_500(styleSize: 20)
+                                    .frame(width: 18)
+                                    .padding(.leading, -5)
+                                    .padding(.trailing, 10)
+                            }
+                            
+                            if magicSearch.lastSearch[index].friend!.photo != nil && !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
+                                AsyncImage(url: URL(string: magicSearch.lastSearch[index].friend!.photo!)) { image in
+                                    switch image {
+                                    case .empty:
+                                        ProgressView()
+                                            .frame(width: 45, height: 45)
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .frame(width: 45, height: 45)
+                                            .clipShape(Circle())
+                                    case .failure:
+                                        Image("profil-picture-default")
+                                            .resizable()
+                                            .frame(width: 45, height: 45)
+                                            .clipShape(Circle())
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            } else {
+                                Image("profil-picture-default")
+                                    .resizable()
+                                    .frame(width: 45, height: 45)
+                                    .clipShape(Circle())
+                            }
+                            Text((magicSearch.lastSearch[index].friend?.name)!)
                                 .default_text_style(styleSize: 16)
-								.frame( maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						}
-					}
-					.buttonStyle(.borderless)
-					.listRowSeparator(.hidden)
-				}
-			}
-			.listStyle(.plain)
-			.overlay(
-				VStack {
-					if magicSearch.lastSearch.isEmpty {
-						Spacer()
-						Image("illus-belledonne1")
-							.resizable()
-							.scaledToFit()
-							.clipped()
-							.padding(.all)
-						Text("No contacts for the moment...")
-							.default_text_style_800(styleSize: 16)
-						Spacer()
-						Spacer()
-					}
-				}
-					.padding(.all)
-			)
-		}
-	}
+                                .frame( maxWidth: .infinity, alignment: .leading)
+                                .foregroundStyle(Color.orangeMain500)
+                        }
+                    }
+                    .simultaneousGesture(
+                        LongPressGesture()
+                            .onEnded { _ in
+                                contactViewModel.selectedFriend = magicSearch.lastSearch[index].friend
+                                showingSheet.toggle()
+                            }
+                    )
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded { _ in
+                                withAnimation {
+                                    contactViewModel.contactTitle =    (magicSearch.lastSearch[index].friend?.name)!
+                                }
+                            }
+                    )
+                    .buttonStyle(.borderless)
+                    .listRowSeparator(.hidden)
+                }
+            }
+            .listStyle(.plain)
+            .overlay(
+                VStack {
+                    if magicSearch.lastSearch.isEmpty {
+                        Spacer()
+                        Image("illus-belledonne1")
+                            .resizable()
+                            .scaledToFit()
+                            .clipped()
+                            .padding(.all)
+                        Text("No contacts for the moment...")
+                            .default_text_style_800(styleSize: 16)
+                        Spacer()
+                        Spacer()
+                    }
+                }
+                    .padding(.all)
+            )
+        }
+    }
 }
 
 #Preview {
-	ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel())
+    ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false))
 }

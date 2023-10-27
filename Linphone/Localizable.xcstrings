@@ -93,6 +93,9 @@
     "Accept all" : {
 
     },
+    "Add to favourites" : {
+
+    },
     "All contacts" : {
 
     },
@@ -141,6 +144,9 @@
 
     },
     "Default mode" : {
+
+    },
+    "Delete" : {
 
     },
     "Demande d’autorisations" : {
@@ -250,6 +256,9 @@
     "Register" : {
 
     },
+    "Remove to favourites" : {
+
+    },
     "Scan QR code" : {
 
     },
@@ -260,6 +269,9 @@
 
     },
     "See Linphone contact" : {
+
+    },
+    "Share" : {
 
     },
     "sip.linphone.org" : {

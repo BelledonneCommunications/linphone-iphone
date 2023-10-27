@@ -22,6 +22,8 @@ import linphonesw
 class ContactViewModel: ObservableObject {
     
     @Published var contactTitle: String = ""
+    
+    var selectedFriend: Friend?
 	
 	private var magicSearch = MagicSearchSingleton.shared
 	

@@ -21,57 +21,22 @@ import SwiftUI
 
 struct ContactsFragment: View {
     
-    @ObservedObject var magicSearch = MagicSearchSingleton.shared
     @ObservedObject var contactViewModel: ContactViewModel
     
-    @State private var orientation = UIDevice.current.orientation
-    
-    @State var isFavoriteOpen: Bool = true
+    @State private var showingSheet = false
     
     var body: some View {
-        VStack(alignment: .leading) {
-            if !magicSearch.lastSearch.filter({ $0.friend?.starred == true }).isEmpty {
-                HStack(alignment: .center) {
-                    Text("Favourites")
-                        .default_text_style_800(styleSize: 16)
-                    
-                    Spacer()
-                    
-                    Image(isFavoriteOpen ? "caret-up" : "caret-down")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundStyle(Color.grayMain2c600)
-                        .frame(width: 25, height: 25, alignment: .leading)
+        if #available(iOS 16.0, *) {
+            ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+                .sheet(isPresented: $showingSheet) {
+                    ContactsListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+                        .presentationDetents([.fraction(0.2)])
                 }
-                .padding(.top, 30)
-                .padding(.horizontal, 16)
-                .background(.white)
-                .onTapGesture {
-                    withAnimation {
-                        isFavoriteOpen.toggle()
-                    }
-                }
-                
-                if isFavoriteOpen {
-                    FavoriteContactsListFragment(contactViewModel: contactViewModel, favoriteContactsListViewModel: FavoriteContactsListViewModel())
-                        .zIndex(-1)
-                        .transition(.move(edge: .top))
-                }
-                
-                HStack(alignment: .center) {
-                    Text("All contacts")
-                        .default_text_style_800(styleSize: 16)
-                    
-                    Spacer()
-                }
-                .padding(.top, 10)
-                .padding(.horizontal, 16)
-            }
-            ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel())
-        }
-        .navigationBarHidden(true)
-        .onRotate { newOrientation in
-            orientation = newOrientation
+        } else {
+            ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+                .halfSheet(showSheet: $showingSheet) {
+                    ContactsListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+                } onDismiss: {}
         }
         
     }
