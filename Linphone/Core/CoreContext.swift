@@ -72,6 +72,15 @@ final class CoreContext: ObservableObject {
 					self.toastMessage = "Registration failed"
 					self.loggingInProgress = false
 					self.loggedIn = false
+					
+					let params = account.params
+					let clonedParams = params?.clone()
+					clonedParams?.registerEnabled = false
+					account.params = clonedParams
+					
+					self.mCore!.removeAccount(account: account)
+					self.mCore!.clearAccounts()
+					self.mCore!.clearAllAuthInfo()
 				}
 			}
 		)

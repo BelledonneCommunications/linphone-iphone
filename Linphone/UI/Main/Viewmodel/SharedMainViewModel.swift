@@ -25,12 +25,14 @@ class SharedMainViewModel: ObservableObject {
 	@Published var generalTermsAccepted = false
 	@Published var displayProfileMode = false
 	
+	let welcomeViewKey = "welcome_view"
+	let generalTermsKey = "general_terms"
+	let displayProfileModeKey = "display_profile_mode"
+	
 	var maxWidth = 400.0
 	
 	init() {
 		let preferences = UserDefaults.standard
-		
-		let welcomeViewKey = "welcome_view"
 		
 		if preferences.object(forKey: welcomeViewKey) == nil {
 			preferences.set(welcomeViewDisplayed, forKey: welcomeViewKey)
@@ -38,20 +40,18 @@ class SharedMainViewModel: ObservableObject {
 			welcomeViewDisplayed = preferences.bool(forKey: welcomeViewKey)
 		}
 		
-		let generalTermsKey = "general_terms"
-		
 		if preferences.object(forKey: generalTermsKey) == nil {
 			preferences.set(generalTermsAccepted, forKey: generalTermsKey)
 		} else {
 			generalTermsAccepted = preferences.bool(forKey: generalTermsKey)
 		}
 		
-		let displayProfileModeKey = "display_profile_mode"
-		
 		if preferences.object(forKey: displayProfileModeKey) == nil {
+			print("displayProfileModeKeydisplayProfileModeKey nil")
 			preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 		} else {
 			displayProfileMode = preferences.bool(forKey: displayProfileModeKey)
+			print("displayProfileModeKeydisplayProfileModeKey \(displayProfileMode)")
 		}
 	}
 	
@@ -59,7 +59,6 @@ class SharedMainViewModel: ObservableObject {
 		let preferences = UserDefaults.standard
 		
 		welcomeViewDisplayed = true
-		let welcomeViewKey = "welcome_view"
 		preferences.set(welcomeViewDisplayed, forKey: welcomeViewKey)
 	}
 	
@@ -67,7 +66,6 @@ class SharedMainViewModel: ObservableObject {
 		let preferences = UserDefaults.standard
 		
 		generalTermsAccepted = true
-		let generalTermsKey = "general_terms"
 		preferences.set(generalTermsAccepted, forKey: generalTermsKey)
 	}
 	
@@ -75,7 +73,6 @@ class SharedMainViewModel: ObservableObject {
 		let preferences = UserDefaults.standard
 		
 		displayProfileMode = true
-		let displayProfileModeKey = "display_profile_mode"
 		preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 	}
 	
@@ -83,7 +80,6 @@ class SharedMainViewModel: ObservableObject {
 		let preferences = UserDefaults.standard
 		
 		displayProfileMode = false
-		let displayProfileModeKey = "display_profile_mode"
 		preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 	}
 }

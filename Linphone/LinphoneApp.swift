@@ -35,7 +35,7 @@ struct LinphoneApp: App {
 				} else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
 					AssistantView(sharedMainViewModel: sharedMainViewModel)
 						.toast(isShowing: $coreContext.toastMessage)
-				} else {
+				} else if coreContext.mCore.defaultAccount != nil {
 					ContentView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
 						.toast(isShowing: $coreContext.toastMessage)
 				}
