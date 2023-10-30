@@ -26,6 +26,7 @@ struct ContentView: View {
 	var magicSearch = MagicSearchSingleton.shared
 	
 	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject private var coreContext = CoreContext.shared
 	
@@ -36,8 +37,10 @@ struct ContentView: View {
 	@State private var searchIsActive = false
 	@State private var text = ""
 	@FocusState private var focusedField: Bool
-	@State var isMenuOpen: Bool = false
+	@State var isMenuOpen = false
 	@State var isShowDeletePopup = false
+	@State var isShowEditContactFragment = false
+	@State var isShowDismissPopup = false
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -73,7 +76,7 @@ struct ContentView: View {
 									
 									Button(action: {
 										self.index = 1
-										contactViewModel.displayedFriend = nil
+										contactViewModel.indexDisplayedFriend = nil
 									}, label: {
 										VStack {
 											Image("phone")
@@ -273,7 +276,13 @@ struct ContentView: View {
 							}
 							
 							if self.index == 0 {
-								ContactsView(contactViewModel: contactViewModel, historyViewModel: historyViewModel, isShowDeletePopup: $isShowDeletePopup)
+								ContactsView(
+									contactViewModel: contactViewModel,
+									historyViewModel: historyViewModel,
+									editContactViewModel: editContactViewModel,
+									isShowEditContactFragment: $isShowEditContactFragment,
+									isShowDeletePopup: $isShowDeletePopup
+								)
 							} else if self.index == 1 {
 								HistoryView()
 							}
@@ -328,7 +337,7 @@ struct ContentView: View {
 								
 								Button(action: {
 									self.index = 1
-									contactViewModel.displayedFriend = nil
+									contactViewModel.indexDisplayedFriend = nil
 								}, label: {
 									VStack {
 										Image("phone")
@@ -358,7 +367,7 @@ struct ContentView: View {
 					}
 				}
 				
-				if contactViewModel.displayedFriend != nil || !historyViewModel.historyTitle.isEmpty {
+				if contactViewModel.indexDisplayedFriend != nil || !historyViewModel.historyTitle.isEmpty {
 					HStack(spacing: 0) {
 						Spacer()
 							.frame(maxWidth:
@@ -369,7 +378,7 @@ struct ContentView: View {
 								   : 0
 							)
 						if self.index == 0 {
-							ContactFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup)
+							ContactFragment(contactViewModel: contactViewModel, editContactViewModel: editContactViewModel, isShowDeletePopup: $isShowDeletePopup, isShowDismissPopup: $isShowDismissPopup)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
@@ -413,31 +422,42 @@ struct ContentView: View {
 				.ignoresSafeArea(.all)
 				.zIndex(2)
 				
+				if isShowEditContactFragment {
+					EditContactFragment(editContactViewModel: editContactViewModel, isShowEditContactFragment: $isShowEditContactFragment, isShowDismissPopup: $isShowDismissPopup)
+						.zIndex(3)
+						.transition(.move(edge: .bottom))
+						.onAppear {
+							contactViewModel.indexDisplayedFriend = nil
+						}
+				}
+				
 				if isShowDeletePopup {
 					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeletePopup,
 							  title: Text(
-									contactViewModel.selectedFriend != nil 
+									contactViewModel.selectedFriend != nil
 									? "Delete \(contactViewModel.selectedFriend!.name!)?"
-									: (contactViewModel.displayedFriend != nil 
-									   ? "Delete \(contactViewModel.displayedFriend!.name!)?"
+									: (contactViewModel.indexDisplayedFriend != nil
+									   ? "Delete \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
 									   : "Error Name")),
 							  content: Text("This contact will be deleted definitively."),
 							  titleFirstButton: Text("Cancel"),
-							  actionFirstButton: {self.isShowDeletePopup.toggle()},
+							  actionFirstButton: {
+						self.isShowDeletePopup.toggle()},
 							  titleSecondButton: Text("Ok"),
 							  actionSecondButton: {
-						if contactViewModel.selectedFriend != nil {
-							contactViewModel.selectedFriend!.remove()
-							if contactViewModel.displayedFriend != nil && contactViewModel.selectedFriend!.name == contactViewModel.displayedFriend!.name {
+						if contactViewModel.selectedFriendToDelete != nil {
+							if contactViewModel.indexDisplayedFriend != nil {
 								withAnimation {
-									contactViewModel.displayedFriend = nil
+									contactViewModel.indexDisplayedFriend = nil
 								}
 							}
-						} else if contactViewModel.displayedFriend != nil {
-							contactViewModel.displayedFriend!.remove()
+							contactViewModel.selectedFriendToDelete!.remove()
+						} else if contactViewModel.indexDisplayedFriend != nil {
+							let tmpIndex = contactViewModel.indexDisplayedFriend
 							withAnimation {
-								contactViewModel.displayedFriend = nil
+								contactViewModel.indexDisplayedFriend = nil
 							}
+							magicSearch.lastSearch[tmpIndex!].friend!.remove()
 						}
 						magicSearch.searchForContacts(
 							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
@@ -447,6 +467,39 @@ struct ContentView: View {
 					.zIndex(3)
 					.onTapGesture {
 						self.isShowDeletePopup.toggle()
+					}
+					.onAppear {
+						contactViewModel.selectedFriendToDelete = contactViewModel.selectedFriend
+					}
+				}
+				
+				if isShowDismissPopup {
+					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDismissPopup,
+							  title: Text("Don’t save modifications?"),
+							  content: Text("All modifications will be canceled."),
+							  titleFirstButton: Text("Cancel"),
+							  actionFirstButton: {self.isShowDismissPopup.toggle()},
+							  titleSecondButton: Text("Ok"),
+							  actionSecondButton: {
+						if editContactViewModel.selectedEditFriend == nil {
+							self.isShowDismissPopup.toggle()
+							editContactViewModel.removePopup = true
+							editContactViewModel.resetValues()
+							withAnimation {
+								isShowEditContactFragment.toggle()
+							}
+						} else {
+							self.isShowDismissPopup.toggle()
+							editContactViewModel.resetValues()
+							withAnimation {
+								editContactViewModel.removePopup = true
+							}
+						}
+					})
+					.background(.black.opacity(0.65))
+					.zIndex(3)
+					.onTapGesture {
+						self.isShowDismissPopup.toggle()
 					}
 				}
 			}
@@ -462,7 +515,7 @@ struct ContentView: View {
 			}
 		}
 		.onRotate { newOrientation in
-			if (contactViewModel.displayedFriend != nil || !historyViewModel.historyTitle.isEmpty) && searchIsActive {
+			if (contactViewModel.indexDisplayedFriend != nil || !historyViewModel.historyTitle.isEmpty) && searchIsActive {
 				self.focusedField = false
 			} else if searchIsActive {
 				self.focusedField = true
@@ -479,5 +532,5 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
+	ContentView(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), historyViewModel: HistoryViewModel())
 }

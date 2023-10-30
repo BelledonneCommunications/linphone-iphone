@@ -23,17 +23,22 @@ struct ContactsView: View {
 	
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
 	
+	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDeletePopup: Bool
 	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-                
 				ContactsFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup)
 				
 				Button {
-					// Action
+					withAnimation {
+						editContactViewModel.selectedEditFriend = nil
+						editContactViewModel.resetValues()
+						isShowEditContactFragment.toggle()
+					}
 				} label: {
 					Image("user-plus")
 						.padding()
@@ -50,5 +55,11 @@ struct ContactsView: View {
 }
 
 #Preview {
-	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel(), isShowDeletePopup: .constant(false))
+	ContactsView(
+		contactViewModel: ContactViewModel(),
+		historyViewModel: HistoryViewModel(),
+		editContactViewModel: EditContactViewModel(),
+		isShowEditContactFragment: .constant(false),
+		isShowDeletePopup: .constant(false)
+	)
 }

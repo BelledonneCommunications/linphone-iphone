@@ -47,6 +47,9 @@
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7C365082AEFAB7F00FE6142 /* ContactListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */; };
+		D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365092AF001C300FE6142 /* EditContactFragment.swift */; };
+		D7C3650C2AF0084000FE6142 /* EditContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */; };
+		D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */; };
 		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
@@ -110,6 +113,9 @@
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListBottomSheet.swift; sourceTree = "<group>"; };
+		D7C365092AF001C300FE6142 /* EditContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactFragment.swift; sourceTree = "<group>"; };
+		D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactViewModel.swift; sourceTree = "<group>"; };
+		D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
@@ -165,6 +171,7 @@
 				D717071F2AC5989C0037746F /* TextExtension.swift */,
 				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
 				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
+				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -331,6 +338,7 @@
 				D7E6D0542AEBFCCE00A57AAF /* ContactsInnerFragment.swift */,
 				D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */,
 				D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */,
+				D7C365092AF001C300FE6142 /* EditContactFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -341,6 +349,7 @@
 				D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */,
 				D71FCA7E2AE1397200D2E43E /* ContactsListViewModel.swift */,
 				D7E6D04A2AE9347D00A57AAF /* FavoriteContactsListViewModel.swift */,
+				D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -541,15 +550,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */,
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */,
+				D7C3650C2AF0084000FE6142 /* EditContactViewModel.swift in Sources */,
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
+				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,

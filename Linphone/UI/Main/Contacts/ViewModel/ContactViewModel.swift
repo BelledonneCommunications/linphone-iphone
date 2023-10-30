@@ -20,11 +20,13 @@
 import linphonesw
 
 class ContactViewModel: ObservableObject {
-    
-    @Published var displayedFriend: Friend?
+	
+	@Published var indexDisplayedFriend: Int?
+	
 	var stringToCopy: String = ""
     
     var selectedFriend: Friend?
+	var selectedFriendToDelete: Friend?
 	
 	private var magicSearch = MagicSearchSingleton.shared
 	

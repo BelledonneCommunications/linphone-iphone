@@ -21,21 +21,50 @@ import SwiftUI
 
 struct ContactFragment: View {
 	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
 	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@Binding var isShowDeletePopup: Bool
+	@Binding var isShowDismissPopup: Bool
 	
 	@State private var showingSheet = false
 	
 	var body: some View {
 		if #available(iOS 16.0, *) {
-			ContactInnerFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
-				.sheet(isPresented: $showingSheet) {
-					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-						.presentationDetents([.fraction(0.2)])
-				}
+			if idiom != .pad {
+				ContactInnerFragment(
+					contactViewModel: contactViewModel,
+					editContactViewModel: editContactViewModel,
+					isShowDeletePopup: $isShowDeletePopup,
+					showingSheet: $showingSheet,
+					isShowDismissPopup: $isShowDismissPopup
+				)
+					.sheet(isPresented: $showingSheet) {
+						ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+							.presentationDetents([.fraction(0.2)])
+					}
+			} else {
+				ContactInnerFragment(
+					contactViewModel: contactViewModel,
+					editContactViewModel: editContactViewModel,
+					isShowDeletePopup: $isShowDeletePopup,
+					showingSheet: $showingSheet,
+					isShowDismissPopup: $isShowDismissPopup
+				)
+					.halfSheet(showSheet: $showingSheet) {
+						ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+					} onDismiss: {}
+			}
 		} else {
-			ContactInnerFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+			ContactInnerFragment(
+				contactViewModel: contactViewModel,
+				editContactViewModel: editContactViewModel,
+				isShowDeletePopup: $isShowDeletePopup,
+				showingSheet: $showingSheet,
+				isShowDismissPopup: $isShowDismissPopup
+			)
 				.halfSheet(showSheet: $showingSheet) {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 				} onDismiss: {}
@@ -45,5 +74,5 @@ struct ContactFragment: View {
 }
 
 #Preview {
-	ContactFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false))
+	ContactFragment(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), isShowDeletePopup: .constant(false), isShowDismissPopup: .constant(false))
 }

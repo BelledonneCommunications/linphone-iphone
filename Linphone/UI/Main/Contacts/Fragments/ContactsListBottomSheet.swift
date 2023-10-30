@@ -21,7 +21,9 @@ import SwiftUI
 import linphonesw
 
 struct ContactsListBottomSheet: View {
-    
+	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
     @ObservedObject var magicSearch = MagicSearchSingleton.shared
     
     @ObservedObject var contactViewModel: ContactViewModel
@@ -36,9 +38,9 @@ struct ContactsListBottomSheet: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            if orientation == .landscapeLeft
+            if idiom != .pad && (orientation == .landscapeLeft
                 || orientation == .landscapeRight
-                || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+                || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
                 Spacer()
                 HStack {
                     Spacer()
@@ -72,10 +74,10 @@ struct ContactsListBottomSheet: View {
 					Image(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
                         .renderingMode(.template)
                         .resizable()
-                        .foregroundStyle(Color.grayMain2c500)
+						.foregroundStyle(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
                         .frame(width: 25, height: 25, alignment: .leading)
                     Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
-                         ? "Remove to favourites"
+                         ? "Remove from favourites"
                          : "Add to favourites")
                     .default_text_style(styleSize: 16)
                     Spacer()
@@ -147,10 +149,13 @@ struct ContactsListBottomSheet: View {
             .background(Color.gray100)
             
         }
+		.background(Color.gray100)
+  		.frame(maxWidth: .infinity)
         .onRotate { newOrientation in
             orientation = newOrientation
         }
-        .background(Color.gray100)
-        .frame(maxWidth: .infinity)
+		.onDisappear {
+			contactViewModel.selectedFriend = nil
+		}
     }
 }

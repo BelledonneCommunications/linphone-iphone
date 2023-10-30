@@ -34,6 +34,9 @@
     "**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone." : {
 
     },
+    "**Job :** %@" : {
+
+    },
     "**Micro** : Pour permettre à vos correspondants de vous entendre." : {
 
     },
@@ -96,10 +99,16 @@
     "Accept all" : {
 
     },
+    "Add a picture" : {
+
+    },
     "Add to favourites" : {
 
     },
     "All contacts" : {
+
+    },
+    "All modifications will be canceled." : {
 
     },
     "Appel" : {
@@ -122,9 +131,6 @@
         }
       }
     },
-    "Block" : {
-
-    },
     "Block the address" : {
 
     },
@@ -144,6 +150,9 @@
 
     },
     "Close" : {
+
+    },
+    "Company" : {
 
     },
     "Conditions de service" : {
@@ -191,7 +200,16 @@
     "Domain" : {
 
     },
+    "Don’t save modifications?" : {
+
+    },
     "Edit" : {
+
+    },
+    "Edit contact" : {
+
+    },
+    "Edit picture" : {
 
     },
     "En continuant, vous acceptez ces conditions, " : {
@@ -207,6 +225,12 @@
 
     },
     "Favourites" : {
+
+    },
+    "First Name" : {
+
+    },
+    "First name*" : {
 
     },
     "History Contact fragment" : {
@@ -236,6 +260,12 @@
     "Invitation" : {
 
     },
+    "Job title" : {
+
+    },
+    "Last name" : {
+
+    },
     "Linphone" : {
 
     },
@@ -248,10 +278,10 @@
     "Message" : {
 
     },
-    "Mute" : {
+    "My Profile" : {
 
     },
-    "My Profile" : {
+    "New contact" : {
 
     },
     "Next" : {
@@ -298,7 +328,13 @@
     "Personnalize your profil mode" : {
 
     },
+    "Phone :" : {
+
+    },
     "Phone (%@) :" : {
+
+    },
+    "Phone number" : {
 
     },
     "Plus tard" : {
@@ -316,7 +352,10 @@
     "Register" : {
 
     },
-    "Remove to favourites" : {
+    "Remove from favourites" : {
+
+    },
+    "Remove picture" : {
 
     },
     "Scan QR code" : {
@@ -332,6 +371,9 @@
 
     },
     "Share" : {
+
+    },
+    "SIP address" : {
 
     },
     "SIP address :" : {
