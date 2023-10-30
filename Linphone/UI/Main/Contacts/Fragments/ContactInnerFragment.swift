@@ -415,11 +415,12 @@ struct ContactInnerFragment: View {
 						
 						Button {
 							if contactViewModel.displayedFriend != nil {
+								contactViewModel.objectWillChange.send()
 								contactViewModel.displayedFriend!.starred.toggle()
 							}
 						} label: {
 							HStack {
-								Image("heart")
+								Image(contactViewModel.displayedFriend != nil && contactViewModel.displayedFriend!.starred == true ? "heart-fill" : "heart")
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(Color.grayMain2c600)
@@ -470,7 +471,7 @@ struct ContactInnerFragment: View {
 						Button {
 						} label: {
 							HStack {
-								Image("bell-ringing_slash")
+								Image("bell-simple-slash")
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(Color.grayMain2c600)
@@ -495,7 +496,7 @@ struct ContactInnerFragment: View {
 						Button {
 						} label: {
 							HStack {
-								Image("empty")
+								Image("x-circle")
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(Color.grayMain2c600)

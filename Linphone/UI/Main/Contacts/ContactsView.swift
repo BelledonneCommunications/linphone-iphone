@@ -35,7 +35,7 @@ struct ContactsView: View {
 				Button {
 					// Action
 				} label: {
-					Image("contacts")
+					Image("user-plus")
 						.padding()
 						.background(.white)
 						.clipShape(Circle())

@@ -26,7 +26,7 @@ struct WelcomePage2Fragment: View {
 		VStack {
 			Spacer()
 			VStack {
-				Image("secure-image")
+				Image("secured")
 					.renderingMode(.template)
 					.resizable()
 					.foregroundStyle(Color.orangeMain500)

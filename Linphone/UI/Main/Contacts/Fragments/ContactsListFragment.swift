@@ -119,7 +119,7 @@ struct ContactsListFragment: View {
                 VStack {
                     if magicSearch.lastSearch.isEmpty {
                         Spacer()
-                        Image("illus-belledonne1")
+                        Image("illus-belledonne")
                             .resizable()
                             .scaledToFit()
                             .clipped()

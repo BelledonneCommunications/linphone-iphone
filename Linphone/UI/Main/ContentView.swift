@@ -123,7 +123,11 @@ struct ContentView: View {
 											searchIsActive.toggle()
 										}
 									} label: {
-										Image("search")
+										Image("magnifying-glass")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 25, height: 25, alignment: .leading)
 									}
 									
 									Menu {
@@ -138,6 +142,8 @@ struct ContentView: View {
 												Spacer()
 												if magicSearch.allContact {
 													Image("green-check")
+														.resizable()
+														.frame(width: 25, height: 25, alignment: .leading)
 												}
 											}
 										}
@@ -153,11 +159,17 @@ struct ContentView: View {
 												Spacer()
 												if !magicSearch.allContact {
 													Image("green-check")
+														.resizable()
+														.frame(width: 25, height: 25, alignment: .leading)
 												}
 											}
 										}
 									} label: {
-										Image(index == 0 ? "filtres" : "more")
+										Image(index == 0 ? "funnel" : "dots-three-vertical")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 25, height: 25, alignment: .leading)
 									}
 									.padding(.leading)
 									.onTapGesture {

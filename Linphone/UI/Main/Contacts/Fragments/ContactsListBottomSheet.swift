@@ -69,7 +69,7 @@ struct ContactsListBottomSheet: View {
                 }
             } label: {
                 HStack {
-                    Image("heart")
+					Image(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
                         .renderingMode(.template)
                         .resizable()
                         .foregroundStyle(Color.grayMain2c500)

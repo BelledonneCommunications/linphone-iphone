@@ -127,7 +127,7 @@ struct ContactListBottomSheet: View {
 				}
 			} label: {
 				HStack {
-					Image("empty")
+					Image("x-circle")
 						.renderingMode(.template)
 						.resizable()
 						.foregroundStyle(Color.grayMain2c500)

@@ -36,9 +36,11 @@ struct ToastView: ViewModifier {
 		VStack {
 			if !isShowing.isEmpty {
 				HStack {
-					Image(isShowing == "Successful" ? "success" : "danger")
+					Image(isShowing == "Successful" ? "smiley" : "warning-circle")
 						.resizable()
+						.renderingMode(.template)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.foregroundStyle(isShowing == "Successful" ? Color.greenSuccess500 : Color.redDanger500)
 					
 					switch isShowing {
 					case "Successful":
