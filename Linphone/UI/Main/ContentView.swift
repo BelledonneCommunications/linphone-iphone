@@ -416,11 +416,11 @@ struct ContentView: View {
 				if isShowDeletePopup {
 					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeletePopup,
 							  title: Text(
-									contactViewModel.selectedFriend != nil 
-									? "Delete \(contactViewModel.selectedFriend!.name!)?"
-									: (contactViewModel.displayedFriend != nil 
-									   ? "Delete \(contactViewModel.displayedFriend!.name!)?"
-									   : "Error Name")),
+								contactViewModel.selectedFriend != nil
+								? "Delete \(contactViewModel.selectedFriend!.name!)?"
+								: (contactViewModel.displayedFriend != nil
+								   ? "Delete \(contactViewModel.displayedFriend!.name!)?"
+								   : "Error Name")),
 							  content: Text("This contact will be deleted definitively."),
 							  titleFirstButton: Text("Cancel"),
 							  actionFirstButton: {self.isShowDeletePopup.toggle()},

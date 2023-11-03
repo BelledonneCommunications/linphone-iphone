@@ -40,7 +40,7 @@ struct SplashScreen: View {
 		.ignoresSafeArea(.all)
 		.onAppear {
 			Task {
-				try await coreContext.initialiseCore()
+				try coreContext.initialiseCore()
 				withAnimation {
 					self.isActive = true
 				}
