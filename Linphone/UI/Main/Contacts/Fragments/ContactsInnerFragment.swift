@@ -18,64 +18,77 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct ContactsInnerFragment: View {
-    
-    @ObservedObject var magicSearch = MagicSearchSingleton.shared
-    @ObservedObject var contactViewModel: ContactViewModel
-    
-    @State private var isFavoriteOpen = true
-    
-    @Binding var showingSheet: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            if !magicSearch.lastSearch.filter({ $0.friend?.starred == true }).isEmpty {
-                HStack(alignment: .center) {
-                    Text("Favourites")
-                        .default_text_style_800(styleSize: 16)
-                    
-                    Spacer()
-                    
-                    Image(isFavoriteOpen ? "caret-up" : "caret-down")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundStyle(Color.grayMain2c600)
-                        .frame(width: 25, height: 25, alignment: .leading)
-                }
-                .padding(.top, 30)
-                .padding(.horizontal, 16)
-                .background(.white)
-                .onTapGesture {
-                    withAnimation {
-                        isFavoriteOpen.toggle()
-                    }
-                }
-                
-                if isFavoriteOpen {
-                    FavoriteContactsListFragment(
-                        contactViewModel: contactViewModel,
-                        favoriteContactsListViewModel: FavoriteContactsListViewModel(),
-                        showingSheet: $showingSheet)
-                    .zIndex(-1)
-                    .transition(.move(edge: .top))
-                }
-                
-                HStack(alignment: .center) {
-                    Text("All contacts")
-                        .default_text_style_800(styleSize: 16)
-                    
-                    Spacer()
-                }
-                .padding(.top, 10)
-                .padding(.horizontal, 16)
-            }
-            ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)
-        }
-        .navigationBarHidden(true)
-    }
+	
+	@Environment(\.scenePhase) var scenePhase
+	
+	@ObservedObject var magicSearch = MagicSearchSingleton.shared
+	@ObservedObject var contactViewModel: ContactViewModel
+	
+	@State private var isFavoriteOpen = true
+	
+	@Binding var showingSheet: Bool
+	
+	var body: some View {
+		VStack(alignment: .leading) {
+			if !magicSearch.lastSearch.filter({ $0.friend?.starred == true }).isEmpty {
+				HStack(alignment: .center) {
+					Text("Favourites")
+						.default_text_style_800(styleSize: 16)
+					
+					Spacer()
+					
+					Image(isFavoriteOpen ? "caret-up" : "caret-down")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.grayMain2c600)
+						.frame(width: 25, height: 25, alignment: .leading)
+				}
+				.padding(.top, 30)
+				.padding(.horizontal, 16)
+				.background(.white)
+				.onTapGesture {
+					withAnimation {
+						isFavoriteOpen.toggle()
+					}
+				}
+				
+				if isFavoriteOpen {
+					FavoriteContactsListFragment(
+						contactViewModel: contactViewModel,
+						favoriteContactsListViewModel: FavoriteContactsListViewModel(),
+						showingSheet: $showingSheet)
+					.zIndex(-1)
+					.transition(.move(edge: .top))
+				}
+				
+				HStack(alignment: .center) {
+					Text("All contacts")
+						.default_text_style_800(styleSize: 16)
+					
+					Spacer()
+				}
+				.padding(.top, 10)
+				.padding(.horizontal, 16)
+			}
+			ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)
+		}
+		.navigationBarHidden(true)
+		.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				ContactsManager.shared.fetchContacts()
+				print("Active")
+			} else if newPhase == .inactive {
+				print("Inactive")
+			} else if newPhase == .background {
+				print("Background")
+			}
+		}
+	}
 }
 
 #Preview {
-    ContactsInnerFragment(contactViewModel: ContactViewModel(), showingSheet: .constant(false))
+	ContactsInnerFragment(contactViewModel: ContactViewModel(), showingSheet: .constant(false))
 }

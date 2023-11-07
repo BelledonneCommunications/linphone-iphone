@@ -50,6 +50,7 @@
 		D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365092AF001C300FE6142 /* EditContactFragment.swift */; };
 		D7C3650C2AF0084000FE6142 /* EditContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */; };
 		D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */; };
+		D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C48DF32AFA66F900D938CB /* EditContactController.swift */; };
 		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
@@ -116,6 +117,7 @@
 		D7C365092AF001C300FE6142 /* EditContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactFragment.swift; sourceTree = "<group>"; };
 		D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactViewModel.swift; sourceTree = "<group>"; };
 		D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
+		D7C48DF32AFA66F900D938CB /* EditContactController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactController.swift; sourceTree = "<group>"; };
 		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
 				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
 				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
+				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -568,6 +571,7 @@
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
 				D7E6D04D2AEBD77600A57AAF /* CustomBottomSheet.swift in Sources */,
+				D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
 				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,

@@ -23,6 +23,7 @@ class EditContactViewModel: ObservableObject {
 	
 	@Published var selectedEditFriend: Friend?
 	
+	@Published var identifier: String = ""
 	@Published var firstName: String = ""
 	@Published var lastName: String = ""
 	@Published var sipAddresses: [String] = []
@@ -36,6 +37,7 @@ class EditContactViewModel: ObservableObject {
 	}
 	
 	func resetValues() {
+		identifier = (selectedEditFriend == nil ? "" : selectedEditFriend!.nativeUri) ?? ""
 		firstName = (selectedEditFriend == nil ? "" : selectedEditFriend!.vcard?.givenName) ?? ""
 		lastName = (selectedEditFriend == nil ? "" : selectedEditFriend!.vcard?.familyName) ?? ""
 		sipAddresses = []

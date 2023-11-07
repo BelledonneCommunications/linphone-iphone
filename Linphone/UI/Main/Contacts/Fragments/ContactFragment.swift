@@ -74,5 +74,10 @@ struct ContactFragment: View {
 }
 
 #Preview {
-	ContactFragment(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), isShowDeletePopup: .constant(false), isShowDismissPopup: .constant(false))
+	ContactFragment(
+		contactViewModel: ContactViewModel(),
+		editContactViewModel: EditContactViewModel(),
+		isShowDeletePopup: .constant(false),
+		isShowDismissPopup: .constant(false)
+	)
 }

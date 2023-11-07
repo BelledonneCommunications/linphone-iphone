@@ -472,6 +472,7 @@ struct EditContactFragment: View {
 	
 	func addOrEditFriend() {
 		let newContact = Contact(
+			identifier: editContactViewModel.identifier,
 			firstName: editContactViewModel.firstName,
 			lastName: editContactViewModel.lastName,
 			organizationName: editContactViewModel.company,

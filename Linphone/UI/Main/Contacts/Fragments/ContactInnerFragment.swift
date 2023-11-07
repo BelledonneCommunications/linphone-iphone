@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import Contacts
 
 struct ContactInnerFragment: View {
 	
@@ -30,6 +31,8 @@ struct ContactInnerFragment: View {
 	@State private var orientation = UIDevice.current.orientation
 	
 	@State private var informationIsOpen = true
+	@State private var presentingEditContact = false
+	@State private var cnContact: CNContact?
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var showingSheet: Bool
@@ -44,8 +47,7 @@ struct ContactInnerFragment: View {
 					.frame(height: 0)
 				
 				HStack {
-					if !(orientation == .landscapeLeft
-						 || orientation == .landscapeRight
+					if !(orientation == .landscapeLeft || orientation == .landscapeRight
 						 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
 						Image("caret-left")
 							.renderingMode(.template)
@@ -61,21 +63,40 @@ struct ContactInnerFragment: View {
 					}
 					
 					Spacer()
-					
-					NavigationLink(destination: EditContactFragment(editContactViewModel: editContactViewModel, isShowEditContactFragment: .constant(false), isShowDismissPopup: $isShowDismissPopup)) {
-						Image("pencil-simple")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.orangeMain500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.padding(.top, 2)
-					}
-					.simultaneousGesture(
-						TapGesture().onEnded {
-							editContactViewModel.selectedEditFriend = magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend
-							editContactViewModel.resetValues()
+					if contactViewModel.indexDisplayedFriend != nil
+						&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+						&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil && !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
+						Button(action: {
+							ContactsManager.shared.getCNContact(friend: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!) { result in
+								cnContact = result
+								if cnContact != nil {
+									presentingEditContact.toggle()
+								}
+							}
+						}, label: {
+							Image("pencil-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.top, 2)
+						})
+					} else {
+						NavigationLink(destination: EditContactFragment(editContactViewModel: editContactViewModel, isShowEditContactFragment: .constant(false), isShowDismissPopup: $isShowDismissPopup)) {
+							Image("pencil-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.top, 2)
 						}
-					)
+						.simultaneousGesture(
+							TapGesture().onEnded {
+								editContactViewModel.selectedEditFriend = magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+								editContactViewModel.resetValues()
+							}
+						)
+					}
 				}
 				.frame(maxWidth: .infinity)
 				.frame(height: 50)
@@ -143,7 +164,6 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-									
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -458,8 +478,7 @@ struct ContactInnerFragment: View {
 											  && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? "heart-fill" : "heart")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(contactViewModel.indexDisplayedFriend != nil
-															 && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil 
+											.foregroundStyle(contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil 
 															 && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
 											.frame(width: 25, height: 25)
 										Text(contactViewModel.indexDisplayedFriend != nil
@@ -600,6 +619,14 @@ struct ContactInnerFragment: View {
 			.onRotate { newOrientation in
 				orientation = newOrientation
 			}
+			.sheet(isPresented: $presentingEditContact) {
+						NavigationView {
+							AnyView(EditContactView(contact: $cnContact)
+								.navigationBarTitle("Edit Contact")
+								.navigationBarTitleDisplayMode(.inline))
+								.edgesIgnoringSafeArea(.top)
+						}
+					}
 		}
 		.navigationViewStyle(.stack)
 	}

@@ -20,6 +20,7 @@
 import linphonesw
 import Contacts
 import SwiftUI
+import ContactsUI
 
 final class ContactsManager: ObservableObject {
 	
@@ -110,6 +111,7 @@ final class ContactsManager: ObservableObject {
 						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
 							DispatchQueue.main.sync {
 								let newContact = Contact(
+									identifier: contact.identifier,
 									firstName: contact.givenName,
 									lastName: contact.familyName,
 									organizationName: contact.organizationName,
@@ -203,6 +205,8 @@ final class ContactsManager: ObservableObject {
 			if friend != nil {
 				friend!.edit()
 				
+				friend!.nativeUri = contact.identifier
+				
 				try friend!.setName(newValue: contact.firstName + " " + contact.lastName)
 				
 				let friendvCard = friend!.vcard
@@ -284,6 +288,55 @@ final class ContactsManager: ObservableObject {
 			}
 		}
 	}
+	
+	func getCNContact(friend: Friend, completion: @escaping (CNContact?) -> Void) {
+		DispatchQueue.global().async {
+			let store = CNContactStore()
+			store.requestAccess(for: .contacts) { (granted, error) in
+				if let error = error {
+					print("failed to request access", error)
+					return
+				}
+				if granted {
+					let keys = [CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+								CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
+								CNContactPostalAddressesKey, CNContactIdentifierKey,
+								CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
+								CNContactImageDataKey, CNContactThumbnailImageDataKey, CNContactOrganizationNameKey]
+					let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
+					do {
+						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
+							if contact.identifier == friend.nativeUri {
+								var contactFetched = contact
+								if !contactFetched.areKeysAvailable([CNContactViewController.descriptorForRequiredKeys()]) {
+									do {
+										contactFetched = try store.unifiedContact(withIdentifier: contact.identifier, keysToFetch: [CNContactViewController.descriptorForRequiredKeys()])
+										completion(contactFetched)
+									}
+									catch {
+										completion(nil)
+									}
+								}
+							}
+						})
+					} catch let error {
+						print("Failed to enumerate contact", error)
+					}
+				} else {
+					print("access denied")
+				}
+			}
+		}
+	}
+	
+	func getFriend(contact: Contact) -> Friend? {
+		if friendList != nil {
+			let friend = friendList!.friends.first(where: {$0.nativeUri == contact.identifier})
+			return friend
+		} else {
+			return nil
+		}
+	}
 }
 
 struct PhoneNumber {
@@ -293,6 +346,7 @@ struct PhoneNumber {
 
 struct Contact: Identifiable {
 	var id = UUID()
+	var identifier: String
 	var firstName: String
 	var lastName: String
 	var organizationName: String
