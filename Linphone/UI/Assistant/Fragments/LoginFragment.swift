@@ -117,6 +117,7 @@ struct LoginFragment: View {
 								.padding(.bottom)
 								
 								Button(action: {
+									sharedMainViewModel.changeDisplayProfileMode()
 									self.accountLoginViewModel.login()
 								}, label: {
 									Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
@@ -280,22 +281,10 @@ struct LoginFragment: View {
 						}
 					}
 				}
-				.onAppear {
-					sharedMainViewModel.changeDisplayProfileMode()
-				}
 				
 				if coreContext.loggingInProgress {
 					PopupLoadingView(sharedMainViewModel: sharedMainViewModel)
 						.background(.black.opacity(0.65))
-				}
-				
-				if !coreContext.loggingInProgress && !coreContext.loggedIn {
-					ZStack {
-						
-					}.onAppear {
-						self.accountLoginViewModel.unregister()
-						self.accountLoginViewModel.delete()
-					}
 				}
 			}
 		}

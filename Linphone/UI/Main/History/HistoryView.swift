@@ -26,7 +26,7 @@ struct HistoryView: View {
 			VStack(spacing: 0) {
 				VStack {
 					Spacer()
-					Image("illus-belledonne1")
+					Image("illus-belledonne")
 						.resizable()
 						.scaledToFit()
 						.clipped()

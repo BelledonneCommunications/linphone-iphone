@@ -19,6 +19,7 @@
 
 import Foundation
 import Photos
+import Contacts
 
 class PermissionManager: ObservableObject {
 	
@@ -26,6 +27,7 @@ class PermissionManager: ObservableObject {
 	
 	@Published var photoLibraryPermissionGranted = false
 	@Published var cameraPermissionGranted = false
+    @Published var contactsPermissionGranted = false
 	
 	private init() {}
 	
@@ -44,4 +46,13 @@ class PermissionManager: ObservableObject {
 			}
 		})
 	}
+    
+    func contactsRequestPermission() {
+        let store = CNContactStore()
+        store.requestAccess(for: .contacts) { success, _ in
+            DispatchQueue.main.async {
+                self.contactsPermissionGranted = success
+            }
+        }
+    }
 }

@@ -136,4 +136,9 @@ extension View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
 			.foregroundStyle(Color.grayMain2c600)
 	}
+    
+    func contact_text_style_500(styleSize: CGFloat) -> some View {
+        self.font(Font.custom("NotoSans-Medium", size: styleSize))
+            .foregroundStyle(Color.grayMain2c400)
+    }
 }

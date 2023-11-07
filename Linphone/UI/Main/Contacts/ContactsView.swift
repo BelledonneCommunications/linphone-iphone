@@ -24,62 +24,18 @@ struct ContactsView: View {
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
 	
-	@State private var orientation = UIDevice.current.orientation
-	@State private var selectedIndex = 0
-	
-	var objects: [Int] = [
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-		20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
-	]
+	@Binding var isShowDeletePopup: Bool
 	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				VStack(spacing: 0) {
-					VStack {
-						List {
-							ForEach(objects, id: \.self) { index in
-								Button {
-									withAnimation {
-										contactViewModel.contactTitle = String(index)
-									}
-								} label: {
-									Text("\(index)")
-										.frame( maxWidth: .infinity, alignment: .leading)
-										.foregroundStyle(Color.orangeMain500)
-								}
-								.buttonStyle(.borderless)
-								.listRowSeparator(.hidden)
-							}
-						}
-						.listStyle(.plain)
-						.overlay(
-							VStack {
-								if objects.isEmpty {
-									Spacer()
-									Image("illus-belledonne1")
-										.resizable()
-										.scaledToFit()
-										.clipped()
-										.padding(.all)
-									Text("No contacts for the moment...")
-										.default_text_style_800(styleSize: 16)
-									Spacer()
-									Spacer()
-								}
-							}
-								.padding(.all)
-						)
-					}
-				}
-				.onRotate { newOrientation in
-					orientation = newOrientation
-				}
+                
+				ContactsFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup)
 				
 				Button {
 					// Action
 				} label: {
-					Image("contacts")
+					Image("user-plus")
 						.padding()
 						.background(.white)
 						.clipShape(Circle())
@@ -94,5 +50,5 @@ struct ContactsView: View {
 }
 
 #Preview {
-	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel())
+	ContactsView(contactViewModel: ContactViewModel(), historyViewModel: HistoryViewModel(), isShowDeletePopup: .constant(false))
 }

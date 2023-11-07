@@ -17,11 +17,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+import linphonesw
 
 class ContactViewModel: ObservableObject {
+    
+    @Published var displayedFriend: Friend?
+	var stringToCopy: String = ""
+    
+    var selectedFriend: Friend?
 	
-	@Published var contactTitle: String = ""
+	private var magicSearch = MagicSearchSingleton.shared
 	
-	init() {}
+	init() {
+		magicSearch.searchForContacts(
+			sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)}
 }

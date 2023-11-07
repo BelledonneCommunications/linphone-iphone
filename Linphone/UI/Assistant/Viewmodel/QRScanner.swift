@@ -70,14 +70,11 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 				if let url = NSURL(string: result) {
 					if UIApplication.shared.canOpenURL(url as URL) {
 						lastResult = result
-						do {
-							try coreContext.mCore.setProvisioninguri(newValue: result)
-							coreContext.mCore.stop()
-							try coreContext.mCore.start()
-						} catch {
-							
+						coreContext.doOnCoreQueue { core in
+							try? core.setProvisioninguri(newValue: result)
+							core.stop()
+							try? core.start()
 						}
-						
 					} else {
 						coreContext.toastMessage = "Invalide URI"
 					}

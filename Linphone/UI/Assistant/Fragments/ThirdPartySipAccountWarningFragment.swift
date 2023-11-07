@@ -72,16 +72,11 @@ struct ThirdPartySipAccountWarningFragment: View {
 							HStack {
 								Spacer()
 								HStack(alignment: .center) {
-									Image("conversation")
+									Image("chat-teardrop-text-slash")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 20, height: 20, alignment: .leading)
-										.onTapGesture {
-											withAnimation {
-												dismiss()
-											}
-										}
 								}
 								.padding(16)
 								.background(Color.grayMain2c200)
@@ -89,16 +84,11 @@ struct ThirdPartySipAccountWarningFragment: View {
 								.padding(.horizontal)
 								
 								HStack(alignment: .center) {
-									Image("video-call")
+									Image("video-camera-slash")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 20, height: 20, alignment: .leading)
-										.onTapGesture {
-											withAnimation {
-												dismiss()
-											}
-										}
 								}
 								.padding(16)
 								.background(Color.grayMain2c200)
