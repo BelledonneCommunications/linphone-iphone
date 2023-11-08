@@ -51,6 +51,7 @@
 		D7C3650C2AF0084000FE6142 /* EditContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */; };
 		D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */; };
 		D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C48DF32AFA66F900D938CB /* EditContactController.swift */; };
+		D7C48DF62AFCDF4700D938CB /* ContactInnerActionsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C48DF52AFCDF4700D938CB /* ContactInnerActionsFragment.swift */; };
 		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
@@ -118,6 +119,7 @@
 		D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactViewModel.swift; sourceTree = "<group>"; };
 		D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		D7C48DF32AFA66F900D938CB /* EditContactController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactController.swift; sourceTree = "<group>"; };
+		D7C48DF52AFCDF4700D938CB /* ContactInnerActionsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerActionsFragment.swift; sourceTree = "<group>"; };
 		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 				D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */,
 				D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */,
 				D7C365092AF001C300FE6142 /* EditContactFragment.swift */,
+				D7C48DF52AFCDF4700D938CB /* ContactInnerActionsFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -588,6 +591,7 @@
 				D7E6D0552AEBFCCE00A57AAF /* ContactsInnerFragment.swift in Sources */,
 				D72343362AD037AF009AA24E /* ToastView.swift in Sources */,
 				D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */,
+				D7C48DF62AFCDF4700D938CB /* ContactInnerActionsFragment.swift in Sources */,
 				D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */,
 				D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,

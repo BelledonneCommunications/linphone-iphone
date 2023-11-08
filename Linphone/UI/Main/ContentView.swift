@@ -378,7 +378,12 @@ struct ContentView: View {
 								   : 0
 							)
 						if self.index == 0 {
-							ContactFragment(contactViewModel: contactViewModel, editContactViewModel: editContactViewModel, isShowDeletePopup: $isShowDeletePopup, isShowDismissPopup: $isShowDismissPopup)
+							ContactFragment(
+								contactViewModel: contactViewModel,
+								editContactViewModel: editContactViewModel,
+								isShowDeletePopup: $isShowDeletePopup,
+								isShowDismissPopup: $isShowDismissPopup
+							)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
@@ -423,7 +428,11 @@ struct ContentView: View {
 				.zIndex(2)
 				
 				if isShowEditContactFragment {
-					EditContactFragment(editContactViewModel: editContactViewModel, isShowEditContactFragment: $isShowEditContactFragment, isShowDismissPopup: $isShowDismissPopup)
+					EditContactFragment(
+						editContactViewModel: editContactViewModel,
+						isShowEditContactFragment: $isShowEditContactFragment,
+						isShowDismissPopup: $isShowDismissPopup
+					)
 						.zIndex(3)
 						.transition(.move(edge: .bottom))
 						.onAppear {

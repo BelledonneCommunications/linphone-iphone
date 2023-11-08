@@ -28,7 +28,7 @@ struct EditContactView: UIViewControllerRepresentable {
 			if let cnc = contact {
 				DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
 					self.parent.contact = cnc
-					
+                    
 					let newContact = Contact(
 						identifier: cnc.identifier,
 						firstName: cnc.givenName,

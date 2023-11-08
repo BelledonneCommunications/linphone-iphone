@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import Contacts
 
 struct ContactFragment: View {
 	
@@ -37,7 +38,8 @@ struct ContactFragment: View {
 				ContactInnerFragment(
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
-					isShowDeletePopup: $isShowDeletePopup,
+                    cnContact: CNContact(),
+                    isShowDeletePopup: $isShowDeletePopup,
 					showingSheet: $showingSheet,
 					isShowDismissPopup: $isShowDismissPopup
 				)
@@ -49,6 +51,7 @@ struct ContactFragment: View {
 				ContactInnerFragment(
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
+                    cnContact: CNContact(),
 					isShowDeletePopup: $isShowDeletePopup,
 					showingSheet: $showingSheet,
 					isShowDismissPopup: $isShowDismissPopup
@@ -61,6 +64,7 @@ struct ContactFragment: View {
 			ContactInnerFragment(
 				contactViewModel: contactViewModel,
 				editContactViewModel: editContactViewModel,
+                cnContact: CNContact(),
 				isShowDeletePopup: $isShowDeletePopup,
 				showingSheet: $showingSheet,
 				isShowDismissPopup: $isShowDismissPopup

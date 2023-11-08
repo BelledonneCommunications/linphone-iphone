@@ -74,7 +74,11 @@ struct ContactsListBottomSheet: View {
 					Image(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
                         .renderingMode(.template)
                         .resizable()
-						.foregroundStyle(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
+						.foregroundStyle(
+							contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
+							? Color.redDanger500
+							: Color.grayMain2c500
+						)
                         .frame(width: 25, height: 25, alignment: .leading)
                     Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
                          ? "Remove from favourites"

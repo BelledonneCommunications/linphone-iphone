@@ -333,7 +333,11 @@ struct EditContactFragment: View {
 											Image("x")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(editContactViewModel.sipAddresses[index].isEmpty && editContactViewModel.sipAddresses.count == index + 1 ? Color.gray100 : Color.grayMain2c600)
+												.foregroundStyle(
+													editContactViewModel.sipAddresses[index].isEmpty && editContactViewModel.sipAddresses.count == index + 1
+													? Color.gray100
+													: Color.grayMain2c600
+												)
 												.frame(width: 25, height: 25)
 										})
 										.disabled(editContactViewModel.sipAddresses[index].isEmpty && editContactViewModel.sipAddresses.count == index + 1)
@@ -377,7 +381,11 @@ struct EditContactFragment: View {
 											Image("x")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(editContactViewModel.phoneNumbers[index].isEmpty && editContactViewModel.phoneNumbers.count == index + 1 ? Color.gray100 : Color.grayMain2c600)
+												.foregroundStyle(
+													editContactViewModel.phoneNumbers[index].isEmpty && editContactViewModel.phoneNumbers.count == index + 1
+													? Color.gray100
+													: Color.grayMain2c600
+												)
 												.frame(width: 25, height: 25)
 										})
 										.disabled(editContactViewModel.phoneNumbers[index].isEmpty && editContactViewModel.phoneNumbers.count == index + 1)
@@ -485,7 +493,7 @@ struct EditContactFragment: View {
 		
 		if editContactViewModel.selectedEditFriend != nil && selectedImage == nil &&
 			!removedImage {
-			let saveFriendResult = ContactsManager.shared.saveFriend(
+			_ = ContactsManager.shared.saveFriend(
 				result: String(editContactViewModel.selectedEditFriend!.photo!.dropFirst(6)),
 				contact: newContact,
 				existingFriend: editContactViewModel.selectedEditFriend
@@ -495,7 +503,10 @@ struct EditContactFragment: View {
 				image: selectedImage
 				?? ContactsManager.shared.textToImage(
 					firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
-				name: editContactViewModel.firstName + editContactViewModel.lastName + String(Int.random(in: 1...1000)) + ((selectedImage == nil) ? "-default" : ""),
+				name: editContactViewModel.firstName 
+				+ editContactViewModel.lastName
+				+ String(Int.random(in: 1...1000))
+				+ ((selectedImage == nil) ? "-default" : ""),
 				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend)
 		}
 		

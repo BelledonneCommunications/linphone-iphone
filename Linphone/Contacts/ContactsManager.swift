@@ -95,6 +95,7 @@ final class ContactsManager: ObservableObject {
 			}
 			
 			let store = CNContactStore()
+            
 			store.requestAccess(for: .contacts) { (granted, error) in
 				if let error = error {
 					print("failed to request access", error)
@@ -105,7 +106,7 @@ final class ContactsManager: ObservableObject {
 								CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
 								CNContactPostalAddressesKey, CNContactIdentifierKey,
 								CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
-								CNContactImageDataKey, CNContactThumbnailImageDataKey, CNContactOrganizationNameKey]
+								CNContactOrganizationNameKey, CNContactImageDataAvailableKey, CNContactImageDataKey, CNContactThumbnailImageDataKey]
 					let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
 					do {
 						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
@@ -284,46 +285,6 @@ final class ContactsManager: ObservableObject {
 				} catch {
 					print("Error: ", error)
 					completion((), "")
-				}
-			}
-		}
-	}
-	
-	func getCNContact(friend: Friend, completion: @escaping (CNContact?) -> Void) {
-		DispatchQueue.global().async {
-			let store = CNContactStore()
-			store.requestAccess(for: .contacts) { (granted, error) in
-				if let error = error {
-					print("failed to request access", error)
-					return
-				}
-				if granted {
-					let keys = [CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-								CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
-								CNContactPostalAddressesKey, CNContactIdentifierKey,
-								CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
-								CNContactImageDataKey, CNContactThumbnailImageDataKey, CNContactOrganizationNameKey]
-					let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
-					do {
-						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
-							if contact.identifier == friend.nativeUri {
-								var contactFetched = contact
-								if !contactFetched.areKeysAvailable([CNContactViewController.descriptorForRequiredKeys()]) {
-									do {
-										contactFetched = try store.unifiedContact(withIdentifier: contact.identifier, keysToFetch: [CNContactViewController.descriptorForRequiredKeys()])
-										completion(contactFetched)
-									}
-									catch {
-										completion(nil)
-									}
-								}
-							}
-						})
-					} catch let error {
-						print("Failed to enumerate contact", error)
-					}
-				} else {
-					print("access denied")
 				}
 			}
 		}
