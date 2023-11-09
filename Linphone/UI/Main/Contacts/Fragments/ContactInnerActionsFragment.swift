@@ -192,7 +192,12 @@ struct ContactInnerActionsFragment: View {
 					&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty {
 					Text("**Job :** \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!)")
 						.default_text_style(styleSize: 14)
-						.padding(.vertical, 15)
+						.padding(.top, 
+								 magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
+								 && !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty 
+								 ? 0 : 15
+						)
+						.padding(.bottom, 15)
 						.padding(.horizontal, 20)
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}

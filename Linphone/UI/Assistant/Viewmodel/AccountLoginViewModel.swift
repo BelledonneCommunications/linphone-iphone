@@ -52,7 +52,14 @@ class AccountLoginViewModel: ObservableObject {
 				// userID is set to null as it's the same as the username in our case
 				// ha1 is set to null as we are using the clear text password. Upon first register, the hash will be computed automatically.
 				// The realm will be determined automatically from the first register, as well as the algorithm
-				let authInfo = try Factory.Instance.createAuthInfo(username: self.username, userid: "", passwd: self.passwd, ha1: "", realm: "", domain: self.domain)
+				let authInfo = try Factory.Instance.createAuthInfo(
+					username: self.username,
+					userid: "",
+					passwd: self.passwd,
+					ha1: "",
+					realm: "",
+					domain: self.domain
+				)
 				
 				// Account object replaces deprecated ProxyConfig object
 				// Account object is configured through an AccountParams object that we can obtain from the Core

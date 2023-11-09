@@ -183,25 +183,24 @@ final class ContactsManager: ObservableObject {
 		}
 		
 		awaitDataWrite(data: data, name: name) { _, result in
-			let resultFriend = self.saveFriend(result: result, contact: contact, existingFriend: existingFriend)
-			
-			if resultFriend != nil {
-				if linphoneFriend && existingFriend == nil {
-					_ = self.linphoneFriendList!.addLocalFriend(linphoneFriend: resultFriend!)
-					
-					self.linphoneFriendList!.updateSubscriptions()
-				} else if existingFriend == nil {
-					_ = self.friendList!.addLocalFriend(linphoneFriend: resultFriend!)
-					
-					self.friendList!.updateSubscriptions()
-				}
+			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
+				if resultFriend != nil {
+				 if linphoneFriend && existingFriend == nil {
+					 _ = self.linphoneFriendList!.addLocalFriend(linphoneFriend: resultFriend!)
+					 
+					 self.linphoneFriendList!.updateSubscriptions()
+				 } else if existingFriend == nil {
+					 _ = self.friendList!.addLocalFriend(linphoneFriend: resultFriend!)
+					 
+					 self.friendList!.updateSubscriptions()
+				 }
+			 }
 			}
 		}
 	}
 	
-	func saveFriend(result: String, contact: Contact, existingFriend: Friend?) -> Friend? {
-		
-		self.coreContext.doOnCoreQueue() { core in
+	func saveFriend(result: String, contact: Contact, existingFriend: Friend?, completion: @escaping (Friend?) -> Void) {
+		self.coreContext.doOnCoreQueue { core in
 			do {
 				let friend = (existingFriend != nil) ? existingFriend : try core.createFriend()
 				
@@ -257,14 +256,14 @@ final class ContactsManager: ObservableObject {
 					friend!.jobTitle = contact.jobTitle
 					
 					friend!.done()
-					return friend
+					completion(friend)
 				}
 			} catch let error {
 				print("Failed to enumerate contact", error)
-				return nil
+				completion(nil)
 			}
 		}
-		return nil
+		completion(nil)
 	}
 	
 	func getImagePath(friendPhotoPath: String) -> URL {

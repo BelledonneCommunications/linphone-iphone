@@ -39,7 +39,7 @@ final class MagicSearchSingleton: ObservableObject {
 	private var domainDefaultAccount = ""
 	
 	private init() {
-		coreContext.doOnCoreQueue{ core in
+		coreContext.doOnCoreQueue { core in
 			self.domainDefaultAccount = core.defaultAccount?.params?.domain ?? ""
 			
 			self.magicSearch = try? core.createMagicSearch()
@@ -53,7 +53,7 @@ final class MagicSearchSingleton: ObservableObject {
 	}
 	
 	func searchForContacts(sourceFlags: Int) {
-		coreContext.doOnCoreQueue{ core in
+		coreContext.doOnCoreQueue { _ in
 			var needResetCache = false
 			
 			DispatchQueue.main.sync {

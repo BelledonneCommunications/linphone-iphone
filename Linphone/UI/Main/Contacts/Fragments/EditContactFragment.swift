@@ -493,10 +493,10 @@ struct EditContactFragment: View {
 		
 		if editContactViewModel.selectedEditFriend != nil && selectedImage == nil &&
 			!removedImage {
-			_ = ContactsManager.shared.saveFriend(
+			ContactsManager.shared.saveFriend(
 				result: String(editContactViewModel.selectedEditFriend!.photo!.dropFirst(6)),
 				contact: newContact,
-				existingFriend: editContactViewModel.selectedEditFriend
+				existingFriend: editContactViewModel.selectedEditFriend, completion: {_ in }
 			)
 		} else {
 			ContactsManager.shared.saveImage(
