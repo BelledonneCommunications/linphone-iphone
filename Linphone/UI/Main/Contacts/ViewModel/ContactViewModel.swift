@@ -26,6 +26,7 @@ class ContactViewModel: ObservableObject {
 	var stringToCopy: String = ""
     
     var selectedFriend: Friend?
+    var selectedFriendToShare: Friend?
 	var selectedFriendToDelete: Friend?
 	
 	private var magicSearch = MagicSearchSingleton.shared

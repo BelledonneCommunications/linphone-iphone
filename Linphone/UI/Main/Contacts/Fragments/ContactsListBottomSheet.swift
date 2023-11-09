@@ -19,147 +19,169 @@
 
 import SwiftUI
 import linphonesw
+import Contacts
 
 struct ContactsListBottomSheet: View {
 	
+	@Environment(\.dismiss) var dismiss
+	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-    @ObservedObject var magicSearch = MagicSearchSingleton.shared
-    
-    @ObservedObject var contactViewModel: ContactViewModel
-    
-    @State private var orientation = UIDevice.current.orientation
-    
-    @Environment(\.dismiss) var dismiss
+	@ObservedObject var magicSearch = MagicSearchSingleton.shared
+	@ObservedObject var contactViewModel: ContactViewModel
+	
+	@State private var orientation = UIDevice.current.orientation
 	
 	@Binding var isShowDeletePopup: Bool
-    
-    @Binding var showingSheet: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            if idiom != .pad && (orientation == .landscapeLeft
-                || orientation == .landscapeRight
-                || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button("Close") {
-                        if #available(iOS 16.0, *) {
-                            showingSheet.toggle()
-                        } else {
-                            showingSheet.toggle()
-                            dismiss()
-                        }
-                    }
-                }
-                .padding(.trailing)
-            }
-            
-            Spacer()
-            Button {
-                if contactViewModel.selectedFriend != nil {
-                    contactViewModel.selectedFriend!.starred.toggle()
-                }
-                self.magicSearch.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-                
-                if #available(iOS 16.0, *) {
-                    showingSheet.toggle()
-                } else {
-                    showingSheet.toggle()
-                    dismiss()
-                }
-            } label: {
-                HStack {
+	@Binding var showingSheet: Bool
+	@Binding var showShareSheet: Bool
+	
+	var body: some View {
+		VStack(alignment: .leading) {
+			if idiom != .pad && (orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+				Spacer()
+				HStack {
+					Spacer()
+					Button("Close") {
+						if #available(iOS 16.0, *) {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
+					}
+				}
+				.padding(.trailing)
+			}
+			
+			Spacer()
+			Button {
+				if contactViewModel.selectedFriend != nil {
+					contactViewModel.selectedFriend!.starred.toggle()
+				}
+				self.magicSearch.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				
+				if #available(iOS 16.0, *) {
+					if idiom != .pad {
+						showingSheet.toggle()
+					} else {
+						showingSheet.toggle()
+					 	dismiss()
+					}
+				} else {
+					showingSheet.toggle()
+					dismiss()
+				}
+			} label: {
+				HStack {
 					Image(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
-                        .renderingMode(.template)
-                        .resizable()
+						.renderingMode(.template)
+						.resizable()
 						.foregroundStyle(
 							contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
 							? Color.redDanger500
 							: Color.grayMain2c500
 						)
-                        .frame(width: 25, height: 25, alignment: .leading)
-                    Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
-                         ? "Remove from favourites"
-                         : "Add to favourites")
-                    .default_text_style(styleSize: 16)
-                    Spacer()
-                }
-                .frame(maxHeight: .infinity)
-            }
-            .padding(.horizontal, 30)
-            .background(Color.gray100)
-            
-            VStack {
-                Divider()
-            }
-            .frame(maxWidth: .infinity)
-            
-            Button {
-                if #available(iOS 16.0, *) {
-                    showingSheet.toggle()
-                } else {
-                    showingSheet.toggle()
-                    dismiss()
-                }
-            } label: {
-                HStack {
-                    Image("share-network")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundStyle(Color.grayMain2c500)
-                        .frame(width: 25, height: 25, alignment: .leading)
-                    Text("Share")
-                        .default_text_style(styleSize: 16)
-                    Spacer()
-                }
-                .frame(maxHeight: .infinity)
-            }
-            .padding(.horizontal, 30)
-            .background(Color.gray100)
-            
-            VStack {
-                Divider()
-            }
-            .frame(maxWidth: .infinity)
-            
-            Button {
-                if contactViewModel.selectedFriend != nil {
-					isShowDeletePopup.toggle()
-                }
+						.frame(width: 25, height: 25, alignment: .leading)
+					Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
+						 ? "Remove from favourites"
+						 : "Add to favourites")
+					.default_text_style(styleSize: 16)
+					Spacer()
+				}
+				.frame(maxHeight: .infinity)
+			}
+			.padding(.horizontal, 30)
+			.background(Color.gray100)
+			
+			VStack {
+				Divider()
+			}
+			.frame(maxWidth: .infinity)
+			
+			Button {
+				if #available(iOS 16.0, *) {
+					if idiom != .pad {
+						showingSheet.toggle()
+					} else {
+						showingSheet.toggle()
+						dismiss()
+					}
+				} else {
+					showingSheet.toggle()
+					dismiss()
+				}
                 
-                if #available(iOS 16.0, *) {
-                    showingSheet.toggle()
-                } else {
-                    showingSheet.toggle()
-                    dismiss()
-                }
-            } label: {
-                HStack {
-                    Image("trash-simple")
-                        .renderingMode(.template)
-                        .resizable()
-                        .foregroundStyle(Color.redDanger500)
-                        .frame(width: 25, height: 25, alignment: .leading)
-                    Text("Delete")
-                        .foregroundStyle(Color.redDanger500)
-                        .default_text_style(styleSize: 16)
-                    Spacer()
-                }
-                .frame(maxHeight: .infinity)
-            }
-            .padding(.horizontal, 30)
-            .background(Color.gray100)
-            
-        }
+                contactViewModel.selectedFriendToShare = contactViewModel.selectedFriend
+				
+				DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+					showShareSheet.toggle()
+				}
+				
+			} label: {
+				HStack {
+					Image("share-network")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.grayMain2c500)
+						.frame(width: 25, height: 25, alignment: .leading)
+					Text("Share")
+						.default_text_style(styleSize: 16)
+					Spacer()
+				}
+				.frame(maxHeight: .infinity)
+			}
+			.padding(.horizontal, 30)
+			.background(Color.gray100)
+			
+			VStack {
+				Divider()
+			}
+			.frame(maxWidth: .infinity)
+			
+			Button {
+				if contactViewModel.selectedFriend != nil {
+					isShowDeletePopup.toggle()
+				}
+				
+				if #available(iOS 16.0, *) {
+					if idiom != .pad {
+						showingSheet.toggle()
+					} else {
+						showingSheet.toggle()
+						dismiss()
+					}
+				} else {
+					showingSheet.toggle()
+					dismiss()
+				}
+			} label: {
+				HStack {
+					Image("trash-simple")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.redDanger500)
+						.frame(width: 25, height: 25, alignment: .leading)
+					Text("Delete")
+						.foregroundStyle(Color.redDanger500)
+						.default_text_style(styleSize: 16)
+					Spacer()
+				}
+				.frame(maxHeight: .infinity)
+			}
+			.padding(.horizontal, 30)
+			.background(Color.gray100)
+			
+		}
 		.background(Color.gray100)
-  		.frame(maxWidth: .infinity)
-        .onRotate { newOrientation in
-            orientation = newOrientation
-        }
+		.frame(maxWidth: .infinity)
+		.onRotate { newOrientation in
+			orientation = newOrientation
+		}
 		.onDisappear {
 			contactViewModel.selectedFriend = nil
 		}
-    }
+	}
 }

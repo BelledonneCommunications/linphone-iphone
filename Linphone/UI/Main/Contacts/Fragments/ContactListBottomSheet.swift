@@ -93,7 +93,12 @@ struct ContactListBottomSheet: View {
 			if contactViewModel.stringToCopy.prefix(4) != "sip:" {
 				Button {
 					if #available(iOS 16.0, *) {
-						showingSheet.toggle()
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
 						dismiss()

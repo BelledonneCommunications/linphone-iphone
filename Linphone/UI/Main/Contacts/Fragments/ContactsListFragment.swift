@@ -72,6 +72,7 @@ struct ContactsListFragment: View {
                                     case .success(let image):
                                         image
                                             .resizable()
+											.aspectRatio(contentMode: .fill)
                                             .frame(width: 45, height: 45)
                                             .clipShape(Circle())
                                     case .failure:

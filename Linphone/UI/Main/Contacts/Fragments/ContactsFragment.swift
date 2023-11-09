@@ -28,6 +28,7 @@ struct ContactsFragment: View {
 	@Binding var isShowDeletePopup: Bool
 	
 	@State private var showingSheet = false
+	@State private var showShareSheet = false
 	
 	var body: some View {
 		ZStack {
@@ -35,20 +36,48 @@ struct ContactsFragment: View {
 				if idiom != .pad {
 					ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 						.sheet(isPresented: $showingSheet) {
-							ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+							ContactsListBottomSheet(
+								contactViewModel: contactViewModel,
+								isShowDeletePopup: $isShowDeletePopup,
+								showingSheet: $showingSheet,
+								showShareSheet: $showShareSheet
+							)
 								.presentationDetents([.fraction(0.2)])
+						}
+						.sheet(isPresented: $showShareSheet) {
+                            ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+								.presentationDetents([.medium])
+								.edgesIgnoringSafeArea(.bottom)
 						}
 				} else {
 					ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 						.halfSheet(showSheet: $showingSheet) {
-							ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+							ContactsListBottomSheet(
+								contactViewModel: contactViewModel,
+								isShowDeletePopup: $isShowDeletePopup,
+								showingSheet: $showingSheet,
+								showShareSheet: $showShareSheet
+							)
 						} onDismiss: {}
+						.sheet(isPresented: $showShareSheet) {
+							ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+								.edgesIgnoringSafeArea(.bottom)
+						}
 				}
 			} else {
 				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 					.halfSheet(showSheet: $showingSheet) {
-						ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+						ContactsListBottomSheet(
+							contactViewModel: contactViewModel,
+							isShowDeletePopup: $isShowDeletePopup,
+							showingSheet: $showingSheet,
+							showShareSheet: $showShareSheet
+						)
 					} onDismiss: {}
+					.sheet(isPresented: $showShareSheet) {
+						ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+							.edgesIgnoringSafeArea(.bottom)
+					}
 			}
 		}
 	}

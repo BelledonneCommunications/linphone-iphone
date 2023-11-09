@@ -16,6 +16,7 @@ struct ContactInnerActionsFragment: View {
 	@State private var informationIsOpen = true
 	
 	@Binding var showingSheet: Bool
+	@Binding var showShareSheet: Bool
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
 	
@@ -278,27 +279,6 @@ struct ContactInnerActionsFragment: View {
 					}
 				)
 			}
-			/*
-			Button {
-			} label: {
-				HStack {
-					Image("pencil-simple")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c600)
-						.frame(width: 25, height: 25)
-					
-					Text("Edit")
-						.default_text_style(styleSize: 14)
-						.frame(maxWidth: .infinity, alignment: .leading)
-						.lineLimit(1)
-						.fixedSize(horizontal: false, vertical: true)
-					Spacer()
-				}
-				.padding(.vertical, 15)
-				.padding(.horizontal, 20)
-			}
-			 */
 			
 			VStack {
 				Divider()
@@ -340,6 +320,7 @@ struct ContactInnerActionsFragment: View {
 			.padding(.horizontal)
 			
 			Button {
+				showShareSheet.toggle()
 			} label: {
 				HStack {
 					Image("share-network")
@@ -453,6 +434,7 @@ struct ContactInnerActionsFragment: View {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		showingSheet: .constant(false),
+		showShareSheet: .constant(false),
 		isShowDeletePopup: .constant(false),
 		isShowDismissPopup: .constant(false),
 		actionEditButton: {}

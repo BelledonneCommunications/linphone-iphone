@@ -37,6 +37,7 @@ struct ContactInnerFragment: View {
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var showingSheet: Bool
+	@Binding var showShareSheet: Bool
 	@Binding var isShowDismissPopup: Bool
 	
 	var body: some View {
@@ -122,6 +123,7 @@ struct ContactInnerFragment: View {
 										case .success(let image):
 											image
 												.resizable()
+												.aspectRatio(contentMode: .fill)
 												.frame(width: 100, height: 100)
 												.clipShape(Circle())
 										case .failure:
@@ -253,6 +255,7 @@ struct ContactInnerFragment: View {
 								contactViewModel: contactViewModel,
 								editContactViewModel: editContactViewModel,
 								showingSheet: $showingSheet,
+								showShareSheet: $showShareSheet,
 								isShowDeletePopup: $isShowDeletePopup,
 								isShowDismissPopup: $isShowDismissPopup,
 								actionEditButton: editNativeContact
@@ -305,6 +308,7 @@ struct ContactInnerFragment: View {
 		editContactViewModel: EditContactViewModel(),
 		isShowDeletePopup: .constant(false),
 		showingSheet: .constant(false),
+		showShareSheet: .constant(false),
 		isShowDismissPopup: .constant(false)
 	)
 }

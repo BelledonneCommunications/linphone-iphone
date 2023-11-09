@@ -137,6 +137,7 @@ struct EditContactFragment: View {
 										case .success(let image):
 											image
 												.resizable()
+												.aspectRatio(contentMode: .fill)
 												.frame(width: 100, height: 100)
 												.clipShape(Circle())
 										case .failure:
@@ -156,6 +157,7 @@ struct EditContactFragment: View {
 								} else {
 									Image(uiImage: selectedImage!)
 										.resizable()
+										.aspectRatio(contentMode: .fill)
 										.frame(width: 100, height: 100)
 										.clipShape(Circle())
 								}
