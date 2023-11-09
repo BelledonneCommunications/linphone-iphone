@@ -32,10 +32,10 @@ struct LinphoneApp: App {
 			if isActive {
 				if !sharedMainViewModel.welcomeViewDisplayed {
 					WelcomeView(sharedMainViewModel: sharedMainViewModel)
-				} else if coreContext.mCore.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
+				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
 					AssistantView(sharedMainViewModel: sharedMainViewModel)
 						.toast(isShowing: $coreContext.toastMessage)
-				} else if coreContext.mCore.defaultAccount != nil {
+				} else if coreContext.defaultAccount != nil {
 					ContentView(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), historyViewModel: HistoryViewModel())
 						.toast(isShowing: $coreContext.toastMessage)
 				}

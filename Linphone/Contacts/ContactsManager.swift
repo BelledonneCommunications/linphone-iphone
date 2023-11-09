@@ -40,16 +40,16 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func fetchContacts() {
-		DispatchQueue.global().async {
-			if self.coreContext.mCore.globalState == GlobalState.Shutdown || self.coreContext.mCore.globalState == GlobalState.Off {
+		coreContext.doOnCoreQueue { core in
+			if core.globalState == GlobalState.Shutdown || core.globalState == GlobalState.Off {
 				print("$TAG Core is being stopped or already destroyed, abort")
 			} else {
 				print("$TAG ${friends.size} friends created")
 				
-				self.friendList = self.coreContext.mCore.getFriendListByName(name: self.nativeAddressBookFriendList)
+				self.friendList = core.getFriendListByName(name: self.nativeAddressBookFriendList)
 				if self.friendList == nil {
 					do {
-						self.friendList = try self.coreContext.mCore.createFriendList()
+						self.friendList = try core.createFriendList()
 					} catch let error {
 						print("Failed to enumerate contact", error)
 					}
@@ -63,7 +63,7 @@ final class ContactsManager: ObservableObject {
 					self.friendList!.databaseStorageEnabled = false // We don't want to store local address-book in DB
 					
 					self.friendList!.displayName = self.nativeAddressBookFriendList
-					self.coreContext.mCore.addFriendList(list: self.friendList!)
+					core.addFriendList(list: self.friendList!)
 				} else {
 					print(
 						"$TAG Friend list [$LINPHONE_ADDRESS_BOOK_FRIEND_LIST] found, removing existing friends if any"
@@ -73,10 +73,10 @@ final class ContactsManager: ObservableObject {
 					}
 				}
 				
-				self.linphoneFriendList = self.coreContext.mCore.getFriendListByName(name: self.linphoneAddressBookFirendList)
+				self.linphoneFriendList = core.getFriendListByName(name: self.linphoneAddressBookFirendList)
 				if self.linphoneFriendList == nil {
 					do {
-						self.linphoneFriendList = try self.coreContext.mCore.createFriendList()
+						self.linphoneFriendList = try core.createFriendList()
 					} catch let error {
 						print("Failed to enumerate contact", error)
 					}
@@ -90,7 +90,7 @@ final class ContactsManager: ObservableObject {
 					self.linphoneFriendList!.databaseStorageEnabled = true
 					
 					self.linphoneFriendList!.displayName = self.linphoneAddressBookFirendList
-					self.coreContext.mCore.addFriendList(list: self.linphoneFriendList!)
+					core.addFriendList(list: self.linphoneFriendList!)
 				}
 			}
 			
@@ -200,66 +200,69 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func saveFriend(result: String, contact: Contact, existingFriend: Friend?) -> Friend? {
-		do {
-			let friend = (existingFriend != nil) ? existingFriend : try self.coreContext.mCore.createFriend()
-			
-			if friend != nil {
-				friend!.edit()
+		
+		self.coreContext.doOnCoreQueue() { core in
+			do {
+				let friend = (existingFriend != nil) ? existingFriend : try core.createFriend()
 				
-				friend!.nativeUri = contact.identifier
-				
-				try friend!.setName(newValue: contact.firstName + " " + contact.lastName)
-				
-				let friendvCard = friend!.vcard
-				
-				if friendvCard != nil {
-					friendvCard!.givenName = contact.firstName
-					friendvCard!.familyName = contact.lastName
-				}
-				
-				friend!.organization = contact.organizationName
-				
-				var friendAddresses: [Address] = []
-				friend?.addresses.forEach({ address in
-					friend?.removeAddress(address: address)
-				})
-				contact.sipAddresses.forEach { sipAddress in
-					let address = self.coreContext.mCore.interpretUrl(url: sipAddress, applyInternationalPrefix: true)
+				if friend != nil {
+					friend!.edit()
 					
-					if address != nil && ((friendAddresses.firstIndex(where: {$0.asString() == address?.asString()})) == nil) {
-						friend!.addAddress(address: address!)
-						friendAddresses.append(address!)
+					friend!.nativeUri = contact.identifier
+					
+					try friend!.setName(newValue: contact.firstName + " " + contact.lastName)
+					
+					let friendvCard = friend!.vcard
+					
+					if friendvCard != nil {
+						friendvCard!.givenName = contact.firstName
+						friendvCard!.familyName = contact.lastName
 					}
-				}
-				
-				var friendPhoneNumbers: [PhoneNumber] = []
-				friend?.phoneNumbersWithLabel.forEach({ phoneNumber in
-					friend?.removePhoneNumberWithLabel(phoneNumber: phoneNumber)
-				})
-				contact.phoneNumbers.forEach { phone in
-					do {
-						if (friendPhoneNumbers.firstIndex(where: {$0.num == phone.num})) == nil {
-							let labelDrop = String(phone.numLabel.dropFirst(4).dropLast(4))
-							let phoneNumber = try Factory.Instance.createFriendPhoneNumber(phoneNumber: phone.num, label: labelDrop)
-							friend!.addPhoneNumberWithLabel(phoneNumber: phoneNumber)
-							friendPhoneNumbers.append(phone)
+					
+					friend!.organization = contact.organizationName
+					
+					var friendAddresses: [Address] = []
+					friend?.addresses.forEach({ address in
+						friend?.removeAddress(address: address)
+					})
+					contact.sipAddresses.forEach { sipAddress in
+						let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true)
+						
+						if address != nil && ((friendAddresses.firstIndex(where: {$0.asString() == address?.asString()})) == nil) {
+							friend!.addAddress(address: address!)
+							friendAddresses.append(address!)
 						}
-					} catch let error {
-						print("Failed to enumerate contact", error)
 					}
+					
+					var friendPhoneNumbers: [PhoneNumber] = []
+					friend?.phoneNumbersWithLabel.forEach({ phoneNumber in
+						friend?.removePhoneNumberWithLabel(phoneNumber: phoneNumber)
+					})
+					contact.phoneNumbers.forEach { phone in
+						do {
+							if (friendPhoneNumbers.firstIndex(where: {$0.num == phone.num})) == nil {
+								let labelDrop = String(phone.numLabel.dropFirst(4).dropLast(4))
+								let phoneNumber = try Factory.Instance.createFriendPhoneNumber(phoneNumber: phone.num, label: labelDrop)
+								friend!.addPhoneNumberWithLabel(phoneNumber: phoneNumber)
+								friendPhoneNumbers.append(phone)
+							}
+						} catch let error {
+							print("Failed to enumerate contact", error)
+						}
+					}
+					
+					friend!.photo = "file:/" + result
+					
+					friend!.organization = contact.organizationName
+					friend!.jobTitle = contact.jobTitle
+					
+					friend!.done()
+					return friend
 				}
-				
-				friend!.photo = "file:/" + result
-				
-				friend!.organization = contact.organizationName
-				friend!.jobTitle = contact.jobTitle
-				
-				friend!.done()
-				return friend
+			} catch let error {
+				print("Failed to enumerate contact", error)
+				return nil
 			}
-		} catch let error {
-			print("Failed to enumerate contact", error)
-			return nil
 		}
 		return nil
 	}

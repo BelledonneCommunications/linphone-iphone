@@ -25,9 +25,8 @@ final class MagicSearchSingleton: ObservableObject {
 	private var coreContext = CoreContext.shared
 	
 	private var magicSearch: MagicSearch!
-	var magicSearchDelegate: MagicSearchDelegate?
 	
-	@objc var currentFilter: String = ""
+	var currentFilter: String = ""
 	var previousFilter: String?
 	
 	var needUpdateLastSearchContacts = false
@@ -35,36 +34,45 @@ final class MagicSearchSingleton: ObservableObject {
 	@Published var lastSearch: [SearchResult] = []
 	
 	private var limitSearchToLinphoneAccounts = true
-    
-    @Published var allContact = false
-    private var domainDefaultAccount = ""
+	
+	@Published var allContact = false
+	private var domainDefaultAccount = ""
 	
 	private init() {
-        domainDefaultAccount = coreContext.mCore.defaultAccount!.params!.domain!
-        
-		magicSearch = try? coreContext.mCore.createMagicSearch()
-		magicSearch.limitedSearch = false
-		
-		magicSearchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
-			self.needUpdateLastSearchContacts = true
-			self.lastSearch = magicSearch.lastSearch
-		})
-		
-		magicSearch.addDelegate(delegate: magicSearchDelegate!)
+		coreContext.doOnCoreQueue{ core in
+			self.domainDefaultAccount = core.defaultAccount?.params?.domain ?? ""
+			
+			self.magicSearch = try? core.createMagicSearch()
+			self.magicSearch.limitedSearch = false
+			
+			self.magicSearch.publisher?.onSearchResultsReceived?.postOnMainQueue { (magicSearch: MagicSearch) in
+				self.needUpdateLastSearchContacts = true
+				self.lastSearch = magicSearch.lastSearch
+			}
+		}
 	}
 	
 	func searchForContacts(sourceFlags: Int) {
-		if let oldFilter = previousFilter {
-			if oldFilter.count > currentFilter.count || oldFilter != currentFilter {
-				magicSearch.resetSearchCache()
+		coreContext.doOnCoreQueue{ core in
+			var needResetCache = false
+			
+			DispatchQueue.main.sync {
+				if let oldFilter = self.previousFilter {
+					if oldFilter.count > self.currentFilter.count || oldFilter != self.currentFilter {
+						needResetCache = true
+					}
+				}
+				self.previousFilter = self.currentFilter
 			}
+			if needResetCache {
+				self.magicSearch.resetSearchCache()
+			}
+			
+			self.magicSearch.getContactsListAsync(
+				filter: self.currentFilter,
+				domain: self.allContact ? "" : self.domainDefaultAccount,
+				sourceFlags: sourceFlags,
+				aggregation: MagicSearch.Aggregation.Friend)
 		}
-		previousFilter = currentFilter
-		
-        magicSearch.getContactsListAsync(
-            filter: currentFilter,
-            domain: allContact ? "" : domainDefaultAccount,
-            sourceFlags: sourceFlags,
-            aggregation: MagicSearch.Aggregation.Friend)
 	}
 }
