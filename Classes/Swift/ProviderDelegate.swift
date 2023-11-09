@@ -115,7 +115,7 @@ class ProviderDelegate: NSObject {
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
 				if CallManager.instance().endCallkit {
-					let call = CallManager.instance().lc?.getCallByCallid(callId: callId!)
+					let call = CallManager.instance().lc?.getCallByCallid(callId: callId ?? "")
 					if (call?.state == .PushIncomingReceived) {
 						try? call?.terminate()
 					}

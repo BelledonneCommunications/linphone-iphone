@@ -539,9 +539,9 @@ import AVFoundation
 	
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
-		let callId = callLog?.callId
+		let callId = callLog?.callId ?? ""
 		if (cstate == .PushIncomingReceived) {
-			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId!, displayName: "Calling")
+			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
 		} else {
 			let video = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 			
@@ -568,7 +568,7 @@ import AVFoundation
 					let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 					callInfo!.callId = CallManager.instance().referedToCall ?? ""
 					CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-					CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
+					CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId)
 					CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
 					CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
 				} else if (CallManager.callKitEnabled()) {
@@ -576,7 +576,7 @@ import AVFoundation
 					let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
 					if (isEarlyConference) {
 						CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
-							let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+							let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
 							if (uuid != nil) {
 								displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
 								CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
@@ -584,7 +584,7 @@ import AVFoundation
 						}
 					}
 					
-					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+					let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
 					if call.replacedCall == nil {
 						CallManager.uuidReplacedCall = callId
 					}
@@ -593,7 +593,7 @@ import AVFoundation
 						// Tha app is now registered, updated the call already existed.
 						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
 					} else {
-						CallManager.instance().displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId!, displayName: displayName)
+						CallManager.instance().displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId, displayName: displayName)
 					}
 				} else if (UIApplication.shared.applicationState != .active) {
 					// not support callkit , use notif
@@ -602,18 +602,18 @@ import AVFoundation
 					content.body = displayName
 					content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
 					content.categoryIdentifier = "call_cat"
-					content.userInfo = ["CallId" : callId!]
+					content.userInfo = ["CallId" : callId]
 					let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
 					UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
 				}
 				break
 			case .StreamsRunning:
 				if (CallManager.callKitEnabled()) {
-					let uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+					let uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
 					if (uuid != nil) {
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 						if (callInfo != nil && callInfo!.isOutgoing && !callInfo!.connected) {
-							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId!)")
+							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call connected with uuid \(uuid!) and callId \(callId)")
 							CallManager.instance().providerDelegate.reportOutgoingCallConnected(uuid: uuid!)
 							callInfo!.connected = true
 							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
@@ -640,12 +640,12 @@ import AVFoundation
 					let uuid = CallManager.instance().providerDelegate.uuids[""]
 					if (uuid != nil) {
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
-						callInfo!.callId = callId!
+						callInfo!.callId = callId
 						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 						CallManager.instance().providerDelegate.uuids.removeValue(forKey: "")
-						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId!)
+						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callId)
 						
-						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId!)")
+						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId)")
 						CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
 					} else {
 						if CallManager.instance().isConferenceCall(call: call) {
@@ -696,7 +696,7 @@ import AVFoundation
 				}
 				
 				if (CallManager.callKitEnabled()) {
-					var uuid = CallManager.instance().providerDelegate.uuids["\(callId!)"]
+					var uuid = CallManager.instance().providerDelegate.uuids["\(callId)"]
 					if (callId == CallManager.instance().referedToCall) {
 						// refered call ended before connecting
 						Log.directLog(BCTBX_LOG_MESSAGE, text: "Callkit: end refered to call :  \(String(describing: CallManager.instance().referedToCall))")
@@ -714,7 +714,7 @@ import AVFoundation
 							let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 							callInfo!.callId = CallManager.instance().referedToCall ?? ""
 							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-							CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId!)
+							CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId)
 							CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
 							CallManager.instance().referedToCall = nil
 							break
