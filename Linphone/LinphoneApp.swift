@@ -29,7 +29,7 @@ struct LinphoneApp: App {
 	
 	var body: some Scene {
 		WindowGroup {
-			if isActive {
+			if isActive && coreContext.coreIsStarted {
 				if !sharedMainViewModel.welcomeViewDisplayed {
 					WelcomeView(sharedMainViewModel: sharedMainViewModel)
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {

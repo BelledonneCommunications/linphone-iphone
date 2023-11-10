@@ -129,26 +129,9 @@ struct EditContactFragment: View {
 								if editContactViewModel.selectedEditFriend != nil
 									&& editContactViewModel.selectedEditFriend!.photo != nil
 									&& !editContactViewModel.selectedEditFriend!.photo!.isEmpty && selectedImage == nil && !removedImage {
-									AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: editContactViewModel.selectedEditFriend!.photo!)) { image in
-										switch image {
-										case .empty:
-											ProgressView()
-												.frame(width: 100, height: 100)
-										case .success(let image):
-											image
-												.resizable()
-												.aspectRatio(contentMode: .fill)
-												.frame(width: 100, height: 100)
-												.clipShape(Circle())
-										case .failure:
-											Image("profil-picture-default")
-												.resizable()
-												.frame(width: 100, height: 100)
-												.clipShape(Circle())
-										@unknown default:
-											EmptyView()
-										}
-									}
+                                    
+                                    Avatar(friend: editContactViewModel.selectedEditFriend!, avatarSize: 100)
+                                    
 								} else if selectedImage == nil {
 									Image("profil-picture-default")
 										.resizable()

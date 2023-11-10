@@ -113,28 +113,9 @@ struct ContactInnerFragment: View {
 									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo != nil
 									&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!.isEmpty {
-									AsyncImage(
-										url: ContactsManager.shared.getImagePath(
-										friendPhotoPath: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!)) { image in
-										switch image {
-										case .empty:
-											ProgressView()
-												.frame(width: 100, height: 100)
-										case .success(let image):
-											image
-												.resizable()
-												.aspectRatio(contentMode: .fill)
-												.frame(width: 100, height: 100)
-												.clipShape(Circle())
-										case .failure:
-											Image("profil-picture-default")
-												.resizable()
-												.frame(width: 100, height: 100)
-												.clipShape(Circle())
-										@unknown default:
-											EmptyView()
-										}
-									}
+                                    
+                                    Avatar(friend: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!, avatarSize: 100)
+                                    
 								} else if contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 									Image("profil-picture-default")
 										.resizable()

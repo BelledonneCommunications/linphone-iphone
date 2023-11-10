@@ -30,6 +30,7 @@ final class CoreContext: ObservableObject {
 	@Published var loggingInProgress: Bool = false
 	@Published var toastMessage: String = ""
 	@Published var defaultAccount: Account?
+	@Published var coreIsStarted: Bool = false
 	
 	private var mCore: Core!
 	private var mIteratePublisher: AnyCancellable?
@@ -53,17 +54,39 @@ final class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			let configDir = Factory.Instance.getConfigDir(context: nil)
-			try? self.mCore = Factory.Instance.createCore(configPath: "\(configDir)/MyConfig", factoryConfigPath: "", systemContext: nil)
+			
+			let url = NSURL(fileURLWithPath: configDir)
+			if let pathComponent = url.appendingPathComponent("linphonerc") {
+				let filePath = pathComponent.path
+				let fileManager = FileManager.default
+				if !fileManager.fileExists(atPath: filePath) {
+					let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
+					if path != nil {
+						try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
+					}
+				}
+			}
+			
+			let config: Config! = Config.newForSharedCore(
+				appGroupId: "group.org.linphone.phone.msgNotification",
+				configFilename: "linphonerc",
+				factoryConfigFilename: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
+			)
+			
+			self.mCore = try? Factory.Instance.createCoreWithConfig(config: config, systemContext: nil)
+			
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 					self.defaultAccount = self.mCore.defaultAccount
+					self.coreIsStarted = true
 				} else if cbVal.state == GlobalState.Off {
 					self.defaultAccount = nil
 				}
 			}
+			
 			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need

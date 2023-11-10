@@ -39,27 +39,9 @@ struct FavoriteContactsListFragment: View {
 							VStack {
 								if magicSearch.lastSearch[index].friend!.photo != nil
 									&& !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
-									AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: magicSearch.lastSearch[index].friend!.photo!)
-									) { image in
-										switch image {
-										case .empty:
-											ProgressView()
-												.frame(width: 45, height: 45)
-										case .success(let image):
-											image
-												.resizable()
-												.aspectRatio(contentMode: .fill)
-												.frame(width: 45, height: 45)
-												.clipShape(Circle())
-										case .failure:
-											Image("profil-picture-default")
-												.resizable()
-												.frame(width: 45, height: 45)
-												.clipShape(Circle())
-										@unknown default:
-											EmptyView()
-										}
-									}
+                                    
+                                    Avatar(friend: magicSearch.lastSearch[index].friend!, avatarSize: 45)
+                                    
 								} else {
 									Image("profil-picture-default")
 										.resizable()

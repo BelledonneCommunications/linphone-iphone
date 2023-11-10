@@ -136,6 +136,7 @@ struct ContentView: View {
 									Menu {
 										Button {
 											isMenuOpen = false
+											contactViewModel.indexDisplayedFriend = nil
 											magicSearch.allContact = true
 											magicSearch.searchForContacts(
 												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
@@ -153,6 +154,7 @@ struct ContentView: View {
 										
 										Button {
 											isMenuOpen = false
+											contactViewModel.indexDisplayedFriend = nil
 											magicSearch.allContact = false
 											magicSearch.searchForContacts(
 												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
