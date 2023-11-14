@@ -20,29 +20,67 @@
 import SwiftUI
 
 struct ContactsFragment: View {
-    
-    @ObservedObject var contactViewModel: ContactViewModel
+	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
+	@ObservedObject var contactViewModel: ContactViewModel
 	
 	@Binding var isShowDeletePopup: Bool
-    
-    @State private var showingSheet = false
-    
-    var body: some View {
+	
+	@State private var showingSheet = false
+	@State private var showShareSheet = false
+	
+	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *) {
-				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-					.sheet(isPresented: $showingSheet) {
-						ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
-							.presentationDetents([.fraction(0.2)])
-					}
+				if idiom != .pad {
+					ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+						.sheet(isPresented: $showingSheet) {
+							ContactsListBottomSheet(
+								contactViewModel: contactViewModel,
+								isShowDeletePopup: $isShowDeletePopup,
+								showingSheet: $showingSheet,
+								showShareSheet: $showShareSheet
+							)
+								.presentationDetents([.fraction(0.2)])
+						}
+						.sheet(isPresented: $showShareSheet) {
+                            ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+								.presentationDetents([.medium])
+								.edgesIgnoringSafeArea(.bottom)
+						}
+				} else {
+					ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+						.halfSheet(showSheet: $showingSheet) {
+							ContactsListBottomSheet(
+								contactViewModel: contactViewModel,
+								isShowDeletePopup: $isShowDeletePopup,
+								showingSheet: $showingSheet,
+								showShareSheet: $showShareSheet
+							)
+						} onDismiss: {}
+						.sheet(isPresented: $showShareSheet) {
+							ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+								.edgesIgnoringSafeArea(.bottom)
+						}
+				}
 			} else {
 				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 					.halfSheet(showSheet: $showingSheet) {
-						ContactsListBottomSheet(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, showingSheet: $showingSheet)
+						ContactsListBottomSheet(
+							contactViewModel: contactViewModel,
+							isShowDeletePopup: $isShowDeletePopup,
+							showingSheet: $showingSheet,
+							showShareSheet: $showShareSheet
+						)
 					} onDismiss: {}
+					.sheet(isPresented: $showShareSheet) {
+						ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+							.edgesIgnoringSafeArea(.bottom)
+					}
 			}
 		}
-    }
+	}
 }
 
 #Preview {

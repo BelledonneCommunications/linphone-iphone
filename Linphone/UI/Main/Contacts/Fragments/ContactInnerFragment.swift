@@ -18,244 +18,159 @@
  */
 
 import SwiftUI
+import Contacts
+import ContactsUI
 
 struct ContactInnerFragment: View {
 	
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel()
+	
+	@ObservedObject var magicSearch = MagicSearchSingleton.shared
+	
 	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
 	
-	@State private var informationIsOpen = true
+	@State private var presentingEditContact = false
+	@State var cnContact: CNContact?
 	
 	@Binding var isShowDeletePopup: Bool
-	
 	@Binding var showingSheet: Bool
+	@Binding var showShareSheet: Bool
+	@Binding var isShowDismissPopup: Bool
 	
 	var body: some View {
-		VStack(spacing: 1) {
-			Rectangle()
-				.foregroundColor(Color.orangeMain500)
-				.edgesIgnoringSafeArea(.top)
-				.frame(height: 0)
-			
-			HStack {
-				if !(orientation == .landscapeLeft
-					 || orientation == .landscapeRight
-					 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-					Image("caret-left")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.orangeMain500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.top, 2)
-						.onTapGesture {
-							withAnimation {
-								contactViewModel.displayedFriend = nil
+		NavigationView {
+			VStack(spacing: 1) {
+				Rectangle()
+					.foregroundColor(Color.orangeMain500)
+					.edgesIgnoringSafeArea(.top)
+					.frame(height: 0)
+				
+				HStack {
+					if !(orientation == .landscapeLeft || orientation == .landscapeRight
+						 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+						Image("caret-left")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.top, 2)
+							.onTapGesture {
+								withAnimation {
+									contactViewModel.indexDisplayedFriend = nil
+								}
 							}
-						}
-				}
-				
-				Spacer()
-				
-				Image("pencil-simple")
-					.renderingMode(.template)
-					.resizable()
-					.foregroundStyle(Color.orangeMain500)
-					.frame(width: 25, height: 25, alignment: .leading)
-					.padding(.top, 2)
-					.onTapGesture {
-						withAnimation {
-							
-						}
 					}
-			}
-			.frame(maxWidth: .infinity)
-			.frame(height: 50)
-			.padding(.horizontal)
-			.padding(.bottom, 4)
-			.background(.white)
-			
-			ScrollView {
-				VStack(spacing: 0) {
+					
+					Spacer()
+					if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < magicSearch.lastSearch.count
+						&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+						&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
+						&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
+						Button(action: {
+							editNativeContact()
+						}, label: {
+							Image("pencil-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.top, 2)
+						})
+					} else {
+						NavigationLink(destination: EditContactFragment(
+							editContactViewModel: editContactViewModel,
+							isShowEditContactFragment: .constant(false),
+							isShowDismissPopup: $isShowDismissPopup)) {
+							Image("pencil-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.top, 2)
+						}
+						.simultaneousGesture(
+							TapGesture().onEnded {
+								editContactViewModel.selectedEditFriend = magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+								editContactViewModel.resetValues()
+							}
+						)
+					}
+				}
+				.frame(maxWidth: .infinity)
+				.frame(height: 50)
+				.padding(.horizontal)
+				.padding(.bottom, 4)
+				.background(.white)
+				
+				ScrollView {
 					VStack(spacing: 0) {
-						if contactViewModel.displayedFriend != nil
-							&& contactViewModel.displayedFriend!.photo != nil
-							&& !contactViewModel.displayedFriend!.photo!.isEmpty {
-							AsyncImage(url: URL(string: contactViewModel.displayedFriend!.photo!)) { image in
-								switch image {
-								case .empty:
-									ProgressView()
-										.frame(width: 100, height: 100)
-								case .success(let image):
-									image
-										.resizable()
-										.frame(width: 100, height: 100)
-										.clipShape(Circle())
-								case .failure:
+						VStack(spacing: 0) {
+							VStack(spacing: 0) {
+								if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < magicSearch.lastSearch.count
+									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo != nil
+									&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!.isEmpty {
+									AsyncImage(
+										url: ContactsManager.shared.getImagePath(
+										friendPhotoPath: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!)) { image in
+										switch image {
+										case .empty:
+											ProgressView()
+												.frame(width: 100, height: 100)
+										case .success(let image):
+											image
+												.resizable()
+												.aspectRatio(contentMode: .fill)
+												.frame(width: 100, height: 100)
+												.clipShape(Circle())
+										case .failure:
+											Image("profil-picture-default")
+												.resizable()
+												.frame(width: 100, height: 100)
+												.clipShape(Circle())
+										@unknown default:
+											EmptyView()
+										}
+									}
+								} else if contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 									Image("profil-picture-default")
 										.resizable()
 										.frame(width: 100, height: 100)
 										.clipShape(Circle())
-								@unknown default:
-									EmptyView()
 								}
-							}
-						} else if contactViewModel.displayedFriend != nil {
-							Image("profil-picture-default")
-								.resizable()
-								.frame(width: 100, height: 100)
-								.clipShape(Circle())
-						}
-						if contactViewModel.displayedFriend != nil && contactViewModel.displayedFriend?.name != nil {
-							Text((contactViewModel.displayedFriend?.name)!)
-								.foregroundStyle(Color.grayMain2c700)
-								.multilineTextAlignment(.center)
-								.default_text_style(styleSize: 14)
-								.frame(maxWidth: .infinity)
-								.padding(.top, 10)
-							
-							Text("En ligne")
-								.foregroundStyle(Color.greenSuccess500)
-								.multilineTextAlignment(.center)
-								.default_text_style_300(styleSize: 12)
-								.frame(maxWidth: .infinity)
-						}
-						
-					}
-					.frame(minHeight: 150)
-					.frame(maxWidth: .infinity)
-					.padding(.top, 10)
-					.background(Color.gray100)
-					
-					HStack {
-						Spacer()
-						
-						Button(action: {
-							
-						}, label: {
-							VStack {
-								HStack(alignment: .center) {
-									Image("phone")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.grayMain2c600)
-										.frame(width: 25, height: 25)
-										.onTapGesture {
-											withAnimation {
-												
-											}
-										}
+								if contactViewModel.indexDisplayedFriend != nil
+									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name != nil {
+									Text((magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name)!)
+										.foregroundStyle(Color.grayMain2c700)
+										.multilineTextAlignment(.center)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity)
+										.padding(.top, 10)
+									
+									Text("En ligne")
+										.foregroundStyle(Color.greenSuccess500)
+										.multilineTextAlignment(.center)
+										.default_text_style_300(styleSize: 12)
+										.frame(maxWidth: .infinity)
 								}
-								.padding(16)
-								.background(Color.grayMain2c200)
-								.cornerRadius(40)
 								
-								Text("Appel")
-									.default_text_style(styleSize: 14)
 							}
-						})
-						
-						Spacer()
-						
-						Button(action: {
+							.frame(minHeight: 150)
+							.frame(maxWidth: .infinity)
+							.padding(.top, 10)
+							.background(Color.gray100)
 							
-						}, label: {
-							VStack {
-								HStack(alignment: .center) {
-									Image("chat-teardrop-text")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.grayMain2c600)
-										.frame(width: 25, height: 25)
-										.onTapGesture {
-											withAnimation {
-												
-											}
-										}
-								}
-								.padding(16)
-								.background(Color.grayMain2c200)
-								.cornerRadius(40)
+							HStack {
+								Spacer()
 								
-								Text("Message")
-									.default_text_style(styleSize: 14)
-							}
-						})
-						
-						Spacer()
-						
-						Button(action: {
-							
-						}, label: {
-							VStack {
-								HStack(alignment: .center) {
-									Image("video-camera")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.grayMain2c600)
-										.frame(width: 25, height: 25)
-										.onTapGesture {
-											withAnimation {
-												
-											}
-										}
-								}
-								.padding(16)
-								.background(Color.grayMain2c200)
-								.cornerRadius(40)
-								
-								Text("Video Call")
-									.default_text_style(styleSize: 14)
-							}
-						})
-						
-						Spacer()
-					}
-					.padding(.top, 20)
-					.frame(maxWidth: .infinity)
-					.background(Color.gray100)
-					
-					HStack(alignment: .center) {
-						Text("Information")
-							.default_text_style_800(styleSize: 16)
-						
-						Spacer()
-						
-						Image(informationIsOpen ? "caret-up" : "caret-down")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
-							.frame(width: 25, height: 25, alignment: .leading)
-					}
-					.padding(.top, 30)
-					.padding(.bottom, 10)
-					.padding(.horizontal, 16)
-					.background(Color.gray100)
-					.onTapGesture {
-						withAnimation {
-							informationIsOpen.toggle()
-						}
-					}
-					
-					if informationIsOpen {
-						VStack(spacing: 0) {
-							if contactViewModel.displayedFriend != nil {
-								ForEach(0..<contactViewModel.displayedFriend!.addresses.count, id: \.self) { index in
-									Button {
-									} label: {
-										HStack {
-											VStack {
-												Text("SIP address :")
-													.default_text_style_700(styleSize: 14)
-													.frame(maxWidth: .infinity, alignment: .leading)
-												Text(contactViewModel.displayedFriend!.addresses[index].asStringUriOnly().dropFirst(4))
-													.default_text_style(styleSize: 14)
-													.frame(maxWidth: .infinity, alignment: .leading)
-													.lineLimit(1)
-													.fixedSize(horizontal: false, vertical: true)
-											}
-											Spacer()
-											
+								Button(action: {
+								}, label: {
+									VStack {
+										HStack(alignment: .center) {
 											Image("phone")
 												.renderingMode(.template)
 												.resizable()
@@ -267,50 +182,23 @@ struct ContactInnerFragment: View {
 													}
 												}
 										}
-										.padding(.vertical, 15)
-										.padding(.horizontal, 20)
+										.padding(16)
+										.background(Color.grayMain2c200)
+										.cornerRadius(40)
+										
+										Text("Appel")
+											.default_text_style(styleSize: 14)
 									}
-									.simultaneousGesture(
-										LongPressGesture()
-											.onEnded { _ in
-												contactViewModel.stringToCopy = contactViewModel.displayedFriend!.addresses[index].asStringUriOnly()
-												showingSheet.toggle()
-											}
-									)
-									.highPriorityGesture(
-										TapGesture()
-											.onEnded { _ in
-												withAnimation {
-													
-												}
-											}
-									)
-									
-									if !contactViewModel.displayedFriend!.phoneNumbers.isEmpty || index < contactViewModel.displayedFriend!.addresses.count - 1 {
-										VStack {
-											Divider()
-										}
-										.padding(.horizontal)
-									}
-								}
+								})
 								
-								ForEach(0..<contactViewModel.displayedFriend!.phoneNumbers.count, id: \.self) { index in
-									Button {
-									} label: {
-										HStack {
-											VStack {
-												Text("Phone (\(contactViewModel.displayedFriend!.phoneNumbersWithLabel[index].label!)) :")
-													.default_text_style_700(styleSize: 14)
-													.frame(maxWidth: .infinity, alignment: .leading)
-												Text(contactViewModel.displayedFriend!.phoneNumbersWithLabel[index].phoneNumber)
-													.default_text_style(styleSize: 14)
-													.frame(maxWidth: .infinity, alignment: .leading)
-													.lineLimit(1)
-													.fixedSize(horizontal: false, vertical: true)
-											}
-											Spacer()
-											
-											Image("phone")
+								Spacer()
+								
+								Button(action: {
+									
+								}, label: {
+									VStack {
+										HStack(alignment: .center) {
+											Image("chat-teardrop-text")
 												.renderingMode(.template)
 												.resizable()
 												.foregroundStyle(Color.grayMain2c600)
@@ -321,245 +209,106 @@ struct ContactInnerFragment: View {
 													}
 												}
 										}
-										.padding(.vertical, 15)
-										.padding(.horizontal, 20)
+										.padding(16)
+										.background(Color.grayMain2c200)
+										.cornerRadius(40)
+										
+										Text("Message")
+											.default_text_style(styleSize: 14)
 									}
-									.simultaneousGesture(
-										LongPressGesture()
-											.onEnded { _ in
-												contactViewModel.stringToCopy = contactViewModel.displayedFriend!.phoneNumbersWithLabel[index].phoneNumber
-												showingSheet.toggle()
-											}
-									)
-									.highPriorityGesture(
-										TapGesture()
-											.onEnded { _ in
-												withAnimation {
-													
-												}
-											}
-									)
+								})
+								
+								Spacer()
+								
+								Button(action: {
 									
-									if index < contactViewModel.displayedFriend!.phoneNumbers.count - 1 {
-										VStack {
-											Divider()
+								}, label: {
+									VStack {
+										HStack(alignment: .center) {
+											Image("video-camera")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c600)
+												.frame(width: 25, height: 25)
+												.onTapGesture {
+													withAnimation {
+														
+													}
+												}
 										}
-										.padding(.horizontal)
+										.padding(16)
+										.background(Color.grayMain2c200)
+										.cornerRadius(40)
+										
+										Text("Video Call")
+											.default_text_style(styleSize: 14)
 									}
-								}
+								})
+								
+								Spacer()
 							}
+							.padding(.top, 20)
+							.frame(maxWidth: .infinity)
+							.background(Color.gray100)
+
+							ContactInnerActionsFragment(
+								contactViewModel: contactViewModel,
+								editContactViewModel: editContactViewModel,
+								showingSheet: $showingSheet,
+								showShareSheet: $showShareSheet,
+								isShowDeletePopup: $isShowDeletePopup,
+								isShowDismissPopup: $isShowDismissPopup,
+								actionEditButton: editNativeContact
+							)
 						}
-						.background(.white)
-						.cornerRadius(15)
-						.padding(.horizontal)
-						.zIndex(-1)
-						.transition(.move(edge: .top))
+						.frame(maxWidth: sharedMainViewModel.maxWidth)
 					}
-					
-					if contactViewModel.displayedFriend != nil
-						&& contactViewModel.displayedFriend!.organization != nil
-						&& !contactViewModel.displayedFriend!.organization!.isEmpty {
-						VStack {
-							Text("**Company :** \(contactViewModel.displayedFriend!.organization!)")
-								.default_text_style(styleSize: 14)
-								.padding(.vertical, 15)
-								.padding(.horizontal, 20)
-								.frame(maxWidth: .infinity, alignment: .leading)
-						}
-						.background(.white)
-						.cornerRadius(15)
-						.padding(.top)
-						.padding(.horizontal)
-						.zIndex(-1)
-						.transition(.move(edge: .top))
-					}
-					
-					// TODO Trust Fragment
-					
-					// TODO Medias Fragment
-					
-					HStack(alignment: .center) {
-						Text("Other actions")
-							.default_text_style_800(styleSize: 16)
-						
-						Spacer()
-					}
-					.padding(.vertical, 10)
-					.padding(.horizontal, 16)
-					.background(Color.gray100)
-					
-					VStack(spacing: 0) {
-						Button {
-						} label: {
-							HStack {
-								Image("pencil-simple")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-								
-								Text("Edit")
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						VStack {
-							Divider()
-						}
-						.padding(.horizontal)
-						
-						Button {
-							if contactViewModel.displayedFriend != nil {
-								contactViewModel.objectWillChange.send()
-								contactViewModel.displayedFriend!.starred.toggle()
-							}
-						} label: {
-							HStack {
-								Image(contactViewModel.displayedFriend != nil && contactViewModel.displayedFriend!.starred == true ? "heart-fill" : "heart")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-								Text(contactViewModel.displayedFriend != nil && contactViewModel.displayedFriend!.starred == true
-									 ? "Remove to favourites"
-									 : "Add to favourites")
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						
-						VStack {
-							Divider()
-						}
-						.padding(.horizontal)
-						
-						Button {
-						} label: {
-							HStack {
-								Image("share-network")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-								
-								Text("Share")
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						
-						VStack {
-							Divider()
-						}
-						.padding(.horizontal)
-						
-						Button {
-						} label: {
-							HStack {
-								Image("bell-simple-slash")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-								
-								Text("Mute")
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						
-						VStack {
-							Divider()
-						}
-						.padding(.horizontal)
-						
-						Button {
-						} label: {
-							HStack {
-								Image("x-circle")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-								
-								Text("Block")
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						
-						VStack {
-							Divider()
-						}
-						.padding(.horizontal)
-						
-						Button {
-							if contactViewModel.displayedFriend != nil {
-		   						isShowDeletePopup.toggle()
-	   						}
-						} label: {
-							HStack {
-								Image("trash-simple")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.redDanger500)
-									.frame(width: 25, height: 25)
-								
-								Text("Delete this contact")
-									.foregroundStyle(Color.redDanger500)
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-					}
-					.background(.white)
-					.cornerRadius(15)
-					.padding(.horizontal)
-					.zIndex(-1)
-					.transition(.move(edge: .top))
+					.frame(maxWidth: .infinity)
+				}
+				.background(Color.gray100)
+			}
+			.background(.white)
+			.navigationBarHidden(true)
+			.onRotate { newOrientation in
+				orientation = newOrientation
+			}
+			.fullScreenCover(isPresented: $presentingEditContact) {
+				NavigationView {
+					EditContactView(contact: $cnContact)
+						.navigationBarTitle("Edit Contact")
+						.navigationBarTitleDisplayMode(.inline)
+						.edgesIgnoringSafeArea(.vertical)
 				}
 			}
-			.background(Color.gray100)
 		}
-		.background(.white)
-		.navigationBarHidden(true)
-		.onRotate { newOrientation in
-			orientation = newOrientation
+		.navigationViewStyle(.stack)
+	}
+	
+	func editNativeContact() {
+		do {
+			let store = CNContactStore()
+			let descriptor = CNContactViewController.descriptorForRequiredKeys()
+			cnContact = try store.unifiedContact(
+				withIdentifier: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!,
+				keysToFetch: [descriptor]
+			)
+			
+			if cnContact != nil {
+				presentingEditContact.toggle()
+			}
+		} catch {
+			print(error)
 		}
-		
 	}
 }
 
 #Preview {
-	ContactInnerFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false), showingSheet: .constant(false))
+	ContactInnerFragment(
+		contactViewModel: ContactViewModel(),
+		editContactViewModel: EditContactViewModel(),
+		isShowDeletePopup: .constant(false),
+		showingSheet: .constant(false),
+		showShareSheet: .constant(false),
+		isShowDismissPopup: .constant(false)
+	)
 }

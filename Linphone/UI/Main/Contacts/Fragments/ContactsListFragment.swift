@@ -64,7 +64,7 @@ struct ContactsListFragment: View {
                             }
                             
                             if magicSearch.lastSearch[index].friend!.photo != nil && !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
-                                AsyncImage(url: URL(string: magicSearch.lastSearch[index].friend!.photo!)) { image in
+								AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: magicSearch.lastSearch[index].friend!.photo!)) { image in
                                     switch image {
                                     case .empty:
                                         ProgressView()
@@ -72,6 +72,7 @@ struct ContactsListFragment: View {
                                     case .success(let image):
                                         image
                                             .resizable()
+											.aspectRatio(contentMode: .fill)
                                             .frame(width: 45, height: 45)
                                             .clipShape(Circle())
                                     case .failure:
@@ -106,7 +107,7 @@ struct ContactsListFragment: View {
                         TapGesture()
                             .onEnded { _ in
                                 withAnimation {
-                                    contactViewModel.displayedFriend = magicSearch.lastSearch[index].friend
+                                    contactViewModel.indexDisplayedFriend = index
                                 }
                             }
                     )

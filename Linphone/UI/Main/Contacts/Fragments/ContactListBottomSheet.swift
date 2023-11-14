@@ -22,6 +22,8 @@ import UniformTypeIdentifiers
 
 struct ContactListBottomSheet: View {
 	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	
 	@ObservedObject var contactViewModel: ContactViewModel
@@ -34,9 +36,9 @@ struct ContactListBottomSheet: View {
 	
 	var body: some View {
 		VStack(alignment: .leading) {
-			if orientation == .landscapeLeft
+			if idiom != .pad && (orientation == .landscapeLeft
 				|| orientation == .landscapeRight
-				|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+				|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
 				Spacer()
 				HStack {
 					Spacer()
@@ -91,7 +93,12 @@ struct ContactListBottomSheet: View {
 			if contactViewModel.stringToCopy.prefix(4) != "sip:" {
 				Button {
 					if #available(iOS 16.0, *) {
-						showingSheet.toggle()
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
 						dismiss()

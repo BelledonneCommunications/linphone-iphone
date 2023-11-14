@@ -47,11 +47,9 @@ class SharedMainViewModel: ObservableObject {
 		}
 		
 		if preferences.object(forKey: displayProfileModeKey) == nil {
-			print("displayProfileModeKeydisplayProfileModeKey nil")
 			preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 		} else {
 			displayProfileMode = preferences.bool(forKey: displayProfileModeKey)
-			print("displayProfileModeKeydisplayProfileModeKey \(displayProfileMode)")
 		}
 	}
 	

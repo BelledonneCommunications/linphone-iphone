@@ -36,7 +36,7 @@ final class CoreContext: ObservableObject {
 	
 	private init() {}
 	
-	func doOnCoreQueue(synchronous : Bool = false, lambda: @escaping (Core) -> Void) {
+	func doOnCoreQueue(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
 		if synchronous {
 			coreQueue.sync {
 				lambda(self.mCore)
@@ -77,7 +77,9 @@ final class CoreContext: ObservableObject {
 				}
 			}
 			
-			self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
+			self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue {(cbVal: 
+																						(core: Core, account: Account, state: RegistrationState, message: String)
+			) in
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
 				NSLog("New registration state is \(cbVal.state) for user id " +

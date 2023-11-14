@@ -32,62 +32,62 @@ struct FavoriteContactsListFragment: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(0..<magicSearch.lastSearch.filter({ $0.friend?.starred == true }).count, id: \.self) { index in
-                    Button {
-                    } label: {
-                        VStack {
-                            if magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo != nil
-                                && !magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!.isEmpty {
-                                AsyncImage(
-                                    url: URL(string: magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend!.photo!)
-                                ) { image in
-                                    switch image {
-                                    case .empty:
-                                        ProgressView()
-                                            .frame(width: 45, height: 45)
-                                    case .success(let image):
-                                        image
-                                            .resizable()
-                                            .frame(width: 45, height: 45)
-                                            .clipShape(Circle())
-                                    case .failure:
-                                        Image("profil-picture-default")
-                                            .resizable()
-                                            .frame(width: 45, height: 45)
-                                            .clipShape(Circle())
-                                    @unknown default:
-                                        EmptyView()
-                                    }
-                                }
-                            } else {
-                                Image("profil-picture-default")
-                                    .resizable()
-                                    .frame(width: 45, height: 45)
-                                    .clipShape(Circle())
-                            }
-                            Text((magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend?.name)!)
-                                .default_text_style(styleSize: 16)
-                                .frame( maxWidth: .infinity, alignment: .center)
-                        }
-                    }
-                    .simultaneousGesture(
-                        LongPressGesture()
-                            .onEnded { _ in
-                                contactViewModel.selectedFriend = magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend
-                                showingSheet.toggle()
-                            }
-                    )
-                    .highPriorityGesture(
-                        TapGesture()
-                            .onEnded { _ in
-                                withAnimation {
-                                    contactViewModel.displayedFriend = (
-                                        magicSearch.lastSearch.filter({ $0.friend?.starred == true })[index].friend
-                                    )!
-                                }
-                            }
-                    )
-                    .frame(minWidth: 70, maxWidth: 70)
+                ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
+					if magicSearch.lastSearch[index].friend != nil && magicSearch.lastSearch[index].friend!.starred == true {
+						Button {
+						} label: {
+							VStack {
+								if magicSearch.lastSearch[index].friend!.photo != nil
+									&& !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
+									AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: magicSearch.lastSearch[index].friend!.photo!)
+									) { image in
+										switch image {
+										case .empty:
+											ProgressView()
+												.frame(width: 45, height: 45)
+										case .success(let image):
+											image
+												.resizable()
+												.aspectRatio(contentMode: .fill)
+												.frame(width: 45, height: 45)
+												.clipShape(Circle())
+										case .failure:
+											Image("profil-picture-default")
+												.resizable()
+												.frame(width: 45, height: 45)
+												.clipShape(Circle())
+										@unknown default:
+											EmptyView()
+										}
+									}
+								} else {
+									Image("profil-picture-default")
+										.resizable()
+										.frame(width: 45, height: 45)
+										.clipShape(Circle())
+								}
+								Text((magicSearch.lastSearch[index].friend?.name)!)
+									.default_text_style(styleSize: 16)
+									.frame( maxWidth: .infinity, alignment: .center)
+							}
+						}
+						.simultaneousGesture(
+							LongPressGesture()
+								.onEnded { _ in
+									contactViewModel.selectedFriend = magicSearch.lastSearch[index].friend
+									showingSheet.toggle()
+								}
+						)
+						.highPriorityGesture(
+							TapGesture()
+								.onEnded { _ in
+									withAnimation {
+										contactViewModel.indexDisplayedFriend = index
+									}
+								}
+						)
+						.frame(minWidth: 70, maxWidth: 70)
+					}
                 }
             }
             .padding(.all, 10)
