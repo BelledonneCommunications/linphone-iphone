@@ -105,7 +105,13 @@
     "Add a picture" : {
 
     },
+    "Add the contact" : {
+
+    },
     "Add to favourites" : {
+
+    },
+    "All calls will be removed from the history." : {
 
     },
     "All contacts" : {
@@ -173,6 +179,9 @@
     "Copy number" : {
 
     },
+    "Copy SIP address" : {
+
+    },
     "D'accord" : {
 
     },
@@ -188,6 +197,9 @@
     "Delete %@?" : {
 
     },
+    "Delete all history" : {
+
+    },
     "Delete this contact" : {
 
     },
@@ -198,6 +210,9 @@
 
     },
     "Display Name" : {
+
+    },
+    "Do you really want to delete all calls history?" : {
 
     },
     "Domain" : {
@@ -293,7 +308,7 @@
     "Next" : {
 
     },
-    "No calls for the moment..." : {
+    "No call for the moment..." : {
 
     },
     "No contacts for the moment..." : {
@@ -371,6 +386,9 @@
 
     },
     "See all" : {
+
+    },
+    "See contact" : {
 
     },
     "See Linphone contact" : {

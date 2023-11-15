@@ -36,8 +36,13 @@ struct LinphoneApp: App {
 					AssistantView(sharedMainViewModel: sharedMainViewModel)
 						.toast(isShowing: $coreContext.toastMessage)
 				} else if coreContext.defaultAccount != nil {
-					ContentView(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), historyViewModel: HistoryViewModel())
-						.toast(isShowing: $coreContext.toastMessage)
+					ContentView(
+						contactViewModel: ContactViewModel(),
+						editContactViewModel: EditContactViewModel(),
+						historyViewModel: HistoryViewModel(),
+						historyListViewModel: HistoryListViewModel()
+					)
+					.toast(isShowing: $coreContext.toastMessage)
 				}
 			} else {
 				SplashScreen(isActive: $isActive)

@@ -29,6 +29,10 @@
 		D72343362AD037AF009AA24E /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343352AD037AF009AA24E /* ToastView.swift */; };
 		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
 		D732A9092AFD235500DB42BA /* ShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9082AFD235500DB42BA /* ShareSheetController.swift */; };
+		D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */; };
+		D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */; };
+		D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */; };
+		D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
 		D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */; };
 		D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */; };
@@ -95,6 +99,10 @@
 		D72343352AD037AF009AA24E /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryContactFragment.swift; sourceTree = "<group>"; };
 		D732A9082AFD235500DB42BA /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
+		D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryFragment.swift; sourceTree = "<group>"; };
+		D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListFragment.swift; sourceTree = "<group>"; };
+		D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModel.swift; sourceTree = "<group>"; };
+		D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListBottomSheet.swift; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
 		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
 		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
@@ -267,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				D72250622ADE9615008FB426 /* HistoryViewModel.swift */,
+				D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -275,6 +284,9 @@
 			isa = PBXGroup;
 			children = (
 				D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */,
+				D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */,
+				D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */,
+				D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -510,12 +522,14 @@
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
+				D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
 				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
+				D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */,
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
@@ -523,9 +537,11 @@
 				D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
+				D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */,
 				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,
 				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
+				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,

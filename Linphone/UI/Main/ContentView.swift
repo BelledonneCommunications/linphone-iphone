@@ -17,10 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// swiftlint:disable type_body_length
 import SwiftUI
 import linphonesw
 
 struct ContentView: View {
+	
+	@Environment(\.scenePhase) var scenePhase
+	
+	@ObservedObject private var coreContext = CoreContext.shared
 	
 	var contactManager = ContactsManager.shared
 	var magicSearch = MagicSearchSingleton.shared
@@ -28,7 +33,7 @@ struct ContentView: View {
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject var historyListViewModel: HistoryListViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -38,7 +43,8 @@ struct ContentView: View {
 	@State private var text = ""
 	@FocusState private var focusedField: Bool
 	@State var isMenuOpen = false
-	@State var isShowDeletePopup = false
+	@State var isShowDeleteContactPopup = false
+	@State var isShowDeleteAllHistoryPopup = false
 	@State var isShowEditContactFragment = false
 	@State var isShowDismissPopup = false
 	
@@ -134,34 +140,50 @@ struct ContentView: View {
 									}
 									
 									Menu {
-										Button {
-											isMenuOpen = false
-											magicSearch.allContact = true
-											magicSearch.searchForContacts(
-												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										} label: {
-											HStack {
-												Text("See all")
-												Spacer()
-												if magicSearch.allContact {
-													Image("green-check")
-														.resizable()
-														.frame(width: 25, height: 25, alignment: .leading)
+										if index == 0 {
+											Button {
+												isMenuOpen = false
+												magicSearch.allContact = true
+												magicSearch.searchForContacts(
+													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											} label: {
+												HStack {
+													Text("See all")
+													Spacer()
+													if magicSearch.allContact {
+														Image("green-check")
+															.resizable()
+															.frame(width: 25, height: 25, alignment: .leading)
+													}
 												}
 											}
-										}
-										
-										Button {
-											isMenuOpen = false
-											magicSearch.allContact = false
-											magicSearch.searchForContacts(
-												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										} label: {
-											HStack {
-												Text("See Linphone contact")
-												Spacer()
-												if !magicSearch.allContact {
-													Image("green-check")
+											
+											Button {
+												isMenuOpen = false
+												magicSearch.allContact = false
+												magicSearch.searchForContacts(
+													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											} label: {
+												HStack {
+													Text("See Linphone contact")
+													Spacer()
+													if !magicSearch.allContact {
+														Image("green-check")
+															.resizable()
+															.frame(width: 25, height: 25, alignment: .leading)
+													}
+												}
+											}
+										} else {
+											Button(role: .destructive) {
+												isMenuOpen = false
+												isShowDeleteAllHistoryPopup.toggle()
+												//historyListViewModel.removeCallLogs()
+											} label: {
+												HStack {
+													Text("Delete all history")
+													Spacer()
+													Image("trash-simple-red")
 														.resizable()
 														.frame(width: 25, height: 25, alignment: .leading)
 												}
@@ -193,9 +215,14 @@ struct ContentView: View {
 										}
 										
 										text = ""
-										magicSearch.currentFilter = ""
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+										
+										if index == 0 {
+											magicSearch.currentFilter = ""
+											magicSearch.searchForContacts(
+												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+										} else {
+											historyListViewModel.resetFilterCallLogs()
+										}
 									} label: {
 										Image("caret-left")
 											.renderingMode(.template)
@@ -226,9 +253,13 @@ struct ContentView: View {
 											self.focusedField = true
 										}
 										.onChange(of: text) { newValue in
-											magicSearch.currentFilter = newValue
-											magicSearch.searchForContacts(
-												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											if index == 0 {
+												magicSearch.currentFilter = newValue
+												magicSearch.searchForContacts(
+													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											} else {
+												historyListViewModel.filterCallLogs(filter: text)
+											}
 										}
 									} else {
 										TextEditor(text: Binding(
@@ -281,10 +312,17 @@ struct ContentView: View {
 									historyViewModel: historyViewModel,
 									editContactViewModel: editContactViewModel,
 									isShowEditContactFragment: $isShowEditContactFragment,
-									isShowDeletePopup: $isShowDeletePopup
+									isShowDeletePopup: $isShowDeleteContactPopup
 								)
 							} else if self.index == 1 {
-								HistoryView()
+								HistoryView(
+									historyListViewModel: historyListViewModel,
+									historyViewModel: historyViewModel,
+									contactViewModel: contactViewModel,
+									editContactViewModel: editContactViewModel,
+									index: $index,
+									isShowEditContactFragment: $isShowEditContactFragment
+								)
 							}
 						}
 						.frame(maxWidth:
@@ -367,7 +405,7 @@ struct ContentView: View {
 					}
 				}
 				
-				if contactViewModel.indexDisplayedFriend != nil || !historyViewModel.historyTitle.isEmpty {
+				if contactViewModel.indexDisplayedFriend != nil || historyViewModel.indexDisplayedCall != nil {
 					HStack(spacing: 0) {
 						Spacer()
 							.frame(maxWidth:
@@ -381,12 +419,12 @@ struct ContentView: View {
 							ContactFragment(
 								contactViewModel: contactViewModel,
 								editContactViewModel: editContactViewModel,
-								isShowDeletePopup: $isShowDeletePopup,
+								isShowDeletePopup: $isShowDeleteContactPopup,
 								isShowDismissPopup: $isShowDismissPopup
 							)
-								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
-								.ignoresSafeArea(.keyboard)
+							.frame(maxWidth: .infinity)
+							.background(Color.gray100)
+							.ignoresSafeArea(.keyboard)
 						} else if self.index == 1 {
 							HistoryContactFragment()
 								.frame(maxWidth: .infinity)
@@ -433,25 +471,25 @@ struct ContentView: View {
 						isShowEditContactFragment: $isShowEditContactFragment,
 						isShowDismissPopup: $isShowDismissPopup
 					)
-						.zIndex(3)
-						.transition(.move(edge: .bottom))
-						.onAppear {
-							contactViewModel.indexDisplayedFriend = nil
-						}
+					.zIndex(3)
+					.transition(.move(edge: .bottom))
+					.onAppear {
+						contactViewModel.indexDisplayedFriend = nil
+					}
 				}
 				
-				if isShowDeletePopup {
-					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeletePopup,
+				if isShowDeleteContactPopup {
+					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeleteContactPopup,
 							  title: Text(
-									contactViewModel.selectedFriend != nil
-									? "Delete \(contactViewModel.selectedFriend!.name!)?"
-									: (contactViewModel.indexDisplayedFriend != nil
-									   ? "Delete \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
-									   : "Error Name")),
+								contactViewModel.selectedFriend != nil
+								? "Delete \(contactViewModel.selectedFriend!.name!)?"
+								: (contactViewModel.indexDisplayedFriend != nil
+								   ? "Delete \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
+								   : "Error Name")),
 							  content: Text("This contact will be deleted definitively."),
 							  titleFirstButton: Text("Cancel"),
 							  actionFirstButton: {
-						self.isShowDeletePopup.toggle()},
+						self.isShowDeleteContactPopup.toggle()},
 							  titleSecondButton: Text("Ok"),
 							  actionSecondButton: {
 						if contactViewModel.selectedFriendToDelete != nil {
@@ -470,15 +508,34 @@ struct ContentView: View {
 						}
 						magicSearch.searchForContacts(
 							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-						self.isShowDeletePopup.toggle()
+						self.isShowDeleteContactPopup.toggle()
 					})
 					.background(.black.opacity(0.65))
 					.zIndex(3)
 					.onTapGesture {
-						self.isShowDeletePopup.toggle()
+						self.isShowDeleteContactPopup.toggle()
 					}
 					.onAppear {
 						contactViewModel.selectedFriendToDelete = contactViewModel.selectedFriend
+					}
+				}
+				
+				if isShowDeleteAllHistoryPopup {
+					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeleteContactPopup,
+							  title: Text("Do you really want to delete all calls history?"),
+							  content: Text("All calls will be removed from the history."),
+							  titleFirstButton: Text("Cancel"),
+							  actionFirstButton: {
+						self.isShowDeleteAllHistoryPopup.toggle()},
+							  titleSecondButton: Text("Ok"),
+							  actionSecondButton: {
+						historyListViewModel.removeCallLogs()
+						self.isShowDeleteAllHistoryPopup.toggle()
+					})
+					.background(.black.opacity(0.65))
+					.zIndex(3)
+					.onTapGesture {
+						self.isShowDeleteAllHistoryPopup.toggle()
 					}
 				}
 				
@@ -524,12 +581,22 @@ struct ContentView: View {
 			}
 		}
 		.onRotate { newOrientation in
-			if (contactViewModel.indexDisplayedFriend != nil || !historyViewModel.historyTitle.isEmpty) && searchIsActive {
+			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.indexDisplayedCall != nil) && searchIsActive {
 				self.focusedField = false
 			} else if searchIsActive {
 				self.focusedField = true
 			}
 			orientation = newOrientation
+		}
+		.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				ContactsManager.shared.fetchContacts()
+				print("Active")
+			} else if newPhase == .inactive {
+				print("Inactive")
+			} else if newPhase == .background {
+				print("Background")
+			}
 		}
 	}
 	
@@ -541,5 +608,11 @@ struct ContentView: View {
 }
 
 #Preview {
-	ContentView(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), historyViewModel: HistoryViewModel())
+	ContentView(
+		contactViewModel: ContactViewModel(),
+		editContactViewModel: EditContactViewModel(),
+		historyViewModel: HistoryViewModel(),
+		historyListViewModel: HistoryListViewModel()
+	)
 }
+// swiftlint:enable type_body_length

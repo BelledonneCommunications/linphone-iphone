@@ -20,10 +20,7 @@
 import SwiftUI
 import linphonesw
 
-struct ContactsInnerFragment: View {
-	
-	@Environment(\.scenePhase) var scenePhase
-	
+struct ContactsInnerFragment: View {	
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject var contactViewModel: ContactViewModel
 	
@@ -76,16 +73,6 @@ struct ContactsInnerFragment: View {
 			ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)
 		}
 		.navigationBarHidden(true)
-		.onChange(of: scenePhase) { newPhase in
-			if newPhase == .active {
-				ContactsManager.shared.fetchContacts()
-				print("Active")
-			} else if newPhase == .inactive {
-				print("Inactive")
-			} else if newPhase == .background {
-				print("Background")
-			}
-		}
 	}
 }
 

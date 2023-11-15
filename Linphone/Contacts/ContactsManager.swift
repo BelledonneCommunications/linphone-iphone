@@ -271,9 +271,21 @@ final class ContactsManager {
 		}
 	}
 	
-	func getFriend(contact: Contact) -> Friend? {
+	func getFriendWithContact(contact: Contact) -> Friend? {
 		if friendList != nil {
 			let friend = friendList!.friends.first(where: {$0.nativeUri == contact.identifier})
+			return friend
+		} else {
+			return nil
+		}
+	}
+	
+	func getFriendWithAddress(address: Address) -> Friend? {
+		if friendList != nil {
+			var friend = friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == address.asStringUriOnly()})})
+			if friend == nil {
+				friend = linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == address.asStringUriOnly()})})
+			}
 			return friend
 		} else {
 			return nil

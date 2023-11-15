@@ -18,10 +18,13 @@
  */
 
 import Foundation
+import linphonesw
 
 class HistoryViewModel: ObservableObject {
 	
-	@Published var historyTitle: String = ""
+	@Published var indexDisplayedCall: Int?
+	
+	var selectedCall: CallLog?
 	
 	init() {}
 }
