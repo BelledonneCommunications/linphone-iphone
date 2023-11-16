@@ -36,34 +36,12 @@ struct HistoryListFragment: View {
 						HStack {
 							let fromAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
 							let toAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
+							let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
 							
-							if historyListViewModel.callLogs[index].dir == .Incoming && fromAddressFriend != nil && fromAddressFriend!.photo != nil && !fromAddressFriend!.photo!.isEmpty {
+							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
 								AsyncImage(url:
 											ContactsManager.shared.getImagePath(
-												friendPhotoPath: fromAddressFriend!.photo!)) { image in
-									switch image {
-									case .empty:
-										ProgressView()
-											.frame(width: 45, height: 45)
-									case .success(let image):
-										image
-											.resizable()
-											.aspectRatio(contentMode: .fill)
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									case .failure:
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									@unknown default:
-										EmptyView()
-									}
-								}
-							} else if historyListViewModel.callLogs[index].dir == .Outgoing && toAddressFriend != nil && toAddressFriend!.photo != nil && !toAddressFriend!.photo!.isEmpty {
-								AsyncImage(url:
-											ContactsManager.shared.getImagePath(
-												friendPhotoPath: toAddressFriend!.photo!)) { image in
+												friendPhotoPath: addressFriend!.photo!)) { image in
 									switch image {
 									case .empty:
 										ProgressView()
@@ -134,14 +112,10 @@ struct HistoryListFragment: View {
 								
 								let fromAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
 								let toAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
+								let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
 								
-								if historyListViewModel.callLogs[index].dir == .Incoming && fromAddressFriend != nil {
-									Text(fromAddressFriend!.name!)
-									 .default_text_style(styleSize: 14)
-									 .frame(maxWidth: .infinity, alignment: .leading)
-									 .lineLimit(1)
-								} else if historyListViewModel.callLogs[index].dir == .Outgoing && toAddressFriend != nil {
-									Text(toAddressFriend!.name!)
+								if addressFriend != nil {
+									Text(addressFriend!.name!)
 									 .default_text_style(styleSize: 14)
 									 .frame(maxWidth: .infinity, alignment: .leading)
 									 .lineLimit(1)
@@ -199,7 +173,7 @@ struct HistoryListFragment: View {
 						TapGesture()
 							.onEnded { _ in
 								withAnimation {
-									//historyViewModel.indexDisplayedCall = index
+									historyViewModel.displayedCall = historyListViewModel.callLogs[index]
 								}
 							}
 					)

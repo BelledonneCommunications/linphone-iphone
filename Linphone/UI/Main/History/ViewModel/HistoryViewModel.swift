@@ -22,7 +22,7 @@ import linphonesw
 
 class HistoryViewModel: ObservableObject {
 	
-	@Published var indexDisplayedCall: Int?
+	@Published var displayedCall: CallLog?
 	
 	var selectedCall: CallLog?
 	

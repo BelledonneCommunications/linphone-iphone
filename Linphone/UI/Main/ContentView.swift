@@ -61,6 +61,7 @@ struct ContentView: View {
 									Spacer()
 									Button(action: {
 										self.index = 0
+										historyViewModel.displayedCall = nil
 									}, label: {
 										VStack {
 											Image("address-book")
@@ -178,7 +179,6 @@ struct ContentView: View {
 											Button(role: .destructive) {
 												isMenuOpen = false
 												isShowDeleteAllHistoryPopup.toggle()
-												//historyListViewModel.removeCallLogs()
 											} label: {
 												HStack {
 													Text("Delete all history")
@@ -353,6 +353,7 @@ struct ContentView: View {
 								Spacer()
 								Button(action: {
 									self.index = 0
+									historyViewModel.displayedCall = nil
 								}, label: {
 									VStack {
 										Image("address-book")
@@ -405,7 +406,7 @@ struct ContentView: View {
 					}
 				}
 				
-				if contactViewModel.indexDisplayedFriend != nil || historyViewModel.indexDisplayedCall != nil {
+				if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil {
 					HStack(spacing: 0) {
 						Spacer()
 							.frame(maxWidth:
@@ -426,7 +427,7 @@ struct ContentView: View {
 							.background(Color.gray100)
 							.ignoresSafeArea(.keyboard)
 						} else if self.index == 1 {
-							HistoryContactFragment()
+							HistoryContactFragment(historyViewModel: historyViewModel, isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
@@ -581,7 +582,7 @@ struct ContentView: View {
 			}
 		}
 		.onRotate { newOrientation in
-			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.indexDisplayedCall != nil) && searchIsActive {
+			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil) && searchIsActive {
 				self.focusedField = false
 			} else if searchIsActive {
 				self.focusedField = true
