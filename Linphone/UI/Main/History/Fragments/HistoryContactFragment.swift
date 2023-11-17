@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct HistoryContactFragment: View {
 	
@@ -25,10 +26,15 @@ struct HistoryContactFragment: View {
 	
 	@ObservedObject var sharedMainViewModel = SharedMainViewModel()
 	@ObservedObject var historyViewModel: HistoryViewModel
+    @ObservedObject var historyListViewModel: HistoryListViewModel
+    @ObservedObject var contactViewModel: ContactViewModel
+    @ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@State var isMenuOpen = false
 	
 	@Binding var isShowDeleteAllHistoryPopup: Bool
+    @Binding var isShowEditContactFragment: Bool
+    @Binding var indexPage: Int
 	
 	var body: some View {
 		NavigationView {
@@ -60,13 +66,52 @@ struct HistoryContactFragment: View {
 					Spacer()
 					
 					Menu {
+                        let fromAddressFriend = historyViewModel.displayedCall != nil ? ContactsManager.shared.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
+                        let toAddressFriend = historyViewModel.displayedCall != nil ? ContactsManager.shared.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
+                        let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
+                        
 						Button {
 							isMenuOpen = false
+                            
+                            indexPage = 0
+                            
+                            if ContactsManager.shared.getFriendWithAddress(
+                                address: historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
+                                   ? historyViewModel.displayedCall!.toAddress!
+                                   : historyViewModel.displayedCall!.fromAddress!
+                            ) != nil {
+                                let addressCall = historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
+                                ? historyViewModel.displayedCall!.toAddress!
+                                : historyViewModel.displayedCall!.fromAddress!
+                                
+                                let friendIndex = MagicSearchSingleton.shared.lastSearch.firstIndex(
+                                    where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall.asStringUriOnly()})})
+                                if friendIndex != nil {
+                                    
+                                    withAnimation {
+										historyViewModel.displayedCall = nil
+                                        contactViewModel.indexDisplayedFriend = friendIndex
+                                    }
+                                }
+                            } else {
+                                let addressCall = historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
+                                ? historyViewModel.displayedCall!.toAddress!
+                                : historyViewModel.displayedCall!.fromAddress!
+                                
+                                withAnimation {
+									historyViewModel.displayedCall = nil
+                                    isShowEditContactFragment.toggle()
+                                    editContactViewModel.sipAddresses.removeAll()
+                                    editContactViewModel.sipAddresses.append(String(addressCall.asStringUriOnly().dropFirst(4)))
+                                    editContactViewModel.sipAddresses.append("")
+                                }
+                            }
+                            
 						} label: {
 							HStack {
-								Text("See all")
+                                Text(addressFriend != nil ? "See contact" : "Add to contacts")
 								Spacer()
-								Image("green-check")
+                                Image(addressFriend != nil ? "user-circle" : "plus-circle")
 									.resizable()
 									.frame(width: 25, height: 25, alignment: .leading)
 							}
@@ -74,11 +119,23 @@ struct HistoryContactFragment: View {
 						
 						Button {
 							isMenuOpen = false
+                            
+                            if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing {
+                                UIPasteboard.general.setValue(
+                                    historyViewModel.displayedCall!.toAddress!.asStringUriOnly().dropFirst(4),
+                                    forPasteboardType: UTType.plainText.identifier
+                                )
+                            } else {
+                                UIPasteboard.general.setValue(
+                                    historyViewModel.displayedCall!.fromAddress!.asStringUriOnly().dropFirst(4),
+                                    forPasteboardType: UTType.plainText.identifier
+                                )
+                            }
 						} label: {
 							HStack {
-								Text("See Linphone contact")
+								Text("Copy SIP address")
 								Spacer()
-								Image("green-check")
+								Image("copy")
 									.resizable()
 									.frame(width: 25, height: 25, alignment: .leading)
 							}
@@ -86,9 +143,18 @@ struct HistoryContactFragment: View {
 						
 						Button(role: .destructive) {
 							isMenuOpen = false
+							
+							if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing {
+								historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.toAddress!.asStringUriOnly()
+							} else {
+								historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.fromAddress!.asStringUriOnly()
+							}
+							
+							isShowDeleteAllHistoryPopup.toggle()
+							
 						} label: {
 							HStack {
-								Text("Delete all history")
+								Text("Delete history")
 								Spacer()
 								Image("trash-simple-red")
 									.resizable()
@@ -166,6 +232,13 @@ struct HistoryContactFragment: View {
 												.default_text_style(styleSize: 14)
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
+                                            
+                                            Text(historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
+                                                .foregroundStyle(Color.grayMain2c700)
+                                                .multilineTextAlignment(.center)
+                                                .default_text_style(styleSize: 14)
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.top, 5)
 											
 											Text("")
 												.multilineTextAlignment(.center)
@@ -188,6 +261,13 @@ struct HistoryContactFragment: View {
 												.default_text_style(styleSize: 14)
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
+                                            
+                                            Text(historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
+                                                .foregroundStyle(Color.grayMain2c700)
+                                                .multilineTextAlignment(.center)
+                                                .default_text_style(styleSize: 14)
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.top, 5)
 											
 											Text("")
 												.multilineTextAlignment(.center)
@@ -213,7 +293,14 @@ struct HistoryContactFragment: View {
 												.default_text_style(styleSize: 14)
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
-											
+                                            
+                                            Text(historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
+                                                .foregroundStyle(Color.grayMain2c700)
+                                                .multilineTextAlignment(.center)
+                                                .default_text_style(styleSize: 14)
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.top, 5)
+                                            
 											Text("")
 												.multilineTextAlignment(.center)
 												.default_text_style_300(styleSize: 12)
@@ -235,7 +322,14 @@ struct HistoryContactFragment: View {
 												.default_text_style(styleSize: 14)
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
-											
+                                            
+                                            Text(historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
+                                                .foregroundStyle(Color.grayMain2c700)
+                                                .multilineTextAlignment(.center)
+                                                .default_text_style(styleSize: 14)
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.top, 5)
+                                            
 											Text("")
 												.multilineTextAlignment(.center)
 												.default_text_style_300(styleSize: 12)
@@ -253,6 +347,22 @@ struct HistoryContactFragment: View {
 										.default_text_style(styleSize: 14)
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
+                                    
+                                    if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
+                                        Text(historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
+                                            .foregroundStyle(Color.grayMain2c700)
+                                            .multilineTextAlignment(.center)
+                                            .default_text_style(styleSize: 14)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.top, 5)
+                                    } else if historyViewModel.displayedCall!.fromAddress != nil {
+                                        Text(historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
+                                            .foregroundStyle(Color.grayMain2c700)
+                                            .multilineTextAlignment(.center)
+                                            .default_text_style(styleSize: 14)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.top, 5)
+                                    }
 									
 									Text("En ligne")
 										.foregroundStyle(Color.greenSuccess500)
@@ -260,6 +370,7 @@ struct HistoryContactFragment: View {
 										.default_text_style_300(styleSize: 12)
 										.frame(maxWidth: .infinity)
 										.frame(height: 20)
+                                        .padding(.top, 5)
 								}
 							}
 							.frame(minHeight: 150)
@@ -355,58 +466,61 @@ struct HistoryContactFragment: View {
 							.background(Color.gray100)
 							
 							VStack(spacing: 0) {
-								
-								let fromAddressFriend = historyViewModel.displayedCall != nil ? ContactsManager.shared.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
-								let toAddressFriend = historyViewModel.displayedCall != nil ? ContactsManager.shared.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
-								let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
-								
-								if historyViewModel.displayedCall != nil && addressFriend != nil && addressFriend != nil {
-									ForEach(0..<addressFriend!.addresses.count, id: \.self) { index in
-										Button {
-										} label: {
-											HStack {
-												VStack {
-													Text("SIP address :")
-														.default_text_style_700(styleSize: 14)
-														.frame(maxWidth: .infinity, alignment: .leading)
-													Text(addressFriend!.addresses[index].asStringUriOnly().dropFirst(4))
-														.default_text_style(styleSize: 14)
-														.frame(maxWidth: .infinity, alignment: .leading)
-														.lineLimit(1)
-														.fixedSize(horizontal: false, vertical: true)
-												}
-												Spacer()
-												
-												Image("phone")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
-													.frame(width: 25, height: 25)
-													.onTapGesture {
-														withAnimation {
-															
-														}
-													}
-											}
-											.padding(.vertical, 15)
-											.padding(.horizontal, 20)
-										}
-										
-										if !addressFriend!.phoneNumbers.isEmpty
-											|| index < addressFriend!.addresses.count - 1 {
-											VStack {
-												Divider()
-											}
-											.padding(.horizontal)
-										}
-									}
-								}
+                                
+                                let addressFriend = historyViewModel.displayedCall != nil 
+                                ? (historyViewModel.displayedCall!.dir == .Incoming ? historyViewModel.displayedCall!.fromAddress!.asStringUriOnly()
+                                   : historyViewModel.displayedCall!.toAddress!.asStringUriOnly()) : nil
+                                
+                                let callLogsFilter = historyListViewModel.callLogs.filter({ $0.dir == .Incoming
+                                    ? $0.fromAddress!.asStringUriOnly() == addressFriend
+                                    : $0.toAddress!.asStringUriOnly() == addressFriend })
+                                
+                                ForEach(0..<callLogsFilter.count, id: \.self) { index in
+                                        HStack {
+                                            VStack {
+                                                Image(historyListViewModel.getCallIconResId(callStatus: callLogsFilter[index].status, callDir: callLogsFilter[index].dir))
+                                                 .resizable()
+                                                 .frame(
+                                                    width: historyListViewModel.getCallIconResId(
+                                                        callStatus: callLogsFilter[index].status,
+                                                        callDir: callLogsFilter[index].dir
+                                                    ).contains("rejected") ? 12 : 8,
+                                                    height: historyListViewModel.getCallIconResId(
+                                                        callStatus: callLogsFilter[index].status,
+                                                        callDir: callLogsFilter[index].dir
+                                                    ).contains("rejected") ? 6 : 8)
+                                                 .padding(.top, 5)
+                                                Spacer()
+                                            }
+                                            
+                                            VStack {
+                                                Text(historyListViewModel.getCallText(
+                                                    callStatus: callLogsFilter[index].status,
+                                                    callDir: callLogsFilter[index].dir)
+                                                )
+                                                .default_text_style(styleSize: 14)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                
+                                                Text(historyListViewModel.getCallTime(startDate: callLogsFilter[index].startDate))
+                                                    .foregroundStyle(callLogsFilter[index].status != .Success ? Color.redDanger500 : Color.grayMain2c600)
+                                                    .default_text_style_300(styleSize: 12)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                            }
+                                            
+                                            VStack {
+                                                Spacer()
+                                                Text(callLogsFilter[index].duration.convertDurationToString())
+                                                    .default_text_style_300(styleSize: 12)
+                                                Spacer()
+                                            }
+                                        }
+                                        .padding(.vertical, 15)
+                                        .padding(.horizontal, 20)
+                                }
 							}
 							.background(.white)
 							.cornerRadius(15)
-							.padding(.horizontal)
-							.zIndex(-1)
-							.transition(.move(edge: .top))
+							.padding(.all)
 						}
 						.frame(maxWidth: sharedMainViewModel.maxWidth)
 					}
@@ -425,5 +539,13 @@ struct HistoryContactFragment: View {
 }
 
 #Preview {
-	HistoryContactFragment(historyViewModel: HistoryViewModel(), isShowDeleteAllHistoryPopup: .constant(false))
+    HistoryContactFragment(
+        historyViewModel: HistoryViewModel(),
+        historyListViewModel: HistoryListViewModel(),
+        contactViewModel: ContactViewModel(),
+        editContactViewModel: EditContactViewModel(),
+        isShowDeleteAllHistoryPopup: .constant(false),
+        isShowEditContactFragment: .constant(false),
+        indexPage: .constant(1)
+    )
 }

@@ -427,10 +427,18 @@ struct ContentView: View {
 							.background(Color.gray100)
 							.ignoresSafeArea(.keyboard)
 						} else if self.index == 1 {
-							HistoryContactFragment(historyViewModel: historyViewModel, isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup)
-								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
-								.ignoresSafeArea(.keyboard)
+							HistoryContactFragment(
+								historyViewModel: historyViewModel,
+								historyListViewModel: historyListViewModel,
+								contactViewModel: contactViewModel,
+								editContactViewModel: editContactViewModel,
+								isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
+								isShowEditContactFragment: $isShowEditContactFragment,
+								indexPage: $index
+							)
+							.frame(maxWidth: .infinity)
+							.background(Color.gray100)
+							.ignoresSafeArea(.keyboard)
 						}
 					}
 					.onAppear {
@@ -527,11 +535,14 @@ struct ContentView: View {
 							  content: Text("All calls will be removed from the history."),
 							  titleFirstButton: Text("Cancel"),
 							  actionFirstButton: {
-						self.isShowDeleteAllHistoryPopup.toggle()},
+						self.isShowDeleteAllHistoryPopup.toggle()
+						historyListViewModel.callLogsAddressToDelete = ""
+					},
 							  titleSecondButton: Text("Ok"),
 							  actionSecondButton: {
 						historyListViewModel.removeCallLogs()
 						self.isShowDeleteAllHistoryPopup.toggle()
+						historyViewModel.displayedCall = nil
 					})
 					.background(.black.opacity(0.65))
 					.zIndex(3)

@@ -26,6 +26,8 @@ class HistoryListViewModel: ObservableObject {
 	@Published var callLogs: [CallLog] = []
 	var callLogsTmp: [CallLog] = []
 	
+	var callLogsAddressToDelete = ""
+	
 	init() {
 		computeCallLogsList()
 	}
@@ -35,10 +37,10 @@ class HistoryListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
 			
-			self.callLogs.removeAll()
-			self.callLogsTmp.removeAll()
-			
 			DispatchQueue.main.async {
+				self.callLogs.removeAll()
+				self.callLogsTmp.removeAll()
+				
 				logs.forEach { log in
 					self.callLogs.append(log)
 					self.callLogsTmp.append(log)
@@ -72,19 +74,44 @@ class HistoryListViewModel: ObservableObject {
 		}
 	}
 	
+	func getCallText(callStatus: Call.Status, callDir: Call.Dir) -> String {
+		switch callStatus {
+		case Call.Status.Missed:
+			if callDir == .Outgoing {
+				"Outgoing Call"
+			} else {
+				"Missed Call"
+			}
+			
+		case Call.Status.Success:
+			if callDir == .Outgoing {
+				"Outgoing Call"
+			} else {
+				"Incoming Call"
+			}
+			
+		default:
+			if callDir == .Outgoing {
+				"Outgoing Call"
+			} else {
+				"Incoming Call"
+			}
+		}
+	}
+	
 	func getCallTime(startDate: time_t) -> String {
 		let timeInterval = TimeInterval(startDate)
-
+		
 		let myNSDate = Date(timeIntervalSince1970: timeInterval)
 		
 		if Calendar.current.isDateInToday(myNSDate) {
 			let formatter = DateFormatter()
 			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
-			return formatter.string(from: myNSDate)
+			return "Today | " + formatter.string(from: myNSDate)
 		} else if Calendar.current.isDateInYesterday(myNSDate) {
 			let formatter = DateFormatter()
 			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
-			return "Yesterday " + formatter.string(from: myNSDate)
+			return "Yesterday | " + formatter.string(from: myNSDate)
 		} else if Calendar.current.isDate(myNSDate, equalTo: .now, toGranularity: .year) {
 			let formatter = DateFormatter()
 			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "dd/MM | HH:mm" : "MM/dd | h:mm a"
@@ -120,15 +147,26 @@ class HistoryListViewModel: ObservableObject {
 	}
 	
 	func removeCallLogs() {
-		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			if account != nil {
-				account!.clearCallLogs()
-			} else {
-				core.clearCallLogs()
+		if callLogsAddressToDelete.isEmpty {
+			coreContext.doOnCoreQueue { core in
+				let account = core.defaultAccount
+				if account != nil {
+					account!.clearCallLogs()
+				} else {
+					core.clearCallLogs()
+				}
+				self.callLogs.removeAll()
+				self.callLogsTmp.removeAll()
 			}
-			self.callLogs.removeAll()
-			self.callLogsTmp.removeAll()
+		} else {
+			removeCallLogsWithAddress()
+			callLogsAddressToDelete = ""
+		}
+	}
+	
+	func removeCallLogsWithAddress() {
+		self.callLogs.filter { $0.toAddress!.asStringUriOnly() == callLogsAddressToDelete || $0.fromAddress!.asStringUriOnly() == callLogsAddressToDelete }.forEach { callLog in
+			removeCallLog(callLog: callLog)
 		}
 	}
 	
@@ -137,6 +175,6 @@ class HistoryListViewModel: ObservableObject {
 		self.callLogs.remove(at: index!)
 		
 		let indexTmp = self.callLogsTmp.firstIndex(where: {$0.callId == callLog.callId})
-		self.callLogsTmp.remove(at: index!)
+		self.callLogsTmp.remove(at: indexTmp!)
 	}
 }

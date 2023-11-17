@@ -108,6 +108,9 @@
     "Add the contact" : {
 
     },
+    "Add to contacts" : {
+
+    },
     "Add to favourites" : {
 
     },
@@ -203,6 +206,9 @@
     "Delete all history" : {
 
     },
+    "Delete history" : {
+
+    },
     "Delete this contact" : {
 
     },
@@ -261,6 +267,9 @@
 
     },
     "I understand" : {
+
+    },
+    "Incoming Call" : {
 
     },
     "Information" : {
@@ -327,6 +336,9 @@
 
     },
     "Other actions" : {
+
+    },
+    "Outgoing Call" : {
 
     },
     "password" : {
