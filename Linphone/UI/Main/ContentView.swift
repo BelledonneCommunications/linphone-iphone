@@ -26,6 +26,7 @@ struct ContentView: View {
 	@Environment(\.scenePhase) var scenePhase
 	
 	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var contactManager = ContactsManager.shared
 	var magicSearch = MagicSearchSingleton.shared
@@ -543,6 +544,9 @@ struct ContentView: View {
 						historyListViewModel.removeCallLogs()
 						self.isShowDeleteAllHistoryPopup.toggle()
 						historyViewModel.displayedCall = nil
+						
+						ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
+						ToastViewModel.shared.displayToast.toggle()
 					})
 					.background(.black.opacity(0.65))
 					.zIndex(3)
@@ -580,6 +584,11 @@ struct ContentView: View {
 						self.isShowDismissPopup.toggle()
 					}
 				}
+				
+				//if sharedMainViewModel.displayToast {
+					ToastView()
+						.zIndex(3)
+				//}
 			}
 		}
 		.overlay {

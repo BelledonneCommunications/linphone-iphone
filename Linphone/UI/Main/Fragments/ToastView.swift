@@ -19,31 +19,21 @@
 
 import SwiftUI
 
-struct ToastView: ViewModifier {
+struct ToastView: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	@ObservedObject private var toastViewModel = ToastViewModel.shared
 	
-	@Binding var isShowing: String
-	
-	func body(content: Content) -> some View {
-		ZStack {
-			content
-			toastView
-				.padding(.top, 60)
-		}
-	}
-	
-	private var toastView: some View {
+	var body: some View {
 		VStack {
-			if !isShowing.isEmpty {
+			if toastViewModel.displayToast {
 				HStack {
-					Image(isShowing.contains("Success") ? "check" : "warning-circle")
+					Image(toastViewModel.toastMessage.contains("Success") ? "check" : "warning-circle")
 						.resizable()
 						.renderingMode(.template)
 						.frame(width: 25, height: 25, alignment: .leading)
-						.foregroundStyle(isShowing.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
+						.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
 					
-					switch isShowing {
+					switch toastViewModel.toastMessage {
 					case "Successful":
 						Text("QR code validated!")
 							.multilineTextAlignment(.center)
@@ -100,29 +90,30 @@ struct ToastView: ViewModifier {
 				.overlay(
 					RoundedRectangle(cornerRadius: 50)
 						.inset(by: 0.5)
-						.stroke(isShowing.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
+						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
 				)
 				.onTapGesture {
-					isShowing = ""
+					withAnimation {
+						toastViewModel.toastMessage = ""
+						toastViewModel.displayToast = false
+					}
 				}
 				.onAppear {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-						isShowing = ""
+						withAnimation {
+							toastViewModel.toastMessage = ""
+							toastViewModel.displayToast = false
+						}
 					}
 				}
+				
+				Spacer()
 			}
-			Spacer()
 		}
-		.frame(maxWidth: sharedMainViewModel.maxWidth)
+		.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 		.padding(.horizontal, 16)
 		.padding(.bottom, 18)
-		.animation(.linear(duration: 0.3), value: isShowing)
-		.transition(.opacity)
-	}
-}
-
-extension View {	
-	func toast(isShowing: Binding<String>) -> some View {
-		self.modifier(ToastView(isShowing: isShowing))
+		.transition(.move(edge: .top))
+		.padding(.top, 60)
 	}
 }

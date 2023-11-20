@@ -132,7 +132,9 @@ struct HistoryContactFragment: View {
                                 )
                             }
 							
-							sharedMainViewModel.toastMessage = "Success_copied_into_clipboard"
+							ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+							ToastViewModel.shared.displayToast.toggle()
+							
 						} label: {
 							HStack {
 								Text("Copy SIP address")

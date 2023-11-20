@@ -55,13 +55,15 @@ struct QrCodeScannerFragment: View {
 		.edgesIgnoringSafeArea(.all)
 		.navigationBarHidden(true)
 		
-		if sharedMainViewModel.toastMessage == "Successful" {
+		/*
+		if $isShowToast {
 			ZStack {
 				
 			}.onAppear {
 				dismiss()
 			}
 		}
+		 */
 	}
 }
 

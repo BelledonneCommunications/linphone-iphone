@@ -77,10 +77,12 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 							try? core.start()
 						}
 					} else {
-						sharedMainViewModel.toastMessage = "Invalide URI"
+						ToastViewModel.shared.toastMessage = "Invalide URI"
+						ToastViewModel.shared.displayToast.toggle()
 					}
 				} else {
-					sharedMainViewModel.toastMessage = "Invalide URI"
+					ToastViewModel.shared.toastMessage = "Invalide URI"
+					ToastViewModel.shared.displayToast.toggle()
 				}
 			}
 		}

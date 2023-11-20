@@ -42,7 +42,6 @@ struct HistoryView: View {
 				)
 				
 				Button {
-					SharedMainViewModel.shared.toastMessage = "Success_remove_call_logs"
 				} label: {
 					Image("phone-plus")
 						.padding()

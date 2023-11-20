@@ -23,8 +23,6 @@ class SharedMainViewModel: ObservableObject {
 	
 	static let shared = SharedMainViewModel()
 	
-	@Published var toastMessage: String = ""
-	
 	@Published var welcomeViewDisplayed = false
 	@Published var generalTermsAccepted = false
 	@Published var displayProfileMode = false

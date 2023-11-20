@@ -71,9 +71,11 @@ final class CoreContext: ObservableObject {
 			self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
 				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
-					self.sharedMainViewModel.toastMessage = "Successful"
+					ToastViewModel.shared.toastMessage = "Successful"
+					ToastViewModel.shared.displayToast.toggle()
 				} else {
-					self.sharedMainViewModel.toastMessage = "Failed"
+					ToastViewModel.shared.toastMessage = "Failed"
+					ToastViewModel.shared.displayToast.toggle()
 				}
 			}
 			
@@ -90,7 +92,8 @@ final class CoreContext: ObservableObject {
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
-					self.sharedMainViewModel.toastMessage = "Registration failed"
+					ToastViewModel.shared.toastMessage = "Registration failed"
+					ToastViewModel.shared.displayToast.toggle()
 					self.loggingInProgress = false
 					self.loggedIn = false
 				}

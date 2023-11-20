@@ -34,7 +34,6 @@ struct LinphoneApp: App {
 					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
 					AssistantView()
-						.toast(isShowing: $sharedMainViewModel.toastMessage)
 				} else if coreContext.defaultAccount != nil {
 					ContentView(
 						contactViewModel: ContactViewModel(),
@@ -42,7 +41,6 @@ struct LinphoneApp: App {
 						historyViewModel: HistoryViewModel(),
 						historyListViewModel: HistoryListViewModel()
 					)
-					.toast(isShowing: $sharedMainViewModel.toastMessage)
 				}
 			} else {
 				SplashScreen(isActive: $isActive)
