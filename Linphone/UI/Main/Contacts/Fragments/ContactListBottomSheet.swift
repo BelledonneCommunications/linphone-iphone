@@ -25,6 +25,7 @@ struct ContactListBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactViewModel: ContactViewModel
 	
@@ -68,6 +69,9 @@ struct ContactListBottomSheet: View {
 					showingSheet.toggle()
 					dismiss()
 				}
+				
+				sharedMainViewModel.toastMessage = "Success_copied_into_clipboard"
+				
 			} label: {
 				HStack {
 					Image("copy")

@@ -26,6 +26,8 @@ struct HistoryListBottomSheet: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
@@ -161,6 +163,9 @@ struct HistoryListBottomSheet: View {
 					showingSheet.toggle()
 					dismiss()
 				}
+				
+				sharedMainViewModel.toastMessage = "Success_copied_into_clipboard"
+				
 			} label: {
 				HStack {
 					Image("copy")

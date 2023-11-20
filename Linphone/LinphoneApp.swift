@@ -23,7 +23,7 @@ import SwiftUI
 struct LinphoneApp: App {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel()
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@State private var isActive = false
 	
@@ -31,10 +31,10 @@ struct LinphoneApp: App {
 		WindowGroup {
 			if isActive {
 				if !sharedMainViewModel.welcomeViewDisplayed {
-					WelcomeView(sharedMainViewModel: sharedMainViewModel)
+					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
-					AssistantView(sharedMainViewModel: sharedMainViewModel)
-						.toast(isShowing: $coreContext.toastMessage)
+					AssistantView()
+						.toast(isShowing: $sharedMainViewModel.toastMessage)
 				} else if coreContext.defaultAccount != nil {
 					ContentView(
 						contactViewModel: ContactViewModel(),
@@ -42,7 +42,7 @@ struct LinphoneApp: App {
 						historyViewModel: HistoryViewModel(),
 						historyListViewModel: HistoryListViewModel()
 					)
-					.toast(isShowing: $coreContext.toastMessage)
+					.toast(isShowing: $sharedMainViewModel.toastMessage)
 				}
 			} else {
 				SplashScreen(isActive: $isActive)

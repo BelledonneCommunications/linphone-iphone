@@ -22,7 +22,7 @@ import Photos
 
 struct PopupView: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var permissionManager = PermissionManager.shared
 	
@@ -100,7 +100,7 @@ struct PopupView: View {
 }
 
 #Preview {
-	PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: .constant(true),
+	PopupView(isShowPopup: .constant(true),
 			  title: Text("Title"),
 			  content: Text("Content"),
 			  titleFirstButton: Text("Deny all"),

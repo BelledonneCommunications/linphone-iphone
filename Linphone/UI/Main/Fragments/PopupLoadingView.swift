@@ -21,7 +21,7 @@ import SwiftUI
 
 struct PopupLoadingView: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -54,6 +54,6 @@ struct PopupLoadingView: View {
 }
 
 #Preview {
-	PopupLoadingView(sharedMainViewModel: SharedMainViewModel())
+	PopupLoadingView()
 		.background(.black.opacity(0.65))
 }

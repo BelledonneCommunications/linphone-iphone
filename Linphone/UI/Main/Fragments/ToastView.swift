@@ -21,7 +21,7 @@ import SwiftUI
 
 struct ToastView: ViewModifier {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Binding var isShowing: String
 	
@@ -29,6 +29,7 @@ struct ToastView: ViewModifier {
 		ZStack {
 			content
 			toastView
+				.padding(.top, 60)
 		}
 	}
 	
@@ -36,15 +37,29 @@ struct ToastView: ViewModifier {
 		VStack {
 			if !isShowing.isEmpty {
 				HStack {
-					Image(isShowing == "Successful" ? "smiley" : "warning-circle")
+					Image(isShowing.contains("Success") ? "check" : "warning-circle")
 						.resizable()
 						.renderingMode(.template)
 						.frame(width: 25, height: 25, alignment: .leading)
-						.foregroundStyle(isShowing == "Successful" ? Color.greenSuccess500 : Color.redDanger500)
+						.foregroundStyle(isShowing.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
 					
 					switch isShowing {
 					case "Successful":
 						Text("QR code validated!")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_remove_call_logs":
+						Text("History has been deleted")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_copied_into_clipboard":
+						Text("SIP address copied into clipboard")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
@@ -85,7 +100,7 @@ struct ToastView: ViewModifier {
 				.overlay(
 					RoundedRectangle(cornerRadius: 50)
 						.inset(by: 0.5)
-						.stroke(isShowing == "Successful" ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
+						.stroke(isShowing.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
 				)
 				.onTapGesture {
 					isShowing = ""
@@ -108,6 +123,6 @@ struct ToastView: ViewModifier {
 
 extension View {	
 	func toast(isShowing: Binding<String>) -> some View {
-		self.modifier(ToastView(sharedMainViewModel: SharedMainViewModel(), isShowing: isShowing))
+		self.modifier(ToastView(isShowing: isShowing))
 	}
 }

@@ -23,7 +23,7 @@ import ContactsUI
 
 struct ContactInnerFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel()
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	

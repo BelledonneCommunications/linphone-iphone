@@ -263,6 +263,9 @@
     "First name*" : {
 
     },
+    "History has been deleted" : {
+
+    },
     "I prefere create an account" : {
 
     },
@@ -413,6 +416,9 @@
 
     },
     "SIP address :" : {
+
+    },
+    "SIP address copied into clipboard" : {
 
     },
     "sip.linphone.org" : {

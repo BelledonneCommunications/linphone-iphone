@@ -21,7 +21,7 @@ import SwiftUI
 
 struct ThirdPartySipAccountWarningFragment: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
 	
@@ -152,7 +152,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 						.padding(.horizontal)
 						
 						NavigationLink(destination: {
-							ThirdPartySipAccountLoginFragment(sharedMainViewModel: sharedMainViewModel, accountLoginViewModel: accountLoginViewModel)
+							ThirdPartySipAccountLoginFragment(accountLoginViewModel: accountLoginViewModel)
 						}, label: {
 							Text("I understand")
 								.default_text_style_white_600(styleSize: 20)
@@ -178,5 +178,5 @@ struct ThirdPartySipAccountWarningFragment: View {
 }
 
 #Preview {
-	ThirdPartySipAccountWarningFragment(sharedMainViewModel: SharedMainViewModel(), accountLoginViewModel: AccountLoginViewModel())
+	ThirdPartySipAccountWarningFragment(accountLoginViewModel: AccountLoginViewModel())
 }

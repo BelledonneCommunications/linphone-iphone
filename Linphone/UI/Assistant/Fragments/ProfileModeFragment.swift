@@ -21,7 +21,7 @@ import SwiftUI
 
 struct ProfileModeFragment: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@State var options: Int = 1
 	@State private var isShowPopup = false
@@ -142,7 +142,7 @@ struct ProfileModeFragment: View {
 			}
 			
 			if self.isShowPopup {
-				PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup,
+				PopupView(isShowPopup: $isShowPopup,
 						  title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"),
 						  content: Text(
 							isShowPopupForDefault
@@ -167,5 +167,5 @@ struct ProfileModeFragment: View {
 }
 
 #Preview {
-	ProfileModeFragment(sharedMainViewModel: SharedMainViewModel())
+	ProfileModeFragment()
 }

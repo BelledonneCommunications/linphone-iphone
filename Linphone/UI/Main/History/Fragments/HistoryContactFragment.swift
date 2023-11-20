@@ -24,7 +24,7 @@ struct HistoryContactFragment: View {
 	
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject var sharedMainViewModel = SharedMainViewModel()
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var historyViewModel: HistoryViewModel
     @ObservedObject var historyListViewModel: HistoryListViewModel
     @ObservedObject var contactViewModel: ContactViewModel
@@ -131,6 +131,8 @@ struct HistoryContactFragment: View {
                                     forPasteboardType: UTType.plainText.identifier
                                 )
                             }
+							
+							sharedMainViewModel.toastMessage = "Success_copied_into_clipboard"
 						} label: {
 							HStack {
 								Text("Copy SIP address")

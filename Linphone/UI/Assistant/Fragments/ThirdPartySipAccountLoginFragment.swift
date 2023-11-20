@@ -21,7 +21,7 @@ import SwiftUI
 
 struct ThirdPartySipAccountLoginFragment: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
 	
@@ -233,5 +233,5 @@ struct ThirdPartySipAccountLoginFragment: View {
 }
 
 #Preview {
-	ThirdPartySipAccountLoginFragment(sharedMainViewModel: SharedMainViewModel(), accountLoginViewModel: AccountLoginViewModel())
+	ThirdPartySipAccountLoginFragment(accountLoginViewModel: AccountLoginViewModel())
 }

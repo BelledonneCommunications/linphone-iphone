@@ -23,7 +23,7 @@ import linphonesw
 struct EditContactFragment: View {
 	
 	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel()
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Environment(\.dismiss) var dismiss
 	

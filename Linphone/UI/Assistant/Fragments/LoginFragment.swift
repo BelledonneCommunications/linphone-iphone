@@ -22,8 +22,8 @@ import SwiftUI
 struct LoginFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
 	
 	@State private var isSecured: Bool = true
 	
@@ -183,7 +183,7 @@ struct LoginFragment: View {
 								.padding(.bottom)
 								
 								NavigationLink(isActive: $isLinkSIPActive, destination: {
-									ThirdPartySipAccountWarningFragment(sharedMainViewModel: sharedMainViewModel, accountLoginViewModel: accountLoginViewModel)
+									ThirdPartySipAccountWarningFragment(accountLoginViewModel: accountLoginViewModel)
 								}, label: {
 									Text("Use SIP Account")
 										.default_text_style_orange_600(styleSize: 20)
@@ -268,7 +268,7 @@ struct LoginFragment: View {
 						let contentPopup3 = Text(" et ")
 						let contentPopup4 = Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline()
 						let contentPopup5 = Text(".")
-						PopupView(sharedMainViewModel: sharedMainViewModel, isShowPopup: $isShowPopup,
+						PopupView(isShowPopup: $isShowPopup,
 								  title: Text("Conditions de service"),
 								  content: contentPopup1 + contentPopup2 + contentPopup3 + contentPopup4 + contentPopup5,
 								  titleFirstButton: Text("Deny all"),
@@ -283,7 +283,7 @@ struct LoginFragment: View {
 				}
 				
 				if coreContext.loggingInProgress {
-					PopupLoadingView(sharedMainViewModel: sharedMainViewModel)
+					PopupLoadingView()
 						.background(.black.opacity(0.65))
 				}
 			}
@@ -306,5 +306,5 @@ struct LoginFragment: View {
 }
 
 #Preview {
-	LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: SharedMainViewModel())
+	LoginFragment(accountLoginViewModel: AccountLoginViewModel())
 }

@@ -21,7 +21,7 @@ import SwiftUI
 
 struct PermissionsFragment: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var permissionManager = PermissionManager.shared
 	
@@ -204,5 +204,5 @@ struct PermissionsFragment: View {
 }
 
 #Preview {
-	PermissionsFragment(sharedMainViewModel: SharedMainViewModel())
+	PermissionsFragment()
 }

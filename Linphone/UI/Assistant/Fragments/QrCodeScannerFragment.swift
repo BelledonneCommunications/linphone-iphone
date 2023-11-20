@@ -22,6 +22,7 @@ import SwiftUI
 struct QrCodeScannerFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Environment(\.dismiss) var dismiss
 	
@@ -54,7 +55,7 @@ struct QrCodeScannerFragment: View {
 		.edgesIgnoringSafeArea(.all)
 		.navigationBarHidden(true)
 		
-		if coreContext.toastMessage == "Successful" {
+		if sharedMainViewModel.toastMessage == "Successful" {
 			ZStack {
 				
 			}.onAppear {

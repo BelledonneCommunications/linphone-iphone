@@ -21,18 +21,18 @@ import SwiftUI
 
 struct AssistantView: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var coreContext = CoreContext.shared
 	
 	var body: some View {
 		if sharedMainViewModel.displayProfileMode && coreContext.loggedIn {
-			ProfileModeFragment(sharedMainViewModel: sharedMainViewModel)
+			ProfileModeFragment()
 		} else {
-			LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: sharedMainViewModel)
+			LoginFragment(accountLoginViewModel: AccountLoginViewModel())
 		}
 	}
 }
 
 #Preview {
-	LoginFragment(accountLoginViewModel: AccountLoginViewModel(), sharedMainViewModel: SharedMainViewModel())
+	LoginFragment(accountLoginViewModel: AccountLoginViewModel())
 }

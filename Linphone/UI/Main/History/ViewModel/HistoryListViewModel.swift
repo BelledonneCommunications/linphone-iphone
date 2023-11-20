@@ -155,8 +155,11 @@ class HistoryListViewModel: ObservableObject {
 				} else {
 					core.clearCallLogs()
 				}
-				self.callLogs.removeAll()
-				self.callLogsTmp.removeAll()
+				
+				DispatchQueue.main.async {
+					self.callLogs.removeAll()
+					self.callLogsTmp.removeAll()
+				}
 			}
 		} else {
 			removeCallLogsWithAddress()
@@ -167,6 +170,10 @@ class HistoryListViewModel: ObservableObject {
 	func removeCallLogsWithAddress() {
 		self.callLogs.filter { $0.toAddress!.asStringUriOnly() == callLogsAddressToDelete || $0.fromAddress!.asStringUriOnly() == callLogsAddressToDelete }.forEach { callLog in
 			removeCallLog(callLog: callLog)
+			
+			coreContext.doOnCoreQueue { core in
+				core.removeCallLog(callLog: callLog)
+			}
 		}
 	}
 	

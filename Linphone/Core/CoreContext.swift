@@ -24,11 +24,11 @@ import Combine
 final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
+	private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn: Bool = false
 	@Published var loggingInProgress: Bool = false
-	@Published var toastMessage: String = ""
 	@Published var defaultAccount: Account?
 	
 	private var mCore: Core!
@@ -71,9 +71,9 @@ final class CoreContext: ObservableObject {
 			self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
 				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
-					self.toastMessage = "Successful"
+					self.sharedMainViewModel.toastMessage = "Successful"
 				} else {
-					self.toastMessage = "Failed"
+					self.sharedMainViewModel.toastMessage = "Failed"
 				}
 			}
 			
@@ -90,7 +90,7 @@ final class CoreContext: ObservableObject {
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
-					self.toastMessage = "Registration failed"
+					self.sharedMainViewModel.toastMessage = "Registration failed"
 					self.loggingInProgress = false
 					self.loggedIn = false
 				}

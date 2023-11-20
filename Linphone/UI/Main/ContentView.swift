@@ -488,7 +488,7 @@ struct ContentView: View {
 				}
 				
 				if isShowDeleteContactPopup {
-					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeleteContactPopup,
+					PopupView(isShowPopup: $isShowDeleteContactPopup,
 							  title: Text(
 								contactViewModel.selectedFriend != nil
 								? "Delete \(contactViewModel.selectedFriend!.name!)?"
@@ -530,7 +530,7 @@ struct ContentView: View {
 				}
 				
 				if isShowDeleteAllHistoryPopup {
-					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDeleteContactPopup,
+					PopupView(isShowPopup: $isShowDeleteContactPopup,
 							  title: Text("Do you really want to delete all calls history?"),
 							  content: Text("All calls will be removed from the history."),
 							  titleFirstButton: Text("Cancel"),
@@ -552,7 +552,7 @@ struct ContentView: View {
 				}
 				
 				if isShowDismissPopup {
-					PopupView(sharedMainViewModel: SharedMainViewModel(), isShowPopup: $isShowDismissPopup,
+					PopupView(isShowPopup: $isShowDismissPopup,
 							  title: Text("Don’t save modifications?"),
 							  content: Text("All modifications will be canceled."),
 							  titleFirstButton: Text("Cancel"),
