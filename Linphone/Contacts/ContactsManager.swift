@@ -188,7 +188,7 @@ final class ContactsManager {
 		self.coreContext.doOnCoreQueue { core in
 			do {
 				let friend = try existingFriend ?? core.createFriend()
-				
+                
 				friend.edit()
 				friend.nativeUri = contact.identifier
 				try friend.setName(newValue: contact.firstName + " " + contact.lastName)
@@ -274,6 +274,9 @@ final class ContactsManager {
 	func getFriendWithContact(contact: Contact) -> Friend? {
 		if friendList != nil {
 			let friend = friendList!.friends.first(where: {$0.nativeUri == contact.identifier})
+			if friend == nil && friendList != nil {
+				return linphoneFriendList!.friends.first(where: {$0.nativeUri == contact.identifier})
+			}
 			return friend
 		} else {
 			return nil
