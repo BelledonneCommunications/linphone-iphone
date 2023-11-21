@@ -25,6 +25,11 @@ struct LinphoneApp: App {
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
+	@State private var contactViewModel: ContactViewModel?
+	@State private var editContactViewModel: EditContactViewModel?
+	@State private var historyViewModel: HistoryViewModel?
+	@State private var historyListViewModel: HistoryListViewModel?
+	
 	@State private var isActive = false
 	
 	var body: some Scene {
@@ -34,16 +39,26 @@ struct LinphoneApp: App {
 					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
 					AssistantView()
-				} else if coreContext.defaultAccount != nil {
+				} else if coreContext.defaultAccount != nil 
+							&& contactViewModel != nil
+							&& editContactViewModel != nil
+							&& historyViewModel != nil
+							&& historyListViewModel != nil {
 					ContentView(
-						contactViewModel: ContactViewModel(),
-						editContactViewModel: EditContactViewModel(),
-						historyViewModel: HistoryViewModel(),
-						historyListViewModel: HistoryListViewModel()
+						contactViewModel: contactViewModel!,
+						editContactViewModel: editContactViewModel!,
+						historyViewModel: historyViewModel!,
+						historyListViewModel: historyListViewModel!
 					)
 				}
 			} else {
 				SplashScreen(isActive: $isActive)
+					.onDisappear {
+						contactViewModel = ContactViewModel()
+						editContactViewModel = EditContactViewModel()
+						historyViewModel = HistoryViewModel()
+						historyListViewModel = HistoryListViewModel()
+					}
 			}
 		}
 	}

@@ -73,8 +73,6 @@ struct HistoryContactFragment: View {
 						Button {
 							isMenuOpen = false
                             
-                            indexPage = 0
-                            
                             if ContactsManager.shared.getFriendWithAddress(
                                 address: historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
                                    ? historyViewModel.displayedCall!.toAddress!
@@ -87,11 +85,13 @@ struct HistoryContactFragment: View {
                                 let friendIndex = MagicSearchSingleton.shared.lastSearch.firstIndex(
                                     where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall.asStringUriOnly()})})
                                 if friendIndex != nil {
-                                    
-                                    withAnimation {
+									
+									withAnimation {
 										historyViewModel.displayedCall = nil
-                                        contactViewModel.indexDisplayedFriend = friendIndex
-                                    }
+										indexPage = 0
+										
+										contactViewModel.indexDisplayedFriend = friendIndex
+									}
                                 }
                             } else {
                                 let addressCall = historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
@@ -100,10 +100,12 @@ struct HistoryContactFragment: View {
                                 
                                 withAnimation {
 									historyViewModel.displayedCall = nil
-                                    isShowEditContactFragment.toggle()
-                                    editContactViewModel.sipAddresses.removeAll()
-                                    editContactViewModel.sipAddresses.append(String(addressCall.asStringUriOnly().dropFirst(4)))
-                                    editContactViewModel.sipAddresses.append("")
+									indexPage = 0
+									
+									isShowEditContactFragment.toggle()
+								 	editContactViewModel.sipAddresses.removeAll()
+								 	editContactViewModel.sipAddresses.append(String(addressCall.asStringUriOnly().dropFirst(4)))
+									editContactViewModel.sipAddresses.append("")
                                 }
                             }
                             
