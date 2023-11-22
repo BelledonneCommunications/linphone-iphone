@@ -173,7 +173,7 @@ final class ContactsManager {
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 				if resultFriend != nil {
 					if linphoneFriend && existingFriend == nil {
-						_ = self.linphoneFriendList?.addLocalFriend(linphoneFriend: resultFriend!)
+						_ = self.linphoneFriendList?.addFriend(linphoneFriend: resultFriend!)
 						self.linphoneFriendList?.updateSubscriptions()
 					} else if existingFriend == nil {
 						_ = self.friendList?.addLocalFriend(linphoneFriend: resultFriend!)

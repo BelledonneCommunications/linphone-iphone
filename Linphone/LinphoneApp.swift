@@ -30,11 +30,11 @@ struct LinphoneApp: App {
 	@State private var historyViewModel: HistoryViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	
-	@State private var isActive = false
+	@State private var isActive = true
 	
 	var body: some Scene {
 		WindowGroup {
-			if isActive {
+			if isActive && coreContext.coreIsStarted {
 				if !sharedMainViewModel.welcomeViewDisplayed {
 					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {

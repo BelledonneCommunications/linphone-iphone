@@ -29,6 +29,8 @@
 		D72343362AD037AF009AA24E /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343352AD037AF009AA24E /* ToastView.swift */; };
 		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
 		D732A9092AFD235500DB42BA /* ShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9082AFD235500DB42BA /* ShareSheetController.swift */; };
+		D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */ = {isa = PBXBuildFile; fileRef = D732A90A2B0376F500DB42BA /* linphonerc-default */; };
+		D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
 		D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */; };
 		D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */; };
 		D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */; };
@@ -51,6 +53,7 @@
 		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
 		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
+		D7ADF6002AFE356400212231 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ADF5FF2AFE356400212231 /* Avatar.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7C365082AEFAB7F00FE6142 /* ContactListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */; };
 		D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365092AF001C300FE6142 /* EditContactFragment.swift */; };
@@ -101,6 +104,8 @@
 		D72343352AD037AF009AA24E /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryContactFragment.swift; sourceTree = "<group>"; };
 		D732A9082AFD235500DB42BA /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
+		D732A90A2B0376F500DB42BA /* linphonerc-default */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-default"; sourceTree = "<group>"; };
+		D732A90B2B0376F500DB42BA /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory"; sourceTree = "<group>"; };
 		D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryFragment.swift; sourceTree = "<group>"; };
 		D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListFragment.swift; sourceTree = "<group>"; };
 		D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModel.swift; sourceTree = "<group>"; };
@@ -124,6 +129,7 @@
 		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D7ADF5FF2AFE356400212231 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListBottomSheet.swift; sourceTree = "<group>"; };
 		D7C365092AF001C300FE6142 /* EditContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactFragment.swift; sourceTree = "<group>"; };
@@ -178,6 +184,7 @@
 				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
 				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
 				D732A9082AFD235500DB42BA /* ShareSheetController.swift */,
+				D7ADF5FF2AFE356400212231 /* Avatar.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -214,6 +221,7 @@
 				D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */,
 				D719ABBD2ABC67BF00B41C10 /* Preview Content */,
 				D7D24D0C2AC1B4C700C6F35B /* Fonts */,
+				D7ADF6012AFE5C7C00212231 /* Ressources */,
 			);
 			path = Linphone;
 			sourceTree = "<group>";
@@ -393,6 +401,15 @@
 			path = Viewmodel;
 			sourceTree = "<group>";
 		};
+		D7ADF6012AFE5C7C00212231 /* Ressources */ = {
+			isa = PBXGroup;
+			children = (
+				D732A90A2B0376F500DB42BA /* linphonerc-default */,
+				D732A90B2B0376F500DB42BA /* linphonerc-factory */,
+			);
+			path = Ressources;
+			sourceTree = "<group>";
+		};
 		D7D24D0C2AC1B4C700C6F35B /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -487,6 +504,8 @@
 				D719ABBF2ABC67BF00B41C10 /* Preview Assets.xcassets in Resources */,
 				D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */,
 				D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */,
+				D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */,
+				D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */,
 				D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -521,6 +540,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */,
+				D7ADF6002AFE356400212231 /* Avatar.swift in Sources */,
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */,
