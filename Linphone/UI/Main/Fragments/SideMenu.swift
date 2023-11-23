@@ -18,8 +18,15 @@
  */
 
 import SwiftUI
+import linphonesw
+import UniformTypeIdentifiers
 
 struct SideMenu: View {
+	
+	@ObservedObject private var coreContext = CoreContext.shared
+	
+	@State private var coreDelegate: CoreDelegate?
+	
     let width: CGFloat
     let isOpen: Bool
     let menuClose: () -> Void
@@ -41,9 +48,13 @@ struct SideMenu: View {
                     Text("My Profile").onTapGesture {
                         print("My Profile")
                     }
-                    Text("Posts").onTapGesture {
-                        print("Posts")
+                    Text("Send logs").onTapGesture {
+						sendLogs()
                     }
+					Text("Clear logs").onTapGesture {
+						print("Clear logs")
+						Core.resetLogCollection()
+	 				}
                     Text("Logout").onTapGesture {
                         print("Logout")
                     }
@@ -60,4 +71,42 @@ struct SideMenu: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+	
+	func sendLogs() {
+		coreContext.doOnCoreQueue { core in
+			core.uploadLogCollection()
+			
+			let newCoreDelegate = CoreDelegateStub(
+				onLogCollectionUploadStateChanged: { core, logCollectionUploadState, logString in
+					print("newCoreDelegatenewCoreDelegate \(logString)")
+					
+					if logString.starts(with: "https") {
+						UIPasteboard.general.setValue(
+							logString,
+							forPasteboardType: UTType.plainText.identifier
+						)
+						
+						removeAllDelegate()
+					 
+						ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+						ToastViewModel.shared.displayToast.toggle()
+					}
+				}
+			)
+			
+			coreDelegate = newCoreDelegate
+			if coreDelegate != nil {
+				core.addDelegate(delegate: coreDelegate!)
+			}
+		}
+	}
+	
+	func removeAllDelegate() {
+		coreContext.doOnCoreQueue { core in
+			if coreDelegate != nil {
+				core.removeDelegate(delegate: coreDelegate!)
+				coreDelegate = nil
+		 	}
+		}
+	}
 }

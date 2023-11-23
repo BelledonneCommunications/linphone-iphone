@@ -164,6 +164,9 @@
     "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
 
     },
+    "Clear logs" : {
+
+    },
     "Close" : {
 
     },
@@ -376,9 +379,6 @@
     "Plus tard" : {
 
     },
-    "Posts" : {
-
-    },
     "Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :" : {
 
     },
@@ -407,6 +407,9 @@
 
     },
     "See Linphone contact" : {
+
+    },
+    "Send logs" : {
 
     },
     "Share" : {

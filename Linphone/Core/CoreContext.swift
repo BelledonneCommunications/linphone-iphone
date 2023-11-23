@@ -60,6 +60,10 @@ final class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			let configDir = Factory.Instance.getConfigDir(context: nil)
+			
+			Factory.Instance.logCollectionPath = configDir
+			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
+			
             let url = NSURL(fileURLWithPath: configDir)
             if let pathComponent = url.appendingPathComponent("linphonerc") {
                 let filePath = pathComponent.path
@@ -71,17 +75,22 @@ final class CoreContext: ObservableObject {
                     }
                 }
             }
-            
-            let config: Config! = Config.newForSharedCore(
-                appGroupId: "group.org.linphone.phone.msgNotification",
-                configFilename: "linphonerc",
-                factoryConfigFilename: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
-            )
-            
-            self.mCore = try? Factory.Instance.createCoreWithConfig(config: config, systemContext: nil)
+			
+			let config = try? Factory.Instance.createConfigWithFactory(
+				path: "\(configDir)/linphonerc",
+				factoryPath: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
+			)
+			if config != nil {
+				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
+			}
 
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
+			
+			//self.mCore.logCollectionUploadServerUrl = "https://www.linphone.org:444/lft.php"
+			//self.mCore.friendListSubscriptionEnabled = true
+			
+			print("configDirconfigDir \(configDir)")
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
@@ -89,7 +98,9 @@ final class CoreContext: ObservableObject {
 				} else if cbVal.state == GlobalState.Off {
 					self.defaultAccount = nil
 				}
+				self.coreIsStarted = true
 			}
+			
 			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need
@@ -115,7 +126,6 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
-					self.coreIsStarted = true
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {

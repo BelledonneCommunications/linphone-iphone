@@ -67,6 +67,9 @@ final class ContactsManager {
 				
 				do {
 					self.linphoneFriendList = try core.getFriendListByName(name: self.linphoneAddressBookFriendList) ?? core.createFriendList()
+					
+					//self.linphoneFriendList?.updateSubscriptions()
+					print("friendListfriendListfriendListfriendList \(self.linphoneFriendList!.rlsAddress)")
 				} catch let error {
 					print("\(#function) - Failed to enumerate contacts: \(error)")
 				}

@@ -21,9 +21,6 @@ import SwiftUI
 
 struct SplashScreen: View {
 	
-	@ObservedObject private var coreContext = CoreContext.shared
-	@Binding var isActive: Bool
-	
 	var body: some View {
 		GeometryReader { _ in
 			VStack {
@@ -42,5 +39,5 @@ struct SplashScreen: View {
 }
 
 #Preview {
-	SplashScreen(isActive: .constant(true))
+	SplashScreen()
 }

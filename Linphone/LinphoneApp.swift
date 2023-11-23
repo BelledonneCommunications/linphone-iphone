@@ -30,11 +30,9 @@ struct LinphoneApp: App {
 	@State private var historyViewModel: HistoryViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	
-	@State private var isActive = true
-	
 	var body: some Scene {
 		WindowGroup {
-			if isActive && coreContext.coreIsStarted {
+			if coreContext.coreIsStarted {
 				if !sharedMainViewModel.welcomeViewDisplayed {
 					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
@@ -52,7 +50,7 @@ struct LinphoneApp: App {
 					)
 				}
 			} else {
-				SplashScreen(isActive: $isActive)
+				SplashScreen()
 					.onDisappear {
 						contactViewModel = ContactViewModel()
 						editContactViewModel = EditContactViewModel()
