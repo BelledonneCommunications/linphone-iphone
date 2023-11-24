@@ -83,10 +83,8 @@ struct Avatar: View {
     }
     
     func addDelegate() {
-        print("onPresenceReceivedonPresenceReceived \(friend.name) \(friend.consolidatedPresence)")
         let newFriendDelegate = FriendDelegateStub(
             onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-                print("onPresenceReceivedonPresenceReceived delegate \(friend.name) \(friend.consolidatedPresence) \(linphoneFriend.consolidatedPresence)")
 				self.presenceImage = linphoneFriend.consolidatedPresence == ConsolidatedPresence.Online ? "presence-online" : "presence-busy"
             }
         )

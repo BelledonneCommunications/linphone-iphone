@@ -78,7 +78,6 @@ struct SideMenu: View {
 			
 			let newCoreDelegate = CoreDelegateStub(
 				onLogCollectionUploadStateChanged: { core, logCollectionUploadState, logString in
-					print("newCoreDelegatenewCoreDelegate \(logString)")
 					
 					if logString.starts(with: "https") {
 						UIPasteboard.general.setValue(

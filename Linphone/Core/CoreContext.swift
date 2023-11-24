@@ -87,10 +87,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
 			
-			//self.mCore.logCollectionUploadServerUrl = "https://www.linphone.org:444/lft.php"
-			//self.mCore.friendListSubscriptionEnabled = true
-			
-			print("configDirconfigDir \(configDir)")
+			self.mCore.friendListSubscriptionEnabled = true
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
