@@ -140,12 +140,12 @@
 	const char *url = linphone_chat_message_get_external_body_url(message);
 	const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(message);
 	// Last message was a file transfer (image) so display a picture...
-	if (url || last_content) {
-        if (linphone_chat_message_get_text_content(message))
-            return [NSString stringWithUTF8String:linphone_chat_message_get_text_content(message)];
+	if ((url || last_content) && message) {
+        if (linphone_chat_message_get_utf8_text(message))
+            return [NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)];
 		return @"🗻";
 	} else {
-        const char *text = linphone_chat_message_get_text_content(message) ?: "";
+        const char *text = linphone_chat_message_get_utf8_text(message) ?: "";
 		return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
 														   ?: NSLocalizedString(@"(invalid string)", nil);
 	}
@@ -530,7 +530,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	if (voiceContent)
 		contentCount--;
 	
-	BOOL multiParts = ((linphone_chat_message_get_text_content(chat) != NULL) ? contentCount > 2 : contentCount > 1);
+	BOOL multiParts = ((linphone_chat_message_get_utf8_text(chat) != NULL) ? contentCount > 2 : contentCount > 1);
 	
 	if (voiceContent && contentCount == 0) {
 		size = CGSizeMake(VOICE_RECORDING_PLAYER_WIDTH, VOICE_RECORDING_PLAYER_HEIGHT);
@@ -618,7 +618,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 	
 
 	// if here, either 1 file + text or just one file or just text.
-	BOOL justText = linphone_chat_message_get_text_content(chat) != NULL && contentCount == 1;
+	BOOL justText = linphone_chat_message_get_utf8_text(chat) != NULL && contentCount == 1;
 	if (justText) { // Just text
         size = [self computeBoundingBox:messageText
                                     size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
@@ -886,7 +886,7 @@ static const CGFloat REPLY_OR_FORWARD_TAG_HEIGHT  = 18;
 		[_messageActionsIcons addObject:@"menu_copy_text_default"];
 		[_messageActionsBlocks addObject:^{
 			[thiz dismissPopup];
-			[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_text_content(message)]];
+			[UIPasteboard.generalPasteboard setString:[NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)]];
 		}];
 	}
 	

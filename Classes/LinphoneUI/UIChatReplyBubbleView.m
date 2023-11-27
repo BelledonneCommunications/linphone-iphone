@@ -67,7 +67,7 @@
 
 	NSString *sender =  [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(message)];
 	_senderName.text = sender;
-	const char * text = isIcal ? [ICSBubbleView getSubjectFromContentWithCmessage:message].UTF8String : linphone_chat_message_get_text_content(message);
+	const char * text = isIcal ? [ICSBubbleView getSubjectFromContentWithCmessage:message].UTF8String : linphone_chat_message_get_utf8_text(message);
 	if (text && strlen(text) == 0)
 		text = nil;
 	_textContent.text = text ? [NSString stringWithUTF8String:text] : @"";

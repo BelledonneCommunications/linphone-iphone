@@ -1375,20 +1375,22 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								imageViewBubble.isHidden = true
 							} else {
 								var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? content.exportPlainFile() : content.filePath
-								if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
-									if !urlEncoded.isEmpty {
-										if let urlFile = URL(string: "file://" + urlEncoded){
-											do {
-												let text = try String(contentsOf: urlFile, encoding: .utf8)
-												imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
-												collectionViewImagesGrid.reloadData()
-												
-												collectionViewImagesGrid.isHidden = false
-												NSLayoutConstraint.activate(imagesGridConstraints)
-												imageViewBubble.image = nil
-												NSLayoutConstraint.deactivate(imageConstraints)
-												imageViewBubble.isHidden = true
-											} catch {}
+								if filePathString != nil {
+									if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+										if !urlEncoded.isEmpty {
+											if let urlFile = URL(string: "file://" + urlEncoded){
+												do {
+													let text = try String(contentsOf: urlFile, encoding: .utf8)
+													imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
+													collectionViewImagesGrid.reloadData()
+													
+													collectionViewImagesGrid.isHidden = false
+													NSLayoutConstraint.activate(imagesGridConstraints)
+													imageViewBubble.image = nil
+													NSLayoutConstraint.deactivate(imageConstraints)
+													imageViewBubble.isHidden = true
+												} catch {}
+											}
 										}
 									}
 								}
@@ -1942,7 +1944,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		var filePath = ""
 		if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 			filePath = content!.exportPlainFile()
-		}else {
+		}else if content!.filePath != nil {
 			filePath = content!.filePath!
 		}
 		let type = content?.type
@@ -2013,13 +2015,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			subject = event.subject!
 			return VoipTexts.bubble_chat_event_message_new_subject + subject
 		case Int(LinphoneEventLogTypeConferenceParticipantAdded.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != nil && event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_joined
 		case Int(LinphoneEventLogTypeConferenceParticipantRemoved.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != nil && event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_left
 		case Int(LinphoneEventLogTypeConferenceParticipantSetAdmin.rawValue):
-			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != nil && event.participantAddress!.displayName != nil && event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_now_admin
 		case Int(LinphoneEventLogTypeConferenceParticipantUnsetAdmin.rawValue):
 			participant = (event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
@@ -2030,28 +2032,28 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			return VoipTexts.bubble_chat_event_message_joined_group
 		case Int(LinphoneEventLogTypeConferenceSecurityEvent.rawValue):
 			let type = event.securityEventType
-			let participant = event.securityEventFaultyDeviceAddress!.displayName != "" ? event.securityEventFaultyDeviceAddress!.displayName : event.securityEventFaultyDeviceAddress!.username
+			let participant = event.securityEventFaultyDeviceAddress!.displayName != nil && event.securityEventFaultyDeviceAddress!.displayName != "" ? event.securityEventFaultyDeviceAddress!.displayName : event.securityEventFaultyDeviceAddress!.username
 			switch (type.rawValue) {
 			case Int(LinphoneSecurityEventTypeSecurityLevelDowngraded.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_security_level_decreased
 				}else{
 					return VoipTexts.bubble_chat_event_message_security_level_decreased_because + participant!
 				}
 			case Int(LinphoneSecurityEventTypeParticipantMaxDeviceCountExceeded.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_max_participant
 				}else{
 					return VoipTexts.bubble_chat_event_message_max_participant_by + participant!
 				}
 			case Int(LinphoneSecurityEventTypeEncryptionIdentityKeyChanged.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_lime_changed
 				}else{
 					return VoipTexts.bubble_chat_event_message_lime_changed_for + participant!
 				}
 			case Int(LinphoneSecurityEventTypeManInTheMiddleDetected.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_attack_detected
 				}else{
 					return VoipTexts.bubble_chat_event_message_attack_detected_for + participant!

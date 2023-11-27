@@ -638,7 +638,7 @@ import AVFoundation
 					.OutgoingEarlyMedia:
 				if (CallManager.callKitEnabled()) {
 					let uuid = CallManager.instance().providerDelegate.uuids[""]
-					if (uuid != nil) {
+					if (uuid != nil && callId != nil) {
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 						callInfo!.callId = callId!
 						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)

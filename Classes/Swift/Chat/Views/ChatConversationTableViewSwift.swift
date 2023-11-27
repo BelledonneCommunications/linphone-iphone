@@ -642,7 +642,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 					
 					ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 					plainFile = ""
-				}else {
+				}else if chatMessage.contents.first?.filePath != nil {
 					self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
 				}
 				
