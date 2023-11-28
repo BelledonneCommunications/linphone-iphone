@@ -211,7 +211,7 @@
 	size_t contentCount = bctbx_list_size(contents);
 	if (voiceContent)
 		contentCount--;
-	BOOL multiParts = ((linphone_chat_message_get_text_content(self.message) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
+	BOOL multiParts = ((linphone_chat_message_get_utf8_text(self.message) != NULL) ? bctbx_list_size(contents) > 2 : bctbx_list_size(contents) > 1);
 	if (voiceContent && !multiParts) {
 		_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden = _fileView.hidden = _fileButton.hidden = YES;
 		return;
@@ -732,7 +732,7 @@
 	}
 
     // Positioning text message
-    const char *utf8Text = linphone_chat_message_get_text_content(self.message);
+    const char *utf8Text = linphone_chat_message_get_utf8_text(self.message);
     
     CGRect textFrame = self.messageText.frame;
 	if (_contentViews.count > 0 || _finalImage.image)

@@ -148,18 +148,20 @@ extension SingleCallView : AVPictureInPictureControllerDelegate {
 			activeVideoCallSourceView: currentCallView!.remoteVideo,
 			contentViewController: pipVideoCallController)
 		pipController = AVPictureInPictureController(contentSource: pipContentSource)
-		pipController.delegate = self
-		
-		ControlsViewModel.shared.isVideoEnabled.readCurrentAndObserve{ (video) in
-			pipVideoCallController.matchVideoDimension()
-			self.pipController.canStartPictureInPictureAutomaticallyFromInline = video == true
-		}
-		
-		CallsViewModel.shared.currentCallData.observe(onChange: { callData in
-			if (callData??.call.state != .StreamsRunning && self.pipController.isPictureInPictureActive) {
-				self.pipController.stopPictureInPicture()
+		if (pipController != nil) {
+			pipController.delegate = self
+			
+			ControlsViewModel.shared.isVideoEnabled.readCurrentAndObserve{ (video) in
+				pipVideoCallController.matchVideoDimension()
+				self.pipController.canStartPictureInPictureAutomaticallyFromInline = video == true
 			}
-		})
+			
+			CallsViewModel.shared.currentCallData.observe(onChange: { callData in
+				if (callData??.call.state != .StreamsRunning && self.pipController.isPictureInPictureActive) {
+					self.pipController.stopPictureInPicture()
+				}
+			})
+		}
 	}
 	
 	

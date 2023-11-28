@@ -1784,8 +1784,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		var result = ""
 		do{
 			let linphonePlayer = try core.createLocalPlayer(soundCardName: nil, videoDisplayName: nil, windowId: nil)
-			try linphonePlayer.open(filename: _voiceRecordingFile!)
-			result = formattedDuration(linphonePlayer.duration)!
+			if _voiceRecordingFile != nil {
+				try linphonePlayer.open(filename: _voiceRecordingFile!)
+			}
+			result = formattedDuration(linphonePlayer.duration) ?? ""
 			linphonePlayer.close()
 		}catch{
 			Log.e(error.localizedDescription)
@@ -2026,13 +2028,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			subject = event.subject!
 			return VoipTexts.bubble_chat_event_message_new_subject + subject
 		case Int(LinphoneEventLogTypeConferenceParticipantAdded.rawValue):
-			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != nil && event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_joined
 		case Int(LinphoneEventLogTypeConferenceParticipantRemoved.rawValue):
-			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != nil && event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_has_left
 		case Int(LinphoneEventLogTypeConferenceParticipantSetAdmin.rawValue):
-			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
+			participant = (event.participantAddress!.displayName != nil && event.participantAddress!.displayName != nil && event.participantAddress!.displayName != "" ? event.participantAddress!.displayName : event.participantAddress!.username)!
 			return participant + VoipTexts.bubble_chat_event_message_now_admin
 		case Int(LinphoneEventLogTypeConferenceParticipantUnsetAdmin.rawValue):
 			participant = (event.participantAddress!.displayName != "" && event.participantAddress!.displayName != nil ? event.participantAddress!.displayName : event.participantAddress!.username)!
@@ -2043,28 +2045,28 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			return VoipTexts.bubble_chat_event_message_joined_group
 		case Int(LinphoneEventLogTypeConferenceSecurityEvent.rawValue):
 			let type = event.securityEventType
-			let participant = event.securityEventFaultyDeviceAddress!.displayName != "" ? event.securityEventFaultyDeviceAddress!.displayName : event.securityEventFaultyDeviceAddress!.username
+			let participant = event.securityEventFaultyDeviceAddress!.displayName != nil && event.securityEventFaultyDeviceAddress!.displayName != "" ? event.securityEventFaultyDeviceAddress!.displayName : event.securityEventFaultyDeviceAddress!.username
 			switch (type.rawValue) {
 			case Int(LinphoneSecurityEventTypeSecurityLevelDowngraded.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_security_level_decreased
 				}else{
 					return VoipTexts.bubble_chat_event_message_security_level_decreased_because + participant!
 				}
 			case Int(LinphoneSecurityEventTypeParticipantMaxDeviceCountExceeded.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_max_participant
 				}else{
 					return VoipTexts.bubble_chat_event_message_max_participant_by + participant!
 				}
 			case Int(LinphoneSecurityEventTypeEncryptionIdentityKeyChanged.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_lime_changed
 				}else{
 					return VoipTexts.bubble_chat_event_message_lime_changed_for + participant!
 				}
 			case Int(LinphoneSecurityEventTypeManInTheMiddleDetected.rawValue):
-				if (participant!.isEmpty){
+				if (participant != nil && participant!.isEmpty){
 					return VoipTexts.bubble_chat_event_message_attack_detected
 				}else{
 					return VoipTexts.bubble_chat_event_message_attack_detected_for + participant!

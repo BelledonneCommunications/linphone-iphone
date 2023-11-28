@@ -1,11 +1,11 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '12.0'
+platform :ios, '13.0'
 source "https://gitlab.linphone.org/BC/public/podspec.git"
 source "https://github.com/CocoaPods/Specs.git"
 
 def all_pods
 	if ENV['PODFILE_PATH'].nil?
-		pod 'linphone-sdk', '~>5.3.0-alpha'
+		pod 'linphone-sdk', '~>5.3.0-beta'
 	else
 		pod 'linphone-sdk', :path => ENV['PODFILE_PATH']  # local sdk
 	end
@@ -121,7 +121,7 @@ post_install do |installer|
 	
 	installer.pods_project.targets.each do |target| 
 		target.build_configurations.each do |config| 
-			config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+			config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
 		end
 	end
 end

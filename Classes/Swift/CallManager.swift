@@ -564,13 +564,15 @@ import AVFoundation
 				if call.replacedCall != nil {
 					endCallKitReplacedCall = false
 					
-					let uuid = CallManager.instance().providerDelegate.uuids["\(CallManager.uuidReplacedCall)"]
+					let uuid = CallManager.instance().providerDelegate.uuids["\(CallManager.uuidReplacedCall ?? "")"]
 					let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 					callInfo!.callId = CallManager.instance().referedToCall ?? ""
-					CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-					CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId)
-					CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-					CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+					if (callInfo != nil && uuid != nil && addr != nil) {
+						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+						CallManager.instance().providerDelegate.uuids.removeValue(forKey: callId)
+						CallManager.instance().providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
+						CallManager.instance().providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+					}
 				} else if (CallManager.callKitEnabled()) {
 					let isConference = isConferenceCall(call: call)
 					let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
@@ -638,7 +640,7 @@ import AVFoundation
 					.OutgoingEarlyMedia:
 				if (CallManager.callKitEnabled()) {
 					let uuid = CallManager.instance().providerDelegate.uuids[""]
-					if (uuid != nil) {
+					if (uuid != nil && callId != nil) {
 						let callInfo = CallManager.instance().providerDelegate.callInfos[uuid!]
 						callInfo!.callId = callId
 						CallManager.instance().providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)

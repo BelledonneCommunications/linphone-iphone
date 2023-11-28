@@ -67,7 +67,7 @@ class ScheduledConferencesCell: UITableViewCell {
 				subject.text = (isBroadcast ? VoipTexts.conference_scheduled_title_broadcast_cell : VoipTexts.conference_scheduled_title_meeting_cell) + data.subject.value!
 				cancelledLabel.text = data.isConferenceCancelled.value == true ? ( data.canEdit.value == true ? VoipTexts.conference_scheduled_cancelled_by_me:  VoipTexts.conference_scheduled_cancelled_by_organizer)  : nil
 				cancelledLabel.isHidden = data.isConferenceCancelled.value != true
-				descriptionValue.text = data.description.value!
+				descriptionValue.text = data.description.value != nil ? data.description.value! : ""
 				urlValue.text = data.address.value!
 				self.joinConf.isHidden =  data.isConferenceCancelled.value == true
 				self.editConf.isHidden = data.canEdit.value != true || data.isConferenceCancelled.value == true
