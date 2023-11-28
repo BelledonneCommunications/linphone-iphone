@@ -23,6 +23,7 @@ final class MagicSearchSingleton: ObservableObject {
 	
 	static let shared = MagicSearchSingleton()
 	private var coreContext = CoreContext.shared
+	private var contactsManager = ContactsManager.shared
 	
 	private var magicSearch: MagicSearch!
 	
@@ -30,8 +31,6 @@ final class MagicSearchSingleton: ObservableObject {
 	var previousFilter: String?
 	
 	var needUpdateLastSearchContacts = false
-	
-	@Published var lastSearch: [SearchResult] = []
 	
 	private var limitSearchToLinphoneAccounts = true
 	
@@ -47,12 +46,52 @@ final class MagicSearchSingleton: ObservableObject {
 			
 			self.magicSearch.publisher?.onSearchResultsReceived?.postOnMainQueue { (magicSearch: MagicSearch) in
 				self.needUpdateLastSearchContacts = true
-				self.lastSearch = magicSearch.lastSearch
+				self.contactsManager.lastSearch = magicSearch.lastSearch.sorted(by: {
+					$0.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
+					<
+					$1.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
+				})
+                
+				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
+					contactAvatarModel.removeAllDelegate()
+				}
+				
+                self.contactsManager.avatarListModel.removeAll()
+				
+				self.contactsManager.lastSearch.forEach { searchResult in
+					if searchResult.friend != nil {
+						self.contactsManager.avatarListModel.append(ContactAvatarModel(friend: searchResult.friend!, withPresence: true))
+					}
+				}
 			}
 		}
 	}
 	
 	func searchForContacts(sourceFlags: Int) {
+		coreContext.doOnCoreQueue { _ in
+			var needResetCache = false
+			
+			DispatchQueue.main.sync {
+				if let oldFilter = self.previousFilter {
+					if oldFilter.count > self.currentFilter.count || oldFilter != self.currentFilter {
+						needResetCache = true
+					}
+				}
+				self.previousFilter = self.currentFilter
+			}
+			if needResetCache {
+				self.magicSearch.resetSearchCache()
+			}
+			
+			self.magicSearch.getContactsListAsync(
+				filter: self.currentFilter,
+				domain: self.allContact ? "" : self.domainDefaultAccount,
+				sourceFlags: sourceFlags,
+				aggregation: MagicSearch.Aggregation.Friend)
+		}
+	}
+	
+	func searchForContactsWithResult(sourceFlags: Int) {
 		coreContext.doOnCoreQueue { _ in
 			var needResetCache = false
 			

@@ -22,84 +22,45 @@ import linphonesw
 
 struct Avatar: View {
 	
-    var friend: Friend
-    let avatarSize: CGFloat
-    
-    @State private var friendDelegate: FriendDelegate?
-    @State private var presenceImage = ""
-    
-    var body: some View {
-        AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: friend.photo!)) { image in
-            switch image {
-            case .empty:
-                ProgressView()
-                    .frame(width: avatarSize, height: avatarSize)
-            case .success(let image):
-                ZStack {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: avatarSize, height: avatarSize)
-                        .clipShape(Circle())
-                    HStack {
-                        Spacer()
-                        VStack {
-                            Spacer()
-							if !friend.addresses.isEmpty {
-								if presenceImage.isEmpty 
-									&& (friend.consolidatedPresence == ConsolidatedPresence.Online || friend.consolidatedPresence == ConsolidatedPresence.Busy) {
-									Image(friend.consolidatedPresence == ConsolidatedPresence.Online ? "presence-online" : "presence-busy")
-										.resizable()
-										.frame(width: avatarSize/4, height: avatarSize/4)
-										.padding(.trailing, avatarSize == 45 ? 1 : 3)
-										.padding(.bottom, avatarSize == 45 ? 1 : 3)
-								} else if !presenceImage.isEmpty {
-										Image(presenceImage)
-											.resizable()
-											.frame(width: avatarSize/4, height: avatarSize/4)
-											.padding(.trailing, avatarSize == 45 ? 1 : 3)
-											.padding(.bottom, avatarSize == 45 ? 1 : 3)
-								}
-                            }
-                        }
-                    }
-                    .frame(width: avatarSize, height: avatarSize)
-                }
-				.onAppear {
-					addDelegate()
+	@ObservedObject var contactAvatarModel: ContactAvatarModel
+	let avatarSize: CGFloat
+	
+	var body: some View {
+        AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.friend!.photo!)) { image in
+			switch image {
+			case .empty:
+				ProgressView()
+					.frame(width: avatarSize, height: avatarSize)
+			case .success(let image):
+				ZStack {
+					image
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+						.frame(width: avatarSize, height: avatarSize)
+						.clipShape(Circle())
+					HStack {
+						Spacer()
+						VStack {
+							Spacer()
+							if contactAvatarModel.presenceStatus == .Online ||	contactAvatarModel.presenceStatus == .Busy {
+								Image(contactAvatarModel.presenceStatus == .Online ? "presence-online" : "presence-busy")
+									.resizable()
+									.frame(width: avatarSize/4, height: avatarSize/4)
+									.padding(.trailing, avatarSize == 45 ? 1 : 3)
+									.padding(.bottom, avatarSize == 45 ? 1 : 3)
+							}
+						}
+					}
+					.frame(width: avatarSize, height: avatarSize)
 				}
-			  	.onDisappear {
-					removeAllDelegate()
-				}
-            case .failure:
-                Image("profil-picture-default")
-                    .resizable()
-                    .frame(width: avatarSize, height: avatarSize)
-                    .clipShape(Circle())
-            @unknown default:
-                EmptyView()
-            }
-        }
-    }
-    
-    func addDelegate() {
-        let newFriendDelegate = FriendDelegateStub(
-            onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-				self.presenceImage = linphoneFriend.consolidatedPresence == ConsolidatedPresence.Online ? "presence-online" : "presence-busy"
-            }
-        )
-        
-        friendDelegate = newFriendDelegate
-        if friendDelegate != nil {
-            friend.addDelegate(delegate: friendDelegate!)
-        }
-    }
-    
-	func removeAllDelegate() {
-		if friendDelegate != nil {
-			presenceImage = ""
-			friend.removeDelegate(delegate: friendDelegate!)
-			friendDelegate = nil
+			case .failure:
+				Image("profil-picture-default")
+					.resizable()
+					.frame(width: avatarSize, height: avatarSize)
+					.clipShape(Circle())
+			@unknown default:
+				EmptyView()
+			}
 		}
 	}
 }

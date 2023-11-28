@@ -22,7 +22,7 @@ import linphonesw
 
 struct ContactsListFragment: View {
     
-    @ObservedObject var magicSearch = MagicSearchSingleton.shared
+    @ObservedObject var contactsManager = ContactsManager.shared
     
     @ObservedObject var contactViewModel: ContactViewModel
     @ObservedObject var contactsListViewModel: ContactsListViewModel
@@ -32,22 +32,22 @@ struct ContactsListFragment: View {
     var body: some View {
         VStack {
             List {
-                ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
+                ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
                     Button {
                     } label: {
                         HStack {
                             if index == 0 
-                                || magicSearch.lastSearch[index].friend?.name!.lowercased().folding(
+                                || contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
                                     options: .diacriticInsensitive,
                                     locale: .current
                                 ).first
-                                != magicSearch.lastSearch[index-1].friend?.name!.lowercased().folding(
+                                != contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
                                     options: .diacriticInsensitive,
                                     locale: .current
                                 ).first {
                                 Text(
                                     String(
-                                        (magicSearch.lastSearch[index].friend?.name!.uppercased().folding(
+                                        (contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
                                             options: .diacriticInsensitive,
                                             locale: .current
                                         ).first)!))
@@ -63,15 +63,17 @@ struct ContactsListFragment: View {
                                     .padding(.trailing, 10)
                             }
                             
-                            if magicSearch.lastSearch[index].friend!.photo != nil && !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
-                                Avatar(friend: magicSearch.lastSearch[index].friend!, avatarSize: 45)
+                            if index < contactsManager.avatarListModel.count
+                                && contactsManager.avatarListModel[index].friend!.photo != nil
+                                && !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
+								Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 45)
                             } else {
                                 Image("profil-picture-default")
                                     .resizable()
                                     .frame(width: 45, height: 45)
                                     .clipShape(Circle())
                             }
-                            Text((magicSearch.lastSearch[index].friend?.name)!)
+                            Text((contactsManager.lastSearch[index].friend?.name)!)
                                 .default_text_style(styleSize: 16)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .foregroundStyle(Color.orangeMain500)
@@ -80,7 +82,7 @@ struct ContactsListFragment: View {
                     .simultaneousGesture(
                         LongPressGesture()
                             .onEnded { _ in
-                                contactViewModel.selectedFriend = magicSearch.lastSearch[index].friend
+                                contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
                                 showingSheet.toggle()
                             }
                     )
@@ -99,7 +101,7 @@ struct ContactsListFragment: View {
             .listStyle(.plain)
             .overlay(
                 VStack {
-                    if magicSearch.lastSearch.isEmpty {
+                    if contactsManager.lastSearch.isEmpty {
                         Spacer()
                         Image("illus-belledonne")
                             .resizable()

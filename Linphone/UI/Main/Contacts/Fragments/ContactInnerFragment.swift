@@ -24,9 +24,9 @@ import ContactsUI
 struct ContactInnerFragment: View {
 	
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	@ObservedObject var contactsManager = ContactsManager.shared
 	
-	@ObservedObject var magicSearch = MagicSearchSingleton.shared
-	
+	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	
@@ -65,10 +65,10 @@ struct ContactInnerFragment: View {
 					}
 					
 					Spacer()
-					if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < magicSearch.lastSearch.count
-						&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-						&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
-						&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
+					if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+						&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+						&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
+						&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
 						Button(action: {
 							editNativeContact()
 						}, label: {
@@ -82,6 +82,7 @@ struct ContactInnerFragment: View {
 					} else {
 						NavigationLink(destination: EditContactFragment(
 							editContactViewModel: editContactViewModel,
+							contactViewModel: contactViewModel,
 							isShowEditContactFragment: .constant(false),
 							isShowDismissPopup: $isShowDismissPopup)) {
 							Image("pencil-simple")
@@ -93,7 +94,7 @@ struct ContactInnerFragment: View {
 						}
 						.simultaneousGesture(
 							TapGesture().onEnded {
-								editContactViewModel.selectedEditFriend = magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+								editContactViewModel.selectedEditFriend = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend
 								editContactViewModel.resetValues()
 							}
 						)
@@ -109,29 +110,31 @@ struct ContactInnerFragment: View {
 					VStack(spacing: 0) {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
-								if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < magicSearch.lastSearch.count
-									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo != nil
-									&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!.isEmpty {
-                                    Avatar(friend: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!, avatarSize: 100)
-								} else if contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+								if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo != nil
+									&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!.isEmpty {
+									Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
+								} else if contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 									Image("profil-picture-default")
 										.resizable()
 										.frame(width: 100, height: 100)
 										.clipShape(Circle())
 								}
 								if contactViewModel.indexDisplayedFriend != nil
-									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-									&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name != nil {
-									Text((magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name)!)
+									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name != nil {
+									Text((contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name)!)
 										.foregroundStyle(Color.grayMain2c700)
 										.multilineTextAlignment(.center)
 										.default_text_style(styleSize: 14)
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
 									
-									Text("En ligne")
-										.foregroundStyle(Color.greenSuccess500)
+                                    Text(contactAvatarModel.lastPresenceInfo)
+										.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
+                                                         ? Color.greenSuccess500
+                                                         : Color.orangeWarning600)
 										.multilineTextAlignment(.center)
 										.default_text_style_300(styleSize: 12)
 										.frame(maxWidth: .infinity)
@@ -268,7 +271,7 @@ struct ContactInnerFragment: View {
 			let store = CNContactStore()
 			let descriptor = CNContactViewController.descriptorForRequiredKeys()
 			cnContact = try store.unifiedContact(
-				withIdentifier: magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!,
+				withIdentifier: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!,
 				keysToFetch: [descriptor]
 			)
 			
@@ -283,6 +286,7 @@ struct ContactInnerFragment: View {
 
 #Preview {
 	ContactInnerFragment(
+		contactAvatarModel: ContactAvatarModel(friend: nil, withPresence: true),
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		isShowDeletePopup: .constant(false),

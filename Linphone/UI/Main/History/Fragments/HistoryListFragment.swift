@@ -22,6 +22,8 @@ import linphonesw
 
 struct HistoryListFragment: View {
 	
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
 	
@@ -34,37 +36,24 @@ struct HistoryListFragment: View {
 					Button {
 					} label: {
 						HStack {
-							let fromAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
-							let toAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
+							let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
+							let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
 							let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
 							
+							let contactAvatarModel = addressFriend != nil
+							? ContactsManager.shared.avatarListModel.first(where: {
+								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+								&& $0.friend!.name == addressFriend!.name
+								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+							})
+							: ContactAvatarModel(friend: nil, withPresence: false)
+							
 							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								AsyncImage(url:
-											ContactsManager.shared.getImagePath(
-												friendPhotoPath: addressFriend!.photo!)) { image in
-									switch image {
-									case .empty:
-										ProgressView()
-											.frame(width: 45, height: 45)
-									case .success(let image):
-										image
-											.resizable()
-											.aspectRatio(contentMode: .fill)
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									case .failure:
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									@unknown default:
-										EmptyView()
-									}
-								}
+								Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
 							} else {
 								if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
 									if historyListViewModel.callLogs[index].toAddress!.displayName != nil {
-										Image(uiImage: ContactsManager.shared.textToImage(
+										Image(uiImage: contactsManager.textToImage(
 										 firstName: historyListViewModel.callLogs[index].toAddress!.displayName!,
 										 lastName: historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ").count > 1
 											? historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ")[1]
@@ -74,7 +63,7 @@ struct HistoryListFragment: View {
 										 .clipShape(Circle())
 										
 									} else {
-										Image(uiImage: ContactsManager.shared.textToImage(
+										Image(uiImage: contactsManager.textToImage(
 											firstName: historyListViewModel.callLogs[index].toAddress!.username ?? "Username Error",
 											lastName: historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ").count > 1
 											? historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ")[1]
@@ -86,7 +75,7 @@ struct HistoryListFragment: View {
 									
 								} else if historyListViewModel.callLogs[index].fromAddress != nil {
 									if historyListViewModel.callLogs[index].fromAddress!.displayName != nil {
-										Image(uiImage: ContactsManager.shared.textToImage(
+										Image(uiImage: contactsManager.textToImage(
 											firstName: historyListViewModel.callLogs[index].fromAddress!.displayName!,
 											lastName: historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ").count > 1 
 											? historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ")[1]
@@ -95,7 +84,7 @@ struct HistoryListFragment: View {
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
 									} else {
-										Image(uiImage: ContactsManager.shared.textToImage(
+										Image(uiImage: contactsManager.textToImage(
 											firstName: historyListViewModel.callLogs[index].fromAddress!.username ?? "Username Error",
 											lastName: historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ").count > 1 
 											? historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ")[1]
@@ -110,8 +99,8 @@ struct HistoryListFragment: View {
 							VStack(spacing: 0) {
 								Spacer()
 								
-								let fromAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
-								let toAddressFriend = ContactsManager.shared.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
+								let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
+								let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
 								let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
 								
 								if addressFriend != nil {

@@ -20,6 +20,6 @@
 import linphonesw
 
 class ContactsListViewModel: ObservableObject {
-    
+	
     init() {}
 }

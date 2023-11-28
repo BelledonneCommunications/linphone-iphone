@@ -21,9 +21,9 @@ import SwiftUI
 import linphonesw
 
 struct FavoriteContactsListFragment: View {
-    
-    @ObservedObject var magicSearch = MagicSearchSingleton.shared
-    
+	
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
     @ObservedObject var contactViewModel: ContactViewModel
     @ObservedObject var favoriteContactsListViewModel: FavoriteContactsListViewModel
     
@@ -32,21 +32,21 @@ struct FavoriteContactsListFragment: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(0..<magicSearch.lastSearch.count, id: \.self) { index in
-					if magicSearch.lastSearch[index].friend != nil && magicSearch.lastSearch[index].friend!.starred == true {
+                ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
+					if contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.starred == true {
 						Button {
 						} label: {
 							VStack {
-								if magicSearch.lastSearch[index].friend!.photo != nil
-									&& !magicSearch.lastSearch[index].friend!.photo!.isEmpty {
-                                    Avatar(friend: magicSearch.lastSearch[index].friend!, avatarSize: 45)
+								if contactsManager.lastSearch[index].friend!.photo != nil
+									&& !contactsManager.lastSearch[index].friend!.photo!.isEmpty {
+									Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 45)
 								} else {
 									Image("profil-picture-default")
 										.resizable()
 										.frame(width: 45, height: 45)
 										.clipShape(Circle())
 								}
-								Text((magicSearch.lastSearch[index].friend?.name)!)
+								Text((contactsManager.lastSearch[index].friend?.name)!)
 									.default_text_style(styleSize: 16)
 									.frame( maxWidth: .infinity, alignment: .center)
 							}
@@ -54,7 +54,7 @@ struct FavoriteContactsListFragment: View {
 						.simultaneousGesture(
 							LongPressGesture()
 								.onEnded { _ in
-									contactViewModel.selectedFriend = magicSearch.lastSearch[index].friend
+									contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
 									showingSheet.toggle()
 								}
 						)

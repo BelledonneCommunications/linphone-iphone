@@ -27,6 +27,7 @@ struct HistoryListBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	@ObservedObject var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var contactViewModel: ContactViewModel
@@ -76,7 +77,7 @@ struct HistoryListBottomSheet: View {
 				
 				index = 0
 				
-				if ContactsManager.shared.getFriendWithAddress(
+				if contactsManager.getFriendWithAddress(
 					address: historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing
 					   ? historyViewModel.selectedCall!.toAddress!
 					   : historyViewModel.selectedCall!.fromAddress!
@@ -85,7 +86,7 @@ struct HistoryListBottomSheet: View {
 					? historyViewModel.selectedCall!.toAddress!
 					: historyViewModel.selectedCall!.fromAddress!
 					
-					let friendIndex = MagicSearchSingleton.shared.lastSearch.firstIndex(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall.asStringUriOnly()})})
+					let friendIndex = contactsManager.lastSearch.firstIndex(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall.asStringUriOnly()})})
 					if friendIndex != nil {
 						withAnimation {
 							contactViewModel.indexDisplayedFriend = friendIndex
@@ -105,7 +106,7 @@ struct HistoryListBottomSheet: View {
 				}
 			} label: {
 				HStack {
-					if ContactsManager.shared.getFriendWithAddress(
+					if contactsManager.getFriendWithAddress(
 						address: historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing
 						   ? historyViewModel.selectedCall!.toAddress!
 						   : historyViewModel.selectedCall!.fromAddress!

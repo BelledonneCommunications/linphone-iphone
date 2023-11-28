@@ -24,7 +24,6 @@ struct ContactListBottomSheet: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactViewModel: ContactViewModel

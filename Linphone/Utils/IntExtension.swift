@@ -28,7 +28,7 @@ extension Int {
     public func convertDurationToString() -> String {
         var duration = ""
         let (hour, minute, second) = self.hmsFrom()
-        if (hour > 0) {
+        if hour > 0 {
             duration = self.getHour(hour: hour)
         }
         return "\(duration)\(self.getMinute(minute: minute))\(self.getSecond(second: second))"
@@ -36,18 +36,18 @@ extension Int {
     
     private func getHour(hour: Int) -> String {
         var duration = "\(hour):"
-        if (hour < 10) {
+        if hour < 10 {
             duration = "0\(hour):"
         }
         return duration
     }
     
     private func getMinute(minute: Int) -> String {
-        if (minute == 0) {
+        if minute == 0 {
             return "00:"
         }
 
-        if (minute < 10) {
+        if minute < 10 {
             return "0\(minute):"
         }
 
@@ -55,11 +55,11 @@ extension Int {
     }
     
     private func getSecond(second: Int) -> String {
-        if (second == 0){
+        if second == 0 {
             return "00"
         }
 
-        if (second < 10) {
+        if second < 10 {
             return "0\(second)"
         }
         return "\(second)"

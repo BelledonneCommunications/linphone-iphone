@@ -22,18 +22,20 @@ import Contacts
 import SwiftUI
 import ContactsUI
 
-final class ContactsManager {
+final class ContactsManager: ObservableObject {
 	
 	static let shared = ContactsManager()
 	
 	private var coreContext = CoreContext.shared
-	private var magicSearch = MagicSearchSingleton.shared
 	
 	private let nativeAddressBookFriendList = "Native address-book"
 	let linphoneAddressBookFriendList = "Linphone address-book"
 	
 	var friendList: FriendList?
 	var linphoneFriendList: FriendList?
+	
+	@Published var lastSearch: [SearchResult] = []
+	@Published var avatarListModel: [ContactAvatarModel] = []
 	
 	private init() {
 		fetchContacts()
@@ -132,7 +134,8 @@ final class ContactsManager {
 					print("\(#function) - access denied")
 				}
 			}
-			self.magicSearch.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			
+			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 		}
 	}
 	

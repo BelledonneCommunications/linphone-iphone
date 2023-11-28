@@ -27,6 +27,7 @@
 		D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343312ACEFF58009AA24E /* QRScannerController.swift */; };
 		D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343332ACEFFC3009AA24E /* QRScanner.swift */; };
 		D72343362AD037AF009AA24E /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343352AD037AF009AA24E /* ToastView.swift */; };
+		D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E4382B16440C0083C415 /* ContactAvatarModel.swift */; };
 		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
 		D732A9092AFD235500DB42BA /* ShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9082AFD235500DB42BA /* ShareSheetController.swift */; };
 		D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */ = {isa = PBXBuildFile; fileRef = D732A90A2B0376F500DB42BA /* linphonerc-default */; };
@@ -104,6 +105,7 @@
 		D72343312ACEFF58009AA24E /* QRScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerController.swift; sourceTree = "<group>"; };
 		D72343332ACEFFC3009AA24E /* QRScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScanner.swift; sourceTree = "<group>"; };
 		D72343352AD037AF009AA24E /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		D726E4382B16440C0083C415 /* ContactAvatarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatarModel.swift; sourceTree = "<group>"; };
 		D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryContactFragment.swift; sourceTree = "<group>"; };
 		D732A9082AFD235500DB42BA /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
 		D732A90A2B0376F500DB42BA /* linphonerc-default */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-default"; sourceTree = "<group>"; };
@@ -297,6 +299,14 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		D726E4372B1643FF0083C415 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D726E4382B16440C0083C415 /* ContactAvatarModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		D72992372ADD7F1C003AF125 /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
@@ -380,6 +390,7 @@
 			isa = PBXGroup;
 			children = (
 				D78290B62ADD38F9004AA85C /* Fragments */,
+				D726E4372B1643FF0083C415 /* Model */,
 				D78290B92ADD409D004AA85C /* ViewModel */,
 				D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */,
 			);
@@ -578,6 +589,7 @@
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
+				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,
 				D76005F62B0798B00054B79A /* IntExtension.swift in Sources */,
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,

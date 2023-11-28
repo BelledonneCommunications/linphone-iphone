@@ -53,9 +53,9 @@ class HistoryListViewModel: ObservableObject {
 			DispatchQueue.main.async {
 				self.coreDelegate = CoreDelegateStub(
 					onCallLogUpdated: { (_: Core, _: CallLog) -> Void in
-						DispatchQueue.main.async {
+						DispatchQueue.main.sync {
 							let account = core.defaultAccount
-							let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
+							let logs = account != nil ? account!.callLogs : core.callLogs
 							
 							self.callLogs.removeAll()
 							self.callLogsTmp.removeAll()
@@ -71,7 +71,6 @@ class HistoryListViewModel: ObservableObject {
 					core.addDelegate(delegate: self.coreDelegate!)
 				}
 			}
-			
 		}
 	}
 	

@@ -28,7 +28,7 @@ struct ContentView: View {
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
-	var contactManager = ContactsManager.shared
+	@ObservedObject var contactsManager = ContactsManager.shared
 	var magicSearch = MagicSearchSingleton.shared
 	
 	@ObservedObject var contactViewModel: ContactViewModel
@@ -146,7 +146,7 @@ struct ContentView: View {
 											Button {
 												isMenuOpen = false
 												magicSearch.allContact = true
-												magicSearch.searchForContacts(
+												MagicSearchSingleton.shared.searchForContacts(
 													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											} label: {
 												HStack {
@@ -163,7 +163,7 @@ struct ContentView: View {
 											Button {
 												isMenuOpen = false
 												magicSearch.allContact = false
-												magicSearch.searchForContacts(
+												MagicSearchSingleton.shared.searchForContacts(
 													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											} label: {
 												HStack {
@@ -219,7 +219,7 @@ struct ContentView: View {
 										
 										if index == 0 {
 											magicSearch.currentFilter = ""
-											magicSearch.searchForContacts(
+											MagicSearchSingleton.shared.searchForContacts(
 												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 										} else {
 											historyListViewModel.resetFilterCallLogs()
@@ -256,7 +256,7 @@ struct ContentView: View {
 										.onChange(of: text) { newValue in
 											if index == 0 {
 												magicSearch.currentFilter = newValue
-												magicSearch.searchForContacts(
+												MagicSearchSingleton.shared.searchForContacts(
 													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											} else {
 												historyListViewModel.filterCallLogs(filter: text)
@@ -284,7 +284,7 @@ struct ContentView: View {
 										}
 										.onChange(of: text) { newValue in
 											magicSearch.currentFilter = newValue
-											magicSearch.searchForContacts(
+											MagicSearchSingleton.shared.searchForContacts(
 												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 										}
 									}
@@ -428,7 +428,20 @@ struct ContentView: View {
 							.background(Color.gray100)
 							.ignoresSafeArea(.keyboard)
 						} else if self.index == 1 {
+							let fromAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
+							let toAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
+							let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
+							
+							let contactAvatarModel = addressFriend != nil
+							? ContactsManager.shared.avatarListModel.first(where: {
+								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+								&& $0.friend!.name == addressFriend!.name
+								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+							})
+							: ContactAvatarModel(friend: nil, withPresence: false)
+							
 							HistoryContactFragment(
+								contactAvatarModel: contactAvatarModel!,
 								historyViewModel: historyViewModel,
 								historyListViewModel: historyListViewModel,
 								contactViewModel: contactViewModel,
@@ -478,6 +491,7 @@ struct ContentView: View {
 				if isShowEditContactFragment {
 					EditContactFragment(
 						editContactViewModel: editContactViewModel,
+						contactViewModel: contactViewModel,
 						isShowEditContactFragment: $isShowEditContactFragment,
 						isShowDismissPopup: $isShowDismissPopup
 					)
@@ -494,7 +508,7 @@ struct ContentView: View {
 								contactViewModel.selectedFriend != nil
 								? "Delete \(contactViewModel.selectedFriend!.name!)?"
 								: (contactViewModel.indexDisplayedFriend != nil
-								   ? "Delete \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
+								   ? "Delete \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
 								   : "Error Name")),
 							  content: Text("This contact will be deleted definitively."),
 							  titleFirstButton: Text("Cancel"),
@@ -514,9 +528,9 @@ struct ContentView: View {
 							withAnimation {
 								contactViewModel.indexDisplayedFriend = nil
 							}
-							magicSearch.lastSearch[tmpIndex!].friend!.remove()
+							contactsManager.lastSearch[tmpIndex!].friend!.remove()
 						}
-						magicSearch.searchForContacts(
+						MagicSearchSingleton.shared.searchForContacts(
 							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 						self.isShowDeleteContactPopup.toggle()
 					})
@@ -611,7 +625,7 @@ struct ContentView: View {
 		}
 		.onChange(of: scenePhase) { newPhase in
 			if newPhase == .active {
-				ContactsManager.shared.fetchContacts()
+				contactsManager.fetchContacts()
 				print("Active")
 			} else if newPhase == .inactive {
 				print("Inactive")
