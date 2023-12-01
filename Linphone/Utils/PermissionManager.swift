@@ -31,6 +31,13 @@ class PermissionManager: ObservableObject {
 	
 	private init() {}
 	
+	
+	func getPermissions(){
+		photoLibraryRequestPermission()
+		cameraRequestPermission()
+		contactsRequestPermission()
+	}
+	
 	func photoLibraryRequestPermission() {
 		PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: {status in
 			DispatchQueue.main.async {

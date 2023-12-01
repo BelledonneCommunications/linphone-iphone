@@ -49,7 +49,9 @@ struct HistoryListFragment: View {
 							: ContactAvatarModel(friend: nil, withPresence: false)
 							
 							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+								if contactAvatarModel != nil {
+									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+								}
 							} else {
 								if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
 									if historyListViewModel.callLogs[index].toAddress!.displayName != nil {

@@ -21,105 +21,83 @@ import SwiftUI
 import linphonesw
 
 struct ContactsListFragment: View {
-    
-    @ObservedObject var contactsManager = ContactsManager.shared
-    
-    @ObservedObject var contactViewModel: ContactViewModel
-    @ObservedObject var contactsListViewModel: ContactsListViewModel
-    
-    @Binding var showingSheet: Bool
-    
-    var body: some View {
-        VStack {
-            List {
-                ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
-                    Button {
-                    } label: {
-                        HStack {
-                            if index == 0 
-                                || contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
-                                    options: .diacriticInsensitive,
-                                    locale: .current
-                                ).first
-                                != contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
-                                    options: .diacriticInsensitive,
-                                    locale: .current
-                                ).first {
-                                Text(
-                                    String(
-                                        (contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
-                                            options: .diacriticInsensitive,
-                                            locale: .current
-                                        ).first)!))
-                                    .contact_text_style_500(styleSize: 20)
-                                    .frame(width: 18)
-                                    .padding(.leading, -5)
-                                    .padding(.trailing, 10)
-                            } else {
-                                Text("")
-                                    .contact_text_style_500(styleSize: 20)
-                                    .frame(width: 18)
-                                    .padding(.leading, -5)
-                                    .padding(.trailing, 10)
-                            }
-                            
-                            if index < contactsManager.avatarListModel.count
-                                && contactsManager.avatarListModel[index].friend!.photo != nil
-                                && !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
-								Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 45)
-                            } else {
-                                Image("profil-picture-default")
-                                    .resizable()
-                                    .frame(width: 45, height: 45)
-                                    .clipShape(Circle())
-                            }
-                            Text((contactsManager.lastSearch[index].friend?.name)!)
-                                .default_text_style(styleSize: 16)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .foregroundStyle(Color.orangeMain500)
-                        }
-                    }
-                    .simultaneousGesture(
-                        LongPressGesture()
-                            .onEnded { _ in
-                                contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
-                                showingSheet.toggle()
-                            }
-                    )
-                    .highPriorityGesture(
-                        TapGesture()
-                            .onEnded { _ in
-                                withAnimation {
-                                    contactViewModel.indexDisplayedFriend = index
-                                }
-                            }
-                    )
-                    .buttonStyle(.borderless)
-                    .listRowSeparator(.hidden)
-                }
-            }
-            .listStyle(.plain)
-            .overlay(
-                VStack {
-                    if contactsManager.lastSearch.isEmpty {
-                        Spacer()
-                        Image("illus-belledonne")
-                            .resizable()
-                            .scaledToFit()
-                            .clipped()
-                            .padding(.all)
-                        Text("No contacts for the moment...")
-                            .default_text_style_800(styleSize: 16)
-                        Spacer()
-                        Spacer()
-                    }
-                }
-                    .padding(.all)
-            )
-        }
-    }
+	
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
+	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var contactsListViewModel: ContactsListViewModel
+	
+	@Binding var showingSheet: Bool
+	
+	var body: some View {
+		ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
+			Button {
+			} label: {
+				HStack {
+					if index == 0 
+						|| contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
+							options: .diacriticInsensitive,
+							locale: .current
+						).first
+						!= contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
+							options: .diacriticInsensitive,
+							locale: .current
+						).first {
+						Text(
+							String(
+								(contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
+									options: .diacriticInsensitive,
+									locale: .current
+								).first)!))
+						.contact_text_style_500(styleSize: 20)
+						.frame(width: 18)
+						.padding(.leading, -5)
+						.padding(.trailing, 10)
+					} else {
+						Text("")
+							.contact_text_style_500(styleSize: 20)
+							.frame(width: 18)
+							.padding(.leading, -5)
+							.padding(.trailing, 10)
+					}
+					
+					if index < contactsManager.avatarListModel.count
+						&& contactsManager.avatarListModel[index].friend!.photo != nil
+						&& !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
+						Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 45)
+					} else {
+						Image("profil-picture-default")
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+					}
+					Text((contactsManager.lastSearch[index].friend?.name)!)
+						.default_text_style(styleSize: 16)
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.foregroundStyle(Color.orangeMain500)
+				}
+			}
+			.simultaneousGesture(
+				LongPressGesture()
+					.onEnded { _ in
+						contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
+						showingSheet.toggle()
+					}
+			)
+			.highPriorityGesture(
+				TapGesture()
+					.onEnded { _ in
+						withAnimation {
+							contactViewModel.indexDisplayedFriend = index
+						}
+					}
+			)
+			.buttonStyle(.borderless)
+			.listRowSeparator(.hidden)
+		}
+	}
 }
 
 #Preview {
-    ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false))
+	ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false))
 }

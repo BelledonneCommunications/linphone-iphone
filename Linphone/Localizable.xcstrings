@@ -28,6 +28,9 @@
     "[notre politique de confidentialité](https://linphone.org/privacy-policy)" : {
 
     },
+    "*" : {
+
+    },
     "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
 
     },
@@ -44,6 +47,9 @@
 
     },
     "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
+
+    },
+    "#" : {
 
     },
     "%lld Book (Example)" : {
@@ -98,6 +104,39 @@
           }
         }
       }
+    },
+    "+" : {
+
+    },
+    "0" : {
+
+    },
+    "1" : {
+
+    },
+    "2" : {
+
+    },
+    "3" : {
+
+    },
+    "4" : {
+
+    },
+    "5" : {
+
+    },
+    "6" : {
+
+    },
+    "7" : {
+
+    },
+    "8" : {
+
+    },
+    "9" : {
+
     },
     "Accept all" : {
 
@@ -314,6 +353,9 @@
     "My Profile" : {
 
     },
+    "New call" : {
+
+    },
     "New contact" : {
 
     },
@@ -394,6 +436,9 @@
     "Scan QR code" : {
 
     },
+    "Search contact or history call" : {
+
+    },
     "Sécurisé" : {
 
     },
@@ -428,6 +473,9 @@
 
     },
     "Start" : {
+
+    },
+    "Suggestions" : {
 
     },
     "TCP" : {
@@ -479,6 +527,9 @@
           }
         }
       }
+    },
+    "Username error" : {
+
     },
     "Video Call" : {
 

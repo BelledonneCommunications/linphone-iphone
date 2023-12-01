@@ -87,15 +87,18 @@ final class CoreContext: ObservableObject {
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
 			
+			print("configDirconfigDirconfigDir \(configDir)")
+			
 			self.mCore.friendListSubscriptionEnabled = true
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 					self.defaultAccount = self.mCore.defaultAccount
+					self.coreIsStarted = true
 				} else if cbVal.state == GlobalState.Off {
 					self.defaultAccount = nil
+					self.coreIsStarted = true
 				}
-				self.coreIsStarted = true
 			}
 			
 			try? self.mCore.start()

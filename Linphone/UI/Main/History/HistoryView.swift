@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct HistoryView: View {
 	
@@ -27,6 +28,7 @@ struct HistoryView: View {
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@Binding var index: Int
+	@Binding var isShowStartCallFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
 	
 	var body: some View {
@@ -42,6 +44,10 @@ struct HistoryView: View {
 				)
 				
 				Button {
+					withAnimation {
+						MagicSearchSingleton.shared.searchForSuggestions()
+						isShowStartCallFragment.toggle()
+					}
 				} label: {
 					Image("phone-plus")
 						.padding()

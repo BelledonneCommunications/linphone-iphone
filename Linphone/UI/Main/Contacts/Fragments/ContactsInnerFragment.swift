@@ -72,7 +72,29 @@ struct ContactsInnerFragment: View {
 				.padding(.top, 10)
 				.padding(.horizontal, 16)
 			}
-			ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)
+			
+			VStack {
+				List {
+					ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)}
+				.listStyle(.plain)
+				.overlay(
+					VStack {
+						if contactsManager.lastSearch.isEmpty {
+							Spacer()
+							Image("illus-belledonne")
+								.resizable()
+								.scaledToFit()
+								.clipped()
+								.padding(.all)
+							Text("No contacts for the moment...")
+								.default_text_style_800(styleSize: 16)
+							Spacer()
+							Spacer()
+						}
+					}
+						.padding(.all)
+				)
+			}
 		}
 		.navigationBarHidden(true)
 	}

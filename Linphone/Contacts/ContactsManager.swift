@@ -35,6 +35,7 @@ final class ContactsManager: ObservableObject {
 	var linphoneFriendList: FriendList?
 	
 	@Published var lastSearch: [SearchResult] = []
+	@Published var lastSearchSuggestions: [SearchResult] = []
 	@Published var avatarListModel: [ContactAvatarModel] = []
 	
 	private init() {
@@ -121,7 +122,8 @@ final class ContactsManager: ObservableObject {
 										&& contact.phoneNumbers.first?.value.stringValue != nil
 										? contact.phoneNumbers.first!.value.stringValue
 										: contact.givenName, lastName: contact.familyName),
-									name: contact.givenName + contact.familyName + String(Int.random(in: 1...1000)) + ((imageThumbnail == nil) ? "-default" : ""),
+									name: contact.givenName + contact.familyName,
+									prefix: String(Int.random(in: 1...1000)) + ((imageThumbnail == nil) ? "-default" : ""),
 									contact: newContact, linphoneFriend: false, existingFriend: nil)
 							}
 						})
@@ -167,12 +169,12 @@ final class ContactsManager: ObservableObject {
 		return IBImgViewUserProfile
 	}
 	
-	func saveImage(image: UIImage, name: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?) {
+	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?) {
 		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
 			return
 		}
 		
-		awaitDataWrite(data: data, name: name) { _, result in
+		awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 				if resultFriend != nil {
 					if linphoneFriend && existingFriend == nil {
@@ -260,15 +262,16 @@ final class ContactsManager: ObservableObject {
 		return imagePath
 	}
 	
-	func awaitDataWrite(data: Data, name: String, completion: @escaping ((), String) -> Void) {
+	func awaitDataWrite(data: Data, name: String, prefix: String,completion: @escaping ((), String) -> Void) {
 		let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 		
 		if directory != nil {
 			DispatchQueue.main.async {
 				do {
-					let urlName = URL(string: name)
+					let urlName = URL(string: name + prefix)
 					let imagePath = urlName != nil ? urlName!.absoluteString.replacingOccurrences(of: "%", with: "") : String(Int.random(in: 1...1000))
 					let decodedData: () = try data.write(to: directory!.appendingPathComponent(imagePath + ".png"))
+					
 					completion(decodedData, imagePath + ".png")
 				} catch {
 					print("Error: ", error)

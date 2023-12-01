@@ -24,6 +24,7 @@ import linphonesw
 struct ContentView: View {
 	
 	@Environment(\.scenePhase) var scenePhase
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
@@ -35,6 +36,7 @@ struct ContentView: View {
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
+	@ObservedObject var startCallViewModel: StartCallViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -43,10 +45,12 @@ struct ContentView: View {
 	@State private var searchIsActive = false
 	@State private var text = ""
 	@FocusState private var focusedField: Bool
+	@State private var showingDialer = false
 	@State var isMenuOpen = false
 	@State var isShowDeleteContactPopup = false
 	@State var isShowDeleteAllHistoryPopup = false
 	@State var isShowEditContactFragment = false
+	@State var isShowStartCallFragment = false
 	@State var isShowDismissPopup = false
 	
 	var body: some View {
@@ -322,6 +326,7 @@ struct ContentView: View {
 									contactViewModel: contactViewModel,
 									editContactViewModel: editContactViewModel,
 									index: $index,
+									isShowStartCallFragment: $isShowStartCallFragment,
 									isShowEditContactFragment: $isShowEditContactFragment
 								)
 							}
@@ -502,6 +507,22 @@ struct ContentView: View {
 					}
 				}
 				
+				if isShowStartCallFragment {
+					StartCallFragment(
+						startCallViewModel: startCallViewModel,
+						isShowStartCallFragment: $isShowStartCallFragment,
+						showingDialer: $showingDialer
+					)
+					.zIndex(3)
+					.transition(.move(edge: .bottom))
+					.halfSheet(showSheet: $showingDialer) {
+						DialerBottomSheet(
+							startCallViewModel: startCallViewModel,
+							showingDialer: $showingDialer
+						)
+					} onDismiss: {}
+				}
+				
 				if isShowDeleteContactPopup {
 					PopupView(isShowPopup: $isShowDeleteContactPopup,
 							  title: Text(
@@ -600,8 +621,8 @@ struct ContentView: View {
 				}
 				
 				//if sharedMainViewModel.displayToast {
-					ToastView()
-						.zIndex(3)
+				ToastView()
+					.zIndex(3)
 				//}
 			}
 		}
@@ -626,7 +647,9 @@ struct ContentView: View {
 		.onChange(of: scenePhase) { newPhase in
 			if newPhase == .active {
 				coreContext.onForeground()
-				contactsManager.fetchContacts()
+				if !isShowStartCallFragment {
+					contactsManager.fetchContacts()
+				}
 				print("Active")
 			} else if newPhase == .inactive {
 				print("Inactive")
@@ -649,7 +672,8 @@ struct ContentView: View {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		historyViewModel: HistoryViewModel(),
-		historyListViewModel: HistoryListViewModel()
+		historyListViewModel: HistoryListViewModel(),
+		startCallViewModel: StartCallViewModel()
 	)
 }
 // swiftlint:enable type_body_length

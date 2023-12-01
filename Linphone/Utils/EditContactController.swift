@@ -50,7 +50,8 @@ struct EditContactView: UIViewControllerRepresentable {
 							&& cnc.phoneNumbers.first?.value.stringValue != nil
 							? cnc.phoneNumbers.first!.value.stringValue
 							: cnc.givenName, lastName: cnc.familyName),
-						name: cnc.givenName + cnc.familyName + String(Int.random(in: 1...1000)) + ((imageThumbnail == nil) ? "-default" : ""),
+						name: cnc.givenName + cnc.familyName,
+						prefix: String(Int.random(in: 1...1000)) + ((imageThumbnail == nil) ? "-default" : ""),
 						contact: newContact,
 						linphoneFriend: false,
 						existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact))

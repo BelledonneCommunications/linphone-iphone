@@ -491,8 +491,8 @@ struct EditContactFragment: View {
 				?? ContactsManager.shared.textToImage(
 					firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
 				name: editContactViewModel.firstName
-				+ editContactViewModel.lastName
-				+ String(Int.random(in: 1...1000))
+				+ editContactViewModel.lastName,
+				prefix: String(Int.random(in: 1...1000))
 				+ ((selectedImage == nil) ? "-default" : ""),
 				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend)
 		}
