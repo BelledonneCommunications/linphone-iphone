@@ -625,11 +625,13 @@ struct ContentView: View {
 		}
 		.onChange(of: scenePhase) { newPhase in
 			if newPhase == .active {
+				coreContext.onForeground()
 				contactsManager.fetchContacts()
 				print("Active")
 			} else if newPhase == .inactive {
 				print("Inactive")
 			} else if newPhase == .background {
+				coreContext.onBackground()
 				print("Background")
 			}
 		}

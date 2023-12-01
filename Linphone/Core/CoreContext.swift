@@ -123,6 +123,9 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
+					if self.mCore.consolidatedPresence != ConsolidatedPresence.Online {
+						self.onForeground()
+					}
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
@@ -152,6 +155,30 @@ final class CoreContext: ObservableObject {
 					self.mCore.iterate()
 				}
 			
+		}
+	}
+	
+	func onForeground() {
+		coreQueue.async {
+			// We can't rely on defaultAccount?.params?.isPublishEnabled
+			// as it will be modified by the SDK when changing the presence status
+			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
+				NSLog("App is in foreground, PUBLISHING presence as Online")
+				self.mCore.consolidatedPresence = ConsolidatedPresence.Online
+			}
+		}
+	}
+	
+	func onBackground() {
+		coreQueue.async {
+			// We can't rely on defaultAccount?.params?.isPublishEnabled
+			// as it will be modified by the SDK when changing the presence status
+			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
+				NSLog("App is in background, un-PUBLISHING presence info")
+				// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
+				// Flexisip will handle the Busy status depending on other devices
+				self.mCore.consolidatedPresence = ConsolidatedPresence.Offline
+			}
 		}
 	}
 }

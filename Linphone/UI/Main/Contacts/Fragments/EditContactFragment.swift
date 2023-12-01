@@ -504,7 +504,6 @@ struct EditContactFragment: View {
 				let result = ContactsManager.shared.lastSearch.firstIndex(where: {
 					$0.friend!.name == newContact.firstName + " " + newContact.lastName
 				})
-				print("getFriendIndexWithFriendgetFriendIndexWithFriend \(newContact.firstName) \(newContact.lastName) \(result)")
 				contactViewModel.indexDisplayedFriend = result
 			}
 		}
