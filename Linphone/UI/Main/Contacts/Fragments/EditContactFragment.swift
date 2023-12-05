@@ -492,8 +492,7 @@ struct EditContactFragment: View {
 					firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
 				name: editContactViewModel.firstName
 				+ editContactViewModel.lastName,
-				prefix: String(Int.random(in: 1...1000))
-				+ ((selectedImage == nil) ? "-default" : ""),
+				prefix: ((selectedImage == nil) ? "-default" : ""),
 				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend)
 		}
 		

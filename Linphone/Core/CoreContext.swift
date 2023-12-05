@@ -87,8 +87,6 @@ final class CoreContext: ObservableObject {
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
 			
-			print("configDirconfigDirconfigDir \(configDir)")
-			
 			self.mCore.friendListSubscriptionEnabled = true
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in

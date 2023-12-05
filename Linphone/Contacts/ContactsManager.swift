@@ -123,7 +123,7 @@ final class ContactsManager: ObservableObject {
 										? contact.phoneNumbers.first!.value.stringValue
 										: contact.givenName, lastName: contact.familyName),
 									name: contact.givenName + contact.familyName,
-									prefix: String(Int.random(in: 1...1000)) + ((imageThumbnail == nil) ? "-default" : ""),
+									prefix: ((imageThumbnail == nil) ? "-default" : ""),
 									contact: newContact, linphoneFriend: false, existingFriend: nil)
 							}
 						})
@@ -269,7 +269,8 @@ final class ContactsManager: ObservableObject {
 			DispatchQueue.main.async {
 				do {
 					let urlName = URL(string: name + prefix)
-					let imagePath = urlName != nil ? urlName!.absoluteString.replacingOccurrences(of: "%", with: "") : String(Int.random(in: 1...1000))
+					let imagePath = urlName != nil ? urlName!.absoluteString.replacingOccurrences(of: "%", with: "") : "ImageError"
+					
 					let decodedData: () = try data.write(to: directory!.appendingPathComponent(imagePath + ".png"))
 					
 					completion(decodedData, imagePath + ".png")
