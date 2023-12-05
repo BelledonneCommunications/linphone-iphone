@@ -610,9 +610,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				var viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
 				
 				var image = UIImage()
-				if chatMessage.contents.first!.type == "image" {
+				if chatMessage.contents.filter({$0.isFile}).first!.type == "image" {
 					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-						var plainFile = chatMessage.contents.first!.exportPlainFile()
+						var plainFile = chatMessage.contents.filter({$0.isFile}).first!.exportPlainFile()
 						
 						image = UIImage(contentsOfFile: plainFile)!
 						
@@ -620,15 +620,15 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 						plainFile = ""
 						
 					}else {
-						image = UIImage(contentsOfFile: chatMessage.contents.first!.filePath!)!
+						image = UIImage(contentsOfFile: chatMessage.contents.filter({$0.isFile}).first!.filePath!)!
 					}
 				}
 				
 				viewer.imageViewer = image
-				viewer.imageNameViewer = (chatMessage.contents.first!.name!.isEmpty ? "" : chatMessage.contents.first!.name)!
+				viewer.imageNameViewer = (chatMessage.contents.filter({$0.isFile}).first!.name!.isEmpty ? "" : chatMessage.contents.filter({$0.isFile}).first!.name)!
 				
-				viewer.imagePathViewer = chatMessage.contents.first!.exportPlainFile()
-				viewer.contentType = chatMessage.contents.first!.type
+				viewer.imagePathViewer = chatMessage.contents.filter({$0.isFile}).first!.exportPlainFile()
+				viewer.contentType = chatMessage.contents.filter({$0.isFile}).first!.type
 				PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
 
 			} else {
@@ -636,14 +636,14 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				self.previewItems = []
 				
 				if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-					var plainFile = chatMessage.contents.first?.exportPlainFile()
+					var plainFile = chatMessage.contents.filter({$0.isFile}).first?.exportPlainFile()
 					
 					self.previewItems.append(self.getPreviewItem(filePath: plainFile!))
 					
 					ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 					plainFile = ""
-				}else if chatMessage.contents.first?.filePath != nil {
-					self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.first?.filePath)!))
+				}else if chatMessage.contents.filter({$0.isFile}).first?.filePath != nil {
+					self.previewItems.append(self.getPreviewItem(filePath: (chatMessage.contents.filter({$0.isFile}).first?.filePath)!))
 				}
 				
 				afterPreviewIndex = index
@@ -666,7 +666,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			if (VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) || ConfigManager.instance().lpConfigBoolForKey(key: "use_in_app_file_viewer_for_non_encrypted_files", section: "app")){
 				
 				var text = ""
-				var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? chatMessage!.contents[index].exportPlainFile() : chatMessage!.contents[index].filePath
+				var filePathString = VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) ? chatMessage!.contents.filter({$0.isFile})[index].exportPlainFile() : chatMessage!.contents.filter({$0.isFile})[index].filePath
 				if let urlEncoded = filePathString!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
 					if !urlEncoded.isEmpty {
 						if let urlFile = URL(string: "file://" + urlEncoded){
@@ -677,24 +677,24 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 								if chatMessage != nil {
 									
 									viewer.textViewer = text
-									viewer.textNameViewer = (chatMessage!.contents[index].name!.isEmpty ? "" : chatMessage!.contents[index].name)!
+									viewer.textNameViewer = (chatMessage!.contents.filter({$0.isFile})[index].name!.isEmpty ? "" : chatMessage!.contents.filter({$0.isFile})[index].name)!
 									PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
 								}
 
 							} catch {
 								var extensionFile = ""
-								if chatMessage!.contents[index].name != nil {
-									extensionFile = chatMessage!.contents[index].name!.lowercased().components(separatedBy: ".").last ?? ""
+								if chatMessage!.contents.filter({$0.isFile})[index].name != nil {
+									extensionFile = chatMessage!.contents.filter({$0.isFile})[index].name!.lowercased().components(separatedBy: ".").last ?? ""
 								}
 								
-								if text == "" && (chatMessage!.contents[index].type == "image" || chatMessage!.contents[index].type == "video" || chatMessage!.contents[index].name!.lowercased().components(separatedBy: ".").last == "pdf" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile))){
+								if text == "" && (chatMessage!.contents.filter({$0.isFile})[index].type == "image" || chatMessage!.contents.filter({$0.isFile})[index].type == "video" || chatMessage!.contents.filter({$0.isFile})[index].name!.lowercased().components(separatedBy: ".").last == "pdf" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile))){
 									let viewer: MediaViewer = VIEW(MediaViewer.compositeViewDescription())
 									
 									var image = UIImage()
 									if chatMessage != nil {
-										if chatMessage!.contents[index].type == "image" {
+										if chatMessage!.contents.filter({$0.isFile})[index].type == "image" {
 											if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
-												var plainFile = chatMessage!.contents[index].exportPlainFile()
+												var plainFile = chatMessage!.contents.filter({$0.isFile})[index].exportPlainFile()
 												
 												image = UIImage(contentsOfFile: plainFile)!
 												
@@ -702,14 +702,14 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 												plainFile = ""
 												
 											}else {
-												image = UIImage(contentsOfFile: chatMessage!.contents[index].filePath!)!
+												image = UIImage(contentsOfFile: chatMessage!.contents.filter({$0.isFile})[index].filePath!)!
 											}
 										}
 										
 										viewer.imageViewer = image
-										viewer.imageNameViewer = (chatMessage!.contents[index].name!.isEmpty ? "" : chatMessage!.contents[index].name)!
-										viewer.imagePathViewer = chatMessage!.contents[index].exportPlainFile()
-										viewer.contentType = chatMessage!.contents[index].type
+										viewer.imageNameViewer = (chatMessage!.contents.filter({$0.isFile})[index].name!.isEmpty ? "" : chatMessage!.contents.filter({$0.isFile})[index].name)!
+										viewer.imagePathViewer = chatMessage!.contents.filter({$0.isFile})[index].exportPlainFile()
+										viewer.contentType = chatMessage!.contents.filter({$0.isFile})[index].type
 										PhoneMainView.instance().changeCurrentView(viewer.compositeViewDescription())
 									}
 								} else {

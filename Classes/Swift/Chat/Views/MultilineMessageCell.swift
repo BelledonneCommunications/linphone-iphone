@@ -126,7 +126,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var replyContentCollection : [Content] = []
 	
 	var imagesGridCollectionView : [UIImage?] = []
-    var imagesGridCollectionViewNil = 0
 	var downloadContentCollection: [DownloadMessageCell?] = []
 	var uploadContentCollection: [UploadMessageCell?] = []
 	
@@ -792,7 +791,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		replyCollectionView = []
 		replyContentCollection = []
 		imagesGridCollectionView = []
-		imagesGridCollectionViewNil = 0
 		downloadContentCollection = []
 		uploadContentCollection = []
 		imageViewBubble = UIImageView(image: UIImage(named: "chat_error"))
@@ -854,7 +852,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
         chatMessage = event.chatMessage
 		addMessageDelegate()
         imagesGridCollectionView.removeAll()
-        imagesGridCollectionViewNil = 0
 		imageUser.isHidden = true
 		deleteItemCheckBox.isHidden = true
 		
@@ -1178,11 +1175,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							NSLayoutConstraint.deactivate(labelTopConstraints)
 						}
 						
-						if imagesGridCollectionView.count == 0 {
-							//imagesGridCollectionView.append(nil)
-							imagesGridCollectionViewNil += 1
-						}
-						
 						label.font = label.font.withSize(17)
 						
 						if (content.utf8Text!.trimmingCharacters(in: .whitespacesAndNewlines).unicodeScalars.first?.properties.isEmojiPresentation == true){
@@ -1497,7 +1489,6 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							stackViewReactionsItem5.isHidden = false
 						}
 					default:
-						print("newStackViewReactionsItemnewStackViewReactionsItem \(chatMessageReaction.body)")
 						if newStackViewReactionsItem.isHidden == false {
 							stackViewReactionsCounter.text = String(event.chatMessage!.reactions.count)
 							stackViewReactionsCounter.isHidden = false
@@ -1859,28 +1850,29 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			return cell
 		}else{
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellImagesGridMessage", for: indexPath)
-			let indexPathWithoutNil = indexPath.row + imagesGridCollectionViewNil
+			let indexPathWithoutNil = indexPath.row
 			let indexPathWithoutNilWithRecording = indexPathWithoutNil + (messageWithRecording ? 1 : 0)
-			if (imagesGridCollectionView.indices.contains(indexPathWithoutNil) == true && chatMessage?.contents.indices.contains(indexPathWithoutNilWithRecording) == true){
-				if ((indexPathWithoutNil <= imagesGridCollectionView.count - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage?.contents[indexPathWithoutNilWithRecording].isFile == true || chatMessage?.contents[indexPathWithoutNilWithRecording].isFileTransfer == true)) {
+			
+			if (chatMessage != nil && imagesGridCollectionView.count > indexPathWithoutNil && chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer}).count > indexPathWithoutNilWithRecording){
+				if ((indexPathWithoutNil <= imagesGridCollectionView.count - 1) && (imagesGridCollectionView[indexPathWithoutNil] != nil) && (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].isFile == true || chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].isFileTransfer == true)) {
 					let viewCell: UIView = UIView(frame: cell.contentView.frame)
 					cell.addSubview(viewCell)
-					if (chatMessage?.isOutgoing == false && (chatMessage?.contents[indexPathWithoutNilWithRecording].filePath == "" || chatMessage?.contents[indexPathWithoutNilWithRecording].isFileTransfer == true)) {
+					if (chatMessage!.isOutgoing == false && (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath == "" || chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].isFileTransfer == true)) {
 						let  downloadView = DownloadMessageCell()
 						downloadContentCollection.append(downloadView)
-						downloadView.content = chatMessage?.contents[indexPathWithoutNilWithRecording]
+						downloadView.content = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording]
 						downloadView.size(w: 138, h: 138).done()
 						viewCell.addSubview(downloadView)
 
-						downloadView.downloadNameLabel.text = chatMessage?.contents[indexPathWithoutNilWithRecording].name!.replacingOccurrences(of: ((chatMessage?.contents[indexPathWithoutNilWithRecording].name!.dropFirst(6).dropLast(8))!), with: "...")
-						downloadView.setFileType(fileName: (chatMessage?.contents[indexPathWithoutNilWithRecording].name)!)
+						downloadView.downloadNameLabel.text = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name!.replacingOccurrences(of: ((chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name!.dropFirst(6).dropLast(8))), with: "...")
+						downloadView.setFileType(fileName: (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!)
 						
 						let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
-						let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(((chatMessage?.contents[indexPathWithoutNilWithRecording].fileSize)!)) / 1000000)) Mo)", attributes: underlineAttribute)
+						let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(((chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].fileSize))) / 1000000)) Mo)", attributes: underlineAttribute)
 						downloadView.downloadButtonLabel.attributedText = underlineAttributedString
 						downloadView.downloadButtonLabel.onClick {
-							self.chatMessage?.contents[indexPathWithoutNilWithRecording].filePath = LinphoneManager.imagesDirectory() + (((self.chatMessage?.contents[indexPathWithoutNilWithRecording].name)!))
-							let _ = self.chatMessage!.downloadContent(content: (self.chatMessage?.contents[indexPathWithoutNilWithRecording])!)
+							self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath = LinphoneManager.imagesDirectory() + (((self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!))
+							let _ = self.chatMessage!.downloadContent(content: (self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording]))
 						}
 						downloadView.downloadButtonLabel.isUserInteractionEnabled = true
 						
@@ -1893,7 +1885,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						let myImageView = UIImageView()
 						
 						
-						myImageView.image = getImageFrom(chatMessage?.contents[indexPathWithoutNilWithRecording], forReplyBubble: false)
+						myImageView.image = getImageFrom(chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording], forReplyBubble: false)
 						
 						myImageView.size(w: (viewCell.frame.width), h: (viewCell.frame.height)).done()
 						viewCell.addSubview(myImageView)
@@ -1901,13 +1893,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						myImageView.contentMode = .scaleAspectFill
 						myImageView.clipsToBounds = true
 						
-						if (chatMessage?.isOutgoing == true && (chatMessage?.contents[indexPathWithoutNilWithRecording].filePath == "" || chatMessage?.isFileTransferInProgress == true)){
+						if (chatMessage!.isOutgoing == true && (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath == "" || chatMessage!.isFileTransferInProgress == true)){
 							let  uploadView = UploadMessageCell()
 							uploadContentCollection.append(uploadView)
-							uploadView.content = chatMessage?.contents[indexPathWithoutNilWithRecording]
+							uploadView.content = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording]
 							uploadView.size(w: 138, h: 138).done()
 							
-							if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video"){
+							if(chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].type == "video"){
 								var imagePlay = UIImage()
 								if #available(iOS 13.0, *) {
 									imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1926,10 +1918,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					}
 					if(imagesGridCollectionView[indexPathWithoutNil] != nil){
 						var extensionFile = ""
-						if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != nil {
-							extensionFile = chatMessage?.contents[indexPathWithoutNilWithRecording].filePath!.lowercased().components(separatedBy: ".").last ?? ""
+						if chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath != nil {
+							extensionFile = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath!.lowercased().components(separatedBy: ".").last ?? ""
 						}
-						if(chatMessage?.contents[indexPathWithoutNilWithRecording].type == "video" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile))){
+						if(chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].type == "video" || (["mkv", "avi", "mov", "mp4"].contains(extensionFile))){
 							var imagePlay = UIImage()
 							if #available(iOS 13.0, *) {
 								imagePlay = (UIImage(named: "vr_play")!.withTintColor(.white))
@@ -1941,7 +1933,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							myImagePlayView.size(w: viewCell.frame.width/4, h: viewCell.frame.height/4).done()
 							myImagePlayView.alignHorizontalCenterWith(viewCell).alignVerticalCenterWith(viewCell).done()
 						}
-						if chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != nil && chatMessage?.contents[indexPathWithoutNilWithRecording].filePath != "" {
+						if chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath != nil && chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath != "" {
 							viewCell.onClick {
 								ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
 							}
@@ -2017,7 +2009,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			}
 		}
 
-		return SwiftUtil.textToImage(drawText: text!, inImage: image!, forReplyBubble: forReplyBubbble)
+		return SwiftUtil.textToImage(drawText: text ?? "", inImage: (image ?? UIImage(named: "file_default"))!, forReplyBubble: forReplyBubbble)
 	}
 	
 	func setEvent(event: EventLog) -> String {
@@ -2110,8 +2102,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			if  !message.isOutgoing {
 				if (indexTransferProgress == -1) {
 					for indexItem in 0...(imagesGridCollectionView.count) - 1 {
-						if chatMessage?.contents[indexItem].name == content.name {
-							indexTransferProgress = indexItem - imagesGridCollectionViewNil - (messageWithRecording ? 1 : 0)
+						if chatMessage != nil && chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexItem].name == content.name {
+							indexTransferProgress = indexItem - (messageWithRecording ? 1 : 0)
 							break
 						}
 					}
@@ -2191,8 +2183,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				if((imagesGridCollectionView.count) > 0){
 					if (indexUploadTransferProgress == -1) {
 						for indexItem in 0...(imagesGridCollectionView.count) - 1 {
-							if chatMessage?.contents[indexItem].filePath == content.filePath {
-								indexUploadTransferProgress = indexItem - imagesGridCollectionViewNil - (messageWithRecording ? 1 : 0)
+							if chatMessage != nil && chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexItem].filePath == content.filePath {
+								indexUploadTransferProgress = indexItem - (messageWithRecording ? 1 : 0)
 								break
 							}
 						}

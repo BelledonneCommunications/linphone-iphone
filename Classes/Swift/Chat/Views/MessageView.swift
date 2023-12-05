@@ -88,13 +88,14 @@ class MessageView:  UIView, UITextViewDelegate {
 		messageWithEmojiView.addArrangedSubview(emojisButton)
 		emojisButton.alignParentRight().matchParentHeight().done()
 		
-		if #available(iOS 17.0, *) {
-			emojisButton.isHidden = true
-		}
+		emojisButton.isHidden = true
 		
 		UIDeviceBridge.displayModeSwitched.readCurrentAndObserve { _ in
 			self.backgroundColor = VoipTheme.voipToolbarBackgroundColor.get()
 			self.messageWithEmojiView.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
+			if self.messageText.textColor != UIColor.lightGray {
+				self.messageText.textColor = VoipTheme.backgroundBlackWhite.get()
+			}
 		}
 	}
 	
@@ -103,11 +104,6 @@ class MessageView:  UIView, UITextViewDelegate {
 			let chatRoom = ChatRoom.getSwiftObject(cObject: PhoneMainView.instance().currentRoom)
 			if ((messageText.text.isEmpty && !fileContext) || isLoading)  {
 				sendButton.isEnabled = false
-				if #available(iOS 17.0, *) {
-					emojisButton.isHidden = true
-				} else {
-					emojisButton.isHidden = false
-				}
 				NotificationCenter.default.post(name: Notification.Name("LinphoneResetTextViewSize"), object: self)
 				lastNumLines = 0
 			} else {
@@ -118,17 +114,6 @@ class MessageView:  UIView, UITextViewDelegate {
 							onlyEmojis = false
 						}
 					}
-					if onlyEmojis {
-						if #available(iOS 17.0, *) {
-							emojisButton.isHidden = true
-						} else {
-							emojisButton.isHidden = false
-						}
-					} else {
-						emojisButton.isHidden = true
-					}
-				} else {
-					emojisButton.isHidden = true
 				}
 				if !isComposing {
 					chatRoom.compose()
