@@ -17,9 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-
 // Core Extension provides a set of utilies to manage automatically a LinphoneCore no matter if it is from App or an extension.
 // It is based on a singleton pattern and adds.
 
@@ -45,4 +42,3 @@ extension Core {
 	}
 	
 }
-
