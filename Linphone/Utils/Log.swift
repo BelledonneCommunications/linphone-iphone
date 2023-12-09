@@ -34,8 +34,7 @@ class Log: LoggingServiceDelegate {
 
 	private init() {
 		service.domain = Bundle.main.bundleIdentifier!
-		// CRASH TO BE FIXED ??
-		//Core.setLogCollectionPath(path: Factory.Instance.getDownloadDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String)))
+		Core.setLogCollectionPath(path: Factory.Instance.getDownloadDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String)))
 		Core.enableLogCollection(state: LogCollectionState.Enabled)
 		setMask()
 		LoggingService.Instance.addDelegate(delegate: self)
