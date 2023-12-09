@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		66C491F92B24D25B00CEA16D /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
 		66C491FB2B24D32600CEA16D /* CoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FA2B24D32600CEA16D /* CoreExtension.swift */; };
+		66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
@@ -90,6 +91,7 @@
 /* Begin PBXFileReference section */
 		66C491F82B24D25A00CEA16D /* ConfigExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigExtension.swift; sourceTree = "<group>"; };
 		66C491FA2B24D32600CEA16D /* CoreExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreExtension.swift; sourceTree = "<group>"; };
+		66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteUtils.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 			isa = PBXGroup;
 			children = (
 				66C491F72B24D25A00CEA16D /* Extensions */,
+				66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */,
 				D7ADF5FF2AFE356400212231 /* Avatar.swift */,
 				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
 				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
@@ -593,6 +596,7 @@
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
 				D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
+				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
 				D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */,
