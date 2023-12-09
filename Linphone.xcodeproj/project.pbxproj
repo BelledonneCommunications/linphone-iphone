@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66C491F92B24D25B00CEA16D /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
@@ -86,6 +87,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		66C491F82B24D25A00CEA16D /* ConfigExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigExtension.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
@@ -178,6 +180,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		66C491F72B24D25A00CEA16D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D717071D2AC5922E0037746F /* ColorExtension.swift */,
+				66C491F82B24D25A00CEA16D /* ConfigExtension.swift */,
+				D76005F52B0798B00054B79A /* IntExtension.swift */,
+				D717071F2AC5989C0037746F /* TextExtension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		A31AF2AB8C6A3D7B7EA3B424 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -188,15 +201,13 @@
 		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				66C491F72B24D25A00CEA16D /* Extensions */,
 				D7ADF5FF2AFE356400212231 /* Avatar.swift */,
-				D717071D2AC5922E0037746F /* ColorExtension.swift */,
 				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
-				D76005F52B0798B00054B79A /* IntExtension.swift */,
 				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
 				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
 				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
 				D732A9082AFD235500DB42BA /* ShareSheetController.swift */,
-				D717071F2AC5989C0037746F /* TextExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -570,6 +581,7 @@
 				D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */,
 				D7ADF6002AFE356400212231 /* Avatar.swift in Sources */,
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
+				66C491F92B24D25B00CEA16D /* ConfigExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */,
 				D7C3650C2AF0084000FE6142 /* EditContactViewModel.swift in Sources */,
