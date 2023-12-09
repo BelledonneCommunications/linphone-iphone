@@ -28,6 +28,9 @@
     "[notre politique de confidentialité](https://linphone.org/privacy-policy)" : {
 
     },
+    "*" : {
+
+    },
     "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
 
     },
@@ -44,6 +47,9 @@
 
     },
     "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
+
+    },
+    "#" : {
 
     },
     "%lld Book (Example)" : {
@@ -99,13 +105,55 @@
         }
       }
     },
+    "+" : {
+
+    },
+    "0" : {
+
+    },
+    "1" : {
+
+    },
+    "2" : {
+
+    },
+    "3" : {
+
+    },
+    "4" : {
+
+    },
+    "5" : {
+
+    },
+    "6" : {
+
+    },
+    "7" : {
+
+    },
+    "8" : {
+
+    },
+    "9" : {
+
+    },
     "Accept all" : {
 
     },
     "Add a picture" : {
 
     },
+    "Add the contact" : {
+
+    },
+    "Add to contacts" : {
+
+    },
     "Add to favourites" : {
+
+    },
+    "All calls will be removed from the history." : {
 
     },
     "All contacts" : {
@@ -140,6 +188,9 @@
     "Block the number" : {
 
     },
+    "Call history" : {
+
+    },
     "Calls" : {
 
     },
@@ -150,6 +201,9 @@
 
     },
     "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
+
+    },
+    "Clear logs" : {
 
     },
     "Close" : {
@@ -173,6 +227,9 @@
     "Copy number" : {
 
     },
+    "Copy SIP address" : {
+
+    },
     "D'accord" : {
 
     },
@@ -188,6 +245,12 @@
     "Delete %@?" : {
 
     },
+    "Delete all history" : {
+
+    },
+    "Delete history" : {
+
+    },
     "Delete this contact" : {
 
     },
@@ -198,6 +261,9 @@
 
     },
     "Display Name" : {
+
+    },
+    "Do you really want to delete all calls history?" : {
 
     },
     "Domain" : {
@@ -221,9 +287,6 @@
     "En continuant, vous acceptez ces conditions, " : {
 
     },
-    "En ligne" : {
-
-    },
     "Error" : {
 
     },
@@ -239,13 +302,16 @@
     "First name*" : {
 
     },
-    "History Contact fragment" : {
+    "History has been deleted" : {
 
     },
     "I prefere create an account" : {
 
     },
     "I understand" : {
+
+    },
+    "Incoming Call" : {
 
     },
     "Information" : {
@@ -287,13 +353,16 @@
     "My Profile" : {
 
     },
+    "New call" : {
+
+    },
     "New contact" : {
 
     },
     "Next" : {
 
     },
-    "No calls for the moment..." : {
+    "No call for the moment..." : {
 
     },
     "No contacts for the moment..." : {
@@ -312,6 +381,9 @@
 
     },
     "Other actions" : {
+
+    },
+    "Outgoing Call" : {
 
     },
     "password" : {
@@ -346,9 +418,6 @@
     "Plus tard" : {
 
     },
-    "Posts" : {
-
-    },
     "Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :" : {
 
     },
@@ -367,13 +436,22 @@
     "Scan QR code" : {
 
     },
+    "Search contact or history call" : {
+
+    },
     "Sécurisé" : {
 
     },
     "See all" : {
 
     },
+    "See contact" : {
+
+    },
     "See Linphone contact" : {
+
+    },
+    "Send logs" : {
 
     },
     "Share" : {
@@ -385,6 +463,9 @@
     "SIP address :" : {
 
     },
+    "SIP address copied into clipboard" : {
+
+    },
     "sip.linphone.org" : {
 
     },
@@ -392,6 +473,9 @@
 
     },
     "Start" : {
+
+    },
+    "Suggestions" : {
 
     },
     "TCP" : {
@@ -443,6 +527,9 @@
           }
         }
       }
+    },
+    "Username error" : {
+
     },
     "Video Call" : {
 

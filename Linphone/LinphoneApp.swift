@@ -23,24 +23,46 @@ import SwiftUI
 struct LinphoneApp: App {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel()
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
-	@State private var isActive = false
+	@State private var contactViewModel: ContactViewModel?
+	@State private var editContactViewModel: EditContactViewModel?
+	@State private var historyViewModel: HistoryViewModel?
+	@State private var historyListViewModel: HistoryListViewModel?
+	@State private var startCallViewModel: StartCallViewModel?
 	
 	var body: some Scene {
 		WindowGroup {
-			if isActive {
+			if coreContext.coreIsStarted {
 				if !sharedMainViewModel.welcomeViewDisplayed {
-					WelcomeView(sharedMainViewModel: sharedMainViewModel)
+					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
-					AssistantView(sharedMainViewModel: sharedMainViewModel)
-						.toast(isShowing: $coreContext.toastMessage)
-				} else if coreContext.defaultAccount != nil {
-					ContentView(contactViewModel: ContactViewModel(), editContactViewModel: EditContactViewModel(), historyViewModel: HistoryViewModel())
-						.toast(isShowing: $coreContext.toastMessage)
+					AssistantView()
+				} else if coreContext.defaultAccount != nil
+							&& contactViewModel != nil
+							&& editContactViewModel != nil
+							&& historyViewModel != nil
+							&& historyListViewModel != nil
+							&& startCallViewModel != nil {
+					ContentView(
+						contactViewModel: contactViewModel!,
+						editContactViewModel: editContactViewModel!,
+						historyViewModel: historyViewModel!,
+						historyListViewModel: historyListViewModel!,
+						startCallViewModel: startCallViewModel!
+					)
+				} else {
+					SplashScreen()
 				}
 			} else {
-				SplashScreen(isActive: $isActive)
+				SplashScreen()
+					.onDisappear {
+						contactViewModel = ContactViewModel()
+						editContactViewModel = EditContactViewModel()
+						historyViewModel = HistoryViewModel()
+						historyListViewModel = HistoryListViewModel()
+						startCallViewModel = StartCallViewModel()
+					}
 			}
 		}
 	}

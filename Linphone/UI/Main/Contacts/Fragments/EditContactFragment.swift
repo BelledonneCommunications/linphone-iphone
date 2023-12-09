@@ -23,9 +23,11 @@ import linphonesw
 struct EditContactFragment: View {
 	
 	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel()
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Environment(\.dismiss) var dismiss
+	
+	var contactViewModel: ContactViewModel
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDismissPopup: Bool
@@ -129,26 +131,9 @@ struct EditContactFragment: View {
 								if editContactViewModel.selectedEditFriend != nil
 									&& editContactViewModel.selectedEditFriend!.photo != nil
 									&& !editContactViewModel.selectedEditFriend!.photo!.isEmpty && selectedImage == nil && !removedImage {
-									AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: editContactViewModel.selectedEditFriend!.photo!)) { image in
-										switch image {
-										case .empty:
-											ProgressView()
-												.frame(width: 100, height: 100)
-										case .success(let image):
-											image
-												.resizable()
-												.aspectRatio(contentMode: .fill)
-												.frame(width: 100, height: 100)
-												.clipShape(Circle())
-										case .failure:
-											Image("profil-picture-default")
-												.resizable()
-												.frame(width: 100, height: 100)
-												.clipShape(Circle())
-										@unknown default:
-											EmptyView()
-										}
-									}
+									
+									Avatar(contactAvatarModel: ContactAvatarModel(friend: editContactViewModel.selectedEditFriend!, withPresence: false), avatarSize: 100)
+									
 								} else if selectedImage == nil {
 									Image("profil-picture-default")
 										.resizable()
@@ -494,7 +479,7 @@ struct EditContactFragment: View {
 		)
 		
 		if editContactViewModel.selectedEditFriend != nil && selectedImage == nil &&
-			!removedImage {
+			!removedImage && editContactViewModel.selectedEditFriend!.photo!.suffix(11) != "default.png" {
 			ContactsManager.shared.saveFriend(
 				result: String(editContactViewModel.selectedEditFriend!.photo!.dropFirst(6)),
 				contact: newContact,
@@ -505,14 +490,22 @@ struct EditContactFragment: View {
 				image: selectedImage
 				?? ContactsManager.shared.textToImage(
 					firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
-				name: editContactViewModel.firstName 
-				+ editContactViewModel.lastName
-				+ String(Int.random(in: 1...1000))
-				+ ((selectedImage == nil) ? "-default" : ""),
+				name: editContactViewModel.firstName
+				+ editContactViewModel.lastName,
+				prefix: ((selectedImage == nil) ? "-default" : ""),
 				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend)
 		}
 		
 		MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+		
+		if editContactViewModel.selectedEditFriend != nil && editContactViewModel.selectedEditFriend!.name != editContactViewModel.firstName + " " + editContactViewModel.lastName {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+				let result = ContactsManager.shared.lastSearch.firstIndex(where: {
+					$0.friend!.name == newContact.firstName + " " + newContact.lastName
+				})
+				contactViewModel.indexDisplayedFriend = result
+			}
+		}
 		
 		delayColorDismiss()
 		if editContactViewModel.selectedEditFriend == nil {
@@ -527,5 +520,10 @@ struct EditContactFragment: View {
 }
 
 #Preview {
-	EditContactFragment(editContactViewModel: EditContactViewModel(), isShowEditContactFragment: .constant(false), isShowDismissPopup: .constant(false))
+	EditContactFragment(
+		editContactViewModel: EditContactViewModel(),
+		contactViewModel: ContactViewModel(),
+		isShowEditContactFragment: .constant(false),
+		isShowDismissPopup: .constant(false)
+	)
 }

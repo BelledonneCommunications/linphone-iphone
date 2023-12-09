@@ -21,7 +21,7 @@ import SwiftUI
 
 struct PermissionsFragment: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var permissionManager = PermissionManager.shared
 	
@@ -172,8 +172,7 @@ struct PermissionsFragment: View {
 					.padding(.horizontal)
 					
 					Button {
-                        permissionManager.contactsRequestPermission()
-						permissionManager.cameraRequestPermission()
+						permissionManager.getPermissions()
 					} label: {
 						Text("D'accord")
 							.default_text_style_white_600(styleSize: 20)
@@ -193,7 +192,7 @@ struct PermissionsFragment: View {
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 		.navigationBarHidden(true)
-		.onReceive(permissionManager.$cameraPermissionGranted, perform: { (granted) in
+		.onReceive(permissionManager.$contactsPermissionGranted, perform: { (granted) in
 			if granted {
 				withAnimation {
 					sharedMainViewModel.changeWelcomeView()
@@ -204,5 +203,5 @@ struct PermissionsFragment: View {
 }
 
 #Preview {
-	PermissionsFragment(sharedMainViewModel: SharedMainViewModel())
+	PermissionsFragment()
 }

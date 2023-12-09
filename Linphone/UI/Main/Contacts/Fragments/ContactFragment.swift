@@ -34,9 +34,11 @@ struct ContactFragment: View {
 	@State private var showShareSheet = false
 	
 	var body: some View {
+		let indexDisplayed = contactViewModel.indexDisplayedFriend != nil ? contactViewModel.indexDisplayedFriend! : 0
 		if #available(iOS 16.0, *) {
 			if idiom != .pad {
 				ContactInnerFragment(
+					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
 					cnContact: CNContact(),
@@ -50,12 +52,13 @@ struct ContactFragment: View {
 						.presentationDetents([.fraction(0.2)])
 				}
 				.sheet(isPresented: $showShareSheet) {
-                    ShareSheet(friendToShare: MagicSearchSingleton.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+                    ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
 						.presentationDetents([.medium])
 						.edgesIgnoringSafeArea(.bottom)
 				}
 			} else {
 				ContactInnerFragment(
+					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
 					cnContact: CNContact(),
@@ -68,12 +71,13 @@ struct ContactFragment: View {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 				} onDismiss: {}
 				.sheet(isPresented: $showShareSheet) {
-					ShareSheet(friendToShare: MagicSearchSingleton.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
 						.edgesIgnoringSafeArea(.bottom)
 				}
 			}
 		} else {
 			ContactInnerFragment(
+				contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
 				contactViewModel: contactViewModel,
 				editContactViewModel: editContactViewModel,
 				cnContact: CNContact(),
@@ -86,7 +90,7 @@ struct ContactFragment: View {
 				ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 			} onDismiss: {}
 			.sheet(isPresented: $showShareSheet) {
-				ShareSheet(friendToShare: MagicSearchSingleton.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+				ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
 					.edgesIgnoringSafeArea(.bottom)
 			}
 		}

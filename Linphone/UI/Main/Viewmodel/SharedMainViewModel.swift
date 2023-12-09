@@ -21,6 +21,8 @@ import linphonesw
 
 class SharedMainViewModel: ObservableObject {
 	
+	static let shared = SharedMainViewModel()
+	
 	@Published var welcomeViewDisplayed = false
 	@Published var generalTermsAccepted = false
 	@Published var displayProfileMode = false
@@ -31,7 +33,7 @@ class SharedMainViewModel: ObservableObject {
 	
 	var maxWidth = 400.0
 	
-	init() {
+	private init() {
 		let preferences = UserDefaults.standard
 		
 		if preferences.object(forKey: welcomeViewKey) == nil {

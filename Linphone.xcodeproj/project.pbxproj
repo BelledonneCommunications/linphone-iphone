@@ -27,8 +27,17 @@
 		D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343312ACEFF58009AA24E /* QRScannerController.swift */; };
 		D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343332ACEFFC3009AA24E /* QRScanner.swift */; };
 		D72343362AD037AF009AA24E /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343352AD037AF009AA24E /* ToastView.swift */; };
+		D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E4382B16440C0083C415 /* ContactAvatarModel.swift */; };
+		D726E43D2B19E4FE0083C415 /* StartCallFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E43C2B19E4FE0083C415 /* StartCallFragment.swift */; };
+		D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */; };
 		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
 		D732A9092AFD235500DB42BA /* ShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9082AFD235500DB42BA /* ShareSheetController.swift */; };
+		D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */ = {isa = PBXBuildFile; fileRef = D732A90A2B0376F500DB42BA /* linphonerc-default */; };
+		D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
+		D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */; };
+		D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */; };
+		D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */; };
+		D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
 		D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */; };
 		D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */; };
@@ -37,14 +46,20 @@
 		D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CFE2ACAEC5E0021626A /* PopupView.swift */; };
 		D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9D002ACB098C0021626A /* PermissionManager.swift */; };
 		D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */; };
+		D76005F62B0798B00054B79A /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76005F52B0798B00054B79A /* IntExtension.swift */; };
 		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
 		D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D777DBB22AE12C5900565A99 /* ContactsManager.swift */; };
 		D78290B82ADD3910004AA85C /* ContactsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290B72ADD3910004AA85C /* ContactsFragment.swift */; };
 		D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */; };
+		D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */; };
+		D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */; };
+		D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79622332B1DFE600037EACD /* DialerBottomSheet.swift */; };
+		D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D796F1FF2B0BB61A0041115F /* ToastViewModel.swift */; };
 		D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */; };
 		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
 		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
+		D7ADF6002AFE356400212231 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ADF5FF2AFE356400212231 /* Avatar.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7C365082AEFAB7F00FE6142 /* ContactListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */; };
 		D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365092AF001C300FE6142 /* EditContactFragment.swift */; };
@@ -93,8 +108,17 @@
 		D72343312ACEFF58009AA24E /* QRScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerController.swift; sourceTree = "<group>"; };
 		D72343332ACEFFC3009AA24E /* QRScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScanner.swift; sourceTree = "<group>"; };
 		D72343352AD037AF009AA24E /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		D726E4382B16440C0083C415 /* ContactAvatarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatarModel.swift; sourceTree = "<group>"; };
+		D726E43C2B19E4FE0083C415 /* StartCallFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallFragment.swift; sourceTree = "<group>"; };
+		D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallViewModel.swift; sourceTree = "<group>"; };
 		D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryContactFragment.swift; sourceTree = "<group>"; };
 		D732A9082AFD235500DB42BA /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
+		D732A90A2B0376F500DB42BA /* linphonerc-default */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-default"; sourceTree = "<group>"; };
+		D732A90B2B0376F500DB42BA /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory"; sourceTree = "<group>"; };
+		D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryFragment.swift; sourceTree = "<group>"; };
+		D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListFragment.swift; sourceTree = "<group>"; };
+		D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModel.swift; sourceTree = "<group>"; };
+		D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListBottomSheet.swift; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
 		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
 		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
@@ -103,15 +127,21 @@
 		D74C9CFE2ACAEC5E0021626A /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
 		D74C9D002ACB098C0021626A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupLoadingView.swift; sourceTree = "<group>"; };
+		D76005F52B0798B00054B79A /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		D777DBB22AE12C5900565A99 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		D78290B72ADD3910004AA85C /* ContactsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsFragment.swift; sourceTree = "<group>"; };
 		D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
+		D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_default_values; sourceTree = "<group>"; };
+		D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_third_party_default_values; sourceTree = "<group>"; };
+		D79622332B1DFE600037EACD /* DialerBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialerBottomSheet.swift; sourceTree = "<group>"; };
+		D796F1FF2B0BB61A0041115F /* ToastViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModel.swift; sourceTree = "<group>"; };
 		D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		D7A03FBF2ACC2E390081A588 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D7ADF5FF2AFE356400212231 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListBottomSheet.swift; sourceTree = "<group>"; };
 		D7C365092AF001C300FE6142 /* EditContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactFragment.swift; sourceTree = "<group>"; };
@@ -160,11 +190,13 @@
 			children = (
 				D717071D2AC5922E0037746F /* ColorExtension.swift */,
 				D717071F2AC5989C0037746F /* TextExtension.swift */,
+				D76005F52B0798B00054B79A /* IntExtension.swift */,
 				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
 				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
 				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
 				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
 				D732A9082AFD235500DB42BA /* ShareSheetController.swift */,
+				D7ADF5FF2AFE356400212231 /* Avatar.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -201,6 +233,7 @@
 				D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */,
 				D719ABBD2ABC67BF00B41C10 /* Preview Content */,
 				D7D24D0C2AC1B4C700C6F35B /* Fonts */,
+				D7ADF6012AFE5C7C00212231 /* Ressources */,
 			);
 			path = Linphone;
 			sourceTree = "<group>";
@@ -267,14 +300,29 @@
 			isa = PBXGroup;
 			children = (
 				D72250622ADE9615008FB426 /* HistoryViewModel.swift */,
+				D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */,
+				D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		D726E4372B1643FF0083C415 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D726E4382B16440C0083C415 /* ContactAvatarModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		D72992372ADD7F1C003AF125 /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
 				D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */,
+				D732A90E2B04C3B400DB42BA /* HistoryFragment.swift */,
+				D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */,
+				D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */,
+				D726E43C2B19E4FE0083C415 /* StartCallFragment.swift */,
+				D79622332B1DFE600037EACD /* DialerBottomSheet.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -351,6 +399,7 @@
 			isa = PBXGroup;
 			children = (
 				D78290B62ADD38F9004AA85C /* Fragments */,
+				D726E4372B1643FF0083C415 /* Model */,
 				D78290B92ADD409D004AA85C /* ViewModel */,
 				D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */,
 			);
@@ -371,8 +420,20 @@
 			isa = PBXGroup;
 			children = (
 				D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */,
+				D796F1FF2B0BB61A0041115F /* ToastViewModel.swift */,
 			);
 			path = Viewmodel;
+			sourceTree = "<group>";
+		};
+		D7ADF6012AFE5C7C00212231 /* Ressources */ = {
+			isa = PBXGroup;
+			children = (
+				D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */,
+				D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */,
+				D732A90A2B0376F500DB42BA /* linphonerc-default */,
+				D732A90B2B0376F500DB42BA /* linphonerc-factory */,
+			);
+			path = Ressources;
 			sourceTree = "<group>";
 		};
 		D7D24D0C2AC1B4C700C6F35B /* Fonts */ = {
@@ -464,11 +525,15 @@
 				D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */,
 				D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */,
 				D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */,
+				D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */,
 				D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */,
 				D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */,
 				D719ABBF2ABC67BF00B41C10 /* Preview Assets.xcassets in Resources */,
 				D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */,
 				D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */,
+				D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */,
+				D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */,
+				D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */,
 				D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -503,6 +568,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */,
+				D7ADF6002AFE356400212231 /* Avatar.swift in Sources */,
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
 				D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */,
 				D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */,
@@ -510,12 +576,16 @@
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
+				D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
+				D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */,
 				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
+				D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */,
+				D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */,
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
@@ -523,10 +593,14 @@
 				D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
+				D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */,
 				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,
 				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
+				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
+				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,
+				D76005F62B0798B00054B79A /* IntExtension.swift in Sources */,
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
@@ -541,7 +615,9 @@
 				D7C48DF62AFCDF4700D938CB /* ContactInnerActionsFragment.swift in Sources */,
 				D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */,
 				D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */,
+				D726E43D2B19E4FE0083C415 /* StartCallFragment.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,
+				D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */,
 				D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,

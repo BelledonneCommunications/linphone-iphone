@@ -29,9 +29,5 @@ class ContactViewModel: ObservableObject {
     var selectedFriendToShare: Friend?
 	var selectedFriendToDelete: Friend?
 	
-	private var magicSearch = MagicSearchSingleton.shared
-	
-	init() {
-		magicSearch.searchForContacts(
-			sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)}
+	init() {}
 }

@@ -23,15 +23,17 @@ final class MagicSearchSingleton: ObservableObject {
 	
 	static let shared = MagicSearchSingleton()
 	private var coreContext = CoreContext.shared
+	private var contactsManager = ContactsManager.shared
 	
 	private var magicSearch: MagicSearch!
 	
 	var currentFilter: String = ""
 	var previousFilter: String?
 	
-	var needUpdateLastSearchContacts = false
+	var currentFilterSuggestions: String = ""
+	var previousFilterSuggestions: String?
 	
-	@Published var lastSearch: [SearchResult] = []
+	var needUpdateLastSearchContacts = false
 	
 	private var limitSearchToLinphoneAccounts = true
 	
@@ -47,7 +49,39 @@ final class MagicSearchSingleton: ObservableObject {
 			
 			self.magicSearch.publisher?.onSearchResultsReceived?.postOnMainQueue { (magicSearch: MagicSearch) in
 				self.needUpdateLastSearchContacts = true
-				self.lastSearch = magicSearch.lastSearch
+				
+				var lastSearchFriend: [SearchResult] = []
+				var lastSearchSuggestions: [SearchResult] = []
+				
+				magicSearch.lastSearch.forEach { searchResult in
+					if searchResult.friend != nil {
+						lastSearchFriend.append(searchResult)
+					} else {
+						lastSearchSuggestions.append(searchResult)
+					}
+				}
+				
+				self.contactsManager.lastSearch = lastSearchFriend.sorted(by: {
+					$0.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
+					<
+					$1.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
+				})
+				
+				self.contactsManager.lastSearchSuggestions = lastSearchSuggestions.sorted(by: {
+					$0.address!.asStringUriOnly() < $1.address!.asStringUriOnly()
+				})
+                
+				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
+					contactAvatarModel.removeAllDelegate()
+				}
+				
+                self.contactsManager.avatarListModel.removeAll()
+				
+				self.contactsManager.lastSearch.forEach { searchResult in
+					if searchResult.friend != nil {
+						self.contactsManager.avatarListModel.append(ContactAvatarModel(friend: searchResult.friend!, withPresence: true))
+					}
+				}
 			}
 		}
 	}
@@ -72,6 +106,30 @@ final class MagicSearchSingleton: ObservableObject {
 				filter: self.currentFilter,
 				domain: self.allContact ? "" : self.domainDefaultAccount,
 				sourceFlags: sourceFlags,
+				aggregation: MagicSearch.Aggregation.Friend)
+		}
+	}
+	
+	func searchForSuggestions() {
+		coreContext.doOnCoreQueue { _ in
+			var needResetCache = false
+			
+			DispatchQueue.main.sync {
+				if let oldFilter = self.previousFilterSuggestions {
+					if oldFilter.count > self.currentFilterSuggestions.count || oldFilter != self.currentFilterSuggestions {
+						needResetCache = true
+					}
+				}
+				self.previousFilterSuggestions = self.currentFilterSuggestions
+			}
+			if needResetCache {
+				self.magicSearch.resetSearchCache()
+			}
+			
+			self.magicSearch.getContactsListAsync(
+				filter: self.currentFilterSuggestions,
+				domain: self.domainDefaultAccount,
+				sourceFlags: MagicSearch.Source.All.rawValue,
 				aggregation: MagicSearch.Aggregation.Friend)
 		}
 	}

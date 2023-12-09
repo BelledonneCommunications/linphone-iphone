@@ -42,10 +42,10 @@ struct ContactsFragment: View {
 								showingSheet: $showingSheet,
 								showShareSheet: $showShareSheet
 							)
-								.presentationDetents([.fraction(0.2)])
+							.presentationDetents([.fraction(0.2)])
 						}
 						.sheet(isPresented: $showShareSheet) {
-                            ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+							ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
 								.presentationDetents([.medium])
 								.edgesIgnoringSafeArea(.bottom)
 						}

@@ -43,6 +43,7 @@ struct QRScanner: UIViewControllerRepresentable {
 class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 	
 	private var coreContext = CoreContext.shared
+	private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Binding var scanResult: String
 	private var lastResult: String = ""
@@ -76,10 +77,12 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 							try? core.start()
 						}
 					} else {
-						coreContext.toastMessage = "Invalide URI"
+						ToastViewModel.shared.toastMessage = "Invalide URI"
+						ToastViewModel.shared.displayToast.toggle()
 					}
 				} else {
-					coreContext.toastMessage = "Invalide URI"
+					ToastViewModel.shared.toastMessage = "Invalide URI"
+					ToastViewModel.shared.displayToast.toggle()
 				}
 			}
 		}

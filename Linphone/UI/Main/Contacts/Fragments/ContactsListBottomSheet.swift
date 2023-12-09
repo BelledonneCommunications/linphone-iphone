@@ -27,7 +27,6 @@ struct ContactsListBottomSheet: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject var contactViewModel: ContactViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
@@ -61,7 +60,8 @@ struct ContactsListBottomSheet: View {
 				if contactViewModel.selectedFriend != nil {
 					contactViewModel.selectedFriend!.starred.toggle()
 				}
-				self.magicSearch.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				
+				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {

@@ -24,17 +24,24 @@ import Combine
 final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
+	private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn: Bool = false
 	@Published var loggingInProgress: Bool = false
-	@Published var toastMessage: String = ""
 	@Published var defaultAccount: Account?
+	@Published var coreIsStarted: Bool = false
 	
 	private var mCore: Core!
 	private var mIteratePublisher: AnyCancellable?
 	
-	private init() {}
+	private init() {
+		do {
+			try initialiseCore()
+		} catch {
+			
+		}
+	}
 	
 	func doOnCoreQueue(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
 		if synchronous {
@@ -53,17 +60,45 @@ final class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			let configDir = Factory.Instance.getConfigDir(context: nil)
-			try? self.mCore = Factory.Instance.createCore(configPath: "\(configDir)/MyConfig", factoryConfigPath: "", systemContext: nil)
+			
+			Factory.Instance.logCollectionPath = configDir
+			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
+			
+            let url = NSURL(fileURLWithPath: configDir)
+            if let pathComponent = url.appendingPathComponent("linphonerc") {
+                let filePath = pathComponent.path
+                let fileManager = FileManager.default
+                if !fileManager.fileExists(atPath: filePath) {
+                    let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
+                    if path != nil {
+                        try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
+                    }
+                }
+            }
+			
+			let config = try? Factory.Instance.createConfigWithFactory(
+				path: "\(configDir)/linphonerc",
+				factoryPath: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
+			)
+			if config != nil {
+				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
+			}
+
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
+			
+			self.mCore.friendListSubscriptionEnabled = true
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 					self.defaultAccount = self.mCore.defaultAccount
+					self.coreIsStarted = true
 				} else if cbVal.state == GlobalState.Off {
 					self.defaultAccount = nil
+					self.coreIsStarted = true
 				}
 			}
+			
 			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need
@@ -71,9 +106,11 @@ final class CoreContext: ObservableObject {
 			self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
 				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
-					self.toastMessage = "Successful"
+					ToastViewModel.shared.toastMessage = "Successful"
+					ToastViewModel.shared.displayToast.toggle()
 				} else {
-					self.toastMessage = "Failed"
+					ToastViewModel.shared.toastMessage = "Failed"
+					ToastViewModel.shared.displayToast.toggle()
 				}
 			}
 			
@@ -87,10 +124,14 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
+					if self.mCore.consolidatedPresence != ConsolidatedPresence.Online {
+						self.onForeground()
+					}
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
-					self.toastMessage = "Registration failed"
+					ToastViewModel.shared.toastMessage = "Registration failed"
+					ToastViewModel.shared.displayToast.toggle()
 					self.loggingInProgress = false
 					self.loggedIn = false
 				}
@@ -115,6 +156,30 @@ final class CoreContext: ObservableObject {
 					self.mCore.iterate()
 				}
 			
+		}
+	}
+	
+	func onForeground() {
+		coreQueue.async {
+			// We can't rely on defaultAccount?.params?.isPublishEnabled
+			// as it will be modified by the SDK when changing the presence status
+			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
+				NSLog("App is in foreground, PUBLISHING presence as Online")
+				self.mCore.consolidatedPresence = ConsolidatedPresence.Online
+			}
+		}
+	}
+	
+	func onBackground() {
+		coreQueue.async {
+			// We can't rely on defaultAccount?.params?.isPublishEnabled
+			// as it will be modified by the SDK when changing the presence status
+			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
+				NSLog("App is in background, un-PUBLISHING presence info")
+				// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
+				// Flexisip will handle the Busy status depending on other devices
+				self.mCore.consolidatedPresence = ConsolidatedPresence.Offline
+			}
 		}
 	}
 }

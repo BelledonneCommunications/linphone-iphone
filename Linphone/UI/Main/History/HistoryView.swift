@@ -18,25 +18,45 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct HistoryView: View {
 	
+	@ObservedObject var historyListViewModel: HistoryListViewModel
+	@ObservedObject var historyViewModel: HistoryViewModel
+	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
+	
+	@Binding var index: Int
+	@Binding var isShowStartCallFragment: Bool
+	@Binding var isShowEditContactFragment: Bool
+	
 	var body: some View {
 		NavigationView {
-			VStack(spacing: 0) {
-				VStack {
-					Spacer()
-					Image("illus-belledonne")
-						.resizable()
-						.scaledToFit()
-						.clipped()
-						.padding(.all)
-					Text("No calls for the moment...")
-						.default_text_style_800(styleSize: 16)
-					Spacer()
-					Spacer()
+			ZStack(alignment: .bottomTrailing) {
+				HistoryFragment(
+					historyListViewModel: historyListViewModel,
+					historyViewModel: historyViewModel,
+					contactViewModel: contactViewModel,
+					editContactViewModel: editContactViewModel,
+					index: $index,
+					isShowEditContactFragment: $isShowEditContactFragment
+				)
+				
+				Button {
+					withAnimation {
+						MagicSearchSingleton.shared.searchForSuggestions()
+						isShowStartCallFragment.toggle()
+					}
+				} label: {
+					Image("phone-plus")
+						.padding()
+						.background(.white)
+						.clipShape(Circle())
+						.shadow(color: .black.opacity(0.2), radius: 4)
+					
 				}
-				.padding(.all)
+				.padding()
 			}
 		}
 		.navigationViewStyle(.stack)
@@ -44,5 +64,12 @@ struct HistoryView: View {
 }
 
 #Preview {
-	HistoryView()
+	HistoryFragment(
+		historyListViewModel: HistoryListViewModel(),
+		historyViewModel: HistoryViewModel(),
+		contactViewModel: ContactViewModel(),
+		editContactViewModel: EditContactViewModel(),
+		index: .constant(1),
+		isShowEditContactFragment: .constant(false)
+	)
 }

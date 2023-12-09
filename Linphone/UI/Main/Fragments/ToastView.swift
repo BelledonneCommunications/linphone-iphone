@@ -19,32 +19,37 @@
 
 import SwiftUI
 
-struct ToastView: ViewModifier {
+struct ToastView: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var toastViewModel = ToastViewModel.shared
 	
-	@Binding var isShowing: String
-	
-	func body(content: Content) -> some View {
-		ZStack {
-			content
-			toastView
-		}
-	}
-	
-	private var toastView: some View {
+	var body: some View {
 		VStack {
-			if !isShowing.isEmpty {
+			if toastViewModel.displayToast {
 				HStack {
-					Image(isShowing == "Successful" ? "smiley" : "warning-circle")
+					Image(toastViewModel.toastMessage.contains("Success") ? "check" : "warning-circle")
 						.resizable()
 						.renderingMode(.template)
 						.frame(width: 25, height: 25, alignment: .leading)
-						.foregroundStyle(isShowing == "Successful" ? Color.greenSuccess500 : Color.redDanger500)
+						.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
 					
-					switch isShowing {
+					switch toastViewModel.toastMessage {
 					case "Successful":
 						Text("QR code validated!")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_remove_call_logs":
+						Text("History has been deleted")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_copied_into_clipboard":
+						Text("SIP address copied into clipboard")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
@@ -85,29 +90,30 @@ struct ToastView: ViewModifier {
 				.overlay(
 					RoundedRectangle(cornerRadius: 50)
 						.inset(by: 0.5)
-						.stroke(isShowing == "Successful" ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
+						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
 				)
 				.onTapGesture {
-					isShowing = ""
+					withAnimation {
+						toastViewModel.toastMessage = ""
+						toastViewModel.displayToast = false
+					}
 				}
 				.onAppear {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-						isShowing = ""
+						withAnimation {
+							toastViewModel.toastMessage = ""
+							toastViewModel.displayToast = false
+						}
 					}
 				}
+				
+				Spacer()
 			}
-			Spacer()
 		}
-		.frame(maxWidth: sharedMainViewModel.maxWidth)
+		.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 		.padding(.horizontal, 16)
 		.padding(.bottom, 18)
-		.animation(.linear(duration: 0.3), value: isShowing)
-		.transition(.opacity)
-	}
-}
-
-extension View {	
-	func toast(isShowing: Binding<String>) -> some View {
-		self.modifier(ToastView(sharedMainViewModel: SharedMainViewModel(), isShowing: isShowing))
+		.transition(.move(edge: .top))
+		.padding(.top, 60)
 	}
 }

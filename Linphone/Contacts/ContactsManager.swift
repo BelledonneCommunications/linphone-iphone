@@ -22,18 +22,21 @@ import Contacts
 import SwiftUI
 import ContactsUI
 
-final class ContactsManager {
+final class ContactsManager: ObservableObject {
 	
 	static let shared = ContactsManager()
 	
 	private var coreContext = CoreContext.shared
-	private var magicSearch = MagicSearchSingleton.shared
 	
 	private let nativeAddressBookFriendList = "Native address-book"
 	let linphoneAddressBookFriendList = "Linphone address-book"
 	
 	var friendList: FriendList?
 	var linphoneFriendList: FriendList?
+	
+	@Published var lastSearch: [SearchResult] = []
+	@Published var lastSearchSuggestions: [SearchResult] = []
+	@Published var avatarListModel: [ContactAvatarModel] = []
 	
 	private init() {
 		fetchContacts()
@@ -119,7 +122,8 @@ final class ContactsManager {
 										&& contact.phoneNumbers.first?.value.stringValue != nil
 										? contact.phoneNumbers.first!.value.stringValue
 										: contact.givenName, lastName: contact.familyName),
-									name: contact.givenName + contact.familyName + String(Int.random(in: 1...1000)) + ((imageThumbnail == nil) ? "-default" : ""),
+									name: contact.givenName + contact.familyName,
+									prefix: ((imageThumbnail == nil) ? "-default" : ""),
 									contact: newContact, linphoneFriend: false, existingFriend: nil)
 							}
 						})
@@ -132,7 +136,8 @@ final class ContactsManager {
 					print("\(#function) - access denied")
 				}
 			}
-			self.magicSearch.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			
+			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 		}
 	}
 	
@@ -164,16 +169,16 @@ final class ContactsManager {
 		return IBImgViewUserProfile
 	}
 	
-	func saveImage(image: UIImage, name: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?) {
+	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?) {
 		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
 			return
 		}
 		
-		awaitDataWrite(data: data, name: name) { _, result in
+		awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 				if resultFriend != nil {
 					if linphoneFriend && existingFriend == nil {
-						_ = self.linphoneFriendList?.addLocalFriend(linphoneFriend: resultFriend!)
+						_ = self.linphoneFriendList?.addFriend(linphoneFriend: resultFriend!)
 						self.linphoneFriendList?.updateSubscriptions()
 					} else if existingFriend == nil {
 						_ = self.friendList?.addLocalFriend(linphoneFriend: resultFriend!)
@@ -188,7 +193,7 @@ final class ContactsManager {
 		self.coreContext.doOnCoreQueue { core in
 			do {
 				let friend = try existingFriend ?? core.createFriend()
-				
+                
 				friend.edit()
 				friend.nativeUri = contact.identifier
 				try friend.setName(newValue: contact.firstName + " " + contact.lastName)
@@ -236,7 +241,11 @@ final class ContactsManager {
 				friend.organization = contact.organizationName
 				friend.jobTitle = contact.jobTitle
 				
+				try friend.setSubscribesenabled(newValue: false)
+				try friend.setIncsubscribepolicy(newValue: .SPDeny)
+				
 				friend.done()
+				
 				completion(friend)
 			} catch let error {
 				print("Failed to enumerate contact", error)
@@ -253,15 +262,17 @@ final class ContactsManager {
 		return imagePath
 	}
 	
-	func awaitDataWrite(data: Data, name: String, completion: @escaping ((), String) -> Void) {
+	func awaitDataWrite(data: Data, name: String, prefix: String,completion: @escaping ((), String) -> Void) {
 		let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 		
 		if directory != nil {
 			DispatchQueue.main.async {
 				do {
-					let urlName = URL(string: name)
-					let imagePath = urlName != nil ? urlName!.absoluteString.replacingOccurrences(of: "%", with: "") : String(Int.random(in: 1...1000))
+					let urlName = URL(string: name + prefix)
+					let imagePath = urlName != nil ? urlName!.absoluteString.replacingOccurrences(of: "%", with: "") : "ImageError"
+					
 					let decodedData: () = try data.write(to: directory!.appendingPathComponent(imagePath + ".png"))
+					
 					completion(decodedData, imagePath + ".png")
 				} catch {
 					print("Error: ", error)
@@ -271,9 +282,24 @@ final class ContactsManager {
 		}
 	}
 	
-	func getFriend(contact: Contact) -> Friend? {
+	func getFriendWithContact(contact: Contact) -> Friend? {
 		if friendList != nil {
 			let friend = friendList!.friends.first(where: {$0.nativeUri == contact.identifier})
+			if friend == nil && friendList != nil {
+				return linphoneFriendList!.friends.first(where: {$0.nativeUri == contact.identifier})
+			}
+			return friend
+		} else {
+			return nil
+		}
+	}
+	
+	func getFriendWithAddress(address: Address) -> Friend? {
+		if friendList != nil {
+			var friend = friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == address.asStringUriOnly()})})
+			if friend == nil {
+				friend = linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == address.asStringUriOnly()})})
+			}
 			return friend
 		} else {
 			return nil

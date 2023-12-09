@@ -35,6 +35,17 @@ class AccountLoginViewModel: ObservableObject {
 	func login() {
 		coreContext.doOnCoreQueue { core in
 			do {
+				
+				if self.domain != "sip.linphone.org" {
+					if let assistantLinphone = Bundle.main.path(forResource: "assistant_third_party_default_values", ofType: nil) {
+						core.loadConfigFromXml(xmlUri: assistantLinphone)
+					}
+				} else {
+					if let assistantLinphone = Bundle.main.path(forResource: "assistant_linphone_default_values", ofType: nil) {
+						core.loadConfigFromXml(xmlUri: assistantLinphone)
+					}
+				}
+
 				// Get the transport protocol to use.
 				// TLS is strongly recommended
 				// Only use UDP if you don't have the choice

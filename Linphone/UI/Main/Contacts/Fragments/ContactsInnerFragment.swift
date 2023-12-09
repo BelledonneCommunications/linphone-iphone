@@ -22,9 +22,8 @@ import linphonesw
 
 struct ContactsInnerFragment: View {
 	
-	@Environment(\.scenePhase) var scenePhase
+	@ObservedObject var contactsManager = ContactsManager.shared
 	
-	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject var contactViewModel: ContactViewModel
 	
 	@State private var isFavoriteOpen = true
@@ -33,7 +32,7 @@ struct ContactsInnerFragment: View {
 	
 	var body: some View {
 		VStack(alignment: .leading) {
-			if !magicSearch.lastSearch.filter({ $0.friend?.starred == true }).isEmpty {
+			if !contactsManager.lastSearch.filter({ $0.friend?.starred == true }).isEmpty {
 				HStack(alignment: .center) {
 					Text("Favourites")
 						.default_text_style_800(styleSize: 16)
@@ -73,19 +72,31 @@ struct ContactsInnerFragment: View {
 				.padding(.top, 10)
 				.padding(.horizontal, 16)
 			}
-			ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)
-		}
-		.navigationBarHidden(true)
-		.onChange(of: scenePhase) { newPhase in
-			if newPhase == .active {
-				ContactsManager.shared.fetchContacts()
-				print("Active")
-			} else if newPhase == .inactive {
-				print("Inactive")
-			} else if newPhase == .background {
-				print("Background")
+			
+			VStack {
+				List {
+					ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)}
+				.listStyle(.plain)
+				.overlay(
+					VStack {
+						if contactsManager.lastSearch.isEmpty {
+							Spacer()
+							Image("illus-belledonne")
+								.resizable()
+								.scaledToFit()
+								.clipped()
+								.padding(.all)
+							Text("No contacts for the moment...")
+								.default_text_style_800(styleSize: 16)
+							Spacer()
+							Spacer()
+						}
+					}
+						.padding(.all)
+				)
 			}
 		}
+		.navigationBarHidden(true)
 	}
 }
 

@@ -1,15 +1,28 @@
-//
-//  ContactInnerActionsFragment.swift
-//  Linphone
-//
-//  Created by Benoît Martins on 09/11/2023.
-//
+/*
+ * Copyright (c) 2010-2023 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import SwiftUI
 
 struct ContactInnerActionsFragment: View {
 	
-	@ObservedObject var magicSearch = MagicSearchSingleton.shared
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	
@@ -47,8 +60,8 @@ struct ContactInnerActionsFragment: View {
 		
 		if informationIsOpen {
 			VStack(spacing: 0) {
-				if contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
-					ForEach(0..<magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count, id: \.self) { index in
+				if contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count, id: \.self) { index in
 						Button {
 						} label: {
 							HStack {
@@ -56,7 +69,7 @@ struct ContactInnerActionsFragment: View {
 									Text("SIP address :")
 										.default_text_style_700(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
-									Text(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly().dropFirst(4))
+									Text(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly().dropFirst(4))
 										.default_text_style(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.lineLimit(1)
@@ -81,7 +94,7 @@ struct ContactInnerActionsFragment: View {
 						.simultaneousGesture(
 							LongPressGesture()
 								.onEnded { _ in
-									contactViewModel.stringToCopy = magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly()
+									contactViewModel.stringToCopy = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly()
 									showingSheet.toggle()
 								}
 						)
@@ -94,8 +107,8 @@ struct ContactInnerActionsFragment: View {
 								}
 						)
 						
-						if !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.isEmpty
-							|| index < magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count - 1 {
+						if !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.isEmpty
+							|| index < contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count - 1 {
 							VStack {
 								Divider()
 							}
@@ -103,14 +116,14 @@ struct ContactInnerActionsFragment: View {
 						}
 					}
 					
-					ForEach(0..<magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count, id: \.self) { index in
+					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count, id: \.self) { index in
 						Button {
 						} label: {
 							HStack {
 								VStack {
-									if magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label != nil
-										&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label!.isEmpty {
-										Text("Phone (\(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label!)) :")
+									if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label != nil
+										&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label!.isEmpty {
+										Text("Phone (\(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label!)) :")
 											.default_text_style_700(styleSize: 14)
 											.frame(maxWidth: .infinity, alignment: .leading)
 									} else {
@@ -118,7 +131,7 @@ struct ContactInnerActionsFragment: View {
 											.default_text_style_700(styleSize: 14)
 											.frame(maxWidth: .infinity, alignment: .leading)
 									}
-									Text(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber)
+									Text(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber)
 										.default_text_style(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.lineLimit(1)
@@ -144,7 +157,7 @@ struct ContactInnerActionsFragment: View {
 							LongPressGesture()
 								.onEnded { _ in
 									contactViewModel.stringToCopy = 
-									magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber
+									contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber
 									showingSheet.toggle()
 								}
 						)
@@ -157,7 +170,7 @@ struct ContactInnerActionsFragment: View {
 								}
 						)
 						
-						if index < magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count - 1 {
+						if index < contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count - 1 {
 							VStack {
 								Divider()
 							}
@@ -174,28 +187,28 @@ struct ContactInnerActionsFragment: View {
 		}
 		
 		if contactViewModel.indexDisplayedFriend != nil
-			&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-			&& ((magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
-				 && !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty)
-				|| (magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle != nil
-					&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty)) {
+			&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+			&& ((contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
+				 && !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty)
+				|| (contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle != nil
+					&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty)) {
 			VStack {
-				if magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
-					&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty {
-					Text("**Company :** \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!)")
+				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
+					&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty {
+					Text("**Company :** \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!)")
 						.default_text_style(styleSize: 14)
 						.padding(.vertical, 15)
 						.padding(.horizontal, 20)
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
 				
-				if magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle != nil
-					&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty {
-					Text("**Job :** \(magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!)")
+				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle != nil
+					&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty {
+					Text("**Job :** \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!)")
 						.default_text_style(styleSize: 14)
 						.padding(.top, 
-								 magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
-								 && !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty 
+								 contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
+								 && !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty 
 								 ? 0 : 15
 						)
 						.padding(.bottom, 15)
@@ -226,10 +239,10 @@ struct ContactInnerActionsFragment: View {
 		.background(Color.gray100)
 		
 		VStack(spacing: 0) {
-			if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < magicSearch.lastSearch.count
-				&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-				&& magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
-				&& !magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
+			if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+				&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+				&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
+				&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
 				Button {
 					actionEditButton()
 				} label: {
@@ -253,6 +266,7 @@ struct ContactInnerActionsFragment: View {
 			} else {
 				NavigationLink(destination: EditContactFragment(
 						editContactViewModel: editContactViewModel,
+						contactViewModel: contactViewModel,
 						isShowEditContactFragment: .constant(false),
 						isShowDismissPopup: $isShowDismissPopup)) {
 						HStack {
@@ -274,7 +288,7 @@ struct ContactInnerActionsFragment: View {
 				}
 				.simultaneousGesture(
 					TapGesture().onEnded {
-						editContactViewModel.selectedEditFriend = magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+						editContactViewModel.selectedEditFriend = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend
 						editContactViewModel.resetValues()
 					}
 				)
@@ -286,22 +300,22 @@ struct ContactInnerActionsFragment: View {
 			.padding(.horizontal)
 			
 			Button {
-				if magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 					contactViewModel.objectWillChange.send()
-					magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred.toggle()
+					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred.toggle()
 				}
 			} label: {
 				HStack {
-					Image(contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-						  && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? "heart-fill" : "heart")
+					Image(contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+						  && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? "heart-fill" : "heart")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(contactViewModel.indexDisplayedFriend != nil && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-									 && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
+					.foregroundStyle(contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+									 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
 					.frame(width: 25, height: 25)
 					Text(contactViewModel.indexDisplayedFriend != nil
-						 && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-						 && magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true
+						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true
 						 ? "Remove from favourites"
 						 : "Add to favourites")
 					.default_text_style(styleSize: 14)
@@ -398,7 +412,7 @@ struct ContactInnerActionsFragment: View {
 			 */
 			
 			Button {
-				if magicSearch.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 					isShowDeletePopup.toggle()
 				}
 			} label: {

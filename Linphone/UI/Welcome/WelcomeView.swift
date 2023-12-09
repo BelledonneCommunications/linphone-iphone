@@ -21,7 +21,7 @@ import SwiftUI
 
 struct WelcomeView: View {
 	
-	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@State private var index = 0
 	
@@ -39,7 +39,7 @@ struct WelcomeView: View {
 							
 							VStack(alignment: .trailing) {
 								NavigationLink(destination: {
-									PermissionsFragment(sharedMainViewModel: sharedMainViewModel)
+									PermissionsFragment()
 								}, label: {
 									Text("Skip")
 										.underline()
@@ -96,7 +96,7 @@ struct WelcomeView: View {
 						
 						if index == 2 {
 							NavigationLink(destination: {
-								PermissionsFragment(sharedMainViewModel: sharedMainViewModel)
+								PermissionsFragment()
 							}, label: {
 								Text("Start")
 									.default_text_style_white_600(styleSize: 20)
@@ -158,5 +158,5 @@ struct WelcomeView: View {
 }
 
 #Preview {
-	WelcomeView(sharedMainViewModel: SharedMainViewModel())
+	WelcomeView()
 }
