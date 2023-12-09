@@ -188,15 +188,15 @@
 		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				D717071D2AC5922E0037746F /* ColorExtension.swift */,
-				D717071F2AC5989C0037746F /* TextExtension.swift */,
-				D76005F52B0798B00054B79A /* IntExtension.swift */,
-				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
-				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
-				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
-				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
-				D732A9082AFD235500DB42BA /* ShareSheetController.swift */,
 				D7ADF5FF2AFE356400212231 /* Avatar.swift */,
+				D717071D2AC5922E0037746F /* ColorExtension.swift */,
+				D7C48DF32AFA66F900D938CB /* EditContactController.swift */,
+				D76005F52B0798B00054B79A /* IntExtension.swift */,
+				D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */,
+				D74C9D002ACB098C0021626A /* PermissionManager.swift */,
+				D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */,
+				D732A9082AFD235500DB42BA /* ShareSheetController.swift */,
+				D717071F2AC5989C0037746F /* TextExtension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
