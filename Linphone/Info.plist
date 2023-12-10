@@ -11,6 +11,11 @@
 		<string>NotoSans-Bold.ttf</string>
 		<string>NotoSans-ExtraBold.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+		<string>voip</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIImageName</key>

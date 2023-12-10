@@ -86,6 +86,8 @@ final class CoreContext: ObservableObject {
 
 			self.mCore.autoIterateEnabled = false
 			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
+			self.mCore.callkitEnabled = true
+			self.mCore.pushNotificationEnabled = true
 			
 			self.mCore.friendListSubscriptionEnabled = true
 			
