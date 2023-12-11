@@ -64,6 +64,24 @@ class ContactAvatarModel: ObservableObject {
 	}
 	
 	func addDelegate() {
+		
+		/*
+		self.friend?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (Friend)) in
+			print("publisherpublisher onLogCollectionUploadStateChanged \(cbValue.address?.asStringUriOnly())")
+			
+			self.presenceStatus = cbValue.consolidatedPresence
+			if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
+				if cbValue.consolidatedPresence == .Online || cbValue.presenceModel!.latestActivityTimestamp != -1 {
+					self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ? "Online" : self.getCallTime(startDate: cbValue.presenceModel!.latestActivityTimestamp)
+				} else {
+					self.lastPresenceInfo = "Away"
+				}
+			} else {
+				self.lastPresenceInfo = ""
+			}
+		}
+		*/
+		
 		let newFriendDelegate = FriendDelegateStub(
 			onPresenceReceived: { (linphoneFriend: Friend) -> Void in
 				DispatchQueue.main.sync {
@@ -80,6 +98,7 @@ class ContactAvatarModel: ObservableObject {
 				}
 			}
 		)
+		 
 		
 		friendDelegate = newFriendDelegate
 		if friendDelegate != nil {

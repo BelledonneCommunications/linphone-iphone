@@ -20,6 +20,7 @@
 // swiftlint:disable large_tuple
 import linphonesw
 import Combine
+import UniformTypeIdentifiers
 
 final class CoreContext: ObservableObject {
 	
@@ -154,6 +155,20 @@ final class CoreContext: ObservableObject {
 			
 			self.mCore.publisher?.onCallStateChanged?.postOnCoreQueue { (cbVal: (core: Core, call: Call, state: Call.State, message: String)) in
 				TelecomManager.shared.onCallStateChanged(core: cbVal.core, call: cbVal.call, state: cbVal.state, message: cbVal.message)
+			}
+			
+			self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnMainQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
+				print("publisherpublisher onLogCollectionUploadStateChanged")
+				
+				if cbValue.info.starts(with: "https") {
+					UIPasteboard.general.setValue(
+						cbValue.info,
+						forPasteboardType: UTType.plainText.identifier
+					)
+				 
+					ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+					ToastViewModel.shared.displayToast.toggle()
+				}
 			}
 			
 			self.mIteratePublisher = Timer.publish(every: 0.02, on: .main, in: .common)

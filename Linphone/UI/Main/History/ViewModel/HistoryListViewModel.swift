@@ -26,12 +26,9 @@ class HistoryListViewModel: ObservableObject {
 	@Published var callLogs: [CallLog] = []
 	var callLogsTmp: [CallLog] = []
 	
-	@Published private var coreDelegate: CoreDelegate?
-	
 	var callLogsAddressToDelete = ""
 	
 	init() {
-		removeAllDelegate()
 		computeCallLogsList()
 	}
 	
@@ -49,29 +46,20 @@ class HistoryListViewModel: ObservableObject {
 					self.callLogsTmp.append(log)
 				}
 			}
-			/*
-			DispatchQueue.main.async {
-				self.coreDelegate = CoreDelegateStub(
-					onCallLogUpdated: { (_: Core, _: CallLog) -> Void in
-						DispatchQueue.main.sync {
-							let account = core.defaultAccount
-							let logs = account != nil ? account!.callLogs : core.callLogs
-							
-							self.callLogs.removeAll()
-							self.callLogsTmp.removeAll()
-							
-							logs.forEach { log in
-								self.callLogs.append(log)
-								self.callLogsTmp.append(log)
-							}
-						}
-					}
-				)
-				if self.coreDelegate != nil {
-					core.addDelegate(delegate: self.coreDelegate!)
+			
+			core.publisher?.onCallLogUpdated?.postOnMainQueue { (_: (_: Core, _: CallLog)) in
+				print("publisherpublisher onCallLogUpdated")
+				let account = core.defaultAccount
+				let logs = account != nil ? account!.callLogs : core.callLogs
+				
+				self.callLogs.removeAll()
+				self.callLogsTmp.removeAll()
+				
+				logs.forEach { log in
+					self.callLogs.append(log)
+					self.callLogsTmp.append(log)
 				}
 			}
-			 */
 		}
 	}
 	
@@ -210,14 +198,4 @@ class HistoryListViewModel: ObservableObject {
 		let indexTmp = self.callLogsTmp.firstIndex(where: {$0.callId == callLog.callId})
 		self.callLogsTmp.remove(at: indexTmp!)
 	}
-	
-	func removeAllDelegate() {
-		coreContext.doOnCoreQueue { core in
-			if self.coreDelegate != nil {
-				core.removeDelegate(delegate: self.coreDelegate!)
-				self.coreDelegate = nil
-			}
-		}
-	}
-	
 }
