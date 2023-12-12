@@ -1215,8 +1215,12 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								
 								ChatConversationViewModel.sharedModel.removeTmpFile(filePath: plainFile)
 								plainFile = ""
-							}else{
+							}else if content.filePath != nil {
 								if let imageMessage = UIImage(named: content.filePath!){
+									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
+								}
+							} else {
+								if let imageMessage = UIImage(named: "file_default"){
 									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 								}
 							}
