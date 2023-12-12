@@ -679,6 +679,9 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		[hiddenKeys addObject:@"video_menu"];
 	}
 	
+	[hiddenKeys addObject:@"enable_broadcast_conference_feature"];
+	[hiddenKeys addObject:@"meeting_menu"];
+	
 #ifndef DEBUG
 	[hiddenKeys addObject:@"debug_actions_group"];
 	[hiddenKeys addObject:@"release_button"];
