@@ -149,6 +149,11 @@ final class CoreContext: ObservableObject {
 					cbVal.core.clearAccounts()
 					cbVal.core.clearAllAuthInfo()
 				}
+				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
+			}
+			
+			self.mCore.publisher?.onCallStateChanged?.postOnCoreQueue { (cbVal: (core: Core, call: Call, state: Call.State, message: String)) in
+				TelecomManager.shared.onCallStateChanged(core: cbVal.core, call: cbVal.call, state: cbVal.state, message: cbVal.message)
 			}
 			
 			self.mIteratePublisher = Timer.publish(every: 0.02, on: .main, in: .common)

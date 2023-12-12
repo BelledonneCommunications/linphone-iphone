@@ -49,7 +49,7 @@ class HistoryListViewModel: ObservableObject {
 					self.callLogsTmp.append(log)
 				}
 			}
-			
+			/*
 			DispatchQueue.main.async {
 				self.coreDelegate = CoreDelegateStub(
 					onCallLogUpdated: { (_: Core, _: CallLog) -> Void in
@@ -71,6 +71,7 @@ class HistoryListViewModel: ObservableObject {
 					core.addDelegate(delegate: self.coreDelegate!)
 				}
 			}
+			 */
 		}
 	}
 	
