@@ -24,6 +24,7 @@ import UserNotifications
 import os
 import CallKit
 import AVFoundation
+import SwiftUI
 
 class CallAppData: NSObject {
 	var batteryWarningShown = false
@@ -32,12 +33,15 @@ class CallAppData: NSObject {
 	
 }
 
-class TelecomManager {
+class TelecomManager: ObservableObject {
 	static let shared = TelecomManager()
 	static var uuidReplacedCall: String?
 	
 	let providerDelegate: ProviderDelegate // to support callkit
 	let callController: CXCallController // to support callkit
+	
+	@Published var callInProgress: Bool = false
+    @Published var callStarted: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -78,7 +82,17 @@ class TelecomManager {
 			sCall.userData = UnsafeMutableRawPointer(Unmanaged.passRetained(appData!).toOpaque())
 		}
 	}
-	
+    
+    func doCallWithCore(addr: Address) {
+        CoreContext.shared.doOnCoreQueue { core in
+            do {
+                try self.doCall(core: core, addr: addr, isSas: false, isVideo: false)
+            } catch {
+                
+            }
+        }
+    }
+    
 	func doCall(core: Core, addr: Address, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
 		// let displayName = FastAddressBook.displayName(for: addr.getCobject)
 		
@@ -135,6 +149,13 @@ class TelecomManager {
 					/* will be used later to notify user if video was not activated because of the linphone core*/
 				}
 			}
+			
+			DispatchQueue.main.async {
+				self.callStarted = true
+				withAnimation {
+					self.callInProgress = true
+				}
+			}
 		}
 	}
 	
@@ -171,6 +192,10 @@ class TelecomManager {
 			}
 			
 			try call.acceptWithParams(params: callParams)
+			
+            DispatchQueue.main.async {
+                self.callStarted = true
+            }
 		} catch {
 			Log.error("accept call failed \(error)")
 		}
@@ -195,7 +220,18 @@ class TelecomManager {
 	}
 	
 	func incomingDisplayName(call: Call) -> String {
-		// TODO
+		if call.remoteAddress != nil {
+			let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
+			if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+				return friend!.address!.displayName!
+			} else {
+				if call.remoteAddress!.displayName != nil {
+					return call.remoteAddress!.displayName!
+				} else if call.remoteAddress!.username != nil {
+					return call.remoteAddress!.username!
+				}
+			}
+		}
 		return "IncomingDisplayName"
 	}
 	
@@ -361,6 +397,13 @@ class TelecomManager {
 				}
 			case .End,
 					.Error:
+				
+				DispatchQueue.main.async {
+					withAnimation {
+						self.callInProgress = false
+						self.callStarted = false
+					}
+				}
 				var displayName = "Unknown"
 				if call.dir == .Incoming {
 					displayName = incomingDisplayName(call: call)

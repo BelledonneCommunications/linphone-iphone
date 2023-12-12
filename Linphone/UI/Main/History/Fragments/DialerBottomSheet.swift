@@ -19,6 +19,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import linphonesw
 
 struct DialerBottomSheet: View {
 	
@@ -29,6 +30,7 @@ struct DialerBottomSheet: View {
 	@ObservedObject private var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var startCallViewModel: StartCallViewModel
 	
@@ -229,18 +231,12 @@ struct DialerBottomSheet: View {
 								.clipShape(Circle())
 						}
 					}
-					.simultaneousGesture(
-						LongPressGesture()
-							.onEnded { _ in
-								startCallViewModel.searchField += "+"
-							}
-					)
-					.highPriorityGesture(
-						TapGesture()
-							.onEnded { _ in
-								startCallViewModel.searchField += "0"
-							}
-					)
+					.onTapGesture {
+						startCallViewModel.searchField += "0"
+					}
+					.onLongPressGesture(minimumDuration: 0.2) {
+						startCallViewModel.searchField += "+"
+					}
 					
 					Spacer()
 					
@@ -270,6 +266,14 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
+                        if !startCallViewModel.searchField.isEmpty {
+                            do {
+                                let address = try Factory.Instance.createAddress(addr: String("sip:" + startCallViewModel.searchField + "@" + startCallViewModel.domain))
+                                telecomManager.doCallWithCore(addr: address)
+                            } catch {
+                                
+                            }
+                        }
 					} label: {
 						Image("phone")
 							.renderingMode(.template)

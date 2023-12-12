@@ -314,6 +314,9 @@
     "I understand" : {
 
     },
+    "Incoming call" : {
+
+    },
     "Incoming Call" : {
 
     },
@@ -353,6 +356,9 @@
     "Message" : {
 
     },
+    "Missed call" : {
+
+    },
     "My Profile" : {
 
     },
@@ -384,6 +390,9 @@
 
     },
     "Other actions" : {
+
+    },
+    "Outgoing call" : {
 
     },
     "Outgoing Call" : {

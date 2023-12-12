@@ -22,6 +22,12 @@ import linphonesw
 class StartCallViewModel: ObservableObject {
 	
 	@Published var searchField: String = ""
+    
+    var domain: String = ""
 	
-	init() {}
+	init() {
+        CoreContext.shared.doOnCoreQueue { core in
+            self.domain = core.defaultAccount?.params?.domain ?? ""
+        }
+    }
 }

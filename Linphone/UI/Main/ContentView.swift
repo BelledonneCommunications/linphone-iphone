@@ -28,6 +28,7 @@ struct ContentView: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	var magicSearch = MagicSearchSingleton.shared
@@ -618,6 +619,12 @@ struct ContentView: View {
 					.onTapGesture {
 						self.isShowDismissPopup.toggle()
 					}
+				}
+				
+				if telecomManager.callInProgress {
+                    CallView(callViewModel: CallViewModel())
+						.zIndex(3)
+						.transition(.scale.combined(with: .move(edge: .top)))
 				}
 				
 				//if sharedMainViewModel.displayToast {

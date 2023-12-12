@@ -47,17 +47,19 @@ class HistoryListViewModel: ObservableObject {
 				}
 			}
 			
-			core.publisher?.onCallLogUpdated?.postOnMainQueue { (_: (_: Core, _: CallLog)) in
+			core.publisher?.onCallLogUpdated?.postOnCoreQueue { (_: (_: Core, _: CallLog)) in
 				print("publisherpublisher onCallLogUpdated")
 				let account = core.defaultAccount
 				let logs = account != nil ? account!.callLogs : core.callLogs
 				
-				self.callLogs.removeAll()
-				self.callLogsTmp.removeAll()
-				
-				logs.forEach { log in
-					self.callLogs.append(log)
-					self.callLogsTmp.append(log)
+				DispatchQueue.main.async {
+					self.callLogs.removeAll()
+					self.callLogsTmp.removeAll()
+					
+					logs.forEach { log in
+						self.callLogs.append(log)
+						self.callLogsTmp.append(log)
+					}
 				}
 			}
 		}

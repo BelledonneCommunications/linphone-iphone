@@ -24,6 +24,7 @@ import UIKit
 import linphonesw
 import AVFoundation
 import os
+import SwiftUI
 
 class CallInfo {
 	var callId: String = ""
@@ -207,6 +208,12 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId ?? ""
+		
+		DispatchQueue.main.async {
+			withAnimation {
+				TelecomManager.shared.callInProgress = true
+			}
+		}
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 			
@@ -225,7 +232,11 @@ extension ProviderDelegate: CXProviderDelegate {
 			}
 			TelecomManager.shared.callkitAudioSessionActivated = false
 			core.configureAudioSession()
-			TelecomManager.shared.acceptCall(core: core, call: call!, hasVideo: call!.params?.videoEnabled ?? false)
+			
+			if call != nil {
+				TelecomManager.shared.acceptCall(core: core, call: call!, hasVideo: call!.params?.videoEnabled ?? false)
+			}
+			
 			action.fulfill()
 		}
 	}

@@ -44,7 +44,7 @@ struct SideMenu: View {
             HStack {
                 List {
                     Text("My Profile").onTapGesture {
-                        print("My Profile")
+						print("My Profile")
                     }
                     Text("Send logs").onTapGesture {
 						sendLogs()

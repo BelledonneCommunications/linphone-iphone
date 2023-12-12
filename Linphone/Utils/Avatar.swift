@@ -24,6 +24,13 @@ struct Avatar: View {
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	let avatarSize: CGFloat
+    let hidePresence: Bool
+    
+    init(contactAvatarModel: ContactAvatarModel, avatarSize: CGFloat, hidePresence: Bool = false) {
+        self.contactAvatarModel = contactAvatarModel
+        self.avatarSize = avatarSize
+        self.hidePresence = hidePresence
+    }
 	
 	var body: some View {
         AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.friend!.photo!)) { image in
@@ -42,7 +49,7 @@ struct Avatar: View {
 						Spacer()
 						VStack {
 							Spacer()
-							if contactAvatarModel.presenceStatus == .Online ||	contactAvatarModel.presenceStatus == .Busy {
+                            if !hidePresence && (contactAvatarModel.presenceStatus == .Online || contactAvatarModel.presenceStatus == .Busy) {
 								Image(contactAvatarModel.presenceStatus == .Online ? "presence-online" : "presence-busy")
 									.resizable()
 									.frame(width: avatarSize/4, height: avatarSize/4)
