@@ -176,9 +176,13 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		contentMessageView.floatingButton.addTarget(self, action: #selector(self.alertActionGoToDevicesList), for: .touchUpInside)
 		
 		ChatConversationViewModel.sharedModel.isComposing.observe { compose in
-			if((compose! && self.contentMessageView.isComposingView.isHidden)||(!compose! && !self.contentMessageView.isComposingView.isHidden)){
+			/*
+			if((compose! > 0 && self.contentMessageView.isComposingView.isHidden)||(compose! == 0 && !self.contentMessageView.isComposingView.isHidden)){
+				print("on_chat_room_is_composing_received isComposing \(compose)")
 				self.setComposingVisible(compose!, withDelay: 0.3)
 			}
+			 */
+			self.setComposingVisible(compose!, withDelay: 0.3)
 		}
 		
 		ChatConversationViewModel.sharedModel.messageReceived.observe { message in
@@ -810,7 +814,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 					} else {
 						contentMessageView.messageView.messageText.text = ""
 					}
-			contentMessageView.messageView.emojisButton.isHidden = false
+			contentMessageView.messageView.emojisButton.isHidden = true
 			contentMessageView.messageView.isComposing = false
 		}
 		setSendButtonState()
@@ -890,10 +894,10 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		if fileTransfer.text.isEmpty && !contentMessageView.messageView.messageText.isFirstResponder{
 			contentMessageView.messageView.messageText.textColor = UIColor.lightGray
 			contentMessageView.messageView.messageText.text = "Message"
-			contentMessageView.messageView.emojisButton.isHidden = false
+			contentMessageView.messageView.emojisButton.isHidden = true
 		} else {
 			contentMessageView.messageView.messageText.text = ""
-			contentMessageView.messageView.emojisButton.isHidden = false
+			contentMessageView.messageView.emojisButton.isHidden = true
 		}
 		contentMessageView.messageView.sendButton.isEnabled = false
 
@@ -917,8 +921,9 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 		tableControllerSwift.refreshData(isOutgoing: true)
 	}
 	
-	func setComposingVisible(_ visible: Bool, withDelay delay: CGFloat) {
-		if visible {
+	func setComposingVisible(_ visible: Int, withDelay delay: CGFloat) {
+		print("setComposingVisiblesetComposingVisible \(ChatConversationViewModel.sharedModel.chatRoom!.composingAddresses.count)")
+		if visible > 0 {
 			let addresses = ChatConversationViewModel.sharedModel.chatRoom!.composingAddresses
 			var composingAddresses : String? = ""
 			if addresses.count == 1 {
@@ -935,9 +940,15 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				contentMessageView.isComposingTextView.text = String.localizedStringWithFormat(NSLocalizedString("%@ are writing...", comment: ""), composingAddresses!)
 			}
 		}
-		UIView.animate(withDuration: 0.3, animations: {
-			self.contentMessageView.isComposingView.isHidden = !self.contentMessageView.isComposingView.isHidden
-	   	})
+		if visible == 0 {
+			UIView.animate(withDuration: 0.3, animations: {
+				self.contentMessageView.isComposingView.isHidden = true
+		 	})
+		} else {
+			UIView.animate(withDuration: 0.3, animations: {
+				self.contentMessageView.isComposingView.isHidden = false
+			})
+		}
 	}
 	
 	func selectionMedia() {

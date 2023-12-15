@@ -2172,6 +2172,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 							indexTransferProgress = -1
 						}
+						
+						if !VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) && ConfigManager.instance().lpConfigBoolForKey(key: "auto_write_to_gallery_preference") {
+							ChatConversationViewModel.sharedModel.writeMediaToGalleryFromName(content.name, fileType: content.type)
+						}
+						
 					} else {
 						if (indexTransferProgress > -1 && downloadContentCollection[indexTransferProgress] != nil && indexTransferProgress > -1) {
 							downloadContentCollection[indexTransferProgress]!.setUpCircularProgressBarView(toValue: p)

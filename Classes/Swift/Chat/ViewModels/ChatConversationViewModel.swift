@@ -67,7 +67,7 @@ class ChatConversationViewModel {
 	var mediaCollectionView : [UIImage] = []
 	var replyCollectionView : [UIImage] = []
 	
-	var isComposing = MutableLiveData<Bool>(false)
+	var isComposing = MutableLiveData<Int>(0)
 	var messageReceived = MutableLiveData<EventLog>()
 	var stateChanged = MutableLiveData<ChatRoom>()
 	var secureLevelChanged = MutableLiveData<EventLog>()
@@ -132,7 +132,7 @@ class ChatConversationViewModel {
 	}
 	
 	func on_chat_room_is_composing_received(_ cr: ChatRoom?, _ remoteAddr: Address?, _ isComposingBool: Bool) {
-		isComposing.value = (linphone_chat_room_is_remote_composing(cr?.getCobject) != 0) || bctbx_list_size(linphone_chat_room_get_composing_addresses(cr?.getCobject)) > 0
+		isComposing.value = bctbx_list_size(linphone_chat_room_get_composing_addresses(cr?.getCobject))
 	}
 
 	func on_chat_room_chat_message_received(_ cr: ChatRoom?, _ event_log: EventLog?) {
