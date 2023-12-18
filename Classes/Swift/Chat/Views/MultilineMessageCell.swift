@@ -36,7 +36,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var imageUser = UIImageView()
 	var contactDateLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
 	var chatRead = UIImageView(image: UIImage(named: "chat_delivered.png"))
-
+	
 	var labelInset = UIEdgeInsets(top: 10, left: 10, bottom: -10, right: -10)
 	
 	var constraintEventMesssage : [NSLayoutConstraint] = []
@@ -98,11 +98,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		let collection_view_reply_height = 60.0
 		let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 		layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
-
+		
 		layout.scrollDirection = .horizontal
 		layout.minimumLineSpacing = 4
 		layout.minimumInteritemSpacing = 4
-
+		
 		let collectionViewReply = UICollectionView(frame: .zero, collectionViewLayout: layout)
 		collectionViewReply.translatesAutoresizingMaskIntoConstraints = false
 		collectionViewReply.backgroundColor = .clear
@@ -115,13 +115,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		layout.scrollDirection = .vertical
 		layout.minimumLineSpacing = 4
 		layout.minimumInteritemSpacing = 4
-
+		
 		let collectionViewImagesGrid = DynamicHeightCollectionView(frame: .zero, collectionViewLayout: layout)
 		collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
 		collectionViewImagesGrid.backgroundColor = .clear
 		return collectionViewImagesGrid
 	}()
-
+	
 	var replyCollectionView : [UIImage] = []
 	var replyContentCollection : [Content] = []
 	
@@ -145,7 +145,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var isPlayingVoiceRecording = false
 	
 	var eventMessage: EventLog?
-    var chatMessage: ChatMessage?
+	var chatMessage: ChatMessage?
 	var chatMessageDelegate: ChatMessageDelegate? = nil
 	
 	var indexTransferProgress: Int = -1
@@ -180,11 +180,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
 	
 	func initCell(){
-	//CheckBox for select item to delete
+		//CheckBox for select item to delete
 		contentView.addSubview(deleteItemCheckBox)
 		deleteItemCheckBox.isHidden = true
 		
-	//Event Message
+		//Event Message
 		contentView.addSubview(eventMessageView)
 		constraintEventMesssage = [
 			eventMessageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
@@ -213,7 +213,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		eventMessageView.isHidden = true
 		
-	//Message
+		//Message
 		contentView.addSubview(contactDateLabel)
 		
 		constraintDateBubble = contactDateLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4)
@@ -305,7 +305,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		chatRead.size(w: 10, h: 10).done()
 		chatRead.isHidden = true
 		
-	//PreContentViewBubble
+		//PreContentViewBubble
 		bubble.addSubview(preContentViewBubble)
 		preContentViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		preContentViewBubbleConstraints = [
@@ -318,7 +318,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			preContentViewBubble.heightAnchor.constraint(equalToConstant: 0)
 		]
 		
-	//Forward
+		//Forward
 		preContentViewBubble.addSubview(forwardView)
 		forwardView.size(w: 90, h: 10).done()
 		
@@ -341,7 +341,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		]
 		forwardView.isHidden = true
 		
-	//Reply
+		//Reply
 		preContentViewBubble.addSubview(replyView)
 		replyView.size(w: 90, h: 10).done()
 		
@@ -404,7 +404,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		replyView.isHidden = true
 		
-	//ContentViewBubble
+		//ContentViewBubble
 		bubble.addSubview(contentViewBubble)
 		contentViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentViewBubbleConstraints = [
@@ -415,7 +415,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		]
 		NSLayoutConstraint.activate(contentViewBubbleConstraints)
 		
-	//Content Media View
+		//Content Media View
 		contentViewBubble.addSubview(contentMediaViewBubble)
 		contentMediaViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		contentMediaViewBubbleConstraints = [
@@ -425,7 +425,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		]
 		NSLayoutConstraint.activate(contentMediaViewBubbleConstraints)
 		
-	//Images Grid
+		//Images Grid
 		contentMediaViewBubble.addSubview(collectionViewImagesGrid)
 		collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
 		imagesGridConstraints = [
@@ -447,8 +447,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		collectionViewImagesGrid.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellImagesGridMessage")
 		collectionViewImagesGrid.width(280).done()
 		collectionViewImagesGrid.isHidden = true
-
-	//Image
+		
+		//Image
 		contentMediaViewBubble.addSubview(imageViewBubble)
 		imageViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		imageConstraints = [
@@ -474,7 +474,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		imageViewBubble.isHidden = true
 		
-	//Video
+		//Video
 		contentMediaViewBubble.addSubview(imageVideoViewBubble)
 		imageVideoViewBubble.translatesAutoresizingMaskIntoConstraints = false
 		videoConstraints = [
@@ -511,7 +511,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		imageVideoViewBubble.isHidden = true
 		
-	//RecordingPlayer
+		//RecordingPlayer
 		contentMediaViewBubble.addSubview(recordingView)
 		recordingView.translatesAutoresizingMaskIntoConstraints = false
 		recordingConstraints = [
@@ -520,17 +520,17 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			recordingView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			recordingView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
-
+		
 		recordingConstraintsWithMediaGrid = [
 			recordingView.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
 			recordingView.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
 			recordingView.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
 		]
-		 
+		
 		recordingView.height(50.0).width(280).done()
 		recordingView.isHidden = true
 		
-	//Text
+		//Text
 		label.numberOfLines = 0
 		label.lineBreakMode = .byWordWrapping
 		label.textColor = .black
@@ -558,7 +558,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		NSLayoutConstraint.activate(labelConstraints)
 		
-	//Meeting
+		//Meeting
 		contentViewBubble.addSubview(meetingView)
 		meetingView.translatesAutoresizingMaskIntoConstraints = false
 		meetingConstraints = [
@@ -573,7 +573,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			self.replyContent.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		}
 		
-	//Ephemeral
+		//Ephemeral
 		contentViewBubble.addSubview(ephemeralTimerLabel)
 		ephemeralTimerLabel.bottomAnchor.constraint(equalTo: contentViewBubble.bottomAnchor, constant: -2).isActive = true
 		ephemeralTimerLabel.trailingAnchor.constraint(equalTo: contentViewBubble.trailingAnchor, constant: -14).isActive = true
@@ -661,7 +661,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	}
 	
 	func initReplyView(){
-	//Reply - Contents
+		//Reply - Contents
 		
 		stackViewReply.axis = .vertical;
 		stackViewReply.distribution = .fill;
@@ -671,7 +671,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		replyContent.addSubview(stackViewReply)
 		replyContent.backgroundColor = VoipTheme.backgroundWhiteBlack.get()
 		stackViewReply.translatesAutoresizingMaskIntoConstraints = false
-
+		
 		stackViewReply.addArrangedSubview(replyLabelTextView)
 		replyLabelTextView.height(24).done()
 		
@@ -819,11 +819,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			let collection_view_reply_height = 60.0
 			let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
 			layout.itemSize = CGSize(width: collection_view_reply_height, height: collection_view_reply_height)
-
+			
 			layout.scrollDirection = .horizontal
 			layout.minimumLineSpacing = 4
 			layout.minimumInteritemSpacing = 4
-
+			
 			let collectionViewReply = UICollectionView(frame: .zero, collectionViewLayout: layout)
 			collectionViewReply.translatesAutoresizingMaskIntoConstraints = false
 			collectionViewReply.backgroundColor = .clear
@@ -836,7 +836,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			layout.scrollDirection = .vertical
 			layout.minimumLineSpacing = 4
 			layout.minimumInteritemSpacing = 4
-
+			
 			let collectionViewImagesGrid = DynamicHeightCollectionView(frame: .zero, collectionViewLayout: layout)
 			collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
 			collectionViewImagesGrid.backgroundColor = .clear
@@ -849,9 +849,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	func configure(event: EventLog, selfIndexPathConfigure: IndexPath, editMode: Bool, selected: Bool) {
 		selfIndexMessage = selfIndexPathConfigure.row
 		eventMessage = event
-        chatMessage = event.chatMessage
+		chatMessage = event.chatMessage
 		addMessageDelegate()
-        imagesGridCollectionView.removeAll()
+		imagesGridCollectionView.removeAll()
 		imageUser.isHidden = true
 		deleteItemCheckBox.isHidden = true
 		
@@ -875,7 +875,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					imageUser.isHidden = false
 					if event.chatMessage?.fromAddress?.contact() != nil {
 						imageUser.image = FastAddressBook.image(for: event.chatMessage?.fromAddress?.contact())
-					}else{
+					}else if event.chatMessage?.fromAddress != nil {
 						imageUser.image = FastAddressBook.image(for: event.chatMessage?.fromAddress?.getCobject)
 					}
 					contactDateLabel.text = contactDateForChat(message: event.chatMessage!)
@@ -893,7 +893,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					imageUser.isHidden = true
 					contactDateLabel.size(w: 200, h: 0).done()
 				}
-
+				
 				bubble.backgroundColor = VoipTheme.gray_light_color//.withAlphaComponent(0.2)
 			}else{
 				constraintLeadingBubble?.isActive = false
@@ -913,7 +913,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				}
 				
 				bubble.backgroundColor = VoipTheme.primary_light_color//.withAlphaComponent(0.2)
-                displayImdnStatus(message: event.chatMessage!, state: event.chatMessage!.state)
+				displayImdnStatus(message: event.chatMessage!, state: event.chatMessage!.state)
 			}
 			
 			if event.chatMessage!.isEphemeral {
@@ -961,13 +961,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						mediaSelectorReply.isHidden = true
 						replyContentTextSpacing.isHidden = true
 					}else{
-
+						
 						if(bctbx_list_size(contentList) > 1 || content == ""){
 							mediaSelectorReply.isHidden = false
 							replyContentTextSpacing.isHidden = true
 							ChatMessage.getSwiftObject(cObject: (event.chatMessage!.replyMessage?.getCobject)!).contents.forEach({ content in
 								if(content.isFile){
-                                    replyContentCollection.append(content)
+									replyContentCollection.append(content)
 									replyCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 									collectionViewReply.reloadData()
 								}else if(content.isText){
@@ -1066,18 +1066,18 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				imageVideoViewBubble.image = nil
 				
 				meetingView.isHidden = true
-                
+				
 				event.chatMessage!.contents.forEach { content in
 					if (content.isFileTransfer && content.name != "" && !content.isVoiceRecording) {
 						imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-                        collectionViewImagesGrid.reloadData()
-                        
-                        collectionViewImagesGrid.isHidden = false
-                        NSLayoutConstraint.activate(imagesGridConstraints)
+						collectionViewImagesGrid.reloadData()
+						
+						collectionViewImagesGrid.isHidden = false
+						NSLayoutConstraint.activate(imagesGridConstraints)
 						imageViewBubble.image = nil
 						NSLayoutConstraint.deactivate(imageConstraints)
 						imageViewBubble.isHidden = true
-                    }
+					}
 					
 					if (event.chatMessage?.isOutgoing == true && content.isFileTransfer && event.chatMessage?.isFileTransferInProgress == true && !content.isVoiceRecording) {
 						var filePath = ""
@@ -1156,16 +1156,16 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							}
 						} else {
 							imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
-						   	collectionViewImagesGrid.reloadData()
-						   	
-						   	collectionViewImagesGrid.isHidden = false
-						   	NSLayoutConstraint.activate(imagesGridConstraints)
-						   	imageViewBubble.image = nil
-						   	NSLayoutConstraint.deactivate(imageConstraints)
-						   	imageViewBubble.isHidden = true
+							collectionViewImagesGrid.reloadData()
+							
+							collectionViewImagesGrid.isHidden = false
+							NSLayoutConstraint.activate(imagesGridConstraints)
+							imageViewBubble.image = nil
+							NSLayoutConstraint.deactivate(imageConstraints)
+							imageViewBubble.isHidden = true
 						}
 					}
-                    
+					
 					if content.type == "text" && !content.isFile{
 						if event.chatMessage!.contents.count > 1 {
 							NSLayoutConstraint.deactivate(labelConstraints)
@@ -1224,13 +1224,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									self.imageViewBubble.image = self.resizeImage(image: imageMessage, targetSize: CGSize(width: UIScreen.main.bounds.size.width*3/4, height: 300.0))
 								}
 							}
-                            
-                            if(content.isFile){
-                                imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
+							
+							if(content.isFile){
+								imagesGridCollectionView.append(getImageFrom(content, forReplyBubble: false)!)
 								collectionViewImagesGrid.reloadData()
-                            }
+							}
 						}
-
+						
 					}else if content.type == "video"{
 						if imagesGridCollectionView.count > 1 {
 							if(content.isFile){
@@ -1358,7 +1358,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								imageViewBubble.image = nil
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageViewBubble.isHidden = true
-						 	}
+							}
 						} else {
 							if content.filePath == "" && content.isFileTransfer == false {
 								imagesGridCollectionView.append(SwiftUtil.textToImage(drawText: "Error", inImage: UIImage(named: "file_default")!, forReplyBubble: true))
@@ -1401,9 +1401,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				if imagesGridCollectionView.count > 0 {
 					self.collectionViewImagesGrid.layoutIfNeeded()
 				}
-                if imagesGridCollectionView.count == 1 && recordingView.isHidden == true {
-                    collectionViewImagesGrid.width(138).done()
-                }
+				if imagesGridCollectionView.count == 1 && recordingView.isHidden == true {
+					collectionViewImagesGrid.width(138).done()
+				}
 				
 				if imagesGridCollectionView.count == 2 {
 					collectionViewImagesGrid.isHidden = false
@@ -1412,11 +1412,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					NSLayoutConstraint.deactivate(imageConstraints)
 					imageVideoViewBubble.isHidden = true
 				}
-                
-                if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
-                    NSLayoutConstraint.activate(imageConstraints)
-                    imageViewBubble.isHidden = false
-                }
+				
+				if (imageViewBubble.image != nil && imagesGridCollectionView.count <= 1){
+					NSLayoutConstraint.activate(imageConstraints)
+					imageViewBubble.isHidden = false
+				}
 				
 				if (imageVideoViewBubble.image != nil && imagesGridCollectionView.count <= 1){
 					NSLayoutConstraint.activate(videoConstraints)
@@ -1503,8 +1503,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					}
 				}
 				
-                let tap = UITapGestureRecognizer(target: self, action: #selector(self.showMyViewControllerInACustomizedSheet(_:)))
-                bubbleReaction.addGestureRecognizer(tap)
+				let tap = UITapGestureRecognizer(target: self, action: #selector(self.showMyViewControllerInACustomizedSheet(_:)))
+				bubbleReaction.addGestureRecognizer(tap)
 			}
 		}else{
 			contentBubble.isHidden = true
@@ -1554,13 +1554,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			deleteItemCheckBox.onClick {
 				if ChatConversationTableViewModel.sharedModel.editModeOn.value! {
 					self.deleteItemCheckBox.isSelected = !self.deleteItemCheckBox.isSelected
-				 	ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
-				 
-				 	if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
-					 	ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
-				 	}else{
+					ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] = self.deleteItemCheckBox.isSelected
+					
+					if ChatConversationTableViewModel.sharedModel.messageListSelected.value![self.selfIndexMessage] == true {
+						ChatConversationTableViewModel.sharedModel.messageSelected.value! += 1
+					}else{
 						ChatConversationTableViewModel.sharedModel.messageSelected.value! -= 1
-				 	}
+					}
 				}
 			}
 		}else{
@@ -1569,17 +1569,17 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			deleteItemCheckBox.width(0).done()
 		}
 	}
-    
-    @objc func showMyViewControllerInACustomizedSheet(_ sender: UITapGestureRecognizer? = nil) {
-        if #available(iOS 15.0, *) {
+	
+	@objc func showMyViewControllerInACustomizedSheet(_ sender: UITapGestureRecognizer? = nil) {
+		if #available(iOS 15.0, *) {
 			let sheetViewController = SheetViewController(chatMessageInit: chatMessage!)
-            if let sheetController = sheetViewController.sheetPresentationController {
+			if let sheetController = sheetViewController.sheetPresentationController {
 				sheetController.detents = [.medium()]
-              sheetController.prefersGrabberVisible = true
-            }
-            PhoneMainView.instance()!.present(sheetViewController, animated: true, completion: nil)
-        }
-    }
+				sheetController.prefersGrabberVisible = true
+			}
+			PhoneMainView.instance()!.present(sheetViewController, animated: true, completion: nil)
+		}
+	}
 	
 	func checkIfIsLinkOrPhoneNumber(content: String){
 		let input = content
@@ -1600,8 +1600,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		let attributedString = NSMutableAttributedString.init(string: content, attributes: [
 			NSAttributedString.Key.font: label.font as Any
-		 ])
-
+		])
+		
 		for match in matches {
 			let linkRange = match.range
 			let linkAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue, NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue] as [NSAttributedString.Key : Any]
@@ -1616,7 +1616,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		
 		label.attributedText = attributedString
 	}
-									   
+	
 	@objc func handleTapOnLabel(_ sender: UITapGestureRecognizer) {
 		matches.forEach { match in
 			if sender.didTapAttributedTextInLabel(label: label, inRange: match.range) {
@@ -1633,11 +1633,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						view.addressField.text = url.absoluteString
 					}else if emailTest.evaluate(with: url.absoluteString){
 						if let urlWithMailTo = URL(string: "mailto:\(url.absoluteString)") {
-						  if #available(iOS 10.0, *) {
-							UIApplication.shared.open(urlWithMailTo, options: [:], completionHandler: nil)
-						  } else {
-							UIApplication.shared.openURL(urlWithMailTo)
-						  }
+							if #available(iOS 10.0, *) {
+								UIApplication.shared.open(urlWithMailTo, options: [:], completionHandler: nil)
+							} else {
+								UIApplication.shared.openURL(urlWithMailTo)
+							}
 						}
 					}else{
 						if #available(iOS 10.0, *) {
@@ -1663,21 +1663,21 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	func addMessageDelegate(){
 		chatMessageDelegate = ChatMessageDelegateStub(
-            onMsgStateChanged: { (message: ChatMessage, state: ChatMessage.State) -> Void in
-                self.displayImdnStatus(message: message, state: state)
-            },
-            onNewMessageReaction: { (message: ChatMessage, messageReaction: ChatMessageReaction) -> Void in
-                ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
-            },
+			onMsgStateChanged: { (message: ChatMessage, state: ChatMessage.State) -> Void in
+				self.displayImdnStatus(message: message, state: state)
+			},
+			onNewMessageReaction: { (message: ChatMessage, messageReaction: ChatMessageReaction) -> Void in
+				ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
+			},
 			onReactionRemoved: { (message: ChatMessage, address: Address) -> Void in
 				ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
 			},
 			onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) -> Void in
 				self.file_transfer_progress_indication_recv(message: message, content: content, offset: offset, total: total)
 			},
-            onParticipantImdnStateChanged: { (message: ChatMessage, state: ParticipantImdnState) -> Void in
-                //self.displayImdnStatus(message: message, state: state)
-            }
+			onParticipantImdnStateChanged: { (message: ChatMessage, state: ParticipantImdnState) -> Void in
+				//self.displayImdnStatus(message: message, state: state)
+			}
 		)
 		chatMessage?.addDelegate(delegate: chatMessageDelegate!)
 	}
@@ -1813,10 +1813,10 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		if(collectionView == collectionViewReply){
 			return replyCollectionView.count
 		}else{
-            return imagesGridCollectionView.count
+			return imagesGridCollectionView.count
 		}
 	}
-
+	
 	@objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		if(collectionView == collectionViewReply){
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellReplyMessage", for: indexPath)
@@ -1867,8 +1867,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						downloadView.content = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording]
 						downloadView.size(w: 138, h: 138).done()
 						viewCell.addSubview(downloadView)
-
-						downloadView.downloadNameLabel.text = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name!.replacingOccurrences(of: ((chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name!.dropFirst(6).dropLast(8))), with: "...")
+						
+						if chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name != nil {
+							downloadView.downloadNameLabel.text = chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name!.replacingOccurrences(of: ((chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name!.dropFirst(6).dropLast(8))), with: "...")
+							downloadView.setFileType(fileName: (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!)
+						} else {
+							downloadView.downloadNameLabel.text = ""
+						}
+						
 						downloadView.setFileType(fileName: (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!)
 						
 						let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
@@ -1917,7 +1923,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							}
 							
 							viewCell.addSubview(uploadView)
-
+							
 						}
 					}
 					if(imagesGridCollectionView[indexPathWithoutNil] != nil){
@@ -1939,7 +1945,9 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						}
 						if chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath != nil && chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath != "" {
 							viewCell.onClick {
-								ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
+								if !self.chatMessage!.isFileTransferInProgress {
+									ChatConversationTableViewModel.sharedModel.onGridClick(indexMessage: self.selfIndexMessage, index: indexPathWithoutNil)
+								}
 							}
 						}
 					}
@@ -2012,7 +2020,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				image = UIImage(named: "file_default")
 			}
 		}
-
+		
 		return SwiftUtil.textToImage(drawText: text ?? "", inImage: (image ?? UIImage(named: "file_default"))!, forReplyBubble: forReplyBubbble)
 	}
 	
@@ -2080,7 +2088,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			return ""
 		}
 	}
-		
+	
 	func formatEphemeralExpiration(duration: CLong) -> String{
 		switch (duration) {
 		case 0:
@@ -2124,7 +2132,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 						
 						if (imagesGridCollectionView.count <= 1){
-                            if content.type == "video" {
+							if content.type == "video" {
 								if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 									var plainFile = content.exportPlainFile()
 									if let imageMessage = createThumbnailOfVideoFromFileURL(videoURL: plainFile){
@@ -2198,7 +2206,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							}
 						}
 					}
-                    DispatchQueue.main.async(execute: { [self] in
+					DispatchQueue.main.async(execute: { [self] in
 						if uploadContentCollection.indices.contains(indexUploadTransferProgress){
 							if (offset == total) {
 								if(indexUploadTransferProgress >= 0){
@@ -2224,8 +2232,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								}
 							}
 						}
-                    })
-                }
+					})
+				}
 				if((imagesGridCollectionView.count) == 1){
 					var filePath = ""
 					if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
@@ -2265,23 +2273,23 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			}
 		}
 	}
-    
-    func displayImdnStatus(message: ChatMessage, state: ChatMessage.State) {
-        if message.isOutgoing {
-            if (state == ChatMessage.State.DeliveredToUser) {
-                chatRead.image = UIImage(named: "chat_delivered.png")
-                chatRead.isHidden = false
-            } else if (state == ChatMessage.State.Displayed) {
-                chatRead.image = UIImage(named: "chat_read.png")
-                chatRead.isHidden = false
-            } else if (state == ChatMessage.State.NotDelivered || state == ChatMessage.State.FileTransferError) {
-                chatRead.image = UIImage(named: "chat_error")
-                chatRead.isHidden = false
-            } else {
-                chatRead.isHidden = true
-            }
-        }
-    }
+	
+	func displayImdnStatus(message: ChatMessage, state: ChatMessage.State) {
+		if message.isOutgoing {
+			if (state == ChatMessage.State.DeliveredToUser) {
+				chatRead.image = UIImage(named: "chat_delivered.png")
+				chatRead.isHidden = false
+			} else if (state == ChatMessage.State.Displayed) {
+				chatRead.image = UIImage(named: "chat_read.png")
+				chatRead.isHidden = false
+			} else if (state == ChatMessage.State.NotDelivered || state == ChatMessage.State.FileTransferError) {
+				chatRead.image = UIImage(named: "chat_error")
+				chatRead.isHidden = false
+			} else {
+				chatRead.isHidden = true
+			}
+		}
+	}
 	
 	func contactDateForChat(message: ChatMessage) -> String {
 		let address: Address? = message.fromAddress != nil ? message.fromAddress : message.chatRoom?.peerAddress
@@ -2301,7 +2309,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		if (previousEvent == nil){
 			return true
 		}
-
+		
 		let previousChat = previousEvent?.chatMessage
 		
 		if previousChat != nil {
@@ -2380,24 +2388,24 @@ class DynamicHeightCollectionView: UICollectionView {
 }
 
 extension UITapGestureRecognizer {
-
+	
 	func didTapAttributedTextInLabel(label: UILabel, inRange targetRange: NSRange) -> Bool {
 		// Create instances of NSLayoutManager, NSTextContainer and NSTextStorage
 		let layoutManager = NSLayoutManager()
 		let textContainer = NSTextContainer(size: CGSize.zero)
 		let textStorage = NSTextStorage(attributedString: label.attributedText!)
-
+		
 		// Configure layoutManager and textStorage
 		layoutManager.addTextContainer(textContainer)
 		textStorage.addLayoutManager(layoutManager)
-
+		
 		// Configure textContainer
 		textContainer.lineFragmentPadding = 0.0
 		textContainer.lineBreakMode = label.lineBreakMode
 		textContainer.maximumNumberOfLines = label.numberOfLines
 		let labelSize = label.bounds.size
 		textContainer.size = labelSize
-
+		
 		// Find the tapped character location and compare it to the specified range
 		let locationOfTouchInLabel = self.location(in: label)
 		let textBoundingBox = layoutManager.usedRect(for: textContainer)
@@ -2410,8 +2418,8 @@ extension UITapGestureRecognizer {
 			y: locationOfTouchInLabel.y - textContainerOffset.y
 		)
 		let indexOfCharacter = layoutManager.characterIndex(for: locationOfTouchInTextContainer, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
-
+		
 		return NSLocationInRange(indexOfCharacter, targetRange)
 	}
-
+	
 }

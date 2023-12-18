@@ -133,9 +133,13 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animated)
 		}
 		ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
-        self.floatingScrollButton?.isHidden = true
-        self.floatingScrollBackground?.isHidden = true
-		scrollBadge!.text = "0"
+		if self.floatingScrollButton != nil && self.floatingScrollBackground != nil {
+			self.floatingScrollButton!.isHidden = true
+   			self.floatingScrollBackground!.isHidden = true
+		}
+		if scrollBadge != nil {
+			scrollBadge!.text = "0"
+		}
 	}
 	
 	func refreshDataAfterForeground(){
@@ -241,7 +245,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				}
 			}
 			
-			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden){
+			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden) && cell.chatMessage != nil && !cell.chatMessage!.isFileTransferInProgress {
 				cell.imageViewBubble.onClick {
 					self.onImageClick(chatMessage: cell.chatMessage!, index: indexPath.row)
 				}
@@ -345,7 +349,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 			case VoipTexts.bubble_chat_dropDown_reply:
 				self!.replyMessage(message: event.chatMessage!)
 			case VoipTexts.bubble_chat_dropDown_infos:
-				self!.infoMessage(event: event)
+				if !event.chatMessage!.isFileTransferInProgress && !(event.chatMessage!.state.rawValue == LinphoneChatMessageStateNotDelivered.rawValue || event.chatMessage!.state.rawValue == LinphoneChatMessageStateFileTransferError.rawValue) {
+					self!.infoMessage(event: event)
+				}
 			case VoipTexts.bubble_chat_dropDown_add_to_contact:
                 self!.addToContacts(message: event.chatMessage!)
 			case VoipTexts.bubble_chat_dropDown_delete:

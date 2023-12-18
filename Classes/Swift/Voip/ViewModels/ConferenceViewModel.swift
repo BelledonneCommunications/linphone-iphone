@@ -241,7 +241,7 @@ class ConferenceViewModel {
 			firstToJoinEvent.value = true
 		}
 		self.updateParticipantsDevicesList(conference)
-	
+		
 		isConferenceLocallyPaused.value = !conference.isIn
 		self.isMeAdmin.value = conference.me?.isAdmin == true
 		isVideoConference.value = conference.currentParams?.videoEnabled == true
@@ -466,16 +466,19 @@ class ConferenceViewModel {
 		if (conference.subject != nil && conference.subject!.count > 0) {
 			return conference.subject
 		} else {
-			let conferenceInfo = Core.get().findConferenceInformationFromUri(uri: conference.conferenceAddress!)
-			if (conferenceInfo != nil) {
-				return conferenceInfo?.subject
-			} else {
-				if (conference.me?.isFocus == true) {
-					return VoipTexts.conference_local_title
+			if conference.conferenceAddress != nil {
+				let conferenceInfo = Core.get().findConferenceInformationFromUri(uri: conference.conferenceAddress!)
+				if (conferenceInfo != nil) {
+					return conferenceInfo?.subject
 				} else {
-					return VoipTexts.conference_default_title
-					
+					if (conference.me?.isFocus == true) {
+						return VoipTexts.conference_local_title
+					} else {
+						return VoipTexts.conference_default_title
+					}
 				}
+			} else {
+				return VoipTexts.conference_default_title
 			}
 		}
 	}
@@ -533,13 +536,13 @@ class ConferenceViewModel {
 			try ChatRoom.getSwiftObject(cObject: cChatRoom).participants.forEach {
 				ConferenceSchedulingViewModel.shared.selectedParticipants.value?.append(
 					try Factory.Instance.createParticipantInfo(address: $0.address!)
-			 	)
+				)
 				ConferenceSchedulingViewModel.shared.selectedParticipants.value?.last?.role = .Listener
-		 	}
+			}
 		} catch {
 			Log.e("[ScheduleFromGroupChat] unable to create ParticipantInfo \(error)")
 		}
-	
+		
 		ConferenceSchedulingViewModel.shared.scheduleForLater.value = true
 	}
 	
