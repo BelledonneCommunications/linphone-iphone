@@ -82,13 +82,46 @@ class TelecomManager: ObservableObject {
 			sCall.userData = UnsafeMutableRawPointer(Unmanaged.passRetained(appData!).toOpaque())
 		}
 	}
-    
+	
+	func startCall(core: Core, addr: Address?, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
+		if addr == nil {
+			Log.info("Can not start a call with null address!")
+			return
+		}
+		
+		if TelecomManager.callKitEnabled(core: core) && !nextCallIsTransfer != true {
+			let uuid = UUID()
+			let name = "outgoingTODO" // FastAddressBook.displayName(for: addr) ?? "unknow"
+			let handle = CXHandle(type: .generic, value: addr?.asStringUriOnly() ?? "")
+			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
+			let transaction = CXTransaction(action: startCallAction)
+			
+			let callInfo = CallInfo.newOutgoingCallInfo(addr: addr!, isSas: isSas, displayName: name, isVideo: isVideo, isConference: isConference)
+			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+			providerDelegate.uuids.updateValue(uuid, forKey: "")
+			
+			// setHeldOtherCalls(core: core, exceptCallid: "")
+			requestTransaction(transaction, action: "startCall")
+		} else {
+			try doCall(core: core, addr: addr!, isSas: isSas, isVideo: isVideo, isConference: isConference)
+		}
+	}
+	
+	func startCall(core: Core, addr: String, isSas: Bool = false, isVideo: Bool, isConference: Bool = false) {
+		do {
+			let address = try Factory.Instance.createAddress(addr: addr)
+			try startCall(core: core, addr: address, isSas: isSas, isVideo: isVideo, isConference: isConference)
+		} catch {
+			Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr) \(error) ")
+		}
+	}
+	
     func doCallWithCore(addr: Address) {
         CoreContext.shared.doOnCoreQueue { core in
             do {
-                try self.doCall(core: core, addr: addr, isSas: false, isVideo: false)
+                try self.startCall(core: core, addr: addr, isSas: false, isVideo: false)
             } catch {
-                
+				Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr.asStringUriOnly()) \(error) ")
             }
         }
     }
