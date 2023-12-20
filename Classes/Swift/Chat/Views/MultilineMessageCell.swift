@@ -1875,14 +1875,14 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							downloadView.downloadNameLabel.text = ""
 						}
 						
-						downloadView.setFileType(fileName: (chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!)
-						
 						let underlineAttribute = [NSAttributedString.Key.underlineStyle: NSUnderlineStyle.thick.rawValue]
 						let underlineAttributedString = NSAttributedString(string: "\(VoipTexts.bubble_chat_download_file) (\(String(format: "%.1f", Float(((chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].fileSize))) / 1000000)) Mo)", attributes: underlineAttribute)
 						downloadView.downloadButtonLabel.attributedText = underlineAttributedString
 						downloadView.downloadButtonLabel.onClick {
-							self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath = LinphoneManager.imagesDirectory() + (((self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!))
-							let _ = self.chatMessage!.downloadContent(content: (self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording]))
+                            if (self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name) != nil {
+                                self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].filePath = LinphoneManager.imagesDirectory() + (((self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording].name)!))
+                                let _ = self.chatMessage!.downloadContent(content: (self.chatMessage!.contents.filter({$0.isFile || $0.isFileTransfer})[indexPathWithoutNilWithRecording]))
+                            }
 						}
 						downloadView.downloadButtonLabel.isUserInteractionEnabled = true
 						
