@@ -231,12 +231,18 @@ struct DialerBottomSheet: View {
 								.clipShape(Circle())
 						}
 					}
-					.onTapGesture {
-						startCallViewModel.searchField += "0"
-					}
-					.onLongPressGesture(minimumDuration: 0.2) {
-						startCallViewModel.searchField += "+"
-					}
+					.simultaneousGesture(
+						LongPressGesture()
+							.onEnded { _ in
+								startCallViewModel.searchField += "+"
+							}
+					)
+					.highPriorityGesture(
+						TapGesture()
+							.onEnded { _ in
+								startCallViewModel.searchField += "0"
+							}
+					)
 					
 					Spacer()
 					

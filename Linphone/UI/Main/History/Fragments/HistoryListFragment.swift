@@ -51,6 +51,11 @@ struct HistoryListFragment: View {
 							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
 								if contactAvatarModel != nil {
 									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+								} else {
+									Image("profil-picture-default")
+										.resizable()
+										.frame(width: 45, height: 45)
+										.clipShape(Circle())
 								}
 							} else {
 								if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
@@ -95,7 +100,12 @@ struct HistoryListFragment: View {
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
 									}
-								}
+								} else {
+									Image("profil-picture-default")
+							   			.resizable()
+							   			.frame(width: 45, height: 45)
+							   			.clipShape(Circle())
+					   			}
 							}
 							
 							VStack(spacing: 0) {

@@ -83,13 +83,13 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	func startCall(core: Core, addr: Address?, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
+	func startCallCallKit(core: Core, addr: Address?, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
 		if addr == nil {
 			Log.info("Can not start a call with null address!")
 			return
 		}
 		
-		if TelecomManager.callKitEnabled(core: core) && !nextCallIsTransfer != true {
+		if TelecomManager.callKitEnabled(core: core) {//&& !nextCallIsTransfer != true {
 			let uuid = UUID()
 			let name = "outgoingTODO" // FastAddressBook.displayName(for: addr) ?? "unknow"
 			let handle = CXHandle(type: .generic, value: addr?.asStringUriOnly() ?? "")
@@ -110,7 +110,7 @@ class TelecomManager: ObservableObject {
 	func startCall(core: Core, addr: String, isSas: Bool = false, isVideo: Bool, isConference: Bool = false) {
 		do {
 			let address = try Factory.Instance.createAddress(addr: addr)
-			try startCall(core: core, addr: address, isSas: isSas, isVideo: isVideo, isConference: isConference)
+			try startCallCallKit(core: core, addr: address, isSas: isSas, isVideo: isVideo, isConference: isConference)
 		} catch {
 			Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr) \(error) ")
 		}
@@ -118,11 +118,11 @@ class TelecomManager: ObservableObject {
 	
     func doCallWithCore(addr: Address) {
         CoreContext.shared.doOnCoreQueue { core in
-            do {
-                try self.startCall(core: core, addr: addr, isSas: false, isVideo: false)
-            } catch {
-				Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr.asStringUriOnly()) \(error) ")
-            }
+			do {
+				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: false, isConference: false)
+			} catch {
+				Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr) \(error) ")
+			}
         }
     }
     
@@ -328,6 +328,14 @@ class TelecomManager: ObservableObject {
 			case .IncomingReceived:
 				let addr = call.remoteAddress
 				let displayName = incomingDisplayName(call: call)
+				
+			#if targetEnvironment(simulator)
+				DispatchQueue.main.async {
+					withAnimation {
+						TelecomManager.shared.callInProgress = true
+					}
+				}
+			#endif
 				
 				if call.replacedCall != nil {
 					endCallKitReplacedCall = false

@@ -47,7 +47,6 @@ final class ContactsManager: ObservableObject {
 			if core.globalState == GlobalState.Shutdown || core.globalState == GlobalState.Off {
 				print("\(#function) - Core is being stopped or already destroyed, abort")
 			} else {
-				
 				do {
 					self.friendList = try core.getFriendListByName(name: self.nativeAddressBookFriendList) ?? core.createFriendList()
 				} catch let error {
@@ -81,6 +80,7 @@ final class ContactsManager: ObservableObject {
 						linphoneFriendList.displayName = self.linphoneAddressBookFriendList
 						core.addFriendList(list: linphoneFriendList)
 					}
+					linphoneFriendList.subscriptionsEnabled = true
 				}
 			}
 			

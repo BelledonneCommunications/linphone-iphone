@@ -446,19 +446,21 @@ struct ContentView: View {
 							})
 							: ContactAvatarModel(friend: nil, withPresence: false)
 							
-							HistoryContactFragment(
-								contactAvatarModel: contactAvatarModel!,
-								historyViewModel: historyViewModel,
-								historyListViewModel: historyListViewModel,
-								contactViewModel: contactViewModel,
-								editContactViewModel: editContactViewModel,
-								isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
-								isShowEditContactFragment: $isShowEditContactFragment,
-								indexPage: $index
-							)
-							.frame(maxWidth: .infinity)
-							.background(Color.gray100)
-							.ignoresSafeArea(.keyboard)
+							if contactAvatarModel != nil {
+								HistoryContactFragment(
+									contactAvatarModel: contactAvatarModel!,
+									historyViewModel: historyViewModel,
+									historyListViewModel: historyListViewModel,
+									contactViewModel: contactViewModel,
+									editContactViewModel: editContactViewModel,
+									isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
+									isShowEditContactFragment: $isShowEditContactFragment,
+									indexPage: $index
+								)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								.ignoresSafeArea(.keyboard)
+							}
 						}
 					}
 					.onAppear {
@@ -656,6 +658,9 @@ struct ContentView: View {
 				coreContext.onForeground()
 				if !isShowStartCallFragment {
 					contactsManager.fetchContacts()
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+						historyListViewModel.computeCallLogsList()
+					}
 				}
 				print("Active")
 			} else if newPhase == .inactive {

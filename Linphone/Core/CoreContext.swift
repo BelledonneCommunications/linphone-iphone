@@ -86,11 +86,8 @@ final class CoreContext: ObservableObject {
 			}
 
 			self.mCore.autoIterateEnabled = false
-			self.mCore.friendsDatabasePath = "\(configDir)/friends.db"
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
-			
-			self.mCore.friendListSubscriptionEnabled = true
 			
 			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
