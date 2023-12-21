@@ -10,6 +10,20 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [5.2.0] - 2023-21-12
+### Added
+- Chat messages emoji "reactions"
+- Hardware video codecs (H264, H265) are now used in priority when possible (SDK)
+
+### Changed
+- Minimum iOS version is now 13
+- Update linphone SDK to 5.3.1
+
+### Fixed
+- Several crashes in chat conversation when receiving files
+- Various UI fixes in conference views
+- Fix crash upon refreshing register
+
 ## [5.1.0] - 2023-21-08
 ### Added
 - In contacts and chat conversations view, show short term presence for contacts whom publish it + added setting to disable it (enabled by default for sip.linphone.org accounts)
