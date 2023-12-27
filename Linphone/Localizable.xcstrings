@@ -191,6 +191,9 @@
     "Call history" : {
 
     },
+    "Call list" : {
+
+    },
     "Calls" : {
 
     },
@@ -264,6 +267,9 @@
 
     },
     "Display Name" : {
+
+    },
+    "Disposition" : {
 
     },
     "Do you really want to delete all calls history?" : {
@@ -356,6 +362,9 @@
     "Message" : {
 
     },
+    "Messages" : {
+
+    },
     "Missed call" : {
 
     },
@@ -398,6 +407,9 @@
     "Outgoing Call" : {
 
     },
+    "Participants" : {
+
+    },
     "password" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -414,6 +426,9 @@
           }
         }
       }
+    },
+    "Pause" : {
+
     },
     "Personnalize your profil mode" : {
 
@@ -436,6 +451,9 @@
     "QR code validated!" : {
 
     },
+    "Record" : {
+
+    },
     "Register" : {
 
     },
@@ -446,6 +464,9 @@
 
     },
     "Scan QR code" : {
+
+    },
+    "Screen share" : {
 
     },
     "Search contact or history call" : {
