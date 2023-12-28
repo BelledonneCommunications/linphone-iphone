@@ -511,19 +511,56 @@ struct ContentView: View {
 				}
 				
 				if isShowStartCallFragment {
-					StartCallFragment(
-						startCallViewModel: startCallViewModel,
-						isShowStartCallFragment: $isShowStartCallFragment,
-						showingDialer: $showingDialer
-					)
-					.zIndex(3)
-					.transition(.move(edge: .bottom))
-					.halfSheet(showSheet: $showingDialer) {
-						DialerBottomSheet(
+					
+					if #available(iOS 16.4, *) {
+						if idiom != .pad {
+							StartCallFragment(
+								startCallViewModel: startCallViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
+								showingDialer: $showingDialer
+							)
+							.zIndex(3)
+							.transition(.move(edge: .bottom))
+							.sheet(isPresented: $showingDialer) {
+								DialerBottomSheet(
+									startCallViewModel: startCallViewModel,
+									showingDialer: $showingDialer
+								)
+								.presentationDetents([.medium])
+								//.interactiveDismissDisabled()
+								.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+							}
+						} else {
+							StartCallFragment(
+								startCallViewModel: startCallViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
+								showingDialer: $showingDialer
+							)
+							.zIndex(3)
+							.transition(.move(edge: .bottom))
+							.halfSheet(showSheet: $showingDialer) {
+								DialerBottomSheet(
+									startCallViewModel: startCallViewModel,
+									showingDialer: $showingDialer
+								)
+							} onDismiss: {}
+						}
+						
+					} else {
+						StartCallFragment(
 							startCallViewModel: startCallViewModel,
+							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer
 						)
-					} onDismiss: {}
+						.zIndex(3)
+						.transition(.move(edge: .bottom))
+						.halfSheet(showSheet: $showingDialer) {
+							DialerBottomSheet(
+								startCallViewModel: startCallViewModel,
+								showingDialer: $showingDialer
+							)
+						} onDismiss: {}
+					}
 				}
 				
 				if isShowDeleteContactPopup {
@@ -624,7 +661,7 @@ struct ContentView: View {
 				}
 				
 				if telecomManager.callInProgress {
-                    CallView(callViewModel: CallViewModel())
+					CallView(callViewModel: CallViewModel())
 						.zIndex(3)
 						.transition(.scale.combined(with: .move(edge: .top)))
 				}

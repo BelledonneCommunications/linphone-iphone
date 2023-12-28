@@ -156,6 +156,8 @@ struct StartCallFragment: View {
 						}
 						
                         ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
+							showingDialer = false
+							
 							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
 								magicSearch.searchForContacts(
 									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
@@ -236,6 +238,8 @@ struct StartCallFragment: View {
 					}
 				}
 				.onTapGesture {
+					showingDialer = false
+					
 					DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
 						magicSearch.searchForContacts(
 							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)

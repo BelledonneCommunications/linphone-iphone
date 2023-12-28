@@ -155,8 +155,6 @@ final class CoreContext: ObservableObject {
 			}
 			
 			self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnMainQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
-				print("publisherpublisher onLogCollectionUploadStateChanged")
-				
 				if cbValue.info.starts(with: "https") {
 					UIPasteboard.general.setValue(
 						cbValue.info,

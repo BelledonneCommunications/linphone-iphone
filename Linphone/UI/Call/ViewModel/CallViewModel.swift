@@ -17,7 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import SwiftUI
 import linphonesw
+import AVFAudio
 
 class CallViewModel: ObservableObject {
 	
@@ -29,8 +31,14 @@ class CallViewModel: ObservableObject {
 	@Published var remoteAddressString: String = "example.linphone@sip.linphone.org"
 	@Published var remoteAddress: Address?
 	@Published var avatarModel: ContactAvatarModel?
+	@Published var audioSessionImage: String = ""
+	@State var micMutted: Bool = false
+	@State var timeElapsed: Int = 0
+	
+	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
 	init() {
+		setupNotifications()
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				DispatchQueue.main.async {
@@ -50,6 +58,125 @@ class CallViewModel: ObservableObject {
 					}
 				}
 			}
+		}
+	}
+	
+	func terminateCall() {
+		withAnimation {
+			telecomManager.callInProgress = false
+			telecomManager.callStarted = false
+		}
+		
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				self.telecomManager.terminateCall(call: core.currentCall!)
+			}
+		}
+		
+		timer.upstream.connect().cancel()
+	}
+	
+	func acceptCall() {
+		withAnimation {
+			telecomManager.callInProgress = true
+			telecomManager.callStarted = true
+		}
+		
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				self.telecomManager.acceptCall(core: core, call: core.currentCall!, hasVideo: false)
+			}
+		}
+		
+		timer.upstream.connect().cancel()
+	}
+	
+	func muteCall() {
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				self.micMutted = !self.micMutted
+				core.currentCall!.microphoneMuted = self.micMutted
+			}
+		}
+	}
+	
+	func counterToMinutes() -> String {
+		let currentTime = timeElapsed
+		let seconds = currentTime % 60
+		let minutes = String(format: "%02d", Int(currentTime / 60))
+		let hours = String(format: "%02d", Int(currentTime / 3600))
+		
+		if Int(currentTime / 3600) > 0 {
+			return "\(hours):\(minutes):\(seconds < 10 ? "0" : "")\(seconds)"
+		} else {
+			return "\(minutes):\(seconds < 10 ? "0" : "")\(seconds)"
+		}
+	}
+	
+	func setupNotifications() {
+		/*
+		notifCenter.addObserver(self,
+					   selector: #selector(handleRouteChange),
+					   name: AVAudioSession.routeChangeNotification,
+					   object: nil)
+		*/
+		
+		//NotificationCenter.default.addObserver(self, selector: Selector(("handleRouteChange")), name: UITextView.textDidChangeNotification, object: nil)
+	}
+
+
+	func handleRouteChange(notification: Notification) {
+		guard let userInfo = notification.userInfo,
+			let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+			let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
+				return
+		}
+		
+		// Switch over the route change reason.
+		switch reason {
+
+
+		case .newDeviceAvailable, .oldDeviceUnavailable: // New device found.
+			print("handleRouteChangehandleRouteChange handleRouteChange")
+			
+			AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty
+			? (
+				AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty
+				? (
+					AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Receiver" }).isEmpty
+					? "headset"
+					: "speaker-slash"
+				)
+				: "bluetooth"
+			)
+			: "speaker-high"
+		
+			/*
+		case .oldDeviceUnavailable: // Old device removed.
+			if let previousRoute =
+				userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
+				
+			}
+		*/
+		default: ()
+		}
+	}
+
+
+	func hasHeadphones(in routeDescription: AVAudioSessionRouteDescription) -> Bool {
+		// Filter the outputs to only those with a port type of headphones.
+		return !routeDescription.outputs.filter({$0.portType == .headphones}).isEmpty
+	}
+	
+	func getAudioRoute() -> Int {
+		if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty {
+			if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+				return 1
+			} else {
+				return 3
+			}
+		} else {
+			return 2
 		}
 	}
 }

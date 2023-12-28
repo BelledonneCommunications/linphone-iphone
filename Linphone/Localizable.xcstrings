@@ -188,6 +188,9 @@
     "Block the number" : {
 
     },
+    "Bluetooth" : {
+
+    },
     "Call history" : {
 
     },
@@ -279,6 +282,9 @@
 
     },
     "Don’t save modifications?" : {
+
+    },
+    "Earpiece" : {
 
     },
     "Edit" : {
@@ -503,6 +509,9 @@
 
     },
     "Skip" : {
+
+    },
+    "Speaker" : {
 
     },
     "Start" : {

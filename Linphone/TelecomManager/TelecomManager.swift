@@ -399,10 +399,13 @@ class TelecomManager: ObservableObject {
 					}
 				}
 				
+				/*
 				if speakerBeforePause {
 					speakerBeforePause = false
 					AudioRouteUtils.routeAudioToSpeaker(core: core)
 				}
+				 */
+				
 				actionToFulFill?.fulfill()
 				actionToFulFill = nil
 			case .Paused:
@@ -518,6 +521,11 @@ class TelecomManager: ObservableObject {
 				break
 			}
 			
+			//AudioRouteUtils.isBluetoothAvailable(core: core)
+			//AudioRouteUtils.isHeadsetAudioRouteAvailable(core: core)
+			//AudioRouteUtils.isBluetoothAudioRouteAvailable(core: core)
+			
+			/*
 			let readyForRoutechange = callkitAudioSessionActivated == nil || (callkitAudioSessionActivated == true)
 			if readyForRoutechange && (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
 				if (call.currentParams?.videoEnabled ?? false) && AudioRouteUtils.isReceiverEnabled(core: core) && call.conference == nil {
@@ -527,6 +535,7 @@ class TelecomManager: ObservableObject {
 					AudioRouteUtils.routeAudioToBluetooth(core: core, call: call)
 				}
 			}
+			 */
 		}
 		// post Notification kLinphoneCallUpdate
 		NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [
