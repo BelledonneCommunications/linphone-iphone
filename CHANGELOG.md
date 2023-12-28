@@ -10,6 +10,16 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [5.2.0] - 2023-28-12
+### Added
+- Added extra Czech and Japanese translations
+
+### Changed
+- Update linphone SDK to 5.3.4
+
+### Fixed
+- Re-enabled the G729 audio codec
+	
 ## [5.2.0] - 2023-21-12
 ### Added
 - Chat messages emoji "reactions"
