@@ -33,6 +33,7 @@ disable_chat_feature=0
 enable_native_address_book=1
 
 hide_link_phone_number=0
+send_db=0
 
 [rtp]
 accept_any_encryption=1
