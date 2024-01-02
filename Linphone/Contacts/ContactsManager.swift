@@ -262,7 +262,7 @@ final class ContactsManager: ObservableObject {
 		return imagePath
 	}
 	
-	func awaitDataWrite(data: Data, name: String, prefix: String,completion: @escaping ((), String) -> Void) {
+	func awaitDataWrite(data: Data, name: String, prefix: String, completion: @escaping ((), String) -> Void) {
 		let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 		
 		if directory != nil {

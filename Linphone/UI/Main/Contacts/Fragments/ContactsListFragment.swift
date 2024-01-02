@@ -98,5 +98,5 @@ struct ContactsListFragment: View {
 }
 
 #Preview {
-    ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: {addr in })
+    ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: {_ in })
 }

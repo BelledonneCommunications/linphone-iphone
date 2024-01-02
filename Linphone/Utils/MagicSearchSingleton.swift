@@ -41,7 +41,7 @@ final class MagicSearchSingleton: ObservableObject {
 	@Published var allContact = false
 	private var domainDefaultAccount = ""
 	
-	var searchSubscription : AnyCancellable?
+	var searchSubscription: AnyCancellable?
 	
 	private init() {
 		coreContext.doOnCoreQueue { core in

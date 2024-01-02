@@ -98,9 +98,7 @@ struct CallView: View {
                                     Button {
 										options = callViewModel.getAudioRoute()
 										print("audioRouteIsSpeakeraudioRouteIsSpeaker output \(AVAudioSession.sharedInstance().currentRoute.outputs)")
-										
                                         print("audioRouteIsSpeakeraudioRouteIsSpeaker inputs \(AVAudioSession.sharedInstance().availableInputs?.count)")
-                                        
                                         
                                         if AVAudioSession.sharedInstance().availableInputs != nil
 											&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {

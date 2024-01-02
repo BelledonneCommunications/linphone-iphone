@@ -89,7 +89,7 @@ class TelecomManager: ObservableObject {
 			return
 		}
 		
-		if TelecomManager.callKitEnabled(core: core) {//&& !nextCallIsTransfer != true {
+		if TelecomManager.callKitEnabled(core: core) {// && !nextCallIsTransfer != true {
 			let uuid = UUID()
 			let name = "outgoingTODO" // FastAddressBook.displayName(for: addr) ?? "unknow"
 			let handle = CXHandle(type: .generic, value: addr?.asStringUriOnly() ?? "")
@@ -521,9 +521,9 @@ class TelecomManager: ObservableObject {
 				break
 			}
 			
-			//AudioRouteUtils.isBluetoothAvailable(core: core)
-			//AudioRouteUtils.isHeadsetAudioRouteAvailable(core: core)
-			//AudioRouteUtils.isBluetoothAudioRouteAvailable(core: core)
+			// AudioRouteUtils.isBluetoothAvailable(core: core)
+			// AudioRouteUtils.isHeadsetAudioRouteAvailable(core: core)
+			// AudioRouteUtils.isBluetoothAudioRouteAvailable(core: core)
 			
 			/*
 			let readyForRoutechange = callkitAudioSessionActivated == nil || (callkitAudioSessionActivated == true)

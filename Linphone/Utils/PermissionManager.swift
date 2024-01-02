@@ -31,8 +31,7 @@ class PermissionManager: ObservableObject {
 	
 	private init() {}
 	
-	
-	func getPermissions(){
+	func getPermissions() {
 		photoLibraryRequestPermission()
 		cameraRequestPermission()
 		contactsRequestPermission()

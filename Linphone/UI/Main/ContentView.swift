@@ -527,7 +527,7 @@ struct ContentView: View {
 									showingDialer: $showingDialer
 								)
 								.presentationDetents([.medium])
-								//.interactiveDismissDisabled()
+								// .interactiveDismissDisabled()
 								.presentationBackgroundInteraction(.enabled(upThrough: .medium))
 							}
 						} else {
@@ -666,10 +666,10 @@ struct ContentView: View {
 						.transition(.scale.combined(with: .move(edge: .top)))
 				}
 				
-				//if sharedMainViewModel.displayToast {
+				// if sharedMainViewModel.displayToast {
 				ToastView()
 					.zIndex(3)
-				//}
+				// }
 			}
 		}
 		.overlay {

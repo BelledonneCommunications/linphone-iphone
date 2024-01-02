@@ -272,7 +272,7 @@ extension ProviderDelegate: CXProviderDelegate {
 						// attempt to resume another one.
 						action.fulfill()
 					} else {
-						if call?.conference != nil && core.callsNb ?? 0 > 1 {/*
+						if call?.conference != nil && core.callsNb > 1 {/*
 							try TelecomManager.shared.lc?.enterConference()
 							action.fulfill()
 							NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)

@@ -17,8 +17,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 import Foundation
 import linphonesw
 
@@ -26,10 +24,10 @@ import linphonesw
 
 extension Config {
 
-	private static var _instance : Config?
+	private static var _instance: Config?
 
-	public func getDouble(section:String, key:String, defaultValue:Double) -> Double {
-		if (self.hasEntry(section: section, key: key) != 1) {
+	public func getDouble(section: String, key: String, defaultValue: Double) -> Double {
+		if self.hasEntry(section: section, key: key) != 1 {
 			return defaultValue
 		}
 		let stringValue = self.getString(section: section, key: key, defaultString: "")
@@ -51,7 +49,7 @@ extension Config {
 	static let appGroupName = "group.org.linphone.phone.logs"
 	// Needs to be the same name in App Group (capabilities in ALL targets - app & extensions - content + service), can't be stored in the Config itself the Config needs this value to get created
 	static let teamID = Config.get().getString(section: "app", key: "team_id", defaultString: "")
-	static let earlymediaContentExtensionCagetoryIdentifier = Config.get().getString(section: "app", key: "extension_category", defaultString: "")
+	static let earlymediaContentExtCatIdentifier = Config.get().getString(section: "app", key: "extension_category", defaultString: "")
 	
 	// Default values in app
 	static let serveraddress =  Config.get().getString(section: "app", key: "server", defaultString: "")
