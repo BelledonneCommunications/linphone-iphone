@@ -18,6 +18,8 @@
  */
 
 // swiftlint:disable large_tuple
+// swiftlint:disable line_length
+
 import linphonesw
 import Combine
 import UniformTypeIdentifiers
@@ -34,8 +36,9 @@ final class CoreContext: ObservableObject {
 	@Published var coreIsStarted: Bool = false
 	
 	private var mCore: Core!
-	private var mIteratePublisher: AnyCancellable?
-	
+	private var mIterateSuscription: AnyCancellable?
+	private var mCoreSuscriptions = Set<AnyCancellable?>()
+
 	private init() {
 		do {
 			try initialiseCore()
@@ -89,7 +92,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
 			
-			self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 					self.defaultAccount = self.mCore.defaultAccount
 					self.coreIsStarted = true
@@ -97,13 +100,13 @@ final class CoreContext: ObservableObject {
 					self.defaultAccount = nil
 					self.coreIsStarted = true
 				}
-			}
+			})
 			
 			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
-			self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
 				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
 					ToastViewModel.shared.toastMessage = "Successful"
@@ -112,11 +115,9 @@ final class CoreContext: ObservableObject {
 					ToastViewModel.shared.toastMessage = "Failed"
 					ToastViewModel.shared.displayToast.toggle()
 				}
-			}
+			})
 			
-			self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue {(cbVal: 
-																						(core: Core, account: Account, state: RegistrationState, message: String)
-			) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
 				NSLog("New registration state is \(cbVal.state) for user id " +
@@ -135,7 +136,9 @@ final class CoreContext: ObservableObject {
 					self.loggingInProgress = false
 					self.loggedIn = false
 				}
-			}.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
+			})
+			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
 				// If registration failed, remove account from core
 				if cbVal.state != .Ok && cbVal.state != .Progress {
 					let params = cbVal.account.params
@@ -148,13 +151,13 @@ final class CoreContext: ObservableObject {
 					cbVal.core.clearAllAuthInfo()
 				}
 				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
-			}
+			})
 			
-			self.mCore.publisher?.onCallStateChanged?.postOnCoreQueue { (cbVal: (core: Core, call: Call, state: Call.State, message: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onCallStateChanged?.postOnCoreQueue { (cbVal: (core: Core, call: Call, state: Call.State, message: String)) in
 				TelecomManager.shared.onCallStateChanged(core: cbVal.core, call: cbVal.call, state: cbVal.state, message: cbVal.message)
-			}
+			})
 			
-			self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnMainQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnMainQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
 				if cbValue.info.starts(with: "https") {
 					UIPasteboard.general.setValue(
 						cbValue.info,
@@ -164,9 +167,9 @@ final class CoreContext: ObservableObject {
 					ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
 					ToastViewModel.shared.displayToast.toggle()
 				}
-			}
+			})
 			
-			self.mIteratePublisher = Timer.publish(every: 0.02, on: .main, in: .common)
+			self.mIterateSuscription = Timer.publish(every: 0.02, on: .main, in: .common)
 				.autoconnect()
 				.receive(on: coreQueue)
 				.sink { _ in
@@ -202,3 +205,4 @@ final class CoreContext: ObservableObject {
 }
 
 // swiftlint:enable large_tuple
+// swiftlint:enable line_length

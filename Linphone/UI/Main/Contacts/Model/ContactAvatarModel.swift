@@ -19,6 +19,7 @@
 
 import Foundation
 import linphonesw
+import Combine
 
 class ContactAvatarModel: ObservableObject {
 	
@@ -30,7 +31,7 @@ class ContactAvatarModel: ObservableObject {
 
 	@Published var presenceStatus: ConsolidatedPresence
 	
-	private var friendDelegate: FriendDelegate?
+	private var friendSuscription: AnyCancellable?
 	
 	init(friend: Friend?, withPresence: Bool?) {
 		self.friend = friend
@@ -51,22 +52,20 @@ class ContactAvatarModel: ObservableObject {
 				self.lastPresenceInfo = ""
 			}
             
-            if self.friendDelegate != nil {
-                self.friend!.removeDelegate(delegate: self.friendDelegate!)
-                self.friendDelegate = nil
+            if self.friendSuscription != nil {
+                self.friendSuscription = nil
             }
 			
-			addDelegate()
+			addSubscription()
         } else {
             self.lastPresenceInfo = ""
             self.presenceStatus = .Offline
         }
 	}
 	
-	func addDelegate() {
+	func addSubscription() {
 		
-		/*
-		self.friend?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (Friend)) in
+		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (Friend)) in
 			print("publisherpublisher onLogCollectionUploadStateChanged \(cbValue.address?.asStringUriOnly())")
 			
 			self.presenceStatus = cbValue.consolidatedPresence
@@ -80,37 +79,12 @@ class ContactAvatarModel: ObservableObject {
 				self.lastPresenceInfo = ""
 			}
 		}
-		*/
-		
-		let newFriendDelegate = FriendDelegateStub(
-			onPresenceReceived: { (linphoneFriend: Friend) -> Void in
-				DispatchQueue.main.sync {
-					self.presenceStatus = linphoneFriend.consolidatedPresence
-					if linphoneFriend.consolidatedPresence == .Online || linphoneFriend.consolidatedPresence == .Busy {
-						if linphoneFriend.consolidatedPresence == .Online || linphoneFriend.presenceModel!.latestActivityTimestamp != -1 {
-							self.lastPresenceInfo = linphoneFriend.consolidatedPresence == .Online ? "Online" : self.getCallTime(startDate: linphoneFriend.presenceModel!.latestActivityTimestamp)
-						} else {
-							self.lastPresenceInfo = "Away"
-						}
-					} else {
-						self.lastPresenceInfo = ""
-					}
-				}
-			}
-		)
-		 
-		
-		friendDelegate = newFriendDelegate
-		if friendDelegate != nil {
-			friend!.addDelegate(delegate: friendDelegate!)
-		}
 	}
 	
-	func removeAllDelegate() {
-		if friendDelegate != nil {
+	func removeAllSuscription() {
+		if friendSuscription != nil {
 			presenceStatus = .Offline
-			friend!.removeDelegate(delegate: friendDelegate!)
-			friendDelegate = nil
+			friendSuscription = nil
 		}
 	}
 	

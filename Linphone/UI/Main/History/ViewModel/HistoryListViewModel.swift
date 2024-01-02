@@ -18,6 +18,7 @@
  */
 
 import linphonesw
+import Combine
 
 class HistoryListViewModel: ObservableObject {
 	
@@ -27,7 +28,7 @@ class HistoryListViewModel: ObservableObject {
 	var callLogsTmp: [CallLog] = []
 	
 	var callLogsAddressToDelete = ""
-	
+	var callLogSubscription : AnyCancellable?
 	init() {
 		computeCallLogsList()
 	}
@@ -47,7 +48,7 @@ class HistoryListViewModel: ObservableObject {
 				}
 			}
 			
-			core.publisher?.onCallLogUpdated?.postOnCoreQueue { (_: (_: Core, _: CallLog)) in
+			self.callLogSubscription = core.publisher?.onCallLogUpdated?.postOnCoreQueue { (_: (_: Core, _: CallLog)) in
 				print("publisherpublisher onCallLogUpdated")
 				let account = core.defaultAccount
 				let logs = account != nil ? account!.callLogs : core.callLogs
