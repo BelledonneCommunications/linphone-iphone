@@ -36,7 +36,6 @@ struct CallView: View {
 	let pub = NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)
     
     @State var startDate = Date.now
-	@State var audioRouteIsSpeaker: Bool = false
 	@State var audioRouteSheet: Bool = false
 	@State var hideButtonsSheet: Bool = false
 	@State var options: Int = 1
@@ -96,10 +95,6 @@ struct CallView: View {
                                     .cornerRadius(40)
                                     
                                     Button {
-										options = callViewModel.getAudioRoute()
-										print("audioRouteIsSpeakeraudioRouteIsSpeaker output \(AVAudioSession.sharedInstance().currentRoute.outputs)")
-                                        print("audioRouteIsSpeakeraudioRouteIsSpeaker inputs \(AVAudioSession.sharedInstance().availableInputs?.count)")
-                                        
                                         if AVAudioSession.sharedInstance().availableInputs != nil
 											&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
 											
@@ -108,12 +103,9 @@ struct CallView: View {
 											DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
 												audioRouteSheet = true
 											}
-											
 										} else {
-											audioRouteIsSpeaker = !audioRouteIsSpeaker
-											
 											do {
-												try AVAudioSession.sharedInstance().overrideOutputAudioPort(audioRouteIsSpeaker ? .speaker : .none)
+												try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
 											} catch _ {
 												
 											}
@@ -310,17 +302,17 @@ struct CallView: View {
 						audioRouteSheet = false
 						hideButtonsSheet = false
 				   	}) {
-						
 						VStack(spacing: 0) {
 							Button(action: {
 								options = 1
 								
-								audioRouteIsSpeaker = false
-								
 								do {
-									try AVAudioSession.sharedInstance().overrideOutputAudioPort(audioRouteIsSpeaker ? .speaker : .none)
-									try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .defaultToSpeaker)
-									try AVAudioSession.sharedInstance().setActive(true)
+									try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+									if callViewModel.isHeadPhoneAvailable() {
+										try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
+									} else {
+										try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
+									}
 								} catch _ {
 									
 								}
@@ -332,12 +324,12 @@ struct CallView: View {
 										.foregroundStyle(.white)
 										.frame(width: 25, height: 25, alignment: .leading)
 									
-									Text("Earpiece")
+									Text(!callViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
 										.default_text_style_white(styleSize: 15)
 									
 									Spacer()
 									
-									Image("ear")
+									Image(!callViewModel.isHeadPhoneAvailable() ? "ear" : "headset")
 										.renderingMode(.template)
 									 	.resizable()
 										.foregroundStyle(.white)
@@ -349,10 +341,8 @@ struct CallView: View {
 							Button(action: {
 								options = 2
 								
-								audioRouteIsSpeaker = true
-								
 								do {
-									try AVAudioSession.sharedInstance().overrideOutputAudioPort(audioRouteIsSpeaker ? .speaker : .none)
+									try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
 								} catch _ {
 									
 								}
@@ -381,12 +371,9 @@ struct CallView: View {
 							Button(action: {
 								options = 3
 								
-								audioRouteIsSpeaker = false
-								
 								do {
-									try AVAudioSession.sharedInstance().overrideOutputAudioPort(audioRouteIsSpeaker ? .speaker : .none)
-									try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
-									try AVAudioSession.sharedInstance().setActive(true)
+									try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+									try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
 								} catch _ {
 									
 								}
@@ -653,12 +640,11 @@ struct CallView: View {
     }
 	
 	func getAudioRouteImage() {
-		print("getAudioRouteImagegetAudioRouteImage")
 		imageAudioRoute = AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty
 		? (
 			AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty
 			? (
-				AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Receiver" }).isEmpty
+				callViewModel.isHeadPhoneAvailable()
 				? "headset"
 				: "speaker-slash"
 			)

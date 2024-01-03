@@ -38,7 +38,14 @@ class CallViewModel: ObservableObject {
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
 	init() {
-		setupNotifications()
+		
+		do {
+			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+			try AVAudioSession.sharedInstance().setActive(true)
+		} catch _ {
+			
+		}
+		
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				DispatchQueue.main.async {
@@ -113,59 +120,14 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	func setupNotifications() {
-		/*
-		notifCenter.addObserver(self,
-					   selector: #selector(handleRouteChange),
-					   name: AVAudioSession.routeChangeNotification,
-					   object: nil)
-		*/
-		
-		//NotificationCenter.default.addObserver(self, selector: Selector(("handleRouteChange")), name: UITextView.textDidChangeNotification, object: nil)
-	}
-
-
-	func handleRouteChange(notification: Notification) {
-		guard let userInfo = notification.userInfo,
-			let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
-			let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
-				return
-		}
-		
-		// Switch over the route change reason.
-		switch reason {
-
-
-		case .newDeviceAvailable, .oldDeviceUnavailable: // New device found.
-			print("handleRouteChangehandleRouteChange handleRouteChange")
-			
-			AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty
-			? (
-				AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty
-				? (
-					AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Receiver" }).isEmpty
-					? "headset"
-					: "speaker-slash"
-				)
-				: "bluetooth"
-			)
-			: "speaker-high"
-		
-			/*
-		case .oldDeviceUnavailable: // Old device removed.
-			if let previousRoute =
-				userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
-				
+	func isHeadPhoneAvailable() -> Bool {
+		guard let availableInputs = AVAudioSession.sharedInstance().availableInputs else {return false}
+		for inputDevice in availableInputs {
+			if inputDevice.portType == .headsetMic  || inputDevice.portType == .headphones {
+				return true
 			}
-		*/
-		default: ()
 		}
-	}
-
-
-	func hasHeadphones(in routeDescription: AVAudioSessionRouteDescription) -> Bool {
-		// Filter the outputs to only those with a port type of headphones.
-		return !routeDescription.outputs.filter({$0.portType == .headphones}).isEmpty
+		return false
 	}
 	
 	func getAudioRoute() -> Int {
