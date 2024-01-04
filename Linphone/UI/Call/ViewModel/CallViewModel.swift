@@ -31,11 +31,13 @@ class CallViewModel: ObservableObject {
 	@Published var remoteAddressString: String = "example.linphone@sip.linphone.org"
 	@Published var remoteAddress: Address?
 	@Published var avatarModel: ContactAvatarModel?
-	@Published var audioSessionImage: String = ""
-	@State var micMutted: Bool = false
+	@Published var micMutted: Bool = false
+	@Published var cameraDisplayed: Bool = false
 	@State var timeElapsed: Int = 0
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+	
+	var currentCall: Call?
 	
 	init() {
 		
@@ -48,21 +50,26 @@ class CallViewModel: ObservableObject {
 		
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
+				self.currentCall = core.currentCall
 				DispatchQueue.main.async {
 					self.direction = .Incoming
-					self.remoteAddressString = String(core.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
-					self.remoteAddress = core.currentCall!.remoteAddress!
+					self.remoteAddressString = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
+					self.remoteAddress = self.currentCall!.remoteAddress!
 					
-					let friend = ContactsManager.shared.getFriendWithAddress(address: core.currentCall!.remoteAddress!)
+					let friend = ContactsManager.shared.getFriendWithAddress(address: self.currentCall!.remoteAddress!)
 					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
 						self.displayName = friend!.address!.displayName!
 					} else {
-						if core.currentCall!.remoteAddress!.displayName != nil {
-							self.displayName = core.currentCall!.remoteAddress!.displayName!
-						} else if core.currentCall!.remoteAddress!.username != nil {
-							self.displayName = core.currentCall!.remoteAddress!.username!
+						if self.currentCall!.remoteAddress!.displayName != nil {
+							self.displayName = self.currentCall!.remoteAddress!.displayName!
+						} else if self.currentCall!.remoteAddress!.username != nil {
+							self.displayName = self.currentCall!.remoteAddress!.username!
 						}
 					}
+					
+					//self.avatarModel = ???
+					self.micMutted = self.currentCall!.microphoneMuted
+					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 				}
 			}
 		}
@@ -74,9 +81,9 @@ class CallViewModel: ObservableObject {
 			telecomManager.callStarted = false
 		}
 		
-		coreContext.doOnCoreQueue { core in
-			if core.currentCall != nil {
-				self.telecomManager.terminateCall(call: core.currentCall!)
+		coreContext.doOnCoreQueue { _ in
+			if self.currentCall != nil {
+				self.telecomManager.terminateCall(call: self.currentCall!)
 			}
 		}
 		
@@ -90,21 +97,110 @@ class CallViewModel: ObservableObject {
 		}
 		
 		coreContext.doOnCoreQueue { core in
-			if core.currentCall != nil {
-				self.telecomManager.acceptCall(core: core, call: core.currentCall!, hasVideo: false)
+			if self.currentCall != nil {
+				self.telecomManager.acceptCall(core: core, call: self.currentCall!, hasVideo: false)
 			}
 		}
 		
 		timer.upstream.connect().cancel()
 	}
 	
-	func muteCall() {
-		coreContext.doOnCoreQueue { core in
-			if core.currentCall != nil {
-				self.micMutted = !self.micMutted
-				core.currentCall!.microphoneMuted = self.micMutted
+	func toggleMuteMicrophone() {
+		coreContext.doOnCoreQueue { _ in
+			if self.currentCall != nil {
+				self.currentCall!.microphoneMuted = !self.currentCall!.microphoneMuted
+				self.micMutted = self.currentCall!.microphoneMuted
+				Log.info(
+					"[CallViewModel] Microphone mute switch \(self.micMutted)"
+				)
 			}
 		}
+	}
+	
+	func toggleVideo() {
+		coreContext.doOnCoreQueue { core in
+			if self.currentCall != nil {
+				do {
+					let params = try core.createCallParams(call: self.currentCall)
+					
+						params.videoEnabled = !params.videoEnabled
+						Log.info(
+							"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
+						)
+					try self.currentCall!.update(params: params)
+					
+					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
+				} catch {
+					
+				}
+			}
+		}
+	}
+	
+	func switchCamera() {
+		coreContext.doOnCoreQueue { core in
+			let currentDevice = core.videoDevice
+			Log.info("[CallViewModel] Current camera device is \(currentDevice)")
+
+			core.videoDevicesList.forEach { camera in
+				if camera != currentDevice && camera != "StaticImage: Static picture" {
+					Log.info("[CallViewModel] New camera device will be \(camera)")
+					do {
+						try core.setVideodevice(newValue: camera)
+					} catch _ {
+						
+					}
+				}
+			}
+		}
+	}
+	
+	func toggleRecording() {
+		coreContext.doOnCoreQueue { _ in
+			if self.currentCall != nil && self.currentCall!.params != nil {
+				if self.currentCall!.params!.isRecording {
+					Log.info("[CallViewModel] Stopping call recording")
+					self.currentCall!.stopRecording()
+				} else {
+					Log.info("[CallViewModel] Starting call recording \(self.currentCall!.params!.isRecording)")
+					self.currentCall!.startRecording()
+					Log.info("[CallViewModel] Starting call recording \(self.currentCall!.params!.isRecording)")
+				}
+				//var recording = self.currentCall!.params!.isRecording
+				//isRecording.postValue(recording)
+			}
+		}
+	}
+	
+	func togglePause() {
+		coreContext.doOnCoreQueue { _ in
+			if self.currentCall != nil && self.currentCall!.remoteAddress != nil {
+				do {
+					if self.isCallPaused() {
+						Log.info("[CallViewModel] Resuming call \(self.currentCall!.remoteAddress!.asStringUriOnly())")
+						try self.currentCall!.resume()
+					} else {
+						Log.info("[CallViewModel] Pausing call \(self.currentCall!.remoteAddress!.asStringUriOnly())")
+						try self.currentCall!.pause()
+					}
+				} catch _ {
+					
+				}
+			}
+		}
+	}
+	
+	private func isCallPaused() -> Bool {
+		var result = false
+		if self.currentCall != nil {
+			switch self.currentCall!.state {
+			case Call.State.Paused, Call.State.Pausing:
+				result = true
+			default:
+				result = false
+			}
+		}
+		return result
 	}
 	
 	func counterToMinutes() -> String {

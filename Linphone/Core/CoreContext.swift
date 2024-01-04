@@ -102,6 +102,11 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
+			self.mCore.videoCaptureEnabled = true
+			self.mCore.videoDisplayEnabled = true
+			
+			self.mCore.videoActivationPolicy!.automaticallyAccept = true
+			
 			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need

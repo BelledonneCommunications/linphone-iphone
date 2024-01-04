@@ -64,7 +64,6 @@ class ContactAvatarModel: ObservableObject {
 	}
 	
 	func addSubscription() {
-		
 		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (Friend)) in
 			print("publisherpublisher onLogCollectionUploadStateChanged \(cbValue.address?.asStringUriOnly() ?? "")")
 			
