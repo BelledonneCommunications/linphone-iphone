@@ -34,8 +34,7 @@ struct FavoriteContactsListFragment: View {
             HStack {
                 ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
 					if contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.starred == true {
-						Button {
-						} label: {
+						VStack {
 							VStack {
 								if contactsManager.lastSearch[index].friend!.photo != nil
 									&& !contactsManager.lastSearch[index].friend!.photo!.isEmpty {
@@ -51,21 +50,16 @@ struct FavoriteContactsListFragment: View {
 									.frame( maxWidth: .infinity, alignment: .center)
 							}
 						}
-						.simultaneousGesture(
-							LongPressGesture()
-								.onEnded { _ in
-									contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
-									showingSheet.toggle()
-								}
-						)
-						.highPriorityGesture(
-							TapGesture()
-								.onEnded { _ in
-									withAnimation {
-										contactViewModel.indexDisplayedFriend = index
-									}
-								}
-						)
+						.background(.white)
+						.onTapGesture {
+							withAnimation {
+								contactViewModel.indexDisplayedFriend = index
+							}
+						}
+						.onLongPressGesture(minimumDuration: 0.2) {
+							contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
+							showingSheet.toggle()
+						}
 						.frame(minWidth: 70, maxWidth: 70)
 					}
                 }

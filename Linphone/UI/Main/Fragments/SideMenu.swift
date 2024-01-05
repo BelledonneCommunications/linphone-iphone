@@ -25,8 +25,6 @@ struct SideMenu: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
 	
-	@State private var coreDelegate: CoreDelegate?
-	
     let width: CGFloat
     let isOpen: Bool
     let menuClose: () -> Void
@@ -46,7 +44,7 @@ struct SideMenu: View {
             HStack {
                 List {
                     Text("My Profile").onTapGesture {
-                        print("My Profile")
+						print("My Profile")
                     }
                     Text("Send logs").onTapGesture {
 						sendLogs()
@@ -75,37 +73,6 @@ struct SideMenu: View {
 	func sendLogs() {
 		coreContext.doOnCoreQueue { core in
 			core.uploadLogCollection()
-			
-			let newCoreDelegate = CoreDelegateStub(
-				onLogCollectionUploadStateChanged: { core, logCollectionUploadState, logString in
-					
-					if logString.starts(with: "https") {
-						UIPasteboard.general.setValue(
-							logString,
-							forPasteboardType: UTType.plainText.identifier
-						)
-						
-						removeAllDelegate()
-					 
-						ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
-						ToastViewModel.shared.displayToast.toggle()
-					}
-				}
-			)
-			
-			coreDelegate = newCoreDelegate
-			if coreDelegate != nil {
-				core.addDelegate(delegate: coreDelegate!)
-			}
-		}
-	}
-	
-	func removeAllDelegate() {
-		coreContext.doOnCoreQueue { core in
-			if coreDelegate != nil {
-				core.removeDelegate(delegate: coreDelegate!)
-				coreDelegate = nil
-		 	}
 		}
 	}
 }

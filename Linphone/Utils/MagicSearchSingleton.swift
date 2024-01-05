@@ -18,6 +18,7 @@
  */
 
 import linphonesw
+import Combine
 
 final class MagicSearchSingleton: ObservableObject {
 	
@@ -40,6 +41,8 @@ final class MagicSearchSingleton: ObservableObject {
 	@Published var allContact = false
 	private var domainDefaultAccount = ""
 	
+	var searchSubscription: AnyCancellable?
+	
 	private init() {
 		coreContext.doOnCoreQueue { core in
 			self.domainDefaultAccount = core.defaultAccount?.params?.domain ?? ""
@@ -47,7 +50,7 @@ final class MagicSearchSingleton: ObservableObject {
 			self.magicSearch = try? core.createMagicSearch()
 			self.magicSearch.limitedSearch = false
 			
-			self.magicSearch.publisher?.onSearchResultsReceived?.postOnMainQueue { (magicSearch: MagicSearch) in
+			self.searchSubscription = self.magicSearch.publisher?.onSearchResultsReceived?.postOnMainQueue { (magicSearch: MagicSearch) in
 				self.needUpdateLastSearchContacts = true
 				
 				var lastSearchFriend: [SearchResult] = []
@@ -72,7 +75,7 @@ final class MagicSearchSingleton: ObservableObject {
 				})
                 
 				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
-					contactAvatarModel.removeAllDelegate()
+					contactAvatarModel.removeAllSuscription()
 				}
 				
                 self.contactsManager.avatarListModel.removeAll()

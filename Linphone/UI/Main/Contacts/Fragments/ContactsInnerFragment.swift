@@ -75,7 +75,7 @@ struct ContactsInnerFragment: View {
 			
 			VStack {
 				List {
-					ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet)}
+                    ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(), showingSheet: $showingSheet, startCallFunc: {addr in })}
 				.listStyle(.plain)
 				.overlay(
 					VStack {

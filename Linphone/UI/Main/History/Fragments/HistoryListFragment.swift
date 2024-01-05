@@ -23,6 +23,7 @@ import linphonesw
 struct HistoryListFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
@@ -33,8 +34,7 @@ struct HistoryListFragment: View {
 		VStack {
 			List {
 				ForEach(0..<historyListViewModel.callLogs.count, id: \.self) { index in
-					Button {
-					} label: {
+					HStack {
 						HStack {
 							let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
 							let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
@@ -51,6 +51,11 @@ struct HistoryListFragment: View {
 							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
 								if contactAvatarModel != nil {
 									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+								} else {
+									Image("profil-picture-default")
+										.resizable()
+										.frame(width: 45, height: 45)
+										.clipShape(Circle())
 								}
 							} else {
 								if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
@@ -95,7 +100,12 @@ struct HistoryListFragment: View {
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
 									}
-								}
+								} else {
+									Image("profil-picture-default")
+							   			.resizable()
+							   			.frame(width: 45, height: 45)
+							   			.clipShape(Circle())
+					   			}
 							}
 							
 							VStack(spacing: 0) {
@@ -148,26 +158,38 @@ struct HistoryListFragment: View {
 								.resizable()
 								.frame(width: 25, height: 25)
 								.padding(.trailing, 5)
+								.highPriorityGesture(
+									TapGesture()
+										.onEnded { _ in
+											withAnimation {
+                                                if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
+                                                    telecomManager.doCallWithCore(
+                                                        addr: historyListViewModel.callLogs[index].toAddress!
+                                                    )
+                                                } else if historyListViewModel.callLogs[index].fromAddress != nil {
+                                                    telecomManager.doCallWithCore(
+                                                        addr: historyListViewModel.callLogs[index].fromAddress!
+                                                    )
+                                                }
+												historyViewModel.displayedCall = nil
+											}
+										}
+								)
 						}
 					}
 					.buttonStyle(.borderless)
 					.listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
 					.listRowSeparator(.hidden)
-					.simultaneousGesture(
-						LongPressGesture()
-							.onEnded { _ in
-								historyViewModel.selectedCall = historyListViewModel.callLogs[index]
-								showingSheet.toggle()
-							}
-					)
-					.highPriorityGesture(
-						TapGesture()
-							.onEnded { _ in
-								withAnimation {
-									historyViewModel.displayedCall = historyListViewModel.callLogs[index]
-								}
-							}
-					)
+					.background(.white)
+					.onTapGesture {
+						withAnimation {
+							historyViewModel.displayedCall = historyListViewModel.callLogs[index]
+						}
+					}
+					.onLongPressGesture(minimumDuration: 0.2) {
+						historyViewModel.selectedCall = historyListViewModel.callLogs[index]
+						showingSheet.toggle()
+					}
 				}
 			}
 			.listStyle(.plain)

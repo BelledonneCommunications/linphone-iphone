@@ -188,7 +188,13 @@
     "Block the number" : {
 
     },
+    "Bluetooth" : {
+
+    },
     "Call history" : {
+
+    },
+    "Call list" : {
 
     },
     "Calls" : {
@@ -216,6 +222,9 @@
 
     },
     "Contacts" : {
+
+    },
+    "Content" : {
 
     },
     "Continue" : {
@@ -263,6 +272,9 @@
     "Display Name" : {
 
     },
+    "Disposition" : {
+
+    },
     "Do you really want to delete all calls history?" : {
 
     },
@@ -270,6 +282,9 @@
 
     },
     "Don’t save modifications?" : {
+
+    },
+    "Earpiece" : {
 
     },
     "Edit" : {
@@ -302,6 +317,9 @@
     "First name*" : {
 
     },
+    "Headphones" : {
+
+    },
     "History has been deleted" : {
 
     },
@@ -309,6 +327,9 @@
 
     },
     "I understand" : {
+
+    },
+    "Incoming call" : {
 
     },
     "Incoming Call" : {
@@ -350,6 +371,12 @@
     "Message" : {
 
     },
+    "Messages" : {
+
+    },
+    "Missed call" : {
+
+    },
     "My Profile" : {
 
     },
@@ -383,7 +410,13 @@
     "Other actions" : {
 
     },
+    "Outgoing call" : {
+
+    },
     "Outgoing Call" : {
+
+    },
+    "Participants" : {
 
     },
     "password" : {
@@ -402,6 +435,9 @@
           }
         }
       }
+    },
+    "Pause" : {
+
     },
     "Personnalize your profil mode" : {
 
@@ -424,6 +460,9 @@
     "QR code validated!" : {
 
     },
+    "Record" : {
+
+    },
     "Register" : {
 
     },
@@ -434,6 +473,9 @@
 
     },
     "Scan QR code" : {
+
+    },
+    "Screen share" : {
 
     },
     "Search contact or history call" : {
@@ -472,6 +514,9 @@
     "Skip" : {
 
     },
+    "Speaker" : {
+
+    },
     "Start" : {
 
     },
@@ -485,6 +530,9 @@
 
     },
     "This contact will be deleted definitively." : {
+
+    },
+    "Title" : {
 
     },
     "TLS" : {

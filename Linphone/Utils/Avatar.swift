@@ -23,44 +23,59 @@ import linphonesw
 struct Avatar: View {
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
+	
 	let avatarSize: CGFloat
+    let hidePresence: Bool
+    
+    init(contactAvatarModel: ContactAvatarModel, avatarSize: CGFloat, hidePresence: Bool = false) {
+        self.contactAvatarModel = contactAvatarModel
+        self.avatarSize = avatarSize
+        self.hidePresence = hidePresence
+    }
 	
 	var body: some View {
-        AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.friend!.photo!)) { image in
-			switch image {
-			case .empty:
-				ProgressView()
-					.frame(width: avatarSize, height: avatarSize)
-			case .success(let image):
-				ZStack {
-					image
-						.resizable()
-						.aspectRatio(contentMode: .fill)
+		if contactAvatarModel.friend != nil {
+			AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.friend!.photo!)) { image in
+				switch image {
+				case .empty:
+					ProgressView()
 						.frame(width: avatarSize, height: avatarSize)
-						.clipShape(Circle())
-					HStack {
-						Spacer()
-						VStack {
+				case .success(let image):
+					ZStack {
+						image
+							.resizable()
+							.aspectRatio(contentMode: .fill)
+							.frame(width: avatarSize, height: avatarSize)
+							.clipShape(Circle())
+						HStack {
 							Spacer()
-							if contactAvatarModel.presenceStatus == .Online ||	contactAvatarModel.presenceStatus == .Busy {
-								Image(contactAvatarModel.presenceStatus == .Online ? "presence-online" : "presence-busy")
-									.resizable()
-									.frame(width: avatarSize/4, height: avatarSize/4)
-									.padding(.trailing, avatarSize == 45 ? 1 : 3)
-									.padding(.bottom, avatarSize == 45 ? 1 : 3)
+							VStack {
+								Spacer()
+								if !hidePresence && (contactAvatarModel.presenceStatus == .Online || contactAvatarModel.presenceStatus == .Busy) {
+									Image(contactAvatarModel.presenceStatus == .Online ? "presence-online" : "presence-busy")
+										.resizable()
+										.frame(width: avatarSize/4, height: avatarSize/4)
+										.padding(.trailing, avatarSize == 45 ? 1 : 3)
+										.padding(.bottom, avatarSize == 45 ? 1 : 3)
+								}
 							}
 						}
+						.frame(width: avatarSize, height: avatarSize)
 					}
-					.frame(width: avatarSize, height: avatarSize)
+				case .failure:
+					Image("profil-picture-default")
+						.resizable()
+						.frame(width: avatarSize, height: avatarSize)
+						.clipShape(Circle())
+				@unknown default:
+					EmptyView()
 				}
-			case .failure:
-				Image("profil-picture-default")
-					.resizable()
-					.frame(width: avatarSize, height: avatarSize)
-					.clipShape(Circle())
-			@unknown default:
-				EmptyView()
 			}
+		} else {
+			Image("profil-picture-default")
+				.resizable()
+				.frame(width: avatarSize, height: avatarSize)
+				.clipShape(Circle())
 		}
 	}
 }

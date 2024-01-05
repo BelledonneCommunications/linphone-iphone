@@ -24,8 +24,9 @@ struct HistoryContactFragment: View {
 	
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var historyViewModel: HistoryViewModel
@@ -372,6 +373,15 @@ struct HistoryContactFragment: View {
 								Spacer()
 								
 								Button(action: {
+                                    if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
+                                        telecomManager.doCallWithCore(
+                                            addr: historyViewModel.displayedCall!.toAddress!
+                                        )
+                                    } else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
+                                        telecomManager.doCallWithCore(
+                                            addr: historyViewModel.displayedCall!.fromAddress!
+                                        )
+                                    }
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -380,11 +390,6 @@ struct HistoryContactFragment: View {
 												.resizable()
 												.foregroundStyle(Color.grayMain2c600)
 												.frame(width: 25, height: 25)
-												.onTapGesture {
-													withAnimation {
-														
-													}
-												}
 										}
 										.padding(16)
 										.background(Color.grayMain2c200)

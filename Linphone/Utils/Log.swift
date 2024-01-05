@@ -84,19 +84,18 @@ class Log: LoggingServiceDelegate {
 	private func output(_ message: String, _ level: Int, _ domain: String = Bundle.main.bundleIdentifier!) {
 		let log = "[\(domain)][\(levelToStrings[level] ?? "Unkown")] \(message)\n"
 		if #available(iOS 10.0, *) {
-			os_log("%{public}@", type: levelToOSleLogLevel[level] ?? .info,log)
+			os_log("%{public}@", type: levelToOSleLogLevel[level] ?? .info, log)
 		} else {
 			NSLog(log)
 		}
 	}
 		
-	
 	func onLogMessageWritten(logService: linphonesw.LoggingService, domain: String, level: linphonesw.LogLevel, message: String) {
 		output(message, level.rawValue, domain)
 	}
 
 	public class func stackTrace() {
-		Thread.callStackSymbols.forEach{ print($0) }
+		Thread.callStackSymbols.forEach { print($0) }
 	}
 	
 	// Debug

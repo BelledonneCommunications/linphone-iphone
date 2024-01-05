@@ -25,6 +25,7 @@ struct ContactInnerFragment: View {
 	
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var contactViewModel: ContactViewModel
@@ -150,6 +151,7 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
+                                    telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!)
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -158,11 +160,6 @@ struct ContactInnerFragment: View {
 												.resizable()
 												.foregroundStyle(Color.grayMain2c600)
 												.frame(width: 25, height: 25)
-												.onTapGesture {
-													withAnimation {
-														
-													}
-												}
 										}
 										.padding(16)
 										.background(Color.grayMain2c200)

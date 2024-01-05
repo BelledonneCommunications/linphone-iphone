@@ -29,10 +29,11 @@ struct ContactsListFragment: View {
 	
 	@Binding var showingSheet: Bool
 	
+    var startCallFunc: (_ addr: Address) -> Void
+	
 	var body: some View {
 		ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
-			Button {
-			} label: {
+			HStack {
 				HStack {
 					if index == 0 
 						|| contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
@@ -77,21 +78,19 @@ struct ContactsListFragment: View {
 						.foregroundStyle(Color.orangeMain500)
 				}
 			}
-			.simultaneousGesture(
-				LongPressGesture()
-					.onEnded { _ in
-						contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
-						showingSheet.toggle()
-					}
-			)
-			.highPriorityGesture(
-				TapGesture()
-					.onEnded { _ in
-						withAnimation {
-							contactViewModel.indexDisplayedFriend = index
-						}
-					}
-			)
+			.background(.white)
+			.onTapGesture {
+				withAnimation {
+					contactViewModel.indexDisplayedFriend = index
+				}
+				if contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.address != nil {
+					startCallFunc(contactsManager.lastSearch[index].friend!.address!)
+				}
+		  	}
+		  	.onLongPressGesture(minimumDuration: 0.2) {
+				contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
+				showingSheet.toggle()
+			}
 			.buttonStyle(.borderless)
 			.listRowSeparator(.hidden)
 		}
@@ -99,5 +98,5 @@ struct ContactsListFragment: View {
 }
 
 #Preview {
-	ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false))
+    ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: {_ in })
 }

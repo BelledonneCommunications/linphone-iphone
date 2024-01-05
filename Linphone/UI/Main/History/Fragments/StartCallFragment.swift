@@ -24,6 +24,7 @@ struct StartCallFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var startCallViewModel: StartCallViewModel
 	
@@ -154,7 +155,23 @@ struct StartCallFragment: View {
 							.padding(.horizontal, 16)
 						}
 						
-						ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false))
+                        ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
+							showingDialer = false
+							
+							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+								magicSearch.searchForContacts(
+									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							}
+							
+							startCallViewModel.searchField = ""
+							magicSearch.currentFilterSuggestions = ""
+							delayColorDismiss()
+							
+							withAnimation {
+								isShowStartCallFragment.toggle()
+                                telecomManager.doCallWithCore(addr: addr)
+							}
+						})
 							.padding(.horizontal, 16)
 						
 						HStack(alignment: .center) {
@@ -220,20 +237,29 @@ struct StartCallFragment: View {
 							.foregroundStyle(Color.orangeMain500)
 					}
 				}
+				.onTapGesture {
+					showingDialer = false
+					
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+						magicSearch.searchForContacts(
+							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+					}
+					
+					startCallViewModel.searchField = ""
+					magicSearch.currentFilterSuggestions = ""
+					delayColorDismiss()
+					
+					withAnimation {
+						isShowStartCallFragment.toggle()
+                        if contactsManager.lastSearchSuggestions[index].address != nil {
+                            telecomManager.doCallWithCore(
+                                addr: contactsManager.lastSearchSuggestions[index].address!
+                            )
+                        }
+					}
+				}
 				.padding(.horizontal)
 			}
-			.simultaneousGesture(
-				LongPressGesture()
-					.onEnded { _ in
-						
-					}
-			)
-			.highPriorityGesture(
-				TapGesture()
-					.onEnded { _ in
-						
-					}
-			)
 			.buttonStyle(.borderless)
 			.listRowSeparator(.hidden)
 		}

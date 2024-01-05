@@ -28,6 +28,7 @@ struct ContentView: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	var magicSearch = MagicSearchSingleton.shared
@@ -445,19 +446,21 @@ struct ContentView: View {
 							})
 							: ContactAvatarModel(friend: nil, withPresence: false)
 							
-							HistoryContactFragment(
-								contactAvatarModel: contactAvatarModel!,
-								historyViewModel: historyViewModel,
-								historyListViewModel: historyListViewModel,
-								contactViewModel: contactViewModel,
-								editContactViewModel: editContactViewModel,
-								isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
-								isShowEditContactFragment: $isShowEditContactFragment,
-								indexPage: $index
-							)
-							.frame(maxWidth: .infinity)
-							.background(Color.gray100)
-							.ignoresSafeArea(.keyboard)
+							if contactAvatarModel != nil {
+								HistoryContactFragment(
+									contactAvatarModel: contactAvatarModel!,
+									historyViewModel: historyViewModel,
+									historyListViewModel: historyListViewModel,
+									contactViewModel: contactViewModel,
+									editContactViewModel: editContactViewModel,
+									isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
+									isShowEditContactFragment: $isShowEditContactFragment,
+									indexPage: $index
+								)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								.ignoresSafeArea(.keyboard)
+							}
 						}
 					}
 					.onAppear {
@@ -508,19 +511,56 @@ struct ContentView: View {
 				}
 				
 				if isShowStartCallFragment {
-					StartCallFragment(
-						startCallViewModel: startCallViewModel,
-						isShowStartCallFragment: $isShowStartCallFragment,
-						showingDialer: $showingDialer
-					)
-					.zIndex(3)
-					.transition(.move(edge: .bottom))
-					.halfSheet(showSheet: $showingDialer) {
-						DialerBottomSheet(
+					
+					if #available(iOS 16.4, *) {
+						if idiom != .pad {
+							StartCallFragment(
+								startCallViewModel: startCallViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
+								showingDialer: $showingDialer
+							)
+							.zIndex(3)
+							.transition(.move(edge: .bottom))
+							.sheet(isPresented: $showingDialer) {
+								DialerBottomSheet(
+									startCallViewModel: startCallViewModel,
+									showingDialer: $showingDialer
+								)
+								.presentationDetents([.medium])
+								// .interactiveDismissDisabled()
+								.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+							}
+						} else {
+							StartCallFragment(
+								startCallViewModel: startCallViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
+								showingDialer: $showingDialer
+							)
+							.zIndex(3)
+							.transition(.move(edge: .bottom))
+							.halfSheet(showSheet: $showingDialer) {
+								DialerBottomSheet(
+									startCallViewModel: startCallViewModel,
+									showingDialer: $showingDialer
+								)
+							} onDismiss: {}
+						}
+						
+					} else {
+						StartCallFragment(
 							startCallViewModel: startCallViewModel,
+							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer
 						)
-					} onDismiss: {}
+						.zIndex(3)
+						.transition(.move(edge: .bottom))
+						.halfSheet(showSheet: $showingDialer) {
+							DialerBottomSheet(
+								startCallViewModel: startCallViewModel,
+								showingDialer: $showingDialer
+							)
+						} onDismiss: {}
+					}
 				}
 				
 				if isShowDeleteContactPopup {
@@ -620,10 +660,16 @@ struct ContentView: View {
 					}
 				}
 				
-				//if sharedMainViewModel.displayToast {
+				if telecomManager.callInProgress {
+					CallView(callViewModel: CallViewModel())
+						.zIndex(3)
+						.transition(.scale.combined(with: .move(edge: .top)))
+				}
+				
+				// if sharedMainViewModel.displayToast {
 				ToastView()
 					.zIndex(3)
-				//}
+				// }
 			}
 		}
 		.overlay {
@@ -649,6 +695,9 @@ struct ContentView: View {
 				coreContext.onForeground()
 				if !isShowStartCallFragment {
 					contactsManager.fetchContacts()
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+						historyListViewModel.computeCallLogsList()
+					}
 				}
 				print("Active")
 			} else if newPhase == .inactive {

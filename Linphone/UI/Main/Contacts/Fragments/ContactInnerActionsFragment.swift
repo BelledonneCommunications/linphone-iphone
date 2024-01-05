@@ -22,6 +22,7 @@ import SwiftUI
 struct ContactInnerActionsFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
@@ -62,8 +63,7 @@ struct ContactInnerActionsFragment: View {
 			VStack(spacing: 0) {
 				if contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count, id: \.self) { index in
-						Button {
-						} label: {
+						HStack {
 							HStack {
 								VStack {
 									Text("SIP address :")
@@ -82,30 +82,22 @@ struct ContactInnerActionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c600)
 									.frame(width: 25, height: 25)
-									.onTapGesture {
-										withAnimation {
-											
-										}
-									}
 							}
 							.padding(.vertical, 15)
 							.padding(.horizontal, 20)
 						}
-						.simultaneousGesture(
-							LongPressGesture()
-								.onEnded { _ in
-									contactViewModel.stringToCopy = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly()
-									showingSheet.toggle()
-								}
-						)
-						.highPriorityGesture(
-							TapGesture()
-								.onEnded { _ in
-									withAnimation {
-										
-									}
-								}
-						)
+						.background(.white)
+						.onTapGesture {
+							withAnimation {
+								telecomManager.doCallWithCore(
+									addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index]
+								)
+							}
+						}
+						.onLongPressGesture(minimumDuration: 0.2) {
+							contactViewModel.stringToCopy = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly()
+							showingSheet.toggle()
+						}
 						
 						if !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.isEmpty
 							|| index < contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count - 1 {
@@ -117,8 +109,7 @@ struct ContactInnerActionsFragment: View {
 					}
 					
 					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count, id: \.self) { index in
-						Button {
-						} label: {
+						HStack {
 							HStack {
 								VStack {
 									if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label != nil
@@ -138,37 +129,16 @@ struct ContactInnerActionsFragment: View {
 										.fixedSize(horizontal: false, vertical: true)
 								}
 								Spacer()
-								
-								Image("phone")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-									.onTapGesture {
-										withAnimation {
-											
-										}
-									}
 							}
 							.padding(.vertical, 15)
 							.padding(.horizontal, 20)
 						}
-						.simultaneousGesture(
-							LongPressGesture()
-								.onEnded { _ in
-									contactViewModel.stringToCopy = 
-									contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber
-									showingSheet.toggle()
-								}
-						)
-						.highPriorityGesture(
-							TapGesture()
-								.onEnded { _ in
-									withAnimation {
-										
-									}
-								}
-						)
+						.background(.white)
+						.onLongPressGesture(minimumDuration: 0.2) {
+							contactViewModel.stringToCopy =
+							   contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber
+							showingSheet.toggle()
+						}
 						
 						if index < contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count - 1 {
 							VStack {
