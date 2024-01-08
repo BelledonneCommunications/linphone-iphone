@@ -65,8 +65,6 @@ class ContactAvatarModel: ObservableObject {
 	
 	func addSubscription() {
 		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (Friend)) in
-			print("publisherpublisher onLogCollectionUploadStateChanged \(cbValue.address?.asStringUriOnly() ?? "")")
-			
 			self.presenceStatus = cbValue.consolidatedPresence
 			if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
 				if cbValue.consolidatedPresence == .Online || cbValue.presenceModel!.latestActivityTimestamp != -1 {

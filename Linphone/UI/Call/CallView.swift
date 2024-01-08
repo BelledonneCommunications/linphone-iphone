@@ -49,8 +49,8 @@ struct CallView: View {
     var body: some View {
         GeometryReader { geo in
             if #available(iOS 16.4, *) {
-				innerView(geoHeight: geo.size.height, geoWidth: geo.size.width)
-					.sheet(isPresented: 
+				innerView(geometry: geo)
+					.sheet(isPresented:
 							.constant(
 								telecomManager.callStarted
 								&& !fullscreenVideo
@@ -424,8 +424,7 @@ struct CallView: View {
     }
     
     @ViewBuilder
-	func innerView(geoHeight: CGFloat, geoWidth: CGFloat) -> some View {
-		
+	func innerView(geometry: GeometryProxy) -> some View {
         VStack {
 			if !fullscreenVideo {
 				Rectangle()
@@ -535,7 +534,16 @@ struct CallView: View {
 						core.nativeVideoWindow = view
 					}
 				}
-				.frame(width: 120*5, height: 160*5)
+				.frame(
+					width: 
+						angleDegree == 0
+					? 120 * ((geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom) / 160)
+					: 120 * ((geometry.size.width + geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing) / 120),
+					height:
+						angleDegree == 0
+					? 160 * ((geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom) / 160)
+					: 160 * ((geometry.size.width + geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing) / 120)
+				)
 				.scaledToFill()
 				.clipped()
 				.onTapGesture {
@@ -552,14 +560,16 @@ struct CallView: View {
 									core.nativePreviewWindow = view
 								}
 							}
-							.frame(width: 120*1.2, height: 160*1.2)
+							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
 							.cornerRadius(20)
 							.padding(10)
-							.rotationEffect(Angle(degrees: angleDegree))
 							.padding(.trailing, abs(angleDegree/2))
 						}
 					}
-					.frame(maxWidth: fullscreenVideo ? geoWidth : geoWidth - 8, maxHeight: fullscreenVideo ? geoHeight + 140 : geoHeight - 140)
+					.frame(
+						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+					)
 				}
 				
                 if !telecomManager.callStarted && !fullscreenVideo {
@@ -581,7 +591,10 @@ struct CallView: View {
                     .background(.clear)
                 }
             }
-			.frame(maxWidth: fullscreenVideo ? geoWidth : geoWidth - 8, maxHeight: fullscreenVideo ? geoHeight + 140 : geoHeight - 140)
+			.frame(
+				maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
+				maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+			)
             .background(Color.gray600)
             .cornerRadius(20)
 			.padding(.horizontal, fullscreenVideo ? 0 : 4)
@@ -596,6 +609,8 @@ struct CallView: View {
 						angleDegree = 90
 					}
 				}
+				
+				callViewModel.orientationUpdate(orientation: orientation)
 			}
 			.onAppear {
 				if orientation == .portrait && orientation == .portraitUpsideDown {
@@ -607,6 +622,8 @@ struct CallView: View {
 						angleDegree = 90
 					}
 				}
+				
+				callViewModel.orientationUpdate(orientation: orientation)
 			}
             
 			if !fullscreenVideo {
@@ -680,7 +697,7 @@ struct CallView: View {
 							.background(Color.gray500)
 							.cornerRadius(40)
 						}
-						.frame(height: geoHeight * 0.15)
+						.frame(height: geometry.size.height * 0.15)
 						.padding(.horizontal, 20)
 						.padding(.top, -6)
 					}

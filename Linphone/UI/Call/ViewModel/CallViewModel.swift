@@ -123,10 +123,10 @@ class CallViewModel: ObservableObject {
 				do {
 					let params = try core.createCallParams(call: self.currentCall)
 					
-						params.videoEnabled = !params.videoEnabled
-						Log.info(
-							"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
-						)
+					params.videoEnabled = !params.videoEnabled
+					Log.info(
+						"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
+					)
 					try self.currentCall!.update(params: params)
 					
 					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
@@ -141,7 +141,7 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			let currentDevice = core.videoDevice
 			Log.info("[CallViewModel] Current camera device is \(currentDevice)")
-
+			
 			core.videoDevicesList.forEach { camera in
 				if camera != currentDevice && camera != "StaticImage: Static picture" {
 					Log.info("[CallViewModel] New camera device will be \(camera)")
@@ -235,6 +235,29 @@ class CallViewModel: ObservableObject {
 			}
 		} else {
 			return 2
+		}
+	}
+	
+	func orientationUpdate(orientation: UIDeviceOrientation) {
+		coreContext.doOnCoreQueue { core in
+			let oldLinphoneOrientation = core.deviceRotation
+			var newRotation = 0
+			switch orientation {
+			case .portrait:
+				newRotation = 0
+			case .portraitUpsideDown:
+				newRotation = 180
+			case .landscapeRight:
+				newRotation = 90
+			case .landscapeLeft:
+				newRotation = 270
+			default:
+				newRotation = oldLinphoneOrientation
+			}
+			
+			if oldLinphoneOrientation != newRotation {
+				core.deviceRotation = newRotation
+			}
 		}
 	}
 }
