@@ -313,6 +313,10 @@ class TelecomManager: ObservableObject {
 		} else {
 			let video = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 			
+			if video {
+				Log.info("[Call] Remote video is activated")
+			}
+			
 			if call.userData == nil {
 				let appData = CallAppData()
 				TelecomManager.setAppData(sCall: call, appData: appData)

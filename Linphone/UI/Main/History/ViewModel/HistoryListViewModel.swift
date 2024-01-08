@@ -49,7 +49,6 @@ class HistoryListViewModel: ObservableObject {
 			}
 			
 			self.callLogSubscription = core.publisher?.onCallLogUpdated?.postOnCoreQueue { (_: (_: Core, _: CallLog)) in
-				print("publisherpublisher onCallLogUpdated")
 				let account = core.defaultAccount
 				let logs = account != nil ? account!.callLogs : core.callLogs
 				

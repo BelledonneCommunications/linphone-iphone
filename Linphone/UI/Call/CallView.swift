@@ -21,6 +21,7 @@
 import SwiftUI
 import CallKit
 import AVFAudio
+import linphonesw
 
 struct CallView: View {
     
@@ -41,14 +42,24 @@ struct CallView: View {
 	@State var options: Int = 1
 	
 	@State var imageAudioRoute: String = ""
+	
+	@State var angleDegree = 0.0
+	@State var fullscreenVideo = false
     
     var body: some View {
         GeometryReader { geo in
             if #available(iOS 16.4, *) {
-				innerView(geoHeight: geo.size.height)
-					.sheet(isPresented: .constant(telecomManager.callStarted && !hideButtonsSheet && idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
-																								   || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height))) {
-                        GeometryReader { _ in
+				innerView(geometry: geo)
+					.sheet(isPresented:
+							.constant(
+								telecomManager.callStarted
+								&& !fullscreenVideo
+								&& !hideButtonsSheet
+								&& idiom != .pad
+								&& !(orientation == .landscapeLeft || orientation == .landscapeRight || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+							)
+					) {
+						GeometryReader { _ in
                             VStack(spacing: 0) {
                                 HStack(spacing: 12) {
                                     Button {
@@ -68,8 +79,9 @@ struct CallView: View {
                                     Spacer()
                                     
                                     Button {
+										callViewModel.toggleVideo()
                                     } label: {
-                                        Image("video-camera")
+										Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
                                             .renderingMode(.template)
                                             .resizable()
                                             .foregroundStyle(.white)
@@ -81,7 +93,7 @@ struct CallView: View {
                                     .cornerRadius(40)
                                     
                                     Button {
-										callViewModel.muteCall()
+										callViewModel.toggleMuteMicrophone()
                                     } label: {
 										Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
                                             .renderingMode(.template)
@@ -129,6 +141,7 @@ struct CallView: View {
                                 }
                                 .frame(height: geo.size.height * 0.15)
                                 .padding(.horizontal, 20)
+								.padding(.top, -6)
                                 
                                 HStack(spacing: 0) {
                                     VStack {
@@ -231,6 +244,7 @@ struct CallView: View {
                                     
                                     VStack {
                                         Button {
+											callViewModel.togglePause()
                                         } label: {
                                             Image("pause")
                                                 .renderingMode(.template)
@@ -250,6 +264,7 @@ struct CallView: View {
                                     
                                     VStack {
                                         Button {
+											callViewModel.toggleRecording()
                                         } label: {
                                             Image("record-fill")
                                                 .renderingMode(.template)
@@ -409,35 +424,51 @@ struct CallView: View {
     }
     
     @ViewBuilder
-	func innerView(geoHeight: CGFloat) -> some View {
+	func innerView(geometry: GeometryProxy) -> some View {
         VStack {
-            Rectangle()
-                .foregroundColor(Color.orangeMain500)
-                .edgesIgnoringSafeArea(.top)
-                .frame(height: 0)
-            
-            HStack {
-                if callViewModel.direction == .Outgoing {
-                    Image("outgoing-call")
-                        .resizable()
-                        .frame(width: 15, height: 15)
-                        .padding(.horizontal)
-                    
-                    Text("Outgoing call")
-                        .foregroundStyle(.white)
-                } else {
-                    Image("incoming-call")
-                        .resizable()
-                        .frame(width: 15, height: 15)
-                        .padding(.horizontal)
-                    
-                    Text("Incoming call")
-                        .foregroundStyle(.white)
-                }
-                
-                Spacer()
-            }
-            .frame(height: 40)
+			if !fullscreenVideo {
+				Rectangle()
+					.foregroundColor(Color.orangeMain500)
+					.edgesIgnoringSafeArea(.top)
+					.frame(height: 0)
+				
+				HStack {
+					if callViewModel.direction == .Outgoing {
+						Image("outgoing-call")
+							.resizable()
+							.frame(width: 15, height: 15)
+							.padding(.horizontal)
+						
+						Text("Outgoing call")
+							.foregroundStyle(.white)
+					} else {
+						Image("incoming-call")
+							.resizable()
+							.frame(width: 15, height: 15)
+							.padding(.horizontal)
+						
+						Text("Incoming call")
+							.foregroundStyle(.white)
+					}
+					
+					Spacer()
+					
+					if callViewModel.cameraDisplayed {
+						Button {
+							callViewModel.switchCamera()
+						} label: {
+							Image("camera-rotate")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(.white)
+								.frame(width: 30, height: 30)
+								.padding(.horizontal)
+						}
+					}
+				}
+				.frame(height: 40)
+				.zIndex(1)
+			}
             
             ZStack {
                 VStack {
@@ -497,8 +528,51 @@ struct CallView: View {
                     
                     Spacer()
                 }
-                
-                if !telecomManager.callStarted {
+				
+				LinphoneVideoViewHolder { view in
+					coreContext.doOnCoreQueue { core in
+						core.nativeVideoWindow = view
+					}
+				}
+				.frame(
+					width: 
+						angleDegree == 0
+					? 120 * ((geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom) / 160)
+					: 120 * ((geometry.size.width + geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing) / 120),
+					height:
+						angleDegree == 0
+					? 160 * ((geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom) / 160)
+					: 160 * ((geometry.size.width + geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing) / 120)
+				)
+				.scaledToFill()
+				.clipped()
+				.onTapGesture {
+					fullscreenVideo.toggle()
+				}
+				
+				if callViewModel.cameraDisplayed {
+					HStack {
+						Spacer()
+						VStack {
+							Spacer()
+							LinphoneVideoViewHolder { view in
+								coreContext.doOnCoreQueue { core in
+									core.nativePreviewWindow = view
+								}
+							}
+							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+							.cornerRadius(20)
+							.padding(10)
+							.padding(.trailing, abs(angleDegree/2))
+						}
+					}
+					.frame(
+						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+					)
+				}
+				
+                if !telecomManager.callStarted && !fullscreenVideo {
                     VStack {
                         ActivityIndicator()
                             .frame(width: 20, height: 20)
@@ -517,14 +591,45 @@ struct CallView: View {
                     .background(.clear)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+			.frame(
+				maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
+				maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+			)
             .background(Color.gray600)
             .cornerRadius(20)
-            .padding(.horizontal, 4)
+			.padding(.horizontal, fullscreenVideo ? 0 : 4)
+			.onRotate { newOrientation in
+				orientation = newOrientation
+				if orientation == .portrait || orientation == .portraitUpsideDown {
+					angleDegree = 0
+				} else {
+					if orientation == .landscapeLeft {
+						angleDegree = -90
+					} else if orientation == .landscapeRight {
+						angleDegree = 90
+					}
+				}
+				
+				callViewModel.orientationUpdate(orientation: orientation)
+			}
+			.onAppear {
+				if orientation == .portrait && orientation == .portraitUpsideDown {
+					angleDegree = 0
+				} else {
+					if orientation == .landscapeLeft {
+						angleDegree = -90
+					} else if orientation == .landscapeRight {
+						angleDegree = 90
+					}
+				}
+				
+				callViewModel.orientationUpdate(orientation: orientation)
+			}
             
-            if telecomManager.callStarted {
+			if !fullscreenVideo {
+				if telecomManager.callStarted {
 					if telecomManager.callStarted && idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
-																		 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+																		|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
 						HStack(spacing: 12) {
 							HStack {
 								
@@ -552,6 +657,7 @@ struct CallView: View {
 							Spacer()
 							
 							Button {
+								callViewModel.toggleVideo()
 							} label: {
 								Image("video-camera")
 									.renderingMode(.template)
@@ -565,7 +671,7 @@ struct CallView: View {
 							.cornerRadius(40)
 							
 							Button {
-								callViewModel.muteCall()
+								callViewModel.toggleMuteMicrophone()
 							} label: {
 								Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
 									.renderingMode(.template)
@@ -591,52 +697,57 @@ struct CallView: View {
 							.background(Color.gray500)
 							.cornerRadius(40)
 						}
-						.frame(height: geoHeight * 0.15)
+						.frame(height: geometry.size.height * 0.15)
 						.padding(.horizontal, 20)
+						.padding(.top, -6)
 					}
-            } else {
-                HStack(spacing: 12) {
-                    HStack {
-                        Spacer()
-                        
-                        Button {
-							callViewModel.terminateCall()
-                        } label: {
-                            Image("phone-disconnect")
-                                .renderingMode(.template)
-                                .resizable()
-                                .foregroundStyle(.white)
-                                .frame(width: 32, height: 32)
-                            
-                        }
-                        .frame(width: 90, height: 60)
-                        .background(Color.redDanger500)
-                        .cornerRadius(40)
-                        
-                        Button {
-							callViewModel.acceptCall()
-                        } label: {
-                            Image("phone")
-                                .renderingMode(.template)
-                                .resizable()
-                                .foregroundStyle(.white)
-                                .frame(width: 32, height: 32)
-                            
-                        }
-                        .frame(width: 90, height: 60)
-                        .background(Color.greenSuccess500)
-                        .cornerRadius(40)
-                        
-                        Spacer()
-                    }
-                    .frame(height: 60)
-                }
-                .padding(.horizontal, 25)
-                .padding(.top, 20)
-            }
+				} else {
+					HStack(spacing: 12) {
+						HStack {
+							Spacer()
+							
+							Button {
+								callViewModel.terminateCall()
+							} label: {
+								Image("phone-disconnect")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+								
+							}
+							.frame(width: 90, height: 60)
+							.background(Color.redDanger500)
+							.cornerRadius(40)
+							
+							Button {
+								callViewModel.acceptCall()
+							} label: {
+								Image("phone")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+								
+							}
+							.frame(width: 90, height: 60)
+							.background(Color.greenSuccess500)
+							.cornerRadius(40)
+							
+							Spacer()
+						}
+						.frame(height: 60)
+					}
+					.padding(.horizontal, 25)
+					.padding(.top, 20)
+				}
+			}
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.gray900)
+		.if(fullscreenVideo) { view in
+			view.ignoresSafeArea(.all)
+		}
     }
 	
 	func getAudioRouteImage() {
