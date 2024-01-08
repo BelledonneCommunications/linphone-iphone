@@ -273,7 +273,7 @@ struct CallView: View {
                                                 .frame(width: 32, height: 32)
                                         }
                                         .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
+										.background(callViewModel.isRecording ? Color.redDanger500 : Color.gray500)
                                         .cornerRadius(40)
                                         
                                         Text("Record")
@@ -565,6 +565,28 @@ struct CallView: View {
 							.padding(10)
 							.padding(.trailing, abs(angleDegree/2))
 						}
+					}
+					.frame(
+						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+					)
+				}
+				
+				if callViewModel.isRecording {
+					HStack {
+						VStack {
+							Image("record-fill")
+								.renderingMode(.template)
+						  		.resizable()
+						  		.foregroundStyle(Color.redDanger500)
+								.frame(width: 32, height: 32)
+								.padding(10)
+								.if(fullscreenVideo) { view in
+									view.padding(.top, 30)
+								}
+							Spacer()
+						}
+						Spacer()
 					}
 					.frame(
 						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,

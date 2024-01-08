@@ -42,6 +42,8 @@ class TelecomManager: ObservableObject {
 	
 	@Published var callInProgress: Bool = false
     @Published var callStarted: Bool = false
+	@Published var remoteVideo: Bool = false
+	@Published var  isRemoteRecording: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -125,6 +127,19 @@ class TelecomManager: ObservableObject {
 			}
         }
     }
+	
+	private func makeRecordFilePath() -> String{
+		var filePath = "recording_"
+		let now = Date()
+		let dateFormat = DateFormatter()
+		dateFormat.dateFormat = "E-d-MMM-yyyy-HH-mm-ss"
+		let date = dateFormat.string(from: now)
+		filePath = filePath.appending("\(date).mkv")
+		
+		let paths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
+		let writablePath = paths[0]
+		return writablePath.appending("/\(filePath)")
+	}
     
 	func doCall(core: Core, addr: Address, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
 		// let displayName = FastAddressBook.displayName(for: addr.getCobject)
@@ -154,6 +169,9 @@ class TelecomManager: ObservableObject {
 			// let writablePath = AppManager.recordingFilePathFromCall(address: addr.username! )
 			// Log.directLog(BCTBX_LOG_DEBUG, text: "record file path: \(writablePath)")
 			// lcallParams.recordFile = writablePath
+			
+			lcallParams.recordFile = makeRecordFilePath()
+			
 			if isSas {
 				lcallParams.mediaEncryption = .ZRTP
 			}
@@ -184,9 +202,12 @@ class TelecomManager: ObservableObject {
 			}
 			
 			DispatchQueue.main.async {
+				
 				self.callStarted = true
-				withAnimation {
-					self.callInProgress = true
+				if self.callInProgress == false {
+					withAnimation {
+						self.callInProgress = true
+					}
 				}
 			}
 		}
@@ -195,6 +216,8 @@ class TelecomManager: ObservableObject {
 	func acceptCall(core: Core, call: Call, hasVideo: Bool) {
 		do {
 			let callParams = try core.createCallParams(call: call)
+			
+			callParams.recordFile = makeRecordFilePath()
 			callParams.videoEnabled = hasVideo
 			/*if (ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference")) {
 				let low_bandwidth = (AppManager.network() == .network_2g)
@@ -311,10 +334,20 @@ class TelecomManager: ObservableObject {
 		if cstate == .PushIncomingReceived {
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
 		} else {
-			let video = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+			remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 			
-			if video {
+			if remoteVideo {
 				Log.info("[Call] Remote video is activated")
+			}
+			
+			isRemoteRecording = call.remoteParams?.isRecording ?? false
+			
+			if isRemoteRecording && ToastViewModel.shared.toastMessage == "" {
+				
+				ToastViewModel.shared.toastMessage = "\(call.remoteAddress) is recording"
+				ToastViewModel.shared.displayToast.toggle()
+				
+				Log.info("[Call] Call is recording by \(call.remoteAddress)")
 			}
 			
 			if call.userData == nil {
@@ -351,7 +384,7 @@ class TelecomManager: ObservableObject {
 						providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 						providerDelegate.uuids.removeValue(forKey: callId)
 						providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, displayName: displayName)
 					}
 				} else if TelecomManager.callKitEnabled(core: core) {
 					/*
@@ -374,9 +407,9 @@ class TelecomManager: ObservableObject {
 					
 					if uuid != nil {
 						// Tha app is now registered, updated the call already existed.
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, displayName: displayName)
 					} else {
-						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId, displayName: displayName)
+						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, callId: callId, displayName: displayName)
 					}
 				} /* else if UIApplication.shared.applicationState != .active {
 					// not support callkit , use notif

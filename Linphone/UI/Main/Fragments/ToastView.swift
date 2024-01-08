@@ -54,6 +54,13 @@ struct ToastView: View {
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
+					
+					case let str where str.contains("is recording"):
+						Text(toastViewModel.toastMessage)
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
 						
 					case "Failed":
 						Text("Invalid QR code!")

@@ -38,6 +38,7 @@ struct ContentView: View {
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var startCallViewModel: StartCallViewModel
+	@ObservedObject var callViewModel: CallViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -661,9 +662,12 @@ struct ContentView: View {
 				}
 				
 				if telecomManager.callInProgress {
-					CallView(callViewModel: CallViewModel())
+					CallView(callViewModel: callViewModel)
 						.zIndex(3)
 						.transition(.scale.combined(with: .move(edge: .top)))
+						.onAppear {
+							callViewModel.resetCallView()
+						}
 				}
 				
 				// if sharedMainViewModel.displayToast {
@@ -722,7 +726,8 @@ struct ContentView: View {
 		editContactViewModel: EditContactViewModel(),
 		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
-		startCallViewModel: StartCallViewModel()
+		startCallViewModel: StartCallViewModel(),
+		callViewModel: CallViewModel()
 	)
 }
 // swiftlint:enable type_body_length

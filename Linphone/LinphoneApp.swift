@@ -30,6 +30,7 @@ struct LinphoneApp: App {
 	@State private var historyViewModel: HistoryViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var startCallViewModel: StartCallViewModel?
+	@State private var callViewModel: CallViewModel?
 	
 	var body: some Scene {
 		WindowGroup {
@@ -43,13 +44,15 @@ struct LinphoneApp: App {
 							&& editContactViewModel != nil
 							&& historyViewModel != nil
 							&& historyListViewModel != nil
-							&& startCallViewModel != nil {
+							&& startCallViewModel != nil
+							&& callViewModel != nil {
 					ContentView(
 						contactViewModel: contactViewModel!,
 						editContactViewModel: editContactViewModel!,
 						historyViewModel: historyViewModel!,
 						historyListViewModel: historyListViewModel!,
-						startCallViewModel: startCallViewModel!
+						startCallViewModel: startCallViewModel!,
+						callViewModel: callViewModel!
 					)
 				} else {
 					SplashScreen()
@@ -62,6 +65,7 @@ struct LinphoneApp: App {
 						historyViewModel = HistoryViewModel()
 						historyListViewModel = HistoryListViewModel()
 						startCallViewModel = StartCallViewModel()
+						callViewModel = CallViewModel()
 					}
 			}
 		}
