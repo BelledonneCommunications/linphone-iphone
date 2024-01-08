@@ -209,9 +209,11 @@ extension ProviderDelegate: CXProviderDelegate {
 		let callInfo = callInfos[uuid]
 		let callId = callInfo?.callId ?? ""
 		
-		DispatchQueue.main.async {
-			withAnimation {
-				TelecomManager.shared.callInProgress = true
+		if TelecomManager.shared.callInProgress == false {
+			DispatchQueue.main.async {
+				withAnimation {
+					TelecomManager.shared.callInProgress = true
+				}
 			}
 		}
 		CoreContext.shared.doOnCoreQueue { core in

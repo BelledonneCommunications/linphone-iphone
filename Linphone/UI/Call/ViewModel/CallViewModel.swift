@@ -33,6 +33,8 @@ class CallViewModel: ObservableObject {
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var micMutted: Bool = false
 	@Published var cameraDisplayed: Bool = false
+	@Published var isRecording: Bool = false
+	@Published var isRemoteRecording: Bool = false
 	@State var timeElapsed: Int = 0
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -40,7 +42,6 @@ class CallViewModel: ObservableObject {
 	var currentCall: Call?
 	
 	init() {
-		
 		do {
 			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
 			try AVAudioSession.sharedInstance().setActive(true)
@@ -48,6 +49,10 @@ class CallViewModel: ObservableObject {
 			
 		}
 		
+		resetCallView()
+	}
+	
+	func resetCallView() {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				self.currentCall = core.currentCall
@@ -70,6 +75,7 @@ class CallViewModel: ObservableObject {
 					//self.avatarModel = ???
 					self.micMutted = self.currentCall!.microphoneMuted
 					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
+					self.isRecording = self.currentCall!.params!.isRecording
 				}
 			}
 		}
@@ -164,10 +170,9 @@ class CallViewModel: ObservableObject {
 				} else {
 					Log.info("[CallViewModel] Starting call recording \(self.currentCall!.params!.isRecording)")
 					self.currentCall!.startRecording()
-					Log.info("[CallViewModel] Starting call recording \(self.currentCall!.params!.isRecording)")
 				}
-				//var recording = self.currentCall!.params!.isRecording
-				//isRecording.postValue(recording)
+				
+				self.isRecording = self.currentCall!.params!.isRecording
 			}
 		}
 	}
