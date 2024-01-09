@@ -28,13 +28,23 @@ class PermissionManager: ObservableObject {
 	@Published var photoLibraryPermissionGranted = false
 	@Published var cameraPermissionGranted = false
     @Published var contactsPermissionGranted = false
+	@Published var microphonePermissionGranted = false
 	
 	private init() {}
 	
 	func getPermissions() {
+		microphoneRequestPermission()
 		photoLibraryRequestPermission()
 		cameraRequestPermission()
 		contactsRequestPermission()
+	}
+	
+	func microphoneRequestPermission() {
+		AVAudioSession.sharedInstance().requestRecordPermission({ granted in
+			DispatchQueue.main.async {
+				self.microphonePermissionGranted = granted
+			}
+		})
 	}
 	
 	func photoLibraryRequestPermission() {

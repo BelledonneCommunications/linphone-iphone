@@ -171,8 +171,11 @@ struct ThirdPartySipAccountWarningFragment: View {
 					.frame(minHeight: geometry.size.height)
 				}
 			}
+			.navigationTitle("")
+		 	.navigationBarHidden(true)
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
+		.navigationTitle("")
 		.navigationBarHidden(true)
 	}
 }

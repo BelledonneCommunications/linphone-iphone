@@ -50,8 +50,10 @@ struct HistoryView: View {
 					}
 				} label: {
 					Image("phone-plus")
+						.renderingMode(.template)
+						.foregroundStyle(.white)
 						.padding()
-						.background(.white)
+						.background(Color.orangeMain500)
 						.clipShape(Circle())
 						.shadow(color: .black.opacity(0.2), radius: 4)
 					

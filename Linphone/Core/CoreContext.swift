@@ -38,7 +38,7 @@ final class CoreContext: ObservableObject {
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
-
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -68,17 +68,17 @@ final class CoreContext: ObservableObject {
 			Factory.Instance.logCollectionPath = configDir
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
-            let url = NSURL(fileURLWithPath: configDir)
-            if let pathComponent = url.appendingPathComponent("linphonerc") {
-                let filePath = pathComponent.path
-                let fileManager = FileManager.default
-                if !fileManager.fileExists(atPath: filePath) {
-                    let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
-                    if path != nil {
-                        try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
-                    }
-                }
-            }
+			let url = NSURL(fileURLWithPath: configDir)
+			if let pathComponent = url.appendingPathComponent("linphonerc") {
+				let filePath = pathComponent.path
+				let fileManager = FileManager.default
+				if !fileManager.fileExists(atPath: filePath) {
+					let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
+					if path != nil {
+						try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
+					}
+				}
+			}
 			
 			let config = try? Factory.Instance.createConfigWithFactory(
 				path: "\(configDir)/linphonerc",
@@ -87,7 +87,7 @@ final class CoreContext: ObservableObject {
 			if config != nil {
 				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
 			}
-
+			
 			self.mCore.autoIterateEnabled = false
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -113,11 +113,14 @@ final class CoreContext: ObservableObject {
 				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
 					ToastViewModel.shared.toastMessage = "Successful"
-					ToastViewModel.shared.displayToast.toggle()
-				} else {
-					ToastViewModel.shared.toastMessage = "Failed"
-					ToastViewModel.shared.displayToast.toggle()
-				}
+					ToastViewModel.shared.displayToast = true
+				} 
+				/*
+				 else {
+				 ToastViewModel.shared.toastMessage = "Failed"
+				 ToastViewModel.shared.displayToast = true
+				 }
+				 */
 			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
@@ -135,7 +138,7 @@ final class CoreContext: ObservableObject {
 					self.loggingInProgress = true
 				} else {
 					ToastViewModel.shared.toastMessage = "Registration failed"
-					ToastViewModel.shared.displayToast.toggle()
+					ToastViewModel.shared.displayToast = true
 					self.loggingInProgress = false
 					self.loggedIn = false
 				}
@@ -166,9 +169,9 @@ final class CoreContext: ObservableObject {
 						cbValue.info,
 						forPasteboardType: UTType.plainText.identifier
 					)
-				 
+					
 					ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
-					ToastViewModel.shared.displayToast.toggle()
+					ToastViewModel.shared.displayToast = true
 				}
 			})
 			

@@ -120,10 +120,10 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	func doCallWithCore(addr: Address) {
+	func doCallWithCore(addr: Address, isVideo: Bool) {
 		CoreContext.shared.doOnCoreQueue { core in
 			do {
-				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: false, isConference: false)
+				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: isVideo, isConference: false)
 			} catch {
 				Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr) \(error) ")
 			}

@@ -166,11 +166,11 @@ struct HistoryListFragment: View {
 											withAnimation {
                                                 if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
                                                     telecomManager.doCallWithCore(
-                                                        addr: historyListViewModel.callLogs[index].toAddress!
+														addr: historyListViewModel.callLogs[index].toAddress!, isVideo: false
                                                     )
                                                 } else if historyListViewModel.callLogs[index].fromAddress != nil {
                                                     telecomManager.doCallWithCore(
-                                                        addr: historyListViewModel.callLogs[index].fromAddress!
+														addr: historyListViewModel.callLogs[index].fromAddress!, isVideo: false
                                                     )
                                                 }
 												historyViewModel.displayedCall = nil
@@ -213,6 +213,8 @@ struct HistoryListFragment: View {
 					.padding(.all)
 			)
 		}
+		.navigationTitle("")
+		.navigationBarHidden(true)
 	}
 }
 

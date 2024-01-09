@@ -90,7 +90,7 @@ struct ContactInnerActionsFragment: View {
 						.onTapGesture {
 							withAnimation {
 								telecomManager.doCallWithCore(
-									addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index]
+									addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index], isVideo: false
 								)
 							}
 						}
@@ -272,7 +272,9 @@ struct ContactInnerActionsFragment: View {
 			Button {
 				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 					contactViewModel.objectWillChange.send()
+					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.edit()
 					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred.toggle()
+					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.done()
 				}
 			} label: {
 				HStack {

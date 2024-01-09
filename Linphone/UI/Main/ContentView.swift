@@ -151,6 +151,7 @@ struct ContentView: View {
 									Menu {
 										if index == 0 {
 											Button {
+												contactViewModel.indexDisplayedFriend = nil
 												isMenuOpen = false
 												magicSearch.allContact = true
 												MagicSearchSingleton.shared.searchForContacts(
@@ -168,6 +169,7 @@ struct ContentView: View {
 											}
 											
 											Button {
+												contactViewModel.indexDisplayedFriend = nil
 												isMenuOpen = false
 												magicSearch.allContact = false
 												MagicSearchSingleton.shared.searchForContacts(
@@ -282,9 +284,8 @@ struct ContentView: View {
 												text = newValue
 											}
 										))
-										.default_text_style_white_700(styleSize: 15)
+										.default_text_style_700(styleSize: 15)
 										.padding(.all, 6)
-										.accentColor(.white)
 										.focused($focusedField)
 										.onAppear {
 											self.focusedField = true
@@ -671,10 +672,8 @@ struct ContentView: View {
 						}
 				}
 				
-				// if sharedMainViewModel.displayToast {
 				ToastView()
 					.zIndex(3)
-				// }
 			}
 		}
 		.overlay {
@@ -698,12 +697,14 @@ struct ContentView: View {
 		.onChange(of: scenePhase) { newPhase in
 			if newPhase == .active {
 				coreContext.onForeground()
+				/*
 				if !isShowStartCallFragment {
 					contactsManager.fetchContacts()
 					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
 						historyListViewModel.computeCallLogsList()
 					}
 				}
+				 */
 				print("Active")
 			} else if newPhase == .inactive {
 				print("Inactive")
