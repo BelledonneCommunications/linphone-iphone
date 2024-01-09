@@ -63,6 +63,8 @@ struct LoginFragment: View {
 								
 								TextField("username", text: $accountLoginViewModel.username)
 									.default_text_style(styleSize: 15)
+									.disableAutocorrection(true)
+									.autocapitalization(.none)
 									.disabled(coreContext.loggedIn)
 									.frame(height: 25)
 									.padding(.horizontal, 20)
@@ -90,6 +92,8 @@ struct LoginFragment: View {
 										} else {
 											TextField("password", text: $accountLoginViewModel.passwd)
 												.default_text_style(styleSize: 15)
+												.disableAutocorrection(true)
+									   			.autocapitalization(.none)
 												.frame(height: 25)
 												.focused($isPasswordFocused)
 										}
@@ -287,6 +291,8 @@ struct LoginFragment: View {
 						.background(.black.opacity(0.65))
 				}
 			}
+			.navigationTitle("")
+			.navigationBarHidden(true)
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 	}

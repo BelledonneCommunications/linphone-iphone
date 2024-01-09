@@ -38,8 +38,14 @@ struct LinphoneApp: App {
 				if !sharedMainViewModel.welcomeViewDisplayed {
 					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
-					AssistantView()
+					ZStack {
+						AssistantView()
+						
+						ToastView()
+							.zIndex(3)
+					}
 				} else if coreContext.defaultAccount != nil
+							&& coreContext.loggedIn
 							&& contactViewModel != nil
 							&& editContactViewModel != nil
 							&& historyViewModel != nil

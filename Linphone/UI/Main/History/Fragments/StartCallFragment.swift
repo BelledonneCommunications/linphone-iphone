@@ -90,6 +90,9 @@ struct StartCallFragment: View {
 								magicSearch.currentFilterSuggestions = newValue
 								magicSearch.searchForSuggestions()
 							}
+							.simultaneousGesture(TapGesture().onEnded {
+								showingDialer = false
+							})
 						
 						HStack {
 							Button(action: {
@@ -105,10 +108,18 @@ struct StartCallFragment: View {
 							
 							if startCallViewModel.searchField.isEmpty {
 								Button(action: {
-									isSearchFieldFocused = false
-									
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
-										showingDialer.toggle()
+									if !showingDialer {
+										isSearchFieldFocused = false
+										
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+											showingDialer = true
+										}
+									} else {
+										showingDialer = false
+										
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+											isSearchFieldFocused = true
+										}
 									}
 								}, label: {
 									Image(!showingDialer ? "dialer" : "keyboard")
@@ -155,7 +166,7 @@ struct StartCallFragment: View {
 							.padding(.horizontal, 16)
 						}
 						
-                        ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
+						ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
 							showingDialer = false
 							
 							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
@@ -169,10 +180,10 @@ struct StartCallFragment: View {
 							
 							withAnimation {
 								isShowStartCallFragment.toggle()
-                                telecomManager.doCallWithCore(addr: addr)
+								telecomManager.doCallWithCore(addr: addr, isVideo: false)
 							}
 						})
-							.padding(.horizontal, 16)
+						.padding(.horizontal, 16)
 						
 						HStack(alignment: .center) {
 							Text("Suggestions")
@@ -208,6 +219,25 @@ struct StartCallFragment: View {
 	var suggestionsList: some View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
+				showingDialer = false
+				
+				DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+					magicSearch.searchForContacts(
+						sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				}
+				
+				startCallViewModel.searchField = ""
+				magicSearch.currentFilterSuggestions = ""
+				delayColorDismiss()
+				
+				withAnimation {
+					isShowStartCallFragment.toggle()
+					if contactsManager.lastSearchSuggestions[index].address != nil {
+						telecomManager.doCallWithCore(
+							addr: contactsManager.lastSearchSuggestions[index].address!, isVideo: false
+						)
+					}
+				}
 			} label: {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
@@ -235,27 +265,6 @@ struct StartCallFragment: View {
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.foregroundStyle(Color.orangeMain500)
-					}
-				}
-				.onTapGesture {
-					showingDialer = false
-					
-					DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
-						magicSearch.searchForContacts(
-							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-					}
-					
-					startCallViewModel.searchField = ""
-					magicSearch.currentFilterSuggestions = ""
-					delayColorDismiss()
-					
-					withAnimation {
-						isShowStartCallFragment.toggle()
-                        if contactsManager.lastSearchSuggestions[index].address != nil {
-                            telecomManager.doCallWithCore(
-                                addr: contactsManager.lastSearchSuggestions[index].address!
-                            )
-                        }
 					}
 				}
 				.padding(.horizontal)

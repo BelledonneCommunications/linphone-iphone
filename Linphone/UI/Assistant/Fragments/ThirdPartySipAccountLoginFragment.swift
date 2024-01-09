@@ -81,6 +81,8 @@ struct ThirdPartySipAccountLoginFragment: View {
 						
 						TextField("username", text: $accountLoginViewModel.username)
 							.default_text_style(styleSize: 15)
+							.disableAutocorrection(true)
+							.autocapitalization(.none)
 							.disabled(coreContext.loggedIn)
 							.frame(height: 25)
 							.padding(.horizontal, 20)
@@ -108,6 +110,8 @@ struct ThirdPartySipAccountLoginFragment: View {
 								} else {
 									TextField("password", text: $accountLoginViewModel.passwd)
 										.default_text_style(styleSize: 15)
+										.disableAutocorrection(true)
+										.autocapitalization(.none)
 										.frame(height: 25)
 										.focused($isPasswordFocused)
 								}
@@ -139,6 +143,8 @@ struct ThirdPartySipAccountLoginFragment: View {
 						
 						TextField("sip.linphone.org", text: $accountLoginViewModel.domain)
 							.default_text_style(styleSize: 15)
+							.disableAutocorrection(true)
+							.autocapitalization(.none)
 							.disabled(coreContext.loggedIn)
 							.frame(height: 25)
 							.padding(.horizontal, 20)
@@ -158,6 +164,8 @@ struct ThirdPartySipAccountLoginFragment: View {
 						
 						TextField("Display Name", text: $accountLoginViewModel.displayName)
 							.default_text_style(styleSize: 15)
+							.disableAutocorrection(true)
+							.autocapitalization(.none)
 							.disabled(coreContext.loggedIn)
 							.frame(height: 25)
 							.padding(.horizontal, 20)
@@ -204,8 +212,6 @@ struct ThirdPartySipAccountLoginFragment: View {
 						
 						Button(action: {
 							self.accountLoginViewModel.login()
-							accountLoginViewModel.domain = "sip.linphone.org"
-							accountLoginViewModel.transportType = "TLS"
 						}, label: {
 							Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
 								.default_text_style_white_600(styleSize: 20)

@@ -427,18 +427,29 @@ struct CallView: View {
 						.presentationDetents([.fraction(0.3)])
 						.frame(maxHeight: .infinity)
 					}
+			} else {
+				innerView(geometry: geo)
 			}
 		}
 	}
 	
 	@ViewBuilder
+	// swiftlint:disable:next cyclomatic_complexity
 	func innerView(geometry: GeometryProxy) -> some View {
 		VStack {
 			if !fullscreenVideo {
-				Rectangle()
-					.foregroundColor(Color.orangeMain500)
-					.edgesIgnoringSafeArea(.top)
-					.frame(height: 0)
+				if #available(iOS 16.0, *) {
+					Rectangle()
+						.foregroundColor(Color.orangeMain500)
+						.edgesIgnoringSafeArea(.top)
+						.frame(height: 0)
+				} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
+											 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+					Rectangle()
+						.foregroundColor(Color.orangeMain500)
+						.edgesIgnoringSafeArea(.top)
+						.frame(height: 1)
+				}
 				
 				HStack {
 					if callViewModel.direction == .Outgoing {
@@ -465,13 +476,8 @@ struct CallView: View {
 						
 						ZStack {
 							Text(callViewModel.timeElapsed.convertDurationToString())
-								.onAppear {
-									callViewModel.timeElapsed = 0
-									startDate = Date.now
-								}
 								.onReceive(callViewModel.timer) { firedDate in
 									callViewModel.timeElapsed = Int(firedDate.timeIntervalSince(startDate))
-									
 								}
 								.foregroundStyle(.white)
 								.if(callViewModel.isPaused || telecomManager.isPausedByRemote) { view in
@@ -646,6 +652,10 @@ struct CallView: View {
 								callViewModel.timeElapsed = Int(firedDate.timeIntervalSince(startDate))
 								
 							}
+							.onDisappear {
+								callViewModel.timeElapsed = 0
+								startDate = Date.now
+							}
 							.padding(.top)
 							.foregroundStyle(.white)
 						
@@ -695,16 +705,101 @@ struct CallView: View {
 			
 			if !fullscreenVideo {
 				if telecomManager.callStarted {
-					if telecomManager.callStarted && idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
-																		|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-						HStack(spacing: 12) {
-							HStack {
-								
+					if #available(iOS 16.0, *) {
+						if telecomManager.callStarted && idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
+																			|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+							HStack(spacing: 12) {
+								HStack {
+									
+								}
+								.frame(height: 60)
 							}
-							.frame(height: 60)
+							.padding(.horizontal, 25)
+							.padding(.top, 20)
+						} else {
+							HStack(spacing: 12) {
+								Button {
+									callViewModel.terminateCall()
+								} label: {
+									Image("phone-disconnect")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 32, height: 32)
+									
+								}
+								.frame(width: 90, height: 60)
+								.background(Color.redDanger500)
+								.cornerRadius(40)
+								
+								Spacer()
+								
+								Button {
+									callViewModel.toggleVideo()
+								} label: {
+									Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+										.frame(width: 32, height: 32)
+									
+								}
+								.frame(width: 60, height: 60)
+								.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
+								.cornerRadius(40)
+								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+								
+								Button {
+									callViewModel.toggleMuteMicrophone()
+								} label: {
+									Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(callViewModel.micMutted ? .black : .white)
+										.frame(width: 32, height: 32)
+									
+								}
+								.frame(width: 60, height: 60)
+								.background(callViewModel.micMutted ? .white : Color.gray500)
+								.cornerRadius(40)
+								
+								Button {
+									if AVAudioSession.sharedInstance().availableInputs != nil
+										&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+										
+										hideButtonsSheet = true
+										
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											audioRouteSheet = true
+										}
+									} else {
+										do {
+											try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
+										} catch _ {
+											
+										}
+									}
+									
+								} label: {
+									Image(imageAudioRoute)
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 32, height: 32)
+										.onAppear(perform: getAudioRouteImage)
+										.onReceive(pub) { _ in
+											self.getAudioRouteImage()
+										}
+									
+								}
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+							}
+							.frame(height: geometry.size.height * 0.15)
+							.padding(.horizontal, 20)
+							.padding(.top, -6)
 						}
-						.padding(.horizontal, 25)
-						.padding(.top, 20)
 					} else {
 						HStack(spacing: 12) {
 							Button {
@@ -726,7 +821,7 @@ struct CallView: View {
 							Button {
 								callViewModel.toggleVideo()
 							} label: {
-								Image("video-camera")
+								Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
@@ -753,12 +848,32 @@ struct CallView: View {
 							.cornerRadius(40)
 							
 							Button {
+								if AVAudioSession.sharedInstance().availableInputs != nil
+									&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+									
+									hideButtonsSheet = true
+									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										audioRouteSheet = true
+									}
+								} else {
+									do {
+										try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
+									} catch _ {
+										
+									}
+								}
+								
 							} label: {
-								Image("speaker-high")
+								Image(imageAudioRoute)
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
+									.onAppear(perform: getAudioRouteImage)
+									.onReceive(pub) { _ in
+										self.getAudioRouteImage()
+									}
 								
 							}
 							.frame(width: 60, height: 60)

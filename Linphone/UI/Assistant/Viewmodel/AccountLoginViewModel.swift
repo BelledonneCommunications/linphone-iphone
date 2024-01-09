@@ -45,7 +45,7 @@ class AccountLoginViewModel: ObservableObject {
 						core.loadConfigFromXml(xmlUri: assistantLinphone)
 					}
 				}
-
+				
 				// Get the transport protocol to use.
 				// TLS is strongly recommended
 				// Only use UDP if you don't have the choice
@@ -105,6 +105,9 @@ class AccountLoginViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					self.coreContext.defaultAccount = account
 				}
+				
+				self.domain = "sip.linphone.org"
+				self.transportType = "TLS"
 				
 			} catch { NSLog(error.localizedDescription) }
 		}
