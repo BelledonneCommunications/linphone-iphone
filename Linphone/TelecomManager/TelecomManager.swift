@@ -342,12 +342,38 @@ class TelecomManager: ObservableObject {
 			
 			isRemoteRecording = call.remoteParams?.isRecording ?? false
 			
-			if isRemoteRecording && ToastViewModel.shared.toastMessage == "" {
+			if isRemoteRecording && ToastViewModel.shared.toastMessage.isEmpty {
 				
-				ToastViewModel.shared.toastMessage = "\(call.remoteAddress) is recording"
-				ToastViewModel.shared.displayToast.toggle()
+				DispatchQueue.main.async {
+					var displayName = ""
+					let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						displayName = friend!.address!.displayName!
+					} else {
+						if call.remoteAddress!.displayName != nil {
+							displayName = call.remoteAddress!.displayName!
+						} else if call.remoteAddress!.username != nil {
+							displayName = call.remoteAddress!.username!
+						}
+					}
+					
+					ToastViewModel.shared.toastMessage = "\(displayName) is recording"
+				 	ToastViewModel.shared.displayToast = true
+				}
 				
-				Log.info("[Call] Call is recording by \(call.remoteAddress)")
+				Log.info("[Call] Call is recording by \(call.remoteAddress!.asStringUriOnly())")
+			}
+			
+			if !isRemoteRecording && ToastViewModel.shared.toastMessage.contains("is recording") {
+				
+				DispatchQueue.main.async {
+					withAnimation {
+						ToastViewModel.shared.toastMessage = ""
+						ToastViewModel.shared.displayToast = false
+					}
+				}
+				
+				Log.info("[Call] Call is recording Stop recording by \(call.remoteAddress!.asStringUriOnly())")
 			}
 			
 			if call.userData == nil {

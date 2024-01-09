@@ -100,19 +100,22 @@ struct ToastView: View {
 						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
 				)
 				.onTapGesture {
-					withAnimation {
-						toastViewModel.toastMessage = ""
-						toastViewModel.displayToast = false
-					}
-				}
-				.onAppear {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+					if !toastViewModel.toastMessage.contains("is recording") {
 						withAnimation {
 							toastViewModel.toastMessage = ""
 							toastViewModel.displayToast = false
 						}
 					}
 				}
+				.onAppear {
+					if !toastViewModel.toastMessage.contains("is recording") {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+							withAnimation {
+								toastViewModel.toastMessage = ""
+								toastViewModel.displayToast = false
+							}
+						}
+					}				}
 				
 				Spacer()
 			}
