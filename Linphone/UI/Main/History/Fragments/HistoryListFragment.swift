@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// swiftlint:disable line_length
+
 import SwiftUI
 import linphonesw
 
@@ -217,3 +219,5 @@ struct HistoryListFragment: View {
 #Preview {
 	HistoryListFragment(historyListViewModel: HistoryListViewModel(), historyViewModel: HistoryViewModel(), showingSheet: .constant(false))
 }
+
+// swiftlint:enable line_length

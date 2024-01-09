@@ -18,6 +18,7 @@
  */
 
 // swiftlint:disable type_body_length
+// swiftlint:disable line_length
 import SwiftUI
 import CallKit
 import AVFAudio
@@ -131,7 +132,7 @@ struct CallView: View {
 											.foregroundStyle(.white)
 											.frame(width: 32, height: 32)
 											.onAppear(perform: getAudioRouteImage)
-											.onReceive(pub) { (output) in
+											.onReceive(pub) { _ in
 												self.getAudioRouteImage()
 											}
 										
@@ -836,3 +837,4 @@ struct CallView: View {
 	CallView(callViewModel: CallViewModel())
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable line_length
