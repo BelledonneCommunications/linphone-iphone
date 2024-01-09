@@ -35,7 +35,8 @@ class CallViewModel: ObservableObject {
 	@Published var cameraDisplayed: Bool = false
 	@Published var isRecording: Bool = false
 	@Published var isRemoteRecording: Bool = false
-	@State var timeElapsed: Int = 0
+	@Published var isPaused: Bool = false
+	@Published var timeElapsed: Int = 0
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
@@ -76,6 +77,8 @@ class CallViewModel: ObservableObject {
 					self.micMutted = self.currentCall!.microphoneMuted
 					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 					self.isRecording = self.currentCall!.params!.isRecording
+					self.isPaused = self.isCallPaused()
+					self.timeElapsed = 0
 				}
 			}
 		}
@@ -83,8 +86,9 @@ class CallViewModel: ObservableObject {
 	
 	func terminateCall() {
 		withAnimation {
-			telecomManager.callInProgress = false
+			telecomManager.outgoingCallStarted = false
 			telecomManager.callStarted = false
+			telecomManager.callInProgress = false
 		}
 		
 		coreContext.doOnCoreQueue { _ in
@@ -98,6 +102,7 @@ class CallViewModel: ObservableObject {
 	
 	func acceptCall() {
 		withAnimation {
+			telecomManager.outgoingCallStarted = false
 			telecomManager.callInProgress = true
 			telecomManager.callStarted = true
 		}
@@ -184,9 +189,11 @@ class CallViewModel: ObservableObject {
 					if self.isCallPaused() {
 						Log.info("[CallViewModel] Resuming call \(self.currentCall!.remoteAddress!.asStringUriOnly())")
 						try self.currentCall!.resume()
+						self.isPaused = false
 					} else {
 						Log.info("[CallViewModel] Pausing call \(self.currentCall!.remoteAddress!.asStringUriOnly())")
 						try self.currentCall!.pause()
+						self.isPaused = true
 					}
 				} catch _ {
 					
@@ -195,7 +202,7 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	private func isCallPaused() -> Bool {
+	func isCallPaused() -> Bool {
 		var result = false
 		if self.currentCall != nil {
 			switch self.currentCall!.state {

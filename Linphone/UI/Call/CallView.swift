@@ -24,10 +24,10 @@ import AVFAudio
 import linphonesw
 
 struct CallView: View {
-    
-    @ObservedObject private var coreContext = CoreContext.shared
-    @ObservedObject private var telecomManager = TelecomManager.shared
-    @ObservedObject private var contactsManager = ContactsManager.shared
+	
+	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
+	@ObservedObject private var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var callViewModel: CallViewModel
 	
@@ -35,8 +35,8 @@ struct CallView: View {
 	@State private var orientation = UIDevice.current.orientation
 	
 	let pub = NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)
-    
-    @State var startDate = Date.now
+	
+	@State var startDate = Date.now
 	@State var audioRouteSheet: Bool = false
 	@State var hideButtonsSheet: Bool = false
 	@State var options: Int = 1
@@ -45,10 +45,10 @@ struct CallView: View {
 	
 	@State var angleDegree = 0.0
 	@State var fullscreenVideo = false
-    
-    var body: some View {
-        GeometryReader { geo in
-            if #available(iOS 16.4, *) {
+	
+	var body: some View {
+		GeometryReader { geo in
+			if #available(iOS 16.4, *) {
 				innerView(geometry: geo)
 					.sheet(isPresented:
 							.constant(
@@ -60,54 +60,55 @@ struct CallView: View {
 							)
 					) {
 						GeometryReader { _ in
-                            VStack(spacing: 0) {
-                                HStack(spacing: 12) {
-                                    Button {
+							VStack(spacing: 0) {
+								HStack(spacing: 12) {
+									Button {
 										callViewModel.terminateCall()
-                                    } label: {
-                                        Image("phone-disconnect")
-                                            .renderingMode(.template)
-                                            .resizable()
-                                            .foregroundStyle(.white)
-                                            .frame(width: 32, height: 32)
-                                        
-                                    }
-                                    .frame(width: 90, height: 60)
-                                    .background(Color.redDanger500)
-                                    .cornerRadius(40)
-                                    
-                                    Spacer()
-                                    
-                                    Button {
+									} label: {
+										Image("phone-disconnect")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+										
+									}
+									.frame(width: 90, height: 60)
+									.background(Color.redDanger500)
+									.cornerRadius(40)
+									
+									Spacer()
+									
+									Button {
 										callViewModel.toggleVideo()
-                                    } label: {
+									} label: {
 										Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
-                                            .renderingMode(.template)
-                                            .resizable()
-                                            .foregroundStyle(.white)
-                                            .frame(width: 32, height: 32)
-                                        
-                                    }
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.gray500)
-                                    .cornerRadius(40)
-                                    
-                                    Button {
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+											.frame(width: 32, height: 32)
+										
+									}
+									.frame(width: 60, height: 60)
+									.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
+									.cornerRadius(40)
+									.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+									
+									Button {
 										callViewModel.toggleMuteMicrophone()
-                                    } label: {
+									} label: {
 										Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
-                                            .renderingMode(.template)
-                                            .resizable()
+											.renderingMode(.template)
+											.resizable()
 											.foregroundStyle(callViewModel.micMutted ? .black : .white)
-                                            .frame(width: 32, height: 32)
-                                        
-                                    }
-                                    .frame(width: 60, height: 60)
+											.frame(width: 32, height: 32)
+										
+									}
+									.frame(width: 60, height: 60)
 									.background(callViewModel.micMutted ? .white : Color.gray500)
-                                    .cornerRadius(40)
-                                    
-                                    Button {
-                                        if AVAudioSession.sharedInstance().availableInputs != nil
+									.cornerRadius(40)
+									
+									Button {
+										if AVAudioSession.sharedInstance().availableInputs != nil
 											&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
 											
 											hideButtonsSheet = true
@@ -123,200 +124,206 @@ struct CallView: View {
 											}
 										}
 										
-                                    } label: {
+									} label: {
 										Image(imageAudioRoute)
-                                            .renderingMode(.template)
-                                            .resizable()
-                                            .foregroundStyle(.white)
-                                            .frame(width: 32, height: 32)
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
 											.onAppear(perform: getAudioRouteImage)
 											.onReceive(pub) { (output) in
 												self.getAudioRouteImage()
 											}
-                                        
-                                    }
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.gray500)
-                                    .cornerRadius(40)
-                                }
-                                .frame(height: geo.size.height * 0.15)
-                                .padding(.horizontal, 20)
+										
+									}
+									.frame(width: 60, height: 60)
+									.background(Color.gray500)
+									.cornerRadius(40)
+								}
+								.frame(height: geo.size.height * 0.15)
+								.padding(.horizontal, 20)
 								.padding(.top, -6)
-                                
-                                HStack(spacing: 0) {
-                                    VStack {
-                                        Button {
-                                        } label: {
-                                            Image("screencast")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Screen share")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    
-                                    VStack {
-                                        Button {
-                                        } label: {
-                                            Image("users")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Participants")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    
-                                    VStack {
-                                        Button {
-                                        } label: {
-                                            Image("chat-teardrop-text")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Messages")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    
-                                    VStack {
-                                        Button {
-                                        } label: {
-                                            Image("notebook")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Disposition")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                }
-                                .frame(height: geo.size.height * 0.15)
-                                
-                                HStack(spacing: 0) {
-                                    VStack {
-                                        Button {
-                                        } label: {
-                                            Image("phone-call")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Call list")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    
-                                    VStack {
-                                        Button {
+								
+								HStack(spacing: 0) {
+									VStack {
+										Button {
+										} label: {
+											Image("phone-transfer")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background(Color.gray500)
+										.cornerRadius(40)
+										
+										Text("Transfer")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									
+									VStack {
+										Button {
+										} label: {
+											Image("phone-plus")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background(Color.gray500)
+										.cornerRadius(40)
+										
+										Text("New call")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									
+									VStack {
+										Button {
+										} label: {
+											Image("phone-list")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background(Color.gray500)
+										.cornerRadius(40)
+										
+										Text("Call list")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									
+									VStack {
+										Button {
+										} label: {
+											Image("dialer")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background(Color.gray500)
+										.cornerRadius(40)
+										
+										Text("Dialer")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+								}
+								.frame(height: geo.size.height * 0.15)
+								
+								HStack(spacing: 0) {
+									VStack {
+										Button {
+										} label: {
+											Image("chat-teardrop-text")
+												.renderingMode(.template)
+												.resizable()
+											//.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+												.foregroundStyle(Color.gray500)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										//.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
+										.background(Color.gray600)
+										.cornerRadius(40)
+										//.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+										.disabled(true)
+										
+										Text("Messages")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									
+									VStack {
+										Button {
 											callViewModel.togglePause()
-                                        } label: {
-                                            Image("pause")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Pause")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    
-                                    VStack {
-                                        Button {
+										} label: {
+											Image(callViewModel.isPaused ? "play" : "pause")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(telecomManager.isPausedByRemote ? Color.gray500 : .white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background(telecomManager.isPausedByRemote ? Color.gray600 : (callViewModel.isPaused ? Color.greenSuccess500 : Color.gray500))
+										.cornerRadius(40)
+										.disabled(telecomManager.isPausedByRemote)
+										
+										Text("Pause")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									
+									VStack {
+										Button {
 											callViewModel.toggleRecording()
-                                        } label: {
-                                            Image("record-fill")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-										.background(callViewModel.isRecording ? Color.redDanger500 : Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Record")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    
-                                    VStack {
-                                        Button {
-                                        } label: {
-                                            Image("video-camera")
-                                                .renderingMode(.template)
-                                                .resizable()
-                                                .foregroundStyle(.white)
-                                                .frame(width: 32, height: 32)
-                                        }
-                                        .frame(width: 60, height: 60)
-                                        .background(Color.gray500)
-                                        .cornerRadius(40)
-                                        
-                                        Text("Disposition")
-                                            .foregroundStyle(.white)
-                                            .default_text_style(styleSize: 15)
-                                    }
-                                    .frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-                                    .hidden()
-                                }
-                                .frame(height: geo.size.height * 0.15)
-                                
-                                Spacer()
-                            }
-                            .frame(maxHeight: .infinity, alignment: .top)
+										} label: {
+											Image("record-fill")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : (callViewModel.isRecording ? Color.redDanger500 : Color.gray500))
+										.cornerRadius(40)
+										.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+										
+										Text("Record")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									
+									VStack {
+										Button {
+										} label: {
+											Image("video-camera")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 32, height: 32)
+										}
+										.frame(width: 60, height: 60)
+										.background(Color.gray500)
+										.cornerRadius(40)
+										
+										Text("Disposition")
+											.foregroundStyle(.white)
+											.default_text_style(styleSize: 15)
+									}
+									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+									.hidden()
+								}
+								.frame(height: geo.size.height * 0.15)
+								
+								Spacer()
+							}
+							.frame(maxHeight: .infinity, alignment: .top)
 							.presentationBackground(.black)
-                            .presentationDetents([.fraction(0.1), .medium])
-                            .interactiveDismissDisabled()
-                            .presentationBackgroundInteraction(.enabled)
-                        }
-                    }
-				   	.sheet(isPresented: $audioRouteSheet, onDismiss: {
+							.presentationDetents([.fraction(0.1), .fraction(0.45)])
+							.interactiveDismissDisabled()
+							.presentationBackgroundInteraction(.enabled)
+						}
+					}
+					.sheet(isPresented: $audioRouteSheet, onDismiss: {
 						audioRouteSheet = false
 						hideButtonsSheet = false
-				   	}) {
+					}) {
 						VStack(spacing: 0) {
 							Button(action: {
 								options = 1
@@ -346,9 +353,9 @@ struct CallView: View {
 									
 									Image(!callViewModel.isHeadPhoneAvailable() ? "ear" : "headset")
 										.renderingMode(.template)
-									 	.resizable()
+										.resizable()
 										.foregroundStyle(.white)
-									 	.frame(width: 25, height: 25, alignment: .leading)
+										.frame(width: 25, height: 25, alignment: .leading)
 								}
 							})
 							.frame(maxHeight: .infinity)
@@ -416,16 +423,16 @@ struct CallView: View {
 						}
 						.padding(.horizontal, 20)
 						.presentationBackground(Color.gray600)
-	  					.presentationDetents([.fraction(0.3)])
+						.presentationDetents([.fraction(0.3)])
 						.frame(maxHeight: .infinity)
 					}
-            }
-        }
-    }
-    
-    @ViewBuilder
+			}
+		}
+	}
+	
+	@ViewBuilder
 	func innerView(geometry: GeometryProxy) -> some View {
-        VStack {
+		VStack {
 			if !fullscreenVideo {
 				Rectangle()
 					.foregroundColor(Color.orangeMain500)
@@ -451,6 +458,35 @@ struct CallView: View {
 							.foregroundStyle(.white)
 					}
 					
+					if !telecomManager.outgoingCallStarted && telecomManager.callInProgress {
+						Text("|")
+							.foregroundStyle(.white)
+						
+						ZStack {
+							Text(callViewModel.timeElapsed.convertDurationToString())
+								.onAppear {
+									callViewModel.timeElapsed = 0
+									startDate = Date.now
+								}
+								.onReceive(callViewModel.timer) { firedDate in
+									callViewModel.timeElapsed = Int(firedDate.timeIntervalSince(startDate))
+									
+								}
+								.foregroundStyle(.white)
+								.if(callViewModel.isPaused || telecomManager.isPausedByRemote) { view in
+									view.hidden()
+								}
+							
+							if callViewModel.isPaused {
+								Text("Paused")
+									.foregroundStyle(.white)
+							} else if telecomManager.isPausedByRemote {
+								Text("Paused by remote")
+									.foregroundStyle(.white)
+							}
+						}
+					}
+					
 					Spacer()
 					
 					if callViewModel.cameraDisplayed {
@@ -469,65 +505,65 @@ struct CallView: View {
 				.frame(height: 40)
 				.zIndex(1)
 			}
-            
-            ZStack {
-                VStack {
-                    Spacer()
-                    
-                    if callViewModel.remoteAddress != nil {
-                        let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
-                        
-                        let contactAvatarModel = addressFriend != nil
-                        ? ContactsManager.shared.avatarListModel.first(where: {
-                            ($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-                            && $0.friend!.name == addressFriend!.name
-                            && $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-                        })
-                        : ContactAvatarModel(friend: nil, withPresence: false)
-                        
-                        if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-                            if contactAvatarModel != nil {
-                                Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 100, hidePresence: true)
-                            }
-                        } else {
-                            if callViewModel.remoteAddress!.displayName != nil {
-                                Image(uiImage: contactsManager.textToImage(
-                                    firstName: callViewModel.remoteAddress!.displayName!,
-                                    lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
-                                    ? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
-                                    : ""))
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                                
-                            } else {
-                                Image(uiImage: contactsManager.textToImage(
-                                    firstName: callViewModel.remoteAddress!.username ?? "Username Error",
-                                    lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
-                                    ? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
-                                    : ""))
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                            }
-                            
-                        }
-                    } else {
-                        Image("profil-picture-default")
-                            .resizable()
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                    }
-                    
-                    Text(callViewModel.displayName)
-                        .padding(.top)
-                        .foregroundStyle(.white)
-                    
-                    Text(callViewModel.remoteAddressString)
-                        .foregroundStyle(.white)
-                    
-                    Spacer()
-                }
+			
+			ZStack {
+				VStack {
+					Spacer()
+					
+					if callViewModel.remoteAddress != nil {
+						let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
+						
+						let contactAvatarModel = addressFriend != nil
+						? ContactsManager.shared.avatarListModel.first(where: {
+							($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+							&& $0.friend!.name == addressFriend!.name
+							&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+						})
+						: ContactAvatarModel(friend: nil, withPresence: false)
+						
+						if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+							if contactAvatarModel != nil {
+								Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 100, hidePresence: true)
+							}
+						} else {
+							if callViewModel.remoteAddress!.displayName != nil {
+								Image(uiImage: contactsManager.textToImage(
+									firstName: callViewModel.remoteAddress!.displayName!,
+									lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
+									? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
+									: ""))
+								.resizable()
+								.frame(width: 100, height: 100)
+								.clipShape(Circle())
+								
+							} else {
+								Image(uiImage: contactsManager.textToImage(
+									firstName: callViewModel.remoteAddress!.username ?? "Username Error",
+									lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
+									? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
+									: ""))
+								.resizable()
+								.frame(width: 100, height: 100)
+								.clipShape(Circle())
+							}
+							
+						}
+					} else {
+						Image("profil-picture-default")
+							.resizable()
+							.frame(width: 100, height: 100)
+							.clipShape(Circle())
+					}
+					
+					Text(callViewModel.displayName)
+						.padding(.top)
+						.foregroundStyle(.white)
+					
+					Text(callViewModel.remoteAddressString)
+						.foregroundStyle(.white)
+					
+					Spacer()
+				}
 				
 				LinphoneVideoViewHolder { view in
 					coreContext.doOnCoreQueue { core in
@@ -535,7 +571,7 @@ struct CallView: View {
 					}
 				}
 				.frame(
-					width: 
+					width:
 						angleDegree == 0
 					? 120 * ((geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom) / 160)
 					: 120 * ((geometry.size.width + geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing) / 120),
@@ -577,8 +613,8 @@ struct CallView: View {
 						VStack {
 							Image("record-fill")
 								.renderingMode(.template)
-						  		.resizable()
-						  		.foregroundStyle(Color.redDanger500)
+								.resizable()
+								.foregroundStyle(Color.redDanger500)
 								.frame(width: 32, height: 32)
 								.padding(10)
 								.if(fullscreenVideo) { view in
@@ -594,31 +630,39 @@ struct CallView: View {
 					)
 				}
 				
-                if !telecomManager.callStarted && !fullscreenVideo {
-                    VStack {
-                        ActivityIndicator()
-                            .frame(width: 20, height: 20)
-                            .padding(.top, 100)
-                        
+				if  telecomManager.outgoingCallStarted {
+					VStack {
+						ActivityIndicator()
+							.frame(width: 20, height: 20)
+							.padding(.top, 100)
+						
 						Text(callViewModel.counterToMinutes())
+							.onAppear {
+								callViewModel.timeElapsed = 0
+								startDate = Date.now
+							}
 							.onReceive(callViewModel.timer) { firedDate in
 								callViewModel.timeElapsed = Int(firedDate.timeIntervalSince(startDate))
-                                
-                            }
-                            .padding(.top)
-                            .foregroundStyle(.white)
-                        
-                        Spacer()
-                    }
-                    .background(.clear)
-                }
-            }
+								
+							}
+							.padding(.top)
+							.foregroundStyle(.white)
+						
+						Spacer()
+					}
+					.frame(
+						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+					)
+					.background(.clear)
+				}
+			}
 			.frame(
 				maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
 				maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
 			)
-            .background(Color.gray600)
-            .cornerRadius(20)
+			.background(Color.gray600)
+			.cornerRadius(20)
 			.padding(.horizontal, fullscreenVideo ? 0 : 4)
 			.onRotate { newOrientation in
 				orientation = newOrientation
@@ -647,7 +691,7 @@ struct CallView: View {
 				
 				callViewModel.orientationUpdate(orientation: orientation)
 			}
-            
+			
 			if !fullscreenVideo {
 				if telecomManager.callStarted {
 					if telecomManager.callStarted && idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
@@ -684,13 +728,14 @@ struct CallView: View {
 								Image("video-camera")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(.white)
+									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
 									.frame(width: 32, height: 32)
 								
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray500)
+							.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
 							.cornerRadius(40)
+							.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 							
 							Button {
 								callViewModel.toggleMuteMicrophone()
@@ -764,13 +809,13 @@ struct CallView: View {
 					.padding(.top, 20)
 				}
 			}
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.gray900)
+		}
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
+		.background(Color.gray900)
 		.if(fullscreenVideo) { view in
 			view.ignoresSafeArea(.all)
 		}
-    }
+	}
 	
 	func getAudioRouteImage() {
 		imageAudioRoute = AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty
