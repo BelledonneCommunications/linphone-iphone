@@ -1,21 +1,21 @@
 /*
-* Copyright (c) 2010-2020 Belledonne Communications SARL.
-*
-* This file is part of linphone-iphone
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (c) 2010-2020 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 // swiftlint:disable line_length
 
 import Foundation
@@ -56,19 +56,19 @@ class CallInfo {
 }
 
 /*
-* A delegate to support callkit.
-*/
+ * A delegate to support callkit.
+ */
 class ProviderDelegate: NSObject {
 	let provider: CXProvider
 	var uuids: [String: UUID] = [:]
 	var callInfos: [UUID: CallInfo] = [:]
-
+	
 	override init() {
 		provider = CXProvider(configuration: ProviderDelegate.providerConfiguration)
 		super.init()
 		provider.setDelegate(self, queue: nil)
 	}
-
+	
 	static var providerConfiguration: CXProviderConfiguration {
 		get {
 			let providerConfiguration = CXProviderConfiguration()
@@ -97,18 +97,18 @@ class ProviderDelegate: NSObject {
 		let callId = callInfo?.callId ?? ""
 		
 		/*
-		if (ConfigManager.instance().config?.hasEntry(section: "app", key: "max_calls") == 1)  { // moved from misc to app section intentionally upon app start or remote configuration
-			if let maxCalls = ConfigManager.instance().config?.getInt(section: "app",key: "max_calls",defaultValue: 10), Core.get().callsNb > maxCalls {
-				Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: declining call, as max calls (\(maxCalls)) reached  call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
-				decline(uuid: uuid)
-				
-				CoreContext.shared.doOnCoreQueue(synchronous: true) { core in
-					try? call?.decline(reason: .Busy)
-				}
-				return
-			}
-		}
-		*/
+		 if (ConfigManager.instance().config?.hasEntry(section: "app", key: "max_calls") == 1)  { // moved from misc to app section intentionally upon app start or remote configuration
+		 if let maxCalls = ConfigManager.instance().config?.getInt(section: "app",key: "max_calls",defaultValue: 10), Core.get().callsNb > maxCalls {
+		 Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: declining call, as max calls (\(maxCalls)) reached  call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)]")
+		 decline(uuid: uuid)
+		 
+		 CoreContext.shared.doOnCoreQueue(synchronous: true) { core in
+		 try? call?.decline(reason: .Busy)
+		 }
+		 return
+		 }
+		 }
+		 */
 		
 		Log.info("CallKit: report new incoming call with call-id: [\(callId)] and UUID: [\(uuid.description)]")
 		// TelecomManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "") // ALREADY COMMENTED ON LINPHONE-IPHONE 5.2
@@ -140,7 +140,7 @@ class ProviderDelegate: NSObject {
 			}
 		}
 	}
-
+	
 	func updateCall(uuid: UUID, handle: String, hasVideo: Bool = false, displayName: String) {
 		let update = CXCallUpdate()
 		update.remoteHandle = CXHandle(type: .generic, value: handle)
@@ -148,11 +148,11 @@ class ProviderDelegate: NSObject {
 		update.hasVideo = hasVideo
 		provider.reportCall(with: uuid, updated: update)
 	}
-
+	
 	func reportOutgoingCallStartedConnecting(uuid: UUID) {
 		provider.reportOutgoingCall(with: uuid, startedConnectingAt: nil)
 	}
-
+	
 	func reportOutgoingCallConnected(uuid: UUID) {
 		provider.reportOutgoingCall(with: uuid, connectedAt: nil)
 	}
@@ -164,7 +164,7 @@ class ProviderDelegate: NSObject {
 	func decline(uuid: UUID) {
 		provider.reportCall(with: uuid, endedAt: .init(), reason: .unanswered)
 	}
-
+	
 	func endCallNotExist(uuid: UUID, timeout: DispatchTime) {
 		DispatchQueue.main.asyncAfter(deadline: timeout) {
 			CoreContext.shared.doOnCoreQueue(synchronous: true) { core in
@@ -188,7 +188,7 @@ extension ProviderDelegate: CXProviderDelegate {
 		
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
-
+		
 		// remove call infos first, otherwise CXEndCallAction will be called more than onece
 		if callId != nil {
 			uuids.removeValue(forKey: callId!)
@@ -203,7 +203,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			action.fulfill()
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
 		let uuid = action.callUUID
 		let callInfo = callInfos[uuid]
@@ -221,15 +221,17 @@ extension ProviderDelegate: CXProviderDelegate {
 			
 			let call = core.getCallByCallid(callId: callId)
 			
-			if UIApplication.shared.applicationState != .active {
-				TelecomManager.shared.backgroundContextCall = call
-				TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
-				if #available(iOS 16.0, *) {
-					if call?.cameraEnabled == true {
-						call?.cameraEnabled = AVCaptureSession().isMultitaskingCameraAccessSupported
+			DispatchQueue.main.async() {
+				if UIApplication.shared.applicationState != .active {
+					TelecomManager.shared.backgroundContextCall = call
+					TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
+					if #available(iOS 16.0, *) {
+						if call?.cameraEnabled == true {
+							call?.cameraEnabled = AVCaptureSession().isMultitaskingCameraAccessSupported
+						}
+					} else {
+						call?.cameraEnabled = false // Disable camera while app is not on foreground
 					}
-				} else {
-					call?.cameraEnabled = false // Disable camera while app is not on foreground
 				}
 			}
 			TelecomManager.shared.callkitAudioSessionActivated = false
@@ -242,7 +244,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			action.fulfill()
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId ?? ""
@@ -275,29 +277,29 @@ extension ProviderDelegate: CXProviderDelegate {
 						action.fulfill()
 					} else {
 						if call?.conference != nil && core.callsNb > 1 {/*
-							try TelecomManager.shared.lc?.enterConference()
-							action.fulfill()
-							NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
-						*/} else {
-							try call!.resume()
-							// We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point
-							// where we actually start the media streams.
-							TelecomManager.shared.actionToFulFill = action
-							// HORRIBLE HACK HERE - PLEASE APPLE FIX THIS !!
-							// When resuming a SIP call after a native call has ended remotely, didActivate: audioSession
-							// is never called.
-							// It looks like in this case, it is implicit.
-							// As a result we have to notify the Core that the AudioSession is active.
-							// The SpeakerBox demo application written by Apple exhibits this behavior.
-							// https://developer.apple.com/documentation/callkit/making_and_receiving_voip_calls_with_callkit
-							// We can clearly see there that startAudio() is called immediately in the CXSetHeldCallAction
-							// handler, while it is called from didActivate: audioSession otherwise.
-							// Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
-							//
-							Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
-							core.activateAudioSession(actived: true)
-							TelecomManager.shared.callkitAudioSessionActivated = true
-						}
+																		 try TelecomManager.shared.lc?.enterConference()
+																		 action.fulfill()
+																		 NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
+																		 */} else {
+																			 try call!.resume()
+																			 // We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point
+																			 // where we actually start the media streams.
+																			 TelecomManager.shared.actionToFulFill = action
+																			 // HORRIBLE HACK HERE - PLEASE APPLE FIX THIS !!
+																			 // When resuming a SIP call after a native call has ended remotely, didActivate: audioSession
+																			 // is never called.
+																			 // It looks like in this case, it is implicit.
+																			 // As a result we have to notify the Core that the AudioSession is active.
+																			 // The SpeakerBox demo application written by Apple exhibits this behavior.
+																			 // https://developer.apple.com/documentation/callkit/making_and_receiving_voip_calls_with_callkit
+																			 // We can clearly see there that startAudio() is called immediately in the CXSetHeldCallAction
+																			 // handler, while it is called from didActivate: audioSession otherwise.
+																			 // Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
+																			 //
+																			 Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
+																			 core.activateAudioSession(actived: true)
+																			 TelecomManager.shared.callkitAudioSessionActivated = true
+																		 }
 					}
 				}
 			} catch {
@@ -332,7 +334,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			}
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("CallKit: Call grouped callUUid : \(action.callUUID) with callUUID: \(String(describing: action.callUUIDToGroupWith)).")
@@ -340,7 +342,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			action.fulfill()
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
@@ -350,7 +352,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			action.fulfill()
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId ?? ""
@@ -368,18 +370,18 @@ extension ProviderDelegate: CXProviderDelegate {
 			action.fulfill()
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
 		let uuid = action.uuid
 		let callId = callInfos[uuid]?.callId
 		Log.error("CallKit: Call time out with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
 		action.fulfill()
 	}
-
+	
 	func providerDidReset(_ provider: CXProvider) {
 		Log.info("CallKit: did reset.")
 	}
-
+	
 	func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("CallKit: audio session activated.")
@@ -387,7 +389,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			TelecomManager.shared.callkitAudioSessionActivated = true
 		}
 	}
-
+	
 	func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("CallKit: audio session deactivated.")
