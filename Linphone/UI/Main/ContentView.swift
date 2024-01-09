@@ -18,6 +18,7 @@
  */
 
 // swiftlint:disable type_body_length
+// swiftlint:disable line_length
 import SwiftUI
 import linphonesw
 
@@ -731,3 +732,4 @@ struct ContentView: View {
 	)
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable line_length

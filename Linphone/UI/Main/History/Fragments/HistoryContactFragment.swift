@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// swiftlint:disable line_length
+
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -549,3 +551,5 @@ struct HistoryContactFragment: View {
         indexPage: .constant(1)
     )
 }
+
+// swiftlint:enable line_length
