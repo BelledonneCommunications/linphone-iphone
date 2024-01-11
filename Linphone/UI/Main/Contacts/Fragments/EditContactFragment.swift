@@ -27,6 +27,9 @@ struct EditContactFragment: View {
 	
 	@Environment(\.dismiss) var dismiss
 	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	@State private var orientation = UIDevice.current.orientation
+	
 	var contactViewModel: ContactViewModel
 	
 	@Binding var isShowEditContactFragment: Bool
@@ -50,16 +53,33 @@ struct EditContactFragment: View {
 		ZStack {
 			VStack(spacing: 1) {
 				if editContactViewModel.selectedEditFriend == nil {
-					Rectangle()
-						.foregroundColor(delayedColor)
-						.edgesIgnoringSafeArea(.top)
-						.frame(height: 0)
-						.task(delayColor)
+					if #available(iOS 16.0, *) {
+						Rectangle()
+							.foregroundColor(delayedColor)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 0)
+							.task(delayColor)
+					} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
+												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+						Rectangle()
+							.foregroundColor(delayedColor)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 1)
+							.task(delayColor)
+					}
 				} else {
-					Rectangle()
-						.foregroundColor(Color.orangeMain500)
-						.edgesIgnoringSafeArea(.top)
-						.frame(height: 0)
+					if #available(iOS 16.0, *) {
+						Rectangle()
+							.foregroundColor(Color.orangeMain500)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 0)
+					} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
+												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+						Rectangle()
+							.foregroundColor(Color.orangeMain500)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 1)
+					}
 				}
 				
 				HStack {

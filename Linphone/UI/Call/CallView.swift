@@ -49,388 +49,129 @@ struct CallView: View {
 	
 	var body: some View {
 		GeometryReader { geo in
-			if #available(iOS 16.4, *) {
+			if #available(iOS 16.0, *), idiom != .pad {
 				innerView(geometry: geo)
-					.sheet(isPresented:
-							.constant(
-								telecomManager.callStarted
-								&& !fullscreenVideo
-								&& !hideButtonsSheet
-								&& idiom != .pad
-								&& !(orientation == .landscapeLeft || orientation == .landscapeRight || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-							)
-					) {
-						GeometryReader { _ in
-							VStack(spacing: 0) {
-								HStack(spacing: 12) {
-									Button {
-										callViewModel.terminateCall()
-									} label: {
-										Image("phone-disconnect")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 32, height: 32)
-										
-									}
-									.frame(width: 90, height: 60)
-									.background(Color.redDanger500)
-									.cornerRadius(40)
-									
-									Spacer()
-									
-									Button {
-										callViewModel.toggleVideo()
-									} label: {
-										Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-											.frame(width: 32, height: 32)
-										
-									}
-									.frame(width: 60, height: 60)
-									.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
-									.cornerRadius(40)
-									.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-									
-									Button {
-										callViewModel.toggleMuteMicrophone()
-									} label: {
-										Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(callViewModel.micMutted ? .black : .white)
-											.frame(width: 32, height: 32)
-										
-									}
-									.frame(width: 60, height: 60)
-									.background(callViewModel.micMutted ? .white : Color.gray500)
-									.cornerRadius(40)
-									
-									Button {
-										if AVAudioSession.sharedInstance().availableInputs != nil
-											&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
-											
-											hideButtonsSheet = true
-											
-											DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-												audioRouteSheet = true
-											}
-										} else {
-											do {
-												try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
-											} catch _ {
-												
-											}
-										}
-										
-									} label: {
-										Image(imageAudioRoute)
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 32, height: 32)
-											.onAppear(perform: getAudioRouteImage)
-											.onReceive(pub) { _ in
-												self.getAudioRouteImage()
-											}
-										
-									}
-									.frame(width: 60, height: 60)
-									.background(Color.gray500)
-									.cornerRadius(40)
-								}
-								.frame(height: geo.size.height * 0.15)
-								.padding(.horizontal, 20)
-								.padding(.top, -6)
-								
-								HStack(spacing: 0) {
-									VStack {
-										Button {
-										} label: {
-											Image("phone-transfer")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background(Color.gray500)
-										.cornerRadius(40)
-										
-										Text("Transfer")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									
-									VStack {
-										Button {
-										} label: {
-											Image("phone-plus")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background(Color.gray500)
-										.cornerRadius(40)
-										
-										Text("New call")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									
-									VStack {
-										Button {
-										} label: {
-											Image("phone-list")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background(Color.gray500)
-										.cornerRadius(40)
-										
-										Text("Call list")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									
-									VStack {
-										Button {
-										} label: {
-											Image("dialer")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background(Color.gray500)
-										.cornerRadius(40)
-										
-										Text("Dialer")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-								}
-								.frame(height: geo.size.height * 0.15)
-								
-								HStack(spacing: 0) {
-									VStack {
-										Button {
-										} label: {
-											Image("chat-teardrop-text")
-												.renderingMode(.template)
-												.resizable()
-											//.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-												.foregroundStyle(Color.gray500)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										//.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
-										.background(Color.gray600)
-										.cornerRadius(40)
-										//.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-										.disabled(true)
-										
-										Text("Messages")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									
-									VStack {
-										Button {
-											callViewModel.togglePause()
-										} label: {
-											Image(callViewModel.isPaused ? "play" : "pause")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(telecomManager.isPausedByRemote ? Color.gray500 : .white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background(telecomManager.isPausedByRemote ? Color.gray600 : (callViewModel.isPaused ? Color.greenSuccess500 : Color.gray500))
-										.cornerRadius(40)
-										.disabled(telecomManager.isPausedByRemote)
-										
-										Text("Pause")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									
-									VStack {
-										Button {
-											callViewModel.toggleRecording()
-										} label: {
-											Image("record-fill")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : (callViewModel.isRecording ? Color.redDanger500 : Color.gray500))
-										.cornerRadius(40)
-										.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-										
-										Text("Record")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									
-									VStack {
-										Button {
-										} label: {
-											Image("video-camera")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 32, height: 32)
-										}
-										.frame(width: 60, height: 60)
-										.background(Color.gray500)
-										.cornerRadius(40)
-										
-										Text("Disposition")
-											.foregroundStyle(.white)
-											.default_text_style(styleSize: 15)
-									}
-									.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-									.hidden()
-								}
-								.frame(height: geo.size.height * 0.15)
-								
-								Spacer()
-							}
-							.frame(maxHeight: .infinity, alignment: .top)
-							.presentationBackground(.black)
-							.presentationDetents([.fraction(0.1), .fraction(0.45)])
-							.interactiveDismissDisabled()
-							.presentationBackgroundInteraction(.enabled)
-						}
-					}
 					.sheet(isPresented: $audioRouteSheet, onDismiss: {
 						audioRouteSheet = false
 						hideButtonsSheet = false
 					}) {
-						VStack(spacing: 0) {
-							Button(action: {
-								options = 1
-								
-								do {
-									try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-									if callViewModel.isHeadPhoneAvailable() {
-										try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
-									} else {
-										try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
-									}
-								} catch _ {
-									
-								}
-							}, label: {
-								HStack {
-									Image(options == 1 ? "radio-button-fill" : "radio-button")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 25, height: 25, alignment: .leading)
-									
-									Text(!callViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
-										.default_text_style_white(styleSize: 15)
-									
-									Spacer()
-									
-									Image(!callViewModel.isHeadPhoneAvailable() ? "ear" : "headset")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 25, height: 25, alignment: .leading)
-								}
-							})
-							.frame(maxHeight: .infinity)
-							
-							Button(action: {
-								options = 2
-								
-								do {
-									try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-								} catch _ {
-									
-								}
-							}, label: {
-								HStack {
-									Image(options == 2 ? "radio-button-fill" : "radio-button")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 25, height: 25, alignment: .leading)
-									
-									Text("Speaker")
-										.default_text_style_white(styleSize: 15)
-									
-									Spacer()
-									
-									Image("speaker-high")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 25, height: 25, alignment: .leading)
-								}
-							})
-							.frame(maxHeight: .infinity)
-							
-							Button(action: {
-								options = 3
-								
-								do {
-									try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-									try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
-								} catch _ {
-									
-								}
-							}, label: {
-								HStack {
-									Image(options == 3 ? "radio-button-fill" : "radio-button")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 25, height: 25, alignment: .leading)
-									
-									Text("Bluetooth")
-										.default_text_style_white(styleSize: 15)
-									
-									Spacer()
-									
-									Image("bluetooth")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 25, height: 25, alignment: .leading)
-								}
-							})
-							.frame(maxHeight: .infinity)
-						}
-						.padding(.horizontal, 20)
-						.presentationBackground(Color.gray600)
-						.presentationDetents([.fraction(0.3)])
-						.frame(maxHeight: .infinity)
+						innerBottomSheet()
+							.presentationDetents([.fraction(0.3)])
 					}
 			} else {
 				innerView(geometry: geo)
+					.halfSheet(showSheet: $audioRouteSheet) {
+						innerBottomSheet()
+					} onDismiss: {
+						audioRouteSheet = false
+						hideButtonsSheet = false
+					}
 			}
 		}
+	}
+	
+	@ViewBuilder
+	func innerBottomSheet() -> some View {
+		VStack(spacing: 0) {
+			Button(action: {
+				options = 1
+				
+				do {
+					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+					if callViewModel.isHeadPhoneAvailable() {
+						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
+					} else {
+						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
+					}
+				} catch _ {
+					
+				}
+			}, label: {
+				HStack {
+					Image(options == 1 ? "radio-button-fill" : "radio-button")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(.white)
+						.frame(width: 25, height: 25, alignment: .leading)
+					
+					Text(!callViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
+						.default_text_style_white(styleSize: 15)
+					
+					Spacer()
+					
+					Image(!callViewModel.isHeadPhoneAvailable() ? "ear" : "headset")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(.white)
+						.frame(width: 25, height: 25, alignment: .leading)
+				}
+			})
+			.frame(maxHeight: .infinity)
+			
+			Button(action: {
+				options = 2
+				
+				do {
+					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+				} catch _ {
+					
+				}
+			}, label: {
+				HStack {
+					Image(options == 2 ? "radio-button-fill" : "radio-button")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(.white)
+						.frame(width: 25, height: 25, alignment: .leading)
+					
+					Text("Speaker")
+						.default_text_style_white(styleSize: 15)
+					
+					Spacer()
+					
+					Image("speaker-high")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(.white)
+						.frame(width: 25, height: 25, alignment: .leading)
+				}
+			})
+			.frame(maxHeight: .infinity)
+			
+			Button(action: {
+				options = 3
+				
+				do {
+					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+					try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
+				} catch _ {
+					
+				}
+			}, label: {
+				HStack {
+					Image(options == 3 ? "radio-button-fill" : "radio-button")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(.white)
+						.frame(width: 25, height: 25, alignment: .leading)
+					
+					Text("Bluetooth")
+						.default_text_style_white(styleSize: 15)
+					
+					Spacer()
+					
+					Image("bluetooth")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(.white)
+						.frame(width: 25, height: 25, alignment: .leading)
+				}
+			})
+			.frame(maxHeight: .infinity)
+		}
+		.padding(.horizontal, 20)
+		.background(Color.gray600)
+		.frame(maxHeight: .infinity)
 	}
 	
 	@ViewBuilder
@@ -663,19 +404,20 @@ struct CallView: View {
 					}
 					.frame(
 						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
 					)
 					.background(.clear)
 				}
 			}
 			.frame(
 				maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
-				maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+				maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
 			)
 			.background(Color.gray600)
 			.cornerRadius(20)
 			.padding(.horizontal, fullscreenVideo ? 0 : 4)
 			.onRotate { newOrientation in
+				let oldOrientation = orientation
 				orientation = newOrientation
 				if orientation == .portrait || orientation == .portraitUpsideDown {
 					angleDegree = 0
@@ -684,6 +426,14 @@ struct CallView: View {
 						angleDegree = -90
 					} else if orientation == .landscapeRight {
 						angleDegree = 90
+					}
+				}
+				
+				if (oldOrientation != orientation && oldOrientation != .faceUp) || (oldOrientation == .faceUp && (orientation == .landscapeLeft || orientation == .landscapeRight)) {
+					telecomManager.callStarted = false
+					
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+						telecomManager.callStarted = true
 					}
 				}
 				
@@ -700,191 +450,28 @@ struct CallView: View {
 					}
 				}
 				
+				telecomManager.callStarted = false
+				
+				DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+					telecomManager.callStarted = true
+				}
+				
 				callViewModel.orientationUpdate(orientation: orientation)
 			}
 			
 			if !fullscreenVideo {
 				if telecomManager.callStarted {
-					if #available(iOS 16.0, *) {
-						if telecomManager.callStarted && idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
-																			|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-							HStack(spacing: 12) {
-								HStack {
-									
-								}
-								.frame(height: 60)
-							}
-							.padding(.horizontal, 25)
-							.padding(.top, 20)
-						} else {
-							HStack(spacing: 12) {
-								Button {
-									callViewModel.terminateCall()
-								} label: {
-									Image("phone-disconnect")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
-									
-								}
-								.frame(width: 90, height: 60)
-								.background(Color.redDanger500)
-								.cornerRadius(40)
-								
-								Spacer()
-								
-								Button {
-									callViewModel.toggleVideo()
-								} label: {
-									Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-										.frame(width: 32, height: 32)
-									
-								}
-								.frame(width: 60, height: 60)
-								.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
-								.cornerRadius(40)
-								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-								
-								Button {
-									callViewModel.toggleMuteMicrophone()
-								} label: {
-									Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(callViewModel.micMutted ? .black : .white)
-										.frame(width: 32, height: 32)
-									
-								}
-								.frame(width: 60, height: 60)
-								.background(callViewModel.micMutted ? .white : Color.gray500)
-								.cornerRadius(40)
-								
-								Button {
-									if AVAudioSession.sharedInstance().availableInputs != nil
-										&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
-										
-										hideButtonsSheet = true
-										
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-											audioRouteSheet = true
-										}
-									} else {
-										do {
-											try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
-										} catch _ {
-											
-										}
-									}
-									
-								} label: {
-									Image(imageAudioRoute)
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
-										.onAppear(perform: getAudioRouteImage)
-										.onReceive(pub) { _ in
-											self.getAudioRouteImage()
-										}
-									
-								}
-								.frame(width: 60, height: 60)
-								.background(Color.gray500)
-								.cornerRadius(40)
-							}
-							.frame(height: geometry.size.height * 0.15)
-							.padding(.horizontal, 20)
-							.padding(.top, -6)
-						}
-					} else {
-						HStack(spacing: 12) {
-							Button {
-								callViewModel.terminateCall()
-							} label: {
-								Image("phone-disconnect")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(.white)
-									.frame(width: 32, height: 32)
-								
-							}
-							.frame(width: 90, height: 60)
-							.background(Color.redDanger500)
-							.cornerRadius(40)
-							
-							Spacer()
-							
-							Button {
-								callViewModel.toggleVideo()
-							} label: {
-								Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-									.frame(width: 32, height: 32)
-								
-							}
-							.frame(width: 60, height: 60)
-							.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
-							.cornerRadius(40)
-							.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-							
-							Button {
-								callViewModel.toggleMuteMicrophone()
-							} label: {
-								Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(callViewModel.micMutted ? .black : .white)
-									.frame(width: 32, height: 32)
-								
-							}
-							.frame(width: 60, height: 60)
-							.background(callViewModel.micMutted ? .white : Color.gray500)
-							.cornerRadius(40)
-							
-							Button {
-								if AVAudioSession.sharedInstance().availableInputs != nil
-									&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
-									
-									hideButtonsSheet = true
-									
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-										audioRouteSheet = true
-									}
-								} else {
-									do {
-										try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
-									} catch _ {
-										
-									}
-								}
-								
-							} label: {
-								Image(imageAudioRoute)
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(.white)
-									.frame(width: 32, height: 32)
-									.onAppear(perform: getAudioRouteImage)
-									.onReceive(pub) { _ in
-										self.getAudioRouteImage()
-									}
-								
-							}
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
-						}
-						.frame(height: geometry.size.height * 0.15)
-						.padding(.horizontal, 20)
-						.padding(.top, -6)
-					}
+					let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+					let bottomInset = scene?.windows.first?.safeAreaInsets
+					
+					BottomSheetView(
+						content: bottomSheetContent(geo: geometry),
+						minHeight: (0.1 * geometry.size.height) + (bottomInset != nil ? bottomInset!.bottom : 0),
+						maxHeight: (0.45 * geometry.size.height) + (bottomInset != nil ? bottomInset!.bottom : 0),
+						currentHeight: (0.1 * geometry.size.height) + (bottomInset != nil ? bottomInset!.bottom : 0)
+					)
 				} else {
+#if targetEnvironment(simulator)
 					HStack(spacing: 12) {
 						HStack {
 							Spacer()
@@ -923,6 +510,15 @@ struct CallView: View {
 					}
 					.padding(.horizontal, 25)
 					.padding(.top, 20)
+#else
+					HStack(spacing: 12) {
+						HStack {
+						}
+						.frame(height: 60)
+					}
+					.padding(.horizontal, 25)
+					.padding(.top, 20)
+#endif
 				}
 			}
 		}
@@ -930,6 +526,418 @@ struct CallView: View {
 		.background(Color.gray900)
 		.if(fullscreenVideo) { view in
 			view.ignoresSafeArea(.all)
+		}
+	}
+	
+	func bottomSheetContent(geo: GeometryProxy) -> some View {
+		GeometryReader { _ in
+			VStack(spacing: 0) {
+				Rectangle()
+					.fill(Color.gray500)
+					.frame(width: 100, height: 5)
+					.cornerRadius(10)
+					.padding(.top, 5)
+				HStack(spacing: 12) {
+					Button {
+						callViewModel.terminateCall()
+					} label: {
+						Image("phone-disconnect")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 32, height: 32)
+						
+					}
+					.frame(width: 90, height: 60)
+					.background(Color.redDanger500)
+					.cornerRadius(40)
+					
+					Spacer()
+					
+					Button {
+						callViewModel.toggleVideo()
+					} label: {
+						Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+							.frame(width: 32, height: 32)
+						
+					}
+					.frame(width: 60, height: 60)
+					.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
+					.cornerRadius(40)
+					.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+					
+					Button {
+						callViewModel.toggleMuteMicrophone()
+					} label: {
+						Image(callViewModel.micMutted ? "microphone-slash" : "microphone")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(callViewModel.micMutted ? .black : .white)
+							.frame(width: 32, height: 32)
+						
+					}
+					.frame(width: 60, height: 60)
+					.background(callViewModel.micMutted ? .white : Color.gray500)
+					.cornerRadius(40)
+					
+					Button {
+						if AVAudioSession.sharedInstance().availableInputs != nil
+							&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+							
+							hideButtonsSheet = true
+							
+							DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+								audioRouteSheet = true
+							}
+						} else {
+							do {
+								try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
+							} catch _ {
+								
+							}
+						}
+						
+					} label: {
+						Image(imageAudioRoute)
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 32, height: 32)
+							.onAppear(perform: getAudioRouteImage)
+							.onReceive(pub) { _ in
+								self.getAudioRouteImage()
+							}
+						
+					}
+					.frame(width: 60, height: 60)
+					.background(Color.gray500)
+					.cornerRadius(40)
+				}
+				.frame(height: geo.size.height * 0.15)
+				.padding(.horizontal, 20)
+				.padding(.top, (orientation != .landscapeLeft && orientation != .landscapeRight) ? (geo.safeAreaInsets.bottom != 0 ? -15 : -30) : -10)
+				
+				if orientation != .landscapeLeft && orientation != .landscapeRight {
+					HStack(spacing: 0) {
+						VStack {
+							Button {
+							} label: {
+								Image("phone-transfer")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Transfer")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("phone-plus")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("New call")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("phone-list")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Call list")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("dialer")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Dialer")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+					}
+					.frame(height: geo.size.height * 0.15)
+					
+					HStack(spacing: 0) {
+						VStack {
+							Button {
+							} label: {
+								Image("chat-teardrop-text")
+									.renderingMode(.template)
+									.resizable()
+								//.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+									.foregroundStyle(Color.gray500)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							//.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
+							.background(Color.gray600)
+							.cornerRadius(40)
+							//.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+							.disabled(true)
+							
+							Text("Messages")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						
+						VStack {
+							Button {
+								callViewModel.togglePause()
+							} label: {
+								Image(callViewModel.isPaused ? "play" : "pause")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(telecomManager.isPausedByRemote ? Color.gray500 : .white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(telecomManager.isPausedByRemote ? Color.gray600 : (callViewModel.isPaused ? Color.greenSuccess500 : Color.gray500))
+							.cornerRadius(40)
+							.disabled(telecomManager.isPausedByRemote)
+							
+							Text("Pause")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						
+						VStack {
+							Button {
+								callViewModel.toggleRecording()
+							} label: {
+								Image("record-fill")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : (callViewModel.isRecording ? Color.redDanger500 : Color.gray500))
+							.cornerRadius(40)
+							.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+							
+							Text("Record")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("video-camera")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Disposition")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						.hidden()
+					}
+					.frame(height: geo.size.height * 0.15)
+				} else {
+					HStack {
+						VStack {
+							Button {
+							} label: {
+								Image("phone-transfer")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Transfer")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("phone-plus")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("New call")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("phone-list")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Call list")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("dialer")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(Color.gray500)
+							.cornerRadius(40)
+							
+							Text("Dialer")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						
+						VStack {
+							Button {
+							} label: {
+								Image("chat-teardrop-text")
+									.renderingMode(.template)
+									.resizable()
+								//.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+									.foregroundStyle(Color.gray500)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							//.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray500)
+							.background(Color.gray600)
+							.cornerRadius(40)
+							//.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+							.disabled(true)
+							
+							Text("Messages")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						
+						VStack {
+							Button {
+								callViewModel.togglePause()
+							} label: {
+								Image(callViewModel.isPaused ? "play" : "pause")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(telecomManager.isPausedByRemote ? Color.gray500 : .white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background(telecomManager.isPausedByRemote ? Color.gray600 : (callViewModel.isPaused ? Color.greenSuccess500 : Color.gray500))
+							.cornerRadius(40)
+							.disabled(telecomManager.isPausedByRemote)
+							
+							Text("Pause")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						
+						VStack {
+							Button {
+								callViewModel.toggleRecording()
+							} label: {
+								Image("record-fill")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+									.frame(width: 32, height: 32)
+							}
+							.frame(width: 60, height: 60)
+							.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray600 : (callViewModel.isRecording ? Color.redDanger500 : Color.gray500))
+							.cornerRadius(40)
+							.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+							
+							Text("Record")
+								.foregroundStyle(.white)
+								.default_text_style(styleSize: 15)
+						}
+						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+					}
+					.frame(height: geo.size.height * 0.15)
+					.padding(.horizontal, 20)
+					.padding(.top, 30)
+				}
+				Spacer()
+			}
+			.background(Color.gray900)
+			.frame(maxHeight: .infinity, alignment: .top)
 		}
 	}
 	
@@ -945,6 +953,59 @@ struct CallView: View {
 			: "bluetooth"
 		)
 		: "speaker-high"
+	}
+}
+
+struct BottomSheetView<Content: View>: View {
+	let content: Content
+	
+	@State var minHeight: CGFloat
+	@State var maxHeight: CGFloat
+	
+	@State var currentHeight: CGFloat
+	
+	var body: some View {
+		GeometryReader { geometry in
+			VStack(spacing: 0.0) {
+				content
+			}
+			.onAppear {
+				self.currentHeight = minHeight
+			}
+			.frame(
+				width: geometry.size.width,
+				height: maxHeight,
+				alignment: .top
+			)
+			.clipShape(
+				Path(
+					UIBezierPath(
+						roundedRect: CGRect(x: 0.0, y: 0.0, width: geometry.size.width, height: maxHeight),
+						byRoundingCorners: [.topLeft, .topRight],
+						cornerRadii: CGSize(width: 16.0, height: 16.0)
+					)
+					.cgPath
+				)
+			)
+			.frame(
+				height: geometry.size.height,
+				alignment: .bottom
+			)
+			.highPriorityGesture(
+				DragGesture()
+					.onChanged { value in
+						currentHeight -= value.translation.height
+						currentHeight = min(max(currentHeight, minHeight), maxHeight)
+					}
+					.onEnded { _ in
+						withAnimation {
+							currentHeight = (currentHeight - minHeight <= maxHeight - currentHeight) ? minHeight : maxHeight
+						}
+					}
+			)
+			.offset(y: maxHeight - currentHeight)
+		}
+		.edgesIgnoringSafeArea(.bottom)
 	}
 }
 

@@ -33,35 +33,20 @@ struct HistoryFragment: View {
 	
 	var body: some View {
 		ZStack {
-			if #available(iOS 16.0, *) {
-				if idiom != .pad {
-					HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet)
-						.sheet(isPresented: $showingSheet) {
-							HistoryListBottomSheet(
-								historyViewModel: historyViewModel,
-								contactViewModel: contactViewModel,
-								editContactViewModel: editContactViewModel,
-								historyListViewModel: historyListViewModel,
-								showingSheet: $showingSheet,
-								index: $index,
-								isShowEditContactFragment: $isShowEditContactFragment
-							)
-							.presentationDetents([.fraction(0.2)])
-						}
-				} else {
-					HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet)
-						.halfSheet(showSheet: $showingSheet) {
-							HistoryListBottomSheet(
-								historyViewModel: historyViewModel,
-								contactViewModel: contactViewModel,
-								editContactViewModel: editContactViewModel,
-								historyListViewModel: historyListViewModel,
-								showingSheet: $showingSheet,
-								index: $index,
-								isShowEditContactFragment: $isShowEditContactFragment
-							)
-						} onDismiss: {}
-				}
+			if #available(iOS 16.0, *), idiom != .pad {
+				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet)
+					.sheet(isPresented: $showingSheet) {
+						HistoryListBottomSheet(
+							historyViewModel: historyViewModel,
+							contactViewModel: contactViewModel,
+							editContactViewModel: editContactViewModel,
+							historyListViewModel: historyListViewModel,
+							showingSheet: $showingSheet,
+							index: $index,
+							isShowEditContactFragment: $isShowEditContactFragment
+						)
+						.presentationDetents([.fraction(0.2)])
+					}
 			} else {
 				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet)
 					.halfSheet(showSheet: $showingSheet) {
