@@ -92,6 +92,8 @@ final class CoreContext: ObservableObject {
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
 			
+			self.mCore.setUserAgent(name: "Linphone iOS 6.0 Beta (\(UIDevice.current.localizedModel)) - Linphone SDK : \(self.coreVersion)", version: "6.0")
+			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 					self.defaultAccount = self.mCore.defaultAccount
