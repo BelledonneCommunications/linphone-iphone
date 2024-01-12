@@ -75,7 +75,6 @@ class CallViewModel: ObservableObject {
 					
 					//self.avatarModel = ???
 					self.micMutted = self.currentCall!.microphoneMuted
-					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 					self.isRecording = self.currentCall!.params!.isRecording
 					self.isPaused = self.isCallPaused()
 					self.timeElapsed = 0
@@ -139,8 +138,6 @@ class CallViewModel: ObservableObject {
 						"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
 					)
 					try self.currentCall!.update(params: params)
-					
-					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 				} catch {
 					
 				}

@@ -82,7 +82,7 @@ struct CallView: View {
 									Button {
 										callViewModel.toggleVideo()
 									} label: {
-										Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
+										Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
 											.renderingMode(.template)
 											.resizable()
 											.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
@@ -500,7 +500,7 @@ struct CallView: View {
 					
 					Spacer()
 					
-					if callViewModel.cameraDisplayed {
+					if telecomManager.remoteVideo {
 						Button {
 							callViewModel.switchCamera()
 						} label: {
@@ -594,10 +594,12 @@ struct CallView: View {
 				.scaledToFill()
 				.clipped()
 				.onTapGesture {
-					fullscreenVideo.toggle()
+					if telecomManager.remoteVideo {
+						fullscreenVideo.toggle()
+					}
 				}
 				
-				if callViewModel.cameraDisplayed {
+				if telecomManager.remoteVideo {
 					HStack {
 						Spacer()
 						VStack {
@@ -741,7 +743,7 @@ struct CallView: View {
 								Button {
 									callViewModel.toggleVideo()
 								} label: {
-									Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
+									Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
@@ -825,7 +827,7 @@ struct CallView: View {
 							Button {
 								callViewModel.toggleVideo()
 							} label: {
-								Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
+								Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
