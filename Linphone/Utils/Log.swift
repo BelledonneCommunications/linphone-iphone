@@ -24,6 +24,9 @@ import UIKit
 import os
 import linphonesw
 import linphone
+#if USE_CRASHLYTICS
+import Firebase
+#endif
 
 class Log: LoggingServiceDelegate {
 	
@@ -88,6 +91,9 @@ class Log: LoggingServiceDelegate {
 		} else {
 			NSLog(log)
 		}
+#if USE_CRASHLYTICS
+		Crashlytics.crashlytics().log("\(levelStr) [\(domain)] \(message)\n")
+#endif
 	}
 		
 	func onLogMessageWritten(logService: linphonesw.LoggingService, domain: String, level: linphonesw.LogLevel, message: String) {
