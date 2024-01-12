@@ -152,12 +152,13 @@ struct CallView: View {
 											Image("phone-transfer")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(.white)
+												.foregroundStyle(Color.gray500)
 												.frame(width: 32, height: 32)
 										}
 										.frame(width: 60, height: 60)
-										.background(Color.gray500)
+										.background(Color.gray600)
 										.cornerRadius(40)
+										.disabled(true)
 										
 										Text("Transfer")
 											.foregroundStyle(.white)
@@ -171,12 +172,13 @@ struct CallView: View {
 											Image("phone-plus")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(.white)
+												.foregroundStyle(Color.gray500)
 												.frame(width: 32, height: 32)
 										}
 										.frame(width: 60, height: 60)
-										.background(Color.gray500)
+										.background(Color.gray600)
 										.cornerRadius(40)
+										.disabled(true)
 										
 										Text("New call")
 											.foregroundStyle(.white)
@@ -190,12 +192,13 @@ struct CallView: View {
 											Image("phone-list")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(.white)
+												.foregroundStyle(Color.gray500)
 												.frame(width: 32, height: 32)
 										}
 										.frame(width: 60, height: 60)
-										.background(Color.gray500)
+										.background(Color.gray600)
 										.cornerRadius(40)
+										.disabled(true)
 										
 										Text("Call list")
 											.foregroundStyle(.white)
@@ -209,12 +212,13 @@ struct CallView: View {
 											Image("dialer")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(.white)
+												.foregroundStyle(Color.gray500)
 												.frame(width: 32, height: 32)
 										}
 										.frame(width: 60, height: 60)
-										.background(Color.gray500)
+										.background(Color.gray600)
 										.cornerRadius(40)
+										.disabled(true)
 										
 										Text("Dialer")
 											.foregroundStyle(.white)
