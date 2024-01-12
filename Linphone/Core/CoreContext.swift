@@ -170,8 +170,10 @@ final class CoreContext: ObservableObject {
 						forPasteboardType: UTType.plainText.identifier
 					)
 					
-					ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
-					ToastViewModel.shared.displayToast = true
+					DispatchQueue.main.async {
+						ToastViewModel.shared.toastMessage = "Success_send_logs"
+					 	ToastViewModel.shared.displayToast = true
+					}
 				}
 			})
 			

@@ -48,6 +48,20 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_clear_logs":
+						Text("Logs cleared")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_send_logs":
+						Text("Logs URL copied into clipboard")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_copied_into_clipboard":
 						Text("SIP address copied into clipboard")
 							.multilineTextAlignment(.center)
