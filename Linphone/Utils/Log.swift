@@ -92,7 +92,7 @@ class Log: LoggingServiceDelegate {
 			NSLog(log)
 		}
 #if USE_CRASHLYTICS
-		Crashlytics.crashlytics().log("\(levelStr) [\(domain)] \(message)\n")
+		Crashlytics.crashlytics().log(log)
 #endif
 	}
 		

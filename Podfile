@@ -31,9 +31,35 @@ target 'Linphone' do
 end
 
 post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-    end
-  end
+	app_project = Xcodeproj::Project.open(Dir.glob("*.xcodeproj")[0])
+	app_project.native_targets.each do |target|
+		target.build_configurations.each do |config|
+			if target.name == "Linphone" || target.name == 'msgNotificationService' || target.name == 'msgNotificationContent'
+				if ENV['USE_CRASHLYTICS'].nil?
+					if config.name == "Debug" then
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1'
+						else
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited)'
+					end
+					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited)'
+				else
+					# activate crashlytics
+					if config.name == "Debug" then
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) DEBUG=1 USE_CRASHLYTICS=1'
+					else
+						config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) USE_CRASHLYTICS=1'
+					end
+					config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -DUSE_CRASHLYTICS'
+				end
+			end
+
+			app_project.save
+		end
+	end
+	installer.pods_project.targets.each do |target|
+		target.build_configurations.each do |config|
+			config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+		end
+	end
 end
+
