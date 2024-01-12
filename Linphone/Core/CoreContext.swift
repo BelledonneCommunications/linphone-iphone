@@ -104,10 +104,25 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
+				if cbVal.state == GlobalState.On {
+#if DEBUG
+					let pushEnvironment = ".dev"
+#else
+					let pushEnvironment = ""
+#endif
+					for account in cbVal.core.accountList where account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+						let newParams = account.params?.clone()
+						Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
+						newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
+						account.params = newParams
+					}
+				}
+			})
+			
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
 			
-			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
@@ -186,6 +201,7 @@ final class CoreContext: ObservableObject {
 					self.mCore.iterate()
 				}
 			
+			try? self.mCore.start()
 		}
 	}
 	
