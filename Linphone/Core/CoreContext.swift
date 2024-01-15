@@ -38,7 +38,7 @@ final class CoreContext: ObservableObject {
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
-
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -68,17 +68,17 @@ final class CoreContext: ObservableObject {
 			Factory.Instance.logCollectionPath = configDir
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
-            let url = NSURL(fileURLWithPath: configDir)
-            if let pathComponent = url.appendingPathComponent("linphonerc") {
-                let filePath = pathComponent.path
-                let fileManager = FileManager.default
-                if !fileManager.fileExists(atPath: filePath) {
-                    let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
-                    if path != nil {
-                        try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
-                    }
-                }
-            }
+			let url = NSURL(fileURLWithPath: configDir)
+			if let pathComponent = url.appendingPathComponent("linphonerc") {
+				let filePath = pathComponent.path
+				let fileManager = FileManager.default
+				if !fileManager.fileExists(atPath: filePath) {
+					let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
+					if path != nil {
+						try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
+					}
+				}
+			}
 			
 			let config = try? Factory.Instance.createConfigWithFactory(
 				path: "\(configDir)/linphonerc",
@@ -87,10 +87,12 @@ final class CoreContext: ObservableObject {
 			if config != nil {
 				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
 			}
-
+			
 			self.mCore.autoIterateEnabled = false
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
+			
+			self.mCore.setUserAgent(name: "Linphone iOS 6.0 Beta (\(UIDevice.current.localizedModel)) - Linphone SDK : \(self.coreVersion)", version: "6.0")
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
@@ -102,15 +104,25 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
+				if cbVal.state == GlobalState.On {
+#if DEBUG
+					let pushEnvironment = ".dev"
+#else
+					let pushEnvironment = ""
+#endif
+					for account in cbVal.core.accountList where account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+						let newParams = account.params?.clone()
+						Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
+						newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
+						account.params = newParams
+					}
+				}
+			})
+			
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
-			self.mCore.recordAwareEnabled = true
 			
-			let videoActivationPolicy = self.mCore.videoActivationPolicy!
-			videoActivationPolicy.automaticallyAccept = true
-			self.mCore.videoActivationPolicy! = videoActivationPolicy
-			
-			try? self.mCore.start()
 			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
@@ -118,11 +130,14 @@ final class CoreContext: ObservableObject {
 				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
 					ToastViewModel.shared.toastMessage = "Successful"
-					ToastViewModel.shared.displayToast.toggle()
-				} else {
-					ToastViewModel.shared.toastMessage = "Failed"
-					ToastViewModel.shared.displayToast.toggle()
-				}
+					ToastViewModel.shared.displayToast = true
+				} 
+				/*
+				 else {
+				 ToastViewModel.shared.toastMessage = "Failed"
+				 ToastViewModel.shared.displayToast = true
+				 }
+				 */
 			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
@@ -140,7 +155,7 @@ final class CoreContext: ObservableObject {
 					self.loggingInProgress = true
 				} else {
 					ToastViewModel.shared.toastMessage = "Registration failed"
-					ToastViewModel.shared.displayToast.toggle()
+					ToastViewModel.shared.displayToast = true
 					self.loggingInProgress = false
 					self.loggedIn = false
 				}
@@ -171,9 +186,11 @@ final class CoreContext: ObservableObject {
 						cbValue.info,
 						forPasteboardType: UTType.plainText.identifier
 					)
-				 
-					ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
-					ToastViewModel.shared.displayToast.toggle()
+					
+					DispatchQueue.main.async {
+						ToastViewModel.shared.toastMessage = "Success_send_logs"
+					 	ToastViewModel.shared.displayToast = true
+					}
 				}
 			})
 			
@@ -184,6 +201,7 @@ final class CoreContext: ObservableObject {
 					self.mCore.iterate()
 				}
 			
+			try? self.mCore.start()
 		}
 	}
 	

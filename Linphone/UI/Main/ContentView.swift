@@ -18,6 +18,7 @@
  */
 
 // swiftlint:disable type_body_length
+// swiftlint:disable line_length
 import SwiftUI
 import linphonesw
 
@@ -38,6 +39,7 @@ struct ContentView: View {
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var startCallViewModel: StartCallViewModel
+	@ObservedObject var callViewModel: CallViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -149,6 +151,7 @@ struct ContentView: View {
 									Menu {
 										if index == 0 {
 											Button {
+												contactViewModel.indexDisplayedFriend = nil
 												isMenuOpen = false
 												magicSearch.allContact = true
 												MagicSearchSingleton.shared.searchForContacts(
@@ -166,6 +169,7 @@ struct ContentView: View {
 											}
 											
 											Button {
+												contactViewModel.indexDisplayedFriend = nil
 												isMenuOpen = false
 												magicSearch.allContact = false
 												MagicSearchSingleton.shared.searchForContacts(
@@ -280,9 +284,8 @@ struct ContentView: View {
 												text = newValue
 											}
 										))
-										.default_text_style_white_700(styleSize: 15)
+										.default_text_style_700(styleSize: 15)
 										.padding(.all, 6)
-										.accentColor(.white)
 										.focused($focusedField)
 										.onAppear {
 											self.focusedField = true
@@ -661,15 +664,16 @@ struct ContentView: View {
 				}
 				
 				if telecomManager.callInProgress {
-					CallView(callViewModel: CallViewModel())
+					CallView(callViewModel: callViewModel)
 						.zIndex(3)
 						.transition(.scale.combined(with: .move(edge: .top)))
+						.onAppear {
+							callViewModel.resetCallView()
+						}
 				}
 				
-				// if sharedMainViewModel.displayToast {
 				ToastView()
 					.zIndex(3)
-				// }
 			}
 		}
 		.overlay {
@@ -693,12 +697,14 @@ struct ContentView: View {
 		.onChange(of: scenePhase) { newPhase in
 			if newPhase == .active {
 				coreContext.onForeground()
+				/*
 				if !isShowStartCallFragment {
 					contactsManager.fetchContacts()
 					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
 						historyListViewModel.computeCallLogsList()
 					}
 				}
+				 */
 				print("Active")
 			} else if newPhase == .inactive {
 				print("Inactive")
@@ -722,7 +728,9 @@ struct ContentView: View {
 		editContactViewModel: EditContactViewModel(),
 		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
-		startCallViewModel: StartCallViewModel()
+		startCallViewModel: StartCallViewModel(),
+		callViewModel: CallViewModel()
 	)
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable line_length

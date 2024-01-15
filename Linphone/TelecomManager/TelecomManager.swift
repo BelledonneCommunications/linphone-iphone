@@ -41,7 +41,11 @@ class TelecomManager: ObservableObject {
 	let callController: CXCallController // to support callkit
 	
 	@Published var callInProgress: Bool = false
-    @Published var callStarted: Bool = false
+	@Published var callStarted: Bool = false
+	@Published var outgoingCallStarted: Bool = false
+	@Published var remoteVideo: Bool = false
+	@Published var  isRecordingByRemote: Bool = false
+	@Published var  isPausedByRemote: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -116,34 +120,47 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-    func doCallWithCore(addr: Address) {
-        CoreContext.shared.doOnCoreQueue { core in
+	func doCallWithCore(addr: Address, isVideo: Bool) {
+		CoreContext.shared.doOnCoreQueue { core in
 			do {
-				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: false, isConference: false)
+				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: isVideo, isConference: false)
 			} catch {
 				Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr) \(error) ")
 			}
-        }
-    }
-    
+		}
+	}
+	
+	private func makeRecordFilePath() -> String{
+		var filePath = "recording_"
+		let now = Date()
+		let dateFormat = DateFormatter()
+		dateFormat.dateFormat = "E-d-MMM-yyyy-HH-mm-ss"
+		let date = dateFormat.string(from: now)
+		filePath = filePath.appending("\(date).mkv")
+		
+		let paths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
+		let writablePath = paths[0]
+		return writablePath.appending("/\(filePath)")
+	}
+	
 	func doCall(core: Core, addr: Address, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
 		// let displayName = FastAddressBook.displayName(for: addr.getCobject)
 		
 		let lcallParams = try core.createCallParams(call: nil)
 		/*
-		if ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference") && AppManager.network() == .network_2g {
-			Log.directLog(BCTBX_LOG_MESSAGE, text: "Enabling low bandwidth mode")
-			lcallParams.lowBandwidthEnabled = true
-		}
-		
-		if (displayName != nil) {
-			try addr.setDisplayname(newValue: displayName!)
-		}
-		
-		if(ConfigManager.instance().lpConfigBoolForKey(key: "override_domain_with_default_one")) {
-			try addr.setDomain(newValue: ConfigManager.instance().lpConfigStringForKey(key: "domain", section: "assistant"))
-		}
-		*/
+		 if ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference") && AppManager.network() == .network_2g {
+		 Log.directLog(BCTBX_LOG_MESSAGE, text: "Enabling low bandwidth mode")
+		 lcallParams.lowBandwidthEnabled = true
+		 }
+		 
+		 if (displayName != nil) {
+		 try addr.setDisplayname(newValue: displayName!)
+		 }
+		 
+		 if(ConfigManager.instance().lpConfigBoolForKey(key: "override_domain_with_default_one")) {
+		 try addr.setDomain(newValue: ConfigManager.instance().lpConfigStringForKey(key: "domain", section: "assistant"))
+		 }
+		 */
 		
 		if nextCallIsTransfer {
 			let call = core.currentCall
@@ -154,17 +171,20 @@ class TelecomManager: ObservableObject {
 			// let writablePath = AppManager.recordingFilePathFromCall(address: addr.username! )
 			// Log.directLog(BCTBX_LOG_DEBUG, text: "record file path: \(writablePath)")
 			// lcallParams.recordFile = writablePath
+			
+			lcallParams.recordFile = makeRecordFilePath()
+			
 			if isSas {
 				lcallParams.mediaEncryption = .ZRTP
 			}
 			if isConference {
-		/*		if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
-					lcallParams.videoEnabled = true
-					lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
-					lcallParams.conferenceVideoLayout = ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! == .Grid ? .Grid : .ActiveSpeaker
-				} else {
-					lcallParams.videoEnabled = false
-				}*/
+				/*		if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
+				 lcallParams.videoEnabled = true
+				 lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
+				 lcallParams.conferenceVideoLayout = ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! == .Grid ? .Grid : .ActiveSpeaker
+				 } else {
+				 lcallParams.videoEnabled = false
+				 }*/
 			} else {
 				lcallParams.videoEnabled = isVideo
 			}
@@ -184,9 +204,12 @@ class TelecomManager: ObservableObject {
 			}
 			
 			DispatchQueue.main.async {
+				self.outgoingCallStarted = true
 				self.callStarted = true
-				withAnimation {
-					self.callInProgress = true
+				if self.callInProgress == false {
+					withAnimation {
+						self.callInProgress = true
+					}
 				}
 			}
 		}
@@ -195,14 +218,16 @@ class TelecomManager: ObservableObject {
 	func acceptCall(core: Core, call: Call, hasVideo: Bool) {
 		do {
 			let callParams = try core.createCallParams(call: call)
+			
+			callParams.recordFile = makeRecordFilePath()
 			callParams.videoEnabled = hasVideo
 			/*if (ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference")) {
-				let low_bandwidth = (AppManager.network() == .network_2g)
-				if (low_bandwidth) {
-					Log.directLog(BCTBX_LOG_MESSAGE, text: "Low bandwidth mode")
-				}
-				callParams.lowBandwidthEnabled = low_bandwidth
-			}*/
+			 let low_bandwidth = (AppManager.network() == .network_2g)
+			 if (low_bandwidth) {
+			 Log.directLog(BCTBX_LOG_MESSAGE, text: "Low bandwidth mode")
+			 }
+			 callParams.lowBandwidthEnabled = low_bandwidth
+			 }*/
 			
 			// We set the record file name here because we can't do it after the call is started.
 			// let address = call.callLog?.fromAddress
@@ -211,10 +236,10 @@ class TelecomManager: ObservableObject {
 			// callParams.recordFile = writablePath
 			
 			/*
-			if let chatView : ChatConversationView = PhoneMainView.instance().VIEW(ChatConversationView.compositeViewDescription()), chatView.isVoiceRecording {
-				Log.directLog(BCTBX_LOG_MESSAGE, text: "Voice recording in progress, stopping it befoce accepting the call.")
-				chatView.stopVoiceRecording()
-			}*/
+			 if let chatView : ChatConversationView = PhoneMainView.instance().VIEW(ChatConversationView.compositeViewDescription()), chatView.isVoiceRecording {
+			 Log.directLog(BCTBX_LOG_MESSAGE, text: "Voice recording in progress, stopping it befoce accepting the call.")
+			 chatView.stopVoiceRecording()
+			 }*/
 			
 			if call.callLog?.wasConference() == true {
 				// Prevent incoming group call to start in audio only layout
@@ -226,9 +251,9 @@ class TelecomManager: ObservableObject {
 			
 			try call.acceptWithParams(params: callParams)
 			
-            DispatchQueue.main.async {
-                self.callStarted = true
-            }
+			DispatchQueue.main.async {
+				self.callStarted = true
+			}
 		} catch {
 			Log.error("accept call failed \(error)")
 		}
@@ -311,10 +336,52 @@ class TelecomManager: ObservableObject {
 		if cstate == .PushIncomingReceived {
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
 		} else {
-			let video = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 			
-			if video {
-				Log.info("[Call] Remote video is activated")
+			DispatchQueue.main.async {
+				self.remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+				
+				if self.remoteVideo {
+					Log.info("[Call] Remote video is activated")
+				}
+				
+				self.isRecordingByRemote = call.remoteParams?.isRecording ?? false
+				
+				if self.isRecordingByRemote && ToastViewModel.shared.toastMessage.isEmpty {
+					
+					var displayName = ""
+					let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						displayName = friend!.address!.displayName!
+					} else {
+						if call.remoteAddress!.displayName != nil {
+							displayName = call.remoteAddress!.displayName!
+						} else if call.remoteAddress!.username != nil {
+							displayName = call.remoteAddress!.username!
+						}
+					}
+					
+					ToastViewModel.shared.toastMessage = "\(displayName) is recording"
+					ToastViewModel.shared.displayToast = true
+					
+					Log.info("[Call] Call is recording by \(call.remoteAddress!.asStringUriOnly())")
+				}
+				
+				if !self.isRecordingByRemote && ToastViewModel.shared.toastMessage.contains("is recording") {
+					
+					withAnimation {
+						ToastViewModel.shared.toastMessage = ""
+						ToastViewModel.shared.displayToast = false
+					}
+					
+					Log.info("[Call] Recording is stopped by \(call.remoteAddress!.asStringUriOnly())")
+				}
+				
+				switch call.state {
+				case Call.State.PausedByRemote:
+					self.isPausedByRemote = true
+				default:
+					self.isPausedByRemote = false
+				}
 			}
 			
 			if call.userData == nil {
@@ -322,24 +389,28 @@ class TelecomManager: ObservableObject {
 				TelecomManager.setAppData(sCall: call, appData: appData)
 			}
 			/*
-			if let conference = call.conference, ConferenceViewModel.shared.conference.value == nil {
-				Log.info("[Call] Found conference attached to call and no conference in dedicated view model, init & configure it")
-				ConferenceViewModel.shared.initConference(conference)
-				ConferenceViewModel.shared.configureConference(conference)
-			}
-			*/
+			 if let conference = call.conference, ConferenceViewModel.shared.conference.value == nil {
+			 Log.info("[Call] Found conference attached to call and no conference in dedicated view model, init & configure it")
+			 ConferenceViewModel.shared.initConference(conference)
+			 ConferenceViewModel.shared.configureConference(conference)
+			 }
+			 */
 			switch cstate {
 			case .IncomingReceived:
 				let addr = call.remoteAddress
 				let displayName = incomingDisplayName(call: call)
 				
-			#if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
 				DispatchQueue.main.async {
-					withAnimation {
-						TelecomManager.shared.callInProgress = true
+					self.outgoingCallStarted = false
+					self.callStarted = true
+					if self.callInProgress == false {
+						withAnimation {
+							self.callInProgress = true
+						}
 					}
 				}
-			#endif
+#endif
 				
 				if call.replacedCall != nil {
 					endCallKitReplacedCall = false
@@ -351,22 +422,22 @@ class TelecomManager: ObservableObject {
 						providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 						providerDelegate.uuids.removeValue(forKey: callId)
 						providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, displayName: displayName)
 					}
 				} else if TelecomManager.callKitEnabled(core: core) {
 					/*
 					 let isConference = isConferenceCall(call: call)
-					let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
-					if (isEarlyConference) {
-						CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
-							let uuid = providerDelegate.uuids["\(callId)"]
-							if (uuid != nil) {
-								displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
-								providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
-							}
-						}
-					}
-					*/
+					 let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
+					 if (isEarlyConference) {
+					 CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
+					 let uuid = providerDelegate.uuids["\(callId)"]
+					 if (uuid != nil) {
+					 displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
+					 providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+					 }
+					 }
+					 }
+					 */
 					let uuid = providerDelegate.uuids["\(callId)"]
 					if call.replacedCall == nil {
 						TelecomManager.uuidReplacedCall = callId
@@ -374,23 +445,28 @@ class TelecomManager: ObservableObject {
 					
 					if uuid != nil {
 						// Tha app is now registered, updated the call already existed.
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, displayName: displayName)
 					} else {
-						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: video, callId: callId, displayName: displayName)
+						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, callId: callId, displayName: displayName)
 					}
 				} /* else if UIApplication.shared.applicationState != .active {
-					// not support callkit , use notif
-					let content = UNMutableNotificationContent()
-					content.title = NSLocalizedString("Incoming call", comment: "")
-					content.body = displayName
-					content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
-					content.categoryIdentifier = "call_cat"
-					content.userInfo = ["CallId": callId]
-					let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
-					UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
-				} */
+				   // not support callkit , use notif
+				   let content = UNMutableNotificationContent()
+				   content.title = NSLocalizedString("Incoming call", comment: "")
+				   content.body = displayName
+				   content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
+				   content.categoryIdentifier = "call_cat"
+				   content.userInfo = ["CallId": callId]
+				   let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
+				   UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
+				   } */
 			case .StreamsRunning:
 				if TelecomManager.callKitEnabled(core: core) {
+					
+					DispatchQueue.main.async {
+						self.outgoingCallStarted = false
+					}
+					
 					let uuid = providerDelegate.uuids["\(callId)"]
 					if uuid != nil {
 						let callInfo = providerDelegate.callInfos[uuid!]
@@ -404,10 +480,10 @@ class TelecomManager: ObservableObject {
 				}
 				
 				/*
-				if speakerBeforePause {
-					speakerBeforePause = false
-					AudioRouteUtils.routeAudioToSpeaker(core: core)
-				}
+				 if speakerBeforePause {
+				 speakerBeforePause = false
+				 AudioRouteUtils.routeAudioToSpeaker(core: core)
+				 }
 				 */
 				
 				actionToFulFill?.fulfill()
@@ -432,12 +508,12 @@ class TelecomManager: ObservableObject {
 						providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
 					} else {
 						if false { /* isConferenceCall(call: call) {
-							let uuid = UUID()
-							let callInfo = CallInfo.newOutgoingCallInfo(addr: call.remoteAddress!, isSas: call.params?.mediaEncryption == .ZRTP, displayName: VoipTexts.conference_default_title, isVideo: call.params?.videoEnabled == true, isConference:true)
-							providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
-							providerDelegate.uuids.updateValue(uuid, forKey: "")
-							providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid)
-							Core.get().activateAudioSession(actived: true) */
+									let uuid = UUID()
+									let callInfo = CallInfo.newOutgoingCallInfo(addr: call.remoteAddress!, isSas: call.params?.mediaEncryption == .ZRTP, displayName: VoipTexts.conference_default_title, isVideo: call.params?.videoEnabled == true, isConference:true)
+									providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+									providerDelegate.uuids.updateValue(uuid, forKey: "")
+									providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid)
+									Core.get().activateAudioSession(actived: true) */
 						} else {
 							referedToCall = callId
 						}
@@ -445,19 +521,6 @@ class TelecomManager: ObservableObject {
 				}
 			case .End,
 					.Error:
-				
-				DispatchQueue.main.async {
-					withAnimation {
-						self.callInProgress = false
-						self.callStarted = false
-					}
-				}
-				var displayName = "Unknown"
-				if call.dir == .Incoming {
-					displayName = incomingDisplayName(call: call)
-				} else { // if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
-					displayName = "TODOContactName"
-				}
 				
 				UIDevice.current.isProximityMonitoringEnabled = false
 				if core.callsNb == 0 {
@@ -468,18 +531,34 @@ class TelecomManager: ObservableObject {
 					// bluetoothEnabled = false
 				}
 				
-				if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted) {
-					// Configure the notification's payload.
-					let content = UNMutableNotificationContent()
-					content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
-					content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
+				DispatchQueue.main.async {
+					withAnimation {
+						self.outgoingCallStarted = false
+						self.callInProgress = false
+						self.callStarted = false
+					}
 					
-					// Deliver the notification.
-					let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
-					let center = UNUserNotificationCenter.current()
-					center.add(request) { (error: Error?) in
-						if error != nil {
-							Log.info("Error while adding notification request : \(error!.localizedDescription)")
+					var displayName = "Unknown"
+					if call.dir == .Incoming {
+						displayName = self.incomingDisplayName(call: call)
+					} else { // if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
+						displayName = "TODOContactName"
+					}
+					
+					
+					if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted) {
+						// Configure the notification's payload.
+						let content = UNMutableNotificationContent()
+						content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
+						content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
+						
+						// Deliver the notification.
+						let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
+						let center = UNUserNotificationCenter.current()
+						center.add(request) { (error: Error?) in
+							if error != nil {
+								Log.info("Error while adding notification request : \(error!.localizedDescription)")
+							}
 						}
 					}
 				}
@@ -524,22 +603,6 @@ class TelecomManager: ObservableObject {
 			default:
 				break
 			}
-			
-			// AudioRouteUtils.isBluetoothAvailable(core: core)
-			// AudioRouteUtils.isHeadsetAudioRouteAvailable(core: core)
-			// AudioRouteUtils.isBluetoothAudioRouteAvailable(core: core)
-			
-			/*
-			let readyForRoutechange = callkitAudioSessionActivated == nil || (callkitAudioSessionActivated == true)
-			if readyForRoutechange && (cstate == .IncomingReceived || cstate == .OutgoingInit || cstate == .Connected || cstate == .StreamsRunning) {
-				if (call.currentParams?.videoEnabled ?? false) && AudioRouteUtils.isReceiverEnabled(core: core) && call.conference == nil {
-					AudioRouteUtils.routeAudioToSpeaker(core: core, call: call)
-				} else if AudioRouteUtils.isBluetoothAvailable(core: core) {
-					// Use bluetooth device by default if one is available
-					AudioRouteUtils.routeAudioToBluetooth(core: core, call: call)
-				}
-			}
-			 */
 		}
 		// post Notification kLinphoneCallUpdate
 		NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self, userInfo: [

@@ -33,14 +33,16 @@ class CallViewModel: ObservableObject {
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var micMutted: Bool = false
 	@Published var cameraDisplayed: Bool = false
-	@State var timeElapsed: Int = 0
+	@Published var isRecording: Bool = false
+	@Published var isRemoteRecording: Bool = false
+	@Published var isPaused: Bool = false
+	@Published var timeElapsed: Int = 0
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
 	var currentCall: Call?
 	
 	init() {
-		
 		do {
 			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
 			try AVAudioSession.sharedInstance().setActive(true)
@@ -48,6 +50,10 @@ class CallViewModel: ObservableObject {
 			
 		}
 		
+		resetCallView()
+	}
+	
+	func resetCallView() {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				self.currentCall = core.currentCall
@@ -69,7 +75,9 @@ class CallViewModel: ObservableObject {
 					
 					//self.avatarModel = ???
 					self.micMutted = self.currentCall!.microphoneMuted
-					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
+					self.isRecording = self.currentCall!.params!.isRecording
+					self.isPaused = self.isCallPaused()
+					self.timeElapsed = 0
 				}
 			}
 		}
@@ -77,8 +85,9 @@ class CallViewModel: ObservableObject {
 	
 	func terminateCall() {
 		withAnimation {
-			telecomManager.callInProgress = false
+			telecomManager.outgoingCallStarted = false
 			telecomManager.callStarted = false
+			telecomManager.callInProgress = false
 		}
 		
 		coreContext.doOnCoreQueue { _ in
@@ -92,6 +101,7 @@ class CallViewModel: ObservableObject {
 	
 	func acceptCall() {
 		withAnimation {
+			telecomManager.outgoingCallStarted = false
 			telecomManager.callInProgress = true
 			telecomManager.callStarted = true
 		}
@@ -128,8 +138,6 @@ class CallViewModel: ObservableObject {
 						"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
 					)
 					try self.currentCall!.update(params: params)
-					
-					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 				} catch {
 					
 				}
@@ -164,10 +172,9 @@ class CallViewModel: ObservableObject {
 				} else {
 					Log.info("[CallViewModel] Starting call recording \(self.currentCall!.params!.isRecording)")
 					self.currentCall!.startRecording()
-					Log.info("[CallViewModel] Starting call recording \(self.currentCall!.params!.isRecording)")
 				}
-				//var recording = self.currentCall!.params!.isRecording
-				//isRecording.postValue(recording)
+				
+				self.isRecording = self.currentCall!.params!.isRecording
 			}
 		}
 	}
@@ -179,9 +186,11 @@ class CallViewModel: ObservableObject {
 					if self.isCallPaused() {
 						Log.info("[CallViewModel] Resuming call \(self.currentCall!.remoteAddress!.asStringUriOnly())")
 						try self.currentCall!.resume()
+						self.isPaused = false
 					} else {
 						Log.info("[CallViewModel] Pausing call \(self.currentCall!.remoteAddress!.asStringUriOnly())")
 						try self.currentCall!.pause()
+						self.isPaused = true
 					}
 				} catch _ {
 					
@@ -190,7 +199,7 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	private func isCallPaused() -> Bool {
+	func isCallPaused() -> Bool {
 		var result = false
 		if self.currentCall != nil {
 			switch self.currentCall!.state {

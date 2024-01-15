@@ -48,10 +48,31 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_clear_logs":
+						Text("Logs cleared")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_send_logs":
+						Text("Logs URL copied into clipboard")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_copied_into_clipboard":
 						Text("SIP address copied into clipboard")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+					
+					case let str where str.contains("is recording"):
+						Text(toastViewModel.toastMessage)
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
@@ -93,19 +114,22 @@ struct ToastView: View {
 						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
 				)
 				.onTapGesture {
-					withAnimation {
-						toastViewModel.toastMessage = ""
-						toastViewModel.displayToast = false
-					}
-				}
-				.onAppear {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+					if !toastViewModel.toastMessage.contains("is recording") {
 						withAnimation {
 							toastViewModel.toastMessage = ""
 							toastViewModel.displayToast = false
 						}
 					}
 				}
+				.onAppear {
+					if !toastViewModel.toastMessage.contains("is recording") {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+							withAnimation {
+								toastViewModel.toastMessage = ""
+								toastViewModel.displayToast = false
+							}
+						}
+					}				}
 				
 				Spacer()
 			}

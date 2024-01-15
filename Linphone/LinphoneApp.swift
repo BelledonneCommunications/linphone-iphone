@@ -18,6 +18,9 @@
  */
 
 import SwiftUI
+#if USE_CRASHLYTICS
+import Firebase
+#endif
 
 @main
 struct LinphoneApp: App {
@@ -30,6 +33,13 @@ struct LinphoneApp: App {
 	@State private var historyViewModel: HistoryViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var startCallViewModel: StartCallViewModel?
+	@State private var callViewModel: CallViewModel?
+	
+	init() {
+#if USE_CRASHLYTICS
+		FirebaseApp.configure()
+#endif
+	}
 	
 	var body: some Scene {
 		WindowGroup {
@@ -37,19 +47,27 @@ struct LinphoneApp: App {
 				if !sharedMainViewModel.welcomeViewDisplayed {
 					WelcomeView()
 				} else if coreContext.defaultAccount == nil || sharedMainViewModel.displayProfileMode {
-					AssistantView()
+					ZStack {
+						AssistantView()
+						
+						ToastView()
+							.zIndex(3)
+					}
 				} else if coreContext.defaultAccount != nil
+							&& coreContext.loggedIn
 							&& contactViewModel != nil
 							&& editContactViewModel != nil
 							&& historyViewModel != nil
 							&& historyListViewModel != nil
-							&& startCallViewModel != nil {
+							&& startCallViewModel != nil
+							&& callViewModel != nil {
 					ContentView(
 						contactViewModel: contactViewModel!,
 						editContactViewModel: editContactViewModel!,
 						historyViewModel: historyViewModel!,
 						historyListViewModel: historyListViewModel!,
-						startCallViewModel: startCallViewModel!
+						startCallViewModel: startCallViewModel!,
+						callViewModel: callViewModel!
 					)
 				} else {
 					SplashScreen()
@@ -62,6 +80,7 @@ struct LinphoneApp: App {
 						historyViewModel = HistoryViewModel()
 						historyListViewModel = HistoryListViewModel()
 						startCallViewModel = StartCallViewModel()
+						callViewModel = CallViewModel()
 					}
 			}
 		}

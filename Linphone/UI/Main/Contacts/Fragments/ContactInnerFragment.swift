@@ -86,19 +86,19 @@ struct ContactInnerFragment: View {
 							contactViewModel: contactViewModel,
 							isShowEditContactFragment: .constant(false),
 							isShowDismissPopup: $isShowDismissPopup)) {
-							Image("pencil-simple")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.orangeMain500)
-								.frame(width: 25, height: 25, alignment: .leading)
-								.padding(.top, 2)
-						}
-						.simultaneousGesture(
-							TapGesture().onEnded {
-								editContactViewModel.selectedEditFriend = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend
-								editContactViewModel.resetValues()
+								Image("pencil-simple")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.orangeMain500)
+									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.top, 2)
 							}
-						)
+							.simultaneousGesture(
+								TapGesture().onEnded {
+									editContactViewModel.selectedEditFriend = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+									editContactViewModel.resetValues()
+								}
+							)
 					}
 				}
 				.frame(maxWidth: .infinity)
@@ -132,10 +132,10 @@ struct ContactInnerFragment: View {
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
 									
-                                    Text(contactAvatarModel.lastPresenceInfo)
+									Text(contactAvatarModel.lastPresenceInfo)
 										.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
-                                                         ? Color.greenSuccess500
-                                                         : Color.orangeWarning600)
+														 ? Color.greenSuccess500
+														 : Color.orangeWarning600)
 										.multilineTextAlignment(.center)
 										.default_text_style_300(styleSize: 12)
 										.frame(maxWidth: .infinity)
@@ -151,7 +151,7 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-                                    telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!)
+									telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: false)
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -180,7 +180,8 @@ struct ContactInnerFragment: View {
 											Image("chat-teardrop-text")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.grayMain2c600)
+											//.foregroundStyle(Color.grayMain2c600)
+												.foregroundStyle(Color.grayMain2c300)
 												.frame(width: 25, height: 25)
 												.onTapGesture {
 													withAnimation {
@@ -200,7 +201,7 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-									
+									telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: true)
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -209,11 +210,6 @@ struct ContactInnerFragment: View {
 												.resizable()
 												.foregroundStyle(Color.grayMain2c600)
 												.frame(width: 25, height: 25)
-												.onTapGesture {
-													withAnimation {
-														
-													}
-												}
 										}
 										.padding(16)
 										.background(Color.grayMain2c200)
@@ -229,7 +225,7 @@ struct ContactInnerFragment: View {
 							.padding(.top, 20)
 							.frame(maxWidth: .infinity)
 							.background(Color.gray100)
-
+							
 							ContactInnerActionsFragment(
 								contactViewModel: contactViewModel,
 								editContactViewModel: editContactViewModel,

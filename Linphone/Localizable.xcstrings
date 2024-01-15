@@ -108,6 +108,9 @@
     "+" : {
 
     },
+    "|" : {
+
+    },
     "0" : {
 
     },
@@ -269,6 +272,9 @@
     "Deny all" : {
 
     },
+    "Dialer" : {
+
+    },
     "Display Name" : {
 
     },
@@ -365,7 +371,10 @@
     "Log out" : {
 
     },
-    "Logout" : {
+    "Logs cleared" : {
+
+    },
+    "Logs URL copied into clipboard" : {
 
     },
     "Message" : {
@@ -375,9 +384,6 @@
 
     },
     "Missed call" : {
-
-    },
-    "My Profile" : {
 
     },
     "New call" : {
@@ -416,9 +422,6 @@
     "Outgoing Call" : {
 
     },
-    "Participants" : {
-
-    },
     "password" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -437,6 +440,12 @@
       }
     },
     "Pause" : {
+
+    },
+    "Paused" : {
+
+    },
+    "Paused by remote" : {
 
     },
     "Personnalize your profil mode" : {
@@ -473,9 +482,6 @@
 
     },
     "Scan QR code" : {
-
-    },
-    "Screen share" : {
 
     },
     "Search contact or history call" : {
@@ -539,6 +545,9 @@
 
     },
     "to Linphone" : {
+
+    },
+    "Transfer" : {
 
     },
     "Transport" : {

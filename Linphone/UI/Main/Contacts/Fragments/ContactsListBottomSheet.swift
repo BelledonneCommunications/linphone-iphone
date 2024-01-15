@@ -58,7 +58,9 @@ struct ContactsListBottomSheet: View {
 			Spacer()
 			Button {
 				if contactViewModel.selectedFriend != nil {
+					contactViewModel.selectedFriend!.edit()
 					contactViewModel.selectedFriend!.starred.toggle()
+					contactViewModel.selectedFriend!.done()
 				}
 				
 				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)

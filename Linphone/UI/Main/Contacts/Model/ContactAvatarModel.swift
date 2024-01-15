@@ -44,7 +44,8 @@ class ContactAvatarModel: ObservableObject {
 			
 			if friend!.consolidatedPresence == .Online || friend!.consolidatedPresence == .Busy {
 				if friend!.consolidatedPresence == .Online || friend!.presenceModel!.latestActivityTimestamp != -1 {
-					self.lastPresenceInfo = friend!.consolidatedPresence == .Online ? "Online" : getCallTime(startDate: friend!.presenceModel!.latestActivityTimestamp)
+					self.lastPresenceInfo = (friend!.consolidatedPresence == .Online) ? 
+					"Online" : getCallTime(startDate: friend!.presenceModel!.latestActivityTimestamp)
 				} else {
 					self.lastPresenceInfo = "Away"
 				}
@@ -68,7 +69,8 @@ class ContactAvatarModel: ObservableObject {
 			self.presenceStatus = cbValue.consolidatedPresence
 			if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
 				if cbValue.consolidatedPresence == .Online || cbValue.presenceModel!.latestActivityTimestamp != -1 {
-					self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ? "Online" : self.getCallTime(startDate: cbValue.presenceModel!.latestActivityTimestamp)
+					self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ?
+					"Online" : self.getCallTime(startDate: cbValue.presenceModel!.latestActivityTimestamp)
 				} else {
 					self.lastPresenceInfo = "Away"
 				}
