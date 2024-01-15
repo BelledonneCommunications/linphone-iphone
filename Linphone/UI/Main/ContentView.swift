@@ -681,12 +681,12 @@ struct ContentView: View {
 			if newPhase == .active {
 				coreContext.onForeground()
 				/*
-				 if !isShowStartCallFragment {
-				 contactsManager.fetchContacts()
-				 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-				 historyListViewModel.computeCallLogsList()
-				 }
-				 }
+				if !isShowStartCallFragment {
+					contactsManager.fetchContacts()
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+						historyListViewModel.computeCallLogsList()
+					}
+				}
 				 */
 				print("Active")
 			} else if newPhase == .inactive {

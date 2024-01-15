@@ -139,8 +139,6 @@ class CallViewModel: ObservableObject {
 						"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
 					)
 					try self.currentCall!.update(params: params)
-					
-					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 				} catch {
 					
 				}

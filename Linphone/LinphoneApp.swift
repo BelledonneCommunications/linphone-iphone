@@ -18,6 +18,9 @@
  */
 
 import SwiftUI
+#if USE_CRASHLYTICS
+import Firebase
+#endif
 
 @main
 struct LinphoneApp: App {
@@ -31,6 +34,12 @@ struct LinphoneApp: App {
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var startCallViewModel: StartCallViewModel?
 	@State private var callViewModel: CallViewModel?
+	
+	init() {
+#if USE_CRASHLYTICS
+		FirebaseApp.configure()
+#endif
+	}
 	
 	var body: some Scene {
 		WindowGroup {

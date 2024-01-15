@@ -91,7 +91,12 @@ class AccountLoginViewModel: ObservableObject {
 				accountParams.registerEnabled = true
 				accountParams.pushNotificationAllowed = true
 				accountParams.remotePushNotificationAllowed = false
-				accountParams.pushNotificationConfig?.provider = "apns.dev"
+#if DEBUG
+				let pushEnvironment = ".dev"
+#else
+				let pushEnvironment = ""
+#endif
+				accountParams.pushNotificationConfig?.provider = "apns" + pushEnvironment
 				
 				// Now that our AccountParams is configured, we can create the Account object
 				let account = try core.createAccount(params: accountParams)

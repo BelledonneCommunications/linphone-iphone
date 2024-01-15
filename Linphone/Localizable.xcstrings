@@ -371,7 +371,10 @@
     "Log out" : {
 
     },
-    "Logout" : {
+    "Logs cleared" : {
+
+    },
+    "Logs URL copied into clipboard" : {
 
     },
     "Message" : {
@@ -381,9 +384,6 @@
 
     },
     "Missed call" : {
-
-    },
-    "My Profile" : {
 
     },
     "New call" : {

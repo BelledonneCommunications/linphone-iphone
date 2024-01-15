@@ -43,19 +43,44 @@ struct SideMenu: View {
             
             HStack {
                 List {
-                    Text("My Profile").onTapGesture {
-						print("My Profile")
-                    }
-                    Text("Send logs").onTapGesture {
-						sendLogs()
-                    }
-					Text("Clear logs").onTapGesture {
-						print("Clear logs")
-						Core.resetLogCollection()
-	 				}
-                    Text("Logout").onTapGesture {
-                        print("Logout")
-                    }
+					/*
+                    Text("My Profile")
+					 	.frame(height: 40)
+					 	.frame(maxWidth: .infinity, alignment: .leading)
+						.background(Color.white)
+						.onTapGesture {
+							print("My Profile")
+							self.menuClose()
+                    	}
+					 */
+                    Text("Send logs")
+						.frame(height: 40)
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.background(Color.white)
+						.onTapGesture {
+							print("Send logs")
+							sendLogs()
+							self.menuClose()
+                    	}
+					Text("Clear logs")
+						.frame(height: 40)
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.background(Color.white)
+						.onTapGesture {
+							print("Clear logs")
+							clearLogs()
+							self.menuClose()
+	 					}
+					/*
+                    Text("Logout")
+					 	.frame(height: 40)
+					 	.frame(maxWidth: .infinity, alignment: .leading)
+						.background(Color.white)
+						.onTapGesture {
+                        	print("Logout")
+							self.menuClose()
+                    	}
+					 */
                 }
                 .frame(width: self.width - safeAreaInsets.leading)
                 .background(Color.white)
@@ -73,6 +98,16 @@ struct SideMenu: View {
 	func sendLogs() {
 		coreContext.doOnCoreQueue { core in
 			core.uploadLogCollection()
+		}
+	}
+	
+	func clearLogs() {
+		coreContext.doOnCoreQueue { core in
+			Core.resetLogCollection()
+			DispatchQueue.main.async {
+				ToastViewModel.shared.toastMessage = "Success_clear_logs"
+				ToastViewModel.shared.displayToast = true
+			}
 		}
 	}
 }

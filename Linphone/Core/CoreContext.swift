@@ -92,6 +92,8 @@ final class CoreContext: ObservableObject {
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
 			
+			self.mCore.setUserAgent(name: "Linphone iOS 6.0 Beta (\(UIDevice.current.localizedModel)) - Linphone SDK : \(self.coreVersion)", version: "6.0")
+			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 					self.defaultAccount = self.mCore.defaultAccount
@@ -99,6 +101,22 @@ final class CoreContext: ObservableObject {
 				} else if cbVal.state == GlobalState.Off {
 					self.defaultAccount = nil
 					self.coreIsStarted = true
+				}
+			})
+			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
+				if cbVal.state == GlobalState.On {
+#if DEBUG
+					let pushEnvironment = ".dev"
+#else
+					let pushEnvironment = ""
+#endif
+					for account in cbVal.core.accountList where account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+						let newParams = account.params?.clone()
+						Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
+						newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
+						account.params = newParams
+					}
 				}
 			})
 			
@@ -170,8 +188,10 @@ final class CoreContext: ObservableObject {
 						forPasteboardType: UTType.plainText.identifier
 					)
 					
-					ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
-					ToastViewModel.shared.displayToast = true
+					DispatchQueue.main.async {
+						ToastViewModel.shared.toastMessage = "Success_send_logs"
+					 	ToastViewModel.shared.displayToast = true
+					}
 				}
 			})
 			
@@ -182,6 +202,7 @@ final class CoreContext: ObservableObject {
 					self.mCore.iterate()
 				}
 			
+			try? self.mCore.start()
 		}
 	}
 	
