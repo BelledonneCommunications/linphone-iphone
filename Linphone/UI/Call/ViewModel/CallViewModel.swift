@@ -32,7 +32,6 @@ class CallViewModel: ObservableObject {
 	@Published var remoteAddress: Address?
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var micMutted: Bool = false
-	@Published var cameraDisplayed: Bool = false
 	@Published var isRecording: Bool = false
 	@Published var isRemoteRecording: Bool = false
 	@Published var isPaused: Bool = false
@@ -58,7 +57,7 @@ class CallViewModel: ObservableObject {
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				self.currentCall = core.currentCall
 				DispatchQueue.main.async {
-					self.direction = .Incoming
+					self.direction = self.currentCall!.dir
 					self.remoteAddressString = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
 					self.remoteAddress = self.currentCall!.remoteAddress!
 					
@@ -75,7 +74,6 @@ class CallViewModel: ObservableObject {
 					
 					//self.avatarModel = ???
 					self.micMutted = self.currentCall!.microphoneMuted
-					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 					self.isRecording = self.currentCall!.params!.isRecording
 					self.isPaused = self.isCallPaused()
 					self.timeElapsed = 0

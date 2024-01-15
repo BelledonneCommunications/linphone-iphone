@@ -123,6 +123,7 @@ struct LoginFragment: View {
 								Button(action: {
 									sharedMainViewModel.changeDisplayProfileMode()
 									self.accountLoginViewModel.login()
+									coreContext.loggingInProgress = true
 								}, label: {
 									Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
 										.default_text_style_white_600(styleSize: 20)

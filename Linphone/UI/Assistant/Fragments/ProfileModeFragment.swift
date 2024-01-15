@@ -58,6 +58,7 @@ struct ProfileModeFragment: View {
 								Image("info")
 									.resizable()
 									.frame(width: 25, height: 25)
+									.padding(.all, 10)
 									.onTapGesture {
 										withAnimation {
 											self.isShowPopupForDefault = true
@@ -94,6 +95,7 @@ struct ProfileModeFragment: View {
 								Image("info")
 									.resizable()
 									.frame(width: 25, height: 25)
+									.padding(.all, 10)
 									.onTapGesture {
 										withAnimation {
 											self.isShowPopupForDefault = false
@@ -139,6 +141,8 @@ struct ProfileModeFragment: View {
 			}
 			.onAppear {
 				UserDefaults.standard.set(false, forKey: "display_profile_mode")
+				//Skip this view
+				sharedMainViewModel.changeHideProfileMode()
 			}
 			
 			if self.isShowPopup {

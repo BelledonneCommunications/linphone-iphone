@@ -48,6 +48,7 @@ struct ContactInnerActionsFragment: View {
 				.resizable()
 				.foregroundStyle(Color.grayMain2c600)
 				.frame(width: 25, height: 25, alignment: .leading)
+				.padding(.all, 10)
 		}
 		.padding(.top, 30)
 		.padding(.bottom, 10)
@@ -82,6 +83,7 @@ struct ContactInnerActionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c600)
 									.frame(width: 25, height: 25)
+									.padding(.all, 10)
 							}
 							.padding(.vertical, 15)
 							.padding(.horizontal, 20)
@@ -222,6 +224,7 @@ struct ContactInnerActionsFragment: View {
 							.resizable()
 							.foregroundStyle(Color.grayMain2c600)
 							.frame(width: 25, height: 25)
+							.padding(.all, 10)
 						
 						Text("Edit")
 							.default_text_style(styleSize: 14)
@@ -245,6 +248,7 @@ struct ContactInnerActionsFragment: View {
 								.resizable()
 								.foregroundStyle(Color.grayMain2c600)
 								.frame(width: 25, height: 25)
+								.padding(.all, 10)
 							
 							Text("Edit")
 								.default_text_style(styleSize: 14)
@@ -285,6 +289,7 @@ struct ContactInnerActionsFragment: View {
 					.foregroundStyle(contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 									 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
 					.frame(width: 25, height: 25)
+					.padding(.all, 10)
 					Text(contactViewModel.indexDisplayedFriend != nil
 						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true
@@ -314,6 +319,7 @@ struct ContactInnerActionsFragment: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c600)
 						.frame(width: 25, height: 25)
+						.padding(.all, 10)
 					
 					Text("Share")
 						.default_text_style(styleSize: 14)
@@ -340,6 +346,7 @@ struct ContactInnerActionsFragment: View {
 			 .resizable()
 			 .foregroundStyle(Color.grayMain2c600)
 			 .frame(width: 25, height: 25)
+			 .padding(.all, 10)
 			 
 			 Text("Mute")
 			 .default_text_style(styleSize: 14)
@@ -365,6 +372,7 @@ struct ContactInnerActionsFragment: View {
 			 .resizable()
 			 .foregroundStyle(Color.grayMain2c600)
 			 .frame(width: 25, height: 25)
+			 .padding(.all, 10)
 			 
 			 Text("Block")
 			 .default_text_style(styleSize: 14)
@@ -394,6 +402,7 @@ struct ContactInnerActionsFragment: View {
 						.resizable()
 						.foregroundStyle(Color.redDanger500)
 						.frame(width: 25, height: 25)
+						.padding(.all, 10)
 					
 					Text("Delete this contact")
 						.foregroundStyle(Color.redDanger500)

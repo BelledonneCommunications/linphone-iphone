@@ -153,10 +153,10 @@ final class CoreContext: ObservableObject {
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
-					ToastViewModel.shared.toastMessage = "Registration failed"
-					ToastViewModel.shared.displayToast = true
 					self.loggingInProgress = false
 					self.loggedIn = false
+					ToastViewModel.shared.toastMessage = "Registration failed"
+					ToastViewModel.shared.displayToast = true
 				}
 			})
 			

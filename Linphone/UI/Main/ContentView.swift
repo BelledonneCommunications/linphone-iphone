@@ -146,6 +146,7 @@ struct ContentView: View {
 											.resizable()
 											.foregroundStyle(.white)
 											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
 									}
 									
 									Menu {
@@ -164,6 +165,7 @@ struct ContentView: View {
 														Image("green-check")
 															.resizable()
 															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
 													}
 												}
 											}
@@ -182,6 +184,7 @@ struct ContentView: View {
 														Image("green-check")
 															.resizable()
 															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
 													}
 												}
 											}
@@ -196,6 +199,7 @@ struct ContentView: View {
 													Image("trash-simple-red")
 														.resizable()
 														.frame(width: 25, height: 25, alignment: .leading)
+														.padding(.all, 10)
 												}
 											}
 										}
@@ -205,15 +209,16 @@ struct ContentView: View {
 											.resizable()
 											.foregroundStyle(.white)
 											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
 									}
-									.padding(.leading)
+									.padding(.trailing, 10)
 									.onTapGesture {
 										isMenuOpen = true
 									}
 								}
 								.frame(maxWidth: .infinity)
 								.frame(height: 50)
-								.padding(.horizontal)
+								.padding(.leading)
 								.padding(.bottom, 5)
 								.background(Color.orangeMain500)
 							} else {
@@ -239,6 +244,8 @@ struct ContentView: View {
 											.resizable()
 											.foregroundStyle(.white)
 											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
+											.padding(.leading, -10)
 									}
 									
 									if #available(iOS 16.0, *) {
@@ -305,6 +312,7 @@ struct ContentView: View {
 											.resizable()
 											.foregroundStyle(.white)
 											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
 									}
 									.padding(.leading)
 								}

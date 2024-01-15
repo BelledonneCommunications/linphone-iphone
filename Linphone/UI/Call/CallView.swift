@@ -93,6 +93,7 @@ struct CallView: View {
 						.resizable()
 						.foregroundStyle(.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					
 					Text(!callViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
 						.default_text_style_white(styleSize: 15)
@@ -104,6 +105,7 @@ struct CallView: View {
 						.resizable()
 						.foregroundStyle(.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 				}
 			})
 			.frame(maxHeight: .infinity)
@@ -123,6 +125,7 @@ struct CallView: View {
 						.resizable()
 						.foregroundStyle(.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					
 					Text("Speaker")
 						.default_text_style_white(styleSize: 15)
@@ -134,6 +137,7 @@ struct CallView: View {
 						.resizable()
 						.foregroundStyle(.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 				}
 			})
 			.frame(maxHeight: .infinity)
@@ -154,6 +158,7 @@ struct CallView: View {
 						.resizable()
 						.foregroundStyle(.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					
 					Text("Bluetooth")
 						.default_text_style_white(styleSize: 15)
@@ -165,6 +170,7 @@ struct CallView: View {
 						.resizable()
 						.foregroundStyle(.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 				}
 			})
 			.frame(maxHeight: .infinity)
@@ -178,7 +184,7 @@ struct CallView: View {
 	// swiftlint:disable:next cyclomatic_complexity
 	func innerView(geometry: GeometryProxy) -> some View {
 		VStack {
-			if !fullscreenVideo {
+			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 				if #available(iOS 16.0, *) {
 					Rectangle()
 						.foregroundColor(Color.orangeMain500)
@@ -353,8 +359,8 @@ struct CallView: View {
 						}
 					}
 					.frame(
-						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
 					)
 				}
 				
@@ -367,7 +373,7 @@ struct CallView: View {
 								.foregroundStyle(Color.redDanger500)
 								.frame(width: 32, height: 32)
 								.padding(10)
-								.if(fullscreenVideo) { view in
+								.if(fullscreenVideo && !telecomManager.isPausedByRemote) { view in
 									view.padding(.top, 30)
 								}
 							Spacer()
@@ -375,8 +381,8 @@ struct CallView: View {
 						Spacer()
 					}
 					.frame(
-						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
 					)
 				}
 				
@@ -405,19 +411,19 @@ struct CallView: View {
 						Spacer()
 					}
 					.frame(
-						maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
 					)
 					.background(.clear)
 				}
 			}
 			.frame(
-				maxWidth: fullscreenVideo ? geometry.size.width : geometry.size.width - 8,
-				maxHeight: fullscreenVideo ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
+				maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+				maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
 			)
 			.background(Color.gray600)
 			.cornerRadius(20)
-			.padding(.horizontal, fullscreenVideo ? 0 : 4)
+			.padding(.horizontal, fullscreenVideo && !telecomManager.isPausedByRemote ? 0 : 4)
 			.onRotate { newOrientation in
 				let oldOrientation = orientation
 				orientation = newOrientation
@@ -461,7 +467,7 @@ struct CallView: View {
 				callViewModel.orientationUpdate(orientation: orientation)
 			}
 			
-			if !fullscreenVideo {
+			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 				if telecomManager.callStarted {
 					let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
 					let bottomInset = scene?.windows.first?.safeAreaInsets
@@ -526,7 +532,7 @@ struct CallView: View {
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.background(Color.gray900)
-		.if(fullscreenVideo) { view in
+		.if(fullscreenVideo && !telecomManager.isPausedByRemote) { view in
 			view.ignoresSafeArea(.all)
 		}
 	}
@@ -559,7 +565,7 @@ struct CallView: View {
 					Button {
 						callViewModel.toggleVideo()
 					} label: {
-						Image(callViewModel.cameraDisplayed ? "video-camera" : "video-camera-slash")
+						Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
 							.renderingMode(.template)
 							.resizable()
 							.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)

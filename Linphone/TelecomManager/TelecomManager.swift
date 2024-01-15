@@ -338,7 +338,16 @@ class TelecomManager: ObservableObject {
 		} else {
 			
 			DispatchQueue.main.async {
+				let oldRemoteVideo = self.remoteVideo
 				self.remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+				
+				if oldRemoteVideo != self.remoteVideo && self.remoteVideo {
+					do {
+						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+					} catch _ {
+						
+					}
+				}
 				
 				if self.remoteVideo {
 					Log.info("[Call] Remote video is activated")

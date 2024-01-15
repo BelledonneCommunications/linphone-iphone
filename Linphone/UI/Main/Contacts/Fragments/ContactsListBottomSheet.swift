@@ -87,6 +87,7 @@ struct ContactsListBottomSheet: View {
 							: Color.grayMain2c500
 						)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
 						 ? "Remove from favourites"
 						 : "Add to favourites")
@@ -129,6 +130,7 @@ struct ContactsListBottomSheet: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					Text("Share")
 						.default_text_style(styleSize: 16)
 					Spacer()
@@ -166,6 +168,7 @@ struct ContactsListBottomSheet: View {
 						.resizable()
 						.foregroundStyle(Color.redDanger500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					Text("Delete")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style(styleSize: 16)

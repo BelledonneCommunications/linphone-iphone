@@ -159,6 +159,7 @@ struct HistoryListFragment: View {
 							Image("phone")
 								.resizable()
 								.frame(width: 25, height: 25)
+								.padding(.all, 10)
 								.padding(.trailing, 5)
 								.highPriorityGesture(
 									TapGesture()

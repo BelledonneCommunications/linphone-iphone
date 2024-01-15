@@ -88,7 +88,9 @@ struct EditContactFragment: View {
 						.resizable()
 						.foregroundStyle(Color.orangeMain500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 						.padding(.top, 2)
+						.padding(.leading, -10)
 						.onTapGesture {
 							if editContactViewModel.selectedEditFriend == nil
 								&& editContactViewModel.firstName.isEmpty
@@ -130,6 +132,7 @@ struct EditContactFragment: View {
 						.resizable()
 						.foregroundStyle(editContactViewModel.firstName.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 						.padding(.top, 2)
 						.disabled(editContactViewModel.firstName.isEmpty)
 						.onTapGesture {
@@ -346,6 +349,7 @@ struct EditContactFragment: View {
 													: Color.grayMain2c600
 												)
 												.frame(width: 25, height: 25)
+												.padding(.all, 10)
 										})
 										.disabled(editContactViewModel.sipAddresses[index].isEmpty && editContactViewModel.sipAddresses.count == index + 1)
 										.frame(maxHeight: .infinity)
@@ -394,6 +398,7 @@ struct EditContactFragment: View {
 													: Color.grayMain2c600
 												)
 												.frame(width: 25, height: 25)
+												.padding(.all, 10)
 										})
 										.disabled(editContactViewModel.phoneNumbers[index].isEmpty && editContactViewModel.phoneNumbers.count == index + 1)
 										.frame(maxHeight: .infinity)

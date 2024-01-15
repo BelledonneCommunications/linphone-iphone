@@ -44,6 +44,7 @@ struct ContactsInnerFragment: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c600)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 				}
 				.padding(.top, 30)
 				.padding(.horizontal, 16)

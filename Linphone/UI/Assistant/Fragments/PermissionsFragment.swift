@@ -45,7 +45,9 @@ struct PermissionsFragment: View {
 									.resizable()
 									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.top, -65)
+									.padding(.all, 10)
+									.padding(.top, -75)
+									.padding(.leading, -10)
 									.onTapGesture {
 										withAnimation {
 											dismiss()

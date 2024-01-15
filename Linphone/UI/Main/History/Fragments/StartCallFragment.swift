@@ -51,7 +51,9 @@ struct StartCallFragment: View {
 						.resizable()
 						.foregroundStyle(Color.orangeMain500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 						.padding(.top, 2)
+						.padding(.leading, -10)
 						.onTapGesture {
 							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
 								magicSearch.searchForContacts(
@@ -139,6 +141,7 @@ struct StartCallFragment: View {
 										.resizable()
 										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25)
+										.padding(.all, 10)
 								})
 							}
 						}

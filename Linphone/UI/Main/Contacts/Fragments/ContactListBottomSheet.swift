@@ -79,6 +79,7 @@ struct ContactListBottomSheet: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					Text(contactViewModel.stringToCopy.prefix(4) == "sip:"
 						 ? "Copy address" : "Copy number")
 					.default_text_style(styleSize: 16)
@@ -114,6 +115,7 @@ struct ContactListBottomSheet: View {
 							.resizable()
 							.foregroundStyle(Color.grayMain2c500)
 							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
 						Text("Invitation")
 							.default_text_style(styleSize: 16)
 						Spacer()
@@ -143,6 +145,7 @@ struct ContactListBottomSheet: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
 					Text(contactViewModel.stringToCopy.prefix(4) == "sip:"
 						 ? "Block the address" : "Block the number")
 						.default_text_style(styleSize: 16)

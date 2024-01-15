@@ -58,7 +58,9 @@ struct HistoryContactFragment: View {
 							.resizable()
 							.foregroundStyle(Color.orangeMain500)
 							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
 							.padding(.top, 2)
+							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
 									historyViewModel.displayedCall = nil
@@ -122,6 +124,7 @@ struct HistoryContactFragment: View {
 								Image(addressFriend != nil ? "user-circle" : "plus-circle")
 									.resizable()
 									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
 							}
 						}
 						
@@ -150,6 +153,7 @@ struct HistoryContactFragment: View {
 								Image("copy")
 									.resizable()
 									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
 							}
 						}
 						
@@ -171,6 +175,7 @@ struct HistoryContactFragment: View {
 								Image("trash-simple-red")
 									.resizable()
 									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
 							}
 						}
 					} label: {
@@ -179,6 +184,7 @@ struct HistoryContactFragment: View {
 							.resizable()
 							.foregroundStyle(Color.orangeMain500)
 							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
 					}
 					.padding(.leading)
 					.onTapGesture {

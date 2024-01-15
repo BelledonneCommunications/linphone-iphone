@@ -45,6 +45,8 @@ struct QrCodeScannerFragment: View {
 						.resizable()
 						.foregroundStyle(Color.white)
 						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
+						.padding(.leading, -10)
 				}
 				.padding()
 				.padding(.top, 50)
