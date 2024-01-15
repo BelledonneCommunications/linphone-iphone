@@ -123,7 +123,6 @@ final class CoreContext: ObservableObject {
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
 			
-			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in

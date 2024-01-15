@@ -75,6 +75,7 @@ class CallViewModel: ObservableObject {
 					
 					//self.avatarModel = ???
 					self.micMutted = self.currentCall!.microphoneMuted
+					self.cameraDisplayed = self.currentCall!.cameraEnabled == true
 					self.isRecording = self.currentCall!.params!.isRecording
 					self.isPaused = self.isCallPaused()
 					self.timeElapsed = 0

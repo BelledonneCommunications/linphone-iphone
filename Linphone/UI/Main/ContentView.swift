@@ -515,40 +515,23 @@ struct ContentView: View {
 				
 				if isShowStartCallFragment {
 					
-					if #available(iOS 16.4, *) {
-						if idiom != .pad {
-							StartCallFragment(
+					if #available(iOS 16.4, *), idiom != .pad  {
+						StartCallFragment(
+							startCallViewModel: startCallViewModel,
+							isShowStartCallFragment: $isShowStartCallFragment,
+							showingDialer: $showingDialer
+						)
+						.zIndex(3)
+						.transition(.move(edge: .bottom))
+						.sheet(isPresented: $showingDialer) {
+							DialerBottomSheet(
 								startCallViewModel: startCallViewModel,
-								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer
 							)
-							.zIndex(3)
-							.transition(.move(edge: .bottom))
-							.sheet(isPresented: $showingDialer) {
-								DialerBottomSheet(
-									startCallViewModel: startCallViewModel,
-									showingDialer: $showingDialer
-								)
-								.presentationDetents([.medium])
-								// .interactiveDismissDisabled()
-								.presentationBackgroundInteraction(.enabled(upThrough: .medium))
-							}
-						} else {
-							StartCallFragment(
-								startCallViewModel: startCallViewModel,
-								isShowStartCallFragment: $isShowStartCallFragment,
-								showingDialer: $showingDialer
-							)
-							.zIndex(3)
-							.transition(.move(edge: .bottom))
-							.halfSheet(showSheet: $showingDialer) {
-								DialerBottomSheet(
-									startCallViewModel: startCallViewModel,
-									showingDialer: $showingDialer
-								)
-							} onDismiss: {}
+							.presentationDetents([.medium])
+							// .interactiveDismissDisabled()
+							.presentationBackgroundInteraction(.enabled(upThrough: .medium))
 						}
-						
 					} else {
 						StartCallFragment(
 							startCallViewModel: startCallViewModel,
