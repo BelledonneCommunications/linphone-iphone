@@ -86,7 +86,7 @@ struct PermissionsFragment: View {
 							.background(Color.grayMain2c200)
 							.cornerRadius(40)
 							
-							Text("**Notifications** : Pour vous informé quand vous recevez un message ou un appel.")
+							Text("**Notifications** : Pour vous informer quand vous recevez un message ou un appel.")
 								.default_text_style(styleSize: 15)
 								.padding(.leading, 10)
 						}
