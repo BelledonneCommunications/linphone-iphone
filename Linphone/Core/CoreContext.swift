@@ -23,6 +23,7 @@
 import linphonesw
 import Combine
 import UniformTypeIdentifiers
+import Network
 
 final class CoreContext: ObservableObject {
 	
@@ -38,6 +39,8 @@ final class CoreContext: ObservableObject {
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
+	
+	let monitor = NWPathMonitor()
 	
 	private init() {
 		do {
@@ -130,7 +133,7 @@ final class CoreContext: ObservableObject {
 				if cbVal.status == Config.ConfiguringState.Successful {
 					ToastViewModel.shared.toastMessage = "Successful"
 					ToastViewModel.shared.displayToast = true
-				} 
+				}
 				/*
 				 else {
 				 ToastViewModel.shared.toastMessage = "Failed"
@@ -157,6 +160,21 @@ final class CoreContext: ObservableObject {
 					self.loggedIn = false
 					ToastViewModel.shared.toastMessage = "Registration failed"
 					ToastViewModel.shared.displayToast = true
+					
+					self.monitor.pathUpdateHandler = { path in
+						if path.status == .satisfied {
+							if cbVal.state != .Ok && cbVal.state != .Progress {
+								let params = cbVal.account.params
+								let clonedParams = params?.clone()
+								clonedParams?.registerEnabled = false
+								cbVal.account.params = clonedParams
+								
+								cbVal.core.removeAccount(account: cbVal.account)
+								cbVal.core.clearAccounts()
+								cbVal.core.clearAllAuthInfo()
+							}
+						}
+					}
 				}
 			})
 			
@@ -188,7 +206,7 @@ final class CoreContext: ObservableObject {
 					
 					DispatchQueue.main.async {
 						ToastViewModel.shared.toastMessage = "Success_send_logs"
-					 	ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.displayToast = true
 					}
 				}
 			})

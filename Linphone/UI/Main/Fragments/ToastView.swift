@@ -31,7 +31,6 @@ struct ToastView: View {
 						.resizable()
 						.renderingMode(.template)
 						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
 						.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
 					
 					switch toastViewModel.toastMessage {
@@ -130,7 +129,8 @@ struct ToastView: View {
 								toastViewModel.displayToast = false
 							}
 						}
-					}				}
+					}
+				}
 				
 				Spacer()
 			}

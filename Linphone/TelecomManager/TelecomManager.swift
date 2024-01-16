@@ -341,7 +341,7 @@ class TelecomManager: ObservableObject {
 				let oldRemoteVideo = self.remoteVideo
 				self.remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
 				
-				if oldRemoteVideo != self.remoteVideo && self.remoteVideo {
+				if self.remoteVideo && self.remoteVideo != oldRemoteVideo {
 					do {
 						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
 					} catch _ {

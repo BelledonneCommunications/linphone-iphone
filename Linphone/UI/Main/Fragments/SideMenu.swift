@@ -71,16 +71,15 @@ struct SideMenu: View {
 							clearLogs()
 							self.menuClose()
 	 					}
-					/*
                     Text("Logout")
 					 	.frame(height: 40)
 					 	.frame(maxWidth: .infinity, alignment: .leading)
 						.background(Color.white)
 						.onTapGesture {
                         	print("Logout")
+							logout()
 							self.menuClose()
                     	}
-					 */
                 }
                 .frame(width: self.width - safeAreaInsets.leading)
                 .background(Color.white)
@@ -107,6 +106,28 @@ struct SideMenu: View {
 			DispatchQueue.main.async {
 				ToastViewModel.shared.toastMessage = "Success_clear_logs"
 				ToastViewModel.shared.displayToast = true
+			}
+		}
+	}
+	
+	func logout() {
+		coreContext.doOnCoreQueue { core in
+			if core.defaultAccount != nil {
+				let authInfo = core.defaultAccount!.findAuthInfo()
+				if authInfo != nil {
+					Log.info("$TAG Found auth info for account, removing it")
+					core.removeAuthInfo(info: authInfo!)
+				} else {
+					Log.warn("$TAG Failed to find matching auth info for account")
+				}
+
+				core.removeAccount(account: core.defaultAccount!)
+				Log.info("$TAG Account has been removed")
+				
+				DispatchQueue.main.async {
+					coreContext.defaultAccount = nil
+					coreContext.loggedIn = false
+				}
 			}
 		}
 	}
