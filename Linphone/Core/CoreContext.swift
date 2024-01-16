@@ -120,6 +120,16 @@ final class CoreContext: ObservableObject {
 						newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
 						account.params = newParams
 					}
+					
+					// Remove specs for 6.0 first version
+					Log.info("Removing spec 'conference' from core for this version")
+					self.mCore.removeLinphoneSpec(spec: "conference")
+					Log.info("Removing spec 'ephemeral' from core for this version")
+					self.mCore.removeLinphoneSpec(spec: "ephemeral")
+					Log.info("Removing spec 'groupchat' from core for this version")
+					self.mCore.removeLinphoneSpec(spec: "groupchat")
+					Log.info("Removing spec 'lime' from core for this version")
+					self.mCore.removeLinphoneSpec(spec: "lime")
 				}
 			})
 			
@@ -129,7 +139,7 @@ final class CoreContext: ObservableObject {
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
-				NSLog("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
+				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
 				if cbVal.status == Config.ConfiguringState.Successful {
 					ToastViewModel.shared.toastMessage = "Successful"
 					ToastViewModel.shared.displayToast = true
@@ -145,7 +155,7 @@ final class CoreContext: ObservableObject {
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
-				NSLog("New registration state is \(cbVal.state) for user id " +
+				Log.info("New registration state is \(cbVal.state) for user id " +
 					  "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
@@ -227,7 +237,7 @@ final class CoreContext: ObservableObject {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
 			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-				NSLog("App is in foreground, PUBLISHING presence as Online")
+				Log.info("App is in foreground, PUBLISHING presence as Online")
 				self.mCore.consolidatedPresence = ConsolidatedPresence.Online
 			}
 		}
@@ -238,7 +248,7 @@ final class CoreContext: ObservableObject {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
 			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-				NSLog("App is in background, un-PUBLISHING presence info")
+				Log.info("App is in background, un-PUBLISHING presence info")
 				// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
 				// Flexisip will handle the Busy status depending on other devices
 				self.mCore.consolidatedPresence = ConsolidatedPresence.Offline
