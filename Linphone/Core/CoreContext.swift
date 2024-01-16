@@ -245,6 +245,10 @@ final class CoreContext: ObservableObject {
 			}
 		}
 	}
+	
+	func crashForCrashlytics() {
+		fatalError("Crashing app to test crashlytics")
+	}
 }
 
 // swiftlint:enable large_tuple

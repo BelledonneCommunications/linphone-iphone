@@ -22,9 +22,20 @@ import SwiftUI
 import Firebase
 #endif
 
+class AppDelegate: NSObject, UIApplicationDelegate {
+	func application(_ application: UIApplication,
+					 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {		
+#if USE_CRASHLYTICS
+		FirebaseApp.configure()
+#endif
+		return true
+	}
+}
+
 @main
 struct LinphoneApp: App {
 	
+	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
@@ -34,12 +45,6 @@ struct LinphoneApp: App {
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var startCallViewModel: StartCallViewModel?
 	@State private var callViewModel: CallViewModel?
-	
-	init() {
-#if USE_CRASHLYTICS
-		FirebaseApp.configure()
-#endif
-	}
 	
 	var body: some Scene {
 		WindowGroup {
