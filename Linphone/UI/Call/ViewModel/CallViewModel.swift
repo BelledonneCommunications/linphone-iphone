@@ -53,12 +53,26 @@ class CallViewModel: ObservableObject {
 	init() {
 		do {
 			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+		} catch _ {
+			
+		}
+		resetCallView()
+	}
+	
+	func enableAVAudioSession(){
+		do {
 			try AVAudioSession.sharedInstance().setActive(true)
 		} catch _ {
 			
 		}
-		
-		resetCallView()
+	}
+	
+	func disableAVAudioSession(){
+		do {
+			try AVAudioSession.sharedInstance().setActive(false)
+		} catch _ {
+			
+		}
 	}
 	
 	func resetCallView() {

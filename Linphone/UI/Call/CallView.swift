@@ -76,6 +76,12 @@ struct CallView: View {
 						}
 				}
 			}
+			.onAppear {
+				callViewModel.enableAVAudioSession()
+			}
+			.onDisappear {
+				callViewModel.disableAVAudioSession()
+			}
 		}
 	}
 	
