@@ -46,6 +46,8 @@ class TelecomManager: ObservableObject {
 	@Published var remoteVideo: Bool = false
 	@Published var isRecordingByRemote: Bool = false
 	@Published var isPausedByRemote: Bool = false
+	@Published var refreshCallViewModel: Bool = false
+	@Published var remainingCall: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -95,7 +97,7 @@ class TelecomManager: ObservableObject {
 		
 		if TelecomManager.callKitEnabled(core: core) {// && !nextCallIsTransfer != true {
 			let uuid = UUID()
-			let name = "outgoingTODO" // FastAddressBook.displayName(for: addr) ?? "unknow"
+			let name = addr?.asStringUriOnly() ?? "unknow"	// FastAddressBook.displayName(for: addr) ?? "unknow"
 			let handle = CXHandle(type: .generic, value: addr?.asStringUriOnly() ?? "")
 			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
 			let transaction = CXTransaction(action: startCallAction)
@@ -104,11 +106,40 @@ class TelecomManager: ObservableObject {
 			providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 			providerDelegate.uuids.updateValue(uuid, forKey: "")
 			
-			// setHeldOtherCalls(core: core, exceptCallid: "")
+			setHeldOtherCalls(core: core, exceptCallid: "")
 			requestTransaction(transaction, action: "startCall")
 		} else {
 			try doCall(core: core, addr: addr!, isSas: isSas, isVideo: isVideo, isConference: isConference)
 		}
+	}
+	
+	func setHeldOtherCalls(core: Core, exceptCallid: String) {
+		for call in core.calls {
+			if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
+				setHeld(call: call, hold: true)
+			}
+		}
+	}
+	
+	func setHeld(call: Call, hold: Bool) {
+		
+#if targetEnvironment(simulator)
+		if (hold) {
+			try?call.pause()
+		} else {
+			try?call.resume()
+		}
+#else
+		let callid = call.callLog?.callId ?? ""
+		let uuid = providerDelegate.uuids["\(callid)"]
+		if (uuid == nil) {
+			Log.error("Can not find correspondant call to set held.")
+			return
+		}
+		let setHeldAction = CXSetHeldCallAction(call: uuid!, onHold: hold)
+		let transaction = CXTransaction(action: setHeldAction)
+		requestTransaction(transaction, action: "setHeld")
+#endif
 	}
 	
 	func startCall(core: Core, addr: String, isSas: Bool = false, isVideo: Bool, isConference: Bool = false) {
@@ -419,7 +450,6 @@ class TelecomManager: ObservableObject {
 					}
 				}
 #endif
-				
 				if call.replacedCall != nil {
 					endCallKitReplacedCall = false
 					
@@ -503,9 +533,12 @@ class TelecomManager: ObservableObject {
 					.OutgoingProgress,
 					.OutgoingRinging,
 					.OutgoingEarlyMedia:
+				
+				print("OutgoingInitOutgoingInit \(core.maxCalls)")
+				
 				if TelecomManager.callKitEnabled(core: core) {
 					let uuid = providerDelegate.uuids[""]
-					if  uuid != nil && callId.isEmpty {
+					if  uuid != nil {
 						let callInfo = providerDelegate.callInfos[uuid!]
 						callInfo!.callId = callId
 						providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
@@ -539,11 +572,25 @@ class TelecomManager: ObservableObject {
 					// bluetoothEnabled = false
 				}
 				
+				//if core.callsNb == 0 {
 				DispatchQueue.main.async {
-					withAnimation {
-						self.outgoingCallStarted = false
-						self.callInProgress = false
-						self.callStarted = false
+					if core.callsNb == 0 {
+						withAnimation {
+							self.outgoingCallStarted = false
+							self.callInProgress = false
+							self.callStarted = false
+						}
+					} else {
+						if core.calls.last != nil {
+							self.setHeld(call: core.calls.last!, hold: false)
+							
+							DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+								self.remainingCall = true
+								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+									self.remainingCall = false
+								}
+							}
+						}
 					}
 					
 					var displayName = "Unknown"
@@ -552,7 +599,6 @@ class TelecomManager: ObservableObject {
 					} else { // if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
 						displayName = "TODOContactName"
 					}
-					
 					
 					if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted) {
 						// Configure the notification's payload.
@@ -570,6 +616,7 @@ class TelecomManager: ObservableObject {
 						}
 					}
 				}
+				//}
 				
 				if TelecomManager.callKitEnabled(core: core) {
 					var uuid = providerDelegate.uuids["\(callId)"]

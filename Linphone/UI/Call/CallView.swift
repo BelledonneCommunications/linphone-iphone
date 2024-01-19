@@ -37,7 +37,6 @@ struct CallView: View {
 	
 	let pub = NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)
 	
-	@State var startDate = Date.now
 	@State var audioRouteSheet: Bool = false
 	@State var hideButtonsSheet: Bool = false
 	@State var options: Int = 1
@@ -48,6 +47,8 @@ struct CallView: View {
 	@State var fullscreenVideo = false
 	
 	@State var showingDialer = false
+	
+	@Binding var isShowStartCallFragment: Bool
 	
 	var body: some View {
 		GeometryReader { geo in
@@ -109,6 +110,13 @@ struct CallView: View {
 						.onTapGesture {
 							callViewModel.zrtpPopupDisplayed = false
 						}
+				}
+				
+				if telecomManager.remainingCall {
+					HStack {}
+					.onAppear {
+						callViewModel.resetCallView()
+					}
 				}
 			}
 			.onAppear {
@@ -273,8 +281,8 @@ struct CallView: View {
 						
 						ZStack {
 							Text(callViewModel.timeElapsed.convertDurationToString())
-								.onReceive(callViewModel.timer) { firedDate in
-									callViewModel.timeElapsed = Int(firedDate.timeIntervalSince(startDate))
+								.onReceive(callViewModel.timer) { _ in
+									callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
 								}
 								.foregroundStyle(.white)
 								.if(callViewModel.isPaused || telecomManager.isPausedByRemote) { view in
@@ -477,15 +485,13 @@ struct CallView: View {
 						Text(callViewModel.counterToMinutes())
 							.onAppear {
 								callViewModel.timeElapsed = 0
-								startDate = Date.now
 							}
-							.onReceive(callViewModel.timer) { firedDate in
-								callViewModel.timeElapsed = Int(firedDate.timeIntervalSince(startDate))
+							.onReceive(callViewModel.timer) { _ in
+								callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
 								
 							}
 							.onDisappear {
 								callViewModel.timeElapsed = 0
-								startDate = Date.now
 							}
 							.padding(.top)
 							.foregroundStyle(.white)
@@ -734,17 +740,20 @@ struct CallView: View {
 						
 						VStack {
 							Button {
+								withAnimation {
+									MagicSearchSingleton.shared.searchForSuggestions()
+									isShowStartCallFragment.toggle()
+								}
 							} label: {
 								Image("phone-plus")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
 							Text("New call")
 								.foregroundStyle(.white)
@@ -907,17 +916,20 @@ struct CallView: View {
 						
 						VStack {
 							Button {
+								withAnimation {
+									MagicSearchSingleton.shared.searchForSuggestions()
+									isShowStartCallFragment.toggle()
+								}
 							} label: {
 								Image("phone-plus")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
 							Text("New call")
 								.foregroundStyle(.white)
@@ -1112,7 +1124,7 @@ struct BottomSheetView<Content: View>: View {
 }
 
 #Preview {
-	CallView(callViewModel: CallViewModel())
+	CallView(callViewModel: CallViewModel(), isShowStartCallFragment: .constant(false))
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length

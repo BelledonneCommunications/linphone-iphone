@@ -522,14 +522,14 @@ struct ContentView: View {
 				}
 				
 				if isShowStartCallFragment {
-					
 					if #available(iOS 16.4, *), idiom != .pad {
 						StartCallFragment(
 							startCallViewModel: startCallViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
-							showingDialer: $showingDialer
+							showingDialer: $showingDialer,
+							resetCallView: {callViewModel.resetCallView()}
 						)
-						.zIndex(3)
+						.zIndex(4)
 						.transition(.move(edge: .bottom))
 						.sheet(isPresented: $showingDialer) {
 							DialerBottomSheet(
@@ -545,9 +545,10 @@ struct ContentView: View {
 						StartCallFragment(
 							startCallViewModel: startCallViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
-							showingDialer: $showingDialer
+							showingDialer: $showingDialer,
+							resetCallView: {callViewModel.resetCallView()}
 						)
-						.zIndex(3)
+						.zIndex(4)
 						.transition(.move(edge: .bottom))
 						.halfSheet(showSheet: $showingDialer) {
 							DialerBottomSheet(
@@ -657,7 +658,7 @@ struct ContentView: View {
 				}
 				
 				if telecomManager.callInProgress {
-					CallView(callViewModel: callViewModel)
+					CallView(callViewModel: callViewModel, isShowStartCallFragment: $isShowStartCallFragment)
 						.zIndex(3)
 						.transition(.scale.combined(with: .move(edge: .top)))
 						.onAppear {

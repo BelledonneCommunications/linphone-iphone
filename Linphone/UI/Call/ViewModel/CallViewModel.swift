@@ -59,7 +59,7 @@ class CallViewModel: ObservableObject {
 		resetCallView()
 	}
 	
-	func enableAVAudioSession(){
+	func enableAVAudioSession() {
 		do {
 			try AVAudioSession.sharedInstance().setActive(true)
 		} catch _ {
@@ -99,7 +99,11 @@ class CallViewModel: ObservableObject {
 					self.micMutted = self.currentCall!.microphoneMuted
 					self.isRecording = self.currentCall!.params!.isRecording
 					self.isPaused = self.isCallPaused()
-					self.timeElapsed = 0
+					self.timeElapsed = self.currentCall?.duration ?? 0
+					
+					let authToken = self.currentCall!.authenticationToken
+					let isDeviceTrusted = self.currentCall!.authenticationTokenVerified && authToken != nil
+					self.isRemoteDeviceTrusted = self.telecomManager.callInProgress ? isDeviceTrusted : false
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
@@ -110,19 +114,15 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func terminateCall() {
-		withAnimation {
-			telecomManager.outgoingCallStarted = false
-			telecomManager.callStarted = false
-			telecomManager.callInProgress = false
-		}
-		
-		coreContext.doOnCoreQueue { _ in
+		coreContext.doOnCoreQueue { core in
 			if self.currentCall != nil {
 				self.telecomManager.terminateCall(call: self.currentCall!)
 			}
+			
+			if core.callsNb == 0 {
+				self.timer.upstream.connect().cancel()
+			}
 		}
-		
-		timer.upstream.connect().cancel()
 	}
 	
 	func acceptCall() {

@@ -32,8 +32,9 @@ struct StartCallFragment: View {
 	@Binding var showingDialer: Bool
 	
 	@FocusState var isSearchFieldFocused: Bool
-	@State private var hasTimeElapsed = false
 	@State private var delayedColor = Color.white
+	
+	var resetCallView: () -> Void
 	
 	var body: some View {
 		ZStack {
@@ -141,7 +142,6 @@ struct StartCallFragment: View {
 										.resizable()
 										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25)
-										.padding(.all, 10)
 								})
 							}
 						}
@@ -175,6 +175,8 @@ struct StartCallFragment: View {
 							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
 								magicSearch.searchForContacts(
 									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+								
+								resetCallView()
 							}
 							
 							startCallViewModel.searchField = ""
@@ -227,6 +229,8 @@ struct StartCallFragment: View {
 				DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
 					magicSearch.searchForContacts(
 						sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+					
+					resetCallView()
 				}
 				
 				startCallViewModel.searchField = ""
@@ -279,5 +283,5 @@ struct StartCallFragment: View {
 }
 
 #Preview {
-	StartCallFragment(startCallViewModel: StartCallViewModel(), isShowStartCallFragment: .constant(true), showingDialer: .constant(false))
+	StartCallFragment(startCallViewModel: StartCallViewModel(), isShowStartCallFragment: .constant(true), showingDialer: .constant(false), resetCallView: {})
 }

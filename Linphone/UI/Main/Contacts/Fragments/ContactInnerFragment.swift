@@ -120,13 +120,16 @@ struct ContactInnerFragment: View {
 									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo != nil
 									&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!.isEmpty {
 									Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
-								} else if contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+								} else if contactViewModel.indexDisplayedFriend != nil 
+											&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+											&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 									Image("profil-picture-default")
 										.resizable()
 										.frame(width: 100, height: 100)
 										.clipShape(Circle())
 								}
 								if contactViewModel.indexDisplayedFriend != nil
+									&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
 									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name != nil {
 									Text((contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name)!)

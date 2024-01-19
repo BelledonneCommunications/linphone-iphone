@@ -35,7 +35,6 @@ struct EditContactFragment: View {
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDismissPopup: Bool
 	
-	@State private var hasTimeElapsed = false
 	@State private var delayedColor = Color.white
 	
 	@FocusState var isFirstNameFocused: Bool

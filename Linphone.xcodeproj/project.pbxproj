@@ -95,6 +95,8 @@
 		D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D0502AEBDBD500A57AAF /* ContactsListBottomSheet.swift */; };
 		D7E6D0552AEBFCCE00A57AAF /* ContactsInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D0542AEBFCCE00A57AAF /* ContactsInnerFragment.swift */; };
 		D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */; };
+		D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */; };
+		D7F4D9CD2B5FD83A00CDCD76 /* CallsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F4D9CC2B5FD83A00CDCD76 /* CallsListViewModel.swift */; };
 		D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */; };
 /* End PBXBuildFile section */
 
@@ -190,6 +192,8 @@
 		D7E6D0502AEBDBD500A57AAF /* ContactsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListBottomSheet.swift; sourceTree = "<group>"; };
 		D7E6D0542AEBFCCE00A57AAF /* ContactsInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsInnerFragment.swift; sourceTree = "<group>"; };
 		D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsFragment.swift; sourceTree = "<group>"; };
+		D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListFragment.swift; sourceTree = "<group>"; };
+		D7F4D9CC2B5FD83A00CDCD76 /* CallsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListViewModel.swift; sourceTree = "<group>"; };
 		D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterFragment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -407,6 +411,7 @@
 			isa = PBXGroup;
 			children = (
 				D75759312B56D40900E7AC10 /* ZRTPPopup.swift */,
+				D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -511,6 +516,7 @@
 			isa = PBXGroup;
 			children = (
 				D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */,
+				D7F4D9CC2B5FD83A00CDCD76 /* CallsListViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -696,6 +702,7 @@
 				D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */,
 				D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */,
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
+				D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
 				D7E6D04D2AEBD77600A57AAF /* CustomBottomSheet.swift in Sources */,
@@ -708,6 +715,7 @@
 				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,
 				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
+				D7F4D9CD2B5FD83A00CDCD76 /* CallsListViewModel.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,

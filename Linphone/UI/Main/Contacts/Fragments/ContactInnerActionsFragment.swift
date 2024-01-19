@@ -62,7 +62,9 @@ struct ContactInnerActionsFragment: View {
 		
 		if informationIsOpen {
 			VStack(spacing: 0) {
-				if contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+				if contactViewModel.indexDisplayedFriend != nil
+					&& contactsManager.lastSearch.count > contactViewModel.indexDisplayedFriend!
+					&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
 					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count, id: \.self) { index in
 						HStack {
 							HStack {
@@ -159,6 +161,7 @@ struct ContactInnerActionsFragment: View {
 		}
 		
 		if contactViewModel.indexDisplayedFriend != nil
+			&& contactsManager.lastSearch.count > contactViewModel.indexDisplayedFriend!
 			&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 			&& ((contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
 				 && !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty)
@@ -211,7 +214,8 @@ struct ContactInnerActionsFragment: View {
 		.background(Color.gray100)
 		
 		VStack(spacing: 0) {
-			if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+			if contactViewModel.indexDisplayedFriend != nil 
+				&& contactsManager.lastSearch.count > contactViewModel.indexDisplayedFriend!
 				&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 				&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
 				&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
@@ -282,15 +286,20 @@ struct ContactInnerActionsFragment: View {
 				}
 			} label: {
 				HStack {
-					Image(contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+					Image(contactViewModel.indexDisplayedFriend != nil
+						  && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+						  && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 						  && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? "heart-fill" : "heart")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(contactViewModel.indexDisplayedFriend != nil && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
+					.foregroundStyle(contactViewModel.indexDisplayedFriend != nil 
+									 && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
+									 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 									 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
 					.frame(width: 25, height: 25)
 					.padding(.all, 10)
 					Text(contactViewModel.indexDisplayedFriend != nil
+						 && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
 						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
 						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true
 						 ? "Remove from favourites"

@@ -221,7 +221,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			
 			let call = core.getCallByCallid(callId: callId)
 			
-			DispatchQueue.main.async() {
+			DispatchQueue.main.async {
 				if UIApplication.shared.applicationState != .active {
 					TelecomManager.shared.backgroundContextCall = call
 					TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
@@ -276,30 +276,33 @@ extension ProviderDelegate: CXProviderDelegate {
 						// attempt to resume another one.
 						action.fulfill()
 					} else {
-						if call?.conference != nil && core.callsNb > 1 {/*
+						if call?.conference != nil && core.callsNb > 1 {
+							/*
 																		 try TelecomManager.shared.lc?.enterConference()
 																		 action.fulfill()
 																		 NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
-																		 */} else {
-																			 try call!.resume()
-																			 // We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point
-																			 // where we actually start the media streams.
-																			 TelecomManager.shared.actionToFulFill = action
-																			 // HORRIBLE HACK HERE - PLEASE APPLE FIX THIS !!
-																			 // When resuming a SIP call after a native call has ended remotely, didActivate: audioSession
-																			 // is never called.
-																			 // It looks like in this case, it is implicit.
-																			 // As a result we have to notify the Core that the AudioSession is active.
-																			 // The SpeakerBox demo application written by Apple exhibits this behavior.
-																			 // https://developer.apple.com/documentation/callkit/making_and_receiving_voip_calls_with_callkit
-																			 // We can clearly see there that startAudio() is called immediately in the CXSetHeldCallAction
-																			 // handler, while it is called from didActivate: audioSession otherwise.
-																			 // Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
-																			 //
-																			 Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
-																			 core.activateAudioSession(actived: true)
-																			 TelecomManager.shared.callkitAudioSessionActivated = true
-																		 }
+							*/
+						} else {
+							try call!.resume()
+							// We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point
+							// where we actually start the media streams.
+							TelecomManager.shared.actionToFulFill = action
+							// HORRIBLE HACK HERE - PLEASE APPLE FIX THIS !!
+							// When resuming a SIP call after a native call has ended remotely, didActivate: audioSession
+							// is never called.
+							// It looks like in this case, it is implicit.
+							// As a result we have to notify the Core that the AudioSession is active.
+							// The SpeakerBox demo application written by Apple exhibits this behavior.
+							// https://developer.apple.com/documentation/callkit/making_and_receiving_voip_calls_with_callkit
+							// We can clearly see there that startAudio() is called immediately in the CXSetHeldCallAction
+							// handler, while it is called from didActivate: audioSession otherwise.
+							// Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
+							//
+							
+							 Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
+							 core.activateAudioSession(actived: true)
+							 TelecomManager.shared.callkitAudioSessionActivated = true
+						}
 					}
 				}
 			} catch {
