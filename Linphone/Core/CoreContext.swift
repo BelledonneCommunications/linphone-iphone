@@ -42,6 +42,8 @@ final class CoreContext: ObservableObject {
 	
 	let monitor = NWPathMonitor()
 	
+	private var mCorePushIncomingDelegate: CoreDelegate!
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -63,14 +65,16 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func initialiseCore() throws {
-		LoggingService.Instance.logLevel = LogLevel.Debug
 		
 		coreQueue.async {
+			
+			LoggingService.Instance.logLevel = LogLevel.Debug
 			let configDir = Factory.Instance.getConfigDir(context: nil)
 			
 			Factory.Instance.logCollectionPath = configDir
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
-			
+
+			Log.info("Initialising core")
 			let url = NSURL(fileURLWithPath: configDir)
 			if let pathComponent = url.appendingPathComponent("linphonerc") {
 				let filePath = pathComponent.path
@@ -91,6 +95,7 @@ final class CoreContext: ObservableObject {
 				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
 			}
 			
+			self.mCore.pushRegistryDispatchQueue = Unmanaged.passUnretained(coreQueue).toOpaque()
 			self.mCore.autoIterateEnabled = false
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -207,6 +212,16 @@ final class CoreContext: ObservableObject {
 				TelecomManager.shared.onCallStateChanged(core: cbVal.core, call: cbVal.call, state: cbVal.state, message: cbVal.message)
 			})
 			
+			self.mCorePushIncomingDelegate = CoreDelegateStub(onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
+				if cstate == .PushIncomingReceived {
+					let callLog = call.callLog
+					let callId = callLog?.callId ?? ""
+					Log.info("PushIncomingReceived in core delegate, display callkit call")
+					TelecomManager.shared.displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
+				}
+			})
+			self.mCore.addDelegate(delegate: self.mCorePushIncomingDelegate)
+			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnMainQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
 				if cbValue.info.starts(with: "https") {
 					UIPasteboard.general.setValue(
@@ -231,7 +246,6 @@ final class CoreContext: ObservableObject {
 			try? self.mCore.start()
 		}
 	}
-	
 	func onForeground() {
 		coreQueue.async {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled

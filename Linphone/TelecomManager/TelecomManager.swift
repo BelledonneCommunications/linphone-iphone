@@ -334,7 +334,7 @@ class TelecomManager: ObservableObject {
 		let callLog = call.callLog
 		let callId = callLog?.callId ?? ""
 		if cstate == .PushIncomingReceived {
-			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
+			Log.info("PushIncomingReceived on TelecomManager -- Ignore, should be processed by a the dedicated CoreDelegate for callkit display")
 		} else {
 			
 			DispatchQueue.main.async {
