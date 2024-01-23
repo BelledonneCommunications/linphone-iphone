@@ -44,8 +44,8 @@ class TelecomManager: ObservableObject {
 	@Published var callStarted: Bool = false
 	@Published var outgoingCallStarted: Bool = false
 	@Published var remoteVideo: Bool = false
-	@Published var  isRecordingByRemote: Bool = false
-	@Published var  isPausedByRemote: Bool = false
+	@Published var isRecordingByRemote: Bool = false
+	@Published var isPausedByRemote: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -130,7 +130,7 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	private func makeRecordFilePath() -> String{
+	private func makeRecordFilePath() -> String {
 		var filePath = "recording_"
 		let now = Date()
 		let dateFormat = DateFormatter()
@@ -408,11 +408,10 @@ class TelecomManager: ObservableObject {
 			case .IncomingReceived:
 				let addr = call.remoteAddress
 				let displayName = incomingDisplayName(call: call)
-				
 #if targetEnvironment(simulator)
 				DispatchQueue.main.async {
 					self.outgoingCallStarted = false
-					self.callStarted = true
+					self.callStarted = false
 					if self.callInProgress == false {
 						withAnimation {
 							self.callInProgress = true

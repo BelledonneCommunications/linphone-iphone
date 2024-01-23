@@ -43,7 +43,7 @@
     "**Micro** : Pour permettre à vos correspondants de vous entendre." : {
 
     },
-    "**Notifications** : Pour vous informé quand vous recevez un message ou un appel." : {
+    "**Notifications** : Pour vous informer quand vous recevez un message ou un appel." : {
 
     },
     "#" : {
@@ -359,6 +359,9 @@
     "Last name" : {
 
     },
+    "Letters don't match!" : {
+
+    },
     "Linphone" : {
 
     },
@@ -475,6 +478,9 @@
     "Remove picture" : {
 
     },
+    "Say %@ and click on the letters given by your correspondent:" : {
+
+    },
     "Scan QR code" : {
 
     },
@@ -529,6 +535,9 @@
     "The user name or password is incorrects" : {
 
     },
+    "This call is completely securised" : {
+
+    },
     "This contact will be deleted definitively." : {
 
     },
@@ -580,6 +589,9 @@
       }
     },
     "Username error" : {
+
+    },
+    "Validate the device" : {
 
     },
     "Video Call" : {

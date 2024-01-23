@@ -73,7 +73,7 @@ final class CoreContext: ObservableObject {
 			
 			Factory.Instance.logCollectionPath = configDir
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
-
+			
 			Log.info("Initialising core")
 			let url = NSURL(fileURLWithPath: configDir)
 			if let pathComponent = url.appendingPathComponent("linphonerc") {
@@ -101,6 +101,9 @@ final class CoreContext: ObservableObject {
 			self.mCore.pushNotificationEnabled = true
 			
 			self.mCore.setUserAgent(name: "Linphone iOS 6.0 Beta (\(UIDevice.current.localizedModel)) - Linphone SDK : \(self.coreVersion)", version: "6.0")
+			
+			self.mCore.videoCaptureEnabled = true
+			self.mCore.videoDisplayEnabled = true
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
@@ -138,9 +141,6 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
-			self.mCore.videoCaptureEnabled = true
-			self.mCore.videoDisplayEnabled = true
-			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
@@ -161,7 +161,7 @@ final class CoreContext: ObservableObject {
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
 				Log.info("New registration state is \(cbVal.state) for user id " +
-					  "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
+						 "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true

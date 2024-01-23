@@ -27,11 +27,17 @@ struct ToastView: View {
 		VStack {
 			if toastViewModel.displayToast {
 				HStack {
-					Image(toastViewModel.toastMessage.contains("Success") ? "check" : "warning-circle")
-						.resizable()
-						.renderingMode(.template)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
+					if toastViewModel.toastMessage.contains("Info_") {
+						Image("trusted")
+							.resizable()
+							.frame(width: 25, height: 25, alignment: .leading)
+					} else {
+						Image(toastViewModel.toastMessage.contains("Success") ? "check" : "warning-circle")
+							.resizable()
+							.renderingMode(.template)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
+					}
 					
 					switch toastViewModel.toastMessage {
 					case "Successful":
@@ -68,7 +74,14 @@ struct ToastView: View {
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
-					
+						
+					case "Info_call_securised":
+						Text("This call is completely securised")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.blueInfo500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case let str where str.contains("is recording"):
 						Text(toastViewModel.toastMessage)
 							.multilineTextAlignment(.center)
@@ -111,7 +124,7 @@ struct ToastView: View {
 				.overlay(
 					RoundedRectangle(cornerRadius: 50)
 						.inset(by: 0.5)
-						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500, lineWidth: 1)
+						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : (toastViewModel.toastMessage.contains("Info_") ? Color.blueInfo500 : Color.redDanger500), lineWidth: 1)
 				)
 				.onTapGesture {
 					if !toastViewModel.toastMessage.contains("is recording") {

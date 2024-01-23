@@ -49,23 +49,32 @@ struct CallView: View {
 	
 	var body: some View {
 		GeometryReader { geo in
-			if #available(iOS 16.0, *), idiom != .pad {
-				innerView(geometry: geo)
-					.sheet(isPresented: $audioRouteSheet, onDismiss: {
-						audioRouteSheet = false
-						hideButtonsSheet = false
-					}) {
-						innerBottomSheet()
-							.presentationDetents([.fraction(0.3)])
-					}
-			} else {
-				innerView(geometry: geo)
-					.halfSheet(showSheet: $audioRouteSheet) {
-						innerBottomSheet()
-					} onDismiss: {
-						audioRouteSheet = false
-						hideButtonsSheet = false
-					}
+			ZStack {
+				if #available(iOS 16.0, *), idiom != .pad {
+					innerView(geometry: geo)
+						.sheet(isPresented: $audioRouteSheet, onDismiss: {
+							audioRouteSheet = false
+							hideButtonsSheet = false
+						}) {
+							innerBottomSheet()
+								.presentationDetents([.fraction(0.3)])
+						}
+				} else {
+					innerView(geometry: geo)
+						.halfSheet(showSheet: $audioRouteSheet) {
+							innerBottomSheet()
+						} onDismiss: {
+							audioRouteSheet = false
+							hideButtonsSheet = false
+						}
+				}
+				if callViewModel.zrtpPopupDisplayed == true {
+					ZRTPPopup(callViewModel: callViewModel)
+						.background(.black.opacity(0.65))
+						.onTapGesture {
+							callViewModel.zrtpPopupDisplayed = false
+						}
+				}
 			}
 		}
 	}
@@ -243,6 +252,17 @@ struct CallView: View {
 					
 					Spacer()
 					
+					if callViewModel.isMediaEncrypted {
+						Button {
+							callViewModel.showZrtpSasDialogIfPossible()
+						} label: {
+							Image(callViewModel.isZrtpPq ? "media-encryption-zrtp-pq" : "media-encryption-srtp")
+								.resizable()
+								.frame(width: 30, height: 30)
+								.padding(.horizontal)
+						}
+					}
+					
 					if telecomManager.remoteVideo {
 						Button {
 							callViewModel.switchCamera()
@@ -263,50 +283,71 @@ struct CallView: View {
 			ZStack {
 				VStack {
 					Spacer()
-					
-					if callViewModel.remoteAddress != nil {
-						let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
+					ZStack {
 						
-						let contactAvatarModel = addressFriend != nil
-						? ContactsManager.shared.avatarListModel.first(where: {
-							($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-							&& $0.friend!.name == addressFriend!.name
-							&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-						})
-						: ContactAvatarModel(friend: nil, withPresence: false)
+						if callViewModel.isRemoteDeviceTrusted {
+							Circle()
+								.fill(Color.blueInfo500)
+								.frame(width: 105, height: 105)
+						}
 						
-						if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-							if contactAvatarModel != nil {
-								Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 100, hidePresence: true)
+						if callViewModel.remoteAddress != nil {
+							let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
+							
+							let contactAvatarModel = addressFriend != nil
+							? ContactsManager.shared.avatarListModel.first(where: {
+								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+								&& $0.friend!.name == addressFriend!.name
+								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+							})
+							: ContactAvatarModel(friend: nil, withPresence: false)
+							
+							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+								if contactAvatarModel != nil {
+									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 100, hidePresence: true)
+								}
+							} else {
+								if callViewModel.remoteAddress!.displayName != nil {
+									Image(uiImage: contactsManager.textToImage(
+										firstName: callViewModel.remoteAddress!.displayName!,
+										lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
+										? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
+										: ""))
+									.resizable()
+									.frame(width: 100, height: 100)
+									.clipShape(Circle())
+									
+								} else {
+									Image(uiImage: contactsManager.textToImage(
+										firstName: callViewModel.remoteAddress!.username ?? "Username Error",
+										lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
+										? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
+										: ""))
+									.resizable()
+									.frame(width: 100, height: 100)
+									.clipShape(Circle())
+								}
+								
 							}
 						} else {
-							if callViewModel.remoteAddress!.displayName != nil {
-								Image(uiImage: contactsManager.textToImage(
-									firstName: callViewModel.remoteAddress!.displayName!,
-									lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
-									? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
-									: ""))
+							Image("profil-picture-default")
 								.resizable()
 								.frame(width: 100, height: 100)
 								.clipShape(Circle())
-								
-							} else {
-								Image(uiImage: contactsManager.textToImage(
-									firstName: callViewModel.remoteAddress!.username ?? "Username Error",
-									lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
-									? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
-									: ""))
-								.resizable()
-								.frame(width: 100, height: 100)
-								.clipShape(Circle())
-							}
-							
 						}
-					} else {
-						Image("profil-picture-default")
-							.resizable()
+						
+						if callViewModel.isRemoteDeviceTrusted {
+							VStack {
+								Spacer()
+								HStack {
+									Image("trusted")
+										.resizable()
+										.frame(width: 25, height: 25)
+									Spacer()
+								}
+							}
 							.frame(width: 100, height: 100)
-							.clipShape(Circle())
+						}
 					}
 					
 					Text(callViewModel.displayName)

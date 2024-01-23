@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 import AVFAudio
+import Combine
 
 class CallViewModel: ObservableObject {
 	
@@ -36,10 +37,18 @@ class CallViewModel: ObservableObject {
 	@Published var isRemoteRecording: Bool = false
 	@Published var isPaused: Bool = false
 	@Published var timeElapsed: Int = 0
+	@Published var zrtpPopupDisplayed: Bool = false
+	@Published var upperCaseAuthTokenToRead = ""
+	@Published var upperCaseAuthTokenToListen = ""
+	@Published var isMediaEncrypted: Bool = false
+	@Published var isZrtpPq: Bool = false
+	@Published var isRemoteDeviceTrusted: Bool = false
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
 	var currentCall: Call?
+	
+	private var callSuscriptions = Set<AnyCancellable?>()
 	
 	init() {
 		do {
@@ -78,6 +87,10 @@ class CallViewModel: ObservableObject {
 					self.isPaused = self.isCallPaused()
 					self.timeElapsed = 0
 				}
+				
+				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
+					_ = self.updateEncryption()
+				})
 			}
 		}
 	}
@@ -266,6 +279,107 @@ class CallViewModel: ObservableObject {
 			if oldLinphoneOrientation != newRotation {
 				core.deviceRotation = newRotation
 			}
+		}
+	}
+	
+	func lettersClicked(letters: String) {
+		let verified = letters == self.upperCaseAuthTokenToListen
+		Log.info(
+			"[ZRTPPopup] User clicked on \(verified ? "right" : "wrong") letters"
+		)
+		
+		if verified {
+			coreContext.doOnCoreQueue { core in
+				if core.currentCall != nil {
+					core.currentCall!.authenticationTokenVerified = verified
+				}
+			}
+		}
+	}
+	
+	private func updateEncryption() -> Bool {
+		if currentCall != nil && currentCall!.currentParams != nil {
+			switch currentCall!.currentParams!.mediaEncryption {
+			case MediaEncryption.ZRTP:
+				let authToken = currentCall!.authenticationToken
+				let isDeviceTrusted = currentCall!.authenticationTokenVerified && authToken != nil
+				
+				Log.info(
+					"[CallViewModel] Current call media encryption is ZRTP, auth token is \(isDeviceTrusted ? "trusted" : "not trusted yet")"
+				)
+				
+				isRemoteDeviceTrusted = isDeviceTrusted
+				
+				if isDeviceTrusted {
+					ToastViewModel.shared.toastMessage = "Info_call_securised"
+					ToastViewModel.shared.displayToast = true
+				}
+				
+				/*
+				 let securityLevel = isDeviceTrusted ? SecurityLevel.Safe : SecurityLevel.Encrypted
+				 let avatarModel = contact
+				 if (avatarModel != nil) {
+				 avatarModel.trust.postValue(securityLevel)
+				 contact.postValue(avatarModel!!)
+				 } else {
+				 Log.error("$TAG No avatar model found!")
+				 }
+				 */
+				
+				isMediaEncrypted = true
+				// When Post Quantum is available, ZRTP is Post Quantum
+				isZrtpPq = Core.getPostQuantumAvailable
+				
+				if !isDeviceTrusted && authToken != nil && !authToken!.isEmpty {
+					Log.info("[CallViewModel] Showing ZRTP SAS confirmation dialog")
+					showZrtpSasDialog(authToken: authToken!)
+				}
+				
+				return isDeviceTrusted
+			case MediaEncryption.SRTP, MediaEncryption.DTLS:
+				isMediaEncrypted = true
+				isZrtpPq = false
+				return false
+			default:
+				isMediaEncrypted = false
+				isZrtpPq = false
+				return false
+			}
+		}
+		return false
+	}
+	
+	func showZrtpSasDialogIfPossible() {
+		if currentCall != nil && currentCall!.currentParams != nil && currentCall!.currentParams!.mediaEncryption == MediaEncryption.ZRTP {
+			let authToken = currentCall!.authenticationToken
+			let isDeviceTrusted = currentCall!.authenticationTokenVerified && authToken != nil
+			Log.info(
+				"[CallViewModel] Current call media encryption is ZRTP, auth token is \(isDeviceTrusted ? "trusted" : "not trusted yet")"
+			)
+			if (authToken != nil && !authToken!.isEmpty) {
+				showZrtpSasDialog(authToken: authToken!)
+			}
+		}
+	}
+	
+	private func showZrtpSasDialog(authToken: String) {
+		if self.currentCall != nil {
+			let upperCaseAuthToken = authToken.localizedUppercase
+			
+			let mySubstringPrefix = upperCaseAuthToken.prefix(2)
+			
+			let mySubstringSuffix = upperCaseAuthToken.suffix(2)
+			
+			switch self.currentCall!.dir {
+			case Call.Dir.Incoming:
+				self.upperCaseAuthTokenToRead = String(mySubstringPrefix)
+				self.upperCaseAuthTokenToListen = String(mySubstringSuffix)
+			default:
+				self.upperCaseAuthTokenToRead = String(mySubstringSuffix)
+				self.upperCaseAuthTokenToListen = String(mySubstringPrefix)
+			}
+			
+			self.zrtpPopupDisplayed = true
 		}
 	}
 }

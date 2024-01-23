@@ -55,6 +55,7 @@
 		D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CFE2ACAEC5E0021626A /* PopupView.swift */; };
 		D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9D002ACB098C0021626A /* PermissionManager.swift */; };
 		D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */; };
+		D75759322B56D40900E7AC10 /* ZRTPPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75759312B56D40900E7AC10 /* ZRTPPopup.swift */; };
 		D76005F62B0798B00054B79A /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76005F52B0798B00054B79A /* IntExtension.swift */; };
 		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
 		D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D777DBB22AE12C5900565A99 /* ContactsManager.swift */; };
@@ -148,6 +149,7 @@
 		D74C9CFE2ACAEC5E0021626A /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
 		D74C9D002ACB098C0021626A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupLoadingView.swift; sourceTree = "<group>"; };
+		D75759312B56D40900E7AC10 /* ZRTPPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZRTPPopup.swift; sourceTree = "<group>"; };
 		D76005F52B0798B00054B79A /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		D777DBB22AE12C5900565A99 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
@@ -401,6 +403,14 @@
 			path = Fragments;
 			sourceTree = "<group>";
 		};
+		D75759302B56D3CE00E7AC10 /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D75759312B56D40900E7AC10 /* ZRTPPopup.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
 		D7702EF02AC7200600557C00 /* Welcome */ = {
 			isa = PBXGroup;
 			children = (
@@ -490,6 +500,7 @@
 		D7B5678C2B28883700DE63EB /* Call */ = {
 			isa = PBXGroup;
 			children = (
+				D75759302B56D3CE00E7AC10 /* Fragments */,
 				D7B99E972B29B37F00BE7BF2 /* ViewModel */,
 				D7B5678D2B28888F00DE63EB /* CallView.swift */,
 			);
@@ -702,6 +713,7 @@
 				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,
 				D76005F62B0798B00054B79A /* IntExtension.swift in Sources */,
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
+				D75759322B56D40900E7AC10 /* ZRTPPopup.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
 				D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */,
