@@ -21,7 +21,10 @@ import SwiftUI
 
 struct CallsListFragment: View {
 	
-	@ObservedObject var callsListViewModel: CallsListViewModel
+	@ObservedObject private var coreContext = CoreContext.shared
+	@ObservedObject private var contactsManager = ContactsManager.shared
+	
+	@ObservedObject var callViewModel: CallViewModel
 	
 	@State private var delayedColor = Color.white
 	
@@ -66,7 +69,7 @@ struct CallsListFragment: View {
 				.padding(.bottom, 4)
 				.background(.white)
 				
-				//callsList
+				callsList
 			}
 			.background(.white)
 		}
@@ -85,174 +88,145 @@ struct CallsListFragment: View {
 		}
 	}
 	
-	/*
 	var callsList: some View {
 		VStack {
 			List {
-				ForEach(0..<historyListViewModel.callLogs.count, id: \.self) { index in
+				ForEach(0..<callViewModel.calls.count, id: \.self) { index in
 					HStack {
 						HStack {
-							let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
-							let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
-							let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
-							
-							let contactAvatarModel = addressFriend != nil
-							? ContactsManager.shared.avatarListModel.first(where: {
-								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-								&& $0.friend!.name == addressFriend!.name
-								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-							})
-							: ContactAvatarModel(friend: nil, withPresence: false)
-							
-							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+							if callViewModel.calls[index].callLog != nil && callViewModel.calls[index].callLog!.remoteAddress != nil {
+								let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.calls[index].callLog!.remoteAddress!)
+								
+								let contactAvatarModel = addressFriend != nil
+								? ContactsManager.shared.avatarListModel.first(where: {
+									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+									&& $0.friend!.name == addressFriend!.name
+									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+								})
+								: ContactAvatarModel(friend: nil, withPresence: false)
+								
+								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+									if contactAvatarModel != nil {
+										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+									} else {
+										Image("profil-picture-default")
+											.resizable()
+											.frame(width: 45, height: 45)
+											.clipShape(Circle())
+									}
 								} else {
-									Image("profil-picture-default")
+									if callViewModel.calls[index].callLog!.remoteAddress!.displayName != nil {
+										Image(uiImage: contactsManager.textToImage(
+											firstName: callViewModel.calls[index].callLog!.remoteAddress!.displayName!,
+											lastName: callViewModel.calls[index].callLog!.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
+											? callViewModel.calls[index].callLog!.remoteAddress!.displayName!.components(separatedBy: " ")[1]
+											: ""))
 										.resizable()
 										.frame(width: 45, height: 45)
 										.clipShape(Circle())
-								}
-							} else {
-								if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-									if historyListViewModel.callLogs[index].toAddress!.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-										 firstName: historyListViewModel.callLogs[index].toAddress!.displayName!,
-										 lastName: historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ").count > 1
-											? historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ")[1]
-											: ""))
-										 .resizable()
-										 .frame(width: 45, height: 45)
-										 .clipShape(Circle())
 										
 									} else {
 										Image(uiImage: contactsManager.textToImage(
-											firstName: historyListViewModel.callLogs[index].toAddress!.username ?? "Username Error",
-											lastName: historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ").count > 1
-											? historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ")[1]
+											firstName: callViewModel.calls[index].callLog!.remoteAddress!.username ?? "Username Error",
+											lastName: callViewModel.calls[index].callLog!.remoteAddress!.username!.components(separatedBy: " ").count > 1
+											? callViewModel.calls[index].callLog!.remoteAddress!.username!.components(separatedBy: " ")[1]
 											: ""))
-										 .resizable()
-										 .frame(width: 45, height: 45)
-										 .clipShape(Circle())
-									}
-									
-								} else if historyListViewModel.callLogs[index].fromAddress != nil {
-									if historyListViewModel.callLogs[index].fromAddress!.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: historyListViewModel.callLogs[index].fromAddress!.displayName!,
-											lastName: historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ").count > 1
-											? historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ")[1]
-											: ""))
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									} else {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: historyListViewModel.callLogs[index].fromAddress!.username ?? "Username Error",
-											lastName: historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ").count > 1
-											? historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ")[1]
-											: ""))
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-									}
-								} else {
-									Image("profil-picture-default")
 										.resizable()
 										.frame(width: 45, height: 45)
 										.clipShape(Circle())
+									}
 								}
-							}
-							
-							VStack(spacing: 0) {
-								Spacer()
-								
-								let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
-								let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
-								let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
 								
 								if addressFriend != nil {
 									Text(addressFriend!.name!)
-									 .default_text_style(styleSize: 14)
-									 .frame(maxWidth: .infinity, alignment: .leading)
-									 .lineLimit(1)
+										.default_text_style(styleSize: 16)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
 								} else {
-									if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-										Text(historyListViewModel.callLogs[index].toAddress!.displayName != nil
-											 ? historyListViewModel.callLogs[index].toAddress!.displayName!
-											 : historyListViewModel.callLogs[index].toAddress!.username!)
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity, alignment: .leading)
-											.lineLimit(1)
-									} else if historyListViewModel.callLogs[index].fromAddress != nil {
-										Text(historyListViewModel.callLogs[index].fromAddress!.displayName != nil
-											 ? historyListViewModel.callLogs[index].fromAddress!.displayName!
-											 : historyListViewModel.callLogs[index].fromAddress!.username!)
-										 .default_text_style(styleSize: 14)
-										 .frame(maxWidth: .infinity, alignment: .leading)
-										 .lineLimit(1)
-									}
-								}
-								HStack {
-									Image(historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, callDir: historyListViewModel.callLogs[index].dir))
-									 .resizable()
-									 .frame(
-										width: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, callDir: historyListViewModel.callLogs[index].dir).contains("rejected") ? 12 : 8,
-										height: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, callDir: historyListViewModel.callLogs[index].dir).contains("rejected") ? 6 : 8)
-									
-									Text(historyListViewModel.getCallTime(startDate: historyListViewModel.callLogs[index].startDate))
-									 .default_text_style_300(styleSize: 12)
-									 .frame(maxWidth: .infinity, alignment: .leading)
-									
-									Spacer()
+									Text(callViewModel.calls[index].callLog!.remoteAddress!.displayName != nil
+										 ? callViewModel.calls[index].callLog!.remoteAddress!.displayName!
+										 : callViewModel.calls[index].callLog!.remoteAddress!.username!)
+									.default_text_style(styleSize: 16)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
 								}
 								
 								Spacer()
+								
+								HStack {
+									if callViewModel.calls[index].state == .PausedByRemote
+										|| callViewModel.calls[index].state == .Pausing
+										|| callViewModel.calls[index].state == .Paused
+										|| callViewModel.calls[index].state == .Resuming {
+										Text(callViewModel.calls[index].state == .Resuming ? "Resuming" : "Paused")
+										.default_text_style_300(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .trailing)
+										.lineLimit(1)
+										.padding(.horizontal, 4)
+										
+										Image("pause")
+											.resizable()
+											.frame(width: 25, height: 25)
+									} else {
+										Text("Active")
+										.default_text_style_300(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .trailing)
+										.lineLimit(1)
+										.padding(.horizontal, 4)
+										
+										Image("phone-call")
+											.resizable()
+											.frame(width: 25, height: 25)
+									}
+								}
 							}
-							
-							Image("phone")
-								.resizable()
-								.frame(width: 25, height: 25)
-								.padding(.all, 10)
-								.padding(.trailing, 5)
-								.highPriorityGesture(
-									TapGesture()
-										.onEnded { _ in
-											withAnimation {
-												if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-													telecomManager.doCallWithCore(
-														addr: historyListViewModel.callLogs[index].toAddress!, isVideo: false
-													)
-												} else if historyListViewModel.callLogs[index].fromAddress != nil {
-													telecomManager.doCallWithCore(
-														addr: historyListViewModel.callLogs[index].fromAddress!, isVideo: false
-													)
-												}
-												historyViewModel.displayedCall = nil
-											}
-										}
-								)
 						}
 					}
 					.buttonStyle(.borderless)
-					.listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+					.listRowInsets(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {
-						withAnimation {
-							historyViewModel.displayedCall = historyListViewModel.callLogs[index]
+						if callViewModel.currentCall != nil && callViewModel.calls[index].callLog!.callId == callViewModel.currentCall!.callLog!.callId {
+							if callViewModel.currentCall!.state == .StreamsRunning {
+								do {
+									try callViewModel.currentCall!.pause()
+									
+									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+										callViewModel.isPaused = true
+									}
+								} catch {
+									
+								}
+							} else {
+								do {
+									try callViewModel.currentCall!.resume()
+									
+									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+										callViewModel.isPaused = false
+									}
+								} catch {
+									
+								}
+							}
+						} else {
+							TelecomManager.shared.setHeldOtherCallsWithCore(exceptCallid: "")
+						 	TelecomManager.shared.setHeld(call: callViewModel.calls[index], hold: callViewModel.calls[index].state == .StreamsRunning)
+							
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+								callViewModel.resetCallView()
+							}
 						}
+						
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
-						historyViewModel.selectedCall = historyListViewModel.callLogs[index]
-						showingSheet.toggle()
 					}
 				}
 			}
 			.listStyle(.plain)
 			.overlay(
 				VStack {
-					if historyListViewModel.callLogs.isEmpty {
+					if callViewModel.calls.isEmpty {
 						Spacer()
 						Image("illus-belledonne")
 							.resizable()
@@ -271,9 +245,8 @@ struct CallsListFragment: View {
 		.navigationTitle("")
 		.navigationBarHidden(true)
 	}
-		 */
 }
 
 #Preview {
-	CallsListFragment(callsListViewModel: CallsListViewModel(), isShowCallsListFragment: .constant(true))
+	CallsListFragment(callViewModel: CallViewModel(), isShowCallsListFragment: .constant(true))
 }

@@ -48,6 +48,7 @@ struct CallView: View {
 	
 	@State var showingDialer = false
 	
+	@State var isShowCallsListFragment = false
 	@Binding var isShowStartCallFragment: Bool
 	
 	var body: some View {
@@ -104,6 +105,25 @@ struct CallView: View {
 							)
 						} onDismiss: {}
 				}
+				
+				if isShowCallsListFragment {
+					CallsListFragment(callViewModel: callViewModel, isShowCallsListFragment: $isShowCallsListFragment)
+					.zIndex(4)
+					.transition(.move(edge: .bottom))
+					/*
+					.sheet(isPresented: $showingDialer) {
+						DialerBottomSheet(
+							startCallViewModel: startCallViewModel,
+							showingDialer: $showingDialer,
+							currentCall: nil
+						)
+						.presentationDetents([.medium])
+						// .interactiveDismissDisabled()
+						.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+					}
+					 */
+				}
+				
 				if callViewModel.zrtpPopupDisplayed == true {
 					ZRTPPopup(callViewModel: callViewModel)
 						.background(.black.opacity(0.65))
@@ -116,6 +136,7 @@ struct CallView: View {
 					HStack {}
 					.onAppear {
 						callViewModel.resetCallView()
+						callViewModel.getCallsList()
 					}
 				}
 			}
@@ -763,17 +784,20 @@ struct CallView: View {
 						
 						VStack {
 							Button {
+								callViewModel.getCallsList()
+								withAnimation {
+									isShowCallsListFragment.toggle()
+								}
 							} label: {
 								Image("phone-list")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
 							Text("Call list")
 								.foregroundStyle(.white)

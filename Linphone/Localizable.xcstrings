@@ -141,6 +141,9 @@
     "Accept all" : {
 
     },
+    "Active" : {
+
+    },
     "Add a picture" : {
 
     },
@@ -476,6 +479,9 @@
 
     },
     "Remove picture" : {
+
+    },
+    "Resuming" : {
 
     },
     "Say %@ and click on the letters given by your correspondent:" : {

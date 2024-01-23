@@ -44,6 +44,8 @@ class CallViewModel: ObservableObject {
 	@Published var isZrtpPq: Bool = false
 	@Published var isRemoteDeviceTrusted: Bool = false
 	
+	var calls: [Call] = []
+	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
 	var currentCall: Call?
@@ -110,6 +112,12 @@ class CallViewModel: ObservableObject {
 					_ = self.updateEncryption()
 				})
 			}
+		}
+	}
+	
+	func getCallsList() {
+		coreContext.doOnCoreQueue { core in
+			self.calls = core.calls
 		}
 	}
 	

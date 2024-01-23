@@ -113,6 +113,16 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
+	func setHeldOtherCallsWithCore(exceptCallid: String) {
+		CoreContext.shared.doOnCoreQueue { core in
+			for call in core.calls {
+				if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
+					self.setHeld(call: call, hold: true)
+				}
+			}
+		}
+	}
+	
 	func setHeldOtherCalls(core: Core, exceptCallid: String) {
 		for call in core.calls {
 			if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
