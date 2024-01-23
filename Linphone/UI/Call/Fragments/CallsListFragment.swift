@@ -18,22 +18,25 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct CallsListFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var contactsManager = ContactsManager.shared
 	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
 	@ObservedObject var callViewModel: CallViewModel
 	
 	@State private var delayedColor = Color.white
+	@State var isShowCallsListBottomSheet: Bool = false
 	
 	@Binding var isShowCallsListFragment: Bool
 	
 	var body: some View {
 		ZStack {
 			VStack(spacing: 1) {
-				
 				Rectangle()
 					.foregroundColor(delayedColor)
 					.edgesIgnoringSafeArea(.top)
@@ -69,11 +72,125 @@ struct CallsListFragment: View {
 				.padding(.bottom, 4)
 				.background(.white)
 				
-				callsList
+				if #available(iOS 16.0, *), idiom != .pad {
+					callsList
+						.sheet(isPresented: $isShowCallsListBottomSheet, onDismiss: {
+						}) {
+							innerBottomSheet()
+								.presentationDetents([.fraction(0.2)])
+						}
+				} else {
+					callsList
+						.halfSheet(showSheet: $isShowCallsListBottomSheet) {
+							innerBottomSheet()
+						} onDismiss: {}
+				}
 			}
 			.background(.white)
 		}
 		.navigationBarHidden(true)
+	}
+	
+	@ViewBuilder
+    func innerBottomSheet() -> some View {
+		VStack(spacing: 0) {
+            if callViewModel.selectedCall != nil {
+                Button(action: {
+                    if callViewModel.currentCall != nil && callViewModel.selectedCall!.callLog!.callId == callViewModel.currentCall!.callLog!.callId {
+                        if callViewModel.currentCall!.state == .StreamsRunning {
+                            do {
+                                try callViewModel.currentCall!.pause()
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    callViewModel.isPaused = true
+                                }
+                            } catch {
+                                
+                            }
+                        } else {
+                            do {
+                                try callViewModel.currentCall!.resume()
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    callViewModel.isPaused = false
+                                }
+                            } catch {
+                                
+                            }
+                        }
+                        
+                        isShowCallsListBottomSheet = false
+                    } else {
+                        TelecomManager.shared.setHeldOtherCallsWithCore(exceptCallid: "")
+                         TelecomManager.shared.setHeld(call: callViewModel.selectedCall!, hold: callViewModel.selectedCall!.state == .StreamsRunning)
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            callViewModel.resetCallView()
+                        }
+                    }
+                }, label: {
+                    HStack {
+                        HStack {
+                            Image((callViewModel.selectedCall!.state == .PausedByRemote
+                                    || callViewModel.selectedCall!.state == .Pausing
+                                    || callViewModel.selectedCall!.state == .Paused) ? "play" : "pause")
+                                .resizable()
+                                .frame(width: 30, height: 30)
+                            
+                        }
+                        .frame(width: 35, height: 30)
+                        .background(.clear)
+                        .cornerRadius(40)
+                        
+                        Text((callViewModel.selectedCall!.state == .PausedByRemote
+                              || callViewModel.selectedCall!.state == .Pausing
+                              || callViewModel.selectedCall!.state == .Paused) ? "Resume" : "Pause")
+                            .default_text_style(styleSize: 15)
+                        
+                        Spacer()
+                    }
+                })
+                .padding(.horizontal, 30)
+                .frame(maxHeight: .infinity)
+                
+                VStack {
+                    Divider()
+                }
+                .frame(maxWidth: .infinity)
+                
+                Button(action: {
+                    do {
+                        try callViewModel.selectedCall!.terminate()
+                        isShowCallsListBottomSheet = false
+                    } catch _ {
+                        
+                    }
+                }, label: {
+                    HStack {
+                        HStack {
+                            Image("phone-disconnect")
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundStyle(.white)
+                                .frame(width: 20, height: 20)
+                            
+                        }
+                        .frame(width: 35, height: 30)
+                        .background(Color.redDanger500)
+                        .cornerRadius(40)
+                        
+                        Text("Hang up call")
+                            .foregroundStyle(Color.redDanger500)
+                            .default_text_style_white(styleSize: 15)
+                        
+                        Spacer()
+                    }
+                })
+                .padding(.horizontal, 30)
+                .frame(maxHeight: .infinity)
+            }
+		}
+		.frame(maxHeight: .infinity)
 	}
 	
 	@Sendable private func delayColor() async {
@@ -217,9 +334,10 @@ struct CallsListFragment: View {
 								callViewModel.resetCallView()
 							}
 						}
-						
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
+                        callViewModel.selectedCall = callViewModel.calls[index]
+						isShowCallsListBottomSheet = true
 					}
 				}
 			}

@@ -227,9 +227,6 @@
     "Contacts" : {
 
     },
-    "Content" : {
-
-    },
     "Continue" : {
 
     },
@@ -321,6 +318,9 @@
 
     },
     "First name*" : {
+
+    },
+    "Hang up call" : {
 
     },
     "Headphones" : {
@@ -481,6 +481,9 @@
     "Remove picture" : {
 
     },
+    "Resume" : {
+
+    },
     "Resuming" : {
 
     },
@@ -545,9 +548,6 @@
 
     },
     "This contact will be deleted definitively." : {
-
-    },
-    "Title" : {
 
     },
     "TLS" : {

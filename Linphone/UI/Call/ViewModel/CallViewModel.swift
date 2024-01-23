@@ -42,7 +42,8 @@ class CallViewModel: ObservableObject {
 	@Published var upperCaseAuthTokenToListen = ""
 	@Published var isMediaEncrypted: Bool = false
 	@Published var isZrtpPq: Bool = false
-	@Published var isRemoteDeviceTrusted: Bool = false
+    @Published var isRemoteDeviceTrusted: Bool = false
+    @Published var selectedCall: Call? = nil
 	
 	var calls: [Call] = []
 	
