@@ -523,7 +523,7 @@ struct ContentView: View {
 				
 				if isShowStartCallFragment {
 					
-					if #available(iOS 16.4, *), idiom != .pad  {
+					if #available(iOS 16.4, *), idiom != .pad {
 						StartCallFragment(
 							startCallViewModel: startCallViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
@@ -534,7 +534,8 @@ struct ContentView: View {
 						.sheet(isPresented: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: startCallViewModel,
-								showingDialer: $showingDialer
+								showingDialer: $showingDialer,
+								currentCall: nil
 							)
 							.presentationDetents([.medium])
 							// .interactiveDismissDisabled()
@@ -551,7 +552,8 @@ struct ContentView: View {
 						.halfSheet(showSheet: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: startCallViewModel,
-								showingDialer: $showingDialer
+								showingDialer: $showingDialer,
+								currentCall: nil
 							)
 						} onDismiss: {}
 					}
@@ -689,12 +691,12 @@ struct ContentView: View {
 			if newPhase == .active {
 				coreContext.onForeground()
 				/*
-				if !isShowStartCallFragment {
-					contactsManager.fetchContacts()
-					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-						historyListViewModel.computeCallLogsList()
-					}
-				}
+				 if !isShowStartCallFragment {
+				 contactsManager.fetchContacts()
+				 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+				 historyListViewModel.computeCallLogsList()
+				 }
+				 }
 				 */
 				print("Active")
 			} else if newPhase == .inactive {

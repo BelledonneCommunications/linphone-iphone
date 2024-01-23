@@ -36,7 +36,10 @@ struct DialerBottomSheet: View {
 	
 	@State private var orientation = UIDevice.current.orientation
 	
+	@State var dialerField = ""
 	@Binding var showingDialer: Bool
+	
+	let currentCall: Call?
 	
 	var body: some View {
 		VStack(alignment: .center, spacing: 0) {
@@ -60,11 +63,47 @@ struct DialerBottomSheet: View {
 						.padding(15)
 				}
 				
-				Spacer()
+				if currentCall != nil {
+					HStack {
+						Text(dialerField)
+							.default_text_style(styleSize: 25)
+							.frame(maxWidth: .infinity)
+							.padding(.horizontal, 10)
+							.lineLimit(1)
+							.truncationMode(.head)
+						
+						Button {
+							dialerField = String(dialerField.dropLast())
+						} label: {
+							Image("backspace-fill")
+								.resizable()
+								.frame(width: 32, height: 32)
+							
+						}
+						.frame(width: 60, height: 60)
+					}
+					.padding(.horizontal, 20)
+					.padding(.top, 10)
+					.frame(maxWidth: sharedMainViewModel.maxWidth)
+					
+					Spacer()
+				} else {
+					Spacer()
+				}
 				
 				HStack {
 					Button {
-						startCallViewModel.searchField += "1"
+						if currentCall != nil {
+							do {
+								let digit = ("1".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "1"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "1"
+						}
 					} label: {
 						Text("1")
 							.default_text_style(styleSize: 32)
@@ -78,7 +117,17 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "2"
+						if currentCall != nil {
+							do {
+								let digit = ("2".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "2"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "2"
+						}
 					} label: {
 						Text("2")
 							.default_text_style(styleSize: 32)
@@ -92,7 +141,17 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "3"
+						if currentCall != nil {
+							do {
+								let digit = ("3".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "3"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "3"
+						}
 					} label: {
 						Text("3")
 							.default_text_style(styleSize: 32)
@@ -108,7 +167,17 @@ struct DialerBottomSheet: View {
 				
 				HStack {
 					Button {
-						startCallViewModel.searchField += "4"
+						if currentCall != nil {
+							do {
+								let digit = ("4".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "4"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "4"
+						}
 					} label: {
 						Text("4")
 							.default_text_style(styleSize: 32)
@@ -122,7 +191,17 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "5"
+						if currentCall != nil {
+							do {
+								let digit = ("5".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "5"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "5"
+						}
 					} label: {
 						Text("5")
 							.default_text_style(styleSize: 32)
@@ -136,7 +215,17 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "6"
+						if currentCall != nil {
+							do {
+								let digit = ("6".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "6"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "6"
+						}
 					} label: {
 						Text("6")
 							.default_text_style(styleSize: 32)
@@ -153,7 +242,17 @@ struct DialerBottomSheet: View {
 				
 				HStack {
 					Button {
-						startCallViewModel.searchField += "7"
+						if currentCall != nil {
+							do {
+								let digit = ("7".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "7"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "7"
+						}
 					} label: {
 						Text("7")
 							.default_text_style(styleSize: 32)
@@ -167,7 +266,17 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "8"
+						if currentCall != nil {
+							do {
+								let digit = ("8".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "8"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "8"
+						}
 					} label: {
 						Text("8")
 							.default_text_style(styleSize: 32)
@@ -181,7 +290,17 @@ struct DialerBottomSheet: View {
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "9"
+						if currentCall != nil {
+							do {
+								let digit = ("9".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "9"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "9"
+						}
 					} label: {
 						Text("9")
 							.default_text_style(styleSize: 32)
@@ -198,7 +317,17 @@ struct DialerBottomSheet: View {
 				
 				HStack {
 					Button {
-						startCallViewModel.searchField += "*"
+						if currentCall != nil {
+							do {
+								let digit = ("*".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "*"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "*"
+						}
 					} label: {
 						Text("*")
 							.default_text_style(styleSize: 32)
@@ -211,43 +340,73 @@ struct DialerBottomSheet: View {
 					
 					Spacer()
 					
-					Button {
-					} label: {
-						ZStack {
+					if currentCall == nil {
+						Button {
+						} label: {
+							ZStack {
+								Text("0")
+									.default_text_style(styleSize: 32)
+									.multilineTextAlignment(.center)
+									.frame(width: 60, height: 75)
+									.padding(.top, -15)
+									.background(.white)
+									.clipShape(Circle())
+									.shadow(color: .black.opacity(0.2), radius: 4)
+								Text("+")
+									.default_text_style(styleSize: 20)
+									.multilineTextAlignment(.center)
+									.frame(width: 60, height: 85)
+									.padding(.bottom, -25)
+									.background(.clear)
+									.clipShape(Circle())
+							}
+						}
+						.simultaneousGesture(
+							LongPressGesture()
+								.onEnded { _ in
+									startCallViewModel.searchField += "+"
+								}
+						)
+						.highPriorityGesture(
+							TapGesture()
+								.onEnded { _ in
+									startCallViewModel.searchField += "0"
+								}
+						)
+					} else {
+						Button {
+							do {
+								let digit = ("0".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "0"
+							} catch {
+								
+							}
+						} label: {
 							Text("0")
 								.default_text_style(styleSize: 32)
 								.multilineTextAlignment(.center)
-								.frame(width: 60, height: 75)
-								.padding(.top, -15)
+								.frame(width: 60, height: 60)
 								.background(.white)
 								.clipShape(Circle())
 								.shadow(color: .black.opacity(0.2), radius: 4)
-							Text("+")
-								.default_text_style(styleSize: 20)
-								.multilineTextAlignment(.center)
-								.frame(width: 60, height: 85)
-								.padding(.bottom, -25)
-								.background(.clear)
-								.clipShape(Circle())
 						}
 					}
-					.simultaneousGesture(
-						LongPressGesture()
-							.onEnded { _ in
-								startCallViewModel.searchField += "+"
-							}
-					)
-					.highPriorityGesture(
-						TapGesture()
-							.onEnded { _ in
-								startCallViewModel.searchField += "0"
-							}
-					)
 					
 					Spacer()
 					
 					Button {
-						startCallViewModel.searchField += "#"
+						if currentCall != nil {
+							do {
+								let digit = ("#".cString(using: String.Encoding.utf8)?[0])!
+								try currentCall!.sendDtmf(dtmf: digit)
+								dialerField += "#"
+							} catch {
+								
+							}
+						} else {
+							startCallViewModel.searchField += "#"
+						}
 					} label: {
 						Text("#")
 							.default_text_style(styleSize: 32)
@@ -262,52 +421,53 @@ struct DialerBottomSheet: View {
 				.padding(.top, 10)
 				.frame(maxWidth: sharedMainViewModel.maxWidth)
 				
-				HStack {
-					
+				if currentCall == nil {
 					HStack {
+						HStack {
+							
+						}
+						.frame(width: 60, height: 60)
 						
-					}
-					.frame(width: 60, height: 60)
-					
-					Spacer()
-					
-					Button {
-                        if !startCallViewModel.searchField.isEmpty {
-                            do {
-                                let address = try Factory.Instance.createAddress(addr: String("sip:" + startCallViewModel.searchField + "@" + startCallViewModel.domain))
-								telecomManager.doCallWithCore(addr: address, isVideo: false)
-                            } catch {
-                                
-                            }
-                        }
-					} label: {
-						Image("phone")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(.white)
-							.frame(width: 32, height: 32)
+						Spacer()
 						
-					}
-					.frame(width: 90, height: 60)
-					.background(Color.greenSuccess500)
-					.cornerRadius(40)
-					.shadow(color: .black.opacity(0.2), radius: 4)
-					
-					Spacer()
-					
-					Button {
-						startCallViewModel.searchField = String(startCallViewModel.searchField.dropLast())
-					} label: {
-						Image("backspace-fill")
-							.resizable()
-							.frame(width: 32, height: 32)
+						Button {
+							if !startCallViewModel.searchField.isEmpty {
+								do {
+									let address = try Factory.Instance.createAddress(addr: String("sip:" + startCallViewModel.searchField + "@" + startCallViewModel.domain))
+									telecomManager.doCallWithCore(addr: address, isVideo: false)
+								} catch {
+									
+								}
+							}
+						} label: {
+							Image("phone")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(.white)
+								.frame(width: 32, height: 32)
+							
+						}
+						.frame(width: 90, height: 60)
+						.background(Color.greenSuccess500)
+						.cornerRadius(40)
+						.shadow(color: .black.opacity(0.2), radius: 4)
 						
+						Spacer()
+						
+						Button {
+							startCallViewModel.searchField = String(startCallViewModel.searchField.dropLast())
+						} label: {
+							Image("backspace-fill")
+								.resizable()
+								.frame(width: 32, height: 32)
+							
+						}
+						.frame(width: 60, height: 60)
 					}
-					.frame(width: 60, height: 60)
+					.padding(.horizontal, 60)
+					.padding(.top, 20)
+					.frame(maxWidth: sharedMainViewModel.maxWidth)
 				}
-				.padding(.horizontal, 60)
-				.padding(.top, 20)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
 				
 				Spacer()
 			}
@@ -325,6 +485,6 @@ struct DialerBottomSheet: View {
 
 #Preview {
 	DialerBottomSheet(
-		startCallViewModel: StartCallViewModel(), showingDialer: .constant(false)
+		startCallViewModel: StartCallViewModel(), showingDialer: .constant(false), currentCall: nil
 	)
 }

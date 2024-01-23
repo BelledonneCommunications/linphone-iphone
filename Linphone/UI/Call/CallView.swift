@@ -47,10 +47,12 @@ struct CallView: View {
 	@State var angleDegree = 0.0
 	@State var fullscreenVideo = false
 	
+	@State var showingDialer = false
+	
 	var body: some View {
 		GeometryReader { geo in
 			ZStack {
-				if #available(iOS 16.0, *), idiom != .pad {
+				if #available(iOS 16.4, *), idiom != .pad {
 					innerView(geometry: geo)
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
@@ -58,6 +60,32 @@ struct CallView: View {
 						}) {
 							innerBottomSheet()
 								.presentationDetents([.fraction(0.3)])
+						}
+						.sheet(isPresented: $showingDialer) {
+							DialerBottomSheet(
+								startCallViewModel: StartCallViewModel(),
+								showingDialer: $showingDialer,
+								currentCall: callViewModel.currentCall
+							)
+							.presentationDetents([.medium])
+							.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+						}
+				} else if #available(iOS 16.0, *), idiom != .pad {
+					innerView(geometry: geo)
+						.sheet(isPresented: $audioRouteSheet, onDismiss: {
+							audioRouteSheet = false
+							hideButtonsSheet = false
+						}) {
+							innerBottomSheet()
+								.presentationDetents([.fraction(0.3)])
+						}
+						.sheet(isPresented: $showingDialer) {
+							DialerBottomSheet(
+								startCallViewModel: StartCallViewModel(),
+								showingDialer: $showingDialer,
+								currentCall: callViewModel.currentCall
+							)
+							.presentationDetents([.medium])
 						}
 				} else {
 					innerView(geometry: geo)
@@ -67,6 +95,13 @@ struct CallView: View {
 							audioRouteSheet = false
 							hideButtonsSheet = false
 						}
+						.halfSheet(showSheet: $showingDialer) {
+							DialerBottomSheet(
+								startCallViewModel: StartCallViewModel(),
+								showingDialer: $showingDialer,
+								currentCall: callViewModel.currentCall
+							)
+						} onDismiss: {}
 				}
 				if callViewModel.zrtpPopupDisplayed == true {
 					ZRTPPopup(callViewModel: callViewModel)
@@ -739,17 +774,17 @@ struct CallView: View {
 						
 						VStack {
 							Button {
+								showingDialer.toggle()
 							} label: {
 								Image("dialer")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
 							Text("Dialer")
 								.foregroundStyle(.white)
@@ -912,17 +947,17 @@ struct CallView: View {
 						
 						VStack {
 							Button {
+								showingDialer.toggle()
 							} label: {
 								Image("dialer")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
 							Text("Dialer")
 								.foregroundStyle(.white)
