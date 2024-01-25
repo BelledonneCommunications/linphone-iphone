@@ -200,10 +200,19 @@
     "Bluetooth" : {
 
     },
+    "Call has been successfully transferred" : {
+
+    },
     "Call history" : {
 
     },
+    "Call is being transferred" : {
+
+    },
     "Call list" : {
+
+    },
+    "Call transfer failed!" : {
 
     },
     "Calls" : {
@@ -231,9 +240,6 @@
 
     },
     "Contacts" : {
-
-    },
-    "Content" : {
 
     },
     "Continue" : {
@@ -557,9 +563,6 @@
 
     },
     "This contact will be deleted definitively." : {
-
-    },
-    "Title" : {
 
     },
     "TLS" : {

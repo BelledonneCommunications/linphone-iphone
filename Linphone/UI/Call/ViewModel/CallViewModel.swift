@@ -43,7 +43,7 @@ class CallViewModel: ObservableObject {
 	@Published var isMediaEncrypted: Bool = false
 	@Published var isZrtpPq: Bool = false
 	@Published var isRemoteDeviceTrusted: Bool = false
-	@Published var selectedCall: Call? = nil
+	@Published var selectedCall: Call?
 	@Published var isTransferInsteadCall: Bool = false
 	
 	var calls: [Call] = []
@@ -406,6 +406,55 @@ class CallViewModel: ObservableObject {
 			}
 			
 			self.zrtpPopupDisplayed = true
+		}
+	}
+	
+	func transferClicked() {
+		coreContext.doOnCoreQueue { core in
+			var callToTransferTo = core.calls.last { call in
+				call.state == Call.State.Paused && call.callLog?.callId != self.currentCall?.callLog?.callId
+			}
+			
+			if (callToTransferTo == nil) {
+				Log.error(
+					"[CallViewModel] Couldn't find a call in Paused state to transfer current call to"
+				)
+			} else {
+				if self.currentCall != nil && self.currentCall!.remoteAddress != nil && callToTransferTo!.remoteAddress != nil {
+					Log.info(
+						"[CallViewModel] Doing an attended transfer between currently displayed call \(self.currentCall!.remoteAddress!.asStringUriOnly()) "
+						+ "and paused call \(callToTransferTo!.remoteAddress!.asStringUriOnly())"
+					)
+					
+					do {
+						try callToTransferTo!.transferToAnother(dest: self.currentCall!)
+						Log.info("[CallViewModel] Attended transfer is successful")
+					} catch _ {
+						ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
+						ToastViewModel.shared.displayToast = true
+						
+						Log.error("[CallViewModel] Failed to make attended transfer!")
+					}
+				}
+			}
+		}
+	}
+	
+	func blindTransferCallTo(toAddress: Address) {
+		if self.currentCall != nil && self.currentCall!.remoteAddress != nil {
+			Log.info(
+				"[CallViewModel] Call \(self.currentCall!.remoteAddress!.asStringUriOnly()) is being blindly transferred to \(toAddress.asStringUriOnly())"
+			)
+			
+			do {
+				try self.currentCall!.transferTo(referTo: toAddress)
+				Log.info("[CallViewModel] Blind call transfer is successful")
+			} catch _ {
+				ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
+				ToastViewModel.shared.displayToast = true
+				
+				Log.error("[CallViewModel] Failed to make blind call transfer!")
+			}
 		}
 	}
 }

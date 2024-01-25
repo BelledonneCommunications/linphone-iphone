@@ -27,7 +27,13 @@ struct ToastView: View {
 		VStack {
 			if toastViewModel.displayToast {
 				HStack {
-					if toastViewModel.toastMessage.contains("Info_") {
+					if toastViewModel.toastMessage.contains("toast_call_transfer") {
+						Image("phone-transfer")
+							.resizable()
+							.renderingMode(.template)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
+					} else if toastViewModel.toastMessage.contains("Info_") {
 						Image("trusted")
 							.resizable()
 							.frame(width: 25, height: 25, alignment: .leading)
@@ -105,6 +111,27 @@ struct ToastView: View {
 						
 					case "Registration failed":
 						Text("The user name or password is incorrects")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_toast_call_transfer_successful":
+						Text("Call has been successfully transferred")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_toast_call_transfer_in_progress":
+						Text("Call is being transferred")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_toast_call_transfer_failed":
+						Text("Call transfer failed!")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)

@@ -237,6 +237,22 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onTransferStateChanged?.postOnMainQueue { (cbValue: (_: Core, transfered: Call, callState: Call.State)) in
+				Log.info(
+					"[CoreContext] Transferred call \(cbValue.transfered.remoteAddress!.asStringUriOnly()) state changed \(cbValue.callState)"
+				)
+				if cbValue.callState == Call.State.Connected {
+					ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_successful"
+					ToastViewModel.shared.displayToast = true
+				} else if cbValue.callState == Call.State.OutgoingProgress {
+					ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_in_progress"
+					ToastViewModel.shared.displayToast = true
+				} else if cbValue.callState == Call.State.End || cbValue.callState == Call.State.Error {
+					ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
+					ToastViewModel.shared.displayToast = true
+				}
+			})
+			
 			self.mIterateSuscription = Timer.publish(every: 0.02, on: .main, in: .common)
 				.autoconnect()
 				.receive(on: coreQueue)

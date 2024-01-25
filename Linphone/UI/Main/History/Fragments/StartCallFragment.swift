@@ -177,26 +177,50 @@ struct StartCallFragment: View {
 						}
 						
 						ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
-							showingDialer = false
-							
-							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
-								magicSearch.searchForContacts(
-									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							if callViewModel.isTransferInsteadCall {
+								showingDialer = false
 								
-								if callViewModel.isTransferInsteadCall == true {
-									callViewModel.isTransferInsteadCall = false
+								DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+									magicSearch.searchForContacts(
+										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+									
+									if callViewModel.isTransferInsteadCall == true {
+										callViewModel.isTransferInsteadCall = false
+									}
+									
+									resetCallView()
 								}
 								
-								resetCallView()
-							}
-							
-							startCallViewModel.searchField = ""
-							magicSearch.currentFilterSuggestions = ""
-							delayColorDismiss()
-							
-							withAnimation {
-								isShowStartCallFragment.toggle()
-								telecomManager.doCallWithCore(addr: addr, isVideo: false)
+								startCallViewModel.searchField = ""
+								magicSearch.currentFilterSuggestions = ""
+								delayColorDismiss()
+								
+								withAnimation {
+									isShowStartCallFragment.toggle()
+									callViewModel.blindTransferCallTo(toAddress: addr)
+								}
+							} else {
+								showingDialer = false
+								
+								DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+									magicSearch.searchForContacts(
+										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+									
+									if callViewModel.isTransferInsteadCall == true {
+										callViewModel.isTransferInsteadCall = false
+									}
+									
+									resetCallView()
+								}
+								
+								startCallViewModel.searchField = ""
+								magicSearch.currentFilterSuggestions = ""
+								delayColorDismiss()
+								
+								withAnimation {
+									isShowStartCallFragment.toggle()
+									telecomManager.doCallWithCore(addr: addr, isVideo: false)
+								}
 							}
 						})
 						.padding(.horizontal, 16)
@@ -235,29 +259,55 @@ struct StartCallFragment: View {
 	var suggestionsList: some View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
-				showingDialer = false
-				
-				DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
-					magicSearch.searchForContacts(
-						sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				if callViewModel.isTransferInsteadCall {
+					showingDialer = false
 					
-					if callViewModel.isTransferInsteadCall == true {
-						callViewModel.isTransferInsteadCall = false
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+						magicSearch.searchForContacts(
+							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						
+						if callViewModel.isTransferInsteadCall == true {
+							callViewModel.isTransferInsteadCall = false
+						}
+						
+						resetCallView()
 					}
 					
-					resetCallView()
-				}
-				
-				startCallViewModel.searchField = ""
-				magicSearch.currentFilterSuggestions = ""
-				delayColorDismiss()
-				
-				withAnimation {
-					isShowStartCallFragment.toggle()
-					if contactsManager.lastSearchSuggestions[index].address != nil {
-						telecomManager.doCallWithCore(
-							addr: contactsManager.lastSearchSuggestions[index].address!, isVideo: false
-						)
+					startCallViewModel.searchField = ""
+					magicSearch.currentFilterSuggestions = ""
+					delayColorDismiss()
+					
+					withAnimation {
+						isShowStartCallFragment.toggle()
+						if contactsManager.lastSearchSuggestions[index].address != nil {
+							callViewModel.blindTransferCallTo(toAddress: contactsManager.lastSearchSuggestions[index].address!)
+						}
+					}
+				} else {
+					showingDialer = false
+					
+					DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+						magicSearch.searchForContacts(
+							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						
+						if callViewModel.isTransferInsteadCall == true {
+							callViewModel.isTransferInsteadCall = false
+						}
+						
+						resetCallView()
+					}
+					
+					startCallViewModel.searchField = ""
+					magicSearch.currentFilterSuggestions = ""
+					delayColorDismiss()
+					
+					withAnimation {
+						isShowStartCallFragment.toggle()
+						if contactsManager.lastSearchSuggestions[index].address != nil {
+							telecomManager.doCallWithCore(
+								addr: contactsManager.lastSearchSuggestions[index].address!, isVideo: false
+							)
+						}
 					}
 				}
 			} label: {

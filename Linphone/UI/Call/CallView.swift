@@ -741,10 +741,14 @@ struct CallView: View {
 					HStack(spacing: 0) {
 						VStack {
 							Button {
-								withAnimation {
-									callViewModel.isTransferInsteadCall = true
-									MagicSearchSingleton.shared.searchForSuggestions()
-									isShowStartCallFragment.toggle()
+								if callViewModel.calls.count < 2 {
+									withAnimation {
+										callViewModel.isTransferInsteadCall = true
+										MagicSearchSingleton.shared.searchForSuggestions()
+										isShowStartCallFragment.toggle()
+									}
+								} else {
+									callViewModel.transferClicked()
 								}
 							} label: {
 								Image("phone-transfer")
