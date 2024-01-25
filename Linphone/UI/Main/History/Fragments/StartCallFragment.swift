@@ -26,6 +26,7 @@ struct StartCallFragment: View {
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
+	@ObservedObject var callViewModel: CallViewModel
 	@ObservedObject var startCallViewModel: StartCallViewModel
 	
 	@Binding var isShowStartCallFragment: Bool
@@ -59,6 +60,12 @@ struct StartCallFragment: View {
 							DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
 								magicSearch.searchForContacts(
 									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+								
+								if callViewModel.isTransferInsteadCall == true {
+									callViewModel.isTransferInsteadCall = false
+								}
+								
+								resetCallView()
 							}
 							
 							startCallViewModel.searchField = ""
@@ -69,7 +76,7 @@ struct StartCallFragment: View {
 							}
 						}
 					
-					Text("New call")
+					Text(!callViewModel.isTransferInsteadCall ? "New call" : "Transfer call to")
 						.multilineTextAlignment(.leading)
 						.default_text_style_orange_800(styleSize: 16)
 					
@@ -176,6 +183,10 @@ struct StartCallFragment: View {
 								magicSearch.searchForContacts(
 									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 								
+								if callViewModel.isTransferInsteadCall == true {
+									callViewModel.isTransferInsteadCall = false
+								}
+								
 								resetCallView()
 							}
 							
@@ -230,6 +241,10 @@ struct StartCallFragment: View {
 					magicSearch.searchForContacts(
 						sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 					
+					if callViewModel.isTransferInsteadCall == true {
+						callViewModel.isTransferInsteadCall = false
+					}
+					
 					resetCallView()
 				}
 				
@@ -283,5 +298,11 @@ struct StartCallFragment: View {
 }
 
 #Preview {
-	StartCallFragment(startCallViewModel: StartCallViewModel(), isShowStartCallFragment: .constant(true), showingDialer: .constant(false), resetCallView: {})
+	StartCallFragment(
+		callViewModel: CallViewModel(),
+		startCallViewModel: StartCallViewModel(),
+		isShowStartCallFragment: .constant(true),
+		showingDialer: .constant(false),
+		resetCallView: {}
+	)
 }

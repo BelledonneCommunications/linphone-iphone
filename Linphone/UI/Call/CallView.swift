@@ -741,19 +741,23 @@ struct CallView: View {
 					HStack(spacing: 0) {
 						VStack {
 							Button {
+								withAnimation {
+									callViewModel.isTransferInsteadCall = true
+									MagicSearchSingleton.shared.searchForSuggestions()
+									isShowStartCallFragment.toggle()
+								}
 							} label: {
 								Image("phone-transfer")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
-							Text("Transfer")
+							Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -942,19 +946,23 @@ struct CallView: View {
 					HStack {
 						VStack {
 							Button {
+								withAnimation {
+									callViewModel.isTransferInsteadCall = true
+									MagicSearchSingleton.shared.searchForSuggestions()
+									isShowStartCallFragment.toggle()
+								}
 							} label: {
 								Image("phone-transfer")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.gray500)
+									.foregroundStyle(.white)
 									.frame(width: 32, height: 32)
 							}
 							.frame(width: 60, height: 60)
-							.background(Color.gray600)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(true)
 							
-							Text("Transfer")
+							Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}

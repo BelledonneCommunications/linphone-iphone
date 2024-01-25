@@ -188,6 +188,9 @@
         }
       }
     },
+    "Attended transfer" : {
+
+    },
     "Block the address" : {
 
     },
@@ -566,6 +569,9 @@
 
     },
     "Transfer" : {
+
+    },
+    "Transfer call to" : {
 
     },
     "Transport" : {

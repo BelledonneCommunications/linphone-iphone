@@ -524,6 +524,7 @@ struct ContentView: View {
 				if isShowStartCallFragment {
 					if #available(iOS 16.4, *), idiom != .pad {
 						StartCallFragment(
+							callViewModel: callViewModel,
 							startCallViewModel: startCallViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer,
@@ -538,11 +539,11 @@ struct ContentView: View {
 								currentCall: nil
 							)
 							.presentationDetents([.medium])
-							// .interactiveDismissDisabled()
 							.presentationBackgroundInteraction(.enabled(upThrough: .medium))
 						}
 					} else {
 						StartCallFragment(
+							callViewModel: callViewModel,
 							startCallViewModel: startCallViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer,

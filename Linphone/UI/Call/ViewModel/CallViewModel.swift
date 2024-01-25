@@ -44,6 +44,7 @@ class CallViewModel: ObservableObject {
 	@Published var isZrtpPq: Bool = false
 	@Published var isRemoteDeviceTrusted: Bool = false
 	@Published var selectedCall: Call? = nil
+	@Published var isTransferInsteadCall: Bool = false
 	
 	var calls: [Call] = []
 	
