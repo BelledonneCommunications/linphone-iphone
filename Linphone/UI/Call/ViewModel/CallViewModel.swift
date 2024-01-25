@@ -107,6 +107,8 @@ class CallViewModel: ObservableObject {
 					let authToken = self.currentCall!.authenticationToken
 					let isDeviceTrusted = self.currentCall!.authenticationTokenVerified && authToken != nil
 					self.isRemoteDeviceTrusted = self.telecomManager.callInProgress ? isDeviceTrusted : false
+					
+					self.getCallsList()
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in

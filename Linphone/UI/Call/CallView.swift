@@ -783,21 +783,43 @@ struct CallView: View {
 						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 						
 						VStack {
-							Button {
-								callViewModel.getCallsList()
-								withAnimation {
-									isShowCallsListFragment.toggle()
+							ZStack {
+								Button {
+									callViewModel.getCallsList()
+									withAnimation {
+										isShowCallsListFragment.toggle()
+									}
+								} label: {
+									Image("phone-list")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 32, height: 32)
 								}
-							} label: {
-								Image("phone-list")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(.white)
-									.frame(width: 32, height: 32)
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								if callViewModel.calls.count > 1 {
+									VStack {
+										HStack {
+											Spacer()
+											
+											VStack {
+												Text("\(callViewModel.calls.count)")
+													.foregroundStyle(.white)
+													.default_text_style(styleSize: 15)
+											}
+											.frame(width: 20, height: 20)
+											.background(Color.redDanger500)
+											.cornerRadius(10)
+										}
+										
+										Spacer()
+									}
+									.frame(width: 60, height: 60)
+								}
 							}
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
 							
 							Text("Call list")
 								.foregroundStyle(.white)
@@ -962,18 +984,39 @@ struct CallView: View {
 						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						
 						VStack {
-							Button {
-							} label: {
-								Image("phone-list")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.gray500)
-									.frame(width: 32, height: 32)
+							ZStack {
+								Button {
+								} label: {
+									Image("phone-list")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 32, height: 32)
+								}
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								if callViewModel.calls.count > 1 {
+									VStack {
+										HStack {
+											Spacer()
+											
+											VStack {
+												Text("\(callViewModel.calls.count)")
+													.foregroundStyle(.white)
+													.default_text_style(styleSize: 15)
+											}
+											.frame(width: 20, height: 20)
+											.background(Color.redDanger500)
+											.cornerRadius(10)
+										}
+										
+										Spacer()
+									}
+									.frame(width: 60, height: 60)
+								}
 							}
-							.frame(width: 60, height: 60)
-							.background(Color.gray600)
-							.cornerRadius(40)
-							.disabled(true)
 							
 							Text("Call list")
 								.foregroundStyle(.white)
