@@ -5962,7 +5962,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Linphone (org.linphone.phone) with Local Push";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - DEV - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6090,7 +6090,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "App Store LocalPush - linphone";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6217,7 +6217,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "App Store LocalPush - linphone";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6343,7 +6343,7 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "App Store LocalPush - linphone";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6388,7 +6388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
@@ -6430,7 +6430,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
@@ -6473,14 +6473,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LocalPush Distribution (linphoneExtension)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphoneExtension";
 				SKIP_INSTALL = YES;
 				STRIP_SWIFT_SYMBOLS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -6518,7 +6518,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
@@ -6828,7 +6828,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Linphone Ext(org.linphone.localpushpro) Local Push";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - DEV - localPushProvider";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -6881,7 +6881,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "App Store LocalPush - extension localpushprovider";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - localPushProvider";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -6934,7 +6934,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "App Store LocalPush - extension localpushprovider";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - localPushProvider";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -6987,7 +6987,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "App Store LocalPush - extension localpushprovider";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - localPushProvider";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -7035,7 +7035,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -7086,7 +7086,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -7138,7 +7138,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -7147,7 +7147,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LocalPush Distribution (msgNotificationService)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - msgNotificationService";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
@@ -7190,7 +7190,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/msgNotificationService/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -7245,7 +7245,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -7296,7 +7296,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -7348,7 +7348,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -7400,7 +7400,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = msgNotificationContent/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MARKETING_VERSION = 5.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
