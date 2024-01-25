@@ -97,7 +97,7 @@ class TelecomManager: ObservableObject {
 		
 		if TelecomManager.callKitEnabled(core: core) {// && !nextCallIsTransfer != true {
 			let uuid = UUID()
-			let name = addr?.asStringUriOnly() ?? "unknow"	// FastAddressBook.displayName(for: addr) ?? "unknow"
+			let name = addr?.asStringUriOnly() ?? "Unknown"
 			let handle = CXHandle(type: .generic, value: addr?.asStringUriOnly() ?? "")
 			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
 			let transaction = CXTransaction(action: startCallAction)
@@ -113,19 +113,11 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	func setHeldOtherCallsWithCore(exceptCallid: String) {
-		CoreContext.shared.doOnCoreQueue { core in
-			for call in core.calls {
-				if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
-					self.setHeld(call: call, hold: true)
-				}
-			}
-		}
-	}
-	
 	func setHeldOtherCalls(core: Core, exceptCallid: String) {
 		for call in core.calls {
 			if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
+				setHeld(call: call, hold: true)
+			} else if call.callLog?.callId == exceptCallid && (call.state == .Paused || call.state == .Pausing || call.state == .PausedByRemote) {
 				setHeld(call: call, hold: true)
 			}
 		}
@@ -543,8 +535,6 @@ class TelecomManager: ObservableObject {
 					.OutgoingProgress,
 					.OutgoingRinging,
 					.OutgoingEarlyMedia:
-				
-				print("OutgoingInitOutgoingInit \(core.maxCalls)")
 				
 				if TelecomManager.callKitEnabled(core: core) {
 					let uuid = providerDelegate.uuids[""]

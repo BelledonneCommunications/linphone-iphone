@@ -121,8 +121,14 @@ struct CallsListFragment: View {
                         
                         isShowCallsListBottomSheet = false
                     } else {
-                        TelecomManager.shared.setHeldOtherCallsWithCore(exceptCallid: "")
-                         TelecomManager.shared.setHeld(call: callViewModel.selectedCall!, hold: callViewModel.selectedCall!.state == .StreamsRunning)
+						CoreContext.shared.doOnCoreQueue { core in
+							if callViewModel.currentCall!.state == .StreamsRunning {
+								TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: "")
+							} else {
+								TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: callViewModel.currentCall?.callLog?.callId ?? "")
+							}
+						}
+						TelecomManager.shared.setHeld(call: callViewModel.selectedCall!, hold: false)
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             callViewModel.resetCallView()
@@ -327,8 +333,14 @@ struct CallsListFragment: View {
 								}
 							}
 						} else {
-							TelecomManager.shared.setHeldOtherCallsWithCore(exceptCallid: "")
-						 	TelecomManager.shared.setHeld(call: callViewModel.calls[index], hold: callViewModel.calls[index].state == .StreamsRunning)
+							CoreContext.shared.doOnCoreQueue { core in
+								if callViewModel.currentCall!.state == .StreamsRunning {
+									TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: "")
+								} else {
+									TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: callViewModel.currentCall?.callLog?.callId ?? "")
+								}
+							}
+						 	TelecomManager.shared.setHeld(call: callViewModel.calls[index], hold: false)
 							
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
 								callViewModel.resetCallView()
