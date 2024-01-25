@@ -482,10 +482,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	/** start of linphone_account_creator_create_proxy_config re-implementation for accounts **/
 	LinphoneAuthInfo *info;
 	LinphoneAccountParams *accountParams = linphone_core_create_account_params(LC);
-	char *identity_str = _get_identity(account_creator);
-	LinphoneAddress *identity = linphone_address_new(identity_str);
-
-	ms_free(identity_str);
+	LinphoneAddress *identity = linphone_address_new(NULL);
+	linphone_address_set_username(identity, linphone_account_creator_get_username(account_creator));
+	linphone_address_set_domain(identity, linphone_account_creator_get_domain(account_creator));
+	
 	char const *creatorDisplayName = linphone_account_creator_get_display_name(account_creator);
 	if (creatorDisplayName) {
 		linphone_address_set_display_name(identity, creatorDisplayName);
