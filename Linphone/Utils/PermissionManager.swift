@@ -20,23 +20,39 @@
 import Foundation
 import Photos
 import Contacts
+import UserNotifications
+import SwiftUI
 
 class PermissionManager: ObservableObject {
 	
 	static let shared = PermissionManager()
 	
+	@Published var pushPermissionGranted = false
 	@Published var photoLibraryPermissionGranted = false
 	@Published var cameraPermissionGranted = false
-    @Published var contactsPermissionGranted = false
+	@Published var contactsPermissionGranted = false
 	@Published var microphonePermissionGranted = false
 	
 	private init() {}
 	
 	func getPermissions() {
+		pushNotificationRequestPermission()
 		microphoneRequestPermission()
 		photoLibraryRequestPermission()
 		cameraRequestPermission()
 		contactsRequestPermission()
+	}
+	
+	func pushNotificationRequestPermission() {
+		let options: UNAuthorizationOptions = [.alert, .sound, .badge]
+		UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
+			if let error = error {
+				Log.error("Unexpected error when asking for Push permission : \(error.localizedDescription)")
+			}
+			DispatchQueue.main.async {
+				self.pushPermissionGranted = granted
+			}
+		}
 	}
 	
 	func microphoneRequestPermission() {
@@ -62,13 +78,13 @@ class PermissionManager: ObservableObject {
 			}
 		})
 	}
-    
-    func contactsRequestPermission() {
-        let store = CNContactStore()
-        store.requestAccess(for: .contacts) { success, _ in
-            DispatchQueue.main.async {
-                self.contactsPermissionGranted = success
-            }
-        }
-    }
+	
+	func contactsRequestPermission() {
+		let store = CNContactStore()
+		store.requestAccess(for: .contacts) { success, _ in
+			DispatchQueue.main.async {
+				self.contactsPermissionGranted = success
+			}
+		}
+	}
 }
