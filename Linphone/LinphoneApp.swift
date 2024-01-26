@@ -22,6 +22,8 @@ import SwiftUI
 import Firebase
 #endif
 
+let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
+
 class AppDelegate: NSObject, UIApplicationDelegate {
 	func application(_ application: UIApplication,
 					 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {		
@@ -29,6 +31,29 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		FirebaseApp.configure()
 #endif
 		return true
+	}
+	
+	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+		let tokenStr = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+		Log.info("Received remote push token : \(tokenStr)")
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("Forwarding remote push token to core")
+			core.didRegisterForRemotePushWithStringifiedToken(deviceTokenStr: tokenStr + ":remote")
+		}
+	}
+	
+	func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+		Log.error("Failed to register for push notifications : \(error.localizedDescription)")
+	}
+	
+	func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+		Log.info("debugtrace -- Received background push notification, payload = \(userInfo.description)")
+		
+		let creationToken = (userInfo["customPayload"] as? NSDictionary)?["token"] as? String
+		if let creationToken = creationToken {
+			NotificationCenter.default.post(name: accountTokenNotification, object: nil, userInfo: ["token": creationToken])
+		}
+		completionHandler(UIBackgroundFetchResult.newData)
 	}
 }
 
