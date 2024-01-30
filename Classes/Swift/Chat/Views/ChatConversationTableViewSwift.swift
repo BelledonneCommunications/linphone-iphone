@@ -245,11 +245,13 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				}
 			}
 			
-			if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden) && cell.chatMessage != nil && !cell.chatMessage!.isFileTransferInProgress {
-				cell.imageViewBubble.onClick {
+			cell.imageViewBubble.onClick {
+				if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden) && cell.chatMessage != nil && !cell.chatMessage!.isFileTransferInProgress {
 					self.onImageClick(chatMessage: cell.chatMessage!, index: indexPath.row)
 				}
-				cell.imageVideoViewBubble.onClick {
+			}
+			cell.imageVideoViewBubble.onClick {
+				if (!cell.imageViewBubble.isHidden || !cell.imageVideoViewBubble.isHidden) && cell.chatMessage != nil && !cell.chatMessage!.isFileTransferInProgress {
 					self.onImageClick(chatMessage: cell.chatMessage!, index: indexPath.row)
 				}
 			}

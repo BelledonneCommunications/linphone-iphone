@@ -961,9 +961,13 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						mediaSelectorReply.isHidden = true
 						replyContentTextSpacing.isHidden = true
 					}else{
-						
-						if(bctbx_list_size(contentList) > 1 || content == ""){
-							mediaSelectorReply.isHidden = false
+						if(bctbx_list_size(contentList) >= 1){
+							if bctbx_list_size(contentList) == 1 && content != nil {
+								mediaSelectorReply.isHidden = true
+							} else {
+								mediaSelectorReply.isHidden = false
+							}
+							
 							replyContentTextSpacing.isHidden = true
 							ChatMessage.getSwiftObject(cObject: (event.chatMessage!.replyMessage?.getCobject)!).contents.forEach({ content in
 								if(content.isFile){

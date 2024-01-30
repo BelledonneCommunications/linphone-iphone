@@ -996,7 +996,7 @@ class ChatConversationViewSwift: BackActionsNavigationView, PHPickerViewControll
 				contentMessageView.replyContentTextSpacing.isHidden = true
 			}else{
 
-				if(bctbx_list_size(contentList) > 1 || content == ""){
+				if(bctbx_list_size(contentList) >= 1 && content == nil){
 					contentMessageView.mediaSelectorReply.isHidden = false
 					contentMessageView.replyContentTextSpacing.isHidden = true
 					ChatMessage.getSwiftObject(cObject: message!).contents.forEach({ content in
