@@ -44,11 +44,11 @@ struct CallView: View {
 	@State var imageAudioRoute: String = ""
 	
 	@State var angleDegree = 0.0
-	@State var fullscreenVideo = false
 	
 	@State var showingDialer = false
 	
-	@State var isShowCallsListFragment = false
+	@Binding var fullscreenVideo: Bool
+	@Binding var isShowCallsListFragment: Bool
 	@Binding var isShowStartCallFragment: Bool
 	
 	var body: some View {
@@ -530,7 +530,7 @@ struct CallView: View {
 				maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
 				maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
 			)
-			.background(Color.gray600)
+			.background(Color.gray900)
 			.cornerRadius(20)
 			.padding(.horizontal, fullscreenVideo && !telecomManager.isPausedByRemote ? 0 : 4)
 			.onRotate { newOrientation in
@@ -862,6 +862,9 @@ struct CallView: View {
 					HStack(spacing: 0) {
 						VStack {
 							Button {
+								withAnimation {
+									telecomManager.callDisplayed = false
+								}
 							} label: {
 								Image("chat-teardrop-text")
 									.renderingMode(.template)
@@ -875,7 +878,7 @@ struct CallView: View {
 							.background(Color.gray600)
 							.cornerRadius(40)
 							//.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-							.disabled(true)
+							//.disabled(true)
 							
 							Text("Messages")
 								.foregroundStyle(.white)
@@ -1056,8 +1059,6 @@ struct CallView: View {
 						}
 						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						
-						
-						
 						VStack {
 							Button {
 							} label: {
@@ -1129,7 +1130,7 @@ struct CallView: View {
 				}
 				Spacer()
 			}
-			.background(Color.gray900)
+			.background(Color.gray600)
 			.frame(maxHeight: .infinity, alignment: .top)
 		}
 	}
@@ -1203,7 +1204,7 @@ struct BottomSheetView<Content: View>: View {
 }
 
 #Preview {
-	CallView(callViewModel: CallViewModel(), isShowStartCallFragment: .constant(false))
+	CallView(callViewModel: CallViewModel(), fullscreenVideo: .constant(false), isShowCallsListFragment: .constant(false), isShowStartCallFragment: .constant(false))
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length

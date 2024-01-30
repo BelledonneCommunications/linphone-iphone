@@ -41,6 +41,7 @@ class TelecomManager: ObservableObject {
 	let callController: CXCallController // to support callkit
 	
 	@Published var callInProgress: Bool = false
+	@Published var callDisplayed: Bool = true
 	@Published var callStarted: Bool = false
 	@Published var outgoingCallStarted: Bool = false
 	@Published var remoteVideo: Bool = false
@@ -242,6 +243,7 @@ class TelecomManager: ObservableObject {
 				if self.callInProgress == false {
 					withAnimation {
 						self.callInProgress = true
+						self.callDisplayed = true
 					}
 				}
 			}
@@ -448,6 +450,7 @@ class TelecomManager: ObservableObject {
 					if self.callInProgress == false {
 						withAnimation {
 							self.callInProgress = true
+							self.callDisplayed = true
 						}
 					}
 				}
@@ -578,6 +581,7 @@ class TelecomManager: ObservableObject {
 						withAnimation {
 							self.outgoingCallStarted = false
 							self.callInProgress = false
+							self.callDisplayed = false
 							self.callStarted = false
 						}
 					} else {

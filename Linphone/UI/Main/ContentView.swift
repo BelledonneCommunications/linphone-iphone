@@ -56,15 +56,336 @@ struct ContentView: View {
 	@State var isShowStartCallFragment = false
 	@State var isShowDismissPopup = false
 	
+	@State var fullscreenVideo = false
+	@State var isShowCallsListFragment = false
+	
 	var body: some View {
 		GeometryReader { geometry in
-			ZStack {
-				VStack(spacing: 0) {
-					HStack(spacing: 0) {
-						if orientation == .landscapeLeft
-							|| orientation == .landscapeRight
-							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-							VStack {
+			VStack(spacing: 0) {
+				if telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.calls.count == 1) || callViewModel.calls.count > 1) {
+					HStack {
+						
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 30)
+					.background(Color.greenSuccess500)
+					.onTapGesture {
+					   withAnimation {
+						   telecomManager.callDisplayed = true
+					   }
+					}
+				}
+				
+				ZStack {
+					VStack(spacing: 0) {
+						HStack(spacing: 0) {
+							if orientation == .landscapeLeft
+								|| orientation == .landscapeRight
+								|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+								VStack {
+									Group {
+										Spacer()
+										Button(action: {
+											self.index = 0
+											historyViewModel.displayedCall = nil
+										}, label: {
+											VStack {
+												Image("address-book")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if self.index == 0 {
+													Text("Contacts")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Contacts")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										
+										Spacer()
+										
+										Button(action: {
+											self.index = 1
+											contactViewModel.indexDisplayedFriend = nil
+										}, label: {
+											VStack {
+												Image("phone")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if self.index == 1 {
+													Text("Calls")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Calls")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										
+										Spacer()
+									}
+								}
+								.frame(width: 75)
+								.padding(.leading,
+										 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
+										 ? -geometry.safeAreaInsets.leading
+										 : 0)
+							}
+							
+							VStack(spacing: 0) {
+								if searchIsActive == false {
+									HStack {
+										Image("profile-image-example")
+											.resizable()
+											.frame(width: 45, height: 45)
+											.clipShape(Circle())
+											.onTapGesture {
+												openMenu()
+											}
+										
+										Text(index == 0 ? "Contacts" : "Calls")
+											.default_text_style_white_800(styleSize: 20)
+											.padding(.leading, 10)
+										
+										Spacer()
+										
+										Button {
+											withAnimation {
+												searchIsActive.toggle()
+											}
+										} label: {
+											Image("magnifying-glass")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+										
+										Menu {
+											if index == 0 {
+												Button {
+													contactViewModel.indexDisplayedFriend = nil
+													isMenuOpen = false
+													magicSearch.allContact = true
+													MagicSearchSingleton.shared.searchForContacts(
+														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+												} label: {
+													HStack {
+														Text("See all")
+														Spacer()
+														if magicSearch.allContact {
+															Image("green-check")
+																.resizable()
+																.frame(width: 25, height: 25, alignment: .leading)
+																.padding(.all, 10)
+														}
+													}
+												}
+												
+												Button {
+													contactViewModel.indexDisplayedFriend = nil
+													isMenuOpen = false
+													magicSearch.allContact = false
+													MagicSearchSingleton.shared.searchForContacts(
+														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+												} label: {
+													HStack {
+														Text("See Linphone contact")
+														Spacer()
+														if !magicSearch.allContact {
+															Image("green-check")
+																.resizable()
+																.frame(width: 25, height: 25, alignment: .leading)
+																.padding(.all, 10)
+														}
+													}
+												}
+											} else {
+												Button(role: .destructive) {
+													isMenuOpen = false
+													isShowDeleteAllHistoryPopup.toggle()
+												} label: {
+													HStack {
+														Text("Delete all history")
+														Spacer()
+														Image("trash-simple-red")
+															.resizable()
+															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
+													}
+												}
+											}
+										} label: {
+											Image(index == 0 ? "funnel" : "dots-three-vertical")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+										.padding(.trailing, 10)
+										.onTapGesture {
+											isMenuOpen = true
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.frame(height: 50)
+									.padding(.leading)
+									.padding(.top, 2.5)
+									.padding(.bottom, 2.5)
+									.background(Color.orangeMain500)
+								} else {
+									HStack {
+										Button {
+											withAnimation {
+												self.focusedField = false
+												searchIsActive.toggle()
+											}
+											
+											text = ""
+											
+											if index == 0 {
+												magicSearch.currentFilter = ""
+												MagicSearchSingleton.shared.searchForContacts(
+													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											} else {
+												historyListViewModel.resetFilterCallLogs()
+											}
+										} label: {
+											Image("caret-left")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+												.padding(.leading, -10)
+										}
+										
+										if #available(iOS 16.0, *) {
+											TextEditor(text: Binding(
+												get: {
+													return text
+												},
+												set: { value in
+													var newValue = value
+													if value.contains("\n") {
+														newValue = value.replacingOccurrences(of: "\n", with: "")
+													}
+													text = newValue
+												}
+											))
+											.default_text_style_white_700(styleSize: 15)
+											.padding(.all, 6)
+											.accentColor(.white)
+											.scrollContentBackground(.hidden)
+											.focused($focusedField)
+											.onAppear {
+												self.focusedField = true
+											}
+											.onChange(of: text) { newValue in
+												if index == 0 {
+													magicSearch.currentFilter = newValue
+													MagicSearchSingleton.shared.searchForContacts(
+														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+												} else {
+													historyListViewModel.filterCallLogs(filter: text)
+												}
+											}
+										} else {
+											TextEditor(text: Binding(
+												get: {
+													return text
+												},
+												set: { value in
+													var newValue = value
+													if value.contains("\n") {
+														newValue = value.replacingOccurrences(of: "\n", with: "")
+													}
+													text = newValue
+												}
+											))
+											.default_text_style_700(styleSize: 15)
+											.padding(.all, 6)
+											.focused($focusedField)
+											.onAppear {
+												self.focusedField = true
+											}
+											.onChange(of: text) { newValue in
+												magicSearch.currentFilter = newValue
+												MagicSearchSingleton.shared.searchForContacts(
+													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											}
+										}
+										
+										Button {
+											text = ""
+										} label: {
+											Image("x")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+										.padding(.leading)
+									}
+									.frame(maxWidth: .infinity)
+									.frame(height: 50)
+									.padding(.horizontal)
+									.padding(.bottom, 5)
+									.background(Color.orangeMain500)
+								}
+								
+								if self.index == 0 {
+									ContactsView(
+										contactViewModel: contactViewModel,
+										historyViewModel: historyViewModel,
+										editContactViewModel: editContactViewModel,
+										isShowEditContactFragment: $isShowEditContactFragment,
+										isShowDeletePopup: $isShowDeleteContactPopup
+									)
+								} else if self.index == 1 {
+									HistoryView(
+										historyListViewModel: historyListViewModel,
+										historyViewModel: historyViewModel,
+										contactViewModel: contactViewModel,
+										editContactViewModel: editContactViewModel,
+										index: $index,
+										isShowStartCallFragment: $isShowStartCallFragment,
+										isShowEditContactFragment: $isShowEditContactFragment
+									)
+								}
+							}
+							.frame(maxWidth:
+									(orientation == .landscapeLeft
+									 || orientation == .landscapeRight
+									 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+								   ? geometry.size.width/100*40
+								   : .infinity
+							)
+							.background(
+								Color.white
+									.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
+									.mask(Rectangle().padding(.horizontal, -8))
+							)
+							
+							if orientation == .landscapeLeft
+								|| orientation == .landscapeRight
+								|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+								Spacer()
+							}
+						}
+						
+						if !(orientation == .landscapeLeft
+							 || orientation == .landscapeRight
+							 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) && !searchIsActive {
+							HStack {
 								Group {
 									Spacer()
 									Button(action: {
@@ -86,6 +407,7 @@ struct ContentView: View {
 											}
 										}
 									})
+									.padding(.top)
 									
 									Spacer()
 									
@@ -108,567 +430,266 @@ struct ContentView: View {
 											}
 										}
 									})
-									
+									.padding(.top)
 									Spacer()
 								}
 							}
-							.frame(width: 75)
-							.padding(.leading,
-									 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
-									 ? -geometry.safeAreaInsets.leading
-									 : 0)
-						}
-						
-						VStack(spacing: 0) {
-							if searchIsActive == false {
-								HStack {
-									Image("profile-image-example")
-										.resizable()
-										.frame(width: 45, height: 45)
-										.clipShape(Circle())
-										.onTapGesture {
-											openMenu()
-										}
-									
-									Text(index == 0 ? "Contacts" : "Calls")
-										.default_text_style_white_800(styleSize: 20)
-										.padding(.leading, 10)
-									
-									Spacer()
-									
-									Button {
-										withAnimation {
-											searchIsActive.toggle()
-										}
-									} label: {
-										Image("magnifying-glass")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
-									
-									Menu {
-										if index == 0 {
-											Button {
-												contactViewModel.indexDisplayedFriend = nil
-												isMenuOpen = false
-												magicSearch.allContact = true
-												MagicSearchSingleton.shared.searchForContacts(
-													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											} label: {
-												HStack {
-													Text("See all")
-													Spacer()
-													if magicSearch.allContact {
-														Image("green-check")
-															.resizable()
-															.frame(width: 25, height: 25, alignment: .leading)
-															.padding(.all, 10)
-													}
-												}
-											}
-											
-											Button {
-												contactViewModel.indexDisplayedFriend = nil
-												isMenuOpen = false
-												magicSearch.allContact = false
-												MagicSearchSingleton.shared.searchForContacts(
-													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											} label: {
-												HStack {
-													Text("See Linphone contact")
-													Spacer()
-													if !magicSearch.allContact {
-														Image("green-check")
-															.resizable()
-															.frame(width: 25, height: 25, alignment: .leading)
-															.padding(.all, 10)
-													}
-												}
-											}
-										} else {
-											Button(role: .destructive) {
-												isMenuOpen = false
-												isShowDeleteAllHistoryPopup.toggle()
-											} label: {
-												HStack {
-													Text("Delete all history")
-													Spacer()
-													Image("trash-simple-red")
-														.resizable()
-														.frame(width: 25, height: 25, alignment: .leading)
-														.padding(.all, 10)
-												}
-											}
-										}
-									} label: {
-										Image(index == 0 ? "funnel" : "dots-three-vertical")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
-									.padding(.trailing, 10)
-									.onTapGesture {
-										isMenuOpen = true
-									}
-								}
-								.frame(maxWidth: .infinity)
-								.frame(height: 50)
-								.padding(.leading)
-								.padding(.bottom, 5)
-								.background(Color.orangeMain500)
-							} else {
-								HStack {
-									Button {
-										withAnimation {
-											self.focusedField = false
-											searchIsActive.toggle()
-										}
-										
-										text = ""
-										
-										if index == 0 {
-											magicSearch.currentFilter = ""
-											MagicSearchSingleton.shared.searchForContacts(
-												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										} else {
-											historyListViewModel.resetFilterCallLogs()
-										}
-									} label: {
-										Image("caret-left")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-											.padding(.leading, -10)
-									}
-									
-									if #available(iOS 16.0, *) {
-										TextEditor(text: Binding(
-											get: {
-												return text
-											},
-											set: { value in
-												var newValue = value
-												if value.contains("\n") {
-													newValue = value.replacingOccurrences(of: "\n", with: "")
-												}
-												text = newValue
-											}
-										))
-										.default_text_style_white_700(styleSize: 15)
-										.padding(.all, 6)
-										.accentColor(.white)
-										.scrollContentBackground(.hidden)
-										.focused($focusedField)
-										.onAppear {
-											self.focusedField = true
-										}
-										.onChange(of: text) { newValue in
-											if index == 0 {
-												magicSearch.currentFilter = newValue
-												MagicSearchSingleton.shared.searchForContacts(
-													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											} else {
-												historyListViewModel.filterCallLogs(filter: text)
-											}
-										}
-									} else {
-										TextEditor(text: Binding(
-											get: {
-												return text
-											},
-											set: { value in
-												var newValue = value
-												if value.contains("\n") {
-													newValue = value.replacingOccurrences(of: "\n", with: "")
-												}
-												text = newValue
-											}
-										))
-										.default_text_style_700(styleSize: 15)
-										.padding(.all, 6)
-										.focused($focusedField)
-										.onAppear {
-											self.focusedField = true
-										}
-										.onChange(of: text) { newValue in
-											magicSearch.currentFilter = newValue
-											MagicSearchSingleton.shared.searchForContacts(
-												sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										}
-									}
-									
-									Button {
-										text = ""
-									} label: {
-										Image("x")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
-									.padding(.leading)
-								}
-								.frame(maxWidth: .infinity)
-								.frame(height: 50)
-								.padding(.horizontal)
-								.padding(.bottom, 5)
-								.background(Color.orangeMain500)
-							}
-							
-							if self.index == 0 {
-								ContactsView(
-									contactViewModel: contactViewModel,
-									historyViewModel: historyViewModel,
-									editContactViewModel: editContactViewModel,
-									isShowEditContactFragment: $isShowEditContactFragment,
-									isShowDeletePopup: $isShowDeleteContactPopup
-								)
-							} else if self.index == 1 {
-								HistoryView(
-									historyListViewModel: historyListViewModel,
-									historyViewModel: historyViewModel,
-									contactViewModel: contactViewModel,
-									editContactViewModel: editContactViewModel,
-									index: $index,
-									isShowStartCallFragment: $isShowStartCallFragment,
-									isShowEditContactFragment: $isShowEditContactFragment
-								)
-							}
-						}
-						.frame(maxWidth:
-								(orientation == .landscapeLeft
-								 || orientation == .landscapeRight
-								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-							   ? geometry.size.width/100*40
-							   : .infinity
-						)
-						.background(
-							Color.white
-								.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
-								.mask(Rectangle().padding(.horizontal, -8))
-						)
-						
-						if orientation == .landscapeLeft
-							|| orientation == .landscapeRight
-							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-							Spacer()
+							.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 15)
+							.background(
+								Color.white
+									.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
+									.mask(Rectangle().padding(.top, -8))
+							)
 						}
 					}
 					
-					if !(orientation == .landscapeLeft
-						 || orientation == .landscapeRight
-						 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) && !searchIsActive {
-						HStack {
-							Group {
-								Spacer()
-								Button(action: {
-									self.index = 0
-									historyViewModel.displayedCall = nil
-								}, label: {
-									VStack {
-										Image("address-book")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
-											.frame(width: 25, height: 25)
-										if self.index == 0 {
-											Text("Contacts")
-												.default_text_style_700(styleSize: 10)
-										} else {
-											Text("Contacts")
-												.default_text_style(styleSize: 10)
-										}
-									}
-								})
-								.padding(.top)
-								
-								Spacer()
-								
-								Button(action: {
-									self.index = 1
-									contactViewModel.indexDisplayedFriend = nil
-								}, label: {
-									VStack {
-										Image("phone")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
-											.frame(width: 25, height: 25)
-										if self.index == 1 {
-											Text("Calls")
-												.default_text_style_700(styleSize: 10)
-										} else {
-											Text("Calls")
-												.default_text_style(styleSize: 10)
-										}
-									}
-								})
-								.padding(.top)
-								Spacer()
-							}
-						}
-						.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 15)
-						.background(
-							Color.white
-								.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
-								.mask(Rectangle().padding(.top, -8))
-						)
-					}
-				}
-				
-				if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil {
-					HStack(spacing: 0) {
-						Spacer()
-							.frame(maxWidth:
-									(orientation == .landscapeLeft
-									 || orientation == .landscapeRight
-									 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-								   ? (geometry.size.width/100*40) + 75
-								   : 0
-							)
-						if self.index == 0 {
-							ContactFragment(
-								contactViewModel: contactViewModel,
-								editContactViewModel: editContactViewModel,
-								isShowDeletePopup: $isShowDeleteContactPopup,
-								isShowDismissPopup: $isShowDismissPopup
-							)
-							.frame(maxWidth: .infinity)
-							.background(Color.gray100)
-							.ignoresSafeArea(.keyboard)
-						} else if self.index == 1 {
-							let fromAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
-							let toAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
-							let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
-							
-							let contactAvatarModel = addressFriend != nil
-							? ContactsManager.shared.avatarListModel.first(where: {
-								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-								&& $0.friend!.name == addressFriend!.name
-								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-							})
-							: ContactAvatarModel(friend: nil, withPresence: false)
-							
-							if contactAvatarModel != nil {
-								HistoryContactFragment(
-									contactAvatarModel: contactAvatarModel!,
-									historyViewModel: historyViewModel,
-									historyListViewModel: historyListViewModel,
+					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil {
+						HStack(spacing: 0) {
+							Spacer()
+								.frame(maxWidth:
+										(orientation == .landscapeLeft
+										 || orientation == .landscapeRight
+										 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+									   ? (geometry.size.width/100*40) + 75
+									   : 0
+								)
+							if self.index == 0 {
+								ContactFragment(
 									contactViewModel: contactViewModel,
 									editContactViewModel: editContactViewModel,
-									isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
-									isShowEditContactFragment: $isShowEditContactFragment,
-									indexPage: $index
+									isShowDeletePopup: $isShowDeleteContactPopup,
+									isShowDismissPopup: $isShowDismissPopup
 								)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
+							} else if self.index == 1 {
+								let fromAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
+								let toAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
+								let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
+								
+								let contactAvatarModel = addressFriend != nil
+								? ContactsManager.shared.avatarListModel.first(where: {
+									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+									&& $0.friend!.name == addressFriend!.name
+									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+								})
+								: ContactAvatarModel(friend: nil, withPresence: false)
+								
+								if contactAvatarModel != nil {
+									HistoryContactFragment(
+										contactAvatarModel: contactAvatarModel!,
+										historyViewModel: historyViewModel,
+										historyListViewModel: historyListViewModel,
+										contactViewModel: contactViewModel,
+										editContactViewModel: editContactViewModel,
+										isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
+										isShowEditContactFragment: $isShowEditContactFragment,
+										indexPage: $index
+									)
+									.frame(maxWidth: .infinity)
+									.background(Color.gray100)
+									.ignoresSafeArea(.keyboard)
+								}
 							}
 						}
-					}
-					.onAppear {
-						if !(orientation == .landscapeLeft
-							 || orientation == .landscapeRight
-							 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-							&& searchIsActive {
-							self.focusedField = false
+						.onAppear {
+							if !(orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+								&& searchIsActive {
+								self.focusedField = false
+							}
 						}
-					}
-					.onDisappear {
-						if !(orientation == .landscapeLeft
-							 || orientation == .landscapeRight
-							 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-							&& searchIsActive {
-							self.focusedField = true
+						.onDisappear {
+							if !(orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+								&& searchIsActive {
+								self.focusedField = true
+							}
 						}
+						.padding(.leading,
+								 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
+								 ? -geometry.safeAreaInsets.leading
+								 : 0)
+						.transition(.move(edge: .trailing))
+						.zIndex(1)
 					}
-					.padding(.leading,
-							 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
-							 ? -geometry.safeAreaInsets.leading
-							 : 0)
-					.transition(.move(edge: .trailing))
-					.zIndex(1)
-				}
-				
-				SideMenu(
-					width: geometry.size.width / 5 * 4,
-					isOpen: self.sideMenuIsOpen,
-					menuClose: self.openMenu,
-					safeAreaInsets: geometry.safeAreaInsets
-				)
-				.ignoresSafeArea(.all)
-				.zIndex(2)
-				
-				if isShowEditContactFragment {
-					EditContactFragment(
-						editContactViewModel: editContactViewModel,
-						contactViewModel: contactViewModel,
-						isShowEditContactFragment: $isShowEditContactFragment,
-						isShowDismissPopup: $isShowDismissPopup
+					
+					SideMenu(
+						callViewModel: callViewModel, 
+						width: geometry.size.width / 5 * 4,
+						isOpen: self.sideMenuIsOpen,
+						menuClose: self.openMenu,
+						safeAreaInsets: geometry.safeAreaInsets
 					)
-					.zIndex(3)
-					.transition(.move(edge: .bottom))
-					.onAppear {
-						contactViewModel.indexDisplayedFriend = nil
-					}
-				}
-				
-				if isShowStartCallFragment {
-					if #available(iOS 16.4, *), idiom != .pad {
-						StartCallFragment(
-							callViewModel: callViewModel,
-							startCallViewModel: startCallViewModel,
-							isShowStartCallFragment: $isShowStartCallFragment,
-							showingDialer: $showingDialer,
-							resetCallView: {callViewModel.resetCallView()}
+					.ignoresSafeArea(.all)
+					.zIndex(2)
+					
+					if isShowEditContactFragment {
+						EditContactFragment(
+							editContactViewModel: editContactViewModel,
+							contactViewModel: contactViewModel,
+							isShowEditContactFragment: $isShowEditContactFragment,
+							isShowDismissPopup: $isShowDismissPopup
 						)
-						.zIndex(4)
+						.zIndex(3)
 						.transition(.move(edge: .bottom))
-						.sheet(isPresented: $showingDialer) {
-							DialerBottomSheet(
-								startCallViewModel: startCallViewModel,
-								showingDialer: $showingDialer,
-								currentCall: nil
-							)
-							.presentationDetents([.medium])
-							.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+						.onAppear {
+							contactViewModel.indexDisplayedFriend = nil
 						}
-					} else {
-						StartCallFragment(
-							callViewModel: callViewModel,
-							startCallViewModel: startCallViewModel,
-							isShowStartCallFragment: $isShowStartCallFragment,
-							showingDialer: $showingDialer,
-							resetCallView: {callViewModel.resetCallView()}
-						)
-						.zIndex(4)
-						.transition(.move(edge: .bottom))
-						.halfSheet(showSheet: $showingDialer) {
-							DialerBottomSheet(
-								startCallViewModel: startCallViewModel,
-								showingDialer: $showingDialer,
-								currentCall: nil
-							)
-						} onDismiss: {}
 					}
-				}
-				
-				if isShowDeleteContactPopup {
-					PopupView(isShowPopup: $isShowDeleteContactPopup,
-							  title: Text(
-								contactViewModel.selectedFriend != nil
-								? "Delete \(contactViewModel.selectedFriend!.name!)?"
-								: (contactViewModel.indexDisplayedFriend != nil
-								   ? "Delete \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
-								   : "Error Name")),
-							  content: Text("This contact will be deleted definitively."),
-							  titleFirstButton: Text("Cancel"),
-							  actionFirstButton: {
-						self.isShowDeleteContactPopup.toggle()},
-							  titleSecondButton: Text("Ok"),
-							  actionSecondButton: {
-						if contactViewModel.selectedFriendToDelete != nil {
-							if contactViewModel.indexDisplayedFriend != nil {
+					
+					if isShowStartCallFragment {
+						if #available(iOS 16.4, *), idiom != .pad {
+							StartCallFragment(
+								callViewModel: callViewModel,
+								startCallViewModel: startCallViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
+								showingDialer: $showingDialer,
+								resetCallView: {callViewModel.resetCallView()}
+							)
+							.zIndex(4)
+							.transition(.move(edge: .bottom))
+							.sheet(isPresented: $showingDialer) {
+								DialerBottomSheet(
+									startCallViewModel: startCallViewModel,
+									showingDialer: $showingDialer,
+									currentCall: nil
+								)
+								.presentationDetents([.medium])
+								.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+							}
+						} else {
+							StartCallFragment(
+								callViewModel: callViewModel,
+								startCallViewModel: startCallViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
+								showingDialer: $showingDialer,
+								resetCallView: {callViewModel.resetCallView()}
+							)
+							.zIndex(4)
+							.transition(.move(edge: .bottom))
+							.halfSheet(showSheet: $showingDialer) {
+								DialerBottomSheet(
+									startCallViewModel: startCallViewModel,
+									showingDialer: $showingDialer,
+									currentCall: nil
+								)
+							} onDismiss: {}
+						}
+					}
+					
+					if isShowDeleteContactPopup {
+						PopupView(isShowPopup: $isShowDeleteContactPopup,
+								  title: Text(
+									contactViewModel.selectedFriend != nil
+									? "Delete \(contactViewModel.selectedFriend!.name!)?"
+									: (contactViewModel.indexDisplayedFriend != nil
+									   ? "Delete \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
+									   : "Error Name")),
+								  content: Text("This contact will be deleted definitively."),
+								  titleFirstButton: Text("Cancel"),
+								  actionFirstButton: {
+							self.isShowDeleteContactPopup.toggle()},
+								  titleSecondButton: Text("Ok"),
+								  actionSecondButton: {
+							if contactViewModel.selectedFriendToDelete != nil {
+								if contactViewModel.indexDisplayedFriend != nil {
+									withAnimation {
+										contactViewModel.indexDisplayedFriend = nil
+									}
+								}
+								contactViewModel.selectedFriendToDelete!.remove()
+							} else if contactViewModel.indexDisplayedFriend != nil {
+								let tmpIndex = contactViewModel.indexDisplayedFriend
 								withAnimation {
 									contactViewModel.indexDisplayedFriend = nil
 								}
+								contactsManager.lastSearch[tmpIndex!].friend!.remove()
 							}
-							contactViewModel.selectedFriendToDelete!.remove()
-						} else if contactViewModel.indexDisplayedFriend != nil {
-							let tmpIndex = contactViewModel.indexDisplayedFriend
-							withAnimation {
-								contactViewModel.indexDisplayedFriend = nil
-							}
-							contactsManager.lastSearch[tmpIndex!].friend!.remove()
-						}
-						MagicSearchSingleton.shared.searchForContacts(
-							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-						self.isShowDeleteContactPopup.toggle()
-					})
-					.background(.black.opacity(0.65))
-					.zIndex(3)
-					.onTapGesture {
-						self.isShowDeleteContactPopup.toggle()
-					}
-					.onAppear {
-						contactViewModel.selectedFriendToDelete = contactViewModel.selectedFriend
-					}
-				}
-				
-				if isShowDeleteAllHistoryPopup {
-					PopupView(isShowPopup: $isShowDeleteContactPopup,
-							  title: Text("Do you really want to delete all calls history?"),
-							  content: Text("All calls will be removed from the history."),
-							  titleFirstButton: Text("Cancel"),
-							  actionFirstButton: {
-						self.isShowDeleteAllHistoryPopup.toggle()
-						historyListViewModel.callLogsAddressToDelete = ""
-					},
-							  titleSecondButton: Text("Ok"),
-							  actionSecondButton: {
-						historyListViewModel.removeCallLogs()
-						self.isShowDeleteAllHistoryPopup.toggle()
-						historyViewModel.displayedCall = nil
-						
-						ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
-						ToastViewModel.shared.displayToast.toggle()
-					})
-					.background(.black.opacity(0.65))
-					.zIndex(3)
-					.onTapGesture {
-						self.isShowDeleteAllHistoryPopup.toggle()
-					}
-				}
-				
-				if isShowDismissPopup {
-					PopupView(isShowPopup: $isShowDismissPopup,
-							  title: Text("Don’t save modifications?"),
-							  content: Text("All modifications will be canceled."),
-							  titleFirstButton: Text("Cancel"),
-							  actionFirstButton: {self.isShowDismissPopup.toggle()},
-							  titleSecondButton: Text("Ok"),
-							  actionSecondButton: {
-						if editContactViewModel.selectedEditFriend == nil {
-							self.isShowDismissPopup.toggle()
-							editContactViewModel.removePopup = true
-							editContactViewModel.resetValues()
-							withAnimation {
-								isShowEditContactFragment.toggle()
-							}
-						} else {
-							self.isShowDismissPopup.toggle()
-							editContactViewModel.resetValues()
-							withAnimation {
-								editContactViewModel.removePopup = true
-							}
-						}
-					})
-					.background(.black.opacity(0.65))
-					.zIndex(3)
-					.onTapGesture {
-						self.isShowDismissPopup.toggle()
-					}
-				}
-				
-				if telecomManager.callInProgress {
-					CallView(callViewModel: callViewModel, isShowStartCallFragment: $isShowStartCallFragment)
+							MagicSearchSingleton.shared.searchForContacts(
+								sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							self.isShowDeleteContactPopup.toggle()
+						})
+						.background(.black.opacity(0.65))
 						.zIndex(3)
-						.transition(.scale.combined(with: .move(edge: .top)))
-						.onAppear {
-							callViewModel.resetCallView()
+						.onTapGesture {
+							self.isShowDeleteContactPopup.toggle()
 						}
+						.onAppear {
+							contactViewModel.selectedFriendToDelete = contactViewModel.selectedFriend
+						}
+					}
+					
+					if isShowDeleteAllHistoryPopup {
+						PopupView(isShowPopup: $isShowDeleteContactPopup,
+								  title: Text("Do you really want to delete all calls history?"),
+								  content: Text("All calls will be removed from the history."),
+								  titleFirstButton: Text("Cancel"),
+								  actionFirstButton: {
+							self.isShowDeleteAllHistoryPopup.toggle()
+							historyListViewModel.callLogsAddressToDelete = ""
+						},
+								  titleSecondButton: Text("Ok"),
+								  actionSecondButton: {
+							historyListViewModel.removeCallLogs()
+							self.isShowDeleteAllHistoryPopup.toggle()
+							historyViewModel.displayedCall = nil
+							
+							ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
+							ToastViewModel.shared.displayToast.toggle()
+						})
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowDeleteAllHistoryPopup.toggle()
+						}
+					}
+					
+					if isShowDismissPopup {
+						PopupView(isShowPopup: $isShowDismissPopup,
+								  title: Text("Don’t save modifications?"),
+								  content: Text("All modifications will be canceled."),
+								  titleFirstButton: Text("Cancel"),
+								  actionFirstButton: {self.isShowDismissPopup.toggle()},
+								  titleSecondButton: Text("Ok"),
+								  actionSecondButton: {
+							if editContactViewModel.selectedEditFriend == nil {
+								self.isShowDismissPopup.toggle()
+								editContactViewModel.removePopup = true
+								editContactViewModel.resetValues()
+								withAnimation {
+									isShowEditContactFragment.toggle()
+								}
+							} else {
+								self.isShowDismissPopup.toggle()
+								editContactViewModel.resetValues()
+								withAnimation {
+									editContactViewModel.removePopup = true
+								}
+							}
+						})
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowDismissPopup.toggle()
+						}
+					}
+					
+					if telecomManager.callInProgress && telecomManager.callDisplayed {
+						CallView(callViewModel: callViewModel, fullscreenVideo: $fullscreenVideo, isShowCallsListFragment: $isShowCallsListFragment, isShowStartCallFragment: $isShowStartCallFragment)
+							.zIndex(3)
+							.transition(.scale.combined(with: .move(edge: .top)))
+							.onAppear {
+								callViewModel.resetCallView()
+							}
+					}
+					
+					ToastView()
+						.zIndex(3)
 				}
-				
-				ToastView()
-					.zIndex(3)
 			}
 		}
 		.overlay {

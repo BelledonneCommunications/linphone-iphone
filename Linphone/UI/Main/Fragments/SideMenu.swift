@@ -25,6 +25,8 @@ struct SideMenu: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
 	
+	@ObservedObject var callViewModel: CallViewModel
+	
     let width: CGFloat
     let isOpen: Bool
     let menuClose: () -> Void
@@ -88,7 +90,7 @@ struct SideMenu: View {
                 Spacer()
             }
             .padding(.leading, safeAreaInsets.leading)
-            .padding(.top, safeAreaInsets.top)
+			.padding(.top, TelecomManager.shared.callInProgress ? 0 : safeAreaInsets.top)
             .padding(.bottom, safeAreaInsets.bottom)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

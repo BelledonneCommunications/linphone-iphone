@@ -46,7 +46,7 @@ struct ContactsInnerFragment: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 				}
-				.padding(.top, 30)
+				.padding(.top, 10)
 				.padding(.horizontal, 16)
 				.background(.white)
 				.onTapGesture {

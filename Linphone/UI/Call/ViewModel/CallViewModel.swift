@@ -121,7 +121,9 @@ class CallViewModel: ObservableObject {
 	
 	func getCallsList() {
 		coreContext.doOnCoreQueue { core in
-			self.calls = core.calls
+			DispatchQueue.main.async {
+				self.calls = core.calls
+			}
 		}
 	}
 	
@@ -141,6 +143,7 @@ class CallViewModel: ObservableObject {
 		withAnimation {
 			telecomManager.outgoingCallStarted = false
 			telecomManager.callInProgress = true
+			telecomManager.callDisplayed = true
 			telecomManager.callStarted = true
 		}
 		

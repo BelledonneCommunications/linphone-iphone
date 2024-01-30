@@ -213,6 +213,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			DispatchQueue.main.async {
 				withAnimation {
 					TelecomManager.shared.callInProgress = true
+					TelecomManager.shared.callDisplayed = true
 				}
 			}
 		}

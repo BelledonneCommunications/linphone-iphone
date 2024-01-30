@@ -64,7 +64,8 @@ struct FavoriteContactsListFragment: View {
 					}
                 }
             }
-            .padding(.all, 10)
+			.padding(.horizontal, 10)
+			.padding(.bottom, 10)
         }
     }
 }
