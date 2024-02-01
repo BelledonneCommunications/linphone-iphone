@@ -144,9 +144,9 @@ final class CoreContext: ObservableObject {
 			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: Config.ConfiguringState, message: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
 				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
-				if cbVal.status == Config.ConfiguringState.Successful {
+				if cbVal.status == ConfiguringState.Successful {
 					ToastViewModel.shared.toastMessage = "Successful"
 					ToastViewModel.shared.displayToast = true
 				}

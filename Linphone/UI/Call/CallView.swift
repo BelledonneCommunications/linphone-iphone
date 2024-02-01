@@ -51,6 +51,9 @@ struct CallView: View {
 	@Binding var isShowCallsListFragment: Bool
 	@Binding var isShowStartCallFragment: Bool
 	
+	@State private var pointingUp: CGFloat = 0.0
+	@State private var currentOffset: CGFloat = 0.0
+	
 	var body: some View {
 		GeometryReader { geo in
 			ZStack {
@@ -471,7 +474,7 @@ struct CallView: View {
 					}
 					.frame(
 						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.18 * geometry.size.height) - geometry.safeAreaInsets.bottom
 					)
 				}
 				
@@ -493,7 +496,7 @@ struct CallView: View {
 					}
 					.frame(
 						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - 140
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.18 * geometry.size.height) - geometry.safeAreaInsets.bottom
 					)
 				}
 				
@@ -521,14 +524,14 @@ struct CallView: View {
 					}
 					.frame(
 						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.18 * geometry.size.height) - geometry.safeAreaInsets.bottom
 					)
 					.background(.clear)
 				}
 			}
 			.frame(
 				maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-				maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.1 * geometry.size.height) - 60
+				maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (0.18 * geometry.size.height) - geometry.safeAreaInsets.bottom
 			)
 			.background(Color.gray900)
 			.cornerRadius(20)
@@ -583,10 +586,16 @@ struct CallView: View {
 					
 					BottomSheetView(
 						content: bottomSheetContent(geo: geometry),
-						minHeight: (0.1 * geometry.size.height) + (bottomInset != nil ? bottomInset!.bottom : 0),
-						maxHeight: (0.45 * geometry.size.height) + (bottomInset != nil ? bottomInset!.bottom : 0),
-						currentHeight: (0.1 * geometry.size.height) + (bottomInset != nil ? bottomInset!.bottom : 0)
+						minHeight: 0.18 * geometry.size.height,
+						maxHeight: 0.5 * geometry.size.height,
+						currentOffset: $currentOffset,
+						pointingUp: $pointingUp,
+						bottomSafeArea: bottomInset?.bottom ?? 0
 					)
+					.onAppear {
+						currentOffset = 0.18 * geometry.size.height
+						pointingUp = 1 - ((currentOffset - 0.18 * geometry.size.height) / (0.5 * geometry.size.height - 0.18 * geometry.size.height))
+					}
 				} else {
 #if targetEnvironment(simulator)
 					HStack(spacing: 12) {
@@ -638,8 +647,10 @@ struct CallView: View {
 #endif
 				}
 			}
+			
+			Spacer()
 		}
-		.frame(maxWidth: .infinity, maxHeight: .infinity)
+		.frame(maxWidth: .infinity)
 		.background(Color.gray900)
 		.if(fullscreenVideo && !telecomManager.isPausedByRemote) { view in
 			view.ignoresSafeArea(.all)
@@ -649,11 +660,25 @@ struct CallView: View {
 	func bottomSheetContent(geo: GeometryProxy) -> some View {
 		GeometryReader { _ in
 			VStack(spacing: 0) {
-				Rectangle()
-					.fill(Color.gray500)
-					.frame(width: 100, height: 5)
-					.cornerRadius(10)
-					.padding(.top, 5)
+				Button {
+					withAnimation {
+						if currentOffset < (0.5 * geo.size.height) {
+							currentOffset = 0.5 * geo.size.height
+						} else {
+							currentOffset = 0.18 * geo.size.height
+						}
+						
+						pointingUp = 1 - ((currentOffset - 0.18 * geo.size.height) / (0.5 * geo.size.height - 0.18 * geo.size.height))
+					}
+				} label: {
+					ChevronShape(pointingUp: pointingUp)
+						.stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round))
+						.frame(width: 50, height: 10)
+						.foregroundStyle(.white)
+						.contentShape(Rectangle())
+						.padding(.top, 15)
+				}
+				
 				HStack(spacing: 12) {
 					Button {
 						callViewModel.terminateCall()
@@ -735,7 +760,6 @@ struct CallView: View {
 				}
 				.frame(height: geo.size.height * 0.15)
 				.padding(.horizontal, 20)
-				.padding(.top, (orientation != .landscapeLeft && orientation != .landscapeRight) ? (geo.safeAreaInsets.bottom != 0 ? -15 : -30) : -10)
 				
 				if orientation != .landscapeLeft && orientation != .landscapeRight {
 					HStack(spacing: 0) {
@@ -1156,15 +1180,15 @@ struct BottomSheetView<Content: View>: View {
 	@State var minHeight: CGFloat
 	@State var maxHeight: CGFloat
 	
-	@State var currentHeight: CGFloat
+	@Binding var currentOffset: CGFloat
+	@Binding var pointingUp: CGFloat
+	
+	@State var bottomSafeArea: CGFloat
 	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0.0) {
 				content
-			}
-			.onAppear {
-				self.currentHeight = minHeight
 			}
 			.frame(
 				width: geometry.size.width,
@@ -1188,18 +1212,49 @@ struct BottomSheetView<Content: View>: View {
 			.highPriorityGesture(
 				DragGesture()
 					.onChanged { value in
-						currentHeight -= value.translation.height
-						currentHeight = min(max(currentHeight, minHeight), maxHeight)
+						currentOffset -= value.translation.height
+						currentOffset = min(max(currentOffset, minHeight), maxHeight)
+						pointingUp = 1 - ((currentOffset - minHeight) / (maxHeight - minHeight))
 					}
 					.onEnded { _ in
 						withAnimation {
-							currentHeight = (currentHeight - minHeight <= maxHeight - currentHeight) ? minHeight : maxHeight
+							currentOffset = (currentOffset - minHeight <= maxHeight - currentOffset) ? minHeight : maxHeight
+							pointingUp = 1 - ((currentOffset - minHeight) / (maxHeight - minHeight))
 						}
 					}
 			)
-			.offset(y: maxHeight - currentHeight)
+			.offset(y: maxHeight - currentOffset + bottomSafeArea)
 		}
-		.edgesIgnoringSafeArea(.bottom)
+	}
+}
+
+struct ChevronShape: Shape {
+	var pointingUp: CGFloat
+	
+	var animatableData: CGFloat {
+		get { return pointingUp }
+		set { pointingUp = newValue }
+	}
+	
+	func path(in rect: CGRect) -> Path {
+		var path = Path()
+		
+		let width = rect.width
+		let height = rect.height
+		
+		let horizontalCenter = width / 2
+		let horizontalCenterOffset = width * 0.05
+		let arrowTipStartingPoint = height - pointingUp * height * 0.9
+		
+		path.move(to: .init(x: 0, y: height))
+		//path.addLine(to: .init(x: horizontalCenter, y: arrowTipStartingPoint))
+		
+		path.addLine(to: .init(x: horizontalCenter - horizontalCenterOffset, y: arrowTipStartingPoint))
+		path.addQuadCurve(to: .init(x: horizontalCenter + horizontalCenterOffset, y: arrowTipStartingPoint), control: .init(x: horizontalCenter, y: height * (1 - pointingUp)))
+		
+		path.addLine(to: .init(x: width, y: height))
+
+		return path
 	}
 }
 
