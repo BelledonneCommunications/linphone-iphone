@@ -143,8 +143,8 @@ final class ContactsManager: ObservableObject {
 	
 	func textToImage(firstName: String, lastName: String) -> UIImage {
 		let lblNameInitialize = UILabel()
-		lblNameInitialize.frame.size = CGSize(width: 100.0, height: 100.0)
-		lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 40)
+		lblNameInitialize.frame.size = CGSize(width: 200.0, height: 200.0)
+		lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80)
 		lblNameInitialize.textColor = UIColor(Color.grayMain2c600)
 		
 		var textToDisplay = ""
