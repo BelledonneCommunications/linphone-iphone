@@ -113,6 +113,9 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
+		if ChatConversationTableViewModel.sharedModel.getNBMessages() > 0 {
+			scrollToBottom(animated: false)
+		}
 		NotificationCenter.default.removeObserver(self, name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil)
 		NotificationCenter.default.removeObserver(self)
 	}

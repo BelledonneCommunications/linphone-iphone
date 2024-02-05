@@ -69,6 +69,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	var recordingWaveConstraints: [NSLayoutConstraint] = []
 	var recordingWaveConstraintsWithMediaGrid: [NSLayoutConstraint] = []
 	var meetingConstraints: [NSLayoutConstraint] = []
+	var constraintGridWithTextLeading : NSLayoutConstraint? = nil
+	var constraintGridWithTextTrailing : NSLayoutConstraint? = nil
 	
 	var eventMessageLineView: UIView = UIView(frame: .zero)
 	var eventMessageLabelView: UIView = UIView(frame: .zero)
@@ -430,17 +432,19 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		collectionViewImagesGrid.translatesAutoresizingMaskIntoConstraints = false
 		imagesGridConstraints = [
 			collectionViewImagesGrid.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top),
-			collectionViewImagesGrid.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
-			collectionViewImagesGrid.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
-			collectionViewImagesGrid.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
+			collectionViewImagesGrid.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom)
 		]
 		
 		imagesGridConstraintsWithRecording = [
 			collectionViewImagesGrid.topAnchor.constraint(equalTo: contentMediaViewBubble.topAnchor, constant: labelInset.top + 50),
-			collectionViewImagesGrid.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom),
-			collectionViewImagesGrid.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left),
-			collectionViewImagesGrid.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right),
+			collectionViewImagesGrid.bottomAnchor.constraint(equalTo: contentMediaViewBubble.bottomAnchor, constant: labelInset.bottom)
 		]
+		
+		
+		constraintGridWithTextLeading = collectionViewImagesGrid.leadingAnchor.constraint(equalTo: contentMediaViewBubble.leadingAnchor, constant: labelInset.left)
+		constraintGridWithTextTrailing = collectionViewImagesGrid.trailingAnchor.constraint(equalTo: contentMediaViewBubble.trailingAnchor, constant: labelInset.right)
+		constraintGridWithTextLeading!.isActive = true
+		constraintGridWithTextTrailing!.isActive = true
 		
 		collectionViewImagesGrid.dataSource = self
 		collectionViewImagesGrid.delegate = self
@@ -1405,8 +1409,19 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				if imagesGridCollectionView.count > 0 {
 					self.collectionViewImagesGrid.layoutIfNeeded()
 				}
+				
 				if imagesGridCollectionView.count == 1 && recordingView.isHidden == true {
-					collectionViewImagesGrid.width(138).done()
+					if label.isHidden {
+						collectionViewImagesGrid.width(138).done()
+					} else {
+						collectionViewImagesGrid.width(138).done()
+						if event.chatMessage?.isOutgoing == true {
+							constraintGridWithTextLeading!.isActive = false
+						} else {
+							constraintGridWithTextTrailing!.isActive = false
+						}
+						label.minWidth(138).done()
+					}
 				}
 				
 				if imagesGridCollectionView.count == 2 {
