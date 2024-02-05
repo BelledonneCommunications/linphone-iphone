@@ -773,6 +773,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		recordingWaveConstraints = []
 		recordingWaveConstraintsWithMediaGrid = []
 		meetingConstraints = []
+		constraintGridWithTextLeading = nil
+		constraintGridWithTextTrailing = nil
 		eventMessageLineView = UIView(frame: .zero)
 		eventMessageLabelView = UIView(frame: .zero)
 		eventMessageLabel = StyledLabel(VoipTheme.chat_conversation_forward_label)
@@ -1064,6 +1066,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				NSLayoutConstraint.deactivate(recordingWaveConstraints)
 				NSLayoutConstraint.deactivate(recordingWaveConstraintsWithMediaGrid)
 				NSLayoutConstraint.deactivate(meetingConstraints)
+				constraintGridWithTextLeading!.isActive = false
+				constraintGridWithTextTrailing!.isActive = false
 				label.isHidden = true
 				collectionViewImagesGrid.isHidden = true
 				imageViewBubble.isHidden = true
@@ -1082,6 +1086,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 						
 						collectionViewImagesGrid.isHidden = false
 						NSLayoutConstraint.activate(imagesGridConstraints)
+						constraintGridWithTextLeading!.isActive = true
+						constraintGridWithTextTrailing!.isActive = true
 						imageViewBubble.image = nil
 						NSLayoutConstraint.deactivate(imageConstraints)
 						imageViewBubble.isHidden = true
@@ -1107,6 +1113,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								
 								collectionViewImagesGrid.isHidden = false
 								NSLayoutConstraint.activate(imagesGridConstraints)
+								constraintGridWithTextLeading!.isActive = true
+								constraintGridWithTextTrailing!.isActive = true
 								imageViewBubble.image = nil
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageViewBubble.isHidden = true
@@ -1136,6 +1144,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								
 								collectionViewImagesGrid.isHidden = false
 								NSLayoutConstraint.activate(imagesGridConstraints)
+								constraintGridWithTextLeading!.isActive = true
+								constraintGridWithTextTrailing!.isActive = true
 								imageVideoViewBubble.image = nil
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageVideoViewBubble.isHidden = true
@@ -1168,6 +1178,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							
 							collectionViewImagesGrid.isHidden = false
 							NSLayoutConstraint.activate(imagesGridConstraints)
+							constraintGridWithTextLeading!.isActive = true
+							constraintGridWithTextTrailing!.isActive = true
 							imageViewBubble.image = nil
 							NSLayoutConstraint.deactivate(imageConstraints)
 							imageViewBubble.isHidden = true
@@ -1210,6 +1222,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							
 							collectionViewImagesGrid.isHidden = false
 							NSLayoutConstraint.activate(imagesGridConstraints)
+							constraintGridWithTextLeading!.isActive = true
+							constraintGridWithTextTrailing!.isActive = true
 							imageViewBubble.image = nil
 							NSLayoutConstraint.deactivate(imageConstraints)
 							imageViewBubble.isHidden = true
@@ -1248,6 +1262,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 							
 							collectionViewImagesGrid.isHidden = false
 							NSLayoutConstraint.activate(imagesGridConstraints)
+							constraintGridWithTextLeading!.isActive = true
+							constraintGridWithTextTrailing!.isActive = true
 							imageVideoViewBubble.image = nil
 							NSLayoutConstraint.deactivate(imageConstraints)
 							imageVideoViewBubble.isHidden = true
@@ -1302,6 +1318,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									
 									collectionViewImagesGrid.isHidden = false
 									NSLayoutConstraint.activate(imagesGridConstraints)
+									constraintGridWithTextLeading!.isActive = true
+									constraintGridWithTextTrailing!.isActive = true
 									imageViewBubble.image = nil
 									NSLayoutConstraint.deactivate(imageConstraints)
 									imageViewBubble.isHidden = true
@@ -1331,6 +1349,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 									
 									collectionViewImagesGrid.isHidden = false
 									NSLayoutConstraint.activate(imagesGridConstraints)
+									constraintGridWithTextLeading!.isActive = true
+									constraintGridWithTextTrailing!.isActive = true
 									imageVideoViewBubble.image = nil
 									NSLayoutConstraint.deactivate(imageConstraints)
 									imageVideoViewBubble.isHidden = true
@@ -1363,6 +1383,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								
 								collectionViewImagesGrid.isHidden = false
 								NSLayoutConstraint.activate(imagesGridConstraints)
+								constraintGridWithTextLeading!.isActive = true
+								constraintGridWithTextTrailing!.isActive = true
 								imageViewBubble.image = nil
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageViewBubble.isHidden = true
@@ -1374,6 +1396,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 								
 								collectionViewImagesGrid.isHidden = false
 								NSLayoutConstraint.activate(imagesGridConstraints)
+								constraintGridWithTextLeading!.isActive = true
+								constraintGridWithTextTrailing!.isActive = true
 								imageViewBubble.image = nil
 								NSLayoutConstraint.deactivate(imageConstraints)
 								imageViewBubble.isHidden = true
@@ -1390,6 +1414,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 													
 													collectionViewImagesGrid.isHidden = false
 													NSLayoutConstraint.activate(imagesGridConstraints)
+													constraintGridWithTextLeading!.isActive = true
+													constraintGridWithTextTrailing!.isActive = true
 													imageViewBubble.image = nil
 													NSLayoutConstraint.deactivate(imageConstraints)
 													imageViewBubble.isHidden = true
@@ -1427,6 +1453,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 				if imagesGridCollectionView.count == 2 {
 					collectionViewImagesGrid.isHidden = false
 					NSLayoutConstraint.activate(imagesGridConstraints)
+					constraintGridWithTextLeading!.isActive = true
+					constraintGridWithTextTrailing!.isActive = true
 					imageVideoViewBubble.image = nil
 					NSLayoutConstraint.deactivate(imageConstraints)
 					imageVideoViewBubble.isHidden = true
@@ -1447,6 +1475,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 					collectionViewImagesGrid.isHidden = false
 					NSLayoutConstraint.deactivate(imagesGridConstraints)
 					NSLayoutConstraint.activate(imagesGridConstraintsWithRecording)
+					constraintGridWithTextLeading!.isActive = true
+					constraintGridWithTextTrailing!.isActive = true
 					NSLayoutConstraint.deactivate(recordingConstraints)
 					NSLayoutConstraint.activate(recordingConstraintsWithMediaGrid)
 					NSLayoutConstraint.deactivate(recordingWaveConstraints)
