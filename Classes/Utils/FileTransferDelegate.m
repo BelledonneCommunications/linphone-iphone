@@ -250,11 +250,20 @@ static void file_transfer_progress_indication_send(LinphoneChatMessage *message,
 
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withName:(NSString *)name rootMessage:(LinphoneChatMessage *)rootMessage {
 	NSURL *url = [ChatConversationViewSwift getFileUrl:name];
+	
 	AVAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
-	NSString *fileType = [[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0 ? @"video" : @"file";
+	
+	NSString *extensionFile = [[name lowercaseString] componentsSeparatedByString:@"."].lastObject;
+	NSString *fileType = @"";
+	if ([extensionFile containsString:@"png"] || [extensionFile containsString:@"jpg"] || [extensionFile containsString:@"jpeg"] || [extensionFile containsString:@"bmp"] || [extensionFile containsString:@"heic"]) {
+		fileType = @"image";
+	} else {
+		fileType = [[asset tracksWithMediaType:AVMediaTypeVideo] count] > 0 ? @"video" : @"file";
+	}
+	
 	NSString *key = [ChatConversationViewSwift getKeyFromFileType:fileType fileName:name];
-
-	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.lastPathComponent name:name key:key rootMessage:rootMessage];
+	
+	[self uploadData:data forChatRoom:chatRoom type:fileType subtype:name.pathExtension name:name key:key rootMessage:rootMessage];
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {
