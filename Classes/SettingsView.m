@@ -340,6 +340,19 @@ INIT_WITH_COMMON_CF {
 
 #pragma mark - UICompositeViewDelegate Functions
 
+id  thisClass;
+
+UIActivityIndicatorView *indicator = nil;
+
+- (id) init
+{
+	if (self = [super init])
+	{
+		thisClass = self;
+	}
+	return self;
+}
+
 static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
@@ -376,6 +389,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_navigationController.view.frame = self.subView.frame;
 	[_navigationController pushViewController:_settingsController animated:FALSE];
 	[self.view addSubview:_navigationController.view];
+	
+	indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	indicator.center = CGPointMake(self.view.bounds.size.width / 2 , (self.view.bounds.size.height) /2);
+	[self.view addSubview:indicator];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -1133,10 +1150,10 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 #pragma mark - Mail composer for sending logs
 
 - (void)sendEmailWithDebugAttachments {
-	NSMutableArray *attachments = [[NSMutableArray alloc] initWithCapacity:3];
+	//NSMutableArray *attachments = [[NSMutableArray alloc] initWithCapacity:3];
 
 	// retrieve linphone logs if available
-	char *filepath = linphone_core_compress_log_collection();
+	//char *filepath = linphone_core_compress_log_collection();
 	
 	
 	LinphoneCoreCbs *coreCbs = linphone_factory_create_core_cbs(linphone_factory_get());
@@ -1145,6 +1162,9 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	
 	linphone_core_upload_log_collection(LC);
 	
+	[indicator startAnimating];
+	
+	/*
 	if (filepath != NULL) {
 		NSString *filename = [[NSString stringWithUTF8String:filepath] componentsSeparatedByString:@"/"].lastObject;
 		NSString *mimeType = nil;
@@ -1189,13 +1209,17 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		return;
 	}
 
-	[self emailAttachments:attachments];
+	//[self emailAttachments:attachments];
+	 */
 }
 
 void core_log_collection_upload_state_changed(LinphoneCore *core, LinphoneCoreLogCollectionUploadState state , const char* info) {
 	
 	LOGD(@"LinphoneCoreLogCollectionUploadStateDelivered core_log_collection_upload_state_changed %s", info);
 	if (state == LinphoneCoreLogCollectionUploadStateDelivered) {
+		
+		[thisClass newEmailAttachments:info];
+		
 		LOGD(@"LinphoneCoreLogCollectionUploadStateDelivered %s", info);
 		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 		
@@ -1243,6 +1267,48 @@ void core_log_collection_upload_state_changed(LinphoneCore *core, LinphoneCoreLo
 	}
 
 	[self emailAttachments:attachments];
+}
+
+- (void) newEmailAttachments:(const char *)info {
+	NSString *error = nil;
+#if TARGET_IPHONE_SIMULATOR
+	error = @"Cannot send emails on the Simulator. To test this feature, please use a real device.";
+#else
+	if ([MFMailComposeViewController canSendMail] == NO) {
+		error = NSLocalizedString(
+			@"Your device is not configured to send emails. Please configure mail application prior to send logs.",
+			nil);
+	}
+#endif
+
+	if (error != nil) {
+		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Cannot send email", nil)
+																		 message:error
+																  preferredStyle:UIAlertControllerStyleAlert];
+		
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Continue", nil)
+																style:UIAlertActionStyleDefault
+															  handler:^(UIAlertAction * action) {}];
+		
+		[errView addAction:defaultAction];
+		[self presentViewController:errView animated:YES completion:nil];
+	} else {
+		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+		picker.mailComposeDelegate = self;
+		
+		[picker setSubject:@"Linphone Logs"];
+		
+		[picker setToRecipients:[NSArray
+									arrayWithObjects:[LinphoneManager.instance lpConfigStringForKey:@"debug_popup_email"
+																						withDefault:@""],
+													 nil]];
+		
+		[picker setMessageBody:[NSString stringWithFormat:@"%s",info] isHTML:NO];
+		
+		[self.view.window.rootViewController presentViewController:picker animated:true completion:nil];
+		
+		[indicator stopAnimating];
+	}
 }
 
 - (void)emailAttachments:(NSArray *)attachments {
