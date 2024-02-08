@@ -770,7 +770,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 				let previewController = QLPreviewController()
 				self.previewItems = []
 				chatMessage?.contents.forEach({ content in
-					if(content.isFile){
+					if(content.isFile && !content.isVoiceRecording){
 						if VFSUtil.vfsEnabled(groupName: kLinphoneMsgNotificationAppGroupId) {
 							var plainFile = content.exportPlainFile()
 							
