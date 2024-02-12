@@ -99,10 +99,10 @@ class AccountLoginViewModel: ObservableObject {
 				accountParams.pushNotificationConfig?.provider = "apns" + pushEnvironment
 				
 				// Temporary disable these features are they are not used for 6.0 first version
-				accountParams.conferenceFactoryUri = nil
-				accountParams.conferenceFactoryAddress = nil
+				//accountParams.conferenceFactoryUri = nil
+				//accountParams.conferenceFactoryAddress = nil
 				accountParams.audioVideoConferenceFactoryAddress = nil
-				accountParams.limeServerUrl = nil
+				//accountParams.limeServerUrl = nil
 				
 				// Now that our AccountParams is configured, we can create the Account object
 				let account = try core.createAccount(params: accountParams)

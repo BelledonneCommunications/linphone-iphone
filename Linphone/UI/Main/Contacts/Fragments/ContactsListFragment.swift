@@ -65,11 +65,11 @@ struct ContactsListFragment: View {
 					if index < contactsManager.avatarListModel.count
 						&& contactsManager.avatarListModel[index].friend!.photo != nil
 						&& !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
-						Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 45)
+						Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
 					} else {
 						Image("profil-picture-default")
 							.resizable()
-							.frame(width: 45, height: 45)
+							.frame(width: 50, height: 50)
 							.clipShape(Circle())
 					}
 					Text((contactsManager.lastSearch[index].friend?.name)!)

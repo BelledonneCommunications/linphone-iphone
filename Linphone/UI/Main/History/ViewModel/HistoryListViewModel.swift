@@ -29,6 +29,7 @@ class HistoryListViewModel: ObservableObject {
 	
 	var callLogsAddressToDelete = ""
 	var callLogSubscription: AnyCancellable?
+	
 	init() {
 		computeCallLogsList()
 	}

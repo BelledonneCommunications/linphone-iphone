@@ -52,7 +52,7 @@ struct HistoryListFragment: View {
 							
 							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
 								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 50)
 								} else {
 									Image("profil-picture-default")
 										.resizable()

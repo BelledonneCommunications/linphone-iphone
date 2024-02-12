@@ -40,6 +40,7 @@ struct ContentView: View {
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var startCallViewModel: StartCallViewModel
 	@ObservedObject var callViewModel: CallViewModel
+	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -128,6 +129,53 @@ struct ContentView: View {
 										})
 										
 										Spacer()
+										
+										ZStack {
+											if conversationsListViewModel.unreadMessages > 0 {
+												VStack {
+													HStack {
+														Text(
+															conversationsListViewModel.unreadMessages < 99
+															? String(conversationsListViewModel.unreadMessages)
+															: "99+"
+														)
+														.foregroundStyle(.white)
+														.default_text_style(styleSize: 10)
+														.lineLimit(1)
+													}
+													.frame(width: 18, height: 18)
+													.background(Color.redDanger500)
+													.cornerRadius(50)
+												}
+												.padding(.bottom, 30)
+												.padding(.leading, 30)
+											}
+											
+											Button(action: {
+												self.index = 2
+												historyViewModel.displayedCall = nil
+												contactViewModel.indexDisplayedFriend = nil
+											}, label: {
+												VStack {
+													Image("chat-teardrop-text")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(self.index == 2 ? Color.orangeMain500 : Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+													
+													if self.index == 2 {
+														Text("Conversations")
+															.default_text_style_700(styleSize: 10)
+													} else {
+														Text("Conversations")
+															.default_text_style(styleSize: 10)
+													}
+												}
+											})
+											.padding(.top)
+										}
+										
+										Spacer()
 									}
 								}
 								.frame(width: 75)
@@ -148,7 +196,7 @@ struct ContentView: View {
 												openMenu()
 											}
 										
-										Text(index == 0 ? "Contacts" : "Calls")
+										Text(index == 0 ? "Contacts" : (index == 1 ? "Calls" : "Conversations"))
 											.default_text_style_white_800(styleSize: 20)
 											.padding(.leading, 10)
 										
@@ -166,72 +214,75 @@ struct ContentView: View {
 												.frame(width: 25, height: 25, alignment: .leading)
 												.padding(.all, 10)
 										}
+										.padding(.trailing, index == 2 ? 10 : 0)
 										
-										Menu {
-											if index == 0 {
-												Button {
-													contactViewModel.indexDisplayedFriend = nil
-													isMenuOpen = false
-													magicSearch.allContact = true
-													MagicSearchSingleton.shared.searchForContacts(
-														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-												} label: {
-													HStack {
-														Text("See all")
-														Spacer()
-														if magicSearch.allContact {
-															Image("green-check")
+										if index != 2 {
+											Menu {
+												if index == 0 {
+													Button {
+														contactViewModel.indexDisplayedFriend = nil
+														isMenuOpen = false
+														magicSearch.allContact = true
+														MagicSearchSingleton.shared.searchForContacts(
+															sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+													} label: {
+														HStack {
+															Text("See all")
+															Spacer()
+															if magicSearch.allContact {
+																Image("green-check")
+																	.resizable()
+																	.frame(width: 25, height: 25, alignment: .leading)
+																	.padding(.all, 10)
+															}
+														}
+													}
+													
+													Button {
+														contactViewModel.indexDisplayedFriend = nil
+														isMenuOpen = false
+														magicSearch.allContact = false
+														MagicSearchSingleton.shared.searchForContacts(
+															sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+													} label: {
+														HStack {
+															Text("See Linphone contact")
+															Spacer()
+															if !magicSearch.allContact {
+																Image("green-check")
+																	.resizable()
+																	.frame(width: 25, height: 25, alignment: .leading)
+																	.padding(.all, 10)
+															}
+														}
+													}
+												} else {
+													Button(role: .destructive) {
+														isMenuOpen = false
+														isShowDeleteAllHistoryPopup.toggle()
+													} label: {
+														HStack {
+															Text("Delete all history")
+															Spacer()
+															Image("trash-simple-red")
 																.resizable()
 																.frame(width: 25, height: 25, alignment: .leading)
 																.padding(.all, 10)
 														}
 													}
 												}
-												
-												Button {
-													contactViewModel.indexDisplayedFriend = nil
-													isMenuOpen = false
-													magicSearch.allContact = false
-													MagicSearchSingleton.shared.searchForContacts(
-														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-												} label: {
-													HStack {
-														Text("See Linphone contact")
-														Spacer()
-														if !magicSearch.allContact {
-															Image("green-check")
-																.resizable()
-																.frame(width: 25, height: 25, alignment: .leading)
-																.padding(.all, 10)
-														}
-													}
-												}
-											} else {
-												Button(role: .destructive) {
-													isMenuOpen = false
-													isShowDeleteAllHistoryPopup.toggle()
-												} label: {
-													HStack {
-														Text("Delete all history")
-														Spacer()
-														Image("trash-simple-red")
-															.resizable()
-															.frame(width: 25, height: 25, alignment: .leading)
-															.padding(.all, 10)
-													}
-												}
+											} label: {
+												Image(index == 0 ? "funnel" : "dots-three-vertical")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(.white)
+													.frame(width: 25, height: 25, alignment: .leading)
+													.padding(.all, 10)
 											}
-										} label: {
-											Image(index == 0 ? "funnel" : "dots-three-vertical")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 25, height: 25, alignment: .leading)
-												.padding(.all, 10)
-										}
-										.padding(.trailing, 10)
-										.onTapGesture {
-											isMenuOpen = true
+											.padding(.trailing, 10)
+											.onTapGesture {
+												isMenuOpen = true
+											}
 										}
 									}
 									.frame(maxWidth: .infinity)
@@ -254,8 +305,10 @@ struct ContentView: View {
 												magicSearch.currentFilter = ""
 												MagicSearchSingleton.shared.searchForContacts(
 													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											} else {
+											} else if index == 1 {
 												historyListViewModel.resetFilterCallLogs()
+											} else {
+												//TODO Conversations List reset
 											}
 										} label: {
 											Image("caret-left")
@@ -293,8 +346,10 @@ struct ContentView: View {
 													magicSearch.currentFilter = newValue
 													MagicSearchSingleton.shared.searchForContacts(
 														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-												} else {
+												} else if index == 1 {
 													historyListViewModel.filterCallLogs(filter: text)
+												} else {
+													//TODO Conversations List Filter
 												}
 											}
 										} else {
@@ -317,9 +372,15 @@ struct ContentView: View {
 												self.focusedField = true
 											}
 											.onChange(of: text) { newValue in
-												magicSearch.currentFilter = newValue
-												MagicSearchSingleton.shared.searchForContacts(
-													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+												if index == 0 {
+													magicSearch.currentFilter = newValue
+													MagicSearchSingleton.shared.searchForContacts(
+														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+												} else if index == 1 {
+													historyListViewModel.filterCallLogs(filter: text)
+												} else {
+													//TODO Conversations List Filter
+												}
 											}
 										}
 										
@@ -360,6 +421,8 @@ struct ContentView: View {
 										isShowStartCallFragment: $isShowStartCallFragment,
 										isShowEditContactFragment: $isShowEditContactFragment
 									)
+								} else if self.index == 2 {
+									ConversationsView(conversationsListViewModel: conversationsListViewModel)
 								}
 							}
 							.frame(maxWidth:
@@ -408,6 +471,7 @@ struct ContentView: View {
 										}
 									})
 									.padding(.top)
+									.frame(width: 100)
 									
 									Spacer()
 									
@@ -431,6 +495,56 @@ struct ContentView: View {
 										}
 									})
 									.padding(.top)
+									.frame(width: 100)
+									
+									Spacer()
+									
+									ZStack {
+										if conversationsListViewModel.unreadMessages > 0 {
+											VStack {
+												HStack {
+													Text(
+														conversationsListViewModel.unreadMessages < 99
+														? String(conversationsListViewModel.unreadMessages)
+														: "99+"
+													)
+													.foregroundStyle(.white)
+													.default_text_style(styleSize: 10)
+													.lineLimit(1)
+												}
+												.frame(width: 18, height: 18)
+												.background(Color.redDanger500)
+												.cornerRadius(50)
+											}
+											.padding(.bottom, 30)
+											.padding(.leading, 30)
+										}
+										
+										Button(action: {
+											self.index = 2
+											historyViewModel.displayedCall = nil
+											contactViewModel.indexDisplayedFriend = nil
+										}, label: {
+											VStack {
+												Image("chat-teardrop-text")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 2 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												
+												if self.index == 2 {
+													Text("Conversations")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Conversations")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										.padding(.top)
+										.frame(width: 100)
+									}
+									
 									Spacer()
 								}
 							}
@@ -491,6 +605,11 @@ struct ContentView: View {
 									.background(Color.gray100)
 									.ignoresSafeArea(.keyboard)
 								}
+							} else if self.index == 2 {
+								ConversationsView(conversationsListViewModel: conversationsListViewModel)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								.ignoresSafeArea(.keyboard)
 							}
 						}
 						.onAppear {
@@ -745,7 +864,8 @@ struct ContentView: View {
 		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
 		startCallViewModel: StartCallViewModel(),
-		callViewModel: CallViewModel()
+		callViewModel: CallViewModel(),
+		conversationsListViewModel: ConversationsListViewModel()
 	)
 }
 // swiftlint:enable type_body_length

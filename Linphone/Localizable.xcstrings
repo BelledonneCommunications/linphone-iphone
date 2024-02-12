@@ -251,6 +251,9 @@
     "Continue" : {
 
     },
+    "Conversations" : {
+
+    },
     "Copy address" : {
 
     },
@@ -423,6 +426,9 @@
 
     },
     "No contacts for the moment..." : {
+
+    },
+    "No conversation for the moment..." : {
 
     },
     "Not account yet?" : {

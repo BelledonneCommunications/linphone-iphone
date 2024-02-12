@@ -55,8 +55,8 @@ struct Avatar: View {
 									Image(contactAvatarModel.presenceStatus == .Online ? "presence-online" : "presence-busy")
 										.resizable()
 										.frame(width: avatarSize/4, height: avatarSize/4)
-										.padding(.trailing, avatarSize == 45 ? 1 : 3)
-										.padding(.bottom, avatarSize == 45 ? 1 : 3)
+										.padding(.trailing, avatarSize == 50 ? 1 : 3)
+										.padding(.bottom, avatarSize == 50 ? 1 : 3)
 								}
 							}
 						}

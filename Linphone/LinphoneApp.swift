@@ -45,6 +45,7 @@ struct LinphoneApp: App {
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var startCallViewModel: StartCallViewModel?
 	@State private var callViewModel: CallViewModel?
+	@State private var conversationsListViewModel: ConversationsListViewModel?
 	
 	var body: some Scene {
 		WindowGroup {
@@ -72,7 +73,8 @@ struct LinphoneApp: App {
 						historyViewModel: historyViewModel!,
 						historyListViewModel: historyListViewModel!,
 						startCallViewModel: startCallViewModel!,
-						callViewModel: callViewModel!
+						callViewModel: callViewModel!,
+						conversationsListViewModel: conversationsListViewModel!
 					)
 				} else {
 					SplashScreen()
@@ -86,6 +88,7 @@ struct LinphoneApp: App {
 						historyListViewModel = HistoryListViewModel()
 						startCallViewModel = StartCallViewModel()
 						callViewModel = CallViewModel()
+						conversationsListViewModel = ConversationsListViewModel()
 					}
 			}
 		}

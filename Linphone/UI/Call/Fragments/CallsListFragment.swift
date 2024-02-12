@@ -230,11 +230,11 @@ struct CallsListFragment: View {
 								
 								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
 									if contactAvatarModel != nil {
-										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 45)
+										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 50)
 									} else {
 										Image("profil-picture-default")
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 									}
 								} else {
@@ -245,7 +245,7 @@ struct CallsListFragment: View {
 											? callViewModel.calls[index].callLog!.remoteAddress!.displayName!.components(separatedBy: " ")[1]
 											: ""))
 										.resizable()
-										.frame(width: 45, height: 45)
+										.frame(width: 50, height: 50)
 										.clipShape(Circle())
 										
 									} else {
@@ -255,7 +255,7 @@ struct CallsListFragment: View {
 											? callViewModel.calls[index].callLog!.remoteAddress!.username!.components(separatedBy: " ")[1]
 											: ""))
 										.resizable()
-										.frame(width: 45, height: 45)
+										.frame(width: 50, height: 50)
 										.clipShape(Circle())
 									}
 								}
