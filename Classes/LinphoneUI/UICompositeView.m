@@ -408,6 +408,8 @@
 	  sideMenu:(NSNumber *)sideMenu
 	fullscreen:(NSNumber *)fullscreen {
 
+	currentOrientation = [self getCorrectInterfaceOrientation:[[UIDevice currentDevice] orientation]];
+
 	UIViewController *oldMainViewController = self.mainViewController;
 	UIViewController *oldDetailsViewController = self.detailsViewController;
 	UIViewController *oldStatusBarViewController = self.statusBarViewController;

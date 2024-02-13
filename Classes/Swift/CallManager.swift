@@ -684,6 +684,7 @@ import AVFoundation
 					let content = UNMutableNotificationContent()
 					content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
 					content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
+					content.userInfo = ["missed_call" : true]
 					
 					// Deliver the notification.
 					let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
