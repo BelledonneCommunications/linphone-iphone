@@ -283,7 +283,6 @@
 								 intentIdentifiers:[[NSMutableArray alloc] init]
 										   options:UNNotificationCategoryOptionCustomDismissAction];
 
-	[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 	//NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
 	NSSet *categories = [NSSet setWithObjects:cat_call
 						 , video_call, cat_zrtp, nil];
@@ -297,7 +296,7 @@
 #ifdef USE_CRASHLYTICS
 	[FIRApp configure];
 #endif
-	
+	[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 	if ([VFSUtil vfsEnabledWithGroupName:kLinphoneMsgNotificationAppGroupId]) {
 		if (TARGET_IPHONE_SIMULATOR) {
 			LOGW(@"[VFS] Can not active for simulators.");
@@ -613,6 +612,8 @@
              withCompletionHandler:(void (^)(void))completionHandler {
 	LOGD(@"UN : response received");
 	LOGD(response.description);
+	
+	startedInBackground = true;
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
 	if (!callId)
