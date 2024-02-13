@@ -613,6 +613,14 @@
 	LOGD(@"UN : response received");
 	LOGD(response.description);
 	
+
+	if (![response.actionIdentifier isEqualToString:@"com.apple.UNNotificationDismissActionIdentifier"] && 
+		[response.notification.request.content.userInfo objectForKey:@"missed_call"]) {
+		[PhoneMainView.instance changeCurrentView:VIEW(HistoryListView).compositeViewDescription];
+		[PhoneMainView.instance.mainViewController didRotateFromInterfaceOrientation:PhoneMainView.instance.mainViewController.currentOrientation];
+		return;
+	}
+	
 	startedInBackground = true;
 
 	NSString *callId = (NSString *)[response.notification.request.content.userInfo objectForKey:@"CallId"];
