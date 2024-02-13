@@ -44,7 +44,6 @@ struct ConversationsListFragment: View {
 							})
 							: ContactAvatarModel(friend: nil, withPresence: false)
 							
-							
 							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationsListViewModel.conversationsList[index]) {
 								Image(uiImage: contactsManager.textToImage(
 									firstName: conversationsListViewModel.conversationsList[index].subject!,
@@ -117,7 +116,8 @@ struct ConversationsListFragment: View {
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.lineLimit(1)
 								} else {
-									if conversationsListViewModel.conversationsList[index].participants.first != nil && conversationsListViewModel.conversationsList[index].participants.first!.address != nil {
+									if conversationsListViewModel.conversationsList[index].participants.first != nil
+										&& conversationsListViewModel.conversationsList[index].participants.first!.address != nil {
 										Text(conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName != nil
 											 ? conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName!
 											 : conversationsListViewModel.conversationsList[index].participants.first!.address!.username!)
@@ -131,16 +131,18 @@ struct ConversationsListFragment: View {
 									}
 								}
 								
-								let text = conversationsListViewModel.conversationsList[index].lastMessageInHistory?.contents.first(where: {$0.isText == true})?.utf8Text ?? ""
-								
-								Text(text)
-									.foregroundStyle(Color.grayMain2c400)
-									.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
-										   view.default_text_style_700(styleSize: 14)
-									}
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
+								Text(
+									conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
+									? conversationsListViewModel.getContentTextMessage(message: conversationsListViewModel.conversationsList[index].lastMessageInHistory!)
+									: ""
+								)
+								.foregroundStyle(Color.grayMain2c400)
+								.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
+									view.default_text_style_700(styleSize: 14)
+								}
+								.default_text_style(styleSize: 14)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.lineLimit(1)
 								
 								Spacer()
 							}
@@ -160,17 +162,10 @@ struct ConversationsListFragment: View {
 											.frame(width: 18, height: 18, alignment: .trailing)
 									}
 									
-									if conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil {
-										Text(conversationsListViewModel.getCallTime(startDate: conversationsListViewModel.conversationsList[index].lastMessageInHistory!.time))
-											.foregroundStyle(Color.grayMain2c400)
-											.default_text_style(styleSize: 14)
-											.lineLimit(1)
-									} else {
-										Text(conversationsListViewModel.getCallTime(startDate: conversationsListViewModel.conversationsList[index].lastUpdateTime))
-											.foregroundStyle(Color.grayMain2c400)
-											.default_text_style(styleSize: 14)
-											.lineLimit(1)
-									}
+									Text(conversationsListViewModel.getCallTime(startDate: conversationsListViewModel.conversationsList[index].lastUpdateTime))
+										.foregroundStyle(Color.grayMain2c400)
+										.default_text_style(styleSize: 14)
+										.lineLimit(1)
 								}
 								
 								Spacer()

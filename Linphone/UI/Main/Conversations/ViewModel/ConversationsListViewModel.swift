@@ -19,17 +19,21 @@
 
 import Foundation
 import linphonesw
+import Combine
 
 class ConversationsListViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
+	private var contactsManager = ContactsManager.shared
+	
+	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	
 	@Published var conversationsList: [ChatRoom] = []
 	@Published var unreadMessages: Int = 0
 	
 	init() {
 		computeChatRoomsList(filter: "")
-		updateUnreadMessagesCount()
+		addConversationDelegate()
 	}
 	
 	func computeChatRoomsList(filter: String) {
@@ -37,41 +41,126 @@ class ConversationsListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let chatRooms = account?.chatRooms != nil ? account!.chatRooms : core.chatRooms
 			
-			chatRooms.forEach { chatRoom in
-				//let disabledBecauseNotSecured = (account?.isInSecureMode() == true && !chatRoom.hasCapability) ? Capabilities.Encrypted.toInt() : 0
+			DispatchQueue.main.async {
+				self.conversationsList = []
+				chatRooms.forEach { chatRoom in
+					//let disabledBecauseNotSecured = (account?.isInSecureMode() == true && !chatRoom.hasCapability) ? Capabilities.Encrypted.toInt() : 0
+					
+					if filter.isEmpty {
+						//val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
+						self.conversationsList.append(chatRoom)
+					}
+					/*
+					else {
+						val participants = chatRoom.participants
+						val found = participants.find {
+							// Search in address but also in contact name if exists
+							val model =
+							coreContext.contactsManager.getContactAvatarModelForAddress(it.address)
+							model.contactName?.contains(
+								filter,
+								ignoreCase = true
+							) == true || it.address.asStringUriOnly().contains(
+								filter,
+								ignoreCase = true
+							)
+						}
+						if (
+							found != null ||
+							chatRoom.peerAddress.asStringUriOnly().contains(filter, ignoreCase = true) ||
+							chatRoom.subject.orEmpty().contains(filter, ignoreCase = true)
+						) {
+							val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
+							list.add(model)
+							count += 1
+						}
+					}
+					 */
+				}
 				
-				if filter.isEmpty {
-					//val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
-					self.conversationsList.append(chatRoom)
-				}
-				/*
-				 else {
-					val participants = chatRoom.participants
-					val found = participants.find {
-						// Search in address but also in contact name if exists
-						val model =
-						coreContext.contactsManager.getContactAvatarModelForAddress(it.address)
-						model.contactName?.contains(
-							filter,
-							ignoreCase = true
-						) == true || it.address.asStringUriOnly().contains(
-							filter,
-							ignoreCase = true
-						)
-					}
-					if (
-						found != null ||
-						chatRoom.peerAddress.asStringUriOnly().contains(filter, ignoreCase = true) ||
-						chatRoom.subject.orEmpty().contains(filter, ignoreCase = true)
-					) {
-						val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
-						list.add(model)
-						count += 1
-					}
-				}
-				 */
+				self.updateUnreadMessagesCount()
 			}
 		}
+	}
+	
+	func addConversationDelegate() {
+		coreContext.doOnCoreQueue { core in
+			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnMainQueue { (cbValue: (_: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
+				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
+				switch cbValue.state {
+				case ChatRoom.State.Created:
+					self.computeChatRoomsList(filter: "")
+				case ChatRoom.State.Deleted:
+					self.computeChatRoomsList(filter: "")
+					//ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
+					//ToastViewModel.shared.displayToast = true
+				default:
+					break
+				}
+			})
+			
+			self.mCoreSuscriptions.insert(core.publisher?.onMessageSent?.postOnMainQueue { _ in
+				self.reorderChatRooms()
+			})
+			
+			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnMainQueue { _ in
+				self.reorderChatRooms()
+			})
+		}
+	}
+	
+	func reorderChatRooms() {
+		Log.info("[ConversationsListViewModel] Re-ordering conversations")
+		var sortedList: [ChatRoom] = []
+		sortedList.append(contentsOf: conversationsList)
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+			self.conversationsList = sortedList.sorted { $0.lastUpdateTime > $1.lastUpdateTime }
+		}
+		
+		updateUnreadMessagesCount()
+	}
+	
+	func updateUnreadMessagesCount() {
+		coreContext.doOnCoreQueue { core in
+			let account = core.defaultAccount
+			if account != nil {
+				let count = account?.unreadChatMessageCount != nil ? account!.unreadChatMessageCount : core.unreadChatMessageCount
+				
+				DispatchQueue.main.async {
+					self.unreadMessages = count
+				}
+			} else {
+				DispatchQueue.main.async {
+					self.unreadMessages = 0
+				}
+			}
+		}
+	}
+	
+	func getContentTextMessage(message: ChatMessage) -> String {
+		var fromAddressFriend = message.fromAddress != nil
+		? contactsManager.getFriendWithAddress(address: message.fromAddress!)?.name ?? nil
+		: nil
+		
+		if !message.isOutgoing && message.chatRoom != nil && !message.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+			if fromAddressFriend == nil {
+				if message.fromAddress!.displayName != nil {
+					fromAddressFriend = message.fromAddress!.displayName! + ": "
+				} else if message.fromAddress!.username != nil {
+					fromAddressFriend = message.fromAddress!.username! + ": "
+				} else {
+					fromAddressFriend = ""
+				}
+			} else {
+				fromAddressFriend! += ": "
+			}
+			
+		} else {
+			fromAddressFriend = nil
+		}
+		
+		return (fromAddressFriend ?? "") + (message.contents.first(where: {$0.isText == true})?.utf8Text ?? (message.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
 	}
 	
 	func getCallTime(startDate: time_t) -> String {
@@ -95,18 +184,6 @@ class ConversationsListViewModel: ObservableObject {
 			let formatter = DateFormatter()
 			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "dd/MM/yy" : "MM/dd/yy"
 			return formatter.string(from: myNSDate)
-		}
-	}
-	
-	func updateUnreadMessagesCount() {
-		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			if account != nil {
-				let count = account?.unreadChatMessageCount != nil ? account!.unreadChatMessageCount : core.unreadChatMessageCount
-				self.unreadMessages = count
-			} else {
-				self.unreadMessages = 0
-			}
 		}
 	}
 }

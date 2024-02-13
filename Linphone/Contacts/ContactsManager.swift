@@ -295,10 +295,13 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func getFriendWithAddress(address: Address) -> Friend? {
+		let clonedAddress = address.clone()
+		clonedAddress!.clean()
+		let sipUri = clonedAddress!.asStringUriOnly()
 		if friendList != nil {
-			var friend = friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == address.asStringUriOnly()})})
+			var friend = friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
 			if friend == nil {
-				friend = linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == address.asStringUriOnly()})})
+				friend = linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
 			}
 			return friend
 		} else {
