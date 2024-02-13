@@ -1064,11 +1064,11 @@
 		}
 		
 		[lm lpConfigSetString:[self stringForKey:@"local_push_ssids"] forKey:@"ssids" inSection:@"local_push"];
-		if (@available(iOS 15.0, *)) {
+		/* if (@available(iOS 15.0, *)) {
 			[LocalPushManager.shared configureLocalPushWithCCoreConfig:lm.configDb];
 		} else {
 			LOGW(@"Local push notifications not available for this ios version (iOS 15 minimum)");
-		}
+		} */
 
 
 		// tunnel section

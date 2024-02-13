@@ -843,22 +843,16 @@
 		C63F72FD285A31DA0066163B /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C63F72FA285A31DA0066163B /* Roboto-Regular.ttf */; };
 		C63F72FE285A31DA0066163B /* Roboto-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C63F72FB285A31DA0066163B /* Roboto-Italic.ttf */; };
 		C63F72FF285A31DA0066163B /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C63F72FC285A31DA0066163B /* Roboto-Bold.ttf */; };
-		C6489D842AA21DBD00B6BEE5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE6C88323FABF690076A018 /* Utils.swift */; };
 		C64A854E2667B67200252AD2 /* EphemeralSettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C64A854D2667B67200252AD2 /* EphemeralSettingsView.m */; };
 		C64A85502667B67A00252AD2 /* EphemeralSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C64A854F2667B67A00252AD2 /* EphemeralSettingsView.xib */; };
 		C64A85522667B74100252AD2 /* ephemeral_messages_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C64A85512667B74100252AD2 /* ephemeral_messages_default.png */; };
 		C6548820292D32FA00BF646B /* SingleCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C654881E292D32FA00BF646B /* SingleCallView.swift */; };
 		C6548821292D32FA00BF646B /* ConferenceCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C654881F292D32FA00BF646B /* ConferenceCallView.swift */; };
 		C6548823292D369500BF646B /* AbstractCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6548822292D369500BF646B /* AbstractCallView.swift */; };
-		C65492BD2AAB228900E9B61B /* LocalPushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65492BC2AAB228900E9B61B /* LocalPushManager.swift */; };
 		C66B03BB26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C66B03BD26E8EB1A009B5EDC /* UIChatReplyBubbleView.xib */; };
 		C66B040A26EFDA55009B5EDC /* reply_cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = C66B040926EFDA54009B5EDC /* reply_cancel.png */; };
 		C66B040E26F095D1009B5EDC /* cancel_forward.png in Resources */ = {isa = PBXBuildFile; fileRef = C66B040D26F095CE009B5EDC /* cancel_forward.png */; };
 		C684F1FA2913D65500736775 /* SnapkitBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C684F1F92913D65500736775 /* SnapkitBridge.swift */; };
-		C6909F6C2AA0DC2A0011D273 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6909F6B2AA0DC2A0011D273 /* NetworkExtension.framework */; };
-		C6909F6F2AA0DC2E0011D273 /* LocalPushProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6909F6E2AA0DC2E0011D273 /* LocalPushProvider.swift */; };
-		C6909F742AA0DC2E0011D273 /* LocalPushProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C6909F6A2AA0DC2A0011D273 /* LocalPushProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		C6909F7A2AA0E8F80011D273 /* VFSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63F720C285A24B10066163B /* VFSUtil.swift */; };
 		C6A1BB3526E8815400540D50 /* menu_info.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3126E8815300540D50 /* menu_info.png */; };
 		C6A1BB3626E8815400540D50 /* menu_forward_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3226E8815400540D50 /* menu_forward_default.png */; };
 		C6A1BB3726E8815400540D50 /* menu_copy_text_default.png in Resources */ = {isa = PBXBuildFile; fileRef = C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */; };
@@ -1018,13 +1012,6 @@
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = linphone;
 		};
-		C6909F722AA0DC2E0011D273 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C6909F692AA0DC2A0011D273;
-			remoteInfo = localpush;
-		};
 		EA88F393241BC1F400E66528 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -1050,7 +1037,6 @@
 			files = (
 				61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */,
 				EA8CB833239F96CA00C330CC /* msgNotificationContent.appex in Embed App Extensions */,
-				C6909F742AA0DC2E0011D273 /* LocalPushProvider.appex in Embed App Extensions */,
 				EA0007A62356008F003CC6BF /* msgNotificationService.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -2089,18 +2075,13 @@
 		C654881E292D32FA00BF646B /* SingleCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleCallView.swift; sourceTree = "<group>"; };
 		C654881F292D32FA00BF646B /* ConferenceCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConferenceCallView.swift; sourceTree = "<group>"; };
 		C6548822292D369500BF646B /* AbstractCallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractCallView.swift; sourceTree = "<group>"; };
-		C65492BC2AAB228900E9B61B /* LocalPushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushManager.swift; sourceTree = "<group>"; };
 		C66B03BC26E8EB1A009B5EDC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatReplyBubbleView.xib; sourceTree = "<group>"; };
 		C66B03C126E8EB82009B5EDC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
 		C66B03C326E8EB87009B5EDC /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIChatReplyBubbleView.strings; sourceTree = "<group>"; };
 		C66B040926EFDA54009B5EDC /* reply_cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reply_cancel.png; sourceTree = "<group>"; };
 		C66B040D26F095CE009B5EDC /* cancel_forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel_forward.png; sourceTree = "<group>"; };
 		C684F1F92913D65500736775 /* SnapkitBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapkitBridge.swift; sourceTree = "<group>"; };
-		C6909F6A2AA0DC2A0011D273 /* LocalPushProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = LocalPushProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6909F6B2AA0DC2A0011D273 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
-		C6909F6E2AA0DC2E0011D273 /* LocalPushProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPushProvider.swift; sourceTree = "<group>"; };
-		C6909F702AA0DC2E0011D273 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C6909F712AA0DC2E0011D273 /* LocalPushProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LocalPushProvider.entitlements; sourceTree = "<group>"; };
 		C6A1BB3126E8815300540D50 /* menu_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_info.png; sourceTree = "<group>"; };
 		C6A1BB3226E8815400540D50 /* menu_forward_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_forward_default.png; sourceTree = "<group>"; };
 		C6A1BB3326E8815400540D50 /* menu_copy_text_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_copy_text_default.png; sourceTree = "<group>"; };
@@ -2409,14 +2390,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C6909F672AA0DC2A0011D273 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C6909F6C2AA0DC2A0011D273 /* NetworkExtension.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -2554,7 +2527,6 @@
 				EA5F25D9232BD3E200475F2E /* msgNotificationService.appex */,
 				EA8CB827239F96CA00C330CC /* msgNotificationContent.appex */,
 				6637AF8D288593AF00965733 /* CallUITests.xctest */,
-				C6909F6A2AA0DC2A0011D273 /* LocalPushProvider.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2675,7 +2647,6 @@
 				EA5F25DA232BD3E200475F2E /* msgNotificationService */,
 				662F5971288AEFAA00C9CAF7 /* UITests */,
 				EA8CB82A239F96CA00C330CC /* msgNotificationContent */,
-				C6909F6D2AA0DC2E0011D273 /* LocalPushProvider */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -3517,7 +3488,6 @@
 				C63F720B285A24B10066163B /* ProviderDelegate.swift */,
 				C63F720C285A24B10066163B /* VFSUtil.swift */,
 				C63F71B1285A24B10066163B /* AppManager.swift */,
-				C65492BC2AAB228900E9B61B /* LocalPushManager.swift */,
 				D7421D99292283AE00290CAB /* Chat */,
 				C63F7199285A24B10066163B /* Conference */,
 				C63F71AA285A24B10066163B /* Util */,
@@ -3798,16 +3768,6 @@
 			path = fonts;
 			sourceTree = "<group>";
 		};
-		C6909F6D2AA0DC2E0011D273 /* LocalPushProvider */ = {
-			isa = PBXGroup;
-			children = (
-				C6909F6E2AA0DC2E0011D273 /* LocalPushProvider.swift */,
-				C6909F702AA0DC2E0011D273 /* Info.plist */,
-				C6909F712AA0DC2E0011D273 /* LocalPushProvider.entitlements */,
-			);
-			path = LocalPushProvider;
-			sourceTree = "<group>";
-		};
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -4067,7 +4027,6 @@
 				EA8CB83A239F9A3000C330CC /* PBXTargetDependency */,
 				EA8CB83C239F9A3000C330CC /* PBXTargetDependency */,
 				61AE365520C00B370089D9D3 /* PBXTargetDependency */,
-				C6909F732AA0DC2E0011D273 /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -4108,23 +4067,6 @@
 			productName = IncommingCallUITests;
 			productReference = 6637AF8D288593AF00965733 /* CallUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
-		};
-		C6909F692AA0DC2A0011D273 /* LocalPushProvider */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C6909F792AA0DC340011D273 /* Build configuration list for PBXNativeTarget "LocalPushProvider" */;
-			buildPhases = (
-				C6909F662AA0DC2A0011D273 /* Sources */,
-				C6909F672AA0DC2A0011D273 /* Frameworks */,
-				C6909F682AA0DC2A0011D273 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = LocalPushProvider;
-			productName = localpush;
-			productReference = C6909F6A2AA0DC2A0011D273 /* LocalPushProvider.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 		EA5F25D8232BD3E200475F2E /* msgNotificationService */ = {
 			isa = PBXNativeTarget;
@@ -4174,7 +4116,7 @@
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = Z2V957B3D6;
 						LastSwiftMigration = 1030;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -4208,11 +4150,6 @@
 						DevelopmentTeam = Z2V957B3D6;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 1D6058900D05DD3D006BFB54;
-					};
-					C6909F692AA0DC2A0011D273 = {
-						CreatedOnToolsVersion = 14.3.1;
-						DevelopmentTeam = Z2V957B3D6;
-						ProvisioningStyle = Manual;
 					};
 					EA5F25D8232BD3E200475F2E = {
 						CreatedOnToolsVersion = 11.0;
@@ -4277,7 +4214,6 @@
 				EA5F25D8232BD3E200475F2E /* msgNotificationService */,
 				EA8CB826239F96CA00C330CC /* msgNotificationContent */,
 				6637AF8C288593AF00965733 /* CallUITests */,
-				C6909F692AA0DC2A0011D273 /* LocalPushProvider */,
 			);
 		};
 /* End PBXProject section */
@@ -4987,13 +4923,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C6909F682AA0DC2A0011D273 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		EA88A406242A6224007FEC61 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -5226,7 +5155,6 @@
 				631098491D4660580041F2B3 /* CountryListView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
 				C684F1FA2913D65500736775 /* SnapkitBridge.swift in Sources */,
-				C65492BD2AAB228900E9B61B /* LocalPushManager.swift in Sources */,
 				C63F7228285A24B10066163B /* OptionalExtensions.swift in Sources */,
 				C63F7241285A24B10066163B /* ParticipantsListView.swift in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
@@ -5369,16 +5297,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C6909F662AA0DC2A0011D273 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C6909F6F2AA0DC2E0011D273 /* LocalPushProvider.swift in Sources */,
-				C6909F7A2AA0E8F80011D273 /* VFSUtil.swift in Sources */,
-				C6489D842AA21DBD00B6BEE5 /* Utils.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		EA5F25D5232BD3E200475F2E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -5411,11 +5329,6 @@
 			isa = PBXTargetDependency;
 			target = 1D6058900D05DD3D006BFB54 /* linphone */;
 			targetProxy = 6637AF93288593AF00965733 /* PBXContainerItemProxy */;
-		};
-		C6909F732AA0DC2E0011D273 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C6909F692AA0DC2A0011D273 /* LocalPushProvider */;
-			targetProxy = C6909F722AA0DC2E0011D273 /* PBXContainerItemProxy */;
 		};
 		EA8CB83A239F9A3000C330CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5909,15 +5822,13 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -5962,7 +5873,6 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - DEV - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6040,15 +5950,13 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -6090,7 +5998,6 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6167,15 +6074,13 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -6217,7 +6122,6 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6293,15 +6197,13 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_UNREACHABLE_CODE = NO;
 				CODE_SIGN_ENTITLEMENTS = linphone.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -6343,7 +6245,6 @@
 				PRODUCT_NAME = linphone;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphone";
 				SKIP_INSTALL = NO;
 				STRIP_SWIFT_SYMBOLS = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Classes/linphone-Bridging-Header.h";
@@ -6458,14 +6359,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -6480,7 +6379,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - linphoneExtension";
 				SKIP_INSTALL = YES;
 				STRIP_SWIFT_SYMBOLS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -6780,223 +6678,6 @@
 			};
 			name = Debug;
 		};
-		C6909F752AA0DC340011D273 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = LocalPushProvider/LocalPushProvider.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LocalPushProvider/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = localpush;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - DEV - localPushProvider";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		C6909F762AA0DC340011D273 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = LocalPushProvider/LocalPushProvider.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LocalPushProvider/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = localpush;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - localPushProvider";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		C6909F772AA0DC340011D273 /* Distribution */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = LocalPushProvider/LocalPushProvider.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LocalPushProvider/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = localpush;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - localPushProvider";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Distribution;
-		};
-		C6909F782AA0DC340011D273 /* DistributionAdhoc */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = LocalPushProvider/LocalPushProvider.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = LocalPushProvider/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = localpush;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MARKETING_VERSION = 1.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.localpushprovider;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - localPushProvider";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = DistributionAdhoc;
-		};
 		EA5F25E2232BD3E300475F2E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -7122,14 +6803,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -7147,7 +6826,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LOCALPUSH - PROD - msgNotificationService";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
@@ -7333,13 +7011,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = msgNotificationContent/msgNotificationContent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = Z2V957B3D6;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -7357,7 +7033,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationContent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "LocalPush Distribution (msgNotificationContent)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
@@ -7460,17 +7135,6 @@
 				22F3D55513CC3C9100A0DA02 /* Release */,
 				22F51EE7107FA53D00F98953 /* Distribution */,
 				228B19A61302902F00F154D3 /* DistributionAdhoc */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		C6909F792AA0DC340011D273 /* Build configuration list for PBXNativeTarget "LocalPushProvider" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C6909F752AA0DC340011D273 /* Debug */,
-				C6909F762AA0DC340011D273 /* Release */,
-				C6909F772AA0DC340011D273 /* Distribution */,
-				C6909F782AA0DC340011D273 /* DistributionAdhoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

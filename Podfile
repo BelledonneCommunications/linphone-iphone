@@ -64,14 +64,14 @@ target 'CallUITests' do
 
 end
 
-target 'LocalPushProvider' do
+#target 'LocalPushProvider' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  use_frameworks!
+  #use_frameworks!
 
   # Pods for CallUITests
-  all_pods
+  #all_pods
 
-end
+#end
 
 post_install do |installer|
         system("sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift")

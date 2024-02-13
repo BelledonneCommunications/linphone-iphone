@@ -30,9 +30,5 @@
 	<array>
 		<string>$(AppIdentifierPrefix)org.linphone.phone</string>
 	</array>
-	<key>com.apple.developer.networking.networkextension</key>
-	<array>
-		<string>app-push-provider</string>
-	</array>
 </dict>
 </plist>

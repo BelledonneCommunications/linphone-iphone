@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -12,7 +12,6 @@
                 <outlet property="callQualityButton" destination="SKk-s0-5HE" id="22M-FN-kRs"/>
                 <outlet property="callSecurityButton" destination="27" id="29"/>
                 <outlet property="incallView" destination="0Vp-VF-wmX" id="mLI-RY-bfW"/>
-                <outlet property="localpushIndicator" destination="Lbe-fc-SC9" id="UZc-RF-pLQ"/>
                 <outlet property="outcallView" destination="lfO-I4-PXi" id="04e-SG-ViY"/>
                 <outlet property="registrationState" destination="Mhg-P6-RfU" id="xTR-Af-XBY"/>
                 <outlet property="view" destination="4" id="11"/>
@@ -95,13 +94,6 @@
                         </button>
                     </subviews>
                 </view>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="local push active" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbe-fc-SC9" userLabel="LocalPushActive">
-                    <rect key="frame" x="65" y="27" width="82" height="12"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <fontDescription key="fontDescription" type="italicSystem" pointSize="10"/>
-                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mhg-P6-RfU" userLabel="registrationState" customClass="UIIconButton">
                     <rect key="frame" x="46" y="0.0" width="194" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>

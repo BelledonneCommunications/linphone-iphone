@@ -198,30 +198,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
-		<dict>
-			<key>Key</key>
-			<string>local_push</string>
-			<key>Title</key>
-			<string>Local push notifications</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>Key</key>
-			<string>local_push_ssids</string>
-			<key>Title</key>
-			<string>Enable on Wifi SSIDs:</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
-		</dict>
 	</array>
 </dict>
 </plist>
