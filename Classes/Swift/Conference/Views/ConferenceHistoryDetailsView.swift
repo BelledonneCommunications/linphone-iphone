@@ -186,6 +186,7 @@ import linphonesw
 		cell.selectionStyle = .none
 		cell.scheduleConfParticipantAddress = tableView.tag == 1 ?  data.conferenceInfo.participants.filter {$0.weakEqual(address2: data.conferenceInfo.organizer!)}.first  : data.conferenceInfo.participants[indexPath.row]
 		cell.limeBadge.isHidden = true
+		cell.addButton.isHidden = true
 		return cell
 	}
 	
