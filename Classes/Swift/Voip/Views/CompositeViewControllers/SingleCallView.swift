@@ -123,14 +123,14 @@ import AVKit
 	// Picture in picture on video call
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
-		if (CallsViewModel.shared.currentCallData.value??.call.state == .StreamsRunning && pipController.isPictureInPicturePossible) {
+		if (pipController != nil && CallsViewModel.shared.currentCallData.value??.call.state == .StreamsRunning && pipController.isPictureInPicturePossible) {
 			pipController.startPictureInPicture()
 		}
 	}
 	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		if pipController.isPictureInPictureActive {
+		if pipController != nil && pipController.isPictureInPictureActive {
 			pipController.stopPictureInPicture()
 		}
 	}
