@@ -16,6 +16,8 @@
 		66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
 		66C492012B24DB6900CEA16D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
+		D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */; };
+		D70A26F02B7D02E6006CC8FC /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
 		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
@@ -114,6 +116,8 @@
 		66C491FE2B24D4AC00CEA16D /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		66C492002B24DB6900CEA16D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
+		D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListBottomSheet.swift; sourceTree = "<group>"; };
+		D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
@@ -544,6 +548,7 @@
 			isa = PBXGroup;
 			children = (
 				D7CEE0372B7A214F00FD79B7 /* ConversationsListViewModel.swift */,
+				D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -553,6 +558,7 @@
 			children = (
 				D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */,
 				D7CEE03C2B7A23B200FD79B7 /* ConversationsListFragment.swift */,
+				D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -741,6 +747,7 @@
 				D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */,
 				D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
+				D70A26F02B7D02E6006CC8FC /* ConversationViewModel.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
 				D7E6D04D2AEBD77600A57AAF /* CustomBottomSheet.swift in Sources */,
 				D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */,
@@ -780,6 +787,7 @@
 				D7B99E9B2B29F7C300BE7BF2 /* ActivityIndicator.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,
 				D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */,
+				D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */,
 				D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				D7CEE0352B7A210300FD79B7 /* ConversationsView.swift in Sources */,

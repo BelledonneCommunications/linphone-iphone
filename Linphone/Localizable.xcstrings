@@ -401,10 +401,16 @@
     "Logs URL copied into clipboard" : {
 
     },
+    "Marquer comme non lu" : {
+
+    },
     "Message" : {
 
     },
     "Messages" : {
+
+    },
+    "Mettre en sourdine" : {
 
     },
     "Missed call" : {
@@ -490,6 +496,9 @@
     "QR code validated!" : {
 
     },
+    "Quitter la conversation" : {
+
+    },
     "Record" : {
 
     },
@@ -557,6 +566,9 @@
 
     },
     "Suggestions" : {
+
+    },
+    "Supprimer la conversation" : {
 
     },
     "TCP" : {

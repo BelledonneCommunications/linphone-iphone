@@ -47,5 +47,5 @@ struct ConversationsView: View {
 }
 
 #Preview {
-    ConversationsListFragment(conversationsListViewModel: ConversationsListViewModel())
+	ConversationsListFragment(conversationsListViewModel: ConversationsListViewModel(), conversationViewModel: ConversationViewModel(), showingSheet: .constant(false))
 }

@@ -22,47 +22,34 @@ import SwiftUI
 struct ConversationsFragment: View {
 	
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
+	@State var showingSheet: Bool = false
 	
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				ConversationsListFragment(conversationsListViewModel: conversationsListViewModel)
-				/*
+				ConversationsListFragment(conversationsListViewModel: conversationsListViewModel, conversationViewModel: conversationViewModel,showingSheet: $showingSheet)
 					.sheet(isPresented: $showingSheet) {
-						HistoryListBottomSheet(
-							historyViewModel: historyViewModel,
-							contactViewModel: contactViewModel,
-							editContactViewModel: editContactViewModel,
-							historyListViewModel: historyListViewModel,
-							showingSheet: $showingSheet,
-							index: $index,
-							isShowEditContactFragment: $isShowEditContactFragment
+						ConversationsListBottomSheet(
+							showingSheet: $showingSheet
 						)
-						.presentationDetents([.fraction(0.2)])
+						.presentationDetents([.fraction(0.4)])
 					}
-				 */
 			} else {
-				ConversationsListFragment(conversationsListViewModel: conversationsListViewModel)
-				/*
+				ConversationsListFragment(conversationsListViewModel: conversationsListViewModel, conversationViewModel: conversationViewModel,showingSheet: $showingSheet)
 					.halfSheet(showSheet: $showingSheet) {
-						HistoryListBottomSheet(
-							historyViewModel: historyViewModel,
-							contactViewModel: contactViewModel,
-							editContactViewModel: editContactViewModel,
-							historyListViewModel: historyListViewModel,
-							showingSheet: $showingSheet,
-							index: $index,
-							isShowEditContactFragment: $isShowEditContactFragment
+						ConversationsListBottomSheet(
+							showingSheet: $showingSheet
 						)
 					} onDismiss: {}
-				 */
 			}
 		}
 	}
 }
 
 #Preview {
-    ConversationsFragment(conversationsListViewModel: ConversationsListViewModel())
+	ConversationsFragment(conversationsListViewModel: ConversationsListViewModel(), conversationViewModel: ConversationViewModel())
 }
