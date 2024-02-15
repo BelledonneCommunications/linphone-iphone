@@ -22,9 +22,5 @@ import linphonesw
 
 class ConversationViewModel: ObservableObject {
 	
-	@Published var displayedConversation: ChatRoom?
-	
-	var selectedConversation: ChatRoom?
-	
 	init() {}
 }

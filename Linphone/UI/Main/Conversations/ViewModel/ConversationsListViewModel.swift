@@ -31,6 +31,10 @@ class ConversationsListViewModel: ObservableObject {
 	@Published var conversationsList: [ChatRoom] = []
 	@Published var unreadMessages: Int = 0
 	
+	@Published var displayedConversation: ChatRoom?
+	
+	var selectedConversation: ChatRoom?
+	
 	init() {
 		computeChatRoomsList(filter: "")
 		addConversationDelegate()
@@ -45,6 +49,8 @@ class ConversationsListViewModel: ObservableObject {
 				self.conversationsList = []
 				chatRooms.forEach { chatRoom in
 					//let disabledBecauseNotSecured = (account?.isInSecureMode() == true && !chatRoom.hasCapability) ? Capabilities.Encrypted.toInt() : 0
+					if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+					}
 					
 					if filter.isEmpty {
 						//val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
@@ -85,11 +91,11 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { core in
-			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnMainQueue { (cbValue: (_: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
+			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnMainQueue { (cbValue: (core: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
 				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				switch cbValue.state {
 				case ChatRoom.State.Created:
-					self.computeChatRoomsList(filter: "")
+					self.addChatRoom(cbChatRoom: cbValue.chatRoom)
 				case ChatRoom.State.Deleted:
 					self.computeChatRoomsList(filter: "")
 					//ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
@@ -100,13 +106,26 @@ class ConversationsListViewModel: ObservableObject {
 			})
 			
 			self.mCoreSuscriptions.insert(core.publisher?.onMessageSent?.postOnMainQueue { _ in
-				self.reorderChatRooms()
+				self.computeChatRoomsList(filter: "")
 			})
 			
 			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnMainQueue { _ in
-				self.reorderChatRooms()
+				self.computeChatRoomsList(filter: "")
 			})
 		}
+	}
+	
+	func addChatRoom(cbChatRoom: ChatRoom) {
+		Log.info("[ConversationsListViewModel] Re-ordering conversations")
+		var sortedList: [ChatRoom] = []
+		sortedList.append(cbChatRoom)
+		sortedList.append(contentsOf: self.conversationsList)
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+			self.conversationsList = sortedList.sorted { $0.lastUpdateTime > $1.lastUpdateTime }
+		}
+		
+		updateUnreadMessagesCount()
 	}
 	
 	func reorderChatRooms() {

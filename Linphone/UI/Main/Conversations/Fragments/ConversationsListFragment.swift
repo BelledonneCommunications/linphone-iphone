@@ -25,7 +25,6 @@ struct ConversationsListFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	@Binding var showingSheet: Bool
 	
@@ -174,6 +173,22 @@ struct ConversationsListFragment: View {
 								Spacer()
 								
 								HStack {
+									if conversationsListViewModel.conversationsList[index].muted == false
+										&& !(conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
+										&& conversationsListViewModel.conversationsList[index].lastMessageInHistory!.isOutgoing == true)
+										&& conversationsListViewModel.conversationsList[index].unreadMessagesCount == 0 {
+										Text("")
+											.frame(width: 18, height: 18, alignment: .trailing)
+									}
+									
+									if conversationsListViewModel.conversationsList[index].muted {
+										Image("bell-slash")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 18, height: 18, alignment: .trailing)
+									}
+									
 									if conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
 										&& conversationsListViewModel.conversationsList[index].lastMessageInHistory!.isOutgoing == true {
 										let imageName = LinphoneUtils.getChatIconState(chatState: conversationsListViewModel.conversationsList[index].lastMessageInHistory!.state)
@@ -199,13 +214,6 @@ struct ConversationsListFragment: View {
 										.background(Color.redDanger500)
 										.cornerRadius(50)
 									}
-									
-									if !(conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
-										&& conversationsListViewModel.conversationsList[index].lastMessageInHistory!.isOutgoing == true)
-										&& conversationsListViewModel.conversationsList[index].unreadMessagesCount == 0 {
-										Text("")
-											.frame(width: 18, height: 18, alignment: .trailing)
-									}
 								}
 								
 								Spacer()
@@ -220,7 +228,7 @@ struct ConversationsListFragment: View {
 					.onTapGesture {
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
-						conversationViewModel.selectedConversation = conversationsListViewModel.conversationsList[index]
+						conversationsListViewModel.selectedConversation = conversationsListViewModel.conversationsList[index]
 						showingSheet.toggle()
 					}
 				}
@@ -250,5 +258,5 @@ struct ConversationsListFragment: View {
 }
 
 #Preview {
-	ConversationsListFragment(conversationsListViewModel: ConversationsListViewModel(), conversationViewModel: ConversationViewModel(), showingSheet: .constant(false))
+	ConversationsListFragment(conversationsListViewModel: ConversationsListViewModel(), showingSheet: .constant(false))
 }

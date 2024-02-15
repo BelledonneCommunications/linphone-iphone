@@ -66,7 +66,8 @@ struct LinphoneApp: App {
 							&& historyViewModel != nil
 							&& historyListViewModel != nil
 							&& startCallViewModel != nil
-							&& callViewModel != nil {
+							&& callViewModel != nil
+							&& conversationsListViewModel != nil{
 					ContentView(
 						contactViewModel: contactViewModel!,
 						editContactViewModel: editContactViewModel!,

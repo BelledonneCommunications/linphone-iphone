@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct ConversationsListBottomSheet: View {
 	
@@ -26,6 +27,8 @@ struct ConversationsListBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@State private var orientation = UIDevice.current.orientation
+	
+	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
 	
@@ -52,6 +55,12 @@ struct ConversationsListBottomSheet: View {
 			Spacer()
 			
 			Button {
+				if conversationsListViewModel.selectedConversation != nil {
+					conversationsListViewModel.objectWillChange.send()
+					conversationsListViewModel.selectedConversation!.markAsRead()
+					conversationsListViewModel.updateUnreadMessagesCount()
+				}
+				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {
 						showingSheet.toggle()
@@ -86,6 +95,11 @@ struct ConversationsListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
+				if conversationsListViewModel.selectedConversation != nil {
+					conversationsListViewModel.objectWillChange.send()
+					conversationsListViewModel.selectedConversation!.muted.toggle()
+				}
+				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {
 						showingSheet.toggle()
@@ -99,13 +113,13 @@ struct ConversationsListBottomSheet: View {
 				}
 			} label: {
 				HStack {
-					Image("bell-slash")
+					Image(conversationsListViewModel.selectedConversation!.muted ? "bell" : "bell-slash")
 						.renderingMode(.template)
 						.resizable()
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Mettre en sourdine")
+					Text(conversationsListViewModel.selectedConversation!.muted ? "Réactiver les notifications" : "Mettre en sourdine")
 					.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -119,42 +133,58 @@ struct ConversationsListBottomSheet: View {
 			}
 			.frame(maxWidth: .infinity)
 			
-			Button {
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
+			if conversationsListViewModel.selectedConversation != nil
+				&& conversationsListViewModel.selectedConversation!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+				Button {
+					if conversationsListViewModel.selectedConversation!.participants.first != nil {
+						TelecomManager.shared.doCallWithCore(
+							addr: conversationsListViewModel.selectedConversation!.participants.first!.address!, isVideo: false
+						)
+					}
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
 						dismiss()
 					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
+					
+				} label: {
+					HStack {
+						Image("phone")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+						Text("Appel")
+							.default_text_style(styleSize: 16)
+						Spacer()
+					}
+					.frame(maxHeight: .infinity)
 				}
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
 				
-			} label: {
-				HStack {
-					Image("phone")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text("Appel")
-						.default_text_style(styleSize: 16)
-					Spacer()
+				VStack {
+					Divider()
 				}
-				.frame(maxHeight: .infinity)
+				.frame(maxWidth: .infinity)
 			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
 			
 			Button {
+				if conversationsListViewModel.selectedConversation != nil {
+					CoreContext.shared.doOnCoreQueue { core in
+						core.deleteChatRoom(chatRoom: conversationsListViewModel.selectedConversation!)
+						//conversationsListViewModel.computeChatRoomsList(filter: "")
+					}
+				}
+				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {
 						showingSheet.toggle()
@@ -190,6 +220,10 @@ struct ConversationsListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
+				if conversationsListViewModel.selectedConversation != nil {
+					conversationsListViewModel.selectedConversation!.leave()
+				}
+				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {
 						showingSheet.toggle()
@@ -227,5 +261,5 @@ struct ConversationsListBottomSheet: View {
 }
 
 #Preview {
-	ConversationsListBottomSheet(showingSheet: .constant(true))
+	ConversationsListBottomSheet(conversationsListViewModel: ConversationsListViewModel(), showingSheet: .constant(true))
 }
