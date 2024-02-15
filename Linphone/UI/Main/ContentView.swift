@@ -108,25 +108,51 @@ struct ContentView: View {
 										
 										Spacer()
 										
-										Button(action: {
-											self.index = 1
-											contactViewModel.indexDisplayedFriend = nil
-										}, label: {
-											VStack {
-												Image("phone")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
-													.frame(width: 25, height: 25)
-												if self.index == 1 {
-													Text("Calls")
-														.default_text_style_700(styleSize: 10)
-												} else {
-													Text("Calls")
+										ZStack {
+											if historyListViewModel.missedCallsCount > 0 {
+												VStack {
+													HStack {
+														Text(
+															historyListViewModel.missedCallsCount < 99
+															? String(historyListViewModel.missedCallsCount)
+															: "99+"
+														)
+														.foregroundStyle(.white)
 														.default_text_style(styleSize: 10)
+														.lineLimit(1)
+													}
+													.frame(width: 18, height: 18)
+													.background(Color.redDanger500)
+													.cornerRadius(50)
 												}
+												.padding(.bottom, 30)
+												.padding(.leading, 30)
 											}
-										})
+											
+											Button(action: {
+												self.index = 1
+												contactViewModel.indexDisplayedFriend = nil
+												if historyListViewModel.missedCallsCount > 0 {
+													historyListViewModel.resetMissedCallsCount()
+												}
+											}, label: {
+												VStack {
+													Image("phone")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+													if self.index == 1 {
+														Text("Calls")
+															.default_text_style_700(styleSize: 10)
+													} else {
+														Text("Calls")
+															.default_text_style(styleSize: 10)
+													}
+												}
+											})
+											.padding(.top)
+										}
 										
 										Spacer()
 										
@@ -475,27 +501,52 @@ struct ContentView: View {
 									
 									Spacer()
 									
-									Button(action: {
-										self.index = 1
-										contactViewModel.indexDisplayedFriend = nil
-									}, label: {
-										VStack {
-											Image("phone")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
-												.frame(width: 25, height: 25)
-											if self.index == 1 {
-												Text("Calls")
-													.default_text_style_700(styleSize: 10)
-											} else {
-												Text("Calls")
+									ZStack {
+										if historyListViewModel.missedCallsCount > 0 {
+											VStack {
+												HStack {
+													Text(
+														historyListViewModel.missedCallsCount < 99
+														? String(historyListViewModel.missedCallsCount)
+														: "99+"
+													)
+													.foregroundStyle(.white)
 													.default_text_style(styleSize: 10)
+													.lineLimit(1)
+												}
+												.frame(width: 18, height: 18)
+												.background(Color.redDanger500)
+												.cornerRadius(50)
 											}
+											.padding(.bottom, 30)
+											.padding(.leading, 30)
 										}
-									})
-									.padding(.top)
-									.frame(width: 100)
+										
+										Button(action: {
+											self.index = 1
+											contactViewModel.indexDisplayedFriend = nil
+											if historyListViewModel.missedCallsCount > 0 {
+												historyListViewModel.resetMissedCallsCount()
+											}
+										}, label: {
+											VStack {
+												Image("phone")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if self.index == 1 {
+													Text("Calls")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Calls")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										.padding(.top)
+										.frame(width: 100)
+									}
 									
 									Spacer()
 									
