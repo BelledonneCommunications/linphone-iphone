@@ -30,8 +30,11 @@ class HistoryListViewModel: ObservableObject {
 	var callLogsAddressToDelete = ""
 	var callLogSubscription: AnyCancellable?
 	
+	@Published var missedCallsCount: Int = 0
+	
 	init() {
 		computeCallLogsList()
+		updateMissedCallsCount()
 	}
 	
 	func computeCallLogsList() {
@@ -61,6 +64,41 @@ class HistoryListViewModel: ObservableObject {
 						self.callLogs.append(log)
 						self.callLogsTmp.append(log)
 					}
+				}
+				
+				self.updateMissedCallsCount()
+			}
+		}
+	}
+	
+	func resetMissedCallsCount() {
+		coreContext.doOnCoreQueue { core in
+			let account = core.defaultAccount
+			if account != nil {
+				account?.resetMissedCallsCount()
+				DispatchQueue.main.async {
+					self.missedCallsCount = 0
+				}
+			} else {
+				DispatchQueue.main.async {
+					self.missedCallsCount = 0
+				}
+			}
+		}
+	}
+	
+	func updateMissedCallsCount() {
+		coreContext.doOnCoreQueue { core in
+			let account = core.defaultAccount
+			if account != nil {
+				let count = account?.missedCallsCount != nil ? account!.missedCallsCount : core.missedCallsCount
+				
+				DispatchQueue.main.async {
+					self.missedCallsCount = count
+				}
+			} else {
+				DispatchQueue.main.async {
+					self.missedCallsCount = 0
 				}
 			}
 		}
