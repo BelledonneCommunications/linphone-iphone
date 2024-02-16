@@ -113,7 +113,7 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		if ChatConversationTableViewModel.sharedModel.getNBMessages() > 0 {
-			scrollToBottom(animated: false)
+			scrollToBottom(animated: false, async:false)
 		}
 		NotificationCenter.default.removeObserver(self, name: Notification.Name("LinphoneFriendPresenceUpdate"), object: nil)
 		NotificationCenter.default.removeObserver(self)
@@ -130,8 +130,12 @@ class ChatConversationTableViewSwift: UIViewController, UICollectionViewDataSour
         self.collectionView.scrollToItem(at: IndexPath(row: messageIndex, section: 0), at: .bottom, animated: false)
     }
 	
-	func scrollToBottom(animated: Bool){
-		DispatchQueue.main.async{
+	func scrollToBottom(animated: Bool, async: Bool = true){
+		if (async) {
+			DispatchQueue.main.async{
+				self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animated)
+			}
+		} else {
 			self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animated)
 		}
 		ChatConversationViewSwift.markAsRead(ChatConversationViewModel.sharedModel.chatRoom?.getCobject)
