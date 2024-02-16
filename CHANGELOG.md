@@ -9,8 +9,21 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
-	
-## [5.2.0] - 2023-28-12
+		
+## [5.2.2] - 2023-28-12
+### Added
+- Log sending option will now give a link to download the logs, rather than send the whole log file
+- Taping a notification when app is started now properly opens the conversation
+- Open call history when taping a missed call notification
+
+### Changed
+- Update linphone SDK to 5.3.20
+
+### Fixed
+- Fix replying to images not displaying the image preview in the reply window
+- Various UI fixes in chatrooms
+
+## [5.2.1] - 2023-28-12
 ### Added
 - Added extra Czech and Japanese translations
 
