@@ -17,23 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
-import linphonesw
+import SwiftUI
 
-class ConversationViewModel: ObservableObject {
+struct ChatBubbleView: View {
 	
-	@Published var displayedConversation: ChatRoom?
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
-	@Published var messageText: String = ""
+	let index: Int
 	
-	init() {}
-	
-	func getMessage(index: Int) -> String {
-		if self.displayedConversation != nil {
-			return displayedConversation!.getHistoryRangeEvents(begin: index, end: index+1).first?.chatMessage?.utf8Text ?? ""
-		}
-		else {
-			return ""
-		}
-	}
+    var body: some View {
+		Text(conversationViewModel.getMessage(index: index))
+    }
+}
+
+#Preview {
+	ChatBubbleView(conversationViewModel: ConversationViewModel(), index: 0)
 }

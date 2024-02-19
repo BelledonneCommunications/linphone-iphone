@@ -226,6 +226,9 @@ struct ConversationsListFragment: View {
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {
+						withAnimation {
+							conversationsListViewModel.displayedConversation = conversationsListViewModel.conversationsList[index]
+						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
 						conversationsListViewModel.selectedConversation = conversationsListViewModel.conversationsList[index]

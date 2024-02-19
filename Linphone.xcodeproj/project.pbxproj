@@ -23,6 +23,7 @@
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
 		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
 		D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */; };
+		D71968922B86369D00DF4459 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71968912B86369D00DF4459 /* ChatBubbleView.swift */; };
 		D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */; };
 		D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB82ABC67BF00B41C10 /* ContentView.swift */; };
 		D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */; };
@@ -124,6 +125,7 @@
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
 		D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneUtils.swift; sourceTree = "<group>"; };
+		D71968912B86369D00DF4459 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
 		D719ABB32ABC67BF00B41C10 /* Linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneApp.swift; sourceTree = "<group>"; };
 		D719ABB82ABC67BF00B41C10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -562,6 +564,7 @@
 				D7CEE03C2B7A23B200FD79B7 /* ConversationsListFragment.swift */,
 				D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */,
 				D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */,
+				D71968912B86369D00DF4459 /* ChatBubbleView.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -796,6 +799,7 @@
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				D7CEE0352B7A210300FD79B7 /* ConversationsView.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
+				D71968922B86369D00DF4459 /* ChatBubbleView.swift in Sources */,
 				D78290B82ADD3910004AA85C /* ContactsFragment.swift in Sources */,
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,
 				D7CEE03D2B7A23B200FD79B7 /* ConversationsListFragment.swift in Sources */,

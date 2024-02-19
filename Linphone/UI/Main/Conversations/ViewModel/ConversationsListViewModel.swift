@@ -31,8 +31,6 @@ class ConversationsListViewModel: ObservableObject {
 	@Published var conversationsList: [ChatRoom] = []
 	@Published var unreadMessages: Int = 0
 	
-	@Published var displayedConversation: ChatRoom?
-	
 	var selectedConversation: ChatRoom?
 	
 	init() {

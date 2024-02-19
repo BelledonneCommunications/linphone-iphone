@@ -41,6 +41,7 @@ struct ContentView: View {
 	@ObservedObject var startCallViewModel: StartCallViewModel
 	@ObservedObject var callViewModel: CallViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -89,6 +90,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 0
 											historyViewModel.displayedCall = nil
+											conversationsListViewModel.displayedConversation = nil
 										}, label: {
 											VStack {
 												Image("address-book")
@@ -132,6 +134,7 @@ struct ContentView: View {
 											Button(action: {
 												self.index = 1
 												contactViewModel.indexDisplayedFriend = nil
+												conversationsListViewModel.displayedConversation = nil
 												if historyListViewModel.missedCallsCount > 0 {
 													historyListViewModel.resetMissedCallsCount()
 												}
@@ -480,6 +483,7 @@ struct ContentView: View {
 									Button(action: {
 										self.index = 0
 										historyViewModel.displayedCall = nil
+										conversationsListViewModel.displayedConversation = nil
 									}, label: {
 										VStack {
 											Image("address-book")
@@ -525,6 +529,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 1
 											contactViewModel.indexDisplayedFriend = nil
+											conversationsListViewModel.displayedConversation = nil
 											if historyListViewModel.missedCallsCount > 0 {
 												historyListViewModel.resetMissedCallsCount()
 											}
@@ -608,7 +613,7 @@ struct ContentView: View {
 						}
 					}
 					
-					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil {
+					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationsListViewModel.displayedConversation != nil {
 						HStack(spacing: 0) {
 							Spacer()
 								.frame(maxWidth:
@@ -657,7 +662,7 @@ struct ContentView: View {
 									.ignoresSafeArea(.keyboard)
 								}
 							} else if self.index == 2 {
-								ConversationsView(conversationsListViewModel: conversationsListViewModel)
+								ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
@@ -873,7 +878,7 @@ struct ContentView: View {
 			}
 		}
 		.onRotate { newOrientation in
-			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil) && searchIsActive {
+			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationsListViewModel.displayedConversation != nil) && searchIsActive {
 				self.focusedField = false
 			} else if searchIsActive {
 				self.focusedField = true
@@ -916,7 +921,8 @@ struct ContentView: View {
 		historyListViewModel: HistoryListViewModel(),
 		startCallViewModel: StartCallViewModel(),
 		callViewModel: CallViewModel(),
-		conversationsListViewModel: ConversationsListViewModel()
+		conversationsListViewModel: ConversationsListViewModel(),
+		conversationViewModel: ConversationViewModel()
 	)
 }
 // swiftlint:enable type_body_length
