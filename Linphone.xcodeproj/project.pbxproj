@@ -17,6 +17,10 @@
 		66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */; };
 		66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
 		66C492012B24DB6900CEA16D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
+		66FBFC482B83B8CC00BC6AB1 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
+		66FBFC492B83BD2400BC6AB1 /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
+		66FBFC4A2B83BD3300BC6AB1 /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
+		66FBFC4B2B83BD7B00BC6AB1 /* CoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FA2B24D32600CEA16D /* CoreExtension.swift */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
@@ -752,7 +756,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66FBFC482B83B8CC00BC6AB1 /* Log.swift in Sources */,
 				6691CA7E2B839C2D00B2A7B8 /* NotificationService.swift in Sources */,
+				66FBFC492B83BD2400BC6AB1 /* ConfigExtension.swift in Sources */,
+				66FBFC4A2B83BD3300BC6AB1 /* FileUtils.swift in Sources */,
+				66FBFC4B2B83BD7B00BC6AB1 /* CoreExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
