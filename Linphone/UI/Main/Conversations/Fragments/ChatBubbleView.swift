@@ -26,7 +26,29 @@ struct ChatBubbleView: View {
 	let index: Int
 	
     var body: some View {
-		Text(conversationViewModel.getMessage(index: index))
+		if index < conversationViewModel.conversationMessagesList.count 
+			&& conversationViewModel.conversationMessagesList[index].eventLog.chatMessage != nil {
+			HStack {
+				if conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing {
+					Spacer()
+				}
+				
+				VStack {
+					Text(conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.utf8Text ?? "")
+						.foregroundStyle(Color.grayMain2c700)
+						.default_text_style(styleSize: 16)
+				}
+				.padding(.all, 15)
+				.background(conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+				.clipShape(RoundedRectangle(cornerRadius: 16))
+				
+				if !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing {
+					Spacer()
+				}
+			}
+			.padding(.leading, conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
+			.padding(.trailing, !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
+		}
     }
 }
 

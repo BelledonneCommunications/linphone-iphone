@@ -109,6 +109,7 @@ class ConversationsListViewModel: ObservableObject {
 			
 			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnMainQueue { _ in
 				self.computeChatRoomsList(filter: "")
+				
 			})
 		}
 	}

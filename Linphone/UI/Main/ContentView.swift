@@ -90,7 +90,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 0
 											historyViewModel.displayedCall = nil
-											conversationsListViewModel.displayedConversation = nil
+											conversationViewModel.displayedConversation = nil
 										}, label: {
 											VStack {
 												Image("address-book")
@@ -134,7 +134,7 @@ struct ContentView: View {
 											Button(action: {
 												self.index = 1
 												contactViewModel.indexDisplayedFriend = nil
-												conversationsListViewModel.displayedConversation = nil
+												conversationViewModel.displayedConversation = nil
 												if historyListViewModel.missedCallsCount > 0 {
 													historyListViewModel.resetMissedCallsCount()
 												}
@@ -451,7 +451,7 @@ struct ContentView: View {
 										isShowEditContactFragment: $isShowEditContactFragment
 									)
 								} else if self.index == 2 {
-									ConversationsView(conversationsListViewModel: conversationsListViewModel)
+									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
 								}
 							}
 							.frame(maxWidth:
@@ -483,7 +483,7 @@ struct ContentView: View {
 									Button(action: {
 										self.index = 0
 										historyViewModel.displayedCall = nil
-										conversationsListViewModel.displayedConversation = nil
+										conversationViewModel.displayedConversation = nil
 									}, label: {
 										VStack {
 											Image("address-book")
@@ -529,7 +529,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 1
 											contactViewModel.indexDisplayedFriend = nil
-											conversationsListViewModel.displayedConversation = nil
+											conversationViewModel.displayedConversation = nil
 											if historyListViewModel.missedCallsCount > 0 {
 												historyListViewModel.resetMissedCallsCount()
 											}
@@ -613,7 +613,7 @@ struct ContentView: View {
 						}
 					}
 					
-					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationsListViewModel.displayedConversation != nil {
+					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil {
 						HStack(spacing: 0) {
 							Spacer()
 								.frame(maxWidth:
@@ -878,7 +878,7 @@ struct ContentView: View {
 			}
 		}
 		.onRotate { newOrientation in
-			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationsListViewModel.displayedConversation != nil) && searchIsActive {
+			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil) && searchIsActive {
 				self.focusedField = false
 			} else if searchIsActive {
 				self.focusedField = true

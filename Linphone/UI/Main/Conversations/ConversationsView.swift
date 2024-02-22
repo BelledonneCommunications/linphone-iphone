@@ -21,12 +21,13 @@ import SwiftUI
 
 struct ConversationsView: View {
 	
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ConversationsFragment(conversationsListViewModel: conversationsListViewModel)
+				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
 				
 				Button {
 				} label: {
@@ -47,5 +48,9 @@ struct ConversationsView: View {
 }
 
 #Preview {
-	ConversationsListFragment(conversationsListViewModel: ConversationsListViewModel(), showingSheet: .constant(false))
+	ConversationsListFragment(
+		conversationViewModel: ConversationViewModel(),
+		conversationsListViewModel: ConversationsListViewModel(),
+	  	showingSheet: .constant(false)
+	)
 }

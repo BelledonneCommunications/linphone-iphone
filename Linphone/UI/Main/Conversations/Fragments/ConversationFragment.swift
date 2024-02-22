@@ -55,14 +55,14 @@ struct ConversationFragment: View {
 									.padding(.leading, -10)
 									.onTapGesture {
 										withAnimation {
-											conversationsListViewModel.displayedConversation = nil
+											conversationViewModel.displayedConversation = nil
 										}
 									}
 							}
 							
 							let addressFriend =
-							(conversationsListViewModel.displayedConversation!.participants.first != nil && conversationsListViewModel.displayedConversation!.participants.first!.address != nil)
-							? contactsManager.getFriendWithAddress(address: conversationsListViewModel.displayedConversation!.participants.first!.address!)
+							(conversationViewModel.displayedConversation!.participants.first != nil && conversationViewModel.displayedConversation!.participants.first!.address != nil)
+							? contactsManager.getFriendWithAddress(address: conversationViewModel.displayedConversation!.participants.first!.address!)
 							: nil
 							
 							let contactAvatarModel = addressFriend != nil
@@ -73,11 +73,11 @@ struct ConversationFragment: View {
 							})
 							: ContactAvatarModel(friend: nil, withPresence: false)
 							
-							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationsListViewModel.displayedConversation!) {
+							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationViewModel.displayedConversation!) {
 								Image(uiImage: contactsManager.textToImage(
-									firstName: conversationsListViewModel.displayedConversation!.subject!,
-									lastName: conversationsListViewModel.displayedConversation!.subject!.components(separatedBy: " ").count > 1
-									? conversationsListViewModel.displayedConversation!.subject!.components(separatedBy: " ")[1]
+									firstName: conversationViewModel.displayedConversation!.subject!,
+									lastName: conversationViewModel.displayedConversation!.subject!.components(separatedBy: " ").count > 1
+									? conversationViewModel.displayedConversation!.subject!.components(separatedBy: " ")[1]
 									: ""))
 								.resizable()
 								.frame(width: 50, height: 50)
@@ -95,13 +95,13 @@ struct ConversationFragment: View {
 										.padding(.top, 4)
 								}
 							} else {
-								if conversationsListViewModel.displayedConversation!.participants.first != nil
-									&& conversationsListViewModel.displayedConversation!.participants.first!.address != nil {
-									if conversationsListViewModel.displayedConversation!.participants.first!.address!.displayName != nil {
+								if conversationViewModel.displayedConversation!.participants.first != nil
+									&& conversationViewModel.displayedConversation!.participants.first!.address != nil {
+									if conversationViewModel.displayedConversation!.participants.first!.address!.displayName != nil {
 										Image(uiImage: contactsManager.textToImage(
-											firstName: conversationsListViewModel.displayedConversation!.participants.first!.address!.displayName!,
-											lastName: conversationsListViewModel.displayedConversation!.participants.first!.address!.displayName!.components(separatedBy: " ").count > 1
-											? conversationsListViewModel.displayedConversation!.participants.first!.address!.displayName!.components(separatedBy: " ")[1]
+											firstName: conversationViewModel.displayedConversation!.participants.first!.address!.displayName!,
+											lastName: conversationViewModel.displayedConversation!.participants.first!.address!.displayName!.components(separatedBy: " ").count > 1
+											? conversationViewModel.displayedConversation!.participants.first!.address!.displayName!.components(separatedBy: " ")[1]
 											: ""))
 										.resizable()
 										.frame(width: 50, height: 50)
@@ -110,9 +110,9 @@ struct ConversationFragment: View {
 										
 									} else {
 										Image(uiImage: contactsManager.textToImage(
-											firstName: conversationsListViewModel.displayedConversation!.participants.first!.address!.username ?? "Username Error",
-											lastName: conversationsListViewModel.displayedConversation!.participants.first!.address!.username!.components(separatedBy: " ").count > 1
-											? conversationsListViewModel.displayedConversation!.participants.first!.address!.username!.components(separatedBy: " ")[1]
+											firstName: conversationViewModel.displayedConversation!.participants.first!.address!.username ?? "Username Error",
+											lastName: conversationViewModel.displayedConversation!.participants.first!.address!.username!.components(separatedBy: " ").count > 1
+											? conversationViewModel.displayedConversation!.participants.first!.address!.username!.components(separatedBy: " ")[1]
 											: ""))
 										.resizable()
 										.frame(width: 50, height: 50)
@@ -129,8 +129,8 @@ struct ConversationFragment: View {
 								}
 							}
 							
-							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationsListViewModel.displayedConversation!) {
-								Text(conversationsListViewModel.displayedConversation!.subject ?? "No Subject")
+							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationViewModel.displayedConversation!) {
+								Text(conversationViewModel.displayedConversation!.subject ?? "No Subject")
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.padding(.top, 4)
@@ -142,11 +142,11 @@ struct ConversationFragment: View {
 									.padding(.top, 4)
 									.lineLimit(1)
 							} else {
-								if conversationsListViewModel.displayedConversation!.participants.first != nil
-									&& conversationsListViewModel.displayedConversation!.participants.first!.address != nil {
-									Text(conversationsListViewModel.displayedConversation!.participants.first!.address!.displayName != nil
-										 ? conversationsListViewModel.displayedConversation!.participants.first!.address!.displayName!
-										 : conversationsListViewModel.displayedConversation!.participants.first!.address!.username!)
+								if conversationViewModel.displayedConversation!.participants.first != nil
+									&& conversationViewModel.displayedConversation!.participants.first!.address != nil {
+									Text(conversationViewModel.displayedConversation!.participants.first!.address!.displayName != nil
+										 ? conversationViewModel.displayedConversation!.participants.first!.address!.displayName!
+										 : conversationViewModel.displayedConversation!.participants.first!.address!.username!)
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.padding(.top, 4)
@@ -225,17 +225,118 @@ struct ConversationFragment: View {
 						.padding(.bottom, 4)
 						.background(.white)
 						
+						
+						
+						
+						
+						
+						
 						List {
-							if conversationsListViewModel.displayedConversation != nil {
-								ForEach(0..<conversationsListViewModel.displayedConversation!.historyEventsSize, id: \.self) { index in
-									ChatBubbleView(index: index)
-								}
+							ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+								ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+									.id(conversationViewModel.conversationMessagesList[index])
+									.scaleEffect(x: 1, y: -1, anchor: .center)
+									.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
+						   			.listRowSeparator(.hidden)
+									.transition(.move(edge: .top))
 							}
 						}
+						.scaleEffect(x: 1, y: -1, anchor: .center)
+						.listStyle(.plain)
+						.frame(maxWidth: .infinity)
 						.background(.white)
 						.onTapGesture {
 							UIApplication.shared.endEditing()
 						}
+						.onDisappear {
+							conversationViewModel.resetMessage()
+						}
+						
+						
+						
+						
+						
+						/*
+						ScrollViewReader { proxy in
+							ScrollView {
+								LazyVStack {
+									ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+										ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+											.id(conversationViewModel.conversationMessagesList[index])
+									}
+								}
+								.frame(maxWidth: .infinity)
+								.background(.white)
+								.onTapGesture {
+									UIApplication.shared.endEditing()
+								}
+								.onAppear {
+									if conversationViewModel.conversationMessagesList.last != nil {
+										proxy.scrollTo(conversationViewModel.conversationMessagesList.last!, anchor: .bottom)
+									}
+								}
+								.onDisappear {
+									conversationViewModel.resetMessage()
+								}
+							}
+						}
+						*/
+						
+						
+						
+						/*
+						ScrollViewReader { proxy in
+							if #available(iOS 17.0, *) {
+								ScrollView {
+									LazyVStack {
+										ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+											ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+												.id(conversationViewModel.conversationMessagesList[index])
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.background(.white)
+									.onTapGesture {
+										UIApplication.shared.endEditing()
+									}
+									.onAppear {
+										conversationViewModel.getMessage()
+									}
+									.onDisappear {
+										conversationViewModel.resetMessage()
+									}
+								}
+								.defaultScrollAnchor(.bottom)
+							} else {
+								ScrollView {
+									LazyVStack {
+										ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+											ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+												.id(conversationViewModel.conversationMessagesList[index])
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.background(.white)
+									.onTapGesture {
+										UIApplication.shared.endEditing()
+									}
+									.onAppear {
+										conversationViewModel.getMessage()
+										if conversationViewModel.conversationMessagesList.last != nil {
+											DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+												proxy.scrollTo(conversationViewModel.conversationMessagesList.last!, anchor: .bottom)
+											}
+										}
+									}
+									.onDisappear {
+										conversationViewModel.resetMessage()
+									}
+								}
+							}
+						}
+						*/
+						
+						
 						
 						HStack(spacing: 0) {
 							Button {
@@ -315,6 +416,7 @@ struct ConversationFragment: View {
 									}
 								} else {
 									Button {
+										conversationViewModel.sendMessage()
 									} label: {
 										Image("paper-plane-tilt")
 											.renderingMode(.template)
@@ -352,6 +454,12 @@ struct ConversationFragment: View {
 				.navigationBarHidden(true)
 				.onRotate { newOrientation in
 					orientation = newOrientation
+				}
+				.onAppear {
+					conversationViewModel.addConversationDelegate()
+				}
+				.onDisappear {
+					conversationViewModel.removeConversationDelegate()
 				}
 			}
 		}

@@ -21,6 +21,7 @@ import SwiftUI
 
 struct ConversationsFragment: View {
 	
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
@@ -30,7 +31,7 @@ struct ConversationsFragment: View {
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				ConversationsListFragment(conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet)
+				ConversationsListFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet)
 					.sheet(isPresented: $showingSheet) {
 						ConversationsListBottomSheet(
 							conversationsListViewModel: conversationsListViewModel,
@@ -39,7 +40,7 @@ struct ConversationsFragment: View {
 						.presentationDetents([.fraction(0.4)])
 					}
 			} else {
-				ConversationsListFragment(conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet)
+				ConversationsListFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet)
 					.halfSheet(showSheet: $showingSheet) {
 						ConversationsListBottomSheet(
 							conversationsListViewModel: conversationsListViewModel,
@@ -52,5 +53,5 @@ struct ConversationsFragment: View {
 }
 
 #Preview {
-	ConversationsFragment(conversationsListViewModel: ConversationsListViewModel())
+	ConversationsFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel())
 }

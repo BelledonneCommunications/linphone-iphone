@@ -24,6 +24,7 @@ struct ConversationsListFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
@@ -227,7 +228,8 @@ struct ConversationsListFragment: View {
 					.background(.white)
 					.onTapGesture {
 						withAnimation {
-							conversationsListViewModel.displayedConversation = conversationsListViewModel.conversationsList[index]
+							conversationViewModel.displayedConversation = conversationsListViewModel.conversationsList[index]
+							conversationViewModel.getMessage()
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
@@ -261,5 +263,9 @@ struct ConversationsListFragment: View {
 }
 
 #Preview {
-	ConversationsListFragment(conversationsListViewModel: ConversationsListViewModel(), showingSheet: .constant(false))
+	ConversationsListFragment(
+		conversationViewModel: ConversationViewModel(),
+		conversationsListViewModel: ConversationsListViewModel(),
+		showingSheet: .constant(false)
+	)
 }
