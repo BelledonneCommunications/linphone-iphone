@@ -26,6 +26,10 @@ import Combine
 import UniformTypeIdentifiers
 import Network
 
+#if USE_CRASHLYTICS
+import Firebase
+#endif
+
 final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
@@ -67,6 +71,9 @@ final class CoreContext: ObservableObject {
 	
 	func initialiseCore() throws {
 		
+#if USE_CRASHLYTICS
+		FirebaseApp.configure()
+#endif
 		coreQueue.async {
 			
 			LoggingService.Instance.logLevel = LogLevel.Debug

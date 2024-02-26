@@ -18,18 +18,14 @@
  */
 
 import SwiftUI
-#if USE_CRASHLYTICS
-import Firebase
-#endif
+import linphonesw
 
 let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 	func application(_ application: UIApplication,
 					 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {		
-#if USE_CRASHLYTICS
-		FirebaseApp.configure()
-#endif
+
 		return true
 	}
 	
