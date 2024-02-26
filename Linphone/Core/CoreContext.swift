@@ -70,38 +70,35 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func initialiseCore() throws {
-		
 #if USE_CRASHLYTICS
 		FirebaseApp.configure()
 #endif
 		coreQueue.async {
-			
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			let configDir = Factory.Instance.getConfigDir(context: nil)
-			
-			Factory.Instance.logCollectionPath = configDir
+			Factory.Instance.logCollectionPath = Factory.Instance.getConfigDir(context: nil)
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
-			Log.info("Initialising core")
-			let url = NSURL(fileURLWithPath: configDir)
-			if let pathComponent = url.appendingPathComponent("linphonerc") {
-				let filePath = pathComponent.path
-				let fileManager = FileManager.default
-				if !fileManager.fileExists(atPath: filePath) {
-					let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
-					if path != nil {
-						try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
+			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
+			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)?
+				.appendingPathComponent("Library/Preferences/linphone") {
+				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
+					do {
+						try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
+						if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
+							try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
+							Log.info("Successfully copied linphonerc-default configuration")
+						}
+					} catch let error {
+						Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
 					}
+				} else {
+					Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
 				}
 			}
 			
-			let config = try? Factory.Instance.createConfigWithFactory(
-				path: "\(configDir)/linphonerc",
-				factoryPath: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
-			)
-			if config != nil {
-				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
-			}
+			Log.info("Initialising core")
+			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: nil, appGroupId: Config.appGroupName, mainCore: true)
 			
 			linphone_core_set_push_registry_dispatch_queue(self.mCore.getCobject, Unmanaged.passUnretained(coreQueue).toOpaque())
 			self.mCore.autoIterateEnabled = false
