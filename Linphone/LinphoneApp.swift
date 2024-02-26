@@ -55,6 +55,30 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		}
 		completionHandler(UIBackgroundFetchResult.newData)
 	}
+	
+	func applicationWillTerminate(_ application: UIApplication) {
+		Log.info("debugtrace -- applicationWillTerminate")
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("debugtrace COREQUEUE -- applicationWillTerminate")
+			core.stop()
+		}
+	}
+	
+	func applicationWillResignActive(_ application: UIApplication) {
+		Log.info("debugtrace -- applicationWillResignActive")
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("debugtrace COREQUEUE -- applicationWillResignActive")
+			if let userDefaults = UserDefaults(suiteName: Config.appGroupName) {
+				userDefaults.set(false, forKey: "appactive")
+			}
+			try? Config.get().sync()
+			core.enterBackground()
+			if core.callsNb == 0 {
+				core.stop()
+			}
+		}
+	}
+	
 }
 
 @main
