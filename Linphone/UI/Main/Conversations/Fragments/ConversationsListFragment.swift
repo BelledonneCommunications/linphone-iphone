@@ -22,8 +22,6 @@ import linphonesw
 
 struct ConversationsListFragment: View {
 	
-	@ObservedObject var contactsManager = ContactsManager.shared
-	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
@@ -34,111 +32,21 @@ struct ConversationsListFragment: View {
 			List {
 				ForEach(0..<conversationsListViewModel.conversationsList.count, id: \.self) { index in
 					HStack {
-						let addressFriend =
-						(conversationsListViewModel.conversationsList[index].participants.first != nil && conversationsListViewModel.conversationsList[index].participants.first!.address != nil)
-						? contactsManager.getFriendWithAddress(address: conversationsListViewModel.conversationsList[index].participants.first!.address!)
-						: nil
-						HStack {
-							let contactAvatarModel = addressFriend != nil
-							? ContactsManager.shared.avatarListModel.first(where: {
-								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-								&& $0.friend!.name == addressFriend!.name
-								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-							})
-							: ContactAvatarModel(friend: nil, withPresence: false)
-							
-							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationsListViewModel.conversationsList[index]) {
-								Image(uiImage: contactsManager.textToImage(
-									firstName: conversationsListViewModel.conversationsList[index].subject!,
-									lastName: conversationsListViewModel.conversationsList[index].subject!.components(separatedBy: " ").count > 1
-									? conversationsListViewModel.conversationsList[index].subject!.components(separatedBy: " ")[1]
-									: ""))
-								.resizable()
-								.frame(width: 50, height: 50)
-								.clipShape(Circle())
-							} else if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 50)
-								} else {
-									Image("profil-picture-default")
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-								}
-							} else {
-								if conversationsListViewModel.conversationsList[index].participants.first != nil
-									&& conversationsListViewModel.conversationsList[index].participants.first!.address != nil {
-									if conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName!,
-											lastName: conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName!.components(separatedBy: " ").count > 1
-											? conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-										
-									} else {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: conversationsListViewModel.conversationsList[index].participants.first!.address!.username ?? "Username Error",
-											lastName: conversationsListViewModel.conversationsList[index].participants.first!.address!.username!.components(separatedBy: " ").count > 1
-											? conversationsListViewModel.conversationsList[index].participants.first!.address!.username!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-									}
-									
-								} else {
-									Image("profil-picture-default")
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-								}
-							}
+							Avatar(contactAvatarModel: conversationsListViewModel.conversationsList[index].avatarModel, avatarSize: 50)
 							
 							VStack(spacing: 0) {
 								Spacer()
-								
-								if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationsListViewModel.conversationsList[index]) {
-									Text(conversationsListViewModel.conversationsList[index].subject ?? "No Subject")
-										.foregroundStyle(Color.grayMain2c800)
-										.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
-											view.default_text_style_700(styleSize: 14)
-										}
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-								} else if addressFriend != nil {
-									Text(addressFriend!.name!)
-										.foregroundStyle(Color.grayMain2c800)
-										.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
-											view.default_text_style_700(styleSize: 14)
-										}
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-								} else {
-									if conversationsListViewModel.conversationsList[index].participants.first != nil
-										&& conversationsListViewModel.conversationsList[index].participants.first!.address != nil {
-										Text(conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName != nil
-											 ? conversationsListViewModel.conversationsList[index].participants.first!.address!.displayName!
-											 : conversationsListViewModel.conversationsList[index].participants.first!.address!.username!)
-										.foregroundStyle(Color.grayMain2c800)
-										.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
-											view.default_text_style_700(styleSize: 14)
-										}
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
+							
+								Text(conversationsListViewModel.conversationsList[index].subject)
+									.foregroundStyle(Color.grayMain2c800)
+									.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
+										view.default_text_style_700(styleSize: 14)
 									}
-								}
+									.default_text_style(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
 								
-								Text(
-									conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
-									? conversationsListViewModel.getContentTextMessage(message: conversationsListViewModel.conversationsList[index].lastMessageInHistory!)
-									: ""
-								)
+								Text(conversationsListViewModel.conversationsList[index].lastMessageText)
 								.foregroundStyle(Color.grayMain2c400)
 								.if(conversationsListViewModel.conversationsList[index].unreadMessagesCount > 0) { view in
 									view.default_text_style_700(styleSize: 14)
@@ -156,8 +64,7 @@ struct ConversationsListFragment: View {
 								Spacer()
 								
 								HStack {
-									if conversationsListViewModel.conversationsList[index].currentParams != nil
-										&& !conversationsListViewModel.conversationsList[index].currentParams!.encryptionEnabled {
+									if !conversationsListViewModel.conversationsList[index].encryptionEnabled {
 										Image("warning-circle")
 											.renderingMode(.template)
 											.resizable()
@@ -174,15 +81,15 @@ struct ConversationsListFragment: View {
 								Spacer()
 								
 								HStack {
-									if conversationsListViewModel.conversationsList[index].muted == false
-										&& !(conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
-										&& conversationsListViewModel.conversationsList[index].lastMessageInHistory!.isOutgoing == true)
+									if conversationsListViewModel.conversationsList[index].isMuted == false
+										&& !(!conversationsListViewModel.conversationsList[index].lastMessageText.isEmpty
+										&& conversationsListViewModel.conversationsList[index].lastMessageIsOutgoing == true)
 										&& conversationsListViewModel.conversationsList[index].unreadMessagesCount == 0 {
 										Text("")
 											.frame(width: 18, height: 18, alignment: .trailing)
 									}
 									
-									if conversationsListViewModel.conversationsList[index].muted {
+									if conversationsListViewModel.conversationsList[index].isMuted {
 										Image("bell-slash")
 											.renderingMode(.template)
 											.resizable()
@@ -190,9 +97,9 @@ struct ConversationsListFragment: View {
 											.frame(width: 18, height: 18, alignment: .trailing)
 									}
 									
-									if conversationsListViewModel.conversationsList[index].lastMessageInHistory != nil
-										&& conversationsListViewModel.conversationsList[index].lastMessageInHistory!.isOutgoing == true {
-										let imageName = LinphoneUtils.getChatIconState(chatState: conversationsListViewModel.conversationsList[index].lastMessageInHistory!.state)
+									if !conversationsListViewModel.conversationsList[index].lastMessageText.isEmpty
+										&& conversationsListViewModel.conversationsList[index].lastMessageIsOutgoing == true {
+										let imageName = LinphoneUtils.getChatIconState(chatState: conversationsListViewModel.conversationsList[index].lastMessageState)
 										Image(imageName)
 											.renderingMode(.template)
 											.resizable()
@@ -220,7 +127,6 @@ struct ConversationsListFragment: View {
 								Spacer()
 							}
 							.padding(.trailing, 10)
-						}
 					}
 					.buttonStyle(.borderless)
 					.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
@@ -228,7 +134,7 @@ struct ConversationsListFragment: View {
 					.background(.white)
 					.onTapGesture {
 						withAnimation {
-							conversationViewModel.displayedConversation = conversationsListViewModel.conversationsList[index]
+							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
 							conversationViewModel.getMessage()
 						}
 					}

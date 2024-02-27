@@ -97,7 +97,7 @@ struct ConversationsListBottomSheet: View {
 			Button {
 				if conversationsListViewModel.selectedConversation != nil {
 					conversationsListViewModel.objectWillChange.send()
-					conversationsListViewModel.selectedConversation!.muted.toggle()
+					conversationsListViewModel.selectedConversation!.toggleMute()
 				}
 				
 				if #available(iOS 16.0, *) {
@@ -113,13 +113,13 @@ struct ConversationsListBottomSheet: View {
 				}
 			} label: {
 				HStack {
-					Image(conversationsListViewModel.selectedConversation!.muted ? "bell" : "bell-slash")
+					Image(conversationsListViewModel.selectedConversation!.isMuted ? "bell" : "bell-slash")
 						.renderingMode(.template)
 						.resizable()
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text(conversationsListViewModel.selectedConversation!.muted ? "Réactiver les notifications" : "Mettre en sourdine")
+					Text(conversationsListViewModel.selectedConversation!.isMuted ? "Réactiver les notifications" : "Mettre en sourdine")
 					.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -134,12 +134,10 @@ struct ConversationsListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			if conversationsListViewModel.selectedConversation != nil
-				&& conversationsListViewModel.selectedConversation!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+				&& !conversationsListViewModel.selectedConversation!.isGroup {
 				Button {
-					if conversationsListViewModel.selectedConversation!.participants.first != nil {
-						TelecomManager.shared.doCallWithCore(
-							addr: conversationsListViewModel.selectedConversation!.participants.first!.address!, isVideo: false
-						)
+					if !conversationsListViewModel.selectedConversation!.isGroup {
+						conversationsListViewModel.selectedConversation!.call()
 					}
 					
 					if #available(iOS 16.0, *) {
@@ -178,12 +176,7 @@ struct ConversationsListBottomSheet: View {
 			}
 			
 			Button {
-				if conversationsListViewModel.selectedConversation != nil {
-					CoreContext.shared.doOnCoreQueue { core in
-						core.deleteChatRoom(chatRoom: conversationsListViewModel.selectedConversation!)
-						//conversationsListViewModel.computeChatRoomsList(filter: "")
-					}
-				}
+				conversationsListViewModel.computeChatRoomsList(filter: "")
 				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {

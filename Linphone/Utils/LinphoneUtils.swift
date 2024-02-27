@@ -27,20 +27,36 @@ class LinphoneUtils: NSObject {
 		return !oneToOne && conference
 	}
 	
-	public class func getChatIconState(chatState: ChatMessage.State) -> String {
+	public class func getChatIconState(chatState: Int) -> String {
 		return switch chatState {
-		case ChatMessage.State.Displayed, ChatMessage.State.FileTransferDone:
+		case ChatMessage.State.Displayed.rawValue, ChatMessage.State.FileTransferDone.rawValue:
 			"checks"
-		case ChatMessage.State.DeliveredToUser:
+		case ChatMessage.State.DeliveredToUser.rawValue:
 			"check"
-		case ChatMessage.State.Delivered:
+		case ChatMessage.State.Delivered.rawValue:
 			"envelope-simple"
-		case ChatMessage.State.NotDelivered, ChatMessage.State.FileTransferError:
+		case ChatMessage.State.NotDelivered.rawValue, ChatMessage.State.FileTransferError.rawValue:
 			"warning-circle"
-		case ChatMessage.State.InProgress, ChatMessage.State.FileTransferInProgress:
+		case ChatMessage.State.InProgress.rawValue, ChatMessage.State.FileTransferInProgress.rawValue:
 			"animated-in-progress"
 		default:
 			"animated-in-progress"
 		}
+	}
+	
+	public class func getChatRoomId(room: ChatRoom) -> String {
+		return getChatRoomId(localAddress: room.localAddress!, remoteAddress: room.peerAddress!)
+	}
+	
+	public class func getChatRoomId(localAddress: Address, remoteAddress: Address) -> String {
+		let localSipUri = localAddress.clone()
+		localSipUri!.clean()
+		let remoteSipUri = remoteAddress.clone()
+		remoteSipUri!.clean()
+		return getChatRoomId(localSipUri: localSipUri!.asStringUriOnly(), remoteSipUri: remoteSipUri!.asStringUriOnly())
+	}
+	
+	public class func getChatRoomId(localSipUri: String, remoteSipUri: String) -> String {
+		return "\(localSipUri)#~#\(remoteSipUri)"
 	}
 }

@@ -25,6 +25,8 @@ class ContactAvatarModel: ObservableObject {
 	
 	let friend: Friend?
 	
+	let name: String
+	
 	let withPresence: Bool?
 
 	@Published var lastPresenceInfo: String
@@ -33,8 +35,9 @@ class ContactAvatarModel: ObservableObject {
 	
 	private var friendSuscription: AnyCancellable?
 	
-	init(friend: Friend?, withPresence: Bool?) {
+	init(friend: Friend?, name: String, withPresence: Bool?) {
 		self.friend = friend
+		self.name = name
 		self.withPresence = withPresence
         if friend != nil &&
 			withPresence == true {

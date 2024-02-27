@@ -82,9 +82,11 @@ final class MagicSearchSingleton: ObservableObject {
 				
 				self.contactsManager.lastSearch.forEach { searchResult in
 					if searchResult.friend != nil {
-						self.contactsManager.avatarListModel.append(ContactAvatarModel(friend: searchResult.friend!, withPresence: true))
+						self.contactsManager.avatarListModel.append(ContactAvatarModel(friend: searchResult.friend!, name: searchResult.friend?.name ?? "", withPresence: true))
 					}
 				}
+				
+				NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
 			}
 		}
 	}

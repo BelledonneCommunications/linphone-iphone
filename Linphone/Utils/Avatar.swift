@@ -22,6 +22,8 @@ import linphonesw
 
 struct Avatar: View {
 	
+	private var contactsManager = ContactsManager.shared
+	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	
 	let avatarSize: CGFloat
@@ -71,6 +73,15 @@ struct Avatar: View {
 					EmptyView()
 				}
 			}
+		} else if !contactAvatarModel.name.isEmpty {
+			Image(uiImage: contactsManager.textToImage(
+				firstName: contactAvatarModel.name,
+				lastName: contactAvatarModel.name.components(separatedBy: " ").count > 1
+				? contactAvatarModel.name.components(separatedBy: " ")[1]
+				: ""))
+			.resizable()
+			.frame(width: 50, height: 50)
+			.clipShape(Circle())
 		} else {
 			Image("profil-picture-default")
 				.resizable()

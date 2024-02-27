@@ -62,6 +62,9 @@ struct ContentView: View {
 	@State var isShowCallsListFragment = false
 	
 	var body: some View {
+		let pub = NotificationCenter.default
+					.publisher(for: NSNotification.Name("ContactLoaded"))
+		
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
 				if telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.calls.count == 1) || callViewModel.calls.count > 1) {
@@ -644,7 +647,7 @@ struct ContentView: View {
 									&& $0.friend!.name == addressFriend!.name
 									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
 								})
-								: ContactAvatarModel(friend: nil, withPresence: false)
+								: ContactAvatarModel(friend: nil, name: "", withPresence: false)
 								
 								if contactAvatarModel != nil {
 									HistoryContactFragment(
@@ -866,6 +869,12 @@ struct ContentView: View {
 						.zIndex(3)
 				}
 			}
+			.onAppear {
+				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			}
+			.onReceive(pub) { _ in
+				conversationsListViewModel.refreshContactAvatarModel()
+		 	}
 		}
 		.overlay {
 			if isMenuOpen {

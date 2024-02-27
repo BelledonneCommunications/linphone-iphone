@@ -154,7 +154,9 @@ struct EditContactFragment: View {
 									&& editContactViewModel.selectedEditFriend!.photo != nil
 									&& !editContactViewModel.selectedEditFriend!.photo!.isEmpty && selectedImage == nil && !removedImage {
 									
-									Avatar(contactAvatarModel: ContactAvatarModel(friend: editContactViewModel.selectedEditFriend!, withPresence: false), avatarSize: 100)
+									Avatar(contactAvatarModel: 
+											ContactAvatarModel(friend: editContactViewModel.selectedEditFriend!, name: editContactViewModel.selectedEditFriend?.name ?? "", withPresence: false), avatarSize: 100
+									)
 									
 								} else if selectedImage == nil {
 									Image("profil-picture-default")

@@ -28,10 +28,10 @@ class ConversationsListViewModel: ObservableObject {
 	
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	
-	@Published var conversationsList: [ChatRoom] = []
+	@Published var conversationsList: [ConversationModel] = []
 	@Published var unreadMessages: Int = 0
 	
-	var selectedConversation: ChatRoom?
+	var selectedConversation: ConversationModel?
 	
 	init() {
 		computeChatRoomsList(filter: "")
@@ -43,47 +43,64 @@ class ConversationsListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let chatRooms = account?.chatRooms != nil ? account!.chatRooms : core.chatRooms
 			
-			DispatchQueue.main.async {
-				self.conversationsList = []
-				chatRooms.forEach { chatRoom in
-					//let disabledBecauseNotSecured = (account?.isInSecureMode() == true && !chatRoom.hasCapability) ? Capabilities.Encrypted.toInt() : 0
-					if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-					}
-					
-					if filter.isEmpty {
-						//val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
-						self.conversationsList.append(chatRoom)
-					}
-					/*
-					else {
-						val participants = chatRoom.participants
-						val found = participants.find {
-							// Search in address but also in contact name if exists
-							val model =
-							coreContext.contactsManager.getContactAvatarModelForAddress(it.address)
-							model.contactName?.contains(
-								filter,
-								ignoreCase = true
-							) == true || it.address.asStringUriOnly().contains(
-								filter,
-								ignoreCase = true
-							)
-						}
-						if (
-							found != null ||
-							chatRoom.peerAddress.asStringUriOnly().contains(filter, ignoreCase = true) ||
-							chatRoom.subject.orEmpty().contains(filter, ignoreCase = true)
-						) {
-							val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
-							list.add(model)
-							count += 1
-						}
-					}
-					 */
+			var conversationsListTmp: [ConversationModel] = []
+			
+			chatRooms.forEach { chatRoom in
+				//let disabledBecauseNotSecured = (account?.isInSecureMode() == true && !chatRoom.hasCapability) ? Capabilities.Encrypted.toInt() : 0
+				if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
 				}
 				
-				self.updateUnreadMessagesCount()
+				if filter.isEmpty {
+					let model = ConversationModel(chatRoom: chatRoom)
+					conversationsListTmp.append(model)
+				}
+				/*
+				 else {
+				 val participants = chatRoom.participants
+				 val found = participants.find {
+				 // Search in address but also in contact name if exists
+				 val model =
+				 coreContext.contactsManager.getContactAvatarModelForAddress(it.address)
+				 model.contactName?.contains(
+				 filter,
+				 ignoreCase = true
+				 ) == true || it.address.asStringUriOnly().contains(
+				 filter,
+				 ignoreCase = true
+				 )
+				 }
+				 if (
+				 found != null ||
+				 chatRoom.peerAddress.asStringUriOnly().contains(filter, ignoreCase = true) ||
+				 chatRoom.subject.orEmpty().contains(filter, ignoreCase = true)
+				 ) {
+				 val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
+				 list.add(model)
+				 count += 1
+				 }
+				 }
+				 */
 			}
+			
+			if !self.conversationsList.isEmpty {
+				for (index, element) in conversationsListTmp.enumerated() {
+					if index > 0 && element.id != self.conversationsList[index].id {
+						DispatchQueue.main.async {
+							self.conversationsList[index] = element
+						}
+					}
+				}
+				
+				DispatchQueue.main.async {
+					self.conversationsList[0] = conversationsListTmp.first!
+				}
+			} else {
+				DispatchQueue.main.async {
+					self.conversationsList = conversationsListTmp
+				}
+			}
+			
+			self.updateUnreadMessagesCount()
 		}
 	}
 	
@@ -93,7 +110,8 @@ class ConversationsListViewModel: ObservableObject {
 				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				switch cbValue.state {
 				case ChatRoom.State.Created:
-					self.addChatRoom(cbChatRoom: cbValue.chatRoom)
+					let model = ConversationModel(chatRoom: cbValue.chatRoom)
+					self.addChatRoom(cbChatRoom: model)
 				case ChatRoom.State.Deleted:
 					self.computeChatRoomsList(filter: "")
 					//ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
@@ -109,14 +127,13 @@ class ConversationsListViewModel: ObservableObject {
 			
 			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnMainQueue { _ in
 				self.computeChatRoomsList(filter: "")
-				
 			})
 		}
 	}
 	
-	func addChatRoom(cbChatRoom: ChatRoom) {
+	func addChatRoom(cbChatRoom: ConversationModel) {
 		Log.info("[ConversationsListViewModel] Re-ordering conversations")
-		var sortedList: [ChatRoom] = []
+		var sortedList: [ConversationModel] = []
 		sortedList.append(cbChatRoom)
 		sortedList.append(contentsOf: self.conversationsList)
 		
@@ -129,7 +146,7 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func reorderChatRooms() {
 		Log.info("[ConversationsListViewModel] Re-ordering conversations")
-		var sortedList: [ChatRoom] = []
+		var sortedList: [ConversationModel] = []
 		sortedList.append(contentsOf: conversationsList)
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -202,6 +219,12 @@ class ConversationsListViewModel: ObservableObject {
 			let formatter = DateFormatter()
 			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "dd/MM/yy" : "MM/dd/yy"
 			return formatter.string(from: myNSDate)
+		}
+	}
+	
+	func refreshContactAvatarModel() {
+		conversationsList.forEach { conversationModel in
+			conversationModel.refreshAvatarModel()
 		}
 	}
 }

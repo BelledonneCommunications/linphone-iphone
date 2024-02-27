@@ -60,99 +60,14 @@ struct ConversationFragment: View {
 									}
 							}
 							
-							let addressFriend =
-							(conversationViewModel.displayedConversation!.participants.first != nil && conversationViewModel.displayedConversation!.participants.first!.address != nil)
-							? contactsManager.getFriendWithAddress(address: conversationViewModel.displayedConversation!.participants.first!.address!)
-							: nil
-							
-							let contactAvatarModel = addressFriend != nil
-							? ContactsManager.shared.avatarListModel.first(where: {
-								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-								&& $0.friend!.name == addressFriend!.name
-								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-							})
-							: ContactAvatarModel(friend: nil, withPresence: false)
-							
-							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationViewModel.displayedConversation!) {
-								Image(uiImage: contactsManager.textToImage(
-									firstName: conversationViewModel.displayedConversation!.subject!,
-									lastName: conversationViewModel.displayedConversation!.subject!.components(separatedBy: " ").count > 1
-									? conversationViewModel.displayedConversation!.subject!.components(separatedBy: " ")[1]
-									: ""))
-								.resizable()
-								.frame(width: 50, height: 50)
-								.clipShape(Circle())
+							Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 50)
 								.padding(.top, 4)
-							} else if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 50)
-										.padding(.top, 4)
-								} else {
-									Image("profil-picture-default")
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-										.padding(.top, 4)
-								}
-							} else {
-								if conversationViewModel.displayedConversation!.participants.first != nil
-									&& conversationViewModel.displayedConversation!.participants.first!.address != nil {
-									if conversationViewModel.displayedConversation!.participants.first!.address!.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: conversationViewModel.displayedConversation!.participants.first!.address!.displayName!,
-											lastName: conversationViewModel.displayedConversation!.participants.first!.address!.displayName!.components(separatedBy: " ").count > 1
-											? conversationViewModel.displayedConversation!.participants.first!.address!.displayName!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-										.padding(.top, 4)
-										
-									} else {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: conversationViewModel.displayedConversation!.participants.first!.address!.username ?? "Username Error",
-											lastName: conversationViewModel.displayedConversation!.participants.first!.address!.username!.components(separatedBy: " ").count > 1
-											? conversationViewModel.displayedConversation!.participants.first!.address!.username!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-										.padding(.top, 4)
-									}
-									
-								} else {
-									Image("profil-picture-default")
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-										.padding(.top, 4)
-								}
-							}
 							
-							if LinphoneUtils.isChatRoomAGroup(chatRoom: conversationViewModel.displayedConversation!) {
-								Text(conversationViewModel.displayedConversation!.subject ?? "No Subject")
-									.default_text_style(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.padding(.top, 4)
-									.lineLimit(1)
-							} else if addressFriend != nil {
-								Text(addressFriend!.name!)
-									.default_text_style(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.padding(.top, 4)
-									.lineLimit(1)
-							} else {
-								if conversationViewModel.displayedConversation!.participants.first != nil
-									&& conversationViewModel.displayedConversation!.participants.first!.address != nil {
-									Text(conversationViewModel.displayedConversation!.participants.first!.address!.displayName != nil
-										 ? conversationViewModel.displayedConversation!.participants.first!.address!.displayName!
-										 : conversationViewModel.displayedConversation!.participants.first!.address!.username!)
-									.default_text_style(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.padding(.top, 4)
-									.lineLimit(1)
-								}
-							}
+							Text(conversationViewModel.displayedConversation!.subject)
+								.default_text_style(styleSize: 16)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding(.top, 4)
+								.lineLimit(1)
 							
 							Spacer()
 							
@@ -238,7 +153,7 @@ struct ConversationFragment: View {
 									.scaleEffect(x: 1, y: -1, anchor: .center)
 									.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
 						   			.listRowSeparator(.hidden)
-									.transition(.move(edge: .top))
+					 				.transition(.move(edge: .top))
 							}
 						}
 						.scaleEffect(x: 1, y: -1, anchor: .center)

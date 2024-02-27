@@ -16,6 +16,7 @@
 		66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
 		66C492012B24DB6900CEA16D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
+		D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */; };
 		D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */; };
 		D70A26F02B7D02E6006CC8FC /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */; };
 		D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */; };
@@ -118,6 +119,7 @@
 		66C491FE2B24D4AC00CEA16D /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		66C492002B24DB6900CEA16D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
+		D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModel.swift; sourceTree = "<group>"; };
 		D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListBottomSheet.swift; sourceTree = "<group>"; };
 		D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFragment.swift; sourceTree = "<group>"; };
@@ -250,6 +252,14 @@
 			children = (
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D70959EF2B8DF33B0014AC0B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		D717071C2AC591EF0037746F /* Utils */ = {
@@ -542,6 +552,7 @@
 			isa = PBXGroup;
 			children = (
 				D7CEE0392B7A232200FD79B7 /* Fragments */,
+				D70959EF2B8DF33B0014AC0B /* Model */,
 				D7CEE0362B7A212C00FD79B7 /* ViewModel */,
 				D7CEE0342B7A210300FD79B7 /* ConversationsView.swift */,
 			);
@@ -743,6 +754,7 @@
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,
 				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
+				D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
 				D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */,
