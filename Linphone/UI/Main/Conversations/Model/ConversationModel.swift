@@ -109,6 +109,11 @@ class ConversationModel: ObservableObject {
 	func markAsRead() {
 		coreContext.doOnCoreQueue { _ in
 			self.chatRoom.markAsRead()
+			
+			let unreadMessagesCountTmp = self.chatRoom.unreadMessagesCount
+			DispatchQueue.main.async {
+				self.unreadMessagesCount = unreadMessagesCountTmp
+			}
 		}
 	}
 	
@@ -227,5 +232,11 @@ class ConversationModel: ObservableObject {
 				}
 			}
 		}
+	}
+	
+	func deleteChatRoom() {
+		CoreContext.shared.doOnCoreQueue { core in
+			core.deleteChatRoom(chatRoom: self.chatRoom)
+	   }
 	}
 }

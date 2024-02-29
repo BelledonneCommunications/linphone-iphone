@@ -175,7 +175,8 @@ struct ConversationsListBottomSheet: View {
 				.frame(maxWidth: .infinity)
 			}
 			
-			Button {
+			Button {	
+				conversationsListViewModel.selectedConversation!.deleteChatRoom()
 				conversationsListViewModel.computeChatRoomsList(filter: "")
 				
 				if #available(iOS 16.0, *) {

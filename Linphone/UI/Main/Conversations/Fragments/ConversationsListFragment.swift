@@ -135,7 +135,8 @@ struct ConversationsListFragment: View {
 					.onTapGesture {
 						withAnimation {
 							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-							conversationViewModel.getMessage()
+							conversationsListViewModel.conversationsList[index].markAsRead()
+							conversationsListViewModel.updateUnreadMessagesCount()
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {

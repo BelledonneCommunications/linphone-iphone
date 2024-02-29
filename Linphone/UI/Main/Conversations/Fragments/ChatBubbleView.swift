@@ -28,26 +28,34 @@ struct ChatBubbleView: View {
     var body: some View {
 		if index < conversationViewModel.conversationMessagesList.count 
 			&& conversationViewModel.conversationMessagesList[index].eventLog.chatMessage != nil {
-			HStack {
-				if conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing {
-					Spacer()
+			VStack {
+				if index == 0 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
+					ProgressView()
+						.frame(idealWidth: .infinity, maxWidth: .infinity, alignment: .center)
+						.id(UUID())
 				}
 				
-				VStack {
-					Text(conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.utf8Text ?? "")
-						.foregroundStyle(Color.grayMain2c700)
-						.default_text_style(styleSize: 16)
+				HStack {
+					if conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing {
+						Spacer()
+					}
+					
+					VStack {
+						Text(conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.utf8Text ?? "")
+							.foregroundStyle(Color.grayMain2c700)
+							.default_text_style(styleSize: 16)
+					}
+					.padding(.all, 15)
+					.background(conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+					.clipShape(RoundedRectangle(cornerRadius: 16))
+					
+					if !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing {
+						Spacer()
+					}
 				}
-				.padding(.all, 15)
-				.background(conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-				.clipShape(RoundedRectangle(cornerRadius: 16))
-				
-				if !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing {
-					Spacer()
-				}
+				.padding(.leading, conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
+			 	.padding(.trailing, !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
 			}
-			.padding(.leading, conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
-			.padding(.trailing, !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
 		}
     }
 }

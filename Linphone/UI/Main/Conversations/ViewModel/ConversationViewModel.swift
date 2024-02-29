@@ -27,6 +27,7 @@ class ConversationViewModel: ObservableObject {
 	private var coreContext = CoreContext.shared
 	
 	@Published var displayedConversation: ConversationModel?
+	@Published var displayedConversationHistorySize: Int = 0
 	
 	@Published var messageText: String = ""
 	
@@ -54,12 +55,34 @@ class ConversationViewModel: ObservableObject {
 		self.chatRoomSuscriptions.removeAll()
 	}
 	
-	func getMessage() {
+	func getHistorySize() {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				let historySize = self.displayedConversation!.chatRoom.historySize
+				DispatchQueue.main.async {
+					self.displayedConversationHistorySize = historySize
+				}
+			}
+		}
+	}
+	
+	func getMessages() {
+		self.getHistorySize()
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
 				
+				//For List
+				/*
 				historyEvents.reversed().forEach { eventLog in
+					DispatchQueue.main.async {
+						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+					}
+				}
+				 */
+				
+				//For ScrollView
+				historyEvents.forEach { eventLog in
 					DispatchQueue.main.async {
 						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
 					}
@@ -68,22 +91,43 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func getNewMessages(eventLogs: [EventLog]) {
-		
-		//let conversationMessagesListTmp = self.conversationMessagesList
-		//self.conversationMessagesList = []
-		
-		eventLogs.forEach { eventLog in
-			DispatchQueue.main.async {
+	func getOldMessages() {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
+				
+				//For List
 				/*
-				withAnimation {
-					self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+				historyEvents.reversed().forEach { eventLog in
+					DispatchQueue.main.async {
+						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+					}
+				}
+				 */
+				
+				//For ScrollView
+				var conversationMessagesListTmp: [LinphoneCustomEventLog] = []
+				
+				historyEvents.reversed().forEach { eventLog in
+					conversationMessagesListTmp.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
 				}
 				
-				self.conversationMessagesList.append(contentsOf: conversationMessagesListTmp)
-				 */
-				withAnimation(.spring(duration: 2)) {
-					self.conversationMessagesList.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
+				DispatchQueue.main.async {
+					self.conversationMessagesList.insert(contentsOf: conversationMessagesListTmp, at: 0)
+				}
+			}
+		}
+	}
+	
+	func getNewMessages(eventLogs: [EventLog]) {
+		eventLogs.forEach { eventLog in
+			DispatchQueue.main.async {
+				withAnimation {
+					//For List
+					//self.conversationMessagesList.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
+					
+					//For ScrollView
+					self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
 				}
 			}
 		}

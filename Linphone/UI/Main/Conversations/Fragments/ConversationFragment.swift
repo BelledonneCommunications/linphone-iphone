@@ -32,6 +32,8 @@ struct ConversationFragment: View {
 	
 	@FocusState var isMessageTextFocused: Bool
 	
+	@State var offset: CGPoint = .zero
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -140,64 +142,169 @@ struct ConversationFragment: View {
 						.padding(.bottom, 4)
 						.background(.white)
 						
+						/*
+						 List {
+						 ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+						 ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+						 .id(conversationViewModel.conversationMessagesList[index])
+						 .scaleEffect(x: 1, y: -1, anchor: .center)
+						 .listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
+						 .listRowSeparator(.hidden)
+						 .transition(.move(edge: .top))
+						 }
+						 }
+						 .scaleEffect(x: 1, y: -1, anchor: .center)
+						 .listStyle(.plain)
+						 .frame(maxWidth: .infinity)
+						 .background(.white)
+						 .onTapGesture {
+						 UIApplication.shared.endEditing()
+						 }
+						 .onDisappear {
+						 conversationViewModel.resetMessage()
+						 }
+						 */
 						
 						
 						
-						
-						
-						
-						List {
-							ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
-								ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
-									.id(conversationViewModel.conversationMessagesList[index])
-									.scaleEffect(x: 1, y: -1, anchor: .center)
-									.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
-						   			.listRowSeparator(.hidden)
-					 				.transition(.move(edge: .top))
+						ScrollViewReader { proxy in
+							List {
+								ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+									ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+										.id(conversationViewModel.conversationMessagesList[index])
+										.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
+										.listRowSeparator(.hidden)
+										.onAppear {
+											if index == 0 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
+												//DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+												conversationViewModel.getOldMessages()
+												//}
+											}
+										}
+								}
+							}
+							.listStyle(.plain)
+							.onTapGesture {
+								UIApplication.shared.endEditing()
+							}
+							.onAppear {
+								conversationViewModel.getMessages()
+							}
+							.onChange(of: conversationViewModel.conversationMessagesList) { _ in
+								if conversationViewModel.conversationMessagesList.count <= 30 {
+									proxy.scrollTo(
+										conversationViewModel.conversationMessagesList.last, anchor: .top
+									)
+								} else if conversationViewModel.conversationMessagesList.count >= conversationViewModel.displayedConversationHistorySize {
+									print("ChatBubbleViewChatBubbleView 1 "
+										  + "\(conversationViewModel.conversationMessagesList.count) "
+										  + "\(conversationViewModel.displayedConversationHistorySize - 30) "
+										  + "\(conversationViewModel.conversationMessagesList.first?.eventLog.chatMessage!.utf8Text ?? "") "
+										  + "\(conversationViewModel.conversationMessagesList[29].eventLog.chatMessage!.utf8Text ?? "")"
+									)
+									
+									proxy.scrollTo(
+										conversationViewModel.conversationMessagesList[conversationViewModel.displayedConversationHistorySize%30], anchor: .top
+									)
+								} else {
+									print("ChatBubbleViewChatBubbleView 2 "
+										  + "\(conversationViewModel.conversationMessagesList.count) "
+										  + "\(conversationViewModel.displayedConversationHistorySize - 30) "
+										  + "\(conversationViewModel.conversationMessagesList.first?.eventLog.chatMessage!.utf8Text ?? "") "
+										  + "\(conversationViewModel.conversationMessagesList[29].eventLog.chatMessage!.utf8Text ?? "")"
+									)
+									
+									proxy.scrollTo(30, anchor: .top)
+								}
+							}
+							.onDisappear {
+								conversationViewModel.resetMessage()
 							}
 						}
-						.scaleEffect(x: 1, y: -1, anchor: .center)
-						.listStyle(.plain)
-						.frame(maxWidth: .infinity)
-						.background(.white)
-						.onTapGesture {
-							UIApplication.shared.endEditing()
-						}
-						.onDisappear {
-							conversationViewModel.resetMessage()
-						}
-						
-						
-						
 						
 						
 						/*
-						ScrollViewReader { proxy in
-							ScrollView {
-								LazyVStack {
-									ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
-										ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
-											.id(conversationViewModel.conversationMessagesList[index])
+						GeometryReader { reader in
+							ScrollViewReader { proxy in
+								if #available(iOS 17.0, *) {
+									ScrollView(.vertical) {
+										VStack(spacing: 4) {
+											Spacer()
+											ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+												ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+													.id(conversationViewModel.conversationMessagesList[index])
+											}
+										}
+										.frame(minHeight: reader.size.height)
+										.padding(.horizontal, 10)
+										.padding(.bottom, 8)
+										.background(GeometryReader { geometry -> Color in
+											DispatchQueue.main.async {
+												//self.offset = -geometry.frame(in: .named("scroll")).origin.y
+												let offsetMax = geometry.size.height - reader.size.height
+												//print("ScrollOffsetPreferenceKey >> \(self.offset) \(offsetMax)")
+												if -geometry.frame(in: .named("scroll")).origin.y <= 0 && self.offset > 0 {
+													conversationViewModel.getOldMessages()
+													print("ScrollOffsetPreferenceKey >> \(self.offset) \(-geometry.frame(in: .named("scroll")).origin.y) \(offsetMax)")
+													//proxy.scrollTo(conversationViewModel.conversationMessagesList[19], anchor: .top)
+												}
+												self.offset = -geometry.frame(in: .named("scroll")).origin.y
+											}
+											return Color.clear
+										})
+										/*/
+										.background(GeometryReader { geometry in
+											Color.clear
+												.preference(key: ScrollOffsetPreferenceKey.self, value: (geometry.frame(in: .named("scroll")).origin))
+										})
+										.onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+											//self.scrollOffset = value
+											print("ScrollOffsetPreferenceKey \(value)")
+											if value.y > 0 {
+												print("ScrollOffsetPreferenceKey \(value) \(conversationViewModel.conversationMessagesList.count)")
+												conversationViewModel.getOldMessages()
+											}
+										}
+										 */
 									}
-								}
-								.frame(maxWidth: .infinity)
-								.background(.white)
-								.onTapGesture {
-									UIApplication.shared.endEditing()
-								}
-								.onAppear {
-									if conversationViewModel.conversationMessagesList.last != nil {
-										proxy.scrollTo(conversationViewModel.conversationMessagesList.last!, anchor: .bottom)
+									.coordinateSpace(name: "scroll")
+									.onTapGesture {
+										UIApplication.shared.endEditing()
 									}
-								}
-								.onDisappear {
-									conversationViewModel.resetMessage()
+									.onAppear {
+										conversationViewModel.getMessages()
+									}
+									.onDisappear {
+										conversationViewModel.resetMessage()
+									}
+									.defaultScrollAnchor(.bottom)
+								} else {
+									ScrollView(.vertical) {
+										VStack {
+											ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
+												ChatBubbleView(conversationViewModel: conversationViewModel, index: index)
+													.id(conversationViewModel.conversationMessagesList[index])
+											}
+										}
+									}
+									.onTapGesture {
+										UIApplication.shared.endEditing()
+									}
+									.onAppear {
+										conversationViewModel.getMessages()
+									}
+									.onChange(of: conversationViewModel.conversationMessagesList) { _ in
+										withAnimation {
+											proxy.scrollTo(conversationViewModel.conversationMessagesList.last, anchor: .top)
+										}
+									}
+									.onDisappear {
+										conversationViewModel.resetMessage()
+									}
 								}
 							}
 						}
-						*/
-						
-						
+						 */
 						
 						/*
 						ScrollViewReader { proxy in
@@ -320,6 +427,7 @@ struct ConversationFragment: View {
 								
 								if conversationViewModel.messageText.isEmpty {
 									Button {
+										conversationViewModel.getOldMessages()
 									} label: {
 										Image("microphone")
 											.renderingMode(.template)
