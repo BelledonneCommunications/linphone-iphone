@@ -134,7 +134,14 @@ struct ConversationsListFragment: View {
 					.background(.white)
 					.onTapGesture {
 						withAnimation {
-							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+							if conversationViewModel.displayedConversation != nil {
+								conversationViewModel.displayedConversation = nil
+								conversationViewModel.resetMessage()
+								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+								conversationViewModel.getMessages()
+							} else {
+								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+							}
 							conversationsListViewModel.conversationsList[index].markAsRead()
 							conversationsListViewModel.updateUnreadMessagesCount()
 						}

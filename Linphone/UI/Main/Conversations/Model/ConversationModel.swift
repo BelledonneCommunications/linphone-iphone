@@ -88,7 +88,7 @@ class ConversationModel: ObservableObject {
 
 		//self.dateTime = chatRoom.date
 
-		self.unreadMessagesCount = chatRoom.unreadMessagesCount
+		self.unreadMessagesCount = 0
 
 		self.avatarModel = ContactAvatarModel(friend: nil, name: "", withPresence: false)
 
@@ -98,9 +98,10 @@ class ConversationModel: ObservableObject {
 		
 		getContentTextMessage()
 		getChatRoomSubject()
+		getUnreadMessagesCount()
 	}
 	
-	func leave(){
+	func leave() {
 		coreContext.doOnCoreQueue { _ in
 			self.chatRoom.leave()
 		}
@@ -211,6 +212,13 @@ class ConversationModel: ObservableObject {
 			DispatchQueue.main.async {
 				self.avatarModel = avatarModelTmp
 			}
+		}
+	}
+	
+	
+	func getUnreadMessagesCount() {
+		coreContext.doOnCoreQueue { _ in
+			self.unreadMessagesCount = self.chatRoom.unreadMessagesCount
 		}
 	}
 	

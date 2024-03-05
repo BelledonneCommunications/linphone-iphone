@@ -28,12 +28,16 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var displayedConversation: ConversationModel?
 	@Published var displayedConversationHistorySize: Int = 0
+	@Published var displayedConversationUnreadMessagesCount: Int = 0
+	
 	
 	@Published var messageText: String = ""
 	
 	private var chatRoomSuscriptions = Set<AnyCancellable?>()
 	
 	@Published var conversationMessagesList: [LinphoneCustomEventLog] = []
+	@Published var conversationMessagesSection: [MessagesSection] = []
+	@Published var conversationMessagesIds: [String] = []
 	
 	init() {}
 	
@@ -66,25 +70,59 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func getUnreadMessagesCount() {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+				DispatchQueue.main.async {
+					self.displayedConversationUnreadMessagesCount = unreadMessagesCount
+				}
+			}
+		}
+	}
+	
+	func markAsRead() {
+		coreContext.doOnCoreQueue { _ in
+			self.displayedConversation!.chatRoom.markAsRead()
+			let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+			DispatchQueue.main.async {
+				self.displayedConversationUnreadMessagesCount = unreadMessagesCount
+			}
+		}
+	}
+	
 	func getMessages() {
 		self.getHistorySize()
+		self.getUnreadMessagesCount()
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
 				
 				//For List
 				/*
-				historyEvents.reversed().forEach { eventLog in
-					DispatchQueue.main.async {
-						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
-					}
-				}
+				 historyEvents.reversed().forEach { eventLog in
+				 DispatchQueue.main.async {
+				 self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+				 }
+				 }
 				 */
 				
 				//For ScrollView
-				historyEvents.forEach { eventLog in
+				var conversationMessage: [Message] = []
+				historyEvents.enumerated().forEach { index, eventLog in
 					DispatchQueue.main.async {
 						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+					}
+					conversationMessage.append(Message(
+						id: UUID().uuidString,
+						isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+						text: eventLog.chatMessage?.utf8Text ?? ""))
+					
+					DispatchQueue.main.async {
+						if index == historyEvents.count - 1 {
+							self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: conversationMessage.reversed()))
+							self.conversationMessagesIds.append(UUID().uuidString)
+						}
 					}
 				}
 			}
@@ -103,38 +141,83 @@ class ConversationViewModel: ObservableObject {
 						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
 					}
 				}
-				 */
+				*/
 				
 				//For ScrollView
 				var conversationMessagesListTmp: [LinphoneCustomEventLog] = []
+				var conversationMessagesTmp: [Message] = []
 				
 				historyEvents.reversed().forEach { eventLog in
 					conversationMessagesListTmp.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
+					
+					conversationMessagesTmp.insert(
+						Message(
+							id: UUID().uuidString,
+							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+							text: eventLog.chatMessage?.utf8Text ?? ""
+						), at: 0
+					)
 				}
 				
-				DispatchQueue.main.async {
-					self.conversationMessagesList.insert(contentsOf: conversationMessagesListTmp, at: 0)
+				if !conversationMessagesTmp.isEmpty {
+					DispatchQueue.main.async {
+						self.conversationMessagesList.insert(contentsOf: conversationMessagesListTmp, at: 0)
+						//self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: conversationMessagesTmp.reversed()))
+						//self.conversationMessagesIds.append(UUID().uuidString)
+						self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
+					}
 				}
 			}
 		}
 	}
 	
 	func getNewMessages(eventLogs: [EventLog]) {
-		eventLogs.forEach { eventLog in
+		var conversationMessage: [Message] = []
+		eventLogs.enumerated().forEach { index, eventLog in
 			DispatchQueue.main.async {
-				withAnimation {
-					//For List
-					//self.conversationMessagesList.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
-					
-					//For ScrollView
-					self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+				//withAnimation {
+				//For List
+				//self.conversationMessagesList.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
+				
+				//For ScrollView
+				self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
+				
+				/*
+				 conversationMessage.append(Message(
+				 id: UUID().uuidString,
+				 isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+				 text: eventLog.chatMessage?.utf8Text ?? ""
+				 )
+				 )
+				 */
+			}
+			let message = Message(
+				id: UUID().uuidString,
+				isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+				text: eventLog.chatMessage?.utf8Text ?? ""
+			)
+			
+			DispatchQueue.main.async {
+				if self.conversationMessagesSection.isEmpty {
+					self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: [message]))
+				} else {
+					self.conversationMessagesSection[0].rows.insert(message, at: 0)
 				}
+				
+				if !message.isOutgoing {
+					self.displayedConversationUnreadMessagesCount += 1
+				}
+			}
+			
+			if self.displayedConversation != nil {
+				self.displayedConversation!.markAsRead()
 			}
 		}
 	}
 	
 	func resetMessage() {
 		conversationMessagesList = []
+		conversationMessagesSection = []
 	}
 	
 	func sendMessage() {

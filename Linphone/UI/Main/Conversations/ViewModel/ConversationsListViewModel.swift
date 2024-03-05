@@ -84,7 +84,7 @@ class ConversationsListViewModel: ObservableObject {
 			
 			if !self.conversationsList.isEmpty {
 				for (index, element) in conversationsListTmp.enumerated() {
-					if index > 0 && element.id != self.conversationsList[index].id {
+					if index > 0 && index < self.conversationsList.count && element.id != self.conversationsList[index].id {
 						DispatchQueue.main.async {
 							self.conversationsList[index] = element
 						}

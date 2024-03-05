@@ -23,13 +23,17 @@ struct ChatBubbleView: View {
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	
-	let index: Int
+	//let index: IndexPath
+	
+	let message: Message
 	
     var body: some View {
-		if index < conversationViewModel.conversationMessagesList.count 
+		/*
+		if index < conversationViewModel.conversationMessagesList.count
 			&& conversationViewModel.conversationMessagesList[index].eventLog.chatMessage != nil {
 			VStack {
 				if index == 0 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
+				//if index % 30 == 29 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
 					ProgressView()
 						.frame(idealWidth: .infinity, maxWidth: .infinity, alignment: .center)
 						.id(UUID())
@@ -57,9 +61,61 @@ struct ChatBubbleView: View {
 			 	.padding(.trailing, !conversationViewModel.conversationMessagesList[index].eventLog.chatMessage!.isOutgoing ? 40 : 0)
 			}
 		}
+		if conversationViewModel.conversationMessagesSection.count > index.section && conversationViewModel.conversationMessagesSection[index.section].rows.count > index.row {
+			VStack {
+				HStack {
+					if message.isOutgoing {
+						Spacer()
+					}
+					
+					VStack {
+						Text(message.text
+						)
+						.foregroundStyle(Color.grayMain2c700)
+						.default_text_style(styleSize: 16)
+					}
+					.padding(.all, 15)
+					.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+					.clipShape(RoundedRectangle(cornerRadius: 16))
+					
+					if !message.isOutgoing {
+						Spacer()
+					}
+				}
+				.padding(.leading, message.isOutgoing ? 40 : 0)
+				.padding(.trailing, !message.isOutgoing ? 40 : 0)
+			}
+		}
+		 */
+		
+		VStack {
+			HStack {
+				if message.isOutgoing {
+					Spacer()
+				}
+				
+				VStack {
+					Text(message.text
+					)
+					.foregroundStyle(Color.grayMain2c700)
+					.default_text_style(styleSize: 16)
+				}
+				.padding(.all, 15)
+				.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+				.clipShape(RoundedRectangle(cornerRadius: 16))
+				
+				if !message.isOutgoing {
+					Spacer()
+				}
+			}
+			.padding(.leading, message.isOutgoing ? 40 : 0)
+			.padding(.trailing, !message.isOutgoing ? 40 : 0)
+		}
     }
 }
 
+/*
 #Preview {
 	ChatBubbleView(conversationViewModel: ConversationViewModel(), index: 0)
 }
+*/
