@@ -23,11 +23,6 @@ import linphonesw
 let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-	func application(_ application: UIApplication,
-					 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {		
-
-		return true
-	}
 	
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 		let tokenStr = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
@@ -43,7 +38,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 	}
 	
 	func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-		Log.info("debugtrace -- Received background push notification, payload = \(userInfo.description)")
+		Log.info("Received background push notification, payload = \(userInfo.description)")
 		
 		let creationToken = (userInfo["customPayload"] as? NSDictionary)?["token"] as? String
 		if let creationToken = creationToken {
@@ -53,24 +48,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 	}
 	
 	func applicationWillTerminate(_ application: UIApplication) {
-		Log.info("debugtrace -- applicationWillTerminate")
-		CoreContext.shared.doOnCoreQueue { core in
-			Log.info("debugtrace COREQUEUE -- applicationWillTerminate")
-			core.stop()
-		}
-	}
-	
-	func applicationWillResignActive(_ application: UIApplication) {
-		Log.info("debugtrace -- applicationWillResignActive")
-		CoreContext.shared.doOnCoreQueue { core in
-			Log.info("debugtrace COREQUEUE -- applicationWillResignActive")
-			if let userDefaults = UserDefaults(suiteName: Config.appGroupName) {
-				userDefaults.set(false, forKey: "appactive")
-			}
-			try? Config.get().sync()
-			core.enterBackground()
-			if core.callsNb == 0 {
+		Log.info("IOS applicationWillTerminate")
+		CoreContext.shared.doOnCoreQueue(synchronous: true) { core in
+			Log.info("applicationWillTerminate - Stopping linphone core")
+			MagicSearchSingleton.shared.destroyMagicSearch()
+			if core.globalState != GlobalState.Off {
 				core.stop()
+			} else {
+				Log.info("applicationWillTerminate - Core already stopped")
 			}
 		}
 	}
@@ -80,6 +65,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct LinphoneApp: App {
 	
+	@Environment(\.scenePhase) var scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
@@ -132,6 +118,15 @@ struct LinphoneApp: App {
 						startCallViewModel = StartCallViewModel()
 						callViewModel = CallViewModel()
 					}
+			}
+		}.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				Log.info("Entering foreground")
+				coreContext.onEnterForeground()
+			} else if newPhase == .inactive {
+			} else if newPhase == .background {
+				Log.info("Entering background")
+				coreContext.onEnterBackground()
 			}
 		}
 	}

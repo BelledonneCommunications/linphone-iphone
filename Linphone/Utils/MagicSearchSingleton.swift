@@ -43,6 +43,10 @@ final class MagicSearchSingleton: ObservableObject {
 	
 	var searchSubscription: AnyCancellable?
 	
+	func destroyMagicSearch() {
+		magicSearch = nil
+	}
+	
 	private init() {
 		coreContext.doOnCoreQueue { core in
 			self.domainDefaultAccount = core.defaultAccount?.params?.domain ?? ""

@@ -166,9 +166,6 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
-					if self.mCore.consolidatedPresence != ConsolidatedPresence.Online {
-						self.onForeground()
-					}
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
@@ -195,8 +192,11 @@ final class CoreContext: ObservableObject {
 			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
-				// If registration failed, remove account from core
-				if cbVal.state != .Ok && cbVal.state != .Progress {
+				if cbVal.state == .Ok {
+					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
+						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
+					}
+				} else if cbVal.state != .Ok && cbVal.state != .Progress { // If registration failed, remove account from core
 					let params = cbVal.account.params
 					let clonedParams = params?.clone()
 					clonedParams?.registerEnabled = false
@@ -263,27 +263,35 @@ final class CoreContext: ObservableObject {
 			try? self.mCore.start()
 		}
 	}
-	func onForeground() {
-		coreQueue.async {
-			// We can't rely on defaultAccount?.params?.isPublishEnabled
-			// as it will be modified by the SDK when changing the presence status
-			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-				Log.info("App is in foreground, PUBLISHING presence as Online")
-				self.mCore.consolidatedPresence = ConsolidatedPresence.Online
-			}
+	
+	func updatePresence(core : Core, presence : ConsolidatedPresence) {
+		if core.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
+			core.consolidatedPresence = presence
 		}
 	}
 	
-	func onBackground() {
+	func onEnterForeground() {
 		coreQueue.async {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
-			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-				Log.info("App is in background, un-PUBLISHING presence info")
-				// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
-				// Flexisip will handle the Busy status depending on other devices
-				self.mCore.consolidatedPresence = ConsolidatedPresence.Offline
-			}
+		
+			Log.info("App is in foreground, PUBLISHING presence as Online")
+			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
+			try? self.mCore.start()
+		}
+	}
+	
+	func onEnterBackground() {
+		coreQueue.async {
+			// We can't rely on defaultAccount?.params?.isPublishEnabled
+			// as it will be modified by the SDK when changing the presence status
+			Log.info("App is in background, un-PUBLISHING presence info")
+			
+			// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
+			// Flexisip will handle the Busy status depending on other devices
+			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Offline)
+			// self.mCore.iterate()
+			self.mCore.stop()
 		}
 	}
 	
