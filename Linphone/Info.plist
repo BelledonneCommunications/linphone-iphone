@@ -6,6 +6,8 @@
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
 	<string>b5cb085f-772a-4a4f-8c77-5d1332b1f93f</string>
+	<key>NSSupportsSuddenTermination</key>
+	<false/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSans-Light.ttf</string>
