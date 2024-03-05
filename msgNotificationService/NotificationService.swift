@@ -25,14 +25,13 @@ import linphonesw
 import Firebase
 #endif
 
-var APP_GROUP_ID = "group.org.linphone.phone.msgNotification"
 var LINPHONE_DUMMY_SUBJECT = "dummy subject"
 
 extension String {
 	func getDisplayNameFromSipAddress(lc: Core) -> String? {
 		Log.info("looking for display name for \(self)")
 		
-		let defaults = UserDefaults.init(suiteName: APP_GROUP_ID)
+		let defaults = UserDefaults.init(suiteName: Config.appGroupName)
 		let addressBook = defaults?.dictionary(forKey: "addressBook")
 		
 		if addressBook == nil {
@@ -86,9 +85,13 @@ class NotificationService: UNNotificationServiceExtension {
 		
 		self.contentHandler = contentHandler
 		bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+		
+		LoggingService.Instance.logLevel = LogLevel.Debug
+		Factory.Instance.logCollectionPath = Factory.Instance.getConfigDir(context: nil)
+		Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 		Log.info("[msgNotificationService] start msgNotificationService extension")
 		/*
-		if (VFSUtil.vfsEnabled(groupName: APP_GROUP_ID) && !VFSUtil.activateVFS()) {
+		if (VFSUtil.vfsEnabled(groupName: Config.appGroupName) && !VFSUtil.activateVFS()) {
 			VFSUtil.log("[VFS] Error unable to activate.", .error)
 		}
 		*/
@@ -99,7 +102,7 @@ class NotificationService: UNNotificationServiceExtension {
 				Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 				
 				/*
-				let defaults = UserDefaults.init(suiteName: APP_GROUP_ID)
+				let defaults = UserDefaults.init(suiteName: Config.appGroupName)
 				if let chatroomsPushStatus = defaults?.dictionary(forKey: "chatroomsPushStatus") {
 					let aps = bestAttemptContent.userInfo["aps"] as? NSDictionary
 					let alert = aps?["alert"] as? NSDictionary
@@ -130,8 +133,6 @@ class NotificationService: UNNotificationServiceExtension {
 						} else {
 							bestAttemptContent.body = chatRoom.subject!
 						}
-						
-						bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
 						contentHandler(bestAttemptContent)
 						return
 					}
@@ -257,16 +258,8 @@ class NotificationService: UNNotificationServiceExtension {
 	
 	func createCore() {
 		Log.info("[msgNotificationService] create core")
-		
-		let config = Config.newForSharedCore(appGroupId: APP_GROUP_ID, configFilename: "linphonerc", factoryConfigFilename: "")
-		
-		LoggingService.Instance.logLevel = LogLevel.Debug
-		let configDir = Factory.Instance.getConfigDir(context: nil)
-		
-		Factory.Instance.logCollectionPath = configDir
-		Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
-			
-		lc = try? Factory.Instance.createSharedCoreWithConfig(config: config!, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
+
+		lc = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: nil, appGroupId: Config.appGroupName, mainCore: false)
 	}
 	
 	func stopCore() {
