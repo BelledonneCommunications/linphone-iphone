@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string></string>
+	<string>221368768663-b8e48em01it3pt04vp1k0ddrgrcrju65.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string></string>
+	<string>com.googleusercontent.apps.221368768663-b8e48em01it3pt04vp1k0ddrgrcrju65</string>
 	<key>API_KEY</key>
-	<string></string>
+	<string>AIzaSyDJTtlRCM7IqdVUU2dSIYq2YIsTz6bqnkI</string>
 	<key>GCM_SENDER_ID</key>
-	<string></string>
+	<string>221368768663</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
@@ -19,18 +19,18 @@
 	<key>STORAGE_BUCKET</key>
 	<string>linphone-iphone.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string></string>
+	<string>1:221368768663:ios:ccf2c32eadcd3a0f9431d2</string>
 	<key>DATABASE_URL</key>
-	<string></string>
+	<string>https://linphone-iphone.firebaseio.com</string>
 </dict>
 </plist>
