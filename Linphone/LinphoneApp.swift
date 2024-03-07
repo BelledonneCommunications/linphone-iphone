@@ -39,12 +39,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 	
 	func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
 		Log.info("Received background push notification, payload = \(userInfo.description)")
-		
+		/*
 		let creationToken = (userInfo["customPayload"] as? NSDictionary)?["token"] as? String
 		if let creationToken = creationToken {
 			NotificationCenter.default.post(name: accountTokenNotification, object: nil, userInfo: ["token": creationToken])
 		}
-		completionHandler(UIBackgroundFetchResult.newData)
+		completionHandler(UIBackgroundFetchResult.newData)*/
 	}
 	
 	func applicationWillTerminate(_ application: UIApplication) {
