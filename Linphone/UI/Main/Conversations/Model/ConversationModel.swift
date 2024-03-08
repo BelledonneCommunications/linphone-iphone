@@ -215,7 +215,6 @@ class ConversationModel: ObservableObject {
 		}
 	}
 	
-	
 	func getUnreadMessagesCount() {
 		coreContext.doOnCoreQueue { _ in
 			self.unreadMessagesCount = self.chatRoom.unreadMessagesCount
@@ -239,6 +238,13 @@ class ConversationModel: ObservableObject {
 					self.avatarModel = avatarModelTmp
 				}
 			}
+		}
+	}
+	
+	func downloadContent(chatMessage: ChatMessage, content: Content) {
+		coreContext.doOnCoreQueue { _ in
+			let result = chatMessage.downloadContent(content: content)
+			print("resultresult download \(result)")
 		}
 	}
 	

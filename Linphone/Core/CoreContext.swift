@@ -92,6 +92,7 @@ final class CoreContext: ObservableObject {
 				path: "\(configDir)/linphonerc",
 				factoryPath: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
 			)
+			
 			if config != nil {
 				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
 			}

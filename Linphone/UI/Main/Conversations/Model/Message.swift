@@ -66,15 +66,16 @@ public struct Message: Identifiable, Hashable {
 	public var recording: Recording?
 	public var replyMessage: ReplyMessage?
 
-	public init(id: String,
-				status: Status? = nil,
-				createdAt: Date = Date(),
-				isOutgoing: Bool,
-				text: String = "",
-				attachments: [Attachment] = [],
-				recording: Recording? = nil,
-				replyMessage: ReplyMessage? = nil) {
-
+	public init(
+		id: String,
+		status: Status? = nil,
+		createdAt: Date = Date(),
+		isOutgoing: Bool,
+		text: String = "",
+		attachments: [Attachment] = [],
+		recording: Recording? = nil,
+		replyMessage: ReplyMessage? = nil
+	) {
 		self.id = id
 		self.status = status
 		self.createdAt = createdAt

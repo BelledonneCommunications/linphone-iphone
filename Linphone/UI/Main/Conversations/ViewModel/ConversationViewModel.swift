@@ -21,6 +21,7 @@ import Foundation
 import linphonesw
 import Combine
 import SwiftUI
+import AVFoundation
 
 class ConversationViewModel: ObservableObject {
 	
@@ -113,10 +114,30 @@ class ConversationViewModel: ObservableObject {
 					DispatchQueue.main.async {
 						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
 					}
+					
+					var attachmentList: [Attachment] = []
+					var contentText = ""
+					
+					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
+						eventLog.chatMessage!.contents.forEach { content in
+							if content.isText {
+								contentText = content.utf8Text ?? ""
+							} else {
+								if content.filePath == nil || content.filePath!.isEmpty {
+									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+								} else {
+									let attachment = Attachment(id: UUID().uuidString, url: URL(string: "file://" + content.filePath!)!, type: .image)
+									attachmentList.append(attachment)
+								}
+							}
+						}
+					}
+					
 					conversationMessage.append(Message(
 						id: UUID().uuidString,
 						isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-						text: eventLog.chatMessage?.utf8Text ?? ""))
+						text: contentText,
+					attachments: attachmentList))
 					
 					DispatchQueue.main.async {
 						if index == historyEvents.count - 1 {
@@ -133,28 +154,29 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
-				
-				//For List
-				/*
-				historyEvents.reversed().forEach { eventLog in
-					DispatchQueue.main.async {
-						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
-					}
-				}
-				*/
-				
-				//For ScrollView
 				var conversationMessagesListTmp: [LinphoneCustomEventLog] = []
 				var conversationMessagesTmp: [Message] = []
 				
 				historyEvents.reversed().forEach { eventLog in
 					conversationMessagesListTmp.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
 					
+					var attachmentList: [Attachment] = []
+					var contentText = ""
+					
+					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
+						eventLog.chatMessage!.contents.forEach { content in
+							if content.isText {
+								contentText = content.utf8Text ?? ""
+							}
+						}
+					}
+					
 					conversationMessagesTmp.insert(
 						Message(
 							id: UUID().uuidString,
 							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-							text: eventLog.chatMessage?.utf8Text ?? ""
+							text: contentText,
+							attachments: attachmentList
 						), at: 0
 					)
 				}
@@ -162,8 +184,6 @@ class ConversationViewModel: ObservableObject {
 				if !conversationMessagesTmp.isEmpty {
 					DispatchQueue.main.async {
 						self.conversationMessagesList.insert(contentsOf: conversationMessagesListTmp, at: 0)
-						//self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: conversationMessagesTmp.reversed()))
-						//self.conversationMessagesIds.append(UUID().uuidString)
 						self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
 					}
 				}
@@ -175,26 +195,28 @@ class ConversationViewModel: ObservableObject {
 		var conversationMessage: [Message] = []
 		eventLogs.enumerated().forEach { index, eventLog in
 			DispatchQueue.main.async {
-				//withAnimation {
-				//For List
-				//self.conversationMessagesList.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
-				
-				//For ScrollView
 				self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
-				
-				/*
-				 conversationMessage.append(Message(
-				 id: UUID().uuidString,
-				 isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-				 text: eventLog.chatMessage?.utf8Text ?? ""
-				 )
-				 )
-				 */
 			}
+			
+			var attachmentList: [Attachment] = []
+			var contentText = ""
+			
+			if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
+				eventLog.chatMessage!.contents.forEach { content in
+					if content.isText {
+						print("contentscontents text")
+						contentText = content.utf8Text ?? ""
+					} else {
+						print("contentscontents \(content.isText)")
+					}
+				}
+			}
+			
 			let message = Message(
 				id: UUID().uuidString,
 				isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-				text: eventLog.chatMessage?.utf8Text ?? ""
+				text: contentText,
+				attachments: attachmentList
 			)
 			
 			DispatchQueue.main.async {
@@ -308,6 +330,38 @@ class ConversationViewModel: ObservableObject {
 	
 	func changeDisplayedChatRoom(conversationModel: ConversationModel) {
 		self.displayedConversation = conversationModel
+	}
+	
+	func downloadContent(chatMessage: ChatMessage, content: Content) {
+		//Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
+		if content.filePath == nil || content.filePath!.isEmpty {
+			let contentName = content.name
+			if contentName != nil {
+				let isImage = FileUtil.isExtensionImage(path: contentName!)
+				let file = FileUtil.getFileStoragePath(fileName: contentName!, isImage: isImage)
+				content.filePath = file
+				Log.info(
+					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath)"
+				)
+				self.displayedConversation?.downloadContent(chatMessage: chatMessage, content: content)
+			} else {
+				Log.error("[ConversationViewModel] Content name is null, can't download it!")
+			}
+		}
+	}
+	
+	func generateThumbnail(path: URL) -> UIImage? {
+		do {
+			let asset = AVURLAsset(url: path, options: nil)
+			let imgGenerator = AVAssetImageGenerator(asset: asset)
+			imgGenerator.appliesPreferredTrackTransform = true
+			let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+			let thumbnail = UIImage(cgImage: cgImage)
+			return thumbnail
+		} catch let error {
+			print("*** Error generating thumbnail: \(error.localizedDescription)")
+			return nil
+		}
 	}
 }
 struct LinphoneCustomEventLog: Hashable {

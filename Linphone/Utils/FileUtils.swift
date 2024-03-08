@@ -19,8 +19,19 @@
 
 import UIKit
 import linphonesw
+import UniformTypeIdentifiers
 
 class FileUtil: NSObject {
+	
+	public enum MimeType {
+		case plainText
+		case pdf
+		case image
+		case video
+		case audio
+		case unknown
+	}
+	
 	public class func bundleFilePath(_ file: NSString) -> String? {
 		return Bundle.main.path(forResource: file.deletingPathExtension, ofType: file.pathExtension)
 	}
@@ -82,7 +93,7 @@ class FileUtil: NSObject {
 			return false
 		}
 	}
-		
+	
 	public class func write(string: String, toPath: String) {
 		do {
 			try string.write(to: URL(fileURLWithPath: toPath), atomically: true, encoding: String.Encoding.utf8)
@@ -122,4 +133,99 @@ class FileUtil: NSObject {
 		}
 	}
 	
+	public class func isExtensionImage(path: String) -> Bool {
+		let extensionName = getExtensionFromFileName(fileName: path)
+		let typeExtension = getMimeTypeFromExtension(urlString: extensionName)
+		return getMimeType(type: typeExtension) == MimeType.image
+	}
+	
+	public class func getExtensionFromFileName(fileName: String) -> String {
+		let url: URL? = URL(string: fileName)
+		let urlExtension: String? = url?.pathExtension
+		
+		return urlExtension?.lowercased() ?? ""
+	}
+	
+	public class func getMimeTypeFromExtension(urlString: String?) -> String? {
+		if urlString == nil || urlString!.isEmpty {
+			return nil
+		}
+		
+		return urlString!.mimeType()
+	}
+	
+	public class func getMimeType(type: String?) -> MimeType {
+		if type == nil || type!.isEmpty {
+			return MimeType.unknown
+		}
+		
+		switch type {
+		case let str where str!.starts(with: "image/"):
+			return MimeType.image
+		case let str where str!.starts(with: "text/"):
+			return MimeType.plainText
+		case let str where str!.starts(with: "/log"):
+			return MimeType.plainText
+		case let str where str!.starts(with: "video/"):
+			return MimeType.video
+		case let str where str!.starts(with: "audio/"):
+			return MimeType.audio
+		case let str where str!.starts(with: "application/pdf"):
+			return MimeType.pdf
+		default:
+			return MimeType.unknown
+		}
+	}
+	
+	public class func getFileStoragePath(
+		fileName: String,
+		isImage: Bool = false,
+		overrideExisting: Bool = false
+	) -> String {
+		return getFileStorageDir(fileName: fileName, isPicture: isImage)
+	}
+	
+	public class func getFileStorageDir(fileName: String, isPicture: Bool = false) -> String {
+		return Factory.Instance.getDownloadDir(context: nil) + fileName
+	}
+}
+
+extension NSURL {
+	public func mimeType() -> String {
+		if let pathExt = self.pathExtension,
+			let mimeType = UTType(filenameExtension: pathExt)?.preferredMIMEType {
+			return mimeType
+		}
+		else {
+			return "application/octet-stream"
+		}
+	}
+}
+
+extension URL {
+	public func mimeType() -> String {
+		if let mimeType = UTType(filenameExtension: self.pathExtension)?.preferredMIMEType {
+			return mimeType
+		}
+		else {
+			return "application/octet-stream"
+		}
+	}
+}
+
+extension NSString {
+	public func mimeType() -> String {
+		if let mimeType = UTType(filenameExtension: self.pathExtension)?.preferredMIMEType {
+			return mimeType
+		}
+		else {
+			return "application/octet-stream"
+		}
+	}
+}
+
+extension String {
+	public func mimeType() -> String {
+		return (self as NSString).mimeType()
+	}
 }

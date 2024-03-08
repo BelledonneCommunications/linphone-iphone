@@ -95,10 +95,24 @@ struct ChatBubbleView: View {
 				}
 				
 				VStack {
-					Text(message.text
-					)
-					.foregroundStyle(Color.grayMain2c700)
-					.default_text_style(styleSize: 16)
+					if !message.attachments.isEmpty {
+						AsyncImage(url: message.attachments.first!.full) { image in
+							image.resizable()
+								.scaledToFill()
+								//.aspectRatio(1.5, contentMode: .fill)
+								//.clipped()
+						} placeholder: {
+							ProgressView()
+						}
+						.frame(maxHeight: 400)
+						//.frame(width: 50, height: 50)
+					}
+					
+					if !message.text.isEmpty {
+						Text(message.text)
+							.foregroundStyle(Color.grayMain2c700)
+							.default_text_style(styleSize: 16)
+					}
 				}
 				.padding(.all, 15)
 				.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
