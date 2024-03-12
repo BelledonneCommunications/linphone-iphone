@@ -99,16 +99,6 @@ class ConversationViewModel: ObservableObject {
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
 				
-				//For List
-				/*
-				 historyEvents.reversed().forEach { eventLog in
-				 DispatchQueue.main.async {
-				 self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
-				 }
-				 }
-				 */
-				
-				//For ScrollView
 				var conversationMessage: [Message] = []
 				historyEvents.enumerated().forEach { index, eventLog in
 					DispatchQueue.main.async {
@@ -126,7 +116,7 @@ class ConversationViewModel: ObservableObject {
 								if content.filePath == nil || content.filePath!.isEmpty {
 									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 								} else {
-									let attachment = Attachment(id: UUID().uuidString, url: URL(string: "file://" + content.filePath!)!, type: .image)
+									let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
 									attachmentList.append(attachment)
 								}
 							}
@@ -350,18 +340,8 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func generateThumbnail(path: URL) -> UIImage? {
-		do {
-			let asset = AVURLAsset(url: path, options: nil)
-			let imgGenerator = AVAssetImageGenerator(asset: asset)
-			imgGenerator.appliesPreferredTrackTransform = true
-			let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
-			let thumbnail = UIImage(cgImage: cgImage)
-			return thumbnail
-		} catch let error {
-			print("*** Error generating thumbnail: \(error.localizedDescription)")
-			return nil
-		}
+	func getNewFilePath(name: String) -> String {
+		return "file://" + Factory.Instance.getDownloadDir(context: nil) + name
 	}
 }
 struct LinphoneCustomEventLog: Hashable {
