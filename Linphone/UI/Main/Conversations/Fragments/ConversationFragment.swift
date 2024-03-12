@@ -152,7 +152,15 @@ struct ConversationFragment: View {
 						
 						if #available(iOS 16.0, *) {
 							ZStack(alignment: .bottomTrailing) {
-								list
+								UIList(viewModel: viewModel,
+									   paginationState: paginationState,
+									   conversationViewModel: conversationViewModel,
+									   isScrolledToBottom: $isScrolledToBottom,
+									   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
+									   geometryProxy: geometry,
+									   sections: conversationViewModel.conversationMessagesSection,
+									   ids: conversationViewModel.conversationMessagesIds
+								)
 								
 								if !isScrolledToBottom {
 									Button {
@@ -209,6 +217,7 @@ struct ConversationFragment: View {
 								conversationViewModel.resetMessage()
 							}
 						} else {
+							/*
 							ScrollViewReader { proxy in
 								List {
 									ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
@@ -249,6 +258,7 @@ struct ConversationFragment: View {
 									conversationViewModel.resetMessage()
 								}
 							}
+							 */
 						}
 						
 						HStack(spacing: 0) {
@@ -378,18 +388,6 @@ struct ConversationFragment: View {
 			}
 		}
 		.navigationViewStyle(.stack)
-	}
-	
-	@ViewBuilder
-	var list: some View {
-		UIList(viewModel: viewModel,
-			   paginationState: paginationState, 
-			   conversationViewModel: conversationViewModel,
-			   isScrolledToBottom: $isScrolledToBottom,
-			   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
-			   sections: conversationViewModel.conversationMessagesSection,
-			   ids: conversationViewModel.conversationMessagesIds
-		)
 	}
 }
 

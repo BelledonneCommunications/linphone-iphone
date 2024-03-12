@@ -22,6 +22,7 @@ import Foundation
 public enum AttachmentType: String, Codable {
 	case image
 	case video
+	case gif
 
 	public var title: String {
 		switch self {
