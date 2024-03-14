@@ -35,11 +35,11 @@ struct ChatBubbleView: View {
 					Spacer()
 				}
 				
-				VStack {
+				VStack(alignment: message.isOutgoing ? .trailing : .leading) {
 					if !message.attachments.isEmpty {
 						if message.attachments.count == 1 {
+							let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
 							if message.attachments.first!.type == .image || message.attachments.first!.type == .gif {
-								let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
 								if message.attachments.first!.type != .gif {
 									AsyncImage(url: message.attachments.first!.full) { image in
 										image.resizable()
@@ -96,8 +96,8 @@ struct ChatBubbleView: View {
 					
 					if !message.text.isEmpty {
 						Text(message.text)
-							.foregroundStyle(Color.grayMain2c700)
-							.default_text_style(styleSize: 16)
+							   .foregroundStyle(Color.grayMain2c700)
+							   .default_text_style(styleSize: 16)
 					}
 				}
 				.padding(.all, 15)
@@ -126,17 +126,17 @@ struct ChatBubbleView: View {
 }
 
 enum URLType {
-  case name(String) // local file name of gif
-  case url(URL) // remote url
-
-  var url: URL? {
-	switch self {
-	  case .name(let name):
-		return Bundle.main.url(forResource: name, withExtension: "gif")
-	  case .url(let remoteURL):
-		return remoteURL
+	case name(String) // local file name of gif
+	case url(URL) // remote url
+	
+	var url: URL? {
+		switch self {
+		case .name(let name):
+			return Bundle.main.url(forResource: name, withExtension: "gif")
+		case .url(let remoteURL):
+			return remoteURL
+		}
 	}
-  }
 }
 
 struct GifImageView: UIViewRepresentable {

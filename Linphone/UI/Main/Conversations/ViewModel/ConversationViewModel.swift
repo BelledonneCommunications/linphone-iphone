@@ -116,8 +116,10 @@ class ConversationViewModel: ObservableObject {
 								if content.filePath == nil || content.filePath!.isEmpty {
 									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 								} else {
-									let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
-									attachmentList.append(attachment)
+									if URL(string: self.getNewFilePath(name: content.name ?? "")) != nil {
+										let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
+										attachmentList.append(attachment)
+									}
 								}
 							}
 						}

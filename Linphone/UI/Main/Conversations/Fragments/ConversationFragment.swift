@@ -217,23 +217,26 @@ struct ConversationFragment: View {
 								conversationViewModel.resetMessage()
 							}
 						} else {
-							/*
 							ScrollViewReader { proxy in
 								List {
 									ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
-										ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index])
-											.id(conversationViewModel.conversationMessagesList[index])
-											.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
-											.listRowSeparator(.hidden)
-											.onAppear {
-												if index == 0 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
-													//DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-													conversationViewModel.getOldMessages()
-													//}
-												}
-											}
+										if index < conversationViewModel.conversationMessagesSection.first!.rows.count {
+											ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
+											 .id(conversationViewModel.conversationMessagesList[index])
+											 .listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
+											 .listRowSeparator(.hidden)
+											 .scaleEffect(x: 1, y: -1, anchor: .center)
+											 .onAppear {
+												 if index == conversationViewModel.conversationMessagesList.count - 1 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
+													 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+														 conversationViewModel.getOldMessages()
+													 }
+												 }
+											 }
+										}
 									}
 								}
+								.scaleEffect(x: 1, y: -1, anchor: .center)
 								.listStyle(.plain)
 								.onTapGesture {
 									UIApplication.shared.endEditing()
@@ -242,23 +245,26 @@ struct ConversationFragment: View {
 									conversationViewModel.getMessages()
 								}
 								.onChange(of: conversationViewModel.conversationMessagesList) { _ in
-									if conversationViewModel.conversationMessagesList.count <= 30 {
-										proxy.scrollTo(
-											conversationViewModel.conversationMessagesList.last, anchor: .top
-										)
-									} else if conversationViewModel.conversationMessagesList.count >= conversationViewModel.displayedConversationHistorySize {
-										proxy.scrollTo(
-											conversationViewModel.conversationMessagesList[conversationViewModel.displayedConversationHistorySize%30], anchor: .top
-										)
-									} else {
-										proxy.scrollTo(30, anchor: .top)
+									/*
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+										if conversationViewModel.conversationMessagesList.count <= 30 {
+											proxy.scrollTo(
+												conversationViewModel.conversationMessagesList.first, anchor: .top
+											)
+										} else if conversationViewModel.conversationMessagesList.count >= conversationViewModel.displayedConversationHistorySize {
+											proxy.scrollTo(
+												conversationViewModel.conversationMessagesList[conversationViewModel.displayedConversationHistorySize%30], anchor: .top
+											)
+										} else {
+											proxy.scrollTo(30, anchor: .top)
+										}
 									}
+									 */
 								}
 								.onDisappear {
 									conversationViewModel.resetMessage()
 								}
 							}
-							 */
 						}
 						
 						HStack(spacing: 0) {
