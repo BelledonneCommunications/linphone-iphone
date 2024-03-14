@@ -33,6 +33,7 @@ struct UIList: UIViewRepresentable {
 	@Binding var isScrolledToBottom: Bool
 	
 	let showMessageMenuOnLongPress: Bool
+	let geometryProxy: GeometryProxy
 	let sections: [MessagesSection]
 	let ids: [String]
 
@@ -310,6 +311,7 @@ struct UIList: UIViewRepresentable {
 			isScrolledToBottom: $isScrolledToBottom,
 			isScrolledToTop: $isScrolledToTop,
 			showMessageMenuOnLongPress: showMessageMenuOnLongPress,
+			geometryProxy: geometryProxy,
 			sections: sections,
 			ids: ids
 		)
@@ -325,16 +327,18 @@ struct UIList: UIViewRepresentable {
 		@Binding var isScrolledToTop: Bool
 		
 		let showMessageMenuOnLongPress: Bool
+		let geometryProxy: GeometryProxy
 		var sections: [MessagesSection]
 		var ids: [String]
 
-		init(conversationViewModel: ConversationViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, showMessageMenuOnLongPress: Bool, sections: [MessagesSection], ids: [String]) {
+		init(conversationViewModel: ConversationViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, showMessageMenuOnLongPress: Bool, geometryProxy: GeometryProxy, sections: [MessagesSection], ids: [String]) {
 			self.conversationViewModel = conversationViewModel
 			self.viewModel = viewModel
 			self.paginationState = paginationState
 			self._isScrolledToBottom = isScrolledToBottom
 			self._isScrolledToTop = isScrolledToTop
 			self.showMessageMenuOnLongPress = showMessageMenuOnLongPress
+			self.geometryProxy = geometryProxy
 			self.sections = sections
 			self.ids = ids
 		}
@@ -373,7 +377,7 @@ struct UIList: UIViewRepresentable {
 			let row = sections[indexPath.section].rows[indexPath.row]
 			if #available(iOS 16.0, *) {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
-					ChatBubbleView(conversationViewModel: conversationViewModel, message: row)
+					ChatBubbleView(conversationViewModel: conversationViewModel, message: row, geometryProxy: geometryProxy)
 						.padding(.vertical, 1)
 						.padding(.horizontal, 10)
 						.onTapGesture { }

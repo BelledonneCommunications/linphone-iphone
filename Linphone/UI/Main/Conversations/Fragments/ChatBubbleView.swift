@@ -26,6 +26,8 @@ struct ChatBubbleView: View {
 	
 	let message: Message
 	
+	let geometryProxy: GeometryProxy
+	
 	var body: some View {
 		VStack {
 			HStack {
@@ -36,8 +38,44 @@ struct ChatBubbleView: View {
 				VStack {
 					if !message.attachments.isEmpty {
 						if message.attachments.count == 1 {
-							let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
-							if message.attachments.first!.type != .gif {
+							if message.attachments.first!.type == .image || message.attachments.first!.type == .gif {
+								let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
+								if message.attachments.first!.type != .gif {
+									AsyncImage(url: message.attachments.first!.full) { image in
+										image.resizable()
+											.interpolation(.low)
+											.scaledToFit()
+											.clipShape(RoundedRectangle(cornerRadius: 4))
+									} placeholder: {
+										ProgressView()
+									}
+									.frame(
+										height: result.0 > result.1
+										? result.1 / (result.0 / (geometryProxy.size.width - 80))
+										: UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5
+									)
+								} else {
+									if result.0 < result.1 {
+										GifImageView(message.attachments.first!.full)
+											.clipShape(RoundedRectangle(cornerRadius: 4))
+											.frame(
+												width: result.1 > (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5)
+												? result.0 / (result.1 / (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5))
+												: result.0,
+												height: result.1 > (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5)
+												? UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5
+												: result.1
+											)
+									} else {
+										GifImageView(message.attachments.first!.full)
+											.clipShape(RoundedRectangle(cornerRadius: 4))
+											.frame(
+												height: result.1 / (result.0 / (geometryProxy.size.width - 80))
+											)
+									}
+								}
+							} else {
+								let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
 								AsyncImage(url: message.attachments.first!.full) { image in
 									image.resizable()
 										.interpolation(.low)
@@ -48,29 +86,9 @@ struct ChatBubbleView: View {
 								}
 								.frame(
 									height: result.0 > result.1
-									? (result.1 / (result.0 / (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 3 : UIScreen.main.bounds.width / 3)))
-									: (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 3 : UIScreen.main.bounds.width / 3)
+									? result.1 / (result.0 / (geometryProxy.size.width - 80))
+									: UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5
 								)
-							} else {
-								if result.0 < result.1 {
-									GifImageView(message.attachments.first!.full)
-										.clipShape(RoundedRectangle(cornerRadius: 4))
-										.frame(
-											width: result.1 > UIScreen.main.bounds.height / 3
-											? (result.0 / (result.0 / (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 3 : UIScreen.main.bounds.width / 3)))
-											: result.0,
-											height: result.1 > UIScreen.main.bounds.height / 3
-											? (result.1 / (result.0 / (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 3 : UIScreen.main.bounds.width / 3)))
-											: result.1
-										)
-								} else {
-									GifImageView(message.attachments.first!.full)
-										.clipShape(RoundedRectangle(cornerRadius: 4))
-									 	.frame(maxWidth: .infinity)
-										.frame(
-											height: result.1 / (result.0 / (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 3 : UIScreen.main.bounds.width / 3))
-										)
-								}
 							}
 						} else {
 						}
