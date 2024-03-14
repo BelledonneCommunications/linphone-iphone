@@ -26,6 +26,10 @@ import Combine
 import UniformTypeIdentifiers
 import Network
 
+#if USE_CRASHLYTICS
+import Firebase
+#endif
+
 final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
@@ -66,36 +70,35 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func initialiseCore() throws {
-		
+#if USE_CRASHLYTICS
+		FirebaseApp.configure()
+#endif
 		coreQueue.async {
-			
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			let configDir = Factory.Instance.getConfigDir(context: nil)
-			
-			Factory.Instance.logCollectionPath = configDir
+			Factory.Instance.logCollectionPath = Factory.Instance.getConfigDir(context: nil)
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
-			Log.info("Initialising core")
-			let url = NSURL(fileURLWithPath: configDir)
-			if let pathComponent = url.appendingPathComponent("linphonerc") {
-				let filePath = pathComponent.path
-				let fileManager = FileManager.default
-				if !fileManager.fileExists(atPath: filePath) {
-					let path = Bundle.main.path(forResource: "linphonerc-default", ofType: nil)
-					if path != nil {
-						try? FileManager.default.copyItem(at: NSURL(fileURLWithPath: path!) as URL, to: pathComponent)
+			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
+			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)?
+				.appendingPathComponent("Library/Preferences/linphone") {
+				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
+					do {
+						try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
+						if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
+							try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
+							Log.info("Successfully copied linphonerc-default configuration")
+						}
+					} catch let error {
+						Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
 					}
+				} else {
+					Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
 				}
 			}
 			
-			let config = try? Factory.Instance.createConfigWithFactory(
-				path: "\(configDir)/linphonerc",
-				factoryPath: Bundle.main.path(forResource: "linphonerc-factory", ofType: nil)
-			)
-			
-			if config != nil {
-				self.mCore = try? Factory.Instance.createCoreWithConfig(config: config!, systemContext: nil)
-			}
+			Log.info("Initialising core")
+			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: nil, appGroupId: Config.appGroupName, mainCore: true)
 			
 			linphone_core_set_push_registry_dispatch_queue(self.mCore.getCobject, Unmanaged.passUnretained(coreQueue).toOpaque())
 			self.mCore.autoIterateEnabled = false
@@ -169,9 +172,6 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
-					if self.mCore.consolidatedPresence != ConsolidatedPresence.Online {
-						self.onForeground()
-					}
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {
@@ -198,8 +198,11 @@ final class CoreContext: ObservableObject {
 			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
-				// If registration failed, remove account from core
-				if cbVal.state != .Ok && cbVal.state != .Progress {
+				if cbVal.state == .Ok {
+					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
+						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
+					}
+				} else if cbVal.state != .Ok && cbVal.state != .Progress { // If registration failed, remove account from core
 					let params = cbVal.account.params
 					let clonedParams = params?.clone()
 					clonedParams?.registerEnabled = false
@@ -266,27 +269,35 @@ final class CoreContext: ObservableObject {
 			try? self.mCore.start()
 		}
 	}
-	func onForeground() {
-		coreQueue.async {
-			// We can't rely on defaultAccount?.params?.isPublishEnabled
-			// as it will be modified by the SDK when changing the presence status
-			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-				Log.info("App is in foreground, PUBLISHING presence as Online")
-				self.mCore.consolidatedPresence = ConsolidatedPresence.Online
-			}
+	
+	func updatePresence(core : Core, presence : ConsolidatedPresence) {
+		if core.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
+			core.consolidatedPresence = presence
 		}
 	}
 	
-	func onBackground() {
+	func onEnterForeground() {
 		coreQueue.async {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
-			if self.mCore.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-				Log.info("App is in background, un-PUBLISHING presence info")
-				// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
-				// Flexisip will handle the Busy status depending on other devices
-				self.mCore.consolidatedPresence = ConsolidatedPresence.Offline
-			}
+		
+			Log.info("App is in foreground, PUBLISHING presence as Online")
+			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
+			try? self.mCore.start()
+		}
+	}
+	
+	func onEnterBackground() {
+		coreQueue.async {
+			// We can't rely on defaultAccount?.params?.isPublishEnabled
+			// as it will be modified by the SDK when changing the presence status
+			Log.info("App is in background, un-PUBLISHING presence info")
+			
+			// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
+			// Flexisip will handle the Busy status depending on other devices
+			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Offline)
+			// self.mCore.iterate()
+			self.mCore.stop()
 		}
 	}
 	

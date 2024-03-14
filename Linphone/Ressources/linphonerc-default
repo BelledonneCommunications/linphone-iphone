@@ -24,6 +24,7 @@ size=vga
 tunnel=disabled
 auto_start=1
 record_aware=1
+disable_chat_feature=0
 
 [tunnel]
 host=

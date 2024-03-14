@@ -36,7 +36,8 @@ extension Config {
 
 	public static func get() -> Config {
 		if _instance == nil {
-			let factoryPath = FileUtil.bundleFilePath(Core.runsInsideExtension() ? "linphonerc-factory-appex" : "linphonerc-factory-app")!
+			let factoryPath = FileUtil.bundleFilePath("linphonerc-factory")!
+			let configDir = Factory.Instance.getConfigDir(context: nil)
 			_instance =  Config.newForSharedCore(appGroupId: Config.appGroupName, configFilename: "linphonerc", factoryConfigFilename: factoryPath)!
 		}
 		return _instance!
@@ -46,7 +47,7 @@ extension Config {
 		return hasEntry(section: section, key: key) == 1  ? getString(section: section, key: key, defaultString: "") : nil
 	}
 	
-	static let appGroupName = "group.org.linphone.phone.logs"
+	static let appGroupName = "group.org.linphone.phone.msgNotification"
 	// Needs to be the same name in App Group (capabilities in ALL targets - app & extensions - content + service), can't be stored in the Config itself the Config needs this value to get created
 	static let teamID = Config.get().getString(section: "app", key: "team_id", defaultString: "")
 	static let earlymediaContentExtCatIdentifier = Config.get().getString(section: "app", key: "extension_category", defaultString: "")

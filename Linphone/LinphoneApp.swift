@@ -18,23 +18,54 @@
  */
 
 import SwiftUI
-#if USE_CRASHLYTICS
-import Firebase
-#endif
+import linphonesw
+
+let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-	func application(_ application: UIApplication,
-					 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {		
-#if USE_CRASHLYTICS
-		FirebaseApp.configure()
-#endif
-		return true
+	
+	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+		let tokenStr = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+		Log.info("Received remote push token : \(tokenStr)")
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("Forwarding remote push token to core")
+			core.didRegisterForRemotePushWithStringifiedToken(deviceTokenStr: tokenStr + ":remote")
+		}
 	}
+	
+	func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+		Log.error("Failed to register for push notifications : \(error.localizedDescription)")
+	}
+	
+	func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+		Log.info("Received background push notification, payload = \(userInfo.description)")
+		/*
+		let creationToken = (userInfo["customPayload"] as? NSDictionary)?["token"] as? String
+		if let creationToken = creationToken {
+			NotificationCenter.default.post(name: accountTokenNotification, object: nil, userInfo: ["token": creationToken])
+		}
+		completionHandler(UIBackgroundFetchResult.newData)*/
+	}
+	
+	func applicationWillTerminate(_ application: UIApplication) {
+		Log.info("IOS applicationWillTerminate")
+		CoreContext.shared.doOnCoreQueue(synchronous: true) { core in
+			Log.info("applicationWillTerminate - Stopping linphone core")
+			MagicSearchSingleton.shared.destroyMagicSearch()
+			if core.globalState != GlobalState.Off {
+				core.stop()
+			} else {
+				Log.info("applicationWillTerminate - Core already stopped")
+			}
+		}
+	}
+	
 }
 
 @main
 struct LinphoneApp: App {
 	
+	@Environment(\.scenePhase) var scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
@@ -95,6 +126,15 @@ struct LinphoneApp: App {
 						conversationsListViewModel = ConversationsListViewModel()
 						conversationViewModel = ConversationViewModel()
 					}
+			}
+		}.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				Log.info("Entering foreground")
+				coreContext.onEnterForeground()
+			} else if newPhase == .inactive {
+			} else if newPhase == .background {
+				Log.info("Entering background")
+				coreContext.onEnterBackground()
 			}
 		}
 	}

@@ -894,25 +894,6 @@ struct ContentView: View {
 			}
 			orientation = newOrientation
 		}
-		.onChange(of: scenePhase) { newPhase in
-			if newPhase == .active {
-				coreContext.onForeground()
-				/*
-				 if !isShowStartCallFragment {
-				 contactsManager.fetchContacts()
-				 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-				 historyListViewModel.computeCallLogsList()
-				 }
-				 }
-				 */
-				print("Active")
-			} else if newPhase == .inactive {
-				print("Inactive")
-			} else if newPhase == .background {
-				coreContext.onBackground()
-				print("Background")
-			}
-		}
 	}
 	
 	func openMenu() {

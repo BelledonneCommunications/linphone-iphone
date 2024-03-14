@@ -341,6 +341,23 @@
     "First name*" : {
 
     },
+    "GC_MSG" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have been added to a chat room"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez été ajouté à une conversation"
+          }
+        }
+      }
+    },
     "Hang up call" : {
 
     },
@@ -355,6 +372,23 @@
     },
     "I understand" : {
 
+    },
+    "IM_MSG" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have received a message"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez reçu un message"
+          }
+        }
+      }
     },
     "Incoming call" : {
 
@@ -379,6 +413,9 @@
     },
     "Job title" : {
 
+    },
+    "Key" : {
+      "extractionState" : "manual"
     },
     "Last name" : {
 
