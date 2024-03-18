@@ -45,6 +45,14 @@ class CallViewModel: ObservableObject {
 	@Published var isRemoteDeviceTrusted: Bool = false
 	@Published var selectedCall: Call?
 	@Published var isTransferInsteadCall: Bool = false
+	@Published var isConference: Bool = false
+	@Published var videoDisplayed: Bool = false
+	@Published var receiveVideo: Bool = false
+	@Published var participantList: [ParticipantModel] = []
+	@Published var activeSpeakerParticipant: ParticipantModel? = nil
+
+	
+	private var mConferenceSuscriptions = Set<AnyCancellable?>()
 	
 	var calls: [Call] = []
 	
@@ -110,6 +118,7 @@ class CallViewModel: ObservableObject {
 					self.isRemoteDeviceTrusted = self.telecomManager.callInProgress ? isDeviceTrusted : false
 					
 					self.getCallsList()
+					self.getConference()
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
@@ -124,6 +133,43 @@ class CallViewModel: ObservableObject {
 			DispatchQueue.main.async {
 				self.calls = core.calls
 			}
+		}
+	}
+	
+	func getConference() {
+		coreContext.doOnCoreQueue { core in
+			//conf = self.currentCall?.conference != nil ? self.currentCall!.conference! : core.findConferenceInformationFromUri(uri: (self.currentCall?.remoteContactAddress)!)
+			if self.currentCall?.remoteContactAddress != nil {
+				let conf = core.findConferenceInformationFromUri(uri: (self.currentCall?.remoteContactAddress)!)
+				DispatchQueue.main.async {
+					self.isConference = conf != nil
+					if self.isConference {
+						self.displayName = conf?.subject ?? ""
+						self.participantList = []
+						conf?.participantInfos.forEach({ participantInfo in
+							if participantInfo.address != nil {
+								self.participantList.append(ParticipantModel(address: participantInfo.address!))
+							}
+						})
+						self.addConferenceCallBacks()
+					}
+				}
+			}
+		}
+	}
+	
+	func addConferenceCallBacks() {
+		coreContext.doOnCoreQueue { core in
+			self.mConferenceSuscriptions.insert(
+				self.currentCall?.conference?.publisher?.onActiveSpeakerParticipantDevice?.postOnMainQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
+					let direction = cbValue.participantDevice.getStreamCapability(streamType: StreamType.Video)
+					
+					self.receiveVideo = direction == MediaDirection.SendRecv || direction == MediaDirection.SendOnly
+					
+					if cbValue.participantDevice.address != nil {
+						self.activeSpeakerParticipant = ParticipantModel(address: cbValue.participantDevice.address!)
+					}
+			})
 		}
 	}
 	
@@ -179,6 +225,33 @@ class CallViewModel: ObservableObject {
 						"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
 					)
 					try self.currentCall!.update(params: params)
+				} catch {
+					
+				}
+			}
+		}
+	}
+	
+	func displayMyVideo() {
+		coreContext.doOnCoreQueue { core in
+			if self.currentCall != nil {
+				do {
+					let params = try core.createCallParams(call: self.currentCall)
+					
+					if params.videoEnabled {
+						if params.videoDirection == MediaDirection.SendRecv {
+							params.videoDirection = MediaDirection.RecvOnly
+						} else if params.videoDirection == MediaDirection.RecvOnly {
+							params.videoDirection = MediaDirection.SendRecv
+						}
+					}
+					
+					try self.currentCall!.update(params: params)
+					
+					let video = params.videoDirection == MediaDirection.SendRecv
+					DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+						self.videoDisplayed = video
+					}
 				} catch {
 					
 				}

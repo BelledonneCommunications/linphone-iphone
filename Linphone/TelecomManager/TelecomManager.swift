@@ -45,6 +45,7 @@ class TelecomManager: ObservableObject {
 	@Published var callStarted: Bool = false
 	@Published var outgoingCallStarted: Bool = false
 	@Published var remoteVideo: Bool = false
+	@Published var remoteConfVideo: Bool = false
 	@Published var isRecordingByRemote: Bool = false
 	@Published var isPausedByRemote: Bool = false
 	@Published var refreshCallViewModel: Bool = false
@@ -374,7 +375,19 @@ class TelecomManager: ObservableObject {
 			
 			DispatchQueue.main.async {
 				let oldRemoteVideo = self.remoteVideo
-				self.remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+				//self.remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+				
+				if call.conference != nil {
+					if call.conference!.activeSpeakerParticipantDevice != nil {
+						let direction = call.conference?.activeSpeakerParticipantDevice!.getStreamCapability(streamType: StreamType.Video)
+						self.remoteConfVideo = direction == MediaDirection.SendRecv || direction == MediaDirection.SendOnly
+					} else {
+						self.remoteConfVideo = true
+					}
+				} else {
+					self.remoteVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection != MediaDirection.Inactive
+					self.remoteConfVideo = false
+				}
 				
 				if self.remoteVideo && self.remoteVideo != oldRemoteVideo {
 					do {

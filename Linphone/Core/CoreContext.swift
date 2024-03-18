@@ -270,9 +270,11 @@ final class CoreContext: ObservableObject {
 		}
 	}
 	
-	func updatePresence(core : Core, presence : ConsolidatedPresence) {
+	func updatePresence(core: Core, presence: ConsolidatedPresence) {
 		if core.config!.getBool(section: "app", key: "publish_presence", defaultValue: true) {
-			core.consolidatedPresence = presence
+			DispatchQueue.main.async {
+				core.consolidatedPresence = presence
+			}
 		}
 	}
 	
@@ -283,7 +285,7 @@ final class CoreContext: ObservableObject {
 		
 			Log.info("App is in foreground, PUBLISHING presence as Online")
 			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
-			try? self.mCore.start()
+			//try? self.mCore.start()
 		}
 	}
 	
@@ -297,7 +299,10 @@ final class CoreContext: ObservableObject {
 			// Flexisip will handle the Busy status depending on other devices
 			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Offline)
 			// self.mCore.iterate()
-			self.mCore.stop()
+			
+			if self.mCore.currentCall == nil {
+				//self.mCore.stop()
+			}
 		}
 	}
 	

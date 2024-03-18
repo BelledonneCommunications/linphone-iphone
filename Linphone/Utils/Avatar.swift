@@ -80,7 +80,7 @@ struct Avatar: View {
 				? contactAvatarModel.name.components(separatedBy: " ")[1]
 				: ""))
 			.resizable()
-			.frame(width: 50, height: 50)
+			.frame(width: avatarSize, height: avatarSize)
 			.clipShape(Circle())
 		} else {
 			Image("profil-picture-default")

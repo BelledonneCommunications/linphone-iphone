@@ -44,6 +44,7 @@
 		D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA7E2AE1397200D2E43E /* ContactsListViewModel.swift */; };
 		D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */; };
 		D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */; };
+		D720E6AD2BAD822000DDFD87 /* ParticipantModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */; };
 		D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250622ADE9615008FB426 /* HistoryViewModel.swift */; };
 		D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250682ADFBF2D008FB426 /* SideMenu.swift */; };
 		D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */; };
@@ -180,6 +181,7 @@
 		D71FCA7E2AE1397200D2E43E /* ContactsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListViewModel.swift; sourceTree = "<group>"; };
 		D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListFragment.swift; sourceTree = "<group>"; };
 		D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFragment.swift; sourceTree = "<group>"; };
+		D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantModel.swift; sourceTree = "<group>"; };
 		D72250622ADE9615008FB426 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		D72250682ADFBF2D008FB426 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
 		D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeScannerFragment.swift; sourceTree = "<group>"; };
@@ -444,6 +446,14 @@
 			path = Viewmodel;
 			sourceTree = "<group>";
 		};
+		D720E6AB2BAD81C800DDFD87 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		D72250612ADE95E4008FB426 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -597,6 +607,7 @@
 			isa = PBXGroup;
 			children = (
 				D75759302B56D3CE00E7AC10 /* Fragments */,
+				D720E6AB2BAD81C800DDFD87 /* Model */,
 				D7B99E972B29B37F00BE7BF2 /* ViewModel */,
 				D7B5678D2B28888F00DE63EB /* CallView.swift */,
 			);
@@ -866,6 +877,7 @@
 				D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
+				D720E6AD2BAD822000DDFD87 /* ParticipantModel.swift in Sources */,
 				D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */,
 				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,

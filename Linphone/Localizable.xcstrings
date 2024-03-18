@@ -245,6 +245,9 @@
     "Contacts" : {
 
     },
+    "Content" : {
+
+    },
     "Continue" : {
 
     },
@@ -486,6 +489,12 @@
     "Other actions" : {
 
     },
+    "Partage d'écran" : {
+
+    },
+    "Participants" : {
+
+    },
     "password" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -624,6 +633,9 @@
 
     },
     "This contact will be deleted definitively." : {
+
+    },
+    "Title" : {
 
     },
     "TLS" : {

@@ -17,13 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// swiftlint:disable type_body_length
-// swiftlint:disable line_length
 import SwiftUI
 import CallKit
 import AVFAudio
 import linphonesw
 
+// swiftlint:disable type_body_length
+// swiftlint:disable line_length
 struct CallView: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
@@ -38,7 +38,6 @@ struct CallView: View {
 	let pub = NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)
 	
 	@State var audioRouteSheet: Bool = false
-	@State var hideButtonsSheet: Bool = false
 	@State var options: Int = 1
 	@State var imageAudioRoute: String = ""
 	@State var angleDegree = 0.0
@@ -47,6 +46,7 @@ struct CallView: View {
 	@State var maxBottomSheetHeight: CGFloat = 0.5
 	@State private var pointingUp: CGFloat = 0.0
 	@State private var currentOffset: CGFloat = 0.0
+	@State private var viewIsDisplayed = false
 	
 	@Binding var fullscreenVideo: Bool
 	@Binding var isShowCallsListFragment: Bool
@@ -59,7 +59,6 @@ struct CallView: View {
 					innerView(geometry: geo)
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
-							hideButtonsSheet = false
 						}) {
 							innerBottomSheet()
 								.presentationDetents([.fraction(0.3)])
@@ -77,7 +76,6 @@ struct CallView: View {
 					innerView(geometry: geo)
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
-							hideButtonsSheet = false
 						}) {
 							innerBottomSheet()
 								.presentationDetents([.fraction(0.3)])
@@ -96,7 +94,6 @@ struct CallView: View {
 							innerBottomSheet()
 						} onDismiss: {
 							audioRouteSheet = false
-							hideButtonsSheet = false
 						}
 						.halfSheet(showSheet: $showingDialer) {
 							DialerBottomSheet(
@@ -320,7 +317,18 @@ struct CallView: View {
 									.padding(.all, 10)
 							}
 							
-							if telecomManager.remoteVideo {
+							if !callViewModel.isConference && telecomManager.remoteVideo {
+									Button {
+										callViewModel.switchCamera()
+									} label: {
+										Image("camera-rotate")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 30, height: 30)
+											.padding(.horizontal)
+									}
+							} else if callViewModel.isConference && callViewModel.videoDisplayed {
 								Button {
 									callViewModel.switchCamera()
 								} label: {
@@ -360,232 +368,7 @@ struct CallView: View {
 					}
 				}
 				
-				ZStack {
-					VStack {
-						Spacer()
-						ZStack {
-							
-							if callViewModel.isRemoteDeviceTrusted {
-								Circle()
-									.fill(Color.blueInfo500)
-									.frame(width: 206, height: 206)
-							}
-							
-							if callViewModel.remoteAddress != nil {
-								let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
-								
-								let contactAvatarModel = addressFriend != nil
-								? ContactsManager.shared.avatarListModel.first(where: {
-									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-									&& $0.friend!.name == addressFriend!.name
-									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-								})
-								: ContactAvatarModel(friend: nil, name: "", withPresence: false)
-								
-								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-									if contactAvatarModel != nil {
-										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
-									}
-								} else {
-									if callViewModel.remoteAddress!.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: callViewModel.remoteAddress!.displayName!,
-											lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
-											? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 200, height: 200)
-										.clipShape(Circle())
-										
-									} else {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: callViewModel.remoteAddress!.username ?? "Username Error",
-											lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
-											? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 200, height: 200)
-										.clipShape(Circle())
-									}
-									
-								}
-							} else {
-								Image("profil-picture-default")
-									.resizable()
-									.frame(width: 200, height: 200)
-									.clipShape(Circle())
-							}
-							
-							if callViewModel.isRemoteDeviceTrusted {
-								VStack {
-									Spacer()
-									HStack {
-										Image("trusted")
-											.resizable()
-											.frame(width: 25, height: 25)
-											.padding(.all, 15)
-										Spacer()
-									}
-								}
-								.frame(width: 200, height: 200)
-							}
-						}
-						
-						Text(callViewModel.displayName)
-							.padding(.top)
-							.default_text_style_white(styleSize: 22)
-						
-						Text(callViewModel.remoteAddressString)
-							.default_text_style_white_300(styleSize: 16)
-						
-						Spacer()
-					}
-					
-					LinphoneVideoViewHolder { view in
-						coreContext.doOnCoreQueue { core in
-							core.nativeVideoWindow = view
-						}
-					}
-					.frame(
-						width:
-							angleDegree == 0
-						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
-						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
-						height:
-							angleDegree == 0
-						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
-						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
-					)
-					.scaledToFill()
-					.clipped()
-					.onTapGesture {
-						if telecomManager.remoteVideo {
-							fullscreenVideo.toggle()
-						}
-					}
-					
-					if telecomManager.remoteVideo {
-						HStack {
-							Spacer()
-							VStack {
-								Spacer()
-								LinphoneVideoViewHolder { view in
-									coreContext.doOnCoreQueue { core in
-										core.nativePreviewWindow = view
-									}
-								}
-								.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
-								.cornerRadius(20)
-								.padding(10)
-								.padding(.trailing, abs(angleDegree/2))
-							}
-						}
-						.frame(
-							maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-							maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-						)
-					}
-					
-					if callViewModel.isRecording {
-						HStack {
-							VStack {
-								Image("record-fill")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.redDanger500)
-									.frame(width: 32, height: 32)
-									.padding(10)
-									.if(fullscreenVideo && !telecomManager.isPausedByRemote) { view in
-										view.padding(.top, 30)
-									}
-								Spacer()
-							}
-							Spacer()
-						}
-						.frame(
-							maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-							maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-						)
-					}
-					
-					if  telecomManager.outgoingCallStarted {
-						VStack {
-							ActivityIndicator()
-								.frame(width: 20, height: 20)
-								.padding(.top, 60)
-							
-							Text(callViewModel.counterToMinutes())
-								.onAppear {
-									callViewModel.timeElapsed = 0
-								}
-								.onReceive(callViewModel.timer) { _ in
-									callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
-									
-								}
-								.onDisappear {
-									callViewModel.timeElapsed = 0
-								}
-								.padding(.top)
-								.foregroundStyle(.white)
-							
-							Spacer()
-						}
-						.background(.clear)
-						.frame(
-							maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-							maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-						)
-					}
-				}
-				.frame(
-					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-				)
-				.background(Color.gray900)
-				.cornerRadius(20)
-				.padding(.horizontal, fullscreenVideo && !telecomManager.isPausedByRemote ? 0 : 4)
-				.onRotate { newOrientation in
-					let oldOrientation = orientation
-					orientation = newOrientation
-					if orientation == .portrait || orientation == .portraitUpsideDown {
-						angleDegree = 0
-					} else {
-						if orientation == .landscapeLeft {
-							angleDegree = -90
-						} else if orientation == .landscapeRight {
-							angleDegree = 90
-						}
-					}
-					
-					if (oldOrientation != orientation && oldOrientation != .faceUp) || (oldOrientation == .faceUp && (orientation == .landscapeLeft || orientation == .landscapeRight)) {
-						telecomManager.callStarted = false
-						
-						DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-							telecomManager.callStarted = true
-						}
-					}
-					
-					callViewModel.orientationUpdate(orientation: orientation)
-				}
-				.onAppear {
-					if orientation == .portrait && orientation == .portraitUpsideDown {
-						angleDegree = 0
-					} else {
-						if orientation == .landscapeLeft {
-							angleDegree = -90
-						} else if orientation == .landscapeRight {
-							angleDegree = 90
-						}
-					}
-					
-					telecomManager.callStarted = false
-					
-					DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-						telecomManager.callStarted = true
-					}
-					
-					callViewModel.orientationUpdate(orientation: orientation)
-				}
+				simpleCallView(geometry: geometry)
 				
 				Spacer()
 			}
@@ -619,6 +402,396 @@ struct CallView: View {
 		}
 	}
 	
+	func simpleCallView(geometry: GeometryProxy) -> some View {
+		ZStack {
+			if !callViewModel.isConference {
+				VStack {
+					Spacer()
+					ZStack {
+						
+						if callViewModel.isRemoteDeviceTrusted {
+							Circle()
+								.fill(Color.blueInfo500)
+								.frame(width: 206, height: 206)
+						}
+						
+						if callViewModel.remoteAddress != nil {
+							let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
+							
+							let contactAvatarModel = addressFriend != nil
+							? ContactsManager.shared.avatarListModel.first(where: {
+								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+								&& $0.friend!.name == addressFriend!.name
+								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+							})
+							: ContactAvatarModel(friend: nil, name: "", withPresence: false)
+							
+							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+								if contactAvatarModel != nil {
+									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
+								}
+							} else {
+								if callViewModel.remoteAddress!.displayName != nil {
+									Image(uiImage: contactsManager.textToImage(
+										firstName: callViewModel.remoteAddress!.displayName!,
+										lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
+										? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
+										: ""))
+									.resizable()
+									.frame(width: 200, height: 200)
+									.clipShape(Circle())
+									
+								} else {
+									Image(uiImage: contactsManager.textToImage(
+										firstName: callViewModel.remoteAddress!.username ?? "Username Error",
+										lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
+										? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
+										: ""))
+									.resizable()
+									.frame(width: 200, height: 200)
+									.clipShape(Circle())
+								}
+								
+							}
+						} else {
+							Image("profil-picture-default")
+								.resizable()
+								.frame(width: 200, height: 200)
+								.clipShape(Circle())
+						}
+						
+						if callViewModel.isRemoteDeviceTrusted {
+							VStack {
+								Spacer()
+								HStack {
+									Image("trusted")
+										.resizable()
+										.frame(width: 25, height: 25)
+										.padding(.all, 15)
+									Spacer()
+								}
+							}
+							.frame(width: 200, height: 200)
+						}
+					}
+					
+					Text(callViewModel.displayName)
+						.padding(.top)
+						.default_text_style_white(styleSize: 22)
+					
+					Text(callViewModel.remoteAddressString)
+						.default_text_style_white_300(styleSize: 16)
+					
+					Spacer()
+				}
+			} else {
+				VStack {
+					Spacer()
+					ZStack {
+						if callViewModel.activeSpeakerParticipant?.address != nil {
+							let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.activeSpeakerParticipant!.address)
+							
+							let contactAvatarModel = addressFriend != nil
+							? ContactsManager.shared.avatarListModel.first(where: {
+								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+								&& $0.friend!.name == addressFriend!.name
+								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+							})
+							: ContactAvatarModel(friend: nil, name: "", withPresence: false)
+							
+							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+								if contactAvatarModel != nil {
+									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
+								}
+							} else {
+								if callViewModel.activeSpeakerParticipant!.address.displayName != nil {
+									Image(uiImage: contactsManager.textToImage(
+										firstName: callViewModel.activeSpeakerParticipant!.address.displayName!,
+										lastName: callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ").count > 1
+										? callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ")[1]
+										: ""))
+									.resizable()
+									.frame(width: 200, height: 200)
+									.clipShape(Circle())
+									
+								} else {
+									Image(uiImage: contactsManager.textToImage(
+										firstName: callViewModel.activeSpeakerParticipant!.address.username ?? "Username Error",
+										lastName: callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ").count > 1
+										? callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ")[1]
+										: ""))
+									.resizable()
+									.frame(width: 200, height: 200)
+									.clipShape(Circle())
+								}
+								
+							}
+						} else {
+							Image("profil-picture-default")
+								.resizable()
+								.frame(width: 200, height: 200)
+								.clipShape(Circle())
+						}
+					}
+					
+					Spacer()
+				}
+			}
+			
+			if !callViewModel.isConference {
+				LinphoneVideoViewHolder { view in
+					coreContext.doOnCoreQueue { core in
+						core.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+					}
+				}
+				.frame(
+					width:
+						angleDegree == 0
+					? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+					: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
+					height:
+						angleDegree == 0
+					? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
+					: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+				)
+				.scaledToFill()
+				.clipped()
+				.onTapGesture {
+					if telecomManager.remoteVideo {
+						fullscreenVideo.toggle()
+					}
+				}
+				
+				if telecomManager.remoteVideo {
+					HStack {
+						Spacer()
+						VStack {
+							Spacer()
+							LinphoneVideoViewHolder { view in
+								coreContext.doOnCoreQueue { core in
+									core.nativePreviewWindow = view
+								}
+							}
+							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+							.cornerRadius(20)
+							.padding(10)
+							.padding(.trailing, abs(angleDegree/2))
+						}
+					}
+					.frame(
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+					)
+				}
+			} else {
+				/*
+				if !viewIsDisplayed {
+					VStack {
+						
+					}
+					.onAppear {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+							viewIsDisplayed = true
+						}
+					}
+				}
+				
+				if viewIsDisplayed && (callViewModel.receiveVideo || telecomManager.remoteConfVideo) {
+				 */
+				if (callViewModel.receiveVideo || telecomManager.remoteConfVideo) {
+					LinphoneVideoViewHolder { view in
+						coreContext.doOnCoreQueue { core in
+							//core.nativeVideoWindow = view
+							core.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+						}
+					}
+					.frame(
+						width:
+							angleDegree == 0
+						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
+						height:
+							angleDegree == 0
+						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
+						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+					)
+					.scaledToFill()
+					.clipped()
+					.onTapGesture {
+						if telecomManager.remoteVideo {
+							fullscreenVideo.toggle()
+						}
+					}
+					
+					HStack {
+						Spacer()
+						VStack {
+							Spacer()
+							ScrollView(.horizontal) {
+								HStack {
+									ForEach(0..<callViewModel.participantList.count - 1, id: \.self) { index in
+										ZStack {
+											VStack {
+												Spacer()
+												
+												Avatar(contactAvatarModel: callViewModel.participantList[index].avatarModel, avatarSize: 50)
+												
+												Spacer()
+											}
+											
+											VStack(alignment: .leading) {
+												Spacer()
+												
+												Text(callViewModel.participantList[index].name)
+													.frame(maxWidth: .infinity, alignment: .leading)
+													.foregroundStyle(Color.white)
+													.default_text_style_500(styleSize: 14)
+													.lineLimit(1)
+													.padding(.horizontal, 10)
+													.padding(.bottom, 6)
+											}
+											.frame(maxWidth: .infinity)
+										}
+										.frame(width: 140, height: 140)
+										.background(Color.gray600)
+										.cornerRadius(20)
+									}
+								}
+							}
+						}
+					}
+					.frame(
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+					)
+					.padding(.bottom, 10)
+					/*
+					HStack {
+						Spacer()
+						VStack {
+							Spacer()
+							LinphoneVideoViewHolder { view in
+								coreContext.doOnCoreQueue { core in
+									core.nativePreviewWindow = view
+								}
+							}
+							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+							.cornerRadius(20)
+							.padding(10)
+							.padding(.trailing, abs(angleDegree/2))
+						}
+					}
+					.frame(
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+					)
+					 */
+				}
+			}
+			
+			if callViewModel.isRecording {
+				HStack {
+					VStack {
+						Image("record-fill")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.redDanger500)
+							.frame(width: 32, height: 32)
+							.padding(10)
+							.if(fullscreenVideo && !telecomManager.isPausedByRemote) { view in
+								view.padding(.top, 30)
+							}
+						Spacer()
+					}
+					Spacer()
+				}
+				.frame(
+					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+				)
+			}
+			
+			if  telecomManager.outgoingCallStarted {
+				VStack {
+					ActivityIndicator()
+						.frame(width: 20, height: 20)
+						.padding(.top, 60)
+					
+					Text(callViewModel.counterToMinutes())
+						.onAppear {
+							callViewModel.timeElapsed = 0
+						}
+						.onReceive(callViewModel.timer) { _ in
+							callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
+							
+						}
+						.onDisappear {
+							callViewModel.timeElapsed = 0
+						}
+						.padding(.top)
+						.foregroundStyle(.white)
+					
+					Spacer()
+				}
+				.background(.clear)
+				.frame(
+					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+				)
+			}
+		}
+		.frame(
+			maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+			maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+		)
+		.background(Color.gray900)
+		.cornerRadius(20)
+		.padding(.horizontal, fullscreenVideo && !telecomManager.isPausedByRemote ? 0 : 4)
+		.onRotate { newOrientation in
+			let oldOrientation = orientation
+			orientation = newOrientation
+			if orientation == .portrait || orientation == .portraitUpsideDown {
+				angleDegree = 0
+			} else {
+				if orientation == .landscapeLeft {
+					angleDegree = -90
+				} else if orientation == .landscapeRight {
+					angleDegree = 90
+				}
+			}
+			
+			if (oldOrientation != orientation && oldOrientation != .faceUp) || (oldOrientation == .faceUp && (orientation == .landscapeLeft || orientation == .landscapeRight)) {
+				telecomManager.callStarted = false
+				
+				DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+					telecomManager.callStarted = true
+				}
+			}
+			
+			callViewModel.orientationUpdate(orientation: orientation)
+		}
+		.onAppear {
+			if orientation == .portrait && orientation == .portraitUpsideDown {
+				angleDegree = 0
+			} else {
+				if orientation == .landscapeLeft {
+					angleDegree = -90
+				} else if orientation == .landscapeRight {
+					angleDegree = 90
+				}
+			}
+			
+			telecomManager.callStarted = false
+			
+			DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+				telecomManager.callStarted = true
+			}
+			
+			callViewModel.orientationUpdate(orientation: orientation)
+		}
+	}
+	
+	// swiftlint:disable function_body_length
 	func bottomSheetContent(geo: GeometryProxy) -> some View {
 		GeometryReader { _ in
 			VStack(spacing: 0) {
@@ -658,22 +831,41 @@ struct CallView: View {
 					
 					Spacer()
 					
-					Button {
-						callViewModel.toggleVideo()
-					} label: {
-						HStack {
-							Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-								.frame(width: 32, height: 32)
+					if !callViewModel.isConference {
+						Button {
+							callViewModel.toggleVideo()
+						} label: {
+							HStack {
+								Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+									.frame(width: 32, height: 32)
+							}
 						}
+						.buttonStyle(PressedButtonStyle())
+						.frame(width: 60, height: 60)
+						.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
+						.cornerRadius(40)
+						.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+					} else {
+						Button {
+							callViewModel.displayMyVideo()
+						} label: {
+							HStack {
+								Image(callViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+									.frame(width: 32, height: 32)
+							}
+						}
+						.buttonStyle(PressedButtonStyle())
+						.frame(width: 60, height: 60)
+						.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
+						.cornerRadius(40)
+						.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 					}
-					.buttonStyle(PressedButtonStyle())
-					.frame(width: 60, height: 60)
-					.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
-					.cornerRadius(40)
-					.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 					
 					Button {
 						callViewModel.toggleMuteMicrophone()
@@ -694,8 +886,6 @@ struct CallView: View {
 					Button {
 						if AVAudioSession.sharedInstance().availableInputs != nil
 							&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
-							
-							hideButtonsSheet = true
 							
 							DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
 								audioRouteSheet = true
@@ -732,63 +922,109 @@ struct CallView: View {
 				
 				if orientation != .landscapeLeft && orientation != .landscapeRight {
 					HStack(spacing: 0) {
-						VStack {
-							Button {
-								if callViewModel.calls.count < 2 {
+						if !callViewModel.isConference {
+							VStack {
+								Button {
+									if callViewModel.calls.count < 2 {
+										withAnimation {
+											callViewModel.isTransferInsteadCall = true
+											MagicSearchSingleton.shared.searchForSuggestions()
+											isShowStartCallFragment.toggle()
+										}
+									} else {
+										callViewModel.transferClicked()
+									}
+								} label: {
+									HStack {
+										Image("phone-transfer")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
+								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							
+							VStack {
+								Button {
 									withAnimation {
-										callViewModel.isTransferInsteadCall = true
 										MagicSearchSingleton.shared.searchForSuggestions()
 										isShowStartCallFragment.toggle()
 									}
-								} else {
-									callViewModel.transferClicked()
+								} label: {
+									HStack {
+										Image("phone-plus")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
 								}
-							} label: {
-								HStack {
-									Image("phone-transfer")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
-								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("New call")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
-							
-							Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
-								.foregroundStyle(.white)
-								.default_text_style(styleSize: 15)
-						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-						
-						VStack {
-							Button {
-								withAnimation {
-									MagicSearchSingleton.shared.searchForSuggestions()
-									isShowStartCallFragment.toggle()
+							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						} else {
+							VStack {
+								Button {
+								} label: {
+									HStack {
+										Image("screencast")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.gray500)
+											.frame(width: 32, height: 32)
+									}
 								}
-							} label: {
-								HStack {
-									Image("phone-plus")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
-								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(.white)
+								.cornerRadius(40)
+								.disabled(true)
+								
+								Text("Partage d'écran")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
+							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 							
-							Text("New call")
-								.foregroundStyle(.white)
-								.default_text_style(styleSize: 15)
+							VStack {
+								Button {
+								} label: {
+									HStack {
+										Image("users")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
+								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("Participants")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
-						
 						VStack {
 							ZStack {
 								Button {
@@ -1162,6 +1398,7 @@ struct CallView: View {
 			.frame(maxHeight: .infinity, alignment: .top)
 		}
 	}
+	// swiftlint:enable function_body_length
 	
 	func getAudioRouteImage() {
 		imageAudioRoute = AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty

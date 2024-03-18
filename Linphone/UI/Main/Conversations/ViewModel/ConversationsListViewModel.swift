@@ -46,7 +46,6 @@ class ConversationsListViewModel: ObservableObject {
 			var conversationsListTmp: [ConversationModel] = []
 			
 			chatRooms.forEach { chatRoom in
-				//let disabledBecauseNotSecured = (account?.isInSecureMode() == true && !chatRoom.hasCapability) ? Capabilities.Encrypted.toInt() : 0
 				if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
 				}
 				
@@ -54,32 +53,6 @@ class ConversationsListViewModel: ObservableObject {
 					let model = ConversationModel(chatRoom: chatRoom)
 					conversationsListTmp.append(model)
 				}
-				/*
-				 else {
-				 val participants = chatRoom.participants
-				 val found = participants.find {
-				 // Search in address but also in contact name if exists
-				 val model =
-				 coreContext.contactsManager.getContactAvatarModelForAddress(it.address)
-				 model.contactName?.contains(
-				 filter,
-				 ignoreCase = true
-				 ) == true || it.address.asStringUriOnly().contains(
-				 filter,
-				 ignoreCase = true
-				 )
-				 }
-				 if (
-				 found != null ||
-				 chatRoom.peerAddress.asStringUriOnly().contains(filter, ignoreCase = true) ||
-				 chatRoom.subject.orEmpty().contains(filter, ignoreCase = true)
-				 ) {
-				 val model = ConversationModel(chatRoom, disabledBecauseNotSecured)
-				 list.add(model)
-				 count += 1
-				 }
-				 }
-				 */
 			}
 			
 			if !self.conversationsList.isEmpty {
