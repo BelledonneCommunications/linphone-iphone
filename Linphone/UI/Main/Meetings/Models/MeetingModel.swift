@@ -5,4 +5,53 @@
 //  Created by QuentinArguillere on 19/03/2024.
 //
 
-import Foundation
+import linphonesw
+
+class MeetingModel: ObservableObject {
+
+	private var confInfo: ConferenceInfo
+	var id: String
+	var meetingDate: Date
+	var isToday: Bool
+	var isAfterToday: Bool
+	
+	private let startTime: String
+	private let endTime: String
+	var time: String // "$startTime - $endTime"
+	var day: String
+	var dayNumber: String
+	var month: String
+
+	@Published var isBroadcast: Bool
+	@Published var subject: String
+	// @Published var firstMeetingOfTheDay: Bool
+	
+	init(conferenceInfo: ConferenceInfo) {
+		confInfo = conferenceInfo
+		id = confInfo.uri?.asStringUriOnly() ?? ""
+		meetingDate = Date(timeIntervalSince1970: TimeInterval(confInfo.dateTime))
+		
+		let formatter = DateFormatter()
+		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+		startTime = formatter.string(from: meetingDate)
+		let endDate = meetingDate + Double(confInfo.duration * 60) // confInfo.duration is in minutes
+		endTime = formatter.string(from: endDate)
+		time = "\(startTime) - \(endTime)"
+		
+		day = meetingDate.formatted(Date.FormatStyle().weekday(.abbreviated))
+		dayNumber = meetingDate.formatted(Date.FormatStyle().day(.twoDigits))
+		month = meetingDate.formatted(Date.FormatStyle().month(.wide)) // February
+		
+		isToday = Calendar.current.isDateInToday(meetingDate)
+		if isToday {
+			isAfterToday = false
+		} else {
+			isAfterToday = meetingDate > Date.now
+		}
+		
+		// If at least one participant is listener, we are in broadcast mode
+		isBroadcast = confInfo.participantInfos.firstIndex(where: {$0.role == Participant.Role.Listener}) != nil
+		
+		subject = confInfo.subject ?? ""
+	}
+}
