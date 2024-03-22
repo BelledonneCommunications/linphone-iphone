@@ -24,7 +24,7 @@ class MeetingModel: ObservableObject {
 
 	@Published var isBroadcast: Bool
 	@Published var subject: String
-	// @Published var firstMeetingOfTheDay: Bool
+	@Published var firstMeetingOfTheDay: Bool = false
 	
 	init(conferenceInfo: ConferenceInfo) {
 		confInfo = conferenceInfo
