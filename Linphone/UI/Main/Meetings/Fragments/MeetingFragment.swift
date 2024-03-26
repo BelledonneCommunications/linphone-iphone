@@ -17,8 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+import SwiftUI
 
-class MeetingViewModel: ObservableObject {
+struct MeetingFragment: View {
 	
+	@ObservedObject var meetingViewModel: MeetingViewModel
+	
+	var body: some View {
+		ZStack {
+			Text("TODO")
+		}
+	}
+}
+
+#Preview {
+	MeetingFragment(meetingViewModel: MeetingViewModel())
 }

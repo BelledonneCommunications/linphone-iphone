@@ -17,8 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+// swiftlint:disable line_length
 
-class MeetingViewModel: ObservableObject {
+import SwiftUI
+import linphonesw
+
+struct MeetingsListFragment: View {
 	
+	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
+	
+	@Binding var showingSheet: Bool
+	
+	var body: some View {
+		VStack {
+			
+		}
+	}
 }
+
+#Preview {
+	MeetingsListFragment(meetingsListViewModel: MeetingsListViewModel(), showingSheet: .constant(false))
+}
+
+// swiftlint:enable line_length

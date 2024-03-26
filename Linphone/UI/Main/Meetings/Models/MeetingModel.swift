@@ -34,7 +34,7 @@ class MeetingModel: ObservableObject {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
 		startTime = formatter.string(from: meetingDate)
-		let endDate = meetingDate + Double(confInfo.duration * 60) // confInfo.duration is in minutes
+		let endDate = Calendar.current.date(byAdding: .minute, value: Int(confInfo.duration), to: meetingDate)
 		endTime = formatter.string(from: endDate)
 		time = "\(startTime) - \(endTime)"
 		

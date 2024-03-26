@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
+		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
+		6613A0B02BAEB7F4008923A4 /* MeetingsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */; };
+		6613A0B42BAEBE3F008923A4 /* MeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */; };
+		6613A0B62BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */; };
 		662B69D92B25DE18007118BF /* TelecomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69D82B25DE18007118BF /* TelecomManager.swift */; };
 		662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69DA2B25DE25007118BF /* ProviderDelegate.swift */; };
 		667E5D7F2B8E430C00EBCFC4 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
@@ -22,7 +26,6 @@
 		66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */; };
 		66E56BCC2BA9A1E0006CE56F /* MeetingsListItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BCB2BA9A1E0006CE56F /* MeetingsListItemModel.swift */; };
 		66E56BCE2BA9A1F8006CE56F /* MeetingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BCD2BA9A1F8006CE56F /* MeetingModel.swift */; };
-		66E56BD22BA9A25B006CE56F /* MeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BD12BA9A25B006CE56F /* MeetingViewModel.swift */; };
 		66FBFC482B83B8CC00BC6AB1 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
 		66FBFC492B83BD2400BC6AB1 /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
 		66FBFC4A2B83BD3300BC6AB1 /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
@@ -155,6 +158,10 @@
 		660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = msgNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		660AAF842B8392E0004C0FA6 /* msgNotificationService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = msgNotificationService.entitlements; sourceTree = "<group>"; };
 		660D8A702B517D260092694D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingFragment.swift; sourceTree = "<group>"; };
+		6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListFragment.swift; sourceTree = "<group>"; };
+		6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetingViewModel.swift; sourceTree = "<group>"; };
+		6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleMeetingViewModel.swift; sourceTree = "<group>"; };
 		662B69D82B25DE18007118BF /* TelecomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelecomManager.swift; sourceTree = "<group>"; };
 		662B69DA2B25DE25007118BF /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
 		667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -167,7 +174,6 @@
 		66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListViewModel.swift; sourceTree = "<group>"; };
 		66E56BCB2BA9A1E0006CE56F /* MeetingsListItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListItemModel.swift; sourceTree = "<group>"; };
 		66E56BCD2BA9A1F8006CE56F /* MeetingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingModel.swift; sourceTree = "<group>"; };
-		66E56BD12BA9A25B006CE56F /* MeetingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingViewModel.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModel.swift; sourceTree = "<group>"; };
 		D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListBottomSheet.swift; sourceTree = "<group>"; };
@@ -333,6 +339,8 @@
 		66E56BC62BA49938006CE56F /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */,
+				6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -341,7 +349,8 @@
 			isa = PBXGroup;
 			children = (
 				66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */,
-				66E56BD12BA9A25B006CE56F /* MeetingViewModel.swift */,
+				6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */,
+				6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -938,6 +947,7 @@
 				D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */,
 				D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */,
 				D70A26F02B7D02E6006CC8FC /* ConversationViewModel.swift in Sources */,
+				6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
 				D7E6D04D2AEBD77600A57AAF /* CustomBottomSheet.swift in Sources */,
 				D73449992BC6932A00778C56 /* MeetingWaitingRoomFragment.swift in Sources */,
@@ -955,6 +965,7 @@
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */,
 				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,
+				6613A0B02BAEB7F4008923A4 /* MeetingsListFragment.swift in Sources */,
 				D76005F62B0798B00054B79A /* IntExtension.swift in Sources */,
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
 				D75759322B56D40900E7AC10 /* ZRTPPopup.swift in Sources */,
@@ -963,9 +974,10 @@
 				D7E6ADF52B9876ED0009A2BC /* Attachment.swift in Sources */,
 				D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */,
 				D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */,
+				6613A0B42BAEBE3F008923A4 /* MeetingViewModel.swift in Sources */,
 				D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */,
 				66C492012B24DB6900CEA16D /* Log.swift in Sources */,
-				66E56BD22BA9A25B006CE56F /* MeetingViewModel.swift in Sources */,
+				6613A0B62BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift in Sources */,
 				D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */,
 				D7CEE0382B7A214F00FD79B7 /* ConversationsListViewModel.swift in Sources */,
 				D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */,
