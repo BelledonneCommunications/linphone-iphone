@@ -21,24 +21,23 @@ import Foundation
 import linphonesw
 import Combine
 
-
 class ScheduleMeetingViewModel: ObservableObject {
 	private let TAG = "[ScheduleMeetingViewModel]"
 	
-	@Published var isBroadcastSelected: Bool
-	@Published var showBroadcastHelp: Bool
-	@Published var subject: String
-	@Published var description: String
-	@Published var allDayMeeting: Bool
-	@Published var fromDateStr: String
-	@Published var fromTime: String
-	@Published var toDateStr: String
-	@Published var  toTime: String
-	@Published var  timezone: String
-	@Published var  sendInvitations: Bool
+	@Published var isBroadcastSelected: Bool = false
+	@Published var showBroadcastHelp: Bool = false
+	@Published var subject: String = ""
+	@Published var description: String = ""
+	@Published var allDayMeeting: Bool = false
+	@Published var fromDateStr: String = ""
+	@Published var fromTime: String = ""
+	@Published var toDateStr: String = ""
+	@Published var  toTime: String = ""
+	@Published var  timezone: String = ""
+	@Published var  sendInvitations: Bool = true
 	// var participants = MutableLiveData<ArrayList<SelectedAddressModel>>()
-	@Published var  operationInProgress: Bool
-	@Published var  conferenceCreatedEvent: Bool
+	@Published var  operationInProgress: Bool = false
+	@Published var  conferenceCreatedEvent: Bool = false
 	
 	var conferenceScheduler: ConferenceScheduler?
 	var conferenceInfoToEdit: ConferenceScheduler?
@@ -47,11 +46,6 @@ class ScheduleMeetingViewModel: ObservableObject {
 	private var toDate: Date
 	
 	init() {
-		isBroadcastSelected = false
-		showBroadcastHelp = false
-		allDayMeeting = false
-		sendInvitations = true
-		
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 1, to: fromDate)!
 		
@@ -78,11 +72,10 @@ class ScheduleMeetingViewModel: ObservableObject {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
 		fromTime = formatter.string(from: fromDate)
-		toTime = formatter.string(from:toDate)
+		toTime = formatter.string(from: toDate)
 	}
 	
 	private func updateTimezone() {
 		// TODO
 	}
 }
-
