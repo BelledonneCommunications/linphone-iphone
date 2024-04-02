@@ -50,6 +50,7 @@ class CallViewModel: ObservableObject {
 	@Published var receiveVideo: Bool = false
 	@Published var participantList: [ParticipantModel] = []
 	@Published var activeSpeakerParticipant: ParticipantModel? = nil
+	@Published var myParticipantModel: ParticipantModel? = nil
 
 	
 	private var mConferenceSuscriptions = Set<AnyCancellable?>()
@@ -148,7 +149,13 @@ class CallViewModel: ObservableObject {
 						self.participantList = []
 						conf?.participantInfos.forEach({ participantInfo in
 							if participantInfo.address != nil {
-								self.participantList.append(ParticipantModel(address: participantInfo.address!))
+								if participantInfo.address!.equal(address2: (self.currentCall?.callLog?.localAddress!)!) {
+									self.myParticipantModel = ParticipantModel(address: participantInfo.address!)
+								} else {
+									if self.activeSpeakerParticipant != nil && !participantInfo.address!.equal(address2: self.activeSpeakerParticipant!.address) {
+										self.participantList.append(ParticipantModel(address: participantInfo.address!))
+									}
+								}
 							}
 						})
 						self.addConferenceCallBacks()
@@ -167,9 +174,24 @@ class CallViewModel: ObservableObject {
 					self.receiveVideo = direction == MediaDirection.SendRecv || direction == MediaDirection.SendOnly
 					
 					if cbValue.participantDevice.address != nil {
+						let activeSpeakerParticipantTmp = self.activeSpeakerParticipant
 						self.activeSpeakerParticipant = ParticipantModel(address: cbValue.participantDevice.address!)
+						
+						if self.activeSpeakerParticipant != nil
+							&& ((activeSpeakerParticipantTmp != nil && !activeSpeakerParticipantTmp!.address.equal(address2: self.activeSpeakerParticipant!.address))
+								|| ( activeSpeakerParticipantTmp == nil)) {
+							
+							self.participantList = []
+							cbValue.conference.participantList.forEach({ participant in
+								if participant.address != nil && !cbValue.conference.isMe(uri: participant.address!) {
+									if !cbValue.conference.isMe(uri: participant.address!) && !participant.address!.equal(address2: self.activeSpeakerParticipant!.address) {
+										self.participantList.append(ParticipantModel(address: participant.address!))
+									}
+								}
+							})
+						}
 					}
-			})
+				})
 		}
 	}
 	

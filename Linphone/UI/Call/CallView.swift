@@ -402,6 +402,7 @@ struct CallView: View {
 		}
 	}
 	
+	// swiftlint:disable:next cyclomatic_complexity
 	func simpleCallView(geometry: GeometryProxy) -> some View {
 		ZStack {
 			if !callViewModel.isConference {
@@ -598,7 +599,7 @@ struct CallView: View {
 				
 				if viewIsDisplayed && (callViewModel.receiveVideo || telecomManager.remoteConfVideo) {
 				 */
-				if (callViewModel.receiveVideo || telecomManager.remoteConfVideo) {
+				if (callViewModel.receiveVideo || telecomManager.remoteConfVideo) && !telecomManager.outgoingCallStarted {
 					LinphoneVideoViewHolder { view in
 						coreContext.doOnCoreQueue { core in
 							//core.nativeVideoWindow = view
@@ -623,13 +624,73 @@ struct CallView: View {
 						}
 					}
 					
+					/*
+					HStack {
+						Spacer()
+						VStack {
+							Spacer()
+							LinphoneVideoViewHolder { view in
+								coreContext.doOnCoreQueue { core in
+									core.nativePreviewWindow = view
+								}
+							}
+							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+							.cornerRadius(20)
+							.padding(10)
+							.padding(.trailing, abs(angleDegree/2))
+						}
+					}
+					.frame(
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+					)
+					 */
+				}
+				
+				if !telecomManager.outgoingCallStarted {
 					HStack {
 						Spacer()
 						VStack {
 							Spacer()
 							ScrollView(.horizontal) {
 								HStack {
-									ForEach(0..<callViewModel.participantList.count - 1, id: \.self) { index in
+									ZStack {
+										VStack {
+											Spacer()
+											
+											if callViewModel.myParticipantModel != nil {
+												Avatar(contactAvatarModel: callViewModel.myParticipantModel!.avatarModel, avatarSize: 50)
+											}
+											
+											Spacer()
+										}
+										
+										VStack(alignment: .leading) {
+											Spacer()
+											
+											if callViewModel.myParticipantModel != nil {
+												Text(callViewModel.myParticipantModel!.name)
+													.frame(maxWidth: .infinity, alignment: .leading)
+													.foregroundStyle(Color.white)
+													.default_text_style_500(styleSize: 14)
+													.lineLimit(1)
+													.padding(.horizontal, 10)
+													.padding(.bottom, 6)
+											}
+										}
+										.frame(maxWidth: .infinity)
+										
+										LinphoneVideoViewHolder { view in
+											coreContext.doOnCoreQueue { core in
+												core.nativePreviewWindow = view
+											}
+										}
+									}
+									.frame(width: 140, height: 140)
+									.background(Color.gray600)
+									.cornerRadius(20)
+									
+									ForEach(0..<callViewModel.participantList.count, id: \.self) { index in
 										ZStack {
 											VStack {
 												Spacer()
@@ -665,27 +726,6 @@ struct CallView: View {
 						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
 					.padding(.bottom, 10)
-					/*
-					HStack {
-						Spacer()
-						VStack {
-							Spacer()
-							LinphoneVideoViewHolder { view in
-								coreContext.doOnCoreQueue { core in
-									core.nativePreviewWindow = view
-								}
-							}
-							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
-							.cornerRadius(20)
-							.padding(10)
-							.padding(.trailing, abs(angleDegree/2))
-						}
-					}
-					.frame(
-						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-					)
-					 */
 				}
 			}
 			
@@ -711,7 +751,7 @@ struct CallView: View {
 				)
 			}
 			
-			if  telecomManager.outgoingCallStarted {
+			if telecomManager.outgoingCallStarted {
 				VStack {
 					ActivityIndicator()
 						.frame(width: 20, height: 20)
