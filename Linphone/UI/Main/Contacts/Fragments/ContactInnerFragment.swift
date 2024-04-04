@@ -158,7 +158,7 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-									telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: false)
+									telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: false, isConference: false)
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -208,7 +208,7 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-									telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: true)
+									telecomManager.doCallWithCore(addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: true, isConference: false)
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {

@@ -50,6 +50,7 @@ class TelecomManager: ObservableObject {
 	@Published var isPausedByRemote: Bool = false
 	@Published var refreshCallViewModel: Bool = false
 	@Published var remainingCall: Bool = false
+	@Published var callConnected: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -155,10 +156,10 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	func doCallWithCore(addr: Address, isVideo: Bool) {
+	func doCallWithCore(addr: Address, isVideo: Bool, isConference: Bool) {
 		CoreContext.shared.doOnCoreQueue { core in
 			do {
-				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: isVideo, isConference: false)
+				try self.startCallCallKit(core: core, addr: addr, isSas: false, isVideo: isVideo, isConference: isConference)
 			} catch {
 				Log.error("[TelecomManager] unable to create address for a new outgoing call : \(addr) \(error) ")
 			}
@@ -213,6 +214,7 @@ class TelecomManager: ObservableObject {
 				lcallParams.mediaEncryption = .ZRTP
 			}
 			if isConference {
+				lcallParams.videoEnabled = true
 				/*		if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
 				 lcallParams.videoEnabled = true
 				 lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
@@ -439,6 +441,10 @@ class TelecomManager: ObservableObject {
 				default:
 					self.isPausedByRemote = false
 				}
+				
+				if (cstate == Call.State.Connected) {
+					self.callConnected = true
+				}
 			}
 			
 			if call.userData == nil {
@@ -596,6 +602,7 @@ class TelecomManager: ObservableObject {
 							self.callInProgress = false
 							self.callDisplayed = false
 							self.callStarted = false
+							self.callConnected = false
 						}
 					} else {
 						if core.calls.last != nil {

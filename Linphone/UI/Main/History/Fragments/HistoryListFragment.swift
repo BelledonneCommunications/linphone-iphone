@@ -165,15 +165,7 @@ struct HistoryListFragment: View {
 									TapGesture()
 										.onEnded { _ in
 											withAnimation {
-                                                if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-                                                    telecomManager.doCallWithCore(
-														addr: historyListViewModel.callLogs[index].toAddress!, isVideo: false
-                                                    )
-                                                } else if historyListViewModel.callLogs[index].fromAddress != nil {
-                                                    telecomManager.doCallWithCore(
-														addr: historyListViewModel.callLogs[index].fromAddress!, isVideo: false
-                                                    )
-                                                }
+												doCall(index: index)
 												historyViewModel.displayedCall = nil
 											}
 										}
@@ -216,6 +208,39 @@ struct HistoryListFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+	}
+	
+	func doCall(index: Int) {
+		if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
+			if historyListViewModel.callLogs[index].toAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
+				do {
+					//let reudumatin = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=8~YNkpFOv;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
+					let reutest = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=iVs8XshC~;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
+					
+					telecomManager.doCallWithCore(
+						addr: reutest, isVideo: false, isConference: true
+					)
+				} catch {}
+			} else {
+				telecomManager.doCallWithCore(
+					addr: historyListViewModel.callLogs[index].toAddress!, isVideo: false, isConference: false
+				)
+			}
+		} else if historyListViewModel.callLogs[index].fromAddress != nil {
+			if historyListViewModel.callLogs[index].fromAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
+				do {
+					//let reudumatin = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=8~YNkpFOv;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
+					let reutest = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=iVs8XshC~;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
+					telecomManager.doCallWithCore(
+						addr: reutest, isVideo: false, isConference: true
+					)
+				} catch {}
+			} else {
+				telecomManager.doCallWithCore(
+					addr: historyListViewModel.callLogs[index].fromAddress!, isVideo: false, isConference: false
+				)
+			}
+		}
 	}
 }
 

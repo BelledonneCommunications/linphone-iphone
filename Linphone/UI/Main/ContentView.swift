@@ -856,7 +856,7 @@ struct ContentView: View {
 						}
 					}
 					
-					if telecomManager.callInProgress && telecomManager.callDisplayed {
+					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) {
 						CallView(callViewModel: callViewModel, fullscreenVideo: $fullscreenVideo, isShowCallsListFragment: $isShowCallsListFragment, isShowStartCallFragment: $isShowStartCallFragment)
 							.zIndex(3)
 							.transition(.scale.combined(with: .move(edge: .top)))

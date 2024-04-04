@@ -47,9 +47,9 @@ class CallViewModel: ObservableObject {
 	@Published var isTransferInsteadCall: Bool = false
 	@Published var isConference: Bool = false
 	@Published var videoDisplayed: Bool = false
-	@Published var receiveVideo: Bool = false
 	@Published var participantList: [ParticipantModel] = []
 	@Published var activeSpeakerParticipant: ParticipantModel? = nil
+	@Published var activeSpeakerName: String = ""
 	@Published var myParticipantModel: ParticipantModel? = nil
 
 	
@@ -80,7 +80,7 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	func disableAVAudioSession(){
+	func disableAVAudioSession() {
 		do {
 			try AVAudioSession.sharedInstance().setActive(false)
 		} catch _ {
@@ -117,6 +117,14 @@ class CallViewModel: ObservableObject {
 					let authToken = self.currentCall!.authenticationToken
 					let isDeviceTrusted = self.currentCall!.authenticationTokenVerified && authToken != nil
 					self.isRemoteDeviceTrusted = self.telecomManager.callInProgress ? isDeviceTrusted : false
+					self.activeSpeakerParticipant = nil
+					
+					do {
+						let params = try core.createCallParams(call: self.currentCall)
+						self.videoDisplayed = params.videoDirection == MediaDirection.SendRecv
+					} catch {
+						
+					}
 					
 					self.getCallsList()
 					self.getConference()
@@ -139,28 +147,69 @@ class CallViewModel: ObservableObject {
 	
 	func getConference() {
 		coreContext.doOnCoreQueue { core in
-			//conf = self.currentCall?.conference != nil ? self.currentCall!.conference! : core.findConferenceInformationFromUri(uri: (self.currentCall?.remoteContactAddress)!)
-			if self.currentCall?.remoteContactAddress != nil {
-				let conf = core.findConferenceInformationFromUri(uri: (self.currentCall?.remoteContactAddress)!)
+			if self.currentCall?.conference != nil {
+				let conf = self.currentCall!.conference!
+				self.isConference = true
 				DispatchQueue.main.async {
-					self.isConference = conf != nil
-					if self.isConference {
-						self.displayName = conf?.subject ?? ""
-						self.participantList = []
-						conf?.participantInfos.forEach({ participantInfo in
-							if participantInfo.address != nil {
-								if participantInfo.address!.equal(address2: (self.currentCall?.callLog?.localAddress!)!) {
-									self.myParticipantModel = ParticipantModel(address: participantInfo.address!)
-								} else {
-									if self.activeSpeakerParticipant != nil && !participantInfo.address!.equal(address2: self.activeSpeakerParticipant!.address) {
-										self.participantList.append(ParticipantModel(address: participantInfo.address!))
-									}
-								}
-							}
-						})
-						self.addConferenceCallBacks()
+					self.displayName = conf.subject ?? ""
+					self.participantList = []
+					
+					if self.currentCall?.callLog?.localAddress != nil {
+						self.myParticipantModel = ParticipantModel(address: self.currentCall!.callLog!.localAddress!)
 					}
+					
+					if conf.activeSpeakerParticipantDevice?.address != nil {
+						self.activeSpeakerParticipant = ParticipantModel(address: conf.activeSpeakerParticipantDevice!.address!)
+					} else if conf.participantList.first?.address != nil {
+						self.activeSpeakerParticipant = ParticipantModel(address: conf.participantList.first!.address!)
+					} else {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+							self.getConference()
+						}
+					}
+					
+					if self.activeSpeakerParticipant != nil {
+						let friend = ContactsManager.shared.getFriendWithAddress(address: self.activeSpeakerParticipant!.address)
+						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+							self.activeSpeakerName = friend!.address!.displayName!
+						} else {
+							if self.activeSpeakerParticipant!.address.displayName != nil {
+								self.activeSpeakerName = self.activeSpeakerParticipant!.address.displayName!
+							} else if self.activeSpeakerParticipant!.address.username != nil {
+								self.activeSpeakerName = self.activeSpeakerParticipant!.address.username!
+							}
+						}
+					}
+					
+					conf.participantList.forEach({ participant in
+						self.participantList.append(ParticipantModel(address: participant.address!))
+					})
+					
+					self.addConferenceCallBacks()
 				}
+			} else if self.currentCall?.remoteContactAddress != nil {
+				let conf = core.findConferenceInformationFromUri(uri: (self.currentCall?.remoteContactAddress)!)
+				   DispatchQueue.main.async {
+					   self.isConference = conf != nil
+					   if self.isConference {
+						   self.displayName = conf?.subject ?? ""
+						   self.participantList = []
+						   
+						   conf?.participantInfos.forEach({ participantInfo in
+							   if participantInfo.address != nil {
+								   if participantInfo.address!.equal(address2: (self.currentCall?.callLog?.localAddress!)!) {
+									   self.myParticipantModel = ParticipantModel(address: participantInfo.address!)
+								   } else {
+									   if self.activeSpeakerParticipant != nil && !participantInfo.address!.equal(address2: self.activeSpeakerParticipant!.address) {
+										   self.participantList.append(ParticipantModel(address: participantInfo.address!))
+									   }
+								   }
+							   }
+						   })
+						   
+						   self.addConferenceCallBacks()
+					   }
+				   }
 			}
 		}
 	}
@@ -169,13 +218,23 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			self.mConferenceSuscriptions.insert(
 				self.currentCall?.conference?.publisher?.onActiveSpeakerParticipantDevice?.postOnMainQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
-					let direction = cbValue.participantDevice.getStreamCapability(streamType: StreamType.Video)
-					
-					self.receiveVideo = direction == MediaDirection.SendRecv || direction == MediaDirection.SendOnly
-					
 					if cbValue.participantDevice.address != nil {
 						let activeSpeakerParticipantTmp = self.activeSpeakerParticipant
 						self.activeSpeakerParticipant = ParticipantModel(address: cbValue.participantDevice.address!)
+						
+						
+						if self.activeSpeakerParticipant != nil {
+							let friend = ContactsManager.shared.getFriendWithAddress(address: self.activeSpeakerParticipant!.address)
+							if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+								self.activeSpeakerName = friend!.address!.displayName!
+							} else {
+								if self.activeSpeakerParticipant!.address.displayName != nil {
+									self.activeSpeakerName = self.activeSpeakerParticipant!.address.displayName!
+								} else if self.activeSpeakerParticipant!.address.username != nil {
+									self.activeSpeakerName = self.activeSpeakerParticipant!.address.username!
+								}
+							}
+						}
 						
 						if self.activeSpeakerParticipant != nil
 							&& ((activeSpeakerParticipantTmp != nil && !activeSpeakerParticipantTmp!.address.equal(address2: self.activeSpeakerParticipant!.address))
@@ -184,7 +243,7 @@ class CallViewModel: ObservableObject {
 							self.participantList = []
 							cbValue.conference.participantList.forEach({ participant in
 								if participant.address != nil && !cbValue.conference.isMe(uri: participant.address!) {
-									if !cbValue.conference.isMe(uri: participant.address!) && !participant.address!.equal(address2: self.activeSpeakerParticipant!.address) {
+									if !cbValue.conference.isMe(uri: participant.address!) {
 										self.participantList.append(ParticipantModel(address: participant.address!))
 									}
 								}

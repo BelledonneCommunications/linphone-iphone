@@ -388,11 +388,11 @@ struct HistoryContactFragment: View {
 								Button(action: {
 									if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
 										telecomManager.doCallWithCore(
-											addr: historyViewModel.displayedCall!.toAddress!, isVideo: false
+											addr: historyViewModel.displayedCall!.toAddress!, isVideo: false, isConference: false
 										)
 									} else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
 										telecomManager.doCallWithCore(
-											addr: historyViewModel.displayedCall!.fromAddress!, isVideo: false
+											addr: historyViewModel.displayedCall!.fromAddress!, isVideo: false, isConference: false
 										)
 									}
 								}, label: {
@@ -448,11 +448,11 @@ struct HistoryContactFragment: View {
 								Button(action: {
 									if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
 										telecomManager.doCallWithCore(
-											addr: historyViewModel.displayedCall!.toAddress!, isVideo: true
+											addr: historyViewModel.displayedCall!.toAddress!, isVideo: true, isConference: false
 										)
 									} else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
 										telecomManager.doCallWithCore(
-											addr: historyViewModel.displayedCall!.fromAddress!, isVideo: true
+											addr: historyViewModel.displayedCall!.fromAddress!, isVideo: true, isConference: false
 										)
 									}
 								}, label: {
