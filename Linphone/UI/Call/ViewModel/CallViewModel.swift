@@ -295,42 +295,34 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	func toggleVideo() {
-		coreContext.doOnCoreQueue { core in
-			if self.currentCall != nil {
-				do {
-					let params = try core.createCallParams(call: self.currentCall)
-					
-					params.videoEnabled = !params.videoEnabled
-					Log.info(
-						"[CallViewModel] Updating call with video enabled set to \(params.videoEnabled)"
-					)
-					try self.currentCall!.update(params: params)
-				} catch {
-					
-				}
-			}
-		}
-	}
-	
 	func displayMyVideo() {
 		coreContext.doOnCoreQueue { core in
 			if self.currentCall != nil {
 				do {
 					let params = try core.createCallParams(call: self.currentCall)
 					
+					params.videoEnabled = true
+					
 					if params.videoEnabled {
-						if params.videoDirection == MediaDirection.SendRecv {
-							params.videoDirection = MediaDirection.RecvOnly
-						} else if params.videoDirection == MediaDirection.RecvOnly {
-							params.videoDirection = MediaDirection.SendRecv
+						if params.videoDirection == .SendRecv {
+							params.videoDirection = .RecvOnly
+						} else if params.videoDirection == .RecvOnly {
+							params.videoDirection = .SendRecv
+						} else if params.videoDirection == .SendOnly {
+							params.videoDirection = .Inactive
+						} else if params.videoDirection == .Inactive {
+							params.videoDirection = .SendOnly
 						}
 					}
 					
 					try self.currentCall!.update(params: params)
 					
-					let video = params.videoDirection == MediaDirection.SendRecv
-					DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+					let video = params.videoDirection == .SendRecv || params.videoDirection == .SendOnly
+					
+					DispatchQueue.main.asyncAfter(deadline: .now() + (video ? 1 : 0)) {
+						if video {
+							self.videoDisplayed = false
+						}
 						self.videoDisplayed = video
 					}
 				} catch {

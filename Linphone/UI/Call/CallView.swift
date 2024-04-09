@@ -317,18 +317,7 @@ struct CallView: View {
 									.padding(.all, 10)
 							}
 							
-							if !callViewModel.isConference && telecomManager.remoteVideo {
-									Button {
-										callViewModel.switchCamera()
-									} label: {
-										Image("camera-rotate")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 30, height: 30)
-											.padding(.horizontal)
-									}
-							} else if callViewModel.isConference && callViewModel.videoDisplayed {
+							if callViewModel.videoDisplayed {
 								Button {
 									callViewModel.switchCamera()
 								} label: {
@@ -504,12 +493,12 @@ struct CallView: View {
 				.scaledToFill()
 				.clipped()
 				.onTapGesture {
-					if telecomManager.remoteVideo {
+					if callViewModel.videoDisplayed {
 						fullscreenVideo.toggle()
 					}
 				}
 				
-				if telecomManager.remoteVideo {
+				if callViewModel.videoDisplayed && telecomManager.remoteConfVideo {
 					HStack {
 						Spacer()
 						VStack {
@@ -619,7 +608,7 @@ struct CallView: View {
 					.scaledToFill()
 					.clipped()
 					.onTapGesture {
-						if telecomManager.remoteVideo {
+						if callViewModel.videoDisplayed {
 							fullscreenVideo.toggle()
 						}
 					}
@@ -884,41 +873,22 @@ struct CallView: View {
 					
 					Spacer()
 					
-					if !callViewModel.isConference {
-						Button {
-							callViewModel.toggleVideo()
-						} label: {
-							HStack {
-								Image(telecomManager.remoteVideo ? "video-camera" : "video-camera-slash")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-									.frame(width: 32, height: 32)
-							}
+					Button {
+						callViewModel.displayMyVideo()
+					} label: {
+						HStack {
+							Image(callViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
+								.frame(width: 32, height: 32)
 						}
-						.buttonStyle(PressedButtonStyle())
-						.frame(width: 60, height: 60)
-						.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
-						.cornerRadius(40)
-						.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
-					} else {
-						Button {
-							callViewModel.displayMyVideo()
-						} label: {
-							HStack {
-								Image(callViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle((callViewModel.isPaused || telecomManager.isPausedByRemote) ? Color.gray500 : .white)
-									.frame(width: 32, height: 32)
-							}
-						}
-						.buttonStyle(PressedButtonStyle())
-						.frame(width: 60, height: 60)
-						.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
-						.cornerRadius(40)
-						.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 					}
+					.buttonStyle(PressedButtonStyle())
+					.frame(width: 60, height: 60)
+					.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
+					.cornerRadius(40)
+					.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 					
 					Button {
 						callViewModel.toggleMuteMicrophone()

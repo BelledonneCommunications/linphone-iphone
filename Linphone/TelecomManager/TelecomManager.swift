@@ -44,7 +44,6 @@ class TelecomManager: ObservableObject {
 	@Published var callDisplayed: Bool = true
 	@Published var callStarted: Bool = false
 	@Published var outgoingCallStarted: Bool = false
-	@Published var remoteVideo: Bool = false
 	@Published var remoteConfVideo: Bool = false
 	@Published var isRecordingByRemote: Bool = false
 	@Published var isPausedByRemote: Bool = false
@@ -213,6 +212,7 @@ class TelecomManager: ObservableObject {
 			if isSas {
 				lcallParams.mediaEncryption = .ZRTP
 			}
+			
 			if isConference {
 				lcallParams.videoEnabled = true
 				/*		if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
@@ -223,7 +223,8 @@ class TelecomManager: ObservableObject {
 				 lcallParams.videoEnabled = false
 				 }*/
 			} else {
-				lcallParams.videoEnabled = isVideo
+				lcallParams.videoEnabled = true
+				lcallParams.videoDirection = isVideo ? MediaDirection.SendRecv : MediaDirection.Inactive
 			}
 			
 			if let call = core.inviteAddressWithParams(addr: addr, params: lcallParams) {
@@ -256,7 +257,6 @@ class TelecomManager: ObservableObject {
 	func acceptCall(core: Core, call: Call, hasVideo: Bool) {
 		do {
 			let callParams = try core.createCallParams(call: call)
-			
 			callParams.recordFile = makeRecordFilePath()
 			callParams.videoEnabled = hasVideo
 			/*if (ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference")) {
@@ -283,7 +283,7 @@ class TelecomManager: ObservableObject {
 				// Prevent incoming group call to start in audio only layout
 				// Do the same as the conference waiting room
 				callParams.videoEnabled = true
-				callParams.videoDirection = core.videoActivationPolicy?.automaticallyInitiate == true ?  .SendRecv : .RecvOnly
+				callParams.videoDirection = core.videoActivationPolicy?.automaticallyInitiate == true ? .SendRecv : .RecvOnly
 				Log.info("[Context] Enabling video on call params to prevent audio-only layout when answering")
 			}
 			
@@ -376,8 +376,7 @@ class TelecomManager: ObservableObject {
 		} else {
 			
 			DispatchQueue.main.async {
-				let oldRemoteVideo = self.remoteVideo
-				//self.remoteVideo = (core.videoActivationPolicy?.automaticallyAccept ?? false) && (call.remoteParams?.videoEnabled ?? false)
+				let oldRemoteConfVideo = self.remoteConfVideo
 				
 				if call.conference != nil {
 					if call.conference!.activeSpeakerParticipantDevice != nil {
@@ -387,11 +386,14 @@ class TelecomManager: ObservableObject {
 						self.remoteConfVideo = true
 					}
 				} else {
-					self.remoteVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection != MediaDirection.Inactive
 					self.remoteConfVideo = false
+					
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == MediaDirection.SendRecv || call.currentParams!.videoDirection == MediaDirection.SendOnly
+					}
 				}
 				
-				if self.remoteVideo && self.remoteVideo != oldRemoteVideo {
+				if self.remoteConfVideo && self.remoteConfVideo != oldRemoteConfVideo {
 					do {
 						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
 					} catch _ {
@@ -399,7 +401,7 @@ class TelecomManager: ObservableObject {
 					}
 				}
 				
-				if self.remoteVideo {
+				if self.remoteConfVideo {
 					Log.info("[Call] Remote video is activated")
 				}
 				
@@ -484,7 +486,7 @@ class TelecomManager: ObservableObject {
 						providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 						providerDelegate.uuids.removeValue(forKey: callId)
 						providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, displayName: displayName)
+						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteConfVideo, displayName: displayName)
 					}
 				} else if TelecomManager.callKitEnabled(core: core) {
 					/*
@@ -507,9 +509,9 @@ class TelecomManager: ObservableObject {
 					
 					if uuid != nil {
 						// Tha app is now registered, updated the call already existed.
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, displayName: displayName)
+						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteConfVideo, displayName: displayName)
 					} else {
-						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: remoteVideo, callId: callId, displayName: displayName)
+						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: remoteConfVideo, callId: callId, displayName: displayName)
 					}
 				} /* else if UIApplication.shared.applicationState != .active {
 				   // not support callkit , use notif
