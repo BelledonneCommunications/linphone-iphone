@@ -22,6 +22,7 @@ import linphonesw
 import AVFAudio
 import Combine
 
+// swiftlint:disable type_body_length
 class CallViewModel: ObservableObject {
 	
 	var coreContext = CoreContext.shared
@@ -156,12 +157,15 @@ class CallViewModel: ObservableObject {
 					
 					if self.currentCall?.callLog?.localAddress != nil {
 						self.myParticipantModel = ParticipantModel(address: self.currentCall!.callLog!.localAddress!)
+						print("ParticipantModelParticipantModel myParticipantModel \(self.currentCall!.callLog!.localAddress!.asStringUriOnly())")
 					}
 					
 					if conf.activeSpeakerParticipantDevice?.address != nil {
 						self.activeSpeakerParticipant = ParticipantModel(address: conf.activeSpeakerParticipantDevice!.address!)
+						print("ParticipantModelParticipantModel activeSpeakerParticipantDevice 1 \(conf.activeSpeakerParticipantDevice!.address!.asStringUriOnly())")
 					} else if conf.participantList.first?.address != nil {
 						self.activeSpeakerParticipant = ParticipantModel(address: conf.participantList.first!.address!)
+						print("ParticipantModelParticipantModel activeSpeakerParticipantDevice 2 \(conf.participantList.first!.address!.asStringUriOnly())")
 					} else {
 						DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 							self.getConference()
@@ -181,35 +185,15 @@ class CallViewModel: ObservableObject {
 						}
 					}
 					
-					conf.participantList.forEach({ participant in
-						self.participantList.append(ParticipantModel(address: participant.address!))
+					conf.participantDeviceList.forEach({ participantDevice in
+						self.participantList.append(ParticipantModel(address: participantDevice.address!))
+						print("ParticipantModelParticipantModel participantDevice \(participantDevice.address!.asStringUriOnly())")
 					})
 					
-					self.addConferenceCallBacks()
+					//self.addConferenceCallBacks()
 				}
 			} else if self.currentCall?.remoteContactAddress != nil {
-				let conf = core.findConferenceInformationFromUri(uri: (self.currentCall?.remoteContactAddress)!)
-				   DispatchQueue.main.async {
-					   self.isConference = conf != nil
-					   if self.isConference {
-						   self.displayName = conf?.subject ?? ""
-						   self.participantList = []
-						   
-						   conf?.participantInfos.forEach({ participantInfo in
-							   if participantInfo.address != nil {
-								   if participantInfo.address!.equal(address2: (self.currentCall?.callLog?.localAddress!)!) {
-									   self.myParticipantModel = ParticipantModel(address: participantInfo.address!)
-								   } else {
-									   if self.activeSpeakerParticipant != nil && !participantInfo.address!.equal(address2: self.activeSpeakerParticipant!.address) {
-										   self.participantList.append(ParticipantModel(address: participantInfo.address!))
-									   }
-								   }
-							   }
-						   })
-						   
-						   self.addConferenceCallBacks()
-					   }
-				   }
+				//self.addConferenceCallBacks()
 			}
 		}
 	}
@@ -221,7 +205,6 @@ class CallViewModel: ObservableObject {
 					if cbValue.participantDevice.address != nil {
 						let activeSpeakerParticipantTmp = self.activeSpeakerParticipant
 						self.activeSpeakerParticipant = ParticipantModel(address: cbValue.participantDevice.address!)
-						
 						
 						if self.activeSpeakerParticipant != nil {
 							let friend = ContactsManager.shared.getFriendWithAddress(address: self.activeSpeakerParticipant!.address)
@@ -241,16 +224,47 @@ class CallViewModel: ObservableObject {
 								|| ( activeSpeakerParticipantTmp == nil)) {
 							
 							self.participantList = []
-							cbValue.conference.participantList.forEach({ participant in
-								if participant.address != nil && !cbValue.conference.isMe(uri: participant.address!) {
-									if !cbValue.conference.isMe(uri: participant.address!) {
-										self.participantList.append(ParticipantModel(address: participant.address!))
+							cbValue.conference.participantDeviceList.forEach({ participantDevice in
+								if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!) {
+									if !cbValue.conference.isMe(uri: participantDevice.address!) {
+										self.participantList.append(ParticipantModel(address: participantDevice.address!))
 									}
 								}
 							})
 						}
 					}
-				})
+				}
+			)
+			
+			self.mConferenceSuscriptions.insert(
+				self.currentCall?.conference?.publisher?.onParticipantAdded?.postOnMainQueue {(cbValue: (conference: Conference, participant: Participant)) in
+					if cbValue.participant.address != nil {
+						self.participantList = []
+						cbValue.conference.participantDeviceList.forEach({ participantDevice in
+							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!) {
+								if !cbValue.conference.isMe(uri: participantDevice.address!) {
+									self.participantList.append(ParticipantModel(address: participantDevice.address!))
+								}
+							}
+						})
+					}
+				}
+			)
+			
+			self.mConferenceSuscriptions.insert(
+				self.currentCall?.conference?.publisher?.onParticipantRemoved?.postOnMainQueue {(cbValue: (conference: Conference, participant: Participant)) in
+					if cbValue.participant.address != nil {
+						self.participantList = []
+						cbValue.conference.participantDeviceList.forEach({ participantDevice in
+							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!) {
+								if !cbValue.conference.isMe(uri: participantDevice.address!) {
+									self.participantList.append(ParticipantModel(address: participantDevice.address!))
+								}
+							}
+						})
+					}
+				}
+			)
 		}
 	}
 	
@@ -607,3 +621,4 @@ class CallViewModel: ObservableObject {
 		}
 	}
 }
+// swiftlint:enable type_body_length

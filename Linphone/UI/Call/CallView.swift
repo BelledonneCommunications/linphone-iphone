@@ -532,11 +532,11 @@ struct CallView: View {
 								&& $0.friend!.name == addressFriend!.name
 								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
 							})
-							: ContactAvatarModel(friend: nil, name: "", withPresence: true)
+							: ContactAvatarModel(friend: nil, name: "", withPresence: false)
 							
 							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
 								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: false)
+									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
 										.onAppear {
 											DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 												displayVideo = true
@@ -635,7 +635,7 @@ struct CallView: View {
 											Spacer()
 											
 											if callViewModel.myParticipantModel != nil {
-												Avatar(contactAvatarModel: callViewModel.myParticipantModel!.avatarModel, avatarSize: 50)
+												Avatar(contactAvatarModel: callViewModel.myParticipantModel!.avatarModel, avatarSize: 50, hidePresence: true)
 											}
 											
 											Spacer()
@@ -680,7 +680,7 @@ struct CallView: View {
 												VStack {
 													Spacer()
 													
-													Avatar(contactAvatarModel: callViewModel.participantList[index].avatarModel, avatarSize: 50)
+													Avatar(contactAvatarModel: callViewModel.participantList[index].avatarModel, avatarSize: 50, hidePresence: true)
 													
 													Spacer()
 												}
