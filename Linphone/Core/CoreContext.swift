@@ -109,6 +109,7 @@ final class CoreContext: ObservableObject {
 			
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
+			self.mCore.videoPreviewEnabled = false
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {

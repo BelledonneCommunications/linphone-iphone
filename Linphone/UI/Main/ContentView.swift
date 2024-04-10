@@ -40,6 +40,7 @@ struct ContentView: View {
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var startCallViewModel: StartCallViewModel
 	@ObservedObject var callViewModel: CallViewModel
+	@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	
@@ -713,7 +714,7 @@ struct ContentView: View {
 							isShowDismissPopup: $isShowDismissPopup
 						)
 						.zIndex(3)
-						.transition(.move(edge: .bottom))
+						.transition(.opacity.combined(with: .move(edge: .bottom)))
 						.onAppear {
 							contactViewModel.indexDisplayedFriend = nil
 						}
@@ -729,7 +730,7 @@ struct ContentView: View {
 								resetCallView: {callViewModel.resetCallView()}
 							)
 							.zIndex(4)
-							.transition(.move(edge: .bottom))
+							.transition(.opacity.combined(with: .move(edge: .bottom)))
 							.sheet(isPresented: $showingDialer) {
 								DialerBottomSheet(
 									startCallViewModel: startCallViewModel,
@@ -748,7 +749,7 @@ struct ContentView: View {
 								resetCallView: {callViewModel.resetCallView()}
 							)
 							.zIndex(4)
-							.transition(.move(edge: .bottom))
+							.transition(.opacity.combined(with: .move(edge: .bottom)))
 							.halfSheet(showSheet: $showingDialer) {
 								DialerBottomSheet(
 									startCallViewModel: startCallViewModel,
@@ -856,7 +857,16 @@ struct ContentView: View {
 						}
 					}
 					
-					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) {
+					if telecomManager.meetingWaitingRoomDisplayed {
+						MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: meetingWaitingRoomViewModel)
+							.zIndex(3)
+							.transition(.opacity.combined(with: .move(edge: .bottom)))
+							.onAppear {
+								meetingWaitingRoomViewModel.resetMeetingRoomView()
+							}
+					}
+					
+					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) && !telecomManager.meetingWaitingRoomDisplayed {
 						CallView(callViewModel: callViewModel, fullscreenVideo: $fullscreenVideo, isShowCallsListFragment: $isShowCallsListFragment, isShowStartCallFragment: $isShowStartCallFragment)
 							.zIndex(3)
 							.transition(.scale.combined(with: .move(edge: .top)))
@@ -911,6 +921,7 @@ struct ContentView: View {
 		historyListViewModel: HistoryListViewModel(),
 		startCallViewModel: StartCallViewModel(),
 		callViewModel: CallViewModel(),
+		meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 		conversationViewModel: ConversationViewModel()
 	)

@@ -538,7 +538,7 @@ struct CallView: View {
 								if contactAvatarModel != nil {
 									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
 										.onAppear {
-											DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+											DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 												displayVideo = true
 											}
 										}
@@ -554,7 +554,7 @@ struct CallView: View {
 									.frame(width: 200, height: 200)
 									.clipShape(Circle())
 									.onAppear {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 											displayVideo = true
 										}
 									}
@@ -569,7 +569,7 @@ struct CallView: View {
 									.frame(width: 200, height: 200)
 									.clipShape(Circle())
 									.onAppear {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 											displayVideo = true
 										}
 									}
@@ -750,7 +750,7 @@ struct CallView: View {
 			
 			if telecomManager.outgoingCallStarted {
 				VStack {
-					ActivityIndicator()
+					ActivityIndicator(color: .white)
 						.frame(width: 20, height: 20)
 						.padding(.top, 60)
 					
@@ -772,7 +772,8 @@ struct CallView: View {
 				}
 				.onDisappear {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-						callViewModel.getConference()
+					//	callViewModel.getConference()
+						callViewModel.waitingForCreatedStateConference()
 					}
 				}
 				.background(.clear)
@@ -799,6 +800,8 @@ struct CallView: View {
 					angleDegree = -90
 				} else if orientation == .landscapeRight {
 					angleDegree = 90
+				} else if UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+					angleDegree = 90
 				}
 			}
 			
@@ -819,6 +822,8 @@ struct CallView: View {
 				if orientation == .landscapeLeft {
 					angleDegree = -90
 				} else if orientation == .landscapeRight {
+					angleDegree = 90
+				} else if UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
 					angleDegree = 90
 				}
 			}

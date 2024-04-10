@@ -50,6 +50,9 @@ class TelecomManager: ObservableObject {
 	@Published var refreshCallViewModel: Bool = false
 	@Published var remainingCall: Bool = false
 	@Published var callConnected: Bool = false
+	@Published var meetingWaitingRoomDisplayed: Bool = false
+	@Published var meetingWaitingRoomSelected: Address?
+	@Published var meetingWaitingRoomName: String = ""
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -215,6 +218,7 @@ class TelecomManager: ObservableObject {
 			
 			if isConference {
 				lcallParams.videoEnabled = true
+				lcallParams.videoDirection = isVideo ? MediaDirection.SendRecv : MediaDirection.RecvOnly
 				/*		if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
 				 lcallParams.videoEnabled = true
 				 lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly
@@ -393,6 +397,7 @@ class TelecomManager: ObservableObject {
 					}
 				}
 				
+				/*
 				if self.remoteConfVideo && self.remoteConfVideo != oldRemoteConfVideo {
 					do {
 						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
@@ -400,6 +405,7 @@ class TelecomManager: ObservableObject {
 						
 					}
 				}
+				 */
 				
 				if self.remoteConfVideo {
 					Log.info("[Call] Remote video is activated")
@@ -444,8 +450,11 @@ class TelecomManager: ObservableObject {
 					self.isPausedByRemote = false
 				}
 				
-				if (cstate == Call.State.Connected) {
+				if cstate == Call.State.Connected {
 					self.callConnected = true
+					
+					self.meetingWaitingRoomSelected = nil
+					self.meetingWaitingRoomDisplayed = false
 				}
 			}
 			

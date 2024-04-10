@@ -53,7 +53,6 @@ class CallViewModel: ObservableObject {
 	@Published var activeSpeakerName: String = ""
 	@Published var myParticipantModel: ParticipantModel? = nil
 
-	
 	private var mConferenceSuscriptions = Set<AnyCancellable?>()
 	
 	var calls: [Call] = []
@@ -98,19 +97,10 @@ class CallViewModel: ObservableObject {
 					self.remoteAddressString = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
 					self.remoteAddress = self.currentCall!.remoteAddress!
 					
-					let friend = ContactsManager.shared.getFriendWithAddress(address: self.currentCall!.remoteAddress!)
-					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-						self.displayName = friend!.address!.displayName!
-					} else {
-						if self.currentCall!.remoteAddress!.displayName != nil {
-							self.displayName = self.currentCall!.remoteAddress!.displayName!
-						} else if self.currentCall!.remoteAddress!.username != nil {
-							self.displayName = self.currentCall!.remoteAddress!.username!
-						}
-					}
+					self.displayName = self.currentCall?.conference?.subject ?? ""
 					
 					//self.avatarModel = ???
-					self.micMutted = self.currentCall!.microphoneMuted
+					self.micMutted = self.currentCall!.microphoneMuted || !core.micEnabled
 					self.isRecording = self.currentCall!.params!.isRecording
 					self.isPaused = self.isCallPaused()
 					self.timeElapsed = self.currentCall?.duration ?? 0
@@ -128,7 +118,7 @@ class CallViewModel: ObservableObject {
 					}
 					
 					self.getCallsList()
-					self.getConference()
+					self.waitingForCreatedStateConference()
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
@@ -157,19 +147,15 @@ class CallViewModel: ObservableObject {
 					
 					if self.currentCall?.callLog?.localAddress != nil {
 						self.myParticipantModel = ParticipantModel(address: self.currentCall!.callLog!.localAddress!)
-						print("ParticipantModelParticipantModel myParticipantModel \(self.currentCall!.callLog!.localAddress!.asStringUriOnly())")
+						print("ParticipantModelParticipantModel 1 \(conf.me?.address!.asStringUriOnly())")
 					}
 					
 					if conf.activeSpeakerParticipantDevice?.address != nil {
 						self.activeSpeakerParticipant = ParticipantModel(address: conf.activeSpeakerParticipantDevice!.address!)
-						print("ParticipantModelParticipantModel activeSpeakerParticipantDevice 1 \(conf.activeSpeakerParticipantDevice!.address!.asStringUriOnly())")
+						print("ParticipantModelParticipantModel 2 \(conf.activeSpeakerParticipantDevice!.address!.asStringUriOnly())")
 					} else if conf.participantList.first?.address != nil {
 						self.activeSpeakerParticipant = ParticipantModel(address: conf.participantList.first!.address!)
-						print("ParticipantModelParticipantModel activeSpeakerParticipantDevice 2 \(conf.participantList.first!.address!.asStringUriOnly())")
-					} else {
-						DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-							self.getConference()
-						}
+						print("ParticipantModelParticipantModel 3 \(conf.participantList.first!.address!.asStringUriOnly())")
 					}
 					
 					if self.activeSpeakerParticipant != nil {
@@ -187,7 +173,7 @@ class CallViewModel: ObservableObject {
 					
 					conf.participantDeviceList.forEach({ participantDevice in
 						self.participantList.append(ParticipantModel(address: participantDevice.address!))
-						print("ParticipantModelParticipantModel participantDevice \(participantDevice.address!.asStringUriOnly())")
+						print("ParticipantModelParticipantModel 4 \(participantDevice.address!.asStringUriOnly()) \(conf.isIn) \(conf.state) \(self.currentCall?.state)")
 					})
 					
 					//self.addConferenceCallBacks()
@@ -196,6 +182,17 @@ class CallViewModel: ObservableObject {
 				//self.addConferenceCallBacks()
 			}
 		}
+	}
+	
+	func waitingForCreatedStateConference() {
+		self.mConferenceSuscriptions.insert(
+			self.currentCall?.conference?.publisher?.onStateChanged?.postOnMainQueue {(cbValue: (conference: Conference, state: Conference.State)) in
+				if cbValue.state == .Created {
+					print("ParticipantModelParticipantModel 0 \(cbValue.conference.isIn) \(cbValue.conference.state) \(self.currentCall?.state) \(cbValue.state)")
+					self.getConference()
+				}
+			}
+		)
 	}
 	
 	func addConferenceCallBacks() {
@@ -298,10 +295,16 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func toggleMuteMicrophone() {
-		coreContext.doOnCoreQueue { _ in
+		coreContext.doOnCoreQueue { core in
 			if self.currentCall != nil {
-				self.currentCall!.microphoneMuted = !self.currentCall!.microphoneMuted
-				self.micMutted = self.currentCall!.microphoneMuted
+				if !core.micEnabled && !self.currentCall!.microphoneMuted {
+					core.micEnabled = true
+				} else {
+					self.currentCall!.microphoneMuted = !self.currentCall!.microphoneMuted
+				}
+				
+				self.micMutted = self.currentCall!.microphoneMuted || !core.micEnabled
+				
 				Log.info(
 					"[CallViewModel] Microphone mute switch \(self.micMutted)"
 				)
@@ -434,18 +437,6 @@ class CallViewModel: ObservableObject {
 			}
 		}
 		return false
-	}
-	
-	func getAudioRoute() -> Int {
-		if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty {
-			if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
-				return 1
-			} else {
-				return 3
-			}
-		} else {
-			return 2
-		}
 	}
 	
 	func orientationUpdate(orientation: UIDeviceOrientation) {

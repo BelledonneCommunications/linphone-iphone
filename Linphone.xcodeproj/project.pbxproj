@@ -63,6 +63,8 @@
 		D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */; };
 		D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */; };
 		D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */; };
+		D73449992BC6932A00778C56 /* MeetingWaitingRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */; };
+		D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
 		D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */; };
 		D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */; };
@@ -200,6 +202,8 @@
 		D732A9122B04C7A300DB42BA /* HistoryListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListFragment.swift; sourceTree = "<group>"; };
 		D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModel.swift; sourceTree = "<group>"; };
 		D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListBottomSheet.swift; sourceTree = "<group>"; };
+		D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomFragment.swift; sourceTree = "<group>"; };
+		D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomViewModel.swift; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
 		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
 		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
@@ -610,6 +614,7 @@
 				D720E6AB2BAD81C800DDFD87 /* Model */,
 				D7B99E972B29B37F00BE7BF2 /* ViewModel */,
 				D7B5678D2B28888F00DE63EB /* CallView.swift */,
+				D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */,
 			);
 			path = Call;
 			sourceTree = "<group>";
@@ -618,6 +623,7 @@
 			isa = PBXGroup;
 			children = (
 				D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */,
+				D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -890,6 +896,7 @@
 				D70A26F02B7D02E6006CC8FC /* ConversationViewModel.swift in Sources */,
 				D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */,
 				D7E6D04D2AEBD77600A57AAF /* CustomBottomSheet.swift in Sources */,
+				D73449992BC6932A00778C56 /* MeetingWaitingRoomFragment.swift in Sources */,
 				D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */,
 				66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
@@ -898,6 +905,7 @@
 				D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */,
 				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,
 				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
+				D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,

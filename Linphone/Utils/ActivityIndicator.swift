@@ -23,15 +23,14 @@ struct ActivityIndicator: View {
 	
 	let style = StrokeStyle(lineWidth: 3, lineCap: .round)
 	@State var animate = false
-	let color1 = Color.white
-	let color2 = Color.white.opacity(0.5)
+	let color: Color
 	
 	var body: some View {
 		ZStack {
 			Circle()
 				.trim(from: 0, to: 0.7)
 				.stroke(
-					AngularGradient(gradient: .init(colors: [color1, color2]), center: .center), style: style)
+					AngularGradient(gradient: .init(colors: [color, color.opacity(0.5)]), center: .center), style: style)
 				.rotationEffect(Angle(degrees: animate ? 360: 0))
 				.animation(Animation.linear(duration: 0.7).repeatForever(autoreverses: false), value: UUID())
 		}.onAppear {
@@ -41,5 +40,5 @@ struct ActivityIndicator: View {
 }
 
 #Preview {
-	ActivityIndicator()
+	ActivityIndicator(color: .white)
 }

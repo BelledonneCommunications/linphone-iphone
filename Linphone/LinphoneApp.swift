@@ -76,6 +76,7 @@ struct LinphoneApp: App {
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var startCallViewModel: StartCallViewModel?
 	@State private var callViewModel: CallViewModel?
+	@State private var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel?
 	@State private var conversationsListViewModel: ConversationsListViewModel?
 	@State private var conversationViewModel: ConversationViewModel?
 	
@@ -99,6 +100,7 @@ struct LinphoneApp: App {
 							&& historyListViewModel != nil
 							&& startCallViewModel != nil
 							&& callViewModel != nil
+							&& meetingWaitingRoomViewModel != nil
 							&& conversationsListViewModel != nil
 							&& conversationViewModel != nil {
 					ContentView(
@@ -108,6 +110,7 @@ struct LinphoneApp: App {
 						historyListViewModel: historyListViewModel!,
 						startCallViewModel: startCallViewModel!,
 						callViewModel: callViewModel!,
+						meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
 						conversationsListViewModel: conversationsListViewModel!,
 						conversationViewModel: conversationViewModel!
 					)
@@ -123,6 +126,7 @@ struct LinphoneApp: App {
 						historyListViewModel = HistoryListViewModel()
 						startCallViewModel = StartCallViewModel()
 						callViewModel = CallViewModel()
+						meetingWaitingRoomViewModel = MeetingWaitingRoomViewModel()
 						conversationsListViewModel = ConversationsListViewModel()
 						conversationViewModel = ConversationViewModel()
 					}
