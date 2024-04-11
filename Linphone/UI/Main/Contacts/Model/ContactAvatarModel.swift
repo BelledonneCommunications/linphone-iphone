@@ -115,22 +115,19 @@ class ContactAvatarModel: ObservableObject {
 	}
 	
 	static func getAvatarModelFromAddress(address: Address) -> ContactAvatarModel {
-		
-		let addressFriend = ContactsManager.shared.getFriendWithAddress(address: address)
-		var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
-			$0.friend!.name == addressFriend!.name
-			&& $0.friend!.address!.asStringUriOnly() == address.asStringUriOnly()
-		})
-		
-		if avatarModel == nil {
-			var nameTmp = ""
-			if addressFriend != nil {
-				nameTmp = addressFriend!.name!
-			} else {
-				nameTmp = address.displayName != nil ? address.displayName! : address.username!
+		if let addressFriend = ContactsManager.shared.getFriendWithAddress(address: address) {
+			var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
+				$0.friend!.name == addressFriend.name
+				&& $0.friend!.address!.asStringUriOnly() == address.asStringUriOnly()
+			})
+			
+			if avatarModel == nil {
+				avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, withPresence: false)
 			}
-			avatarModel = ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
+			return avatarModel!
+		} else {
+			let name = address.displayName != nil ? address.displayName! : address.username!
+			return ContactAvatarModel(friend: nil, name: name, withPresence: false)
 		}
-		return avatarModel!
 	}
 }
