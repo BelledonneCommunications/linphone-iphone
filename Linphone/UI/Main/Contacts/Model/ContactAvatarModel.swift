@@ -28,9 +28,9 @@ class ContactAvatarModel: ObservableObject {
 	let name: String
 	
 	let withPresence: Bool?
-
+	
 	@Published var lastPresenceInfo: String
-
+	
 	@Published var presenceStatus: ConsolidatedPresence
 	
 	private var friendSuscription: AnyCancellable?
@@ -39,7 +39,7 @@ class ContactAvatarModel: ObservableObject {
 		self.friend = friend
 		self.name = name
 		self.withPresence = withPresence
-        if friend != nil &&
+		if friend != nil &&
 			withPresence == true {
 			self.lastPresenceInfo = ""
 			
@@ -47,7 +47,7 @@ class ContactAvatarModel: ObservableObject {
 			
 			if friend!.consolidatedPresence == .Online || friend!.consolidatedPresence == .Busy {
 				if friend!.consolidatedPresence == .Online || friend!.presenceModel!.latestActivityTimestamp != -1 {
-					self.lastPresenceInfo = (friend!.consolidatedPresence == .Online) ? 
+					self.lastPresenceInfo = (friend!.consolidatedPresence == .Online) ?
 					"Online" : getCallTime(startDate: friend!.presenceModel!.latestActivityTimestamp)
 				} else {
 					self.lastPresenceInfo = "Away"
@@ -55,16 +55,16 @@ class ContactAvatarModel: ObservableObject {
 			} else {
 				self.lastPresenceInfo = ""
 			}
-            
-            if self.friendSuscription != nil {
-                self.friendSuscription = nil
-            }
+			
+			if self.friendSuscription != nil {
+				self.friendSuscription = nil
+			}
 			
 			addSubscription()
-        } else {
-            self.lastPresenceInfo = ""
-            self.presenceStatus = .Offline
-        }
+		} else {
+			self.lastPresenceInfo = ""
+			self.presenceStatus = .Offline
+		}
 	}
 	
 	func addSubscription() {
