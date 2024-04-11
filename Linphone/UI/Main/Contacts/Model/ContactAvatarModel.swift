@@ -113,4 +113,24 @@ class ContactAvatarModel: ObservableObject {
 			return "Online on " + formatter.string(from: myNSDate)
 		}
 	}
+	
+	static func getAvatarModelFromAddress(address: Address) -> ContactAvatarModel {
+		
+		let addressFriend = ContactsManager.shared.getFriendWithAddress(address: address)
+		var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
+			$0.friend!.name == addressFriend!.name
+			&& $0.friend!.address!.asStringUriOnly() == address.asStringUriOnly()
+		})
+		
+		if avatarModel == nil {
+			var nameTmp = ""
+			if addressFriend != nil {
+				nameTmp = addressFriend!.name!
+			} else {
+				nameTmp = address.displayName != nil ? address.displayName! : address.username!
+			}
+			avatarModel = ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
+		}
+		return avatarModel!
+	}
 }
