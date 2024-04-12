@@ -35,6 +35,12 @@ class ParticipantModel: ObservableObject {
 		
 		self.sipUri = address.asStringUriOnly()
 
+		if let addressFriend = ContactsManager.shared.getFriendWithAddress(address: self.address) {
+			self.name = addressFriend.name!
+		} else {
+			self.name = address.displayName != nil ? address.displayName! : address.username!
+		}
+		
 		self.avatarModel = ContactAvatarModel.getAvatarModelFromAddress(address: self.address)
 	}
 }
