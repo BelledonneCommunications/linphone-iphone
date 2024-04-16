@@ -97,7 +97,20 @@ class CallViewModel: ObservableObject {
 					self.remoteAddressString = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
 					self.remoteAddress = self.currentCall!.remoteAddress!
 					
-					self.displayName = self.currentCall?.conference?.subject ?? ""
+					if self.currentCall?.conference != nil {
+						self.displayName = self.currentCall?.conference?.subject ?? ""
+					} else if self.currentCall?.remoteAddress != nil {
+						let friend = ContactsManager.shared.getFriendWithAddress(address: self.currentCall!.remoteAddress!)
+						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+							self.displayName = friend!.address!.displayName!
+						} else {
+							if self.currentCall!.remoteAddress!.displayName != nil {
+								self.displayName = self.currentCall!.remoteAddress!.displayName!
+							} else if self.currentCall!.remoteAddress!.username != nil {
+								self.displayName = self.currentCall!.remoteAddress!.username!
+							}
+						}
+					}
 					
 					//self.avatarModel = ???
 					self.micMutted = self.currentCall!.microphoneMuted || !core.micEnabled
@@ -145,17 +158,16 @@ class CallViewModel: ObservableObject {
 					self.displayName = conf.subject ?? ""
 					self.participantList = []
 					
-					if self.currentCall?.callLog?.localAddress != nil {
-						self.myParticipantModel = ParticipantModel(address: self.currentCall!.callLog!.localAddress!)
-						print("ParticipantModelParticipantModel 1 \(conf.me?.address!.asStringUriOnly())")
+					if conf.me?.address != nil {
+						self.myParticipantModel = ParticipantModel(address: conf.me!.address!, isJoining: false)
+					} else if self.currentCall?.callLog?.localAddress != nil {
+						self.myParticipantModel = ParticipantModel(address: self.currentCall!.callLog!.localAddress!, isJoining: false)
 					}
 					
 					if conf.activeSpeakerParticipantDevice?.address != nil {
-						self.activeSpeakerParticipant = ParticipantModel(address: conf.activeSpeakerParticipantDevice!.address!)
-						print("ParticipantModelParticipantModel 2 \(conf.activeSpeakerParticipantDevice!.address!.asStringUriOnly())")
+						self.activeSpeakerParticipant = ParticipantModel(address: conf.activeSpeakerParticipantDevice!.address!, isJoining: false)
 					} else if conf.participantList.first?.address != nil {
-						self.activeSpeakerParticipant = ParticipantModel(address: conf.participantList.first!.address!)
-						print("ParticipantModelParticipantModel 3 \(conf.participantList.first!.address!.asStringUriOnly())")
+						self.activeSpeakerParticipant = ParticipantModel(address: conf.participantList.first!.address!, isJoining: false)
 					}
 					
 					if self.activeSpeakerParticipant != nil {
@@ -172,14 +184,17 @@ class CallViewModel: ObservableObject {
 					}
 					
 					conf.participantDeviceList.forEach({ participantDevice in
-						self.participantList.append(ParticipantModel(address: participantDevice.address!))
-						print("ParticipantModelParticipantModel 4 \(participantDevice.address!.asStringUriOnly()) \(conf.isIn) \(conf.state) \(self.currentCall?.state)")
+						if participantDevice.address != nil && !conf.isMe(uri: participantDevice.address!.clone()!) {
+							if !conf.isMe(uri: participantDevice.address!.clone()!) {
+								self.participantList.append(ParticipantModel(address: participantDevice.address!, isJoining: participantDevice.state == .Joining))
+							}
+						}
 					})
 					
-					//self.addConferenceCallBacks()
+					self.addConferenceCallBacks()
 				}
 			} else if self.currentCall?.remoteContactAddress != nil {
-				//self.addConferenceCallBacks()
+				self.addConferenceCallBacks()
 			}
 		}
 	}
@@ -188,7 +203,6 @@ class CallViewModel: ObservableObject {
 		self.mConferenceSuscriptions.insert(
 			self.currentCall?.conference?.publisher?.onStateChanged?.postOnMainQueue {(cbValue: (conference: Conference, state: Conference.State)) in
 				if cbValue.state == .Created {
-					print("ParticipantModelParticipantModel 0 \(cbValue.conference.isIn) \(cbValue.conference.state) \(self.currentCall?.state) \(cbValue.state)")
 					self.getConference()
 				}
 			}
@@ -201,7 +215,7 @@ class CallViewModel: ObservableObject {
 				self.currentCall?.conference?.publisher?.onActiveSpeakerParticipantDevice?.postOnMainQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
 					if cbValue.participantDevice.address != nil {
 						let activeSpeakerParticipantTmp = self.activeSpeakerParticipant
-						self.activeSpeakerParticipant = ParticipantModel(address: cbValue.participantDevice.address!)
+						self.activeSpeakerParticipant = ParticipantModel(address: cbValue.participantDevice.address!, isJoining: false)
 						
 						if self.activeSpeakerParticipant != nil {
 							let friend = ContactsManager.shared.getFriendWithAddress(address: self.activeSpeakerParticipant!.address)
@@ -222,9 +236,9 @@ class CallViewModel: ObservableObject {
 							
 							self.participantList = []
 							cbValue.conference.participantDeviceList.forEach({ participantDevice in
-								if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!) {
-									if !cbValue.conference.isMe(uri: participantDevice.address!) {
-										self.participantList.append(ParticipantModel(address: participantDevice.address!))
+								if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+									if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+										self.participantList.append(ParticipantModel(address: participantDevice.address!, isJoining: participantDevice.state == .Joining))
 									}
 								}
 							})
@@ -238,9 +252,9 @@ class CallViewModel: ObservableObject {
 					if cbValue.participant.address != nil {
 						self.participantList = []
 						cbValue.conference.participantDeviceList.forEach({ participantDevice in
-							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!) {
-								if !cbValue.conference.isMe(uri: participantDevice.address!) {
-									self.participantList.append(ParticipantModel(address: participantDevice.address!))
+							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+								if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+									self.participantList.append(ParticipantModel(address: participantDevice.address!, isJoining: participantDevice.state == .Joining))
 								}
 							}
 						})
@@ -253,13 +267,27 @@ class CallViewModel: ObservableObject {
 					if cbValue.participant.address != nil {
 						self.participantList = []
 						cbValue.conference.participantDeviceList.forEach({ participantDevice in
-							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!) {
-								if !cbValue.conference.isMe(uri: participantDevice.address!) {
-									self.participantList.append(ParticipantModel(address: participantDevice.address!))
+							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+								if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+									self.participantList.append(ParticipantModel(address: participantDevice.address!, isJoining: participantDevice.state == .Joining))
 								}
 							}
 						})
 					}
+				}
+			)
+			
+			self.mConferenceSuscriptions.insert(
+				self.currentCall?.conference?.publisher?.onParticipantDeviceStateChanged?.postOnMainQueue {(cbValue: (conference: Conference, device: ParticipantDevice, state: ParticipantDevice.State)) in
+					Log.info(
+						"[CallViewModel] Participant device \(cbValue.device.address!.asStringUriOnly()) state changed \(cbValue.state)"
+					)
+					
+					self.participantList.forEach({ participantDevice in
+						if participantDevice.address.equal(address2: cbValue.device.address!) {
+							participantDevice.isJoining = cbValue.state == .Joining
+						}
+					})
 				}
 			)
 		}

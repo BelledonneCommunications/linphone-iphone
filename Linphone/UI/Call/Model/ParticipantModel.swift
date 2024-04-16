@@ -28,8 +28,9 @@ class ParticipantModel: ObservableObject {
 	@Published var sipUri: String
 	@Published var name: String
 	@Published var avatarModel: ContactAvatarModel
+	@Published var isJoining: Bool
 	
-	init(address: Address) {
+	init(address: Address, isJoining: Bool) {
 		self.address = address
 		
 		self.sipUri = address.asStringUriOnly()
@@ -54,5 +55,7 @@ class ParticipantModel: ObservableObject {
 			&& $0.friend!.address!.asStringUriOnly() == address.asStringUriOnly()
 		}) ?? ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
 		: ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
+		
+		self.isJoining = isJoining
 	}
 }

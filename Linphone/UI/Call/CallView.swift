@@ -770,12 +770,6 @@ struct CallView: View {
 					
 					Spacer()
 				}
-				.onDisappear {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-					//	callViewModel.getConference()
-						callViewModel.waitingForCreatedStateConference()
-					}
-				}
 				.background(.clear)
 				.frame(
 					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
