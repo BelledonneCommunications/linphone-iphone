@@ -519,7 +519,7 @@ struct CallView: View {
 						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
 				}
-			} else if callViewModel.isConference  && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
+			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
 				VStack {
 					Spacer()
 					ZStack {
@@ -613,6 +613,27 @@ struct CallView: View {
 						}
 					}
 				}
+				if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && callViewModel.activeSpeakerParticipant!.isMuted {
+					VStack {
+						HStack {
+							Spacer()
+							
+							HStack(alignment: .center) {
+								Image("microphone-slash")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c800)
+									.frame(width: 20, height: 20)
+							}
+							.padding(5)
+							.background(.white)
+							.cornerRadius(40)
+						}
+						Spacer()
+					}
+					.frame(maxWidth: .infinity)
+					.padding(.all, 20)
+				}
 				
 				if callViewModel.isConference {
 					HStack {
@@ -654,6 +675,7 @@ struct CallView: View {
 											.scaledToFill()
 						  					.clipped()
 										}
+						
 										
 										VStack(alignment: .leading) {
 											Spacer()
@@ -677,20 +699,62 @@ struct CallView: View {
 									ForEach(0..<callViewModel.participantList.count, id: \.self) { index in
 										if callViewModel.activeSpeakerParticipant != nil && !callViewModel.participantList[index].address.equal(address2: callViewModel.activeSpeakerParticipant!.address) {
 											ZStack {
-												VStack {
-													Spacer()
+												if callViewModel.participantList[index].isJoining {
+													VStack {
+														Spacer()
+														
+														ActivityIndicator(color: .white)
+															.frame(width: 40, height: 40)
+															.padding(.bottom, 5)
+														
+														
+														Text("Joining...")
+															.frame(maxWidth: .infinity, alignment: .center)
+															.foregroundStyle(Color.white)
+															.default_text_style_500(styleSize: 14)
+															.lineLimit(1)
+															.padding(.horizontal, 10)
+														
+														Spacer()
+													}
+												} else {
+													VStack {
+														Spacer()
+														
+														Avatar(contactAvatarModel: callViewModel.participantList[index].avatarModel, avatarSize: 50, hidePresence: true)
+														
+														Spacer()
+													}
 													
-													Avatar(contactAvatarModel: callViewModel.participantList[index].avatarModel, avatarSize: 50, hidePresence: true)
-													
-													Spacer()
-												}
-												
-												LinphoneVideoViewHolder { view in
-													coreContext.doOnCoreQueue { core in
-														let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
-														if participantVideo != nil && participantVideo!.devices.first != nil {
-															participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+													LinphoneVideoViewHolder { view in
+														coreContext.doOnCoreQueue { core in
+															let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
+															if participantVideo != nil && participantVideo!.devices.first != nil {
+																participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+															}
 														}
+													}
+													
+													if callViewModel.participantList[index].isMuted {
+														VStack {
+															HStack {
+																Spacer()
+																
+																HStack(alignment: .center) {
+																	Image("microphone-slash")
+																		.renderingMode(.template)
+																		.resizable()
+																		.foregroundStyle(Color.grayMain2c800)
+																		.frame(width: 12, height: 12)
+																}
+																.padding(2)
+																.background(.white)
+																.cornerRadius(40)
+															}
+															Spacer()
+														}
+														.frame(maxWidth: .infinity)
+														.padding(.all, 10)
 													}
 												}
 												
@@ -706,7 +770,6 @@ struct CallView: View {
 														.padding(.bottom, 6)
 												}
 												.frame(maxWidth: .infinity)
-												
 											}
 											.frame(width: 140, height: 140)
 											.background(Color.gray600)
