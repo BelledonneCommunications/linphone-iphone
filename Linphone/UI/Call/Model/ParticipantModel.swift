@@ -32,31 +32,18 @@ class ParticipantModel: ObservableObject {
 	@Published var onPause: Bool
 	@Published var isMuted: Bool
 	
-	init(address: Address, isJoining: Bool, onPause: Bool, isMuted: Bool) {
+	init(address: Address, isJoining: Bool = false, onPause: Bool = false, isMuted: Bool = false) {
 		self.address = address
 		
 		self.sipUri = address.asStringUriOnly()
 		
-		let addressFriend = ContactsManager.shared.getFriendWithAddress(address: self.address)
-		
-		var nameTmp = ""
-		
-		if addressFriend != nil {
-			nameTmp = addressFriend!.name!
+		if let addressFriend = ContactsManager.shared.getFriendWithAddress(address: self.address) {
+			self.name = addressFriend.name!
 		} else {
-			nameTmp = address.displayName != nil
-			? address.displayName!
-			: address.username!
+			self.name = address.displayName != nil ? address.displayName! : address.username!
 		}
 		
-		self.name = nameTmp
-		
-		self.avatarModel = addressFriend != nil
-		? ContactsManager.shared.avatarListModel.first(where: {
-			$0.friend!.name == addressFriend!.name
-			&& $0.friend!.address!.asStringUriOnly() == address.asStringUriOnly()
-		}) ?? ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
-		: ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
+		self.avatarModel = ContactAvatarModel.getAvatarModelFromAddress(address: self.address)
 		
 		self.isJoining = isJoining
 		self.onPause = onPause

@@ -20,31 +20,6 @@
 import Foundation
 import linphonesw
 
-// TODO: à merger avec le ParticipantModel de la branche de Benoit
-class ParticipantModel: ObservableObject {
-	
-	static let TAG = "[Participant Model]"
-	
-	let address: Address
-	@Published var sipUri: String
-	@Published var name: String
-	@Published var avatarModel: ContactAvatarModel
-	
-	init(address: Address) {
-		self.address = address
-		
-		self.sipUri = address.asStringUriOnly()
-
-		if let addressFriend = ContactsManager.shared.getFriendWithAddress(address: self.address) {
-			self.name = addressFriend.name!
-		} else {
-			self.name = address.displayName != nil ? address.displayName! : address.username!
-		}
-		
-		self.avatarModel = ContactAvatarModel.getAvatarModelFromAddress(address: self.address)
-	}
-}
-
 class MeetingViewModel: ObservableObject {
 	static let TAG = "[Meeting ViewModel]"
 	
