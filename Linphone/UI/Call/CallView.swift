@@ -21,6 +21,7 @@ import SwiftUI
 import CallKit
 import AVFAudio
 import linphonesw
+import UniformTypeIdentifiers
 
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
@@ -391,6 +392,7 @@ struct CallView: View {
 		}
 	}
 	
+	// swiftlint:disable function_body_length
 	// swiftlint:disable:next cyclomatic_complexity
 	func simpleCallView(geometry: GeometryProxy) -> some View {
 		ZStack {
@@ -688,11 +690,11 @@ struct CallView: View {
 							
 							Text(callViewModel.activeSpeakerName)
 								.frame(maxWidth: .infinity, alignment: .leading)
-							   	.foregroundStyle(Color.white)
-							   	.default_text_style_500(styleSize: 20)
-							   	.lineLimit(1)
-							   	.padding(.horizontal, 10)
-							   	.padding(.bottom, 6)
+								.foregroundStyle(Color.white)
+								.default_text_style_500(styleSize: 20)
+								.lineLimit(1)
+								.padding(.horizontal, 10)
+								.padding(.bottom, 6)
 							
 							ScrollView(.horizontal) {
 								HStack {
@@ -718,9 +720,9 @@ struct CallView: View {
 											}
 											.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
 											.scaledToFill()
-						  					.clipped()
+											.clipped()
 										}
-						
+										
 										
 										VStack(alignment: .leading) {
 											Spacer()
@@ -834,6 +836,72 @@ struct CallView: View {
 					.padding(.bottom, 10)
 					.padding(.leading, -10)
 				}
+			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.participantList.isEmpty {
+				VStack {
+					Spacer()
+					
+					Text("En attente d'autres participants...")
+						.frame(maxWidth: .infinity, alignment: .center)
+						.foregroundStyle(Color.white)
+						.default_text_style_300(styleSize: 25)
+						.lineLimit(1)
+						.padding(.bottom, 4)
+					
+					Button(action: {
+						UIPasteboard.general.setValue(
+							callViewModel.remoteAddressString,
+							forPasteboardType: UTType.plainText.identifier
+						)
+						
+						DispatchQueue.main.async {
+							ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+							ToastViewModel.shared.displayToast = true
+						}
+					}, label: {
+						HStack {
+							Image("share-network")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c400)
+								.frame(width: 30, height: 30)
+							
+							Text("Partager le lien")
+								.foregroundStyle(Color.grayMain2c400)
+								.default_text_style(styleSize: 25)
+								.frame(height: 40)
+						}
+					})
+					.padding(.horizontal, 20)
+					.padding(.vertical, 10)
+					.cornerRadius(60)
+					.overlay(
+						RoundedRectangle(cornerRadius: 60)
+							.inset(by: 0.5)
+							.stroke(Color.grayMain2c400, lineWidth: 1)
+					)
+					
+					Spacer()
+				}
+				
+				HStack {
+					Spacer()
+					VStack {
+						Spacer()
+						LinphoneVideoViewHolder { view in
+							coreContext.doOnCoreQueue { core in
+								core.nativePreviewWindow = view
+							}
+						}
+						.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+						.cornerRadius(20)
+						.padding(10)
+						.padding(.trailing, abs(angleDegree/2))
+					}
+				}
+				.frame(
+					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+				)
 			}
 			
 			if callViewModel.isRecording {
@@ -912,6 +980,7 @@ struct CallView: View {
 			callViewModel.orientationUpdate(orientation: orientation)
 		}
 	}
+	// swiftlint:enable function_body_length
 	
 	// swiftlint:disable function_body_length
 	func bottomSheetContent(geo: GeometryProxy) -> some View {
