@@ -23,8 +23,22 @@ import linphonesw
 class HistoryViewModel: ObservableObject {
 	
 	@Published var displayedCall: CallLog?
+	@Published var displayedCallIsConference: String = ""
 	
 	var selectedCall: CallLog?
 	
 	init() {}
+	
+	func getConferenceSubject() {
+		CoreContext.shared.doOnCoreQueue { core in
+			var displayedCallIsConferenceTmp = ""
+			if self.displayedCall?.conferenceInfo != nil {
+				displayedCallIsConferenceTmp = self.displayedCall?.conferenceInfo?.subject ?? ""
+			}
+			
+			DispatchQueue.main.async {
+				self.displayedCallIsConference = displayedCallIsConferenceTmp
+			}
+		}
+	}
 }

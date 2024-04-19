@@ -25,6 +25,7 @@ class HistoryListViewModel: ObservableObject {
 	private var coreContext = CoreContext.shared
 	
 	@Published var callLogs: [CallLog] = []
+	@Published var callLogsIsConference: [String] = []
 	var callLogsTmp: [CallLog] = []
 	
 	var callLogsAddressToDelete = ""
@@ -42,28 +43,46 @@ class HistoryListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
 			
+			var callLogsBis: [CallLog] = []
+			var callLogsIsConferenceBis: [String] = []
+			var callLogsTmpBis: [CallLog] = []
+			
+			logs.forEach { log in
+				callLogsBis.append(log)
+				callLogsIsConferenceBis.append(log.conferenceInfo != nil && log.conferenceInfo!.subject != nil ? log.conferenceInfo!.subject! : "")
+				callLogsTmpBis.append(log)
+			}
+			
 			DispatchQueue.main.async {
 				self.callLogs.removeAll()
 				self.callLogsTmp.removeAll()
 				
-				logs.forEach { log in
-					self.callLogs.append(log)
-					self.callLogsTmp.append(log)
-				}
+				self.callLogs = callLogsBis
+				self.callLogsIsConference = callLogsIsConferenceBis
+				self.callLogsTmp = callLogsTmpBis
 			}
 			
 			self.callLogSubscription = core.publisher?.onCallLogUpdated?.postOnCoreQueue { (_: (_: Core, _: CallLog)) in
 				let account = core.defaultAccount
-				let logs = account != nil ? account!.callLogs : core.callLogs
+				let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
+				
+				var callLogsBis: [CallLog] = []
+				var callLogsIsConferenceBis: [String] = []
+				var callLogsTmpBis: [CallLog] = []
+				
+				logs.forEach { log in
+					callLogsBis.append(log)
+					callLogsIsConferenceBis.append(log.conferenceInfo != nil && log.conferenceInfo!.subject != nil ? log.conferenceInfo!.subject! : "")
+					callLogsTmpBis.append(log)
+				}
 				
 				DispatchQueue.main.async {
 					self.callLogs.removeAll()
 					self.callLogsTmp.removeAll()
 					
-					logs.forEach { log in
-						self.callLogs.append(log)
-						self.callLogsTmp.append(log)
-					}
+					self.callLogs = callLogsBis
+					self.callLogsIsConference = callLogsIsConferenceBis
+					self.callLogsTmp = callLogsTmpBis
 				}
 				
 				self.updateMissedCallsCount()
