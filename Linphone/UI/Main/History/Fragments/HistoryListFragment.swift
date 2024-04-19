@@ -223,7 +223,7 @@ struct HistoryListFragment: View {
 					)
 					*/
 					
-					let reutest = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=7M7oqGrZS;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
+					let reutest = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=~~zKKyETb;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
 					
 					telecomManager.meetingWaitingRoomDisplayed = true
 					telecomManager.meetingWaitingRoomSelected = reutest
@@ -244,7 +244,7 @@ struct HistoryListFragment: View {
 					)
 					 */
 					
-					let reutest = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=7M7oqGrZS;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
+					let reutest = try Factory.Instance.createAddress(addr: "sip:conference-focus@sip.linphone.org;conf-id=~~zKKyETb;gr=0ee3f37f-6df2-0071-bb9a-a4e24be30135")
 					
 					telecomManager.meetingWaitingRoomDisplayed = true
 					telecomManager.meetingWaitingRoomSelected = reutest

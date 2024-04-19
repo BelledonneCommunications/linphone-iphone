@@ -28,9 +28,9 @@ class CallViewModel: ObservableObject {
 	var coreContext = CoreContext.shared
 	var telecomManager = TelecomManager.shared
 	
-	@Published var displayName: String = "Example Linphone"
+	@Published var displayName: String = ""
 	@Published var direction: Call.Dir = .Outgoing
-	@Published var remoteAddressString: String = "example.linphone@sip.linphone.org"
+	@Published var remoteAddressString: String = ""
 	@Published var remoteAddress: Address?
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var micMutted: Bool = false
@@ -46,6 +46,7 @@ class CallViewModel: ObservableObject {
 	@Published var isRemoteDeviceTrusted: Bool = false
 	@Published var selectedCall: Call?
 	@Published var isTransferInsteadCall: Bool = false
+	@Published var isOneOneCall: Bool = false
 	@Published var isConference: Bool = false
 	@Published var videoDisplayed: Bool = false
 	@Published var participantList: [ParticipantModel] = []
@@ -92,11 +93,41 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				self.currentCall = core.currentCall
+				
+				var videoDisplayedTmp = false
+				do {
+					let params = try core.createCallParams(call: self.currentCall)
+					videoDisplayedTmp = params.videoDirection == MediaDirection.SendRecv || params.videoDirection == MediaDirection.SendOnly
+				} catch {
+					
+				}
+				
+				var isOneOneCallTmp = false
+				if self.currentCall?.remoteAddress != nil {
+					let conf = core.findConferenceInformationFromUri(uri: self.currentCall!.remoteAddress!)
+					
+					if conf == nil {
+						isOneOneCallTmp = true
+					}
+				}
+				
+				var isMediaEncryptedTmp = false
+				var isZrtpPqTmp = false
+				if self.currentCall != nil && self.currentCall!.currentParams != nil {
+					if self.currentCall!.currentParams!.mediaEncryption == .ZRTP ||
+						self.currentCall!.currentParams!.mediaEncryption == .SRTP ||
+						self.currentCall!.currentParams!.mediaEncryption == .DTLS {
+						
+						isMediaEncryptedTmp = true
+						isZrtpPqTmp = self.currentCall!.currentParams!.mediaEncryption == .ZRTP
+					}
+				}
+				
 				DispatchQueue.main.async {
 					self.direction = self.currentCall!.dir
 					self.remoteAddressString = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
 					self.remoteAddress = self.currentCall!.remoteAddress!
-					
+					self.displayName = ""
 					if self.currentCall?.conference != nil {
 						self.displayName = self.currentCall?.conference?.subject ?? ""
 					} else if self.currentCall?.remoteAddress != nil {
@@ -123,15 +154,33 @@ class CallViewModel: ObservableObject {
 					self.isRemoteDeviceTrusted = self.telecomManager.callInProgress ? isDeviceTrusted : false
 					self.activeSpeakerParticipant = nil
 					
-					do {
-						let params = try core.createCallParams(call: self.currentCall)
-						self.videoDisplayed = params.videoDirection == MediaDirection.SendRecv
-					} catch {
-						
-					}
+					self.avatarModel = nil
+					self.isRemoteRecording = false
+					self.zrtpPopupDisplayed = false
+					self.upperCaseAuthTokenToRead = ""
+					self.upperCaseAuthTokenToListen = ""
+					self.isMediaEncrypted = false
+					self.isZrtpPq = false
+					self.isOneOneCall = false
+					self.isConference = false
+					self.videoDisplayed = false
+					self.participantList = []
+					self.activeSpeakerParticipant = nil
+					self.activeSpeakerName = ""
+					self.myParticipantModel = nil
+					
+					self.videoDisplayed = videoDisplayedTmp
+					self.isOneOneCall = isOneOneCallTmp
+					self.isMediaEncrypted = isMediaEncryptedTmp
+					self.isZrtpPq = isZrtpPqTmp
 					
 					self.getCallsList()
-					self.waitingForCreatedStateConference()
+					
+					if self.currentCall?.conference?.state == .Created {
+						self.getConference()
+					} else {
+						self.waitingForCreatedStateConference()
+					}
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
@@ -165,9 +214,23 @@ class CallViewModel: ObservableObject {
 					}
 					
 					if conf.activeSpeakerParticipantDevice?.address != nil {
-						self.activeSpeakerParticipant = ParticipantModel(address: conf.activeSpeakerParticipantDevice!.address!, isJoining: false, isMuted: conf.activeSpeakerParticipantDevice!.isMuted)
-					} else if conf.participantList.first?.address != nil {
-						self.activeSpeakerParticipant = ParticipantModel(address: conf.participantDeviceList.first!.address!, isJoining: false, isMuted: conf.participantDeviceList.first!.isMuted)
+						self.activeSpeakerParticipant = ParticipantModel(
+							address: conf.activeSpeakerParticipantDevice!.address!,
+							isJoining: false,
+							isMuted: conf.activeSpeakerParticipantDevice!.isMuted
+						)
+					} else if conf.participantList.first?.address != nil && conf.participantList.first!.address!.clone()!.equal(address2: (conf.me?.address)!) {
+						self.activeSpeakerParticipant = ParticipantModel(
+							address: conf.participantDeviceList.first!.address!,
+							isJoining: false,
+							isMuted: conf.participantDeviceList.first!.isMuted
+						)
+					} else if conf.participantList.last?.address != nil {
+						self.activeSpeakerParticipant = ParticipantModel(
+							address: conf.participantDeviceList.last!.address!,
+							isJoining: false,
+							isMuted: conf.participantDeviceList.last!.isMuted
+						)
 					}
 					
 					if self.activeSpeakerParticipant != nil {

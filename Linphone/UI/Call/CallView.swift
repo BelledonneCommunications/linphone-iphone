@@ -394,7 +394,7 @@ struct CallView: View {
 	// swiftlint:disable:next cyclomatic_complexity
 	func simpleCallView(geometry: GeometryProxy) -> some View {
 		ZStack {
-			if !callViewModel.isConference {
+			if callViewModel.isOneOneCall {
 				VStack {
 					Spacer()
 					ZStack {
@@ -519,100 +519,145 @@ struct CallView: View {
 						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
 				}
+				
+				if telecomManager.outgoingCallStarted {
+					VStack {
+						ActivityIndicator(color: .white)
+							.frame(width: 20, height: 20)
+							.padding(.top, 60)
+						
+						Text(callViewModel.counterToMinutes())
+							.onAppear {
+								callViewModel.timeElapsed = 0
+							}
+							.onReceive(callViewModel.timer) { _ in
+								callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
+								
+							}
+							.onDisappear {
+								callViewModel.timeElapsed = 0
+							}
+							.padding(.top)
+							.foregroundStyle(.white)
+						
+						Spacer()
+					}
+					.background(.clear)
+					.frame(
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+					)
+				}
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
 				VStack {
-					Spacer()
-					ZStack {
-						if callViewModel.activeSpeakerParticipant?.address != nil {
-							let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.activeSpeakerParticipant!.address)
-							
-							let contactAvatarModel = addressFriend != nil
-							? ContactsManager.shared.avatarListModel.first(where: {
-								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-								&& $0.friend!.name == addressFriend!.name
-								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-							})
-							: ContactAvatarModel(friend: nil, name: "", withPresence: false)
-							
-							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
+					VStack {
+						Spacer()
+						ZStack {
+							if callViewModel.activeSpeakerParticipant?.address != nil {
+								let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.activeSpeakerParticipant!.address)
+								
+								let contactAvatarModel = addressFriend != nil
+								? ContactsManager.shared.avatarListModel.first(where: {
+									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+									&& $0.friend!.name == addressFriend!.name
+									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+								})
+								: ContactAvatarModel(friend: nil, name: "", withPresence: false)
+								
+								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+									if contactAvatarModel != nil {
+										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
+											.onAppear {
+												DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+													displayVideo = true
+												}
+											}
+									}
+								} else {
+									if callViewModel.activeSpeakerParticipant!.address.displayName != nil {
+										Image(uiImage: contactsManager.textToImage(
+											firstName: callViewModel.activeSpeakerParticipant!.address.displayName!,
+											lastName: callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ").count > 1
+											? callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ")[1]
+											: ""))
+										.resizable()
+										.frame(width: 200, height: 200)
+										.clipShape(Circle())
 										.onAppear {
 											DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 												displayVideo = true
 											}
 										}
-								}
-							} else {
-								if callViewModel.activeSpeakerParticipant!.address.displayName != nil {
-									Image(uiImage: contactsManager.textToImage(
-										firstName: callViewModel.activeSpeakerParticipant!.address.displayName!,
-										lastName: callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ").count > 1
-										? callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ")[1]
-										: ""))
-									.resizable()
-									.frame(width: 200, height: 200)
-									.clipShape(Circle())
-									.onAppear {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-											displayVideo = true
+										
+									} else {
+										Image(uiImage: contactsManager.textToImage(
+											firstName: callViewModel.activeSpeakerParticipant!.address.username ?? "Username Error",
+											lastName: callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ").count > 1
+											? callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ")[1]
+											: ""))
+										.resizable()
+										.frame(width: 200, height: 200)
+										.clipShape(Circle())
+										.onAppear {
+											DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+												displayVideo = true
+											}
 										}
 									}
 									
-								} else {
-									Image(uiImage: contactsManager.textToImage(
-										firstName: callViewModel.activeSpeakerParticipant!.address.username ?? "Username Error",
-										lastName: callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ").count > 1
-										? callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ")[1]
-										: ""))
+								}
+							} else {
+								Image("profil-picture-default")
 									.resizable()
 									.frame(width: 200, height: 200)
 									.clipShape(Circle())
-									.onAppear {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-											displayVideo = true
-										}
-									}
-								}
-								
 							}
-						} else {
-							Image("profil-picture-default")
-								.resizable()
-								.frame(width: 200, height: 200)
-								.clipShape(Circle())
 						}
+						
+						Spacer()
 					}
+					.frame(
+						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+					)
 					
 					Spacer()
 				}
+				.frame(
+					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+				)
 				
 				if telecomManager.remoteConfVideo && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && displayVideo {
-					LinphoneVideoViewHolder { view in
-						DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-							coreContext.doOnCoreQueue { core in
-								core.nativeVideoWindow = view
+					VStack {
+						VStack {
+							LinphoneVideoViewHolder { view in
+								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+									coreContext.doOnCoreQueue { core in
+										core.nativeVideoWindow = view
+									}
+								}
+							}
+							.onTapGesture {
+								if callViewModel.videoDisplayed {
+									fullscreenVideo.toggle()
+								}
 							}
 						}
+						.frame(
+							width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+							height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+						)
+						.cornerRadius(20)
+						
+						Spacer()
 					}
 					.frame(
-						width:
-							angleDegree == 0
-						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
-						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
-						height:
-							angleDegree == 0
-						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
-						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
-					.scaledToFill()
-					.clipped()
-					.onTapGesture {
-						if callViewModel.videoDisplayed {
-							fullscreenVideo.toggle()
-						}
-					}
 				}
+				
 				if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && callViewModel.activeSpeakerParticipant!.isMuted {
 					VStack {
 						HStack {
@@ -728,9 +773,11 @@ struct CallView: View {
 													
 													LinphoneVideoViewHolder { view in
 														coreContext.doOnCoreQueue { core in
-															let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
-															if participantVideo != nil && participantVideo!.devices.first != nil {
-																participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+															if index < callViewModel.participantList.count {
+																let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
+																if participantVideo != nil && participantVideo!.devices.first != nil {
+																	participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
+																}
 															}
 														}
 													}
@@ -805,35 +852,6 @@ struct CallView: View {
 					}
 					Spacer()
 				}
-				.frame(
-					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-				)
-			}
-			
-			if telecomManager.outgoingCallStarted {
-				VStack {
-					ActivityIndicator(color: .white)
-						.frame(width: 20, height: 20)
-						.padding(.top, 60)
-					
-					Text(callViewModel.counterToMinutes())
-						.onAppear {
-							callViewModel.timeElapsed = 0
-						}
-						.onReceive(callViewModel.timer) { _ in
-							callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
-							
-						}
-						.onDisappear {
-							callViewModel.timeElapsed = 0
-						}
-						.padding(.top)
-						.foregroundStyle(.white)
-					
-					Spacer()
-				}
-				.background(.clear)
 				.frame(
 					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
 					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
@@ -1007,7 +1025,7 @@ struct CallView: View {
 				
 				if orientation != .landscapeLeft && orientation != .landscapeRight {
 					HStack(spacing: 0) {
-						if !callViewModel.isConference {
+						if callViewModel.isOneOneCall {
 							VStack {
 								Button {
 									if callViewModel.calls.count < 2 {
@@ -1231,7 +1249,7 @@ struct CallView: View {
 						}
 						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 						
-						if !callViewModel.isConference {
+						if callViewModel.isOneOneCall {
 							VStack {
 								Button {
 									callViewModel.toggleRecording()
@@ -1473,7 +1491,7 @@ struct CallView: View {
 						}
 						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						
-						if !callViewModel.isConference {
+						if callViewModel.isOneOneCall {
 							VStack {
 								Button {
 									callViewModel.toggleRecording()

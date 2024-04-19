@@ -299,10 +299,14 @@ final class ContactsManager: ObservableObject {
 		clonedAddress!.clean()
 		let sipUri = clonedAddress!.asStringUriOnly()
 		if friendList != nil {
-			var friend = friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-			if friend == nil {
-				friend = linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+			var friend: Friend?
+			self.coreContext.doOnCoreQueue { _ in
+				friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+				if friend == nil {
+					friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+				}
 			}
+			
 			return friend
 		} else {
 			return nil
