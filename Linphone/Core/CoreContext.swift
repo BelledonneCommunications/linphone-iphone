@@ -135,17 +135,6 @@ final class CoreContext: ObservableObject {
 						account.params = newParams
 					}
 					
-					// Remove specs for 6.0 first version
-					Log.info("Removing spec 'conference' from core for this version")
-					self.mCore.removeLinphoneSpec(spec: "conference")
-					Log.info("Removing spec 'ephemeral' from core for this version")
-					self.mCore.removeLinphoneSpec(spec: "ephemeral")
-					/*
-					Log.info("Removing spec 'groupchat' from core for this version")
-					self.mCore.removeLinphoneSpec(spec: "groupchat")
-					Log.info("Removing spec 'lime' from core for this version")
-					self.mCore.removeLinphoneSpec(spec: "lime")
-					 */
 				}
 			})
 			
