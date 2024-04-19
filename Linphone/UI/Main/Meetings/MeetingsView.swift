@@ -8,11 +8,40 @@
 import SwiftUI
 
 struct MeetingsView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+	
+	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	
+	@Binding var isShowScheduleMeetingFragment: Bool
+		
+	var body: some View {
+		NavigationView {
+			ZStack(alignment: .bottomTrailing) {
+				MeetingsFragment(scheduleMeetingViewModel: scheduleMeetingViewModel)
+				
+				Button {
+					withAnimation {
+						isShowScheduleMeetingFragment.toggle()
+					}
+				} label: {
+					Image("plus-circle")
+						.renderingMode(.template)
+						.foregroundStyle(.white)
+						.padding()
+						.background(Color.orangeMain500)
+						.clipShape(Circle())
+						.shadow(color: .black.opacity(0.2), radius: 4)
+					
+				}
+				.padding()
+			}
+		}
+		.navigationViewStyle(.stack)
+	}
 }
 
 #Preview {
-    MeetingsView()
+	MeetingsView(
+		scheduleMeetingViewModel: ScheduleMeetingViewModel(),
+		isShowScheduleMeetingFragment: .constant(false)
+	)
 }
