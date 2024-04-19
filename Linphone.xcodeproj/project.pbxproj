@@ -24,9 +24,12 @@
 		66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */; };
 		66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
 		66C492012B24DB6900CEA16D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
+		66E50A492BD12B2300AD61CA /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E50A482BD12B2300AD61CA /* MeetingsView.swift */; };
+		66E50A4B2BD12B7800AD61CA /* MeetingsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E50A4A2BD12B7800AD61CA /* MeetingsFragment.swift */; };
 		66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */; };
 		66E56BCC2BA9A1E0006CE56F /* MeetingsListItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BCB2BA9A1E0006CE56F /* MeetingsListItemModel.swift */; };
 		66E56BCE2BA9A1F8006CE56F /* MeetingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BCD2BA9A1F8006CE56F /* MeetingModel.swift */; };
+		66F626B22BCEBB86003E2DEC /* AddParticipantsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F626B12BCEBB86003E2DEC /* AddParticipantsFragment.swift */; };
 		66FBFC482B83B8CC00BC6AB1 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
 		66FBFC492B83BD2400BC6AB1 /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
 		66FBFC4A2B83BD3300BC6AB1 /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
@@ -173,9 +176,12 @@
 		66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteUtils.swift; sourceTree = "<group>"; };
 		66C491FE2B24D4AC00CEA16D /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		66C492002B24DB6900CEA16D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		66E50A482BD12B2300AD61CA /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
+		66E50A4A2BD12B7800AD61CA /* MeetingsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsFragment.swift; sourceTree = "<group>"; };
 		66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListViewModel.swift; sourceTree = "<group>"; };
 		66E56BCB2BA9A1E0006CE56F /* MeetingsListItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListItemModel.swift; sourceTree = "<group>"; };
 		66E56BCD2BA9A1F8006CE56F /* MeetingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingModel.swift; sourceTree = "<group>"; };
+		66F626B12BCEBB86003E2DEC /* AddParticipantsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsFragment.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModel.swift; sourceTree = "<group>"; };
 		D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListBottomSheet.swift; sourceTree = "<group>"; };
@@ -334,6 +340,7 @@
 				66E56BC62BA49938006CE56F /* Fragments */,
 				66E56BCA2BA9A1A0006CE56F /* Models */,
 				66E56BC72BA4993E006CE56F /* ViewModel */,
+				66E50A482BD12B2300AD61CA /* MeetingsView.swift */,
 			);
 			path = Meetings;
 			sourceTree = "<group>";
@@ -341,9 +348,11 @@
 		66E56BC62BA49938006CE56F /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				66E50A4A2BD12B7800AD61CA /* MeetingsFragment.swift */,
 				6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */,
 				6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */,
 				6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */,
+				66F626B12BCEBB86003E2DEC /* AddParticipantsFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -943,6 +952,7 @@
 				D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */,
 				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
+				66E50A492BD12B2300AD61CA /* MeetingsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */,
 				D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */,
@@ -965,6 +975,7 @@
 				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
 				D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
+				66E50A4B2BD12B7800AD61CA /* MeetingsFragment.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */,
@@ -1000,6 +1011,7 @@
 				D726E43D2B19E4FE0083C415 /* StartCallFragment.swift in Sources */,
 				66E56BCC2BA9A1E0006CE56F /* MeetingsListItemModel.swift in Sources */,
 				D7B99E9B2B29F7C300BE7BF2 /* ActivityIndicator.swift in Sources */,
+				66F626B22BCEBB86003E2DEC /* AddParticipantsFragment.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,
 				D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */,
 				D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */,
