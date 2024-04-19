@@ -551,113 +551,146 @@ struct CallView: View {
 					)
 				}
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
-				VStack {
-					VStack {
-						Spacer()
-						ZStack {
-							if callViewModel.activeSpeakerParticipant?.address != nil {
-								let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.activeSpeakerParticipant!.address)
-								
-								let contactAvatarModel = addressFriend != nil
-								? ContactsManager.shared.avatarListModel.first(where: {
-									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-									&& $0.friend!.name == addressFriend!.name
-									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-								})
-								: ContactAvatarModel(friend: nil, name: "", withPresence: false)
-								
-								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-									if contactAvatarModel != nil {
-										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
-											.onAppear {
-												DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-													displayVideo = true
-												}
-											}
-									}
-								} else {
-									if callViewModel.activeSpeakerParticipant!.address.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: callViewModel.activeSpeakerParticipant!.address.displayName!,
-											lastName: callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ").count > 1
-											? callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 200, height: 200)
-										.clipShape(Circle())
-										.onAppear {
-											DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-												displayVideo = true
-											}
-										}
-										
-									} else {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: callViewModel.activeSpeakerParticipant!.address.username ?? "Username Error",
-											lastName: callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ").count > 1
-											? callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 200, height: 200)
-										.clipShape(Circle())
-										.onAppear {
-											DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-												displayVideo = true
-											}
-										}
-									}
-									
-								}
-							} else {
-								Image("profil-picture-default")
-									.resizable()
-									.frame(width: 200, height: 200)
-									.clipShape(Circle())
-							}
-						}
-						
-						Spacer()
-					}
-					.frame(
-						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
-					)
-					
-					Spacer()
-				}
-				.frame(
-					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-				)
-				
-				if telecomManager.remoteConfVideo && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && displayVideo {
+				if callViewModel.activeSpeakerParticipant!.onPause {
 					VStack {
 						VStack {
-							LinphoneVideoViewHolder { view in
-								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-									coreContext.doOnCoreQueue { core in
-										core.nativeVideoWindow = view
-									}
-								}
-							}
-							.onTapGesture {
-								if callViewModel.videoDisplayed {
-									fullscreenVideo.toggle()
-								}
-							}
+							Spacer()
+							
+							Image("pause")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(.white)
+								.frame(width: 40, height: 40)
+							
+							Text("En pause")
+								.frame(maxWidth: .infinity, alignment: .center)
+								.foregroundStyle(Color.white)
+								.default_text_style_500(styleSize: 14)
+								.lineLimit(1)
+								.padding(.horizontal, 10)
+							
+							Spacer()
 						}
 						.frame(
 							width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
 							height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
 						)
-						.cornerRadius(20)
 						
 						Spacer()
 					}
 					.frame(
-						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
+				} else {
+					VStack {
+						VStack {
+							Spacer()
+							ZStack {
+								if callViewModel.activeSpeakerParticipant?.address != nil {
+									let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.activeSpeakerParticipant!.address)
+									
+									let contactAvatarModel = addressFriend != nil
+									? ContactsManager.shared.avatarListModel.first(where: {
+										($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
+										&& $0.friend!.name == addressFriend!.name
+										&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+									})
+									: ContactAvatarModel(friend: nil, name: "", withPresence: false)
+									
+									if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
+										if contactAvatarModel != nil {
+											Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
+												.onAppear {
+													DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+														displayVideo = true
+													}
+												}
+										}
+									} else {
+										if callViewModel.activeSpeakerParticipant!.address.displayName != nil {
+											Image(uiImage: contactsManager.textToImage(
+												firstName: callViewModel.activeSpeakerParticipant!.address.displayName!,
+												lastName: callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ").count > 1
+												? callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ")[1]
+												: ""))
+											.resizable()
+											.frame(width: 200, height: 200)
+											.clipShape(Circle())
+											.onAppear {
+												DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+													displayVideo = true
+												}
+											}
+											
+										} else {
+											Image(uiImage: contactsManager.textToImage(
+												firstName: callViewModel.activeSpeakerParticipant!.address.username ?? "Username Error",
+												lastName: callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ").count > 1
+												? callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ")[1]
+												: ""))
+											.resizable()
+											.frame(width: 200, height: 200)
+											.clipShape(Circle())
+											.onAppear {
+												DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+													displayVideo = true
+												}
+											}
+										}
+										
+									}
+								} else {
+									Image("profil-picture-default")
+										.resizable()
+										.frame(width: 200, height: 200)
+										.clipShape(Circle())
+								}
+							}
+							
+							Spacer()
+						}
+						.frame(
+							width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+							height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+						)
+						
+						Spacer()
+					}
+					.frame(
+						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+					)
+					
+					if telecomManager.remoteConfVideo && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && displayVideo {
+						VStack {
+							VStack {
+								LinphoneVideoViewHolder { view in
+									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+										coreContext.doOnCoreQueue { core in
+											core.nativeVideoWindow = view
+										}
+									}
+								}
+								.onTapGesture {
+									if callViewModel.videoDisplayed {
+										fullscreenVideo.toggle()
+									}
+								}
+							}
+							.frame(
+								width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+								height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+							)
+							.cornerRadius(20)
+							
+							Spacer()
+						}
+						.frame(
+							width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+							height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+						)
+					}
 				}
 				
 				if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && callViewModel.activeSpeakerParticipant!.isMuted {
@@ -756,6 +789,25 @@ struct CallView: View {
 														
 														
 														Text("Joining...")
+															.frame(maxWidth: .infinity, alignment: .center)
+															.foregroundStyle(Color.white)
+															.default_text_style_500(styleSize: 14)
+															.lineLimit(1)
+															.padding(.horizontal, 10)
+														
+														Spacer()
+													}
+												} else if callViewModel.participantList[index].onPause {
+													VStack {
+														Spacer()
+														
+														Image("pause")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(.white)
+															.frame(width: 40, height: 40)
+														
+														Text("En pause")
 															.frame(maxWidth: .infinity, alignment: .center)
 															.foregroundStyle(Color.white)
 															.default_text_style_500(styleSize: 14)

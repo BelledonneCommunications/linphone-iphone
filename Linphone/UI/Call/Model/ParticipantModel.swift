@@ -29,9 +29,10 @@ class ParticipantModel: ObservableObject {
 	@Published var name: String
 	@Published var avatarModel: ContactAvatarModel
 	@Published var isJoining: Bool
+	@Published var onPause: Bool
 	@Published var isMuted: Bool
 	
-	init(address: Address, isJoining: Bool, isMuted: Bool) {
+	init(address: Address, isJoining: Bool, onPause: Bool, isMuted: Bool) {
 		self.address = address
 		
 		self.sipUri = address.asStringUriOnly()
@@ -58,6 +59,7 @@ class ParticipantModel: ObservableObject {
 		: ContactAvatarModel(friend: nil, name: nameTmp, withPresence: false)
 		
 		self.isJoining = isJoining
+		self.onPause = onPause
 		self.isMuted = isMuted
 	}
 }
