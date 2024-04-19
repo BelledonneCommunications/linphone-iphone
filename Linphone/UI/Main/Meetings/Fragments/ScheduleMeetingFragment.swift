@@ -451,7 +451,7 @@ struct ScheduleMeetingFragment: View {
 	}
 
 	func pickDate() {
-		let duration = scheduleMeetingViewModel.fromDate.distance(to: scheduleMeetingViewModel.toDate)
+		let duration = min(scheduleMeetingViewModel.fromDate.distance(to: scheduleMeetingViewModel.toDate), 86400) // Limit auto correction of dates to 24h
 		if setFromDate {
 			scheduleMeetingViewModel.fromDate = selectedDate
 			// If new startdate is after previous end date, bump up the end date
