@@ -43,6 +43,7 @@ struct ContentView: View {
 	@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationViewModel: ConversationViewModel
+	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -61,6 +62,8 @@ struct ContentView: View {
 	
 	@State var fullscreenVideo = false
 	@State var isShowCallsListFragment = false
+	
+	@State var isShowScheduleMeetingFragment = false
 	
 	var body: some View {
 		let pub = NotificationCenter.default
@@ -229,7 +232,7 @@ struct ContentView: View {
 												openMenu()
 											}
 										
-										Text(index == 0 ? "Contacts" : (index == 1 ? "Calls" : "Conversations"))
+										Text(index == 0 ? "Contacts" : (index == 1 ? "Calls" : (index == 2 ? "Conversations" : "Meetings")))
 											.default_text_style_white_800(styleSize: 20)
 											.padding(.leading, 10)
 										
@@ -456,6 +459,11 @@ struct ContentView: View {
 									)
 								} else if self.index == 2 {
 									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
+								} else if self.index == 3 {
+									MeetingsView(
+										scheduleMeetingViewModel: scheduleMeetingViewModel,
+										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
+									)
 								}
 							}
 							.frame(maxWidth:
@@ -505,7 +513,7 @@ struct ContentView: View {
 										}
 									})
 									.padding(.top)
-									.frame(width: 100)
+									.frame(width: 66)
 									
 									Spacer()
 									
@@ -546,15 +554,15 @@ struct ContentView: View {
 													.frame(width: 25, height: 25)
 												if self.index == 1 {
 													Text("Calls")
-														.default_text_style_700(styleSize: 10)
+														.default_text_style_700(styleSize: 9)
 												} else {
 													Text("Calls")
-														.default_text_style(styleSize: 10)
+														.default_text_style(styleSize: 9)
 												}
 											}
 										})
 										.padding(.top)
-										.frame(width: 100)
+										.frame(width: 66)
 									}
 									
 									Spacer()
@@ -594,16 +602,41 @@ struct ContentView: View {
 												
 												if self.index == 2 {
 													Text("Conversations")
-														.default_text_style_700(styleSize: 10)
+														.default_text_style_700(styleSize: 9)
 												} else {
 													Text("Conversations")
-														.default_text_style(styleSize: 10)
+														.default_text_style(styleSize: 9)
 												}
 											}
 										})
 										.padding(.top)
-										.frame(width: 100)
+										.frame(width: 66)
 									}
+									
+									Spacer()
+									Button(action: {
+										self.index = 3
+										contactViewModel.indexDisplayedFriend = nil
+										historyViewModel.displayedCall = nil
+										conversationViewModel.displayedConversation = nil
+									}, label: {
+										VStack {
+											Image("meetings")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(self.index == 3 ? Color.orangeMain500 : Color.grayMain2c600)
+												.frame(width: 25, height: 25)
+											if self.index == 3 {
+												Text("Meetings")
+													.default_text_style_700(styleSize: 9)
+											} else {
+												Text("Meetings")
+													.default_text_style(styleSize: 9)
+											}
+										}
+									})
+									.padding(.top)
+									.frame(width: 66)
 									
 									Spacer()
 								}
@@ -857,6 +890,16 @@ struct ContentView: View {
 						}
 					}
 					
+					if isShowScheduleMeetingFragment {
+						ScheduleMeetingFragment(
+							scheduleMeetingViewModel: scheduleMeetingViewModel,
+							isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
+						)
+						.zIndex(3)
+						.transition(.move(edge: .bottom))
+						.onAppear {
+						}
+					}
 					if telecomManager.meetingWaitingRoomDisplayed {
 						MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: meetingWaitingRoomViewModel)
 							.zIndex(3)
@@ -923,7 +966,8 @@ struct ContentView: View {
 		callViewModel: CallViewModel(),
 		meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
-		conversationViewModel: ConversationViewModel()
+		conversationViewModel: ConversationViewModel(),
+		scheduleMeetingViewModel: ScheduleMeetingViewModel()
 	)
 }
 // swiftlint:enable type_body_length

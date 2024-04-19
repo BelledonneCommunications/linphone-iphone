@@ -79,6 +79,7 @@ struct LinphoneApp: App {
 	@State private var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel?
 	@State private var conversationsListViewModel: ConversationsListViewModel?
 	@State private var conversationViewModel: ConversationViewModel?
+	@State private var scheduleMeetingViewModel: ScheduleMeetingViewModel?
 	
 	var body: some Scene {
 		WindowGroup {
@@ -112,7 +113,8 @@ struct LinphoneApp: App {
 						callViewModel: callViewModel!,
 						meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
 						conversationsListViewModel: conversationsListViewModel!,
-						conversationViewModel: conversationViewModel!
+						conversationViewModel: conversationViewModel!,
+						scheduleMeetingViewModel: scheduleMeetingViewModel!
 					)
 				} else {
 					SplashScreen()
@@ -129,6 +131,7 @@ struct LinphoneApp: App {
 						meetingWaitingRoomViewModel = MeetingWaitingRoomViewModel()
 						conversationsListViewModel = ConversationsListViewModel()
 						conversationViewModel = ConversationViewModel()
+						scheduleMeetingViewModel = ScheduleMeetingViewModel()
 					}
 			}
 		}.onChange(of: scenePhase) { newPhase in

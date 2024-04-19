@@ -21,8 +21,6 @@ struct AddParticipantsFragment: View {
 	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
 	
 	@State private var delayedColor = Color.white
-	
-	@Binding var isShowAddParticipantFragment: Bool
 	@FocusState var isSearchFieldFocused: Bool
 	
 	var body: some View {
@@ -52,8 +50,8 @@ struct AddParticipantsFragment: View {
 						.padding(.top, 2)
 						.padding(.leading, -10)
 						.onTapGesture {
-							isShowAddParticipantFragment = false
 							scheduleMeetingViewModel.participantsToAdd = []
+							dismiss()
 						}
 					
 					VStack(alignment: .leading, spacing: 3) {
@@ -72,26 +70,31 @@ struct AddParticipantsFragment: View {
 				.padding(.bottom, 4)
 				.background(.white)
 				
-				ForEach(0..<scheduleMeetingViewModel.participantsToAdd.count, id: \.self) { index in
+				ScrollView(.horizontal) {
 					HStack {
-						ZStack {
-							VStack {
+						ForEach(0..<scheduleMeetingViewModel.participantsToAdd.count, id: \.self) { index in
+							ZStack(alignment: .topTrailing) {
+								VStack {
 									Avatar(contactAvatarModel: scheduleMeetingViewModel.participantsToAdd[index].avatarModel, avatarSize: 50)
-								
-								Text(scheduleMeetingViewModel.participantsToAdd[index].avatarModel.name)
-								 .default_text_style(styleSize: 16)
-								 .frame(maxWidth: .infinity, alignment: .leading)
+									
+									Text(scheduleMeetingViewModel.participantsToAdd[index].avatarModel.name)
+										.default_text_style(styleSize: 12)
+										.frame(minWidth: 60, maxWidth:80)
+								}
+								Image("x-circle")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c500)
+									.frame(width: 25, height: 25)
+									.onTapGesture {
+										scheduleMeetingViewModel.participantsToAdd.remove(at: index)
+									}
 							}
-							Image("x-circle")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
-								.frame(width: 25, height: 25, alignment: .leading)
-								.padding(.all, 10)
 						}
-						
 					}
 				}
+				.padding(.leading, 16)
+				
 				ZStack(alignment: .trailing) {
 					TextField("Search contact", text: $scheduleMeetingViewModel.searchField)
 						.default_text_style(styleSize: 15)
@@ -100,6 +103,8 @@ struct AddParticipantsFragment: View {
 						.padding(.horizontal, 30)
 						.onChange(of: scheduleMeetingViewModel.searchField) { newValue in
 							magicSearch.currentFilterSuggestions = newValue
+							magicSearch.searchForSuggestions()
+						}.onAppear {
 							magicSearch.searchForSuggestions()
 						}
 					
@@ -142,69 +147,81 @@ struct AddParticipantsFragment: View {
 				.padding(.vertical)
 				.padding(.horizontal)
 				
-				ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
-					HStack {
+				ScrollView {
+					ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
 						HStack {
-							if index == 0
-								|| contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
-									options: .diacriticInsensitive,
-									locale: .current
-								).first
-								!= contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
-									options: .diacriticInsensitive,
-									locale: .current
-								).first {
-								Text(
-									String(
-										(contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
-											options: .diacriticInsensitive,
-											locale: .current
-										).first)!))
-								.contact_text_style_500(styleSize: 20)
-								.frame(width: 18)
-								.padding(.leading, -5)
-								.padding(.trailing, 10)
-							} else {
-								Text("")
+							HStack {
+								if index == 0
+									|| contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
+										options: .diacriticInsensitive,
+										locale: .current
+									).first
+									!= contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
+										options: .diacriticInsensitive,
+										locale: .current
+									).first {
+									Text(
+										String(
+											(contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
+												options: .diacriticInsensitive,
+												locale: .current
+											).first)!))
 									.contact_text_style_500(styleSize: 20)
 									.frame(width: 18)
 									.padding(.leading, -5)
 									.padding(.trailing, 10)
+								} else {
+									Text("")
+										.contact_text_style_500(styleSize: 20)
+										.frame(width: 18)
+										.padding(.leading, -5)
+										.padding(.trailing, 10)
+								}
+								
+								if index < contactsManager.avatarListModel.count
+									&& contactsManager.avatarListModel[index].friend!.photo != nil
+									&& !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
+									Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
+								} else {
+									Image("profil-picture-default")
+										.resizable()
+										.frame(width: 50, height: 50)
+										.clipShape(Circle())
+								}
+								Text((contactsManager.lastSearch[index].friend?.name)!)
+									.default_text_style(styleSize: 16)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.foregroundStyle(Color.orangeMain500)
+								Spacer()
+								
 							}
-							
-							if index < contactsManager.avatarListModel.count
-								&& contactsManager.avatarListModel[index].friend!.photo != nil
-								&& !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
-								Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
-							} else {
-								Image("profil-picture-default")
-									.resizable()
-									.frame(width: 50, height: 50)
-									.clipShape(Circle())
+						}
+						.background(.white)
+						.onTapGesture {
+							if let addr = contactsManager.lastSearch[index].address {
+								scheduleMeetingViewModel.selectParticipant(addr: addr)
 							}
-							Text((contactsManager.lastSearch[index].friend?.name)!)
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-							Spacer()
-							
 						}
+						.buttonStyle(.borderless)
+						.listRowSeparator(.hidden)
 					}
-					.background(.white)
-					.onTapGesture {
-						if contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.address != nil {
-							scheduleMeetingViewModel.selectParticipant(addr: contactsManager.lastSearch[index].friend!.address!)
-						}
+					
+					HStack(alignment: .center) {
+						Text("Suggestions")
+							.default_text_style_800(styleSize: 16)
+						
+						Spacer()
 					}
-					.buttonStyle(.borderless)
-					.listRowSeparator(.hidden)
+					.padding(.vertical, 10)
+					.padding(.horizontal, 16)
+					
+					suggestionsList
 				}
-				Spacer()
 			}
 			Button {
 				withAnimation {
 					scheduleMeetingViewModel.addParticipants()
-					isShowAddParticipantFragment.toggle()
+					dismiss()
 				}
 			} label: {
 				Image("check")
@@ -218,6 +235,8 @@ struct AddParticipantsFragment: View {
 			}
 			.padding()
 		}
+		.navigationTitle("")
+		.navigationBarHidden(true)
 	}
 	
 	@Sendable private func delayColor() async {
@@ -225,9 +244,49 @@ struct AddParticipantsFragment: View {
 		delayedColor = Color.orangeMain500
 	}
 	
+	var suggestionsList: some View {
+		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
+			Button {
+				if let addr = contactsManager.lastSearchSuggestions[index].address {
+					scheduleMeetingViewModel.selectParticipant(addr: addr)
+				}
+			} label: {
+				HStack {
+					if index < contactsManager.lastSearchSuggestions.count
+						&& contactsManager.lastSearchSuggestions[index].address != nil
+						&& contactsManager.lastSearchSuggestions[index].address!.username != nil {
+						
+						Image(uiImage: contactsManager.textToImage(
+							firstName: contactsManager.lastSearchSuggestions[index].address!.username!,
+							lastName: ""))
+						.resizable()
+						.frame(width: 45, height: 45)
+						.clipShape(Circle())
+						
+						Text(contactsManager.lastSearchSuggestions[index].address?.username ?? "")
+							.default_text_style(styleSize: 16)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.foregroundStyle(Color.orangeMain500)
+					} else {
+						Image("profil-picture-default")
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+						
+						Text("Username error")
+							.default_text_style(styleSize: 16)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.foregroundStyle(Color.orangeMain500)
+					}
+				}
+				.padding(.horizontal)
+			}
+			.buttonStyle(.borderless)
+			.listRowSeparator(.hidden)
+		}
+	}
 }
 
 #Preview {
-	AddParticipantsFragment(scheduleMeetingViewModel: ScheduleMeetingViewModel()
-		, isShowAddParticipantFragment: .constant(true))
+	AddParticipantsFragment(scheduleMeetingViewModel: ScheduleMeetingViewModel())
 }

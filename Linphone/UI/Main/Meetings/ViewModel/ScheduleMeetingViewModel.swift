@@ -21,11 +21,11 @@ import Foundation
 import linphonesw
 import Combine
 
-class SelectedAddressModel {
+class SelectedAddressModel: ObservableObject {
 	var address: Address
-	var avatarModel: ContactAvatarModel?
+	var avatarModel: ContactAvatarModel
 	
-	init (addr: Address, avModel: ContactAvatarModel?) {
+	init (addr: Address, avModel: ContactAvatarModel) {
 		address = addr
 		avatarModel = avModel
 	}
@@ -37,7 +37,7 @@ class ScheduleMeetingViewModel: ObservableObject {
 	@Published var isBroadcastSelected: Bool = false
 	@Published var showBroadcastHelp: Bool = false
 	@Published var subject: String = ""
-	@Published var description: String = "aaaaaa aaaaaa"
+	@Published var description: String = ""
 	@Published var allDayMeeting: Bool = false
 	@Published var fromDateStr: String = ""
 	@Published var fromTime: String = ""
@@ -45,27 +45,30 @@ class ScheduleMeetingViewModel: ObservableObject {
 	@Published var toTime: String = ""
 	@Published var timezone: String = ""
 	@Published var sendInvitations: Bool = true
+	@Published var participantsToAdd: [SelectedAddressModel] = []
 	@Published var participants: [SelectedAddressModel] = []
 	@Published var operationInProgress: Bool = false
 	@Published var conferenceCreatedEvent: Bool = false
+	
+	@Published var searchField: String = ""
 	
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
 	var conferenceInfoToEdit: ConferenceInfo?
 	
-	private var fromDate: Date
-	private var toDate: Date
+	@Published var fromDate: Date
+	@Published var toDate: Date
 	
 	init() {
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
-		toDate = Calendar.current.date(byAdding: .hour, value: 1, to: fromDate)!
+		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
 		
 		computeDateLabels()
 		computeTimeLabels()
 		updateTimezone()
 	}
 	
-	private func computeDateLabels() {
+	func computeDateLabels() {
 		var day = fromDate.formatted(Date.FormatStyle().weekday(.wide))
 		var dayNumber = fromDate.formatted(Date.FormatStyle().day(.twoDigits))
 		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
@@ -79,7 +82,7 @@ class ScheduleMeetingViewModel: ObservableObject {
 		Log.info("\(ScheduleMeetingViewModel.TAG)) computed end date is \(toDateStr)")
 	}
 	
-	private func computeTimeLabels() {
+	func computeTimeLabels() {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
 		fromTime = formatter.string(from: fromDate)
@@ -90,29 +93,28 @@ class ScheduleMeetingViewModel: ObservableObject {
 		// TODO
 	}
 	
-	func addParticipants(toAdd: [String]) {
-		CoreContext.shared.doOnCoreQueue { _ in
-			var list = self.participants
-			for participant in toAdd {
-				if let address = try? Factory.Instance.createAddress(addr: participant) {
-					if let found = list.first(where: { $0.address.weakEqual(address2: address) }) {
-						Log.info("\(ScheduleMeetingViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
-						continue
-					}
-					
-					let avatarModel = ContactAvatarModel.getAvatarModelFromAddress(address: address)
-					list.append(SelectedAddressModel(addr: address, avModel: avatarModel))
-					Log.info("\(ScheduleMeetingViewModel.TAG) Added participant \(address.asStringUriOnly())")
-				} else {
-					Log.error("\(ScheduleMeetingViewModel.TAG) Failed to parse \(participant) as address!")
-				}
+	func selectParticipant(addr: Address) {
+		if let idx = participantsToAdd.firstIndex(where: {$0.address.weakEqual(address2: addr)}) {
+			participantsToAdd.remove(at: idx)
+		} else {
+			participantsToAdd.append(SelectedAddressModel(addr: addr, avModel: ContactAvatarModel.getAvatarModelFromAddress(address: addr)))
+		}
+	}
+	func addParticipants() {
+		var list = participants
+		for selectedAddr in participantsToAdd {
+			if let found = list.first(where: { $0.address.weakEqual(address2: selectedAddr.address) }) {
+				Log.info("\(ScheduleMeetingViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
+				continue
 			}
 			
-			Log.info("\(ScheduleMeetingViewModel.TAG) [\(toAdd.count) participants added, now there are \(list.count) participants in list")
-			DispatchQueue.main.async {
-				self.participants = list
-			}
+			list.append(selectedAddr)
+			Log.info("\(ScheduleMeetingViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
 		}
+		Log.info("\(ScheduleMeetingViewModel.TAG) [\(list.count - participants.count) participants added, now there are \(list.count) participants in list")
+
+		participants = list
+		participantsToAdd = []
 	}
 	
 	private func fillConferenceInfo(confInfo: ConferenceInfo) {
@@ -169,7 +171,7 @@ class ScheduleMeetingViewModel: ObservableObject {
 					Log.info("\(ScheduleMeetingViewModel.TAG) User didn't asked for invitations to be sent")
 					DispatchQueue.main.async {
 						self.operationInProgress = false
-						self.conferenceCreatedEvent = false
+						self.conferenceCreatedEvent = true
 					}
 				}
 			}
