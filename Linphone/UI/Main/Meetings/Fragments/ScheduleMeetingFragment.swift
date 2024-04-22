@@ -29,6 +29,7 @@ struct ScheduleMeetingFragment: View {
 	@State private var orientation = UIDevice.current.orientation
 	
 	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@State private var delayedColor = Color.white
 	@State private var showDatePicker = false
@@ -305,7 +306,7 @@ struct ScheduleMeetingFragment: View {
 									VStack {
 										HStack {
 											Avatar(contactAvatarModel: scheduleMeetingViewModel.participants[index].avatarModel, avatarSize: 50)
-												.padding(.leading, 66)
+												.padding(.leading, 20)
 											
 											Text(scheduleMeetingViewModel.participants[index].avatarModel.name)
 												.default_text_style(styleSize: 16)
@@ -374,6 +375,7 @@ struct ScheduleMeetingFragment: View {
 					}.onDisappear {
 						withAnimation {
 							if scheduleMeetingViewModel.conferenceCreatedEvent {
+								meetingsListViewModel.computeMeetingsList()
 								isShowScheduleMeetingFragment.toggle()
 							}
 						}
@@ -488,6 +490,7 @@ struct ScheduleMeetingFragment: View {
 
 #Preview {
 	ScheduleMeetingFragment(scheduleMeetingViewModel: ScheduleMeetingViewModel()
+							, meetingsListViewModel: MeetingsListViewModel()
 							, isShowScheduleMeetingFragment: .constant(true))
 }
 

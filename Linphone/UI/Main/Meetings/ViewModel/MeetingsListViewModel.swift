@@ -33,74 +33,79 @@ class MeetingsListViewModel: ObservableObject {
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
-			self.computeMeetingsList(core: core, filter: self.currentFilter)
-			
 			self.mCoreSuscriptions.insert(core.publisher?.onConferenceInfoReceived?.postOnCoreQueue { (cbVal: (core: Core, conferenceInfo: ConferenceInfo)) in
 				Log.info("\(MeetingsListViewModel.TAG) Conference info received [\(cbVal.conferenceInfo.uri?.asStringUriOnly())")
-				self.computeMeetingsList(core: cbVal.core, filter: self.currentFilter)
+				self.computeMeetingsList()
 			})
 		}
+		computeMeetingsList()
 	}
 	
-	func computeMeetingsList(core: Core, filter: String) {
-		var confInfoList: [ConferenceInfo] = []
+	func computeMeetingsList() {
+		let filter = self.currentFilter
 		
-		if let account = core.defaultAccount {
-			confInfoList = account.conferenceInformationList
-		}
-		if confInfoList.isEmpty {
-			confInfoList = core.conferenceInformationList
-		}
-		
-		var meetingsListTmp: [MeetingsListItemModel] = []
-		var previousModel: MeetingModel?
-		var meetingForTodayFound = false
-		
-		for confInfo in confInfoList {
-			if confInfo.duration == 0 { continue }// This isn't a scheduled conference, don't display it
-			var add = true
-			if !filter.isEmpty {
-				let organizerCheck = confInfo.organizer?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil
-				let subjectCheck = confInfo.subject?.range(of: filter, options: .caseInsensitive) != nil
-				let descriptionCheck = confInfo.description?.range(of: filter, options: .caseInsensitive) != nil
-				let participantsCheck = confInfo.participantInfos.first(where: {$0.address?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil}) != nil
-				
-				add = organizerCheck || subjectCheck || descriptionCheck || participantsCheck
+		coreContext.doOnCoreQueue { core in
+			var confInfoList: [ConferenceInfo] = []
+			
+			if let account = core.defaultAccount {
+				confInfoList = account.conferenceInformationList
+			}
+			if confInfoList.isEmpty {
+				confInfoList = core.conferenceInformationList
 			}
 			
-			if add {
-				let model = MeetingModel(conferenceInfo: confInfo)
-				let firstMeetingOfTheDay = (previousModel != nil) ? previousModel?.day != model.day || previousModel?.dayNumber != model.dayNumber : true
-				model.firstMeetingOfTheDay = firstMeetingOfTheDay
-				
-				// Insert "Today" fake model before the first one of today
-				/*
-				if firstMeetingOfTheDay && model.isToday {
-					meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
-					meetingForTodayFound = true
+			var meetingsListTmp: [MeetingsListItemModel] = []
+			var previousModel: MeetingModel?
+			// var meetingForTodayFound = false
+			
+			for confInfo in confInfoList {
+				if confInfo.duration == 0 { continue }// This isn't a scheduled conference, don't display it
+				var add = true
+				if !filter.isEmpty {
+					let organizerCheck = confInfo.organizer?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil
+					let subjectCheck = confInfo.subject?.range(of: filter, options: .caseInsensitive) != nil
+					let descriptionCheck = confInfo.description?.range(of: filter, options: .caseInsensitive) != nil
+					let participantsCheck = confInfo.participantInfos.first(where: {$0.address?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil}) != nil
+					
+					add = organizerCheck || subjectCheck || descriptionCheck || participantsCheck
 				}
-				*/
 				
-				// If no meeting was found for today, insert "Today" fake model before the next meeting to come
-				/*
-				 if !meetingForTodayFound && model.isAfterToday {
-					meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
-					meetingForTodayFound = true
+				if add {
+					let model = MeetingModel(conferenceInfo: confInfo)
+					let firstMeetingOfTheDay = (previousModel != nil) ? previousModel?.day != model.day || previousModel?.dayNumber != model.dayNumber : true
+					model.firstMeetingOfTheDay = firstMeetingOfTheDay
+					
+					// Insert "Today" fake model before the first one of today
+					/*
+					 if firstMeetingOfTheDay && model.isToday {
+					 meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
+					 meetingForTodayFound = true
+					 }
+					 */
+					
+					// If no meeting was found for today, insert "Today" fake model before the next meeting to come
+					/*
+					 if !meetingForTodayFound && model.isAfterToday {
+					 meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
+					 meetingForTodayFound = true
+					 }
+					 */
+					
+					meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
+					previousModel = model
 				}
-				 */
-				
-				meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
-				previousModel = model
+			}
+			
+			// If no meeting was found after today, insert "Today" fake model at the end
+			/*
+			 if !meetingForTodayFound {
+			 meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
+			 }
+			 */
+			
+			DispatchQueue.main.sync {
+				self.meetingsList = meetingsListTmp
 			}
 		}
-		
-		// If no meeting was found after today, insert "Today" fake model at the end
-		/*
-		if !meetingForTodayFound {
-			meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
-		}
-		 */
-		
-		self.meetingsList = meetingsListTmp
 	}
 }

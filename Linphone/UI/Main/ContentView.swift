@@ -895,6 +895,7 @@ struct ContentView: View {
 					if isShowScheduleMeetingFragment {
 						ScheduleMeetingFragment(
 							scheduleMeetingViewModel: scheduleMeetingViewModel,
+							meetingsListViewModel: meetingsListViewModel,
 							isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 						)
 						.zIndex(3)

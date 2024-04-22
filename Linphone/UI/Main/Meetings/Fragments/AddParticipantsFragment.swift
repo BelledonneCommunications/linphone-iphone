@@ -168,14 +168,14 @@ struct AddParticipantsFragment: View {
 											).first)!))
 									.contact_text_style_500(styleSize: 20)
 									.frame(width: 18)
-									.padding(.leading, -5)
-									.padding(.trailing, 10)
+									.padding(.leading, 5)
+									.padding(.trailing, 5)
 								} else {
 									Text("")
 										.contact_text_style_500(styleSize: 20)
 										.frame(width: 18)
-										.padding(.leading, -5)
-										.padding(.trailing, 10)
+										.padding(.leading, 5)
+										.padding(.trailing, 5)
 								}
 								
 								if index < contactsManager.avatarListModel.count
