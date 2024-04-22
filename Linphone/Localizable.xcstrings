@@ -105,6 +105,9 @@
         }
       }
     },
+    "%lld selected participants" : {
+
+    },
     "+" : {
 
     },
@@ -147,7 +150,13 @@
     "Active" : {
 
     },
+    "Add a description" : {
+
+    },
     "Add a picture" : {
+
+    },
+    "Add participants" : {
 
     },
     "Add the contact" : {
@@ -163,6 +172,9 @@
 
     },
     "All contacts" : {
+
+    },
+    "All day" : {
 
     },
     "All modifications will be canceled." : {
@@ -376,6 +388,9 @@
     "Headphones" : {
 
     },
+    "Hello meetings list" : {
+
+    },
     "History has been deleted" : {
 
     },
@@ -456,6 +471,9 @@
     "Marquer comme non lu" : {
 
     },
+    "Meetings" : {
+
+    },
     "Mercredi 10 Avril 2024 | 2:41 PM - 2:42 PM" : {
 
     },
@@ -475,6 +493,9 @@
 
     },
     "New contact" : {
+
+    },
+    "New meeting" : {
 
     },
     "Next" : {
@@ -596,6 +617,9 @@
     "Scan QR code" : {
 
     },
+    "Search contact" : {
+
+    },
     "Search contact or history call" : {
 
     },
@@ -609,6 +633,19 @@
 
     },
     "See Linphone contact" : {
+
+    },
+    "Select %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Select %1$@ %2$@"
+          }
+        }
+      }
+    },
+    "Send invitations to participants" : {
 
     },
     "Send logs" : {
@@ -638,6 +675,9 @@
     "Start" : {
 
     },
+    "Subject" : {
+
+    },
     "Suggestions" : {
 
     },
@@ -663,6 +703,15 @@
 
     },
     "to Linphone" : {
+
+    },
+    "TODO" : {
+
+    },
+    "TODO : repeat" : {
+
+    },
+    "TODO : timezone" : {
 
     },
     "Transfer" : {

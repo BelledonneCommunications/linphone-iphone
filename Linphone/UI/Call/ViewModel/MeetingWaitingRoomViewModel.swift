@@ -107,6 +107,9 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	func enableVideoPreview() {
 		self.coreContext.doOnCoreQueue { core in
 			if core.videoEnabled {
+				DispatchQueue.main.async {
+					self.videoDisplayed = true
+				}
 				self.videoDisplayed = true
 				core.videoPreviewEnabled = true
 			}
@@ -116,7 +119,9 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	func disableVideoPreview() {
 		coreContext.doOnCoreQueue { core in
 			if core.videoEnabled {
-				self.videoDisplayed = false
+				DispatchQueue.main.async {
+					self.videoDisplayed = false
+				}
 				core.videoPreviewEnabled = false
 			}
 		}

@@ -666,10 +666,8 @@ struct CallView: View {
 						VStack {
 							VStack {
 								LinphoneVideoViewHolder { view in
-									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-										coreContext.doOnCoreQueue { core in
-											core.nativeVideoWindow = view
-										}
+									coreContext.doOnCoreQueue { core in
+										core.nativeVideoWindow = view
 									}
 								}
 								.onTapGesture {
@@ -745,10 +743,8 @@ struct CallView: View {
 										
 										if callViewModel.videoDisplayed {
 											LinphoneVideoViewHolder { view in
-												DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-													coreContext.doOnCoreQueue { core in
-														core.nativePreviewWindow = view
-													}
+												coreContext.doOnCoreQueue { core in
+													core.nativePreviewWindow = view
 												}
 											}
 											.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
@@ -1023,12 +1019,6 @@ struct CallView: View {
 				}
 			}
 			
-			telecomManager.callStarted = false
-			
-			DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-				telecomManager.callStarted = true
-			}
-			
 			callViewModel.orientationUpdate(orientation: orientation)
 		}
 	}
@@ -1297,28 +1287,52 @@ struct CallView: View {
 						}
 						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 						
-						VStack {
-							Button {
-								showingDialer.toggle()
-							} label: {
-								HStack {
-									Image("dialer")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
+						if callViewModel.isOneOneCall {
+							VStack {
+								Button {
+									showingDialer.toggle()
+								} label: {
+									HStack {
+										Image("dialer")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
 								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("Dialer")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
-							
-							Text("Dialer")
-								.foregroundStyle(.white)
-								.default_text_style(styleSize: 15)
+							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						} else {
+							VStack {
+								Button {
+								} label: {
+									HStack {
+										Image("notebook")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
+								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("Disposition")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
 					}
 					.frame(height: geo.size.height * 0.15)
 					
@@ -1501,6 +1515,10 @@ struct CallView: View {
 						VStack {
 							ZStack {
 								Button {
+									callViewModel.getCallsList()
+									withAnimation {
+										isShowCallsListFragment.toggle()
+									}
 								} label: {
 									HStack {
 										Image("phone-list")
@@ -1542,28 +1560,52 @@ struct CallView: View {
 						}
 						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						
-						VStack {
-							Button {
-								showingDialer.toggle()
-							} label: {
-								HStack {
-									Image("dialer")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
+						if callViewModel.isOneOneCall {
+							VStack {
+								Button {
+									showingDialer.toggle()
+								} label: {
+									HStack {
+										Image("dialer")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
 								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("Dialer")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
-							
-							Text("Dialer")
-								.foregroundStyle(.white)
-								.default_text_style(styleSize: 15)
+							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						} else {
+							VStack {
+								Button {
+								} label: {
+									HStack {
+										Image("notebook")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
+								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("Disposition")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						}
-						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						
 						VStack {
 							Button {
