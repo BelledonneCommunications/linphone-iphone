@@ -21,6 +21,7 @@ import linphonesw
 import Contacts
 import SwiftUI
 import ContactsUI
+import Combine
 
 final class ContactsManager: ObservableObject {
 	
@@ -37,6 +38,8 @@ final class ContactsManager: ObservableObject {
 	@Published var lastSearch: [SearchResult] = []
 	@Published var lastSearchSuggestions: [SearchResult] = []
 	@Published var avatarListModel: [ContactAvatarModel] = []
+	
+	private var friendListSuscription: AnyCancellable?
 	
 	private init() {
 		fetchContacts()
@@ -137,6 +140,15 @@ final class ContactsManager: ObservableObject {
 				}
 			}
 			
+			self.linphoneFriendList?.updateSubscriptions()
+			self.friendList?.updateSubscriptions()
+			
+			self.friendListSuscription = self.friendList?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (friendList: FriendList, friends: [Friend])) in
+				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				self.friendListSuscription = nil
+			}
+																			   
+																			   
 			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 		}
 	}
@@ -179,10 +191,8 @@ final class ContactsManager: ObservableObject {
 				if resultFriend != nil {
 					if linphoneFriend && existingFriend == nil {
 						_ = self.linphoneFriendList?.addFriend(linphoneFriend: resultFriend!)
-						self.linphoneFriendList?.updateSubscriptions()
 					} else if existingFriend == nil {
 						_ = self.friendList?.addLocalFriend(linphoneFriend: resultFriend!)
-						self.friendList?.updateSubscriptions()
 					}
 				}
 			}
