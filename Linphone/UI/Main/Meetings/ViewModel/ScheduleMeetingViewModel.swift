@@ -62,7 +62,27 @@ class ScheduleMeetingViewModel: ObservableObject {
 	init() {
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
+		computeDateLabels()
+		computeTimeLabels()
+		updateTimezone()
+	}
+	
+	func resetViewModelData() {
+		isBroadcastSelected = false
+		showBroadcastHelp = false
+		subject = ""
+		description = ""
+		allDayMeeting = false
+		timezone = ""
+		sendInvitations = true
+		participantsToAdd = []
+		participants = []
+		operationInProgress = false
+		conferenceCreatedEvent = false
+		searchField = ""
 		
+		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
+		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
 		computeDateLabels()
 		computeTimeLabels()
 		updateTimezone()

@@ -20,6 +20,7 @@ struct MeetingsView: View {
 				
 				Button {
 					withAnimation {
+						scheduleMeetingViewModel.resetViewModelData()
 						isShowScheduleMeetingFragment.toggle()
 					}
 				} label: {
