@@ -280,7 +280,6 @@ class CallViewModel: ObservableObject {
 				
 				DispatchQueue.main.async {
 					self.displayName = displayNameTmp
-					self.participantList = []
 					
 					self.myParticipantModel = myParticipantModelTmp
 					
@@ -357,7 +356,10 @@ class CallViewModel: ObservableObject {
 						DispatchQueue.main.async {
 							self.activeSpeakerParticipant = activeSpeakerParticipantTmp
 							self.activeSpeakerName = activeSpeakerNameTmp
-							self.participantList = participantListTmp
+							if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
+								|| ( activeSpeakerParticipantBis == nil) {
+								self.participantList = participantListTmp
+							}
 						}
 					}
 				}
