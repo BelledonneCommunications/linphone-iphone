@@ -170,11 +170,7 @@ class CallViewModel: ObservableObject {
 					self.zrtpPopupDisplayed = false
 					self.upperCaseAuthTokenToRead = ""
 					self.upperCaseAuthTokenToListen = ""
-					self.isMediaEncrypted = false
-					self.isZrtpPq = false
-					self.isOneOneCall = false
 					self.isConference = false
-					self.videoDisplayed = false
 					self.participantList = []
 					self.activeSpeakerParticipant = nil
 					self.activeSpeakerName = ""
@@ -550,7 +546,7 @@ class CallViewModel: ObservableObject {
 					
 					let video = params.videoDirection == .SendRecv || params.videoDirection == .SendOnly
 					
-					DispatchQueue.main.async {
+					DispatchQueue.main.asyncAfter(deadline: .now() + (video ? 1 : 0)) {
 						if video {
 							self.videoDisplayed = false
 						}
