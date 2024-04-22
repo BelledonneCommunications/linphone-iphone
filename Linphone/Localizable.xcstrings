@@ -388,9 +388,6 @@
     "Headphones" : {
 
     },
-    "Hello meetings list" : {
-
-    },
     "History has been deleted" : {
 
     },
@@ -508,6 +505,9 @@
 
     },
     "No conversation for the moment..." : {
+
+    },
+    "No meeting for the moment..." : {
 
     },
     "Not account yet?" : {

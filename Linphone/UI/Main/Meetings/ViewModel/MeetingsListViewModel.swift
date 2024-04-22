@@ -74,16 +74,20 @@ class MeetingsListViewModel: ObservableObject {
 				model.firstMeetingOfTheDay = firstMeetingOfTheDay
 				
 				// Insert "Today" fake model before the first one of today
+				/*
 				if firstMeetingOfTheDay && model.isToday {
 					meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
 					meetingForTodayFound = true
 				}
+				*/
 				
 				// If no meeting was found for today, insert "Today" fake model before the next meeting to come
-				if !meetingForTodayFound && model.isAfterToday {
+				/*
+				 if !meetingForTodayFound && model.isAfterToday {
 					meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
 					meetingForTodayFound = true
 				}
+				 */
 				
 				meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
 				previousModel = model
@@ -91,9 +95,11 @@ class MeetingsListViewModel: ObservableObject {
 		}
 		
 		// If no meeting was found after today, insert "Today" fake model at the end
+		/*
 		if !meetingForTodayFound {
 			meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
 		}
+		 */
 		
 		self.meetingsList = meetingsListTmp
 	}

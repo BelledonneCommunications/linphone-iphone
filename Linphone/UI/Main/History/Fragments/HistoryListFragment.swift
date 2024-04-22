@@ -72,17 +72,27 @@ struct HistoryListFragment: View {
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
 											
-										} else {
+										} else if historyListViewModel.callLogs[index].toAddress!.username != nil {
 											Image(uiImage: contactsManager.textToImage(
-												firstName: historyListViewModel.callLogs[index].toAddress!.username ?? "Username Error",
+												firstName: historyListViewModel.callLogs[index].toAddress!.username!,
 												lastName: historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ").count > 1
 												? historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ")[1]
 												: ""))
 											.resizable()
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
+										} else {
+											VStack {
+												Image("users-three-square")
+													.renderingMode(.template)
+													.resizable()
+													.frame(width: 28, height: 28)
+													.foregroundStyle(Color.grayMain2c600)
+											}
+											.frame(width: 45, height: 45)
+											.background(Color.grayMain2c200)
+											.clipShape(Circle())
 										}
-										
 									} else if historyListViewModel.callLogs[index].fromAddress != nil {
 										if historyListViewModel.callLogs[index].fromAddress!.displayName != nil {
 											Image(uiImage: contactsManager.textToImage(
@@ -93,14 +103,25 @@ struct HistoryListFragment: View {
 											.resizable()
 											.frame(width: 45, height: 45)
 											.clipShape(Circle())
-										} else {
+										} else if historyListViewModel.callLogs[index].fromAddress!.username != nil {
 											Image(uiImage: contactsManager.textToImage(
-												firstName: historyListViewModel.callLogs[index].fromAddress!.username ?? "Username Error",
+												firstName: historyListViewModel.callLogs[index].fromAddress!.username!,
 												lastName: historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ").count > 1
 												? historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ")[1]
 												: ""))
 											.resizable()
 											.frame(width: 45, height: 45)
+											.clipShape(Circle())
+										} else {
+											VStack {
+												Image("users-three-square")
+													.renderingMode(.template)
+													.resizable()
+													.frame(width: 28, height: 28)
+													.foregroundStyle(Color.grayMain2c600)
+											}
+											.frame(width: 45, height: 45)
+											.background(Color.grayMain2c200)
 											.clipShape(Circle())
 										}
 									} else {
@@ -139,14 +160,14 @@ struct HistoryListFragment: View {
 										if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
 											Text(historyListViewModel.callLogs[index].toAddress!.displayName != nil
 												 ? historyListViewModel.callLogs[index].toAddress!.displayName!
-												 : historyListViewModel.callLogs[index].toAddress!.username!)
+												 : historyListViewModel.callLogs[index].toAddress!.username ?? "")
 											.default_text_style(styleSize: 14)
 											.frame(maxWidth: .infinity, alignment: .leading)
 											.lineLimit(1)
 										} else if historyListViewModel.callLogs[index].fromAddress != nil {
 											Text(historyListViewModel.callLogs[index].fromAddress!.displayName != nil
 												 ? historyListViewModel.callLogs[index].fromAddress!.displayName!
-												 : historyListViewModel.callLogs[index].fromAddress!.username!)
+												 : historyListViewModel.callLogs[index].fromAddress!.username ?? "")
 											.default_text_style(styleSize: 14)
 											.frame(maxWidth: .infinity, alignment: .leading)
 											.lineLimit(1)

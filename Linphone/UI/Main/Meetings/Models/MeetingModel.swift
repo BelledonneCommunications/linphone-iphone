@@ -24,6 +24,7 @@ class MeetingModel: ObservableObject {
 
 	@Published var isBroadcast: Bool
 	@Published var subject: String
+	@Published var address: String
 	@Published var firstMeetingOfTheDay: Bool = false
 	
 	init(conferenceInfo: ConferenceInfo) {
@@ -53,5 +54,7 @@ class MeetingModel: ObservableObject {
 		isBroadcast = confInfo.participantInfos.firstIndex(where: {$0.role == Participant.Role.Listener}) != nil
 		
 		subject = confInfo.subject ?? ""
+		
+		address = confInfo.uri?.asStringUriOnly() ?? ""
 	}
 }

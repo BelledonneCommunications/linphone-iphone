@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MeetingsView: View {
 	
+	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
@@ -16,7 +17,7 @@ struct MeetingsView: View {
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				MeetingsFragment(scheduleMeetingViewModel: scheduleMeetingViewModel)
+				MeetingsFragment(meetingsListViewModel: meetingsListViewModel, scheduleMeetingViewModel: scheduleMeetingViewModel)
 				
 				Button {
 					withAnimation {
@@ -42,6 +43,7 @@ struct MeetingsView: View {
 
 #Preview {
 	MeetingsView(
+		meetingsListViewModel: MeetingsListViewModel(),
 		scheduleMeetingViewModel: ScheduleMeetingViewModel(),
 		isShowScheduleMeetingFragment: .constant(false)
 	)

@@ -43,6 +43,7 @@ struct ContentView: View {
 	@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationViewModel: ConversationViewModel
+	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
 	
 	@State var index = 0
@@ -461,6 +462,7 @@ struct ContentView: View {
 									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
 								} else if self.index == 3 {
 									MeetingsView(
+										meetingsListViewModel: meetingsListViewModel,
 										scheduleMeetingViewModel: scheduleMeetingViewModel,
 										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 									)
@@ -967,6 +969,7 @@ struct ContentView: View {
 		meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 		conversationViewModel: ConversationViewModel(),
+		meetingsListViewModel: MeetingsListViewModel(),
 		scheduleMeetingViewModel: ScheduleMeetingViewModel()
 	)
 }

@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import linphonesw
 
 struct MeetingsFragment: View {
 	
+	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
@@ -17,32 +19,72 @@ struct MeetingsFragment: View {
 	
 	var body: some View {
 		VStack {
-			Spacer()
-			Text("Hello meetings list")
-			Spacer()
-			/*
-			if #available(iOS 16.0, *), idiom != .pad {
-				MeetingsListFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet)
-					.sheet(isPresented: $showingSheet) {
-						ConversationsListBottomSheet(
-							conversationsListViewModel: conversationsListViewModel,
-							showingSheet: $showingSheet
-						)
-						.presentationDetents([.fraction(0.4)])
+			List {
+				ForEach(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
+					HStack {
+						HStack {
+							Image("users-three-square")
+								   .renderingMode(.template)
+								   .resizable()
+								   .frame(width: 28, height: 28)
+								   .foregroundStyle(Color.grayMain2c600)
+							
+							VStack(spacing: 0) {
+								Text(meetingsListViewModel.meetingsList[index].model?.subject ?? "")
+									.default_text_style_500(styleSize: 16)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+							}
+						}
+						.frame(height: 40)
 					}
-			} else {
-				ConversationsListFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet)
-					.halfSheet(showSheet: $showingSheet) {
-						ConversationsListBottomSheet(
-							conversationsListViewModel: conversationsListViewModel,
-							showingSheet: $showingSheet
-						)
-					} onDismiss: {}
-			} */
+					.buttonStyle(.borderless)
+					.listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+					.listRowSeparator(.hidden)
+					.background(.white)
+					.onTapGesture {
+						withAnimation {
+							joinMeetingWaitingRoom(index: index)
+						}
+					}
+					.onLongPressGesture(minimumDuration: 0.2) {
+						//showingSheet.toggle()
+					}
+				}
+			}
+			.listStyle(.plain)
+			.overlay(
+				VStack {
+					if meetingsListViewModel.meetingsList.isEmpty {
+						Spacer()
+						Image("illus-belledonne")
+							.resizable()
+							.scaledToFit()
+							.clipped()
+							.padding(.all)
+						Text("No meeting for the moment...")
+							.default_text_style_800(styleSize: 16)
+						Spacer()
+						Spacer()
+					}
+				}
+					.padding(.all)
+			)
 		}
+		.navigationTitle("")
+		.navigationBarHidden(true)
+	}
+	
+	func joinMeetingWaitingRoom(index: Int) {
+		do {
+			let meetingAddress = try Factory.Instance.createAddress(addr: meetingsListViewModel.meetingsList[index].model?.address ?? "")
+			
+			TelecomManager.shared.meetingWaitingRoomDisplayed = true
+			TelecomManager.shared.meetingWaitingRoomSelected = meetingAddress
+		} catch {}
 	}
 }
 
 #Preview {
-	MeetingsFragment(scheduleMeetingViewModel: ScheduleMeetingViewModel())
+	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(), scheduleMeetingViewModel: ScheduleMeetingViewModel())
 }

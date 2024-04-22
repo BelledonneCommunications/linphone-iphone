@@ -79,6 +79,7 @@ struct LinphoneApp: App {
 	@State private var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel?
 	@State private var conversationsListViewModel: ConversationsListViewModel?
 	@State private var conversationViewModel: ConversationViewModel?
+	@State private var meetingsListViewModel: MeetingsListViewModel?
 	@State private var scheduleMeetingViewModel: ScheduleMeetingViewModel?
 	
 	var body: some Scene {
@@ -103,7 +104,9 @@ struct LinphoneApp: App {
 							&& callViewModel != nil
 							&& meetingWaitingRoomViewModel != nil
 							&& conversationsListViewModel != nil
-							&& conversationViewModel != nil {
+							&& conversationViewModel != nil 
+							&& meetingsListViewModel != nil
+							&& scheduleMeetingViewModel != nil {
 					ContentView(
 						contactViewModel: contactViewModel!,
 						editContactViewModel: editContactViewModel!,
@@ -114,6 +117,7 @@ struct LinphoneApp: App {
 						meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
 						conversationsListViewModel: conversationsListViewModel!,
 						conversationViewModel: conversationViewModel!,
+						meetingsListViewModel: meetingsListViewModel!,
 						scheduleMeetingViewModel: scheduleMeetingViewModel!
 					)
 				} else {
@@ -131,6 +135,7 @@ struct LinphoneApp: App {
 						meetingWaitingRoomViewModel = MeetingWaitingRoomViewModel()
 						conversationsListViewModel = ConversationsListViewModel()
 						conversationViewModel = ConversationViewModel()
+						meetingsListViewModel = MeetingsListViewModel()
 						scheduleMeetingViewModel = ScheduleMeetingViewModel()
 					}
 			}
