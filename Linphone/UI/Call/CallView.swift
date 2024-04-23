@@ -752,7 +752,6 @@ struct CallView: View {
 											.clipped()
 										}
 										
-										
 										VStack(alignment: .leading) {
 											Spacer()
 											

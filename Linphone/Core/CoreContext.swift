@@ -193,14 +193,19 @@ final class CoreContext: ObservableObject {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}
 				} else if cbVal.state != .Ok && cbVal.state != .Progress { // If registration failed, remove account from core
-					let params = cbVal.account.params
-					let clonedParams = params?.clone()
-					clonedParams?.registerEnabled = false
-					cbVal.account.params = clonedParams
 					
-					cbVal.core.removeAccount(account: cbVal.account)
-					cbVal.core.clearAccounts()
-					cbVal.core.clearAllAuthInfo()
+					self.monitor.pathUpdateHandler = { path in
+						if path.status == .satisfied {
+							let params = cbVal.account.params
+							let clonedParams = params?.clone()
+							clonedParams?.registerEnabled = false
+							cbVal.account.params = clonedParams
+							
+							cbVal.core.removeAccount(account: cbVal.account)
+							cbVal.core.clearAccounts()
+							cbVal.core.clearAllAuthInfo()
+						}
+					}
 				}
 				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
 			})
