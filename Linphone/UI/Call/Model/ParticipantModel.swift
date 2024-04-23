@@ -31,8 +31,9 @@ class ParticipantModel: ObservableObject {
 	@Published var isJoining: Bool
 	@Published var onPause: Bool
 	@Published var isMuted: Bool
+	@Published var isAdmin: Bool
 	
-	init(address: Address, isJoining: Bool = false, onPause: Bool = false, isMuted: Bool = false) {
+	init(address: Address, isJoining: Bool = false, onPause: Bool = false, isMuted: Bool = false, isAdmin: Bool = false) {
 		self.address = address
 		
 		self.sipUri = address.asStringUriOnly()
@@ -48,5 +49,6 @@ class ParticipantModel: ObservableObject {
 		self.isJoining = isJoining
 		self.onPause = onPause
 		self.isMuted = isMuted
+		self.isAdmin = isAdmin
 	}
 }

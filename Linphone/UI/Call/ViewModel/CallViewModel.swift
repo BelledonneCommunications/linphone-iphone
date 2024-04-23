@@ -215,9 +215,9 @@ class CallViewModel: ObservableObject {
 				
 				var myParticipantModelTmp: ParticipantModel? = nil
 				if conf.me?.address != nil {
-					myParticipantModelTmp = ParticipantModel(address: conf.me!.address!, isJoining: false, onPause: false, isMuted: false)
+					myParticipantModelTmp = ParticipantModel(address: conf.me!.address!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin)
 				} else if self.currentCall?.callLog?.localAddress != nil {
-					myParticipantModelTmp = ParticipantModel(address: self.currentCall!.callLog!.localAddress!, isJoining: false, onPause: false, isMuted: false)
+					myParticipantModelTmp = ParticipantModel(address: self.currentCall!.callLog!.localAddress!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin)
 				}
 				
 				var activeSpeakerParticipantTmp: ParticipantModel? = nil
@@ -262,12 +262,14 @@ class CallViewModel: ObservableObject {
 				conf.participantDeviceList.forEach({ participantDevice in
 					if participantDevice.address != nil && !conf.isMe(uri: participantDevice.address!.clone()!) {
 						if !conf.isMe(uri: participantDevice.address!.clone()!) {
+							let isAdmin = conf.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
 							participantListTmp.append(
 								ParticipantModel(
 									address: participantDevice.address!,
 									isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
 									onPause: participantDevice.state == .OnHold,
-									isMuted: participantDevice.isMuted
+									isMuted: participantDevice.isMuted,
+									isAdmin: isAdmin ?? false
 								)
 							)
 						}
@@ -336,12 +338,14 @@ class CallViewModel: ObservableObject {
 							cbValue.conference.participantDeviceList.forEach({ participantDevice in
 								if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
 									if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+										let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
 										participantListTmp.append(
 											ParticipantModel(
 												address: participantDevice.address!,
 												isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
 												onPause: participantDevice.state == .OnHold,
-												isMuted: participantDevice.isMuted
+												isMuted: participantDevice.isMuted,
+												isAdmin: isAdmin ?? false
 											)
 										)
 									}
@@ -368,12 +372,14 @@ class CallViewModel: ObservableObject {
 						cbValue.conference.participantDeviceList.forEach({ participantDevice in
 							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
 								if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+									let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
 									participantListTmp.append(
 										ParticipantModel(
 											address: participantDevice.address!,
 											isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
 											onPause: participantDevice.state == .OnHold,
-											isMuted: participantDevice.isMuted
+											isMuted: participantDevice.isMuted,
+											isAdmin: isAdmin ?? false
 										)
 									)
 								}
@@ -394,12 +400,14 @@ class CallViewModel: ObservableObject {
 						cbValue.conference.participantDeviceList.forEach({ participantDevice in
 							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
 								if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+									let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
 									participantListTmp.append(
 										ParticipantModel(
 											address: participantDevice.address!,
 											isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
 											onPause: participantDevice.state == .OnHold,
-											isMuted: participantDevice.isMuted
+											isMuted: participantDevice.isMuted,
+											isAdmin: isAdmin ?? false
 										)
 									)
 								}
@@ -464,6 +472,25 @@ class CallViewModel: ObservableObject {
 								}
 							}
 					 })
+					}
+				}
+			)
+			
+			self.mConferenceSuscriptions.insert(
+				self.currentCall?.conference?.publisher?.onParticipantAdminStatusChanged?.postOnMainQueue {(cbValue: (conference: Conference, participant: Participant)) in
+					let isAdmin = cbValue.participant.isAdmin
+					if self.myParticipantModel != nil && self.myParticipantModel!.address.clone()!.equal(address2: cbValue.participant.address!) {
+						DispatchQueue.main.async {
+							self.myParticipantModel!.isAdmin = isAdmin
+						}
+					} else {
+						self.participantList.forEach({ participantDevice in
+							if participantDevice.address.clone()!.equal(address2: cbValue.participant.address!) {
+								DispatchQueue.main.async {
+									participantDevice.isAdmin = isAdmin
+								}
+							}
+					 	})
 					}
 				}
 			)
@@ -828,6 +855,30 @@ class CallViewModel: ObservableObject {
 				
 				Log.error("[CallViewModel] Failed to make blind call transfer!")
 			}
+		}
+	}
+	
+	func toggleAdminParticipant(index: Int) {
+		coreContext.doOnCoreQueue { core in
+			self.currentCall?.conference?.participantList.forEach({ participant in
+				if participant.address != nil && self.participantList[index].address.clone() != nil && participant.address!.equal(address2: self.participantList[index].address.clone()!) {
+					self.currentCall?.conference?.setParticipantAdminStatus(participant: participant, isAdmin: !participant.isAdmin)
+				}
+			})
+		}
+	}
+	
+	func removeParticipant(index: Int) {
+		coreContext.doOnCoreQueue { core in
+			self.currentCall?.conference?.participantList.forEach({ participant in
+				if participant.address != nil && self.participantList[index].address.clone() != nil && participant.address!.equal(address2: self.participantList[index].address.clone()!) {
+					do {
+						try self.currentCall?.conference?.removeParticipant(participant: participant)
+					} catch {
+						
+					}
+				}
+			})
 		}
 	}
 }

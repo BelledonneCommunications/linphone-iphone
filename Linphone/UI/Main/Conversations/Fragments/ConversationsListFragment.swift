@@ -128,6 +128,7 @@ struct ConversationsListFragment: View {
 							}
 							.padding(.trailing, 10)
 					}
+					.frame(height: 50)
 					.buttonStyle(.borderless)
 					.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
 					.listRowSeparator(.hidden)

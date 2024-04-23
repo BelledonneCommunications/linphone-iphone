@@ -50,7 +50,8 @@ struct CallView: View {
 	@State var displayVideo = false
 	
 	@Binding var fullscreenVideo: Bool
-	@Binding var isShowCallsListFragment: Bool
+	@State var isShowCallsListFragment: Bool = false
+	@State var isShowParticipantsListFragment: Bool = false
 	@Binding var isShowStartCallFragment: Bool
 	
 	var body: some View {
@@ -107,8 +108,14 @@ struct CallView: View {
 				
 				if isShowCallsListFragment {
 					CallsListFragment(callViewModel: callViewModel, isShowCallsListFragment: $isShowCallsListFragment)
-					.zIndex(4)
-					.transition(.move(edge: .bottom))
+						.zIndex(4)
+						.transition(.move(edge: .bottom))
+				}
+				
+				if isShowParticipantsListFragment {
+					ParticipantsListFragment(callViewModel: callViewModel, isShowParticipantsListFragment: $isShowParticipantsListFragment)
+						.zIndex(4)
+						.transition(.move(edge: .bottom))
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
@@ -1218,6 +1225,9 @@ struct CallView: View {
 							
 							VStack {
 								Button {
+									withAnimation {
+										isShowParticipantsListFragment.toggle()
+									}
 								} label: {
 									HStack {
 										Image("users")
@@ -1458,58 +1468,110 @@ struct CallView: View {
 					.frame(height: geo.size.height * 0.15)
 				} else {
 					HStack {
-						VStack {
-							Button {
-								withAnimation {
-									callViewModel.isTransferInsteadCall = true
-									MagicSearchSingleton.shared.searchForSuggestions()
-									isShowStartCallFragment.toggle()
+						if callViewModel.isOneOneCall {
+							VStack {
+								Button {
+									withAnimation {
+										callViewModel.isTransferInsteadCall = true
+										MagicSearchSingleton.shared.searchForSuggestions()
+										isShowStartCallFragment.toggle()
+									}
+								} label: {
+									HStack {
+										Image("phone-transfer")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
 								}
-							} label: {
-								HStack {
-									Image("phone-transfer")
-										.renderingMode(.template)
-										.resizable()
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+							
+							VStack {
+								Button {
+									withAnimation {
+										MagicSearchSingleton.shared.searchForSuggestions()
+										isShowStartCallFragment.toggle()
+									}
+								} label: {
+									HStack {
+										Image("phone-plus")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
+								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("New call")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
+						} else {
+							VStack {
+								VStack {
+									Button {
+									} label: {
+										HStack {
+											Image("screencast")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.gray500)
+												.frame(width: 32, height: 32)
+										}
+									}
+									.buttonStyle(PressedButtonStyle())
+									.frame(width: 60, height: 60)
+									.background(.white)
+									.cornerRadius(40)
+									.disabled(true)
+									
+									Text("Partage d'écran")
 										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
+										.default_text_style(styleSize: 15)
 								}
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
+							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 							
-							Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
-								.foregroundStyle(.white)
-								.default_text_style(styleSize: 15)
-						}
-						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
-						
-						VStack {
-							Button {
-								withAnimation {
-									MagicSearchSingleton.shared.searchForSuggestions()
-									isShowStartCallFragment.toggle()
+							VStack {
+								Button {
+									withAnimation {
+										isShowParticipantsListFragment.toggle()
+									}
+								} label: {
+									HStack {
+										Image("users")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
 								}
-							} label: {
-								HStack {
-									Image("phone-plus")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 32, height: 32)
-								}
+								.buttonStyle(PressedButtonStyle())
+								.frame(width: 60, height: 60)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								
+								Text("Participants")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
-							.background(Color.gray500)
-							.cornerRadius(40)
-							
-							Text("New call")
-								.foregroundStyle(.white)
-								.default_text_style(styleSize: 15)
+							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						}
-						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 						
 						VStack {
 							ZStack {
@@ -1823,7 +1885,7 @@ struct PressedButtonStyle: ButtonStyle {
 }
 
 #Preview {
-	CallView(callViewModel: CallViewModel(), fullscreenVideo: .constant(false), isShowCallsListFragment: .constant(false), isShowStartCallFragment: .constant(false))
+	CallView(callViewModel: CallViewModel(), fullscreenVideo: .constant(false), isShowStartCallFragment: .constant(false))
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length

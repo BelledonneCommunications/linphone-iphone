@@ -23,11 +23,16 @@ struct MeetingsFragment: View {
 				ForEach(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
 					HStack {
 						HStack {
-							Image("users-three-square")
-								   .renderingMode(.template)
-								   .resizable()
-								   .frame(width: 28, height: 28)
-								   .foregroundStyle(Color.grayMain2c600)
+							VStack {
+								Image("users-three-square")
+									.renderingMode(.template)
+									.resizable()
+									.frame(width: 28, height: 28)
+									.foregroundStyle(Color.grayMain2c600)
+							}
+							.frame(width: 50, height: 50)
+							.background(Color.grayMain2c200)
+							.clipShape(Circle())
 							
 							VStack(spacing: 0) {
 								Text(meetingsListViewModel.meetingsList[index].model?.subject ?? "")
@@ -38,8 +43,9 @@ struct MeetingsFragment: View {
 						}
 						.frame(height: 40)
 					}
+					.frame(height: 50)
 					.buttonStyle(.borderless)
-					.listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+					.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {

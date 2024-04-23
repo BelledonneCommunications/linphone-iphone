@@ -78,6 +78,10 @@ struct ContactsListFragment: View {
 						.foregroundStyle(Color.orangeMain500)
 				}
 			}
+			.frame(height: 50)
+			.buttonStyle(.borderless)
+			.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
+			.listRowSeparator(.hidden)
 			.background(.white)
 			.onTapGesture {
 				withAnimation {
@@ -91,8 +95,6 @@ struct ContactsListFragment: View {
 				contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
 				showingSheet.toggle()
 			}
-			.buttonStyle(.borderless)
-			.listRowSeparator(.hidden)
 		}
 	}
 }

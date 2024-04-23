@@ -57,7 +57,7 @@ struct HistoryListFragment: View {
 									} else {
 										Image("profil-picture-default")
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 									}
 								} else {
@@ -69,7 +69,7 @@ struct HistoryListFragment: View {
 												? historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ")[1]
 												: ""))
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 											
 										} else if historyListViewModel.callLogs[index].toAddress!.username != nil {
@@ -79,7 +79,7 @@ struct HistoryListFragment: View {
 												? historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ")[1]
 												: ""))
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 										} else {
 											VStack {
@@ -89,7 +89,7 @@ struct HistoryListFragment: View {
 													.frame(width: 28, height: 28)
 													.foregroundStyle(Color.grayMain2c600)
 											}
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.background(Color.grayMain2c200)
 											.clipShape(Circle())
 										}
@@ -101,7 +101,7 @@ struct HistoryListFragment: View {
 												? historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ")[1]
 												: ""))
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 										} else if historyListViewModel.callLogs[index].fromAddress!.username != nil {
 											Image(uiImage: contactsManager.textToImage(
@@ -110,7 +110,7 @@ struct HistoryListFragment: View {
 												? historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ")[1]
 												: ""))
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 										} else {
 											VStack {
@@ -120,14 +120,14 @@ struct HistoryListFragment: View {
 													.frame(width: 28, height: 28)
 													.foregroundStyle(Color.grayMain2c600)
 											}
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.background(Color.grayMain2c200)
 											.clipShape(Circle())
 										}
 									} else {
 										Image("profil-picture-default")
 											.resizable()
-											.frame(width: 45, height: 45)
+											.frame(width: 50, height: 50)
 											.clipShape(Circle())
 									}
 								}
@@ -139,7 +139,7 @@ struct HistoryListFragment: View {
 										.frame(width: 28, height: 28)
 										.foregroundStyle(Color.grayMain2c600)
 								}
-								.frame(width: 45, height: 45)
+								.frame(width: 50, height: 50)
 								.background(Color.grayMain2c200)
 								.clipShape(Circle())
 							}
@@ -215,8 +215,9 @@ struct HistoryListFragment: View {
 							}
 						}
 					}
+					.frame(height: 50)
 					.buttonStyle(.borderless)
-					.listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+					.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {

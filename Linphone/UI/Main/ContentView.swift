@@ -62,7 +62,6 @@ struct ContentView: View {
 	@State var isShowDismissPopup = false
 	
 	@State var fullscreenVideo = false
-	@State var isShowCallsListFragment = false
 	
 	@State var isShowScheduleMeetingFragment = false
 	
@@ -913,8 +912,8 @@ struct ContentView: View {
 					}
 					
 					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) && !telecomManager.meetingWaitingRoomDisplayed {
-						CallView(callViewModel: callViewModel, fullscreenVideo: $fullscreenVideo, isShowCallsListFragment: $isShowCallsListFragment, isShowStartCallFragment: $isShowStartCallFragment)
-							.zIndex(3)
+						CallView(callViewModel: callViewModel, fullscreenVideo: $fullscreenVideo, isShowStartCallFragment: $isShowStartCallFragment)
+							.zIndex(5)
 							.transition(.scale.combined(with: .move(edge: .top)))
 							.onAppear {
 								callViewModel.resetCallView()

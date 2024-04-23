@@ -52,6 +52,16 @@
     "%lld" : {
 
     },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
     "%lld Book (Example)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -166,6 +176,9 @@
 
     },
     "Add to favourites" : {
+
+    },
+    "Administrateur" : {
 
     },
     "All calls will be removed from the history." : {
@@ -356,6 +369,9 @@
     "Error Name" : {
 
     },
+    "Etes-vous sûr de vouloir supprimer %@ ?" : {
+
+    },
     "Favourites" : {
 
     },
@@ -510,6 +526,12 @@
     "No meeting for the moment..." : {
 
     },
+    "No participant for the moment..." : {
+
+    },
+    "Non" : {
+
+    },
     "Not account yet?" : {
 
     },
@@ -523,6 +545,9 @@
 
     },
     "Other actions" : {
+
+    },
+    "Oui" : {
 
     },
     "Partage d'écran" : {
@@ -682,6 +707,9 @@
 
     },
     "Supprimer la conversation" : {
+
+    },
+    "Supprimer un participant" : {
 
     },
     "TCP" : {
