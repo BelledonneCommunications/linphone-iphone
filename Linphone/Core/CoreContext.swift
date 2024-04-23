@@ -169,21 +169,6 @@ final class CoreContext: ObservableObject {
 					self.loggedIn = false
 					ToastViewModel.shared.toastMessage = "Registration failed"
 					ToastViewModel.shared.displayToast = true
-					
-					self.monitor.pathUpdateHandler = { path in
-						if path.status == .satisfied {
-							if cbVal.state != .Ok && cbVal.state != .Progress {
-								let params = cbVal.account.params
-								let clonedParams = params?.clone()
-								clonedParams?.registerEnabled = false
-								cbVal.account.params = clonedParams
-								
-								cbVal.core.removeAccount(account: cbVal.account)
-								cbVal.core.clearAccounts()
-								cbVal.core.clearAllAuthInfo()
-							}
-						}
-					}
 				}
 			})
 			
