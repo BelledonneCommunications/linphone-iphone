@@ -268,7 +268,7 @@ struct MeetingWaitingRoomFragment: View {
 								.frame(width: 32, height: 32)
 						}
 					}
-					.buttonStyle(PressedButtonStyle())
+					.buttonStyle(PressedButtonStyle(buttonSize: 60))
 					.frame(width: 60, height: 60)
 					.background(Color.gray500)
 					.cornerRadius(40)
@@ -285,7 +285,7 @@ struct MeetingWaitingRoomFragment: View {
 								.frame(width: 32, height: 32)
 						}
 					}
-					.buttonStyle(PressedButtonStyle())
+					.buttonStyle(PressedButtonStyle(buttonSize: 60))
 					.frame(width: 60, height: 60)
 					.background(Color.gray500)
 					.cornerRadius(40)
@@ -320,7 +320,7 @@ struct MeetingWaitingRoomFragment: View {
 								}
 						}
 					}
-					.buttonStyle(PressedButtonStyle())
+					.buttonStyle(PressedButtonStyle(buttonSize: 60))
 					.frame(width: 60, height: 60)
 					.background(Color.gray500)
 					.cornerRadius(40)

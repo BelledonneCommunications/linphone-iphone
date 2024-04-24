@@ -54,6 +54,8 @@ struct CallView: View {
 	@State var isShowParticipantsListFragment: Bool = false
 	@Binding var isShowStartCallFragment: Bool
 	
+	@State var buttonSize = 60.0
+	
 	var body: some View {
 		GeometryReader { geo in
 			ZStack {
@@ -136,6 +138,9 @@ struct CallView: View {
 			}
 			.onAppear {
 				callViewModel.enableAVAudioSession()
+				if geo.size.width < 350 || geo.size.height < 350 {
+					buttonSize = 45.0
+				}
 			}
 			.onDisappear {
 				callViewModel.disableAVAudioSession()
@@ -789,7 +794,6 @@ struct CallView: View {
 															.frame(width: 40, height: 40)
 															.padding(.bottom, 5)
 														
-														
 														Text("Joining...")
 															.frame(maxWidth: .infinity, alignment: .center)
 															.foregroundStyle(Color.white)
@@ -1064,7 +1068,7 @@ struct CallView: View {
 							.frame(width: 32, height: 32)
 						
 					}
-					.frame(width: 90, height: 60)
+					.frame(width: buttonSize == 60 ? 90 : 70, height: buttonSize)
 					.background(Color.redDanger500)
 					.cornerRadius(40)
 					
@@ -1081,8 +1085,8 @@ struct CallView: View {
 								.frame(width: 32, height: 32)
 						}
 					}
-					.buttonStyle(PressedButtonStyle())
-					.frame(width: 60, height: 60)
+					.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+					.frame(width: buttonSize, height: buttonSize)
 					.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : Color.gray500)
 					.cornerRadius(40)
 					.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
@@ -1098,8 +1102,8 @@ struct CallView: View {
 							 .frame(width: 32, height: 32)
 						}
 					}
-					.buttonStyle(PressedButtonStyle())
-					.frame(width: 60, height: 60)
+					.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+					.frame(width: buttonSize, height: buttonSize)
 					.background(callViewModel.micMutted ? Color.redDanger500 : Color.gray500)
 					.cornerRadius(40)
 					
@@ -1131,14 +1135,14 @@ struct CallView: View {
 							 }
 						}
 					}
-					.buttonStyle(PressedButtonStyle())
-					.frame(width: 60, height: 60)
+					.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+					.frame(width: buttonSize, height: buttonSize)
 					.background(Color.gray500)
 					.cornerRadius(40)
 				}
 				.frame(height: geo.size.height * 0.15)
 				.padding(.horizontal, 20)
-				.padding(.top, -12)
+				.padding(.top, -5)
 				
 				if orientation != .landscapeLeft && orientation != .landscapeRight {
 					HStack(spacing: 0) {
@@ -1163,8 +1167,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1172,7 +1176,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 							
 							VStack {
 								Button {
@@ -1189,8 +1193,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1198,7 +1202,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						} else {
 							VStack {
 								Button {
@@ -1211,8 +1215,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(.white)
 								.cornerRadius(40)
 								.disabled(true)
@@ -1221,7 +1225,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 							
 							VStack {
 								Button {
@@ -1237,8 +1241,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1246,7 +1250,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						}
 						VStack {
 							ZStack {
@@ -1264,8 +1268,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1286,7 +1290,7 @@ struct CallView: View {
 										
 										Spacer()
 									}
-									.frame(width: 60, height: 60)
+									.frame(width: buttonSize, height: buttonSize)
 								}
 							}
 							
@@ -1294,7 +1298,7 @@ struct CallView: View {
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						
 						if callViewModel.isOneOneCall {
 							VStack {
@@ -1309,8 +1313,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1318,7 +1322,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						} else {
 							VStack {
 								Button {
@@ -1331,8 +1335,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1340,7 +1344,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						}
 					}
 					.frame(height: geo.size.height * 0.15)
@@ -1357,8 +1361,8 @@ struct CallView: View {
 										.frame(width: 32, height: 32)
 								}
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
+							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+							.frame(width: buttonSize, height: buttonSize)
 							.background(.white)
 							.cornerRadius(40)
 							.disabled(true)
@@ -1367,7 +1371,7 @@ struct CallView: View {
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						
 						VStack {
 							Button {
@@ -1381,8 +1385,8 @@ struct CallView: View {
 										.frame(width: 32, height: 32)
 								}
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
+							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+							.frame(width: buttonSize, height: buttonSize)
 							.background(telecomManager.isPausedByRemote ? .white : (callViewModel.isPaused ? Color.greenSuccess500 : Color.gray500))
 							.cornerRadius(40)
 							.disabled(telecomManager.isPausedByRemote)
@@ -1391,7 +1395,7 @@ struct CallView: View {
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						
 						if callViewModel.isOneOneCall {
 							VStack {
@@ -1406,8 +1410,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : (callViewModel.isRecording ? Color.redDanger500 : Color.gray500))
 								.cornerRadius(40)
 								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
@@ -1416,7 +1420,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						} else {
 							VStack {
 								Button {
@@ -1429,8 +1433,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(.white)
 								.cornerRadius(40)
 								.disabled(true)
@@ -1439,7 +1443,7 @@ struct CallView: View {
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
-							.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						}
 						
 						VStack {
@@ -1453,8 +1457,8 @@ struct CallView: View {
 										.frame(width: 32, height: 32)
 								}
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
+							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+							.frame(width: buttonSize, height: buttonSize)
 							.background(Color.gray500)
 							.cornerRadius(40)
 							
@@ -1462,7 +1466,7 @@ struct CallView: View {
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
-						.frame(width: geo.size.width * 0.25, height: geo.size.width * 0.25)
+						.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 						.hidden()
 					}
 					.frame(height: geo.size.height * 0.15)
@@ -1485,8 +1489,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1511,8 +1515,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1534,8 +1538,8 @@ struct CallView: View {
 												.frame(width: 32, height: 32)
 										}
 									}
-									.buttonStyle(PressedButtonStyle())
-									.frame(width: 60, height: 60)
+									.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+									.frame(width: buttonSize, height: buttonSize)
 									.background(.white)
 									.cornerRadius(40)
 									.disabled(true)
@@ -1561,8 +1565,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1589,8 +1593,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1611,7 +1615,7 @@ struct CallView: View {
 										
 										Spacer()
 									}
-									.frame(width: 60, height: 60)
+									.frame(width: buttonSize, height: buttonSize)
 								}
 							}
 							
@@ -1634,8 +1638,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1656,8 +1660,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
@@ -1679,8 +1683,8 @@ struct CallView: View {
 										.frame(width: 32, height: 32)
 								}
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
+							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+							.frame(width: buttonSize, height: buttonSize)
 							.background(.white)
 							.cornerRadius(40)
 							.disabled(true)
@@ -1703,8 +1707,8 @@ struct CallView: View {
 										.frame(width: 32, height: 32)
 								}
 							}
-							.buttonStyle(PressedButtonStyle())
-							.frame(width: 60, height: 60)
+							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+							.frame(width: buttonSize, height: buttonSize)
 							.background(telecomManager.isPausedByRemote ? .white : (callViewModel.isPaused ? Color.greenSuccess500 : Color.gray500))
 							.cornerRadius(40)
 							.disabled(telecomManager.isPausedByRemote)
@@ -1728,8 +1732,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background((callViewModel.isPaused || telecomManager.isPausedByRemote) ? .white : (callViewModel.isRecording ? Color.redDanger500 : Color.gray500))
 								.cornerRadius(40)
 								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
@@ -1751,8 +1755,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32)
 									}
 								}
-								.buttonStyle(PressedButtonStyle())
-								.frame(width: 60, height: 60)
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
 								.background(.white)
 								.cornerRadius(40)
 								.disabled(true)
@@ -1876,9 +1880,10 @@ struct ChevronShape: Shape {
 }
 
 struct PressedButtonStyle: ButtonStyle {
+	var buttonSize: CGFloat
 	func makeBody(configuration: Self.Configuration) -> some View {
 		configuration.label
-		.frame(width: 60, height: 60)
+		.frame(width: buttonSize, height: buttonSize)
 		.background(configuration.isPressed ? .white : .clear)
 		.cornerRadius(40)
 	}
