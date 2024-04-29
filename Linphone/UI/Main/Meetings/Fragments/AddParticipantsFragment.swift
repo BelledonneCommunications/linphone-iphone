@@ -18,7 +18,8 @@ struct AddParticipantsFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
-	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var addParticipantsViewModel: AddParticipantsViewModel
+	var confirmAddParticipantsFunc: ([SelectedAddressModel]) -> Void
 	
 	@State private var delayedColor = Color.white
 	@FocusState var isSearchFieldFocused: Bool
@@ -50,7 +51,7 @@ struct AddParticipantsFragment: View {
 						.padding(.top, 2)
 						.padding(.leading, -10)
 						.onTapGesture {
-							scheduleMeetingViewModel.participantsToAdd = []
+							addParticipantsViewModel.reset()
 							dismiss()
 						}
 					
@@ -59,7 +60,7 @@ struct AddParticipantsFragment: View {
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 							.padding(.top, 20)
-						Text("\($scheduleMeetingViewModel.participants.count) selected participants")
+						Text("\($addParticipantsViewModel.participantsToAdd.count) selected participants")
 							.default_text_style_300(styleSize: 12)
 					}
 					Spacer()
@@ -72,12 +73,12 @@ struct AddParticipantsFragment: View {
 				
 				ScrollView(.horizontal) {
 					HStack {
-						ForEach(0..<scheduleMeetingViewModel.participantsToAdd.count, id: \.self) { index in
+						ForEach(0..<addParticipantsViewModel.participantsToAdd.count, id: \.self) { index in
 							ZStack(alignment: .topTrailing) {
 								VStack {
-									Avatar(contactAvatarModel: scheduleMeetingViewModel.participantsToAdd[index].avatarModel, avatarSize: 50)
+									Avatar(contactAvatarModel: addParticipantsViewModel.participantsToAdd[index].avatarModel, avatarSize: 50)
 									
-									Text(scheduleMeetingViewModel.participantsToAdd[index].avatarModel.name)
+									Text(addParticipantsViewModel.participantsToAdd[index].avatarModel.name)
 										.default_text_style(styleSize: 12)
 										.frame(minWidth: 60, maxWidth:80)
 								}
@@ -87,7 +88,7 @@ struct AddParticipantsFragment: View {
 									.foregroundStyle(Color.grayMain2c500)
 									.frame(width: 25, height: 25)
 									.onTapGesture {
-										scheduleMeetingViewModel.participantsToAdd.remove(at: index)
+										addParticipantsViewModel.participantsToAdd.remove(at: index)
 									}
 							}
 						}
@@ -96,12 +97,12 @@ struct AddParticipantsFragment: View {
 				.padding(.leading, 16)
 				
 				ZStack(alignment: .trailing) {
-					TextField("Search contact", text: $scheduleMeetingViewModel.searchField)
+					TextField("Search contact", text: $addParticipantsViewModel.searchField)
 						.default_text_style(styleSize: 15)
 						.frame(height: 25)
 						.focused($isSearchFieldFocused)
 						.padding(.horizontal, 30)
-						.onChange(of: scheduleMeetingViewModel.searchField) { newValue in
+						.onChange(of: addParticipantsViewModel.searchField) { newValue in
 							magicSearch.currentFilterSuggestions = newValue
 							magicSearch.searchForSuggestions()
 						}.onAppear {
@@ -120,9 +121,9 @@ struct AddParticipantsFragment: View {
 						
 						Spacer()
 						
-						if !scheduleMeetingViewModel.searchField.isEmpty {
+						if !addParticipantsViewModel.searchField.isEmpty {
 							Button(action: {
-								scheduleMeetingViewModel.searchField = ""
+								addParticipantsViewModel.searchField = ""
 								magicSearch.currentFilterSuggestions = ""
 								magicSearch.searchForSuggestions()
 								isSearchFieldFocused = false
@@ -199,7 +200,7 @@ struct AddParticipantsFragment: View {
 						.background(.white)
 						.onTapGesture {
 							if let addr = contactsManager.lastSearch[index].address {
-								scheduleMeetingViewModel.selectParticipant(addr: addr)
+								addParticipantsViewModel.selectParticipant(addr: addr)
 							}
 						}
 						.buttonStyle(.borderless)
@@ -220,7 +221,7 @@ struct AddParticipantsFragment: View {
 			}
 			Button {
 				withAnimation {
-					scheduleMeetingViewModel.addParticipants()
+					confirmAddParticipantsFunc(addParticipantsViewModel.participantsToAdd)
 					dismiss()
 				}
 			} label: {
@@ -248,7 +249,7 @@ struct AddParticipantsFragment: View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
 				if let addr = contactsManager.lastSearchSuggestions[index].address {
-					scheduleMeetingViewModel.selectParticipant(addr: addr)
+					addParticipantsViewModel.selectParticipant(addr: addr)
 				}
 			} label: {
 				HStack {
@@ -288,5 +289,5 @@ struct AddParticipantsFragment: View {
 }
 
 #Preview {
-	AddParticipantsFragment(scheduleMeetingViewModel: ScheduleMeetingViewModel())
+	AddParticipantsFragment(addParticipantsViewModel: AddParticipantsViewModel(), confirmAddParticipantsFunc: {_ in } )
 }

@@ -42,6 +42,8 @@ struct ScheduleMeetingFragment: View {
 	@State var selectedHours: Int = 0
 	@State var selectedMinutes: Int = 0
 	
+	@State var addParticipantsViewModel = AddParticipantsViewModel()
+	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
@@ -284,7 +286,10 @@ struct ScheduleMeetingFragment: View {
 					
 					VStack {
 						NavigationLink(destination: {
-							AddParticipantsFragment(scheduleMeetingViewModel: scheduleMeetingViewModel)
+							AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: scheduleMeetingViewModel.addParticipants)
+								.onAppear {
+									addParticipantsViewModel.participantsToAdd = scheduleMeetingViewModel.participants
+								}
 						}, label: {
 							HStack(alignment: .center, spacing: 8) {
 								Image("users")
@@ -300,6 +305,7 @@ struct ScheduleMeetingFragment: View {
 								Spacer()
 							}
 						})
+						
 						if !scheduleMeetingViewModel.participants.isEmpty {
 							ScrollView {
 								ForEach(0..<scheduleMeetingViewModel.participants.count, id: \.self) { index in

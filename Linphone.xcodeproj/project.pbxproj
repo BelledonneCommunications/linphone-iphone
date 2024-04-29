@@ -13,6 +13,7 @@
 		6613A0B02BAEB7F4008923A4 /* MeetingsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */; };
 		6613A0B42BAEBE3F008923A4 /* MeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */; };
 		6613A0B62BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */; };
+		66162A202BDFC2F900DCE913 /* AddParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66162A1F2BDFC2F900DCE913 /* AddParticipantsViewModel.swift */; };
 		662B69D92B25DE18007118BF /* TelecomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69D82B25DE18007118BF /* TelecomManager.swift */; };
 		662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69DA2B25DE25007118BF /* ProviderDelegate.swift */; };
 		6646A7A32BB2E224006B842A /* ScheduleMeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */; };
@@ -167,6 +168,7 @@
 		6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListFragment.swift; sourceTree = "<group>"; };
 		6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetingViewModel.swift; sourceTree = "<group>"; };
 		6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleMeetingViewModel.swift; sourceTree = "<group>"; };
+		66162A1F2BDFC2F900DCE913 /* AddParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsViewModel.swift; sourceTree = "<group>"; };
 		662B69D82B25DE18007118BF /* TelecomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelecomManager.swift; sourceTree = "<group>"; };
 		662B69DA2B25DE25007118BF /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
 		6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleMeetingFragment.swift; sourceTree = "<group>"; };
@@ -658,6 +660,7 @@
 		D7A2EDD42AC180FE005D90FC /* Viewmodel */ = {
 			isa = PBXGroup;
 			children = (
+				66162A1F2BDFC2F900DCE913 /* AddParticipantsViewModel.swift */,
 				D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */,
 				D796F1FF2B0BB61A0041115F /* ToastViewModel.swift */,
 			);
@@ -980,6 +983,7 @@
 				D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				66E50A4B2BD12B7800AD61CA /* MeetingsFragment.swift in Sources */,
+				66162A202BDFC2F900DCE913 /* AddParticipantsViewModel.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */,
@@ -1252,7 +1256,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";

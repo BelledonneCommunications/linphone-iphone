@@ -21,16 +21,6 @@ import Foundation
 import linphonesw
 import Combine
 
-class SelectedAddressModel: ObservableObject {
-	var address: Address
-	var avatarModel: ContactAvatarModel
-	
-	init (addr: Address, avModel: ContactAvatarModel) {
-		address = addr
-		avatarModel = avModel
-	}
-}
-
 class ScheduleMeetingViewModel: ObservableObject {
 	static let TAG = "[ScheduleMeetingViewModel]"
 	
@@ -45,12 +35,9 @@ class ScheduleMeetingViewModel: ObservableObject {
 	@Published var toTime: String = ""
 	@Published var timezone: String = ""
 	@Published var sendInvitations: Bool = true
-	@Published var participantsToAdd: [SelectedAddressModel] = []
 	@Published var participants: [SelectedAddressModel] = []
 	@Published var operationInProgress: Bool = false
 	@Published var conferenceCreatedEvent: Bool = false
-	
-	@Published var searchField: String = ""
 	
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
@@ -75,11 +62,9 @@ class ScheduleMeetingViewModel: ObservableObject {
 		allDayMeeting = false
 		timezone = ""
 		sendInvitations = true
-		participantsToAdd = []
 		participants = []
 		operationInProgress = false
 		conferenceCreatedEvent = false
-		searchField = ""
 		
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
@@ -113,14 +98,7 @@ class ScheduleMeetingViewModel: ObservableObject {
 		// TODO
 	}
 	
-	func selectParticipant(addr: Address) {
-		if let idx = participantsToAdd.firstIndex(where: {$0.address.weakEqual(address2: addr)}) {
-			participantsToAdd.remove(at: idx)
-		} else {
-			participantsToAdd.append(SelectedAddressModel(addr: addr, avModel: ContactAvatarModel.getAvatarModelFromAddress(address: addr)))
-		}
-	}
-	func addParticipants() {
+	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
 		var list = participants
 		for selectedAddr in participantsToAdd {
 			if let found = list.first(where: { $0.address.weakEqual(address2: selectedAddr.address) }) {
@@ -134,7 +112,6 @@ class ScheduleMeetingViewModel: ObservableObject {
 		Log.info("\(ScheduleMeetingViewModel.TAG) [\(list.count - participants.count) participants added, now there are \(list.count) participants in list")
 
 		participants = list
-		participantsToAdd = []
 	}
 	
 	private func fillConferenceInfo(confInfo: ConferenceInfo) {
