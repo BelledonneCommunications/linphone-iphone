@@ -127,7 +127,7 @@ struct SideMenu: View {
 				Log.info("$TAG Account has been removed")
 				
 				DispatchQueue.main.async {
-					coreContext.defaultAccount = nil
+					coreContext.hasDefaultAccount = false
 					coreContext.loggedIn = false
 				}
 			}

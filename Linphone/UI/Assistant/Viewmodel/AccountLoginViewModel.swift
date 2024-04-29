@@ -108,7 +108,7 @@ class AccountLoginViewModel: ObservableObject {
 				// Also set the newly added account as default
 				core.defaultAccount = account
 				DispatchQueue.main.async {
-					self.coreContext.defaultAccount = account
+					self.coreContext.hasDefaultAccount = true
 				}
 				
 				self.domain = "sip.linphone.org"
@@ -142,7 +142,7 @@ class AccountLoginViewModel: ObservableObject {
 			if let account = core.defaultAccount {
 				core.removeAccount(account: account)
 				DispatchQueue.main.async {
-					self.coreContext.defaultAccount = nil
+					self.coreContext.hasDefaultAccount = false
 				}
 				
 				// To remove all accounts use

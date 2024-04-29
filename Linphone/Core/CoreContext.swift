@@ -38,7 +38,7 @@ final class CoreContext: ObservableObject {
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn: Bool = false
 	@Published var loggingInProgress: Bool = false
-	@Published var defaultAccount: Account?
+	@Published var hasDefaultAccount: Bool = false
 	@Published var coreIsStarted: Bool = false
 	
 	private var mCore: Core!
@@ -113,11 +113,11 @@ final class CoreContext: ObservableObject {
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
-					self.defaultAccount = self.mCore.defaultAccount
+					self.hasDefaultAccount = true
 					self.coreIsStarted = true
 				} else if cbVal.state == GlobalState.Off {
-					self.defaultAccount = nil
-					self.coreIsStarted = true
+					self.hasDefaultAccount = false
+					self.coreIsStarted = false
 				}
 			})
 			
