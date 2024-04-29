@@ -21,7 +21,7 @@
 // swiftlint:disable line_length
 
 import linphonesw
-import linphone // needed for unwrapped function linphone_core_set_push_registry_dispatch_queue
+import linphone // needed for unwrapped function linphone_core_set_push_and_app_delegate_dispatch_queue
 import Combine
 import UniformTypeIdentifiers
 import Network
@@ -100,7 +100,7 @@ final class CoreContext: ObservableObject {
 			Log.info("Initialising core")
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: nil, appGroupId: Config.appGroupName, mainCore: true)
 			
-			linphone_core_set_push_registry_dispatch_queue(self.mCore.getCobject, Unmanaged.passUnretained(coreQueue).toOpaque())
+			linphone_core_set_push_and_app_delegate_dispatch_queue(self.mCore.getCobject, Unmanaged.passUnretained(coreQueue).toOpaque())
 			self.mCore.autoIterateEnabled = false
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
