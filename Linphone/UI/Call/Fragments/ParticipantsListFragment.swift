@@ -74,6 +74,27 @@ struct ParticipantsListFragment: View {
 				.background(.white)
 				
 				participantsList
+				
+				HStack {
+					Spacer()
+					
+					NavigationLink(destination: {
+						//AddParticipantsFragment()
+					}, label: {
+						Image("plus")
+							.resizable()
+							.renderingMode(.template)
+							.frame(width: 25, height: 25)
+							.foregroundStyle(.white)
+							.padding()
+							.background(Color.orangeMain500)
+							.clipShape(Circle())
+							.shadow(color: .black.opacity(0.2), radius: 4)
+						
+					})
+					.padding()
+				}
+				.padding(.trailing, 10)
 			}
 			.background(.white)
 			

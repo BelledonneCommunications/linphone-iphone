@@ -219,6 +219,9 @@
     "Attended transfer" : {
 
     },
+    "Audio seulement" : {
+
+    },
     "Block the address" : {
 
     },
@@ -502,6 +505,9 @@
     "Missed call" : {
 
     },
+    "Mosaïque" : {
+
+    },
     "New call" : {
 
     },
@@ -554,6 +560,9 @@
 
     },
     "Partager le lien" : {
+
+    },
+    "Participant actif" : {
 
     },
     "Participants" : {
