@@ -385,15 +385,25 @@ class TelecomManager: ObservableObject {
 				if call.conference != nil {
 					if call.conference!.activeSpeakerParticipantDevice != nil {
 						let direction = call.conference?.activeSpeakerParticipantDevice!.getStreamCapability(streamType: StreamType.Video)
-						self.remoteConfVideo = direction == MediaDirection.SendRecv || direction == MediaDirection.SendOnly
+						self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+					} else if call.conference!.participantList.first != nil
+								&& call.conference!.participantList.first?.address != nil
+								&& call.conference!.participantList.first!.address!.clone()!.equal(address2: (call.conference!.me?.address)!) {
+						let direction = call.conference!.participantDeviceList.first!.getStreamCapability(streamType: StreamType.Video)
+						self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+					} else if call.conference!.participantList.last != nil
+								&& call.conference!.participantList.last?.address != nil {
+						let direction = call.conference!.participantDeviceList.last!.getStreamCapability(streamType: StreamType.Video)
+						self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
 					} else {
-						self.remoteConfVideo = true
+						self.remoteConfVideo = false
 					}
+					
 				} else {
 					self.remoteConfVideo = false
 					
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == MediaDirection.SendRecv || call.currentParams!.videoDirection == MediaDirection.SendOnly
+						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .SendOnly
 					}
 				}
 				

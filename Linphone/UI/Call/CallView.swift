@@ -283,6 +283,7 @@ struct CallView: View {
 		VStack(spacing: 0) {
 			Button(action: {
 				optionsChangeLayout = 1
+				callViewModel.toggleVideoMode(isAudioOnlyMode: false)
 				changeLayoutSheet = false
 			}, label: {
 				HStack {
@@ -312,6 +313,7 @@ struct CallView: View {
 			
 			Button(action: {
 				optionsChangeLayout = 2
+				callViewModel.toggleVideoMode(isAudioOnlyMode: false)
 				changeLayoutSheet = false
 			}, label: {
 				HStack {
@@ -339,6 +341,10 @@ struct CallView: View {
 			
 			Button(action: {
 				optionsChangeLayout = 3
+				if callViewModel.videoDisplayed {
+					callViewModel.displayMyVideo()
+				}
+				callViewModel.toggleVideoMode(isAudioOnlyMode: true)
 				changeLayoutSheet = false
 			}, label: {
 				HStack {
@@ -509,6 +515,10 @@ struct CallView: View {
 						currentOffset = (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)
 						pointingUp = -(((currentOffset - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)) / ((maxBottomSheetHeight * geometry.size.height) - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78))) - 0.5) * 2
 					}
+					.onChange(of: optionsChangeLayout) { optionsChangeLayoutValue in
+						currentOffset = (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)
+						pointingUp = -(((currentOffset - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)) / ((maxBottomSheetHeight * geometry.size.height) - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78))) - 0.5) * 2
+					}
 					.edgesIgnoringSafeArea(.bottom)
 				}
 			}
@@ -674,8 +684,11 @@ struct CallView: View {
 					)
 				}
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
+				let heightValue = (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
 				if optionsChangeLayout == 1 && callViewModel.participantList.count <= 5 {
-					mosaicMode(geometry: geometry, height: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom))
+					mosaicMode(geometry: geometry, height: heightValue)
+				} else if optionsChangeLayout == 3 {
+					audioOnlyMode(geometry: geometry, height: heightValue)
 				} else {
 					activeSpeakerMode(geometry: geometry)
 				}
@@ -1645,6 +1658,103 @@ struct CallView: View {
 		}
 	}
 	
+	func audioOnlyMode(geometry: GeometryProxy, height: Double) -> some View {
+		VStack {
+			let layout = [
+				GridItem(.fixed((geometry.size.width/2)-10)),
+				GridItem(.fixed((geometry.size.width/2)-10))
+			]
+			ScrollView {
+				LazyVGrid(columns: layout) {
+					if callViewModel.myParticipantModel != nil {
+						HStack {
+							Avatar(contactAvatarModel: callViewModel.myParticipantModel!.avatarModel, avatarSize: 50, hidePresence: true)
+							
+							Text(callViewModel.myParticipantModel!.name)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.white)
+								.default_text_style_500(styleSize: 14)
+								.lineLimit(1)
+								.padding(.horizontal, 10)
+							
+							if callViewModel.myParticipantModel!.isMuted {
+								HStack(alignment: .center) {
+									Image("microphone-slash")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c800)
+										.frame(width: 20, height: 20)
+								}
+								.padding(2)
+								.background(.white)
+								.cornerRadius(40)
+							}
+							
+							if callViewModel.myParticipantModel!.onPause {
+								Image("pause")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 25, height: 25)
+							}
+						}
+						.frame(height: 80)
+						.padding(.all, 10)
+						.background(Color.gray600)
+						.overlay(
+							RoundedRectangle(cornerRadius: 20)
+								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : Color.gray600, lineWidth: 4)
+						)
+						.cornerRadius(20)
+					}
+					
+					ForEach(0..<callViewModel.participantList.count, id: \.self) { index in
+						HStack {
+							Avatar(contactAvatarModel: callViewModel.participantList[index].avatarModel, avatarSize: 50, hidePresence: true)
+							
+							Text(callViewModel.participantList[index].name)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.white)
+								.default_text_style_500(styleSize: 14)
+								.lineLimit(1)
+								.padding(.horizontal, 10)
+							
+							if callViewModel.participantList[index].isMuted {
+								HStack(alignment: .center) {
+									Image("microphone-slash")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c800)
+										.frame(width: 20, height: 20)
+								}
+								.padding(2)
+								.background(.white)
+								.cornerRadius(40)
+							}
+							
+							if callViewModel.participantList[index].onPause {
+								Image("pause")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 25, height: 25)
+							}
+						}
+						.frame(height: 80)
+						.padding(.all, 10)
+						.background(Color.gray600)
+						.overlay(
+							RoundedRectangle(cornerRadius: 20)
+								.stroke(callViewModel.participantList[index].isSpeaking ? .white : Color.gray600, lineWidth: 4)
+						)
+						.cornerRadius(20)
+					}
+				}
+			}
+			.frame(width: geometry.size.width, height: height)
+		}
+	}
+	
 	// swiftlint:disable function_body_length
 	func bottomSheetContent(geo: GeometryProxy) -> some View {
 		GeometryReader { _ in
@@ -1686,7 +1796,12 @@ struct CallView: View {
 					Spacer()
 					
 					Button {
-						callViewModel.displayMyVideo()
+						if optionsChangeLayout == 3 {
+							optionsChangeLayout = 2
+							callViewModel.toggleVideoMode(isAudioOnlyMode: false)
+						} else {
+							callViewModel.displayMyVideo()
+						}
 					} label: {
 						HStack {
 							Image(callViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")

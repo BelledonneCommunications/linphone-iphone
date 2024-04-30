@@ -40,4 +40,7 @@ version_check_url_root=https://www.linphone.org/releases
 max_calls=10
 conference_layout=1
 
+[fec]
+fec_enabled=1
+
 ## End of default rc

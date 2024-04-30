@@ -647,6 +647,22 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
+	func toggleVideoMode(isAudioOnlyMode: Bool) {
+		coreContext.doOnCoreQueue { core in
+			if self.currentCall != nil {
+				do {
+					let params = try core.createCallParams(call: self.currentCall)
+					
+					params.videoEnabled = !isAudioOnlyMode
+					
+					try self.currentCall!.update(params: params)
+				} catch {
+					
+				}
+			}
+		}
+	}
+	
 	func switchCamera() {
 		coreContext.doOnCoreQueue { core in
 			let currentDevice = core.videoDevice
