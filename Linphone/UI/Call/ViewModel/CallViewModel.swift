@@ -54,6 +54,10 @@ class CallViewModel: ObservableObject {
 	@Published var activeSpeakerName: String = ""
 	@Published var myParticipantModel: ParticipantModel?
 	@Published var callMediaEncryptionModel = CallMediaEncryptionModel()
+	@Published var callStatsModel = CallStatsModel()
+	
+	@Published var qualityValue: Float = 0.0
+	@Published var qualityIcon = "cell-signal-full"
 
 	private var mConferenceSuscriptions = Set<AnyCancellable?>()
 	
@@ -153,6 +157,9 @@ class CallViewModel: ObservableObject {
 				
 				if self.currentCall != nil {
 					self.callMediaEncryptionModel.update(call: self.currentCall!)
+					if self.currentCall!.audioStats != nil {
+						self.callStatsModel.update(call: self.currentCall!, stats: self.currentCall!.audioStats!)
+					}
 				}
 				
 				DispatchQueue.main.async {
@@ -201,6 +208,14 @@ class CallViewModel: ObservableObject {
 						self.callMediaEncryptionModel.update(call: self.currentCall!)
 					}
 				})
+				
+				self.callSuscriptions.insert(self.currentCall!.publisher?.onStatsUpdated?.postOnMainQueue {(cbVal: (call: Call, stats: CallStats)) in
+					if self.currentCall != nil {
+						self.callStatsModel.update(call: self.currentCall!, stats: cbVal.stats)
+					}
+				})
+				
+				self.updateCallQualityIcon()
 			}
 		}
 	}
@@ -575,6 +590,7 @@ class CallViewModel: ObservableObject {
 			if core.callsNb == 0 {
 				DispatchQueue.main.async {
 					self.timer.upstream.connect().cancel()
+					self.currentCall = nil
 				}
 			}
 		}
@@ -964,6 +980,33 @@ class CallViewModel: ObservableObject {
 					}
 				}
 			})
+		}
+	}
+	
+	func updateCallQualityIcon() {
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+			self.coreContext.doOnCoreQueue { core in
+				if self.currentCall != nil {
+					let quality = self.currentCall!.currentQuality
+					let icon = switch floor(quality) {
+					case 4, 5: "cell-signal-full"
+					case 3: "cell-signal-high"
+					case 2: "cell-signal-medium"
+					case 1: "cell-signal-low"
+					default: "cell-signal-none"
+					}
+					
+					print("iconiconicon \(icon) \(self.currentCall!.currentQuality)")
+					DispatchQueue.main.async {
+						self.qualityValue = quality
+						self.qualityIcon = icon
+					}
+					
+					if core.callsNb > 0 {
+						self.updateCallQualityIcon()
+					}
+				}
+			}
 		}
 	}
 }

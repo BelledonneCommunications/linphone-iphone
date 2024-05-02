@@ -42,6 +42,7 @@ struct CallView: View {
 	@State var audioRouteSheet: Bool = false
 	@State var changeLayoutSheet: Bool = false
 	@State var mediaEncryptedSheet: Bool = false
+	@State var callStatisticsSheet: Bool = false
 	@State var optionsAudioRoute: Int = 1
 	@State var optionsChangeLayout: Int = 2
 	@State var imageAudioRoute: String = ""
@@ -70,6 +71,12 @@ struct CallView: View {
 						}) {
 							mediaEncryptedSheetBottomSheet()
 								.presentationDetents([.medium])
+						}
+						.sheet(isPresented: $callStatisticsSheet, onDismiss: {
+							callStatisticsSheet = false
+						}) {
+							callStatisticsSheetBottomSheet()
+								.presentationDetents(!callViewModel.callStatsModel.isVideoEnabled ? [.fraction(0.3)] : [.medium])
 						}
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
@@ -100,6 +107,12 @@ struct CallView: View {
 							mediaEncryptedSheetBottomSheet()
 								.presentationDetents([.medium])
 						}
+						.sheet(isPresented: $callStatisticsSheet, onDismiss: {
+							callStatisticsSheet = false
+						}) {
+							callStatisticsSheetBottomSheet()
+								.presentationDetents(!callViewModel.callStatsModel.isVideoEnabled ? [.fraction(0.3)] : [.medium])
+						}
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
 						}) {
@@ -126,6 +139,11 @@ struct CallView: View {
 							mediaEncryptedSheetBottomSheet()
 						} onDismiss: {
 							mediaEncryptedSheet = false
+						}
+						.halfSheet(showSheet: $callStatisticsSheet) {
+							callStatisticsSheetBottomSheet()
+						} onDismiss: {
+							callStatisticsSheet = false
 						}
 						.halfSheet(showSheet: $audioRouteSheet) {
 							audioRouteBottomSheet()
@@ -263,6 +281,74 @@ struct CallView: View {
 		.background(Color.gray600)
 	}
 	
+	@ViewBuilder
+	func callStatisticsSheetBottomSheet() -> some View {
+		VStack {
+			if idiom != .pad && (orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+				Spacer()
+				HStack {
+					Spacer()
+					Button("Close") {
+						mediaEncryptedSheet = false
+					}
+				}
+				.padding(.trailing)
+			} else {
+				Capsule()
+					.fill(Color.grayMain2c300)
+					.frame(width: 75, height: 5)
+					.padding(15)
+			}
+			
+			Text("Audio")
+				.default_text_style_white_600(styleSize: 15)
+				.padding(.top, 10)
+			
+			Spacer()
+			
+			Text(callViewModel.callStatsModel.audioCodec)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			Text(callViewModel.callStatsModel.audioBandwidth)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			if callViewModel.callStatsModel.isVideoEnabled {
+				Text("Vidéo")
+					.default_text_style_white_600(styleSize: 15)
+					.padding(.top, 10)
+				
+				Spacer()
+				
+				Text(callViewModel.callStatsModel.videoCodec)
+					.default_text_style_white(styleSize: 15)
+				
+				Spacer()
+				
+				Text(callViewModel.callStatsModel.videoBandwidth)
+					.default_text_style_white(styleSize: 15)
+				
+				Spacer()
+				
+				Text(callViewModel.callStatsModel.videoResolution)
+					.default_text_style_white(styleSize: 15)
+				
+				Spacer()
+				
+				Text(callViewModel.callStatsModel.videoFps)
+					.default_text_style_white(styleSize: 15)
+				
+				Spacer()
+			}
+		}
+		.frame(maxWidth: .infinity)
+		.background(Color.gray600)
+	}
 	@ViewBuilder
 	func audioRouteBottomSheet() -> some View {
 		VStack(spacing: 0) {
@@ -533,8 +619,9 @@ struct CallView: View {
 							Spacer()
 							
 							Button {
+								callStatisticsSheet = true
 							} label: {
-								Image("cell-signal-full")
+								Image(callViewModel.qualityIcon)
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(.white)

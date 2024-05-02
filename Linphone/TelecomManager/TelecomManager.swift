@@ -398,7 +398,6 @@ class TelecomManager: ObservableObject {
 					} else {
 						self.remoteConfVideo = false
 					}
-					
 				} else {
 					self.remoteConfVideo = false
 					

@@ -53,8 +53,6 @@ class CallMediaEncryptionModel: ObservableObject {
 							mediaEncryptionTmp = "Media encryption: " + "ZRTP"
 						case .DTLS:
 							mediaEncryptionTmp = "Media encryption: " + "DTLS"
-						default:
-							mediaEncryptionTmp = "Media encryption: " + "None"
 						}
 					}
 					
