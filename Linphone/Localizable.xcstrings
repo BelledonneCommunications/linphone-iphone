@@ -49,6 +49,9 @@
     "#" : {
 
     },
+    "%@" : {
+
+    },
     "%lld" : {
 
     },
@@ -61,6 +64,9 @@
           }
         }
       }
+    },
+    "%lld appels" : {
+
     },
     "%lld Book (Example)" : {
       "extractionState" : "manual",

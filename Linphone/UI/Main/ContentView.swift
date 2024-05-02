@@ -73,7 +73,28 @@ struct ContentView: View {
 			VStack(spacing: 0) {
 				if telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.calls.count == 1) || callViewModel.calls.count > 1) {
 					HStack {
+						Image("phone")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 26, height: 26)
+							.padding(.leading, 10)
 						
+						if callViewModel.calls.count > 1 {
+							Text("\(callViewModel.calls.count) appels")
+								.default_text_style_white(styleSize: 16)
+						} else {
+							Text("\(callViewModel.displayName)")
+								.default_text_style_white(styleSize: 16)
+						}
+						
+						Spacer()
+						
+						if callViewModel.calls.count == 1 {
+							Text("\(callViewModel.isPaused || telecomManager.isPausedByRemote ? "En pause" : "Actif")")
+								.default_text_style_white(styleSize: 16)
+								.padding(.trailing, 10)
+						}
 					}
 					.frame(maxWidth: .infinity)
 					.frame(height: 30)

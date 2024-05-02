@@ -113,6 +113,9 @@ class TelecomManager: ObservableObject {
 			
 			setHeldOtherCalls(core: core, exceptCallid: "")
 			requestTransaction(transaction, action: "startCall")
+			withAnimation {
+				self.callDisplayed = true
+			}
 		} else {
 			try doCall(core: core, addr: addr!, isSas: isSas, isVideo: isVideo, isConference: isConference)
 		}

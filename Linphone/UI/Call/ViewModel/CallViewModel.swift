@@ -61,7 +61,7 @@ class CallViewModel: ObservableObject {
 
 	private var mConferenceSuscriptions = Set<AnyCancellable?>()
 	
-	var calls: [Call] = []
+	@Published var calls: [Call] = []
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 	
@@ -996,7 +996,6 @@ class CallViewModel: ObservableObject {
 					default: "cell-signal-none"
 					}
 					
-					print("iconiconicon \(icon) \(self.currentCall!.currentQuality)")
 					DispatchQueue.main.async {
 						self.qualityValue = quality
 						self.qualityIcon = icon
