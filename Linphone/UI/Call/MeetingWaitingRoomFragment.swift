@@ -386,6 +386,21 @@ struct MeetingWaitingRoomFragment: View {
 						.frame(width: 35, height: 35)
 					
 					Spacer()
+					
+					Button(action: {
+						meetingWaitingRoomViewModel.cancelMeeting()
+					}, label: {
+						Text("Annuler")
+							.default_text_style_white_600(styleSize: 20)
+							.frame(height: 35)
+							.frame(maxWidth: .infinity)
+					})
+					.padding(.horizontal, 20)
+					.padding(.vertical, 10)
+					.background(Color.orangeMain500)
+					.cornerRadius(60)
+					.padding(.bottom)
+					.padding(.horizontal, 10)
 				}
 			}
 			

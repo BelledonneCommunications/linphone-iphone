@@ -53,6 +53,7 @@ class CallViewModel: ObservableObject {
 	@Published var activeSpeakerParticipant: ParticipantModel?
 	@Published var activeSpeakerName: String = ""
 	@Published var myParticipantModel: ParticipantModel?
+	@Published var callMediaEncryptionModel = CallMediaEncryptionModel()
 
 	private var mConferenceSuscriptions = Set<AnyCancellable?>()
 	
@@ -150,6 +151,10 @@ class CallViewModel: ObservableObject {
 				let isDeviceTrusted = self.currentCall!.authenticationTokenVerified && authToken != nil
 				let isRemoteDeviceTrustedTmp = self.telecomManager.callInProgress ? isDeviceTrusted : false
 				
+				if self.currentCall != nil {
+					self.callMediaEncryptionModel.update(call: self.currentCall!)
+				}
+				
 				DispatchQueue.main.async {
 					self.direction = directionTmp
 					self.remoteAddressString = remoteAddressStringTmp
@@ -192,6 +197,9 @@ class CallViewModel: ObservableObject {
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnMainQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
 					_ = self.updateEncryption()
+					if self.currentCall != nil {
+						self.callMediaEncryptionModel.update(call: self.currentCall!)
+					}
 				})
 			}
 		}

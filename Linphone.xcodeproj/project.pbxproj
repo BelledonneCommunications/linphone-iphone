@@ -41,6 +41,7 @@
 		D70A26F02B7D02E6006CC8FC /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */; };
 		D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
+		D714035B2BE11E00004BD8CA /* CallMediaEncryptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
 		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
 		D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */; };
@@ -191,6 +192,7 @@
 		D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFragment.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMediaEncryptionModel.swift; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
 		D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneUtils.swift; sourceTree = "<group>"; };
@@ -523,6 +525,7 @@
 			isa = PBXGroup;
 			children = (
 				D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */,
+				D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1000,6 +1003,7 @@
 				6613A0B42BAEBE3F008923A4 /* MeetingViewModel.swift in Sources */,
 				D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */,
 				66C492012B24DB6900CEA16D /* Log.swift in Sources */,
+				D714035B2BE11E00004BD8CA /* CallMediaEncryptionModel.swift in Sources */,
 				6613A0B62BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift in Sources */,
 				D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */,
 				D7CEE0382B7A214F00FD79B7 /* ConversationsListViewModel.swift in Sources */,

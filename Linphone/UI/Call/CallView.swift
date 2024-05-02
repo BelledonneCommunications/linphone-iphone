@@ -41,6 +41,7 @@ struct CallView: View {
 	
 	@State var audioRouteSheet: Bool = false
 	@State var changeLayoutSheet: Bool = false
+	@State var mediaEncryptedSheet: Bool = false
 	@State var optionsAudioRoute: Int = 1
 	@State var optionsChangeLayout: Int = 2
 	@State var imageAudioRoute: String = ""
@@ -64,6 +65,12 @@ struct CallView: View {
 			ZStack {
 				if #available(iOS 16.4, *), idiom != .pad {
 					innerView(geometry: geo)
+						.sheet(isPresented: $mediaEncryptedSheet, onDismiss: {
+							mediaEncryptedSheet = false
+						}) {
+							mediaEncryptedSheetBottomSheet()
+								.presentationDetents([.medium])
+						}
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
 						}) {
@@ -87,6 +94,12 @@ struct CallView: View {
 						}
 				} else if #available(iOS 16.0, *), idiom != .pad {
 					innerView(geometry: geo)
+						.sheet(isPresented: $mediaEncryptedSheet, onDismiss: {
+							mediaEncryptedSheet = false
+						}) {
+							mediaEncryptedSheetBottomSheet()
+								.presentationDetents([.medium])
+						}
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
 						}) {
@@ -109,6 +122,11 @@ struct CallView: View {
 						}
 				} else {
 					innerView(geometry: geo)
+						.halfSheet(showSheet: $mediaEncryptedSheet) {
+							mediaEncryptedSheetBottomSheet()
+						} onDismiss: {
+							mediaEncryptedSheet = false
+						}
 						.halfSheet(showSheet: $audioRouteSheet) {
 							audioRouteBottomSheet()
 						} onDismiss: {
@@ -166,6 +184,83 @@ struct CallView: View {
 				callViewModel.disableAVAudioSession()
 			}
 		}
+	}
+	
+	@ViewBuilder
+	func mediaEncryptedSheetBottomSheet() -> some View {
+		VStack {
+			if idiom != .pad && (orientation == .landscapeLeft
+								 || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+				Spacer()
+				HStack {
+					Spacer()
+					Button("Close") {
+						mediaEncryptedSheet = false
+					}
+				}
+				.padding(.trailing)
+			} else {
+				Capsule()
+					.fill(Color.grayMain2c300)
+					.frame(width: 75, height: 5)
+					.padding(15)
+			}
+			
+			Text("Chiffrement du média")
+				.default_text_style_white_600(styleSize: 15)
+				.padding(.top, 10)
+			
+			Spacer()
+			
+			Text(callViewModel.callMediaEncryptionModel.mediaEncryption)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			Text(callViewModel.callMediaEncryptionModel.zrtpCipher)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			Text(callViewModel.callMediaEncryptionModel.zrtpKeyAgreement)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			Text(callViewModel.callMediaEncryptionModel.zrtpHash)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			Text(callViewModel.callMediaEncryptionModel.zrtpAuthTag)
+				.default_text_style_white(styleSize: 15)
+			
+			Spacer()
+			
+			Text(callViewModel.callMediaEncryptionModel.zrtpAuthSas)
+				.default_text_style_white(styleSize: 15)
+				.padding(.bottom, 10)
+			
+			Spacer()
+			
+			Button(action: {
+				callViewModel.showZrtpSasDialogIfPossible()
+				mediaEncryptedSheet = false
+			}, label: {
+				Text("Faire la validation à nouveau")
+					.default_text_style_white_600(styleSize: 20)
+					.frame(height: 35)
+					.frame(maxWidth: .infinity)
+			})
+			.padding(.horizontal, 20)
+			.padding(.vertical, 10)
+			.background(Color.orangeMain500)
+			.cornerRadius(60)
+			.padding(.bottom)
+			.padding(.horizontal, 10)
+		}
+		.background(Color.gray600)
 	}
 	
 	@ViewBuilder
@@ -479,7 +574,7 @@ struct CallView: View {
 								Spacer()
 							}
 							.onTapGesture {
-								callViewModel.showZrtpSasDialogIfPossible()
+								mediaEncryptedSheet = true
 							}
 							.frame(height: 40)
 						 	.zIndex(1)

@@ -193,6 +193,9 @@
     "All modifications will be canceled." : {
 
     },
+    "Annuler" : {
+
+    },
     "Appel" : {
 
     },
@@ -256,6 +259,9 @@
 
     },
     "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
+
+    },
+    "Chiffrement du média" : {
 
     },
     "Clear logs" : {
@@ -373,6 +379,9 @@
 
     },
     "Etes-vous sûr de vouloir supprimer %@ ?" : {
+
+    },
+    "Faire la validation à nouveau" : {
 
     },
     "Favourites" : {

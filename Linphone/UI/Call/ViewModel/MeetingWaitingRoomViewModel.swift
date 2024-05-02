@@ -263,4 +263,12 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 			}
 		}
 	}
+	
+	func cancelMeeting() {
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				self.telecomManager.terminateCall(call: core.currentCall!)
+			}
+		}
+	}
 }
