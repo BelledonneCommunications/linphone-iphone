@@ -321,6 +321,8 @@ struct EditContactFragment: View {
 									HStack(alignment: .center) {
 										TextField("SIP address", text: $editContactViewModel.sipAddresses[index])
 											.default_text_style(styleSize: 15)
+											.disableAutocorrection(true)
+									  		.autocapitalization(.none)
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)

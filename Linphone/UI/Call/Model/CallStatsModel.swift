@@ -56,7 +56,7 @@ class CallStatsModel: ObservableObject {
 					if call.currentParams != nil {
 						let payloadType = call.currentParams!.usedVideoPayloadType
 						let clockRate = (payloadType?.clockRate != nil ? payloadType!.clockRate : 0) / 1000
-						let codecLabel = "Codec: " + "\(payloadType!.mimeType)/\(clockRate) kHz"
+						let codecLabel = "Codec: " + "\(payloadType != nil ? payloadType!.mimeType : "null")/\(clockRate) kHz"
 						
 						let uploadBandwidth = Int(stats.uploadBandwidth.rounded())
 						let downloadBandwidth = Int(stats.downloadBandwidth.rounded())
