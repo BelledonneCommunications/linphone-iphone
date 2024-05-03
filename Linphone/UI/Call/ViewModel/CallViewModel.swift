@@ -98,6 +98,9 @@ class CallViewModel: ObservableObject {
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				self.currentCall = core.currentCall
 				
+				self.callSuscriptions.removeAll()
+				self.mConferenceSuscriptions.removeAll()
+				
 				var videoDisplayedTmp = false
 				do {
 					let params = try core.createCallParams(call: self.currentCall)

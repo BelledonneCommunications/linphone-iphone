@@ -784,7 +784,7 @@ struct ContentView: View {
 								showingDialer: $showingDialer,
 								resetCallView: {callViewModel.resetCallView()}
 							)
-							.zIndex(4)
+							.zIndex(6)
 							.transition(.opacity.combined(with: .move(edge: .bottom)))
 							.sheet(isPresented: $showingDialer) {
 								DialerBottomSheet(
@@ -803,7 +803,7 @@ struct ContentView: View {
 								showingDialer: $showingDialer,
 								resetCallView: {callViewModel.resetCallView()}
 							)
-							.zIndex(4)
+							.zIndex(6)
 							.transition(.opacity.combined(with: .move(edge: .bottom)))
 							.halfSheet(showSheet: $showingDialer) {
 								DialerBottomSheet(
@@ -938,11 +938,16 @@ struct ContentView: View {
 							.transition(.scale.combined(with: .move(edge: .top)))
 							.onAppear {
 								callViewModel.resetCallView()
+								if callViewModel.calls.count >= 1 {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+										callViewModel.resetCallView()
+									}
+								}
 							}
 					}
 					
 					ToastView()
-						.zIndex(3)
+						.zIndex(6)
 				}
 			}
 			.onAppear {

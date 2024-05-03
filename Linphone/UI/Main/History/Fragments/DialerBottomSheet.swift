@@ -58,7 +58,7 @@ struct DialerBottomSheet: View {
 					.padding(.trailing)
 				} else {
 					Capsule()
-						.fill(Color.grayMain2c300)
+						.fill(currentCall != nil ? .white : Color.grayMain2c300)
 						.frame(width: 75, height: 5)
 						.padding(15)
 				}
@@ -66,6 +66,7 @@ struct DialerBottomSheet: View {
 				if currentCall != nil {
 					HStack {
 						Text(dialerField)
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 25)
 							.frame(maxWidth: .infinity)
 							.padding(.horizontal, 10)
@@ -76,7 +77,9 @@ struct DialerBottomSheet: View {
 							dialerField = String(dialerField.dropLast())
 						} label: {
 							Image("backspace-fill")
+								.renderingMode(.template)
 								.resizable()
+								.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c500)
 								.frame(width: 32, height: 32)
 							
 						}
@@ -106,10 +109,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("1")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -130,10 +134,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("2")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -154,10 +159,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("3")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -180,10 +186,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("4")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -204,10 +211,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("5")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -228,10 +236,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("6")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -255,10 +264,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("7")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -279,10 +289,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("8")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -303,10 +314,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("9")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -330,10 +342,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("*")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -345,14 +358,16 @@ struct DialerBottomSheet: View {
 						} label: {
 							ZStack {
 								Text("0")
+									.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 									.default_text_style(styleSize: 32)
 									.multilineTextAlignment(.center)
 									.frame(width: 60, height: 75)
 									.padding(.top, -15)
-									.background(.white)
+									.background(currentCall != nil ? Color.gray500 : .white)
 									.clipShape(Circle())
 									.shadow(color: .black.opacity(0.2), radius: 4)
 								Text("+")
+									.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 									.default_text_style(styleSize: 20)
 									.multilineTextAlignment(.center)
 									.frame(width: 60, height: 85)
@@ -384,10 +399,11 @@ struct DialerBottomSheet: View {
 							}
 						} label: {
 							Text("0")
+								.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 								.default_text_style(styleSize: 32)
 								.multilineTextAlignment(.center)
 								.frame(width: 60, height: 60)
-								.background(.white)
+								.background(currentCall != nil ? Color.gray500 : .white)
 								.clipShape(Circle())
 								.shadow(color: .black.opacity(0.2), radius: 4)
 						}
@@ -409,10 +425,11 @@ struct DialerBottomSheet: View {
 						}
 					} label: {
 						Text("#")
+							.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
 							.default_text_style(styleSize: 32)
 							.multilineTextAlignment(.center)
 							.frame(width: 60, height: 60)
-							.background(.white)
+							.background(currentCall != nil ? Color.gray500 : .white)
 							.clipShape(Circle())
 							.shadow(color: .black.opacity(0.2), radius: 4)
 					}
@@ -474,7 +491,7 @@ struct DialerBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			.frame(maxHeight: .infinity)
 		}
-		.background(Color.gray100)
+		.background(currentCall != nil ? Color.gray600 : Color.gray100)
 		.frame(maxWidth: .infinity)
 		.frame(maxHeight: .infinity)
 		.onRotate { newOrientation in
