@@ -35,6 +35,7 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	@Published var videoDisplayed: Bool = false
 	@Published var avatarDisplayed: Bool = true
 	@Published var imageAudioRoute: String = ""
+	@Published var meetingDate: String = ""
 	
 	init() {
 		do {
@@ -89,6 +90,23 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					
 					let micMuttedTmp = !core.micEnabled
 					
+					let timeInterval = TimeInterval(conf!.dateTime)
+					let date = Date(timeIntervalSince1970: timeInterval)
+					let dateFormatter = DateFormatter()
+					dateFormatter.dateStyle = .full
+					dateFormatter.timeStyle = .none
+					let dateTmp = dateFormatter.string(from: date)
+					
+					let timeFormatter = DateFormatter()
+					timeFormatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+					let timeTmp = timeFormatter.string(from: date)
+					
+					let timeBisInterval = TimeInterval(conf!.dateTime + (Int(conf!.duration) * 60))
+					let timeBis = Date(timeIntervalSince1970: timeBisInterval)
+					let timeBisTmp = timeFormatter.string(from: timeBis)
+					
+					let meetingDateTmp = "\(dateTmp) | \(timeTmp) - \(timeBisTmp)"
+					
 					DispatchQueue.main.async {
 						if self.telecomManager.meetingWaitingRoomName.isEmpty || self.telecomManager.meetingWaitingRoomName != confNameTmp {
 							self.telecomManager.meetingWaitingRoomName = confNameTmp
@@ -97,6 +115,7 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 						self.userName = userNameTmp
 						self.avatarModel = avatarModelTmp
 						self.micMutted = micMuttedTmp
+						self.meetingDate = meetingDateTmp
 					}
 					
 				}

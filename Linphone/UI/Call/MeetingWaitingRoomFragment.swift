@@ -135,7 +135,7 @@ struct MeetingWaitingRoomFragment: View {
 				}
 				.hidden()
 				
-				Text("Mercredi 10 Avril 2024 | 2:41 PM - 2:42 PM")
+				Text(meetingWaitingRoomViewModel.meetingDate)
 					.foregroundStyle(.white)
 					.default_text_style_white(styleSize: 12)
 				
