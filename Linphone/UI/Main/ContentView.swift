@@ -112,9 +112,10 @@ struct ContentView: View {
 							if orientation == .landscapeLeft
 								|| orientation == .landscapeRight
 								|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-								VStack {
+								VStack(spacing: 0) {
 									Group {
 										Spacer()
+										
 										Button(action: {
 											self.index = 0
 											historyViewModel.displayedCall = nil
@@ -135,8 +136,8 @@ struct ContentView: View {
 												}
 											}
 										})
-										
-										Spacer()
+										.padding(.top)
+										.frame(height: geometry.size.height/4)
 										
 										ZStack {
 											if historyListViewModel.missedCallsCount > 0 {
@@ -184,8 +185,7 @@ struct ContentView: View {
 											})
 											.padding(.top)
 										}
-										
-										Spacer()
+										.frame(height: geometry.size.height/4)
 										
 										ZStack {
 											if conversationsListViewModel.unreadMessages > 0 {
@@ -231,11 +231,36 @@ struct ContentView: View {
 											})
 											.padding(.top)
 										}
+										.frame(height: geometry.size.height/4)
+										
+										Button(action: {
+											self.index = 3
+											contactViewModel.indexDisplayedFriend = nil
+											historyViewModel.displayedCall = nil
+											conversationViewModel.displayedConversation = nil
+										}, label: {
+											VStack {
+												Image("meetings")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(self.index == 3 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if self.index == 0 {
+													Text("Meetings")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("Meetings")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										.padding(.top)
+										.frame(height: geometry.size.height/4)
 										
 										Spacer()
 									}
 								}
-								.frame(width: 75)
+								.frame(width: 75, height: geometry.size.height)
 								.padding(.leading,
 										 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
 										 ? -geometry.safeAreaInsets.leading
