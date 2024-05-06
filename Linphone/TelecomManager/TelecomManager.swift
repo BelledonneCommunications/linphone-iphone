@@ -620,6 +620,11 @@ class TelecomManager: ObservableObject {
 				//if core.callsNb == 0 {
 				DispatchQueue.main.async {
 					if core.callsNb == 0 {
+						do {
+							try core.setVideodevice(newValue: "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1")
+						} catch _ {
+							
+						}
 						withAnimation {
 							self.outgoingCallStarted = false
 							self.callInProgress = false

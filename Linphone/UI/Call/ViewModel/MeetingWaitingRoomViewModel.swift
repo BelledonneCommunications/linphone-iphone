@@ -54,6 +54,12 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 				
 				let conf = core.findConferenceInformationFromUri(uri: self.telecomManager.meetingWaitingRoomSelected!)
 				
+				do {
+					try core.setVideodevice(newValue: "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1")
+				} catch _ {
+					
+				}
+				
 				if conf != nil && conf!.uri != nil {
 					let confNameTmp = conf?.subject ?? "Conference"
 					var userNameTmp = ""
@@ -129,7 +135,6 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					self.videoDisplayed = true
 				}
-				self.videoDisplayed = true
 				core.videoPreviewEnabled = true
 			}
 		}
