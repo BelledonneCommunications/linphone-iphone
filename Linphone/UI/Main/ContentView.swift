@@ -962,12 +962,16 @@ struct ContentView: View {
 							.zIndex(5)
 							.transition(.scale.combined(with: .move(edge: .top)))
 							.onAppear {
+								UIApplication.shared.isIdleTimerDisabled = true
 								callViewModel.resetCallView()
 								if callViewModel.calls.count >= 1 {
 									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 										callViewModel.resetCallView()
 									}
 								}
+							}
+							.onDisappear {
+								UIApplication.shared.isIdleTimerDisabled = false
 							}
 					}
 					
