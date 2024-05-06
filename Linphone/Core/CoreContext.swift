@@ -115,7 +115,7 @@ final class CoreContext: ObservableObject {
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
-					self.hasDefaultAccount = true
+					self.hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
 					self.coreIsStarted = true
 				} else if cbVal.state == GlobalState.Off {
 					self.hasDefaultAccount = false
