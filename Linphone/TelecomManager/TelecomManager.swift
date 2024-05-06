@@ -402,11 +402,7 @@ class TelecomManager: ObservableObject {
 						self.remoteConfVideo = false
 					}
 				} else {
-					self.remoteConfVideo = false
-					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .SendOnly
-					}
+					self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
 				}
 				
 				/*

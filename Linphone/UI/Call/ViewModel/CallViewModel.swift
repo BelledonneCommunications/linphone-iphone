@@ -104,7 +104,7 @@ class CallViewModel: ObservableObject {
 				var videoDisplayedTmp = false
 				do {
 					let params = try core.createCallParams(call: self.currentCall)
-					videoDisplayedTmp = params.videoDirection == MediaDirection.SendRecv || params.videoDirection == MediaDirection.SendOnly
+					videoDisplayedTmp = params.videoEnabled && params.videoDirection == .SendRecv || params.videoDirection == .SendOnly
 				} catch {
 					
 				}

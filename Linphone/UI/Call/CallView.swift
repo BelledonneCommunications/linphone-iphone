@@ -676,9 +676,7 @@ struct CallView: View {
 			.frame(height: geometry.size.height)
 			.frame(maxWidth: .infinity)
 			.background(Color.gray900)
-			.if(fullscreenVideo && !telecomManager.isPausedByRemote) { view in
-				view.ignoresSafeArea(.all)
-			}
+			
 			
 			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 				if telecomManager.callStarted {
@@ -792,30 +790,48 @@ struct CallView: View {
 					Spacer()
 				}
 				
-				LinphoneVideoViewHolder { view in
-					coreContext.doOnCoreQueue { core in
-						core.nativeVideoWindow = view
+				if telecomManager.remoteConfVideo {
+					LinphoneVideoViewHolder { view in
+						coreContext.doOnCoreQueue { core in
+							core.nativeVideoWindow = view
+						}
 					}
-				}
-				.frame(
-					width:
-						angleDegree == 0
-					? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
-					: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
-					height:
-						angleDegree == 0
-					? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
-					: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
-				)
-				.scaledToFill()
-				.clipped()
-				.onTapGesture {
-					if callViewModel.videoDisplayed {
-						fullscreenVideo.toggle()
+					.frame(
+						width:
+							angleDegree == 0
+						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
+						height:
+							angleDegree == 0
+						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
+						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+					)
+					.scaledToFill()
+					.clipped()
+					.onTapGesture {
+						if telecomManager.remoteConfVideo {
+							fullscreenVideo.toggle()
+						}
+					}
+					.onAppear {
+						if callViewModel.videoDisplayed {
+							callViewModel.videoDisplayed = false
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								callViewModel.videoDisplayed = true
+							}
+						}
+					}
+					.onDisappear {
+						if callViewModel.videoDisplayed {
+							callViewModel.videoDisplayed = false
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								callViewModel.videoDisplayed = true
+							}
+						}
 					}
 				}
 				
-				if callViewModel.videoDisplayed && telecomManager.remoteConfVideo {
+				if callViewModel.videoDisplayed {
 					HStack {
 						Spacer()
 						VStack {
@@ -866,7 +882,7 @@ struct CallView: View {
 					)
 				}
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
-				let heightValue = (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
+				let heightValue = (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
 				if optionsChangeLayout == 1 && callViewModel.participantList.count <= 5 {
 					mosaicMode(geometry: geometry, height: heightValue)
 				} else if optionsChangeLayout == 3 {
@@ -919,6 +935,9 @@ struct CallView: View {
 					)
 					
 					Spacer()
+				}
+				.onAppear {
+					fullscreenVideo = false
 				}
 				
 				HStack {
@@ -1038,7 +1057,7 @@ struct CallView: View {
 					}
 					.frame(
 						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom - 160 : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
 					)
 					
 					Spacer()
@@ -1117,7 +1136,7 @@ struct CallView: View {
 					}
 					.frame(
 						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom - 160 : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
 					)
 					
 					Spacer()
@@ -1127,33 +1146,27 @@ struct CallView: View {
 					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 				)
 				
-				if telecomManager.remoteConfVideo && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && displayVideo {
-					VStack {
+				VStack {
+					if telecomManager.remoteConfVideo && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && displayVideo {
 						VStack {
 							LinphoneVideoViewHolder { view in
 								coreContext.doOnCoreQueue { core in
 									core.nativeVideoWindow = view
 								}
 							}
-							.onTapGesture {
-								if callViewModel.videoDisplayed {
-									fullscreenVideo.toggle()
-								}
-							}
 						}
 						.frame(
 							width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-							height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
+							height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom - 160 : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 - 160 + geometry.safeAreaInsets.bottom
 						)
 						.cornerRadius(20)
-						
-						Spacer()
 					}
-					.frame(
-						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
-						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
-					)
+					Spacer()
 				}
+				.frame(
+					width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+					height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+				)
 			}
 			
 			if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil && callViewModel.activeSpeakerParticipant!.isMuted {
@@ -1236,7 +1249,7 @@ struct CallView: View {
 								.background(Color.gray600)
 								.overlay(
 									RoundedRectangle(cornerRadius: 20)
-										.stroke(callViewModel.myParticipantModel != nil && callViewModel.myParticipantModel!.isSpeaking ? .white : Color.gray600, lineWidth: 4)
+										.stroke(callViewModel.myParticipantModel != nil && callViewModel.myParticipantModel!.isSpeaking ? .white : .clear, lineWidth: 4)
 								)
 								.cornerRadius(20)
 								
@@ -1339,7 +1352,7 @@ struct CallView: View {
 										.background(Color.gray600)
 										.overlay(
 											RoundedRectangle(cornerRadius: 20)
-												.stroke(callViewModel.participantList[index].isSpeaking ? .white : Color.gray600, lineWidth: 4)
+												.stroke(callViewModel.participantList[index].isSpeaking ? .white : .clear, lineWidth: 4)
 										)
 										.cornerRadius(20)
 									}
@@ -1355,6 +1368,14 @@ struct CallView: View {
 				.padding(.bottom, 10)
 				.padding(.leading, -10)
 			}
+		}
+		.frame(
+			maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+			maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+		)
+		.contentShape(Rectangle())
+		.onTapGesture {
+			fullscreenVideo.toggle()
 		}
 		.onAppear {
 			optionsChangeLayout = 2
@@ -1485,7 +1506,7 @@ struct CallView: View {
 						.background(Color.gray600)
 						.overlay(
 		  					RoundedRectangle(cornerRadius: 20)
-								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : Color.gray600, lineWidth: 4)
+								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : .clear, lineWidth: 4)
 	  					)
 						.cornerRadius(20)
 					}
@@ -1594,7 +1615,7 @@ struct CallView: View {
 							.background(Color.gray600)
 							.overlay(
 								RoundedRectangle(cornerRadius: 20)
-									.stroke(callViewModel.participantList[index].isSpeaking ? .white : Color.gray600, lineWidth: 4)
+									.stroke(callViewModel.participantList[index].isSpeaking ? .white : .clear, lineWidth: 4)
 							)
 							.cornerRadius(20)
 						}
@@ -1721,7 +1742,7 @@ struct CallView: View {
 						.background(Color.gray600)
 						.overlay(
 							RoundedRectangle(cornerRadius: 20)
-								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : Color.gray600, lineWidth: 4)
+								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : .clear, lineWidth: 4)
 						)
 						.cornerRadius(20)
 					}
@@ -1830,13 +1851,21 @@ struct CallView: View {
 							.background(Color.gray600)
 							.overlay(
 								RoundedRectangle(cornerRadius: 20)
-									.stroke(callViewModel.participantList[index].isSpeaking ? .white : Color.gray600, lineWidth: 4)
+									.stroke(callViewModel.participantList[index].isSpeaking ? .white : .clear, lineWidth: 4)
 							)
 							.cornerRadius(20)
 						}
 					}
 				}
 			}
+		}
+		.frame(
+			maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+			maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
+		)
+		.contentShape(Rectangle())
+		.onTapGesture {
+			fullscreenVideo.toggle()
 		}
 	}
 	
@@ -1885,7 +1914,7 @@ struct CallView: View {
 						.background(Color.gray600)
 						.overlay(
 							RoundedRectangle(cornerRadius: 20)
-								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : Color.gray600, lineWidth: 4)
+								.stroke(callViewModel.myParticipantModel!.isSpeaking ? .white : .clear, lineWidth: 4)
 						)
 						.cornerRadius(20)
 					}
@@ -1927,7 +1956,7 @@ struct CallView: View {
 						.background(Color.gray600)
 						.overlay(
 							RoundedRectangle(cornerRadius: 20)
-								.stroke(callViewModel.participantList[index].isSpeaking ? .white : Color.gray600, lineWidth: 4)
+								.stroke(callViewModel.participantList[index].isSpeaking ? .white : .clear, lineWidth: 4)
 						)
 						.cornerRadius(20)
 					}
