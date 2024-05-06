@@ -422,7 +422,7 @@
 
 - (IBAction)onRegistrationStateClick:(id)sender {
 	if (linphone_core_get_default_account(LC)) {
-		linphone_core_refresh_registers(LC);
+		linphone_account_refresh_register(linphone_core_get_default_account(LC));
 	} else {
 		
 		MSList *accounts = [LinphoneManager.instance createAccountsNotHiddenList];
