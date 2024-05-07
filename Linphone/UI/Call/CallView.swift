@@ -69,25 +69,25 @@ struct CallView: View {
 						.sheet(isPresented: $mediaEncryptedSheet, onDismiss: {
 							mediaEncryptedSheet = false
 						}) {
-							mediaEncryptedSheetBottomSheet()
+							MediaEncryptedSheetBottomSheet(callViewModel: callViewModel, mediaEncryptedSheet: $mediaEncryptedSheet)
 								.presentationDetents([.medium])
 						}
 						.sheet(isPresented: $callStatisticsSheet, onDismiss: {
 							callStatisticsSheet = false
 						}) {
-							callStatisticsSheetBottomSheet()
+							CallStatisticsSheetBottomSheet(callViewModel: callViewModel, callStatisticsSheet: $callStatisticsSheet)
 								.presentationDetents(!callViewModel.callStatsModel.isVideoEnabled ? [.fraction(0.3)] : [.medium])
 						}
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
 						}) {
-							audioRouteBottomSheet()
+							AudioRouteBottomSheet(callViewModel: callViewModel, optionsAudioRoute: $optionsAudioRoute)
 								.presentationDetents([.fraction(0.3)])
 						}
 						.sheet(isPresented: $changeLayoutSheet, onDismiss: {
 							changeLayoutSheet = false
 						}) {
-							changeLayoutBottomSheet()
+							ChangeLayoutBottomSheet(callViewModel: callViewModel, changeLayoutSheet: $changeLayoutSheet, optionsChangeLayout: $optionsChangeLayout)
 								.presentationDetents([.fraction(0.3)])
 						}
 						.sheet(isPresented: $showingDialer) {
@@ -104,25 +104,25 @@ struct CallView: View {
 						.sheet(isPresented: $mediaEncryptedSheet, onDismiss: {
 							mediaEncryptedSheet = false
 						}) {
-							mediaEncryptedSheetBottomSheet()
+							MediaEncryptedSheetBottomSheet(callViewModel: callViewModel, mediaEncryptedSheet: $mediaEncryptedSheet)
 								.presentationDetents([.medium])
 						}
 						.sheet(isPresented: $callStatisticsSheet, onDismiss: {
 							callStatisticsSheet = false
 						}) {
-							callStatisticsSheetBottomSheet()
+							CallStatisticsSheetBottomSheet(callViewModel: callViewModel, callStatisticsSheet: $callStatisticsSheet)
 								.presentationDetents(!callViewModel.callStatsModel.isVideoEnabled ? [.fraction(0.3)] : [.medium])
 						}
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
 						}) {
-							audioRouteBottomSheet()
+							AudioRouteBottomSheet(callViewModel: callViewModel, optionsAudioRoute: $optionsAudioRoute)
 								.presentationDetents([.fraction(0.3)])
 						}
 						.sheet(isPresented: $changeLayoutSheet, onDismiss: {
 							changeLayoutSheet = false
 						}) {
-							changeLayoutBottomSheet()
+							ChangeLayoutBottomSheet(callViewModel: callViewModel, changeLayoutSheet: $changeLayoutSheet, optionsChangeLayout: $optionsChangeLayout)
 								.presentationDetents([.fraction(0.3)])
 						}
 						.sheet(isPresented: $showingDialer) {
@@ -136,22 +136,22 @@ struct CallView: View {
 				} else {
 					innerView(geometry: geo)
 						.halfSheet(showSheet: $mediaEncryptedSheet) {
-							mediaEncryptedSheetBottomSheet()
+							MediaEncryptedSheetBottomSheet(callViewModel: callViewModel, mediaEncryptedSheet: $mediaEncryptedSheet)
 						} onDismiss: {
 							mediaEncryptedSheet = false
 						}
 						.halfSheet(showSheet: $callStatisticsSheet) {
-							callStatisticsSheetBottomSheet()
+							CallStatisticsSheetBottomSheet(callViewModel: callViewModel, callStatisticsSheet: $callStatisticsSheet)
 						} onDismiss: {
 							callStatisticsSheet = false
 						}
 						.halfSheet(showSheet: $audioRouteSheet) {
-							audioRouteBottomSheet()
+							AudioRouteBottomSheet(callViewModel: callViewModel, optionsAudioRoute: $optionsAudioRoute)
 						} onDismiss: {
 							audioRouteSheet = false
 						}
 						.halfSheet(showSheet: $changeLayoutSheet) {
-							changeLayoutBottomSheet()
+							ChangeLayoutBottomSheet(callViewModel: callViewModel, changeLayoutSheet: $changeLayoutSheet, optionsChangeLayout: $optionsChangeLayout)
 						} onDismiss: {
 							changeLayoutSheet = false
 						}
@@ -202,358 +202,6 @@ struct CallView: View {
 				callViewModel.disableAVAudioSession()
 			}
 		}
-	}
-	
-	@ViewBuilder
-	func mediaEncryptedSheetBottomSheet() -> some View {
-		VStack {
-			if idiom != .pad && (orientation == .landscapeLeft
-								 || orientation == .landscapeRight
-								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-				Spacer()
-				HStack {
-					Spacer()
-					Button("Close") {
-						mediaEncryptedSheet = false
-					}
-				}
-				.padding(.trailing)
-			} else {
-				Capsule()
-					.fill(Color.grayMain2c300)
-					.frame(width: 75, height: 5)
-					.padding(15)
-			}
-			
-			Text("Chiffrement du média")
-				.default_text_style_white_600(styleSize: 15)
-				.padding(.top, 10)
-			
-			Spacer()
-			
-			Text(callViewModel.callMediaEncryptionModel.mediaEncryption)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			Text(callViewModel.callMediaEncryptionModel.zrtpCipher)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			Text(callViewModel.callMediaEncryptionModel.zrtpKeyAgreement)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			Text(callViewModel.callMediaEncryptionModel.zrtpHash)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			Text(callViewModel.callMediaEncryptionModel.zrtpAuthTag)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			Text(callViewModel.callMediaEncryptionModel.zrtpAuthSas)
-				.default_text_style_white(styleSize: 15)
-				.padding(.bottom, 10)
-			
-			Spacer()
-			
-			Button(action: {
-				callViewModel.showZrtpSasDialogIfPossible()
-				mediaEncryptedSheet = false
-			}, label: {
-				Text("Faire la validation à nouveau")
-					.default_text_style_white_600(styleSize: 20)
-					.frame(height: 35)
-					.frame(maxWidth: .infinity)
-			})
-			.padding(.horizontal, 20)
-			.padding(.vertical, 10)
-			.background(Color.orangeMain500)
-			.cornerRadius(60)
-			.padding(.bottom)
-			.padding(.horizontal, 10)
-		}
-		.background(Color.gray600)
-	}
-	
-	@ViewBuilder
-	func callStatisticsSheetBottomSheet() -> some View {
-		VStack {
-			if idiom != .pad && (orientation == .landscapeLeft
-								 || orientation == .landscapeRight
-								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-				Spacer()
-				HStack {
-					Spacer()
-					Button("Close") {
-						mediaEncryptedSheet = false
-					}
-				}
-				.padding(.trailing)
-			} else {
-				Capsule()
-					.fill(Color.grayMain2c300)
-					.frame(width: 75, height: 5)
-					.padding(15)
-			}
-			
-			Text("Audio")
-				.default_text_style_white_600(styleSize: 15)
-				.padding(.top, 10)
-			
-			Spacer()
-			
-			Text(callViewModel.callStatsModel.audioCodec)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			Text(callViewModel.callStatsModel.audioBandwidth)
-				.default_text_style_white(styleSize: 15)
-			
-			Spacer()
-			
-			if callViewModel.callStatsModel.isVideoEnabled {
-				Text("Vidéo")
-					.default_text_style_white_600(styleSize: 15)
-					.padding(.top, 10)
-				
-				Spacer()
-				
-				Text(callViewModel.callStatsModel.videoCodec)
-					.default_text_style_white(styleSize: 15)
-				
-				Spacer()
-				
-				Text(callViewModel.callStatsModel.videoBandwidth)
-					.default_text_style_white(styleSize: 15)
-				
-				Spacer()
-				
-				Text(callViewModel.callStatsModel.videoResolution)
-					.default_text_style_white(styleSize: 15)
-				
-				Spacer()
-				
-				Text(callViewModel.callStatsModel.videoFps)
-					.default_text_style_white(styleSize: 15)
-				
-				Spacer()
-			}
-		}
-		.frame(maxWidth: .infinity)
-		.background(Color.gray600)
-	}
-	@ViewBuilder
-	func audioRouteBottomSheet() -> some View {
-		VStack(spacing: 0) {
-			Button(action: {
-				optionsAudioRoute = 1
-				
-				do {
-					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-					if callViewModel.isHeadPhoneAvailable() {
-						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
-					} else {
-						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
-					}
-				} catch _ {
-					
-				}
-			}, label: {
-				HStack {
-					Image(optionsAudioRoute == 1 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text(!callViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image(!callViewModel.isHeadPhoneAvailable() ? "ear" : "headset")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
-			
-			Button(action: {
-				optionsAudioRoute = 2
-				
-				do {
-					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-				} catch _ {
-					
-				}
-			}, label: {
-				HStack {
-					Image(optionsAudioRoute == 2 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text("Speaker")
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("speaker-high")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
-			
-			Button(action: {
-				optionsAudioRoute = 3
-				
-				do {
-					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-					try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
-				} catch _ {
-					
-				}
-			}, label: {
-				HStack {
-					Image(optionsAudioRoute == 3 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text("Bluetooth")
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("bluetooth")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
-		}
-		.padding(.horizontal, 20)
-		.background(Color.gray600)
-		.frame(maxHeight: .infinity)
-	}
-	
-	@ViewBuilder
-	func changeLayoutBottomSheet() -> some View {
-		VStack(spacing: 0) {
-			Button(action: {
-				optionsChangeLayout = 1
-				callViewModel.toggleVideoMode(isAudioOnlyMode: false)
-				changeLayoutSheet = false
-			}, label: {
-				HStack {
-					Image(optionsChangeLayout == 1 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(callViewModel.participantList.count > 5 ? Color.gray500 : .white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text("Mosaïque")
-						.foregroundStyle(callViewModel.participantList.count > 5 ? Color.gray500 : .white)
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("squares-four")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(callViewModel.participantList.count > 5 ? Color.gray500 : .white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.disabled(callViewModel.participantList.count > 5)
-			.frame(maxHeight: .infinity)
-			
-			Button(action: {
-				optionsChangeLayout = 2
-				callViewModel.toggleVideoMode(isAudioOnlyMode: false)
-				changeLayoutSheet = false
-			}, label: {
-				HStack {
-					Image(optionsChangeLayout == 2 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text("Participant actif")
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("picture-in-picture")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
-			
-			Button(action: {
-				optionsChangeLayout = 3
-				if callViewModel.videoDisplayed {
-					callViewModel.displayMyVideo()
-				}
-				callViewModel.toggleVideoMode(isAudioOnlyMode: true)
-				changeLayoutSheet = false
-			}, label: {
-				HStack {
-					Image(optionsChangeLayout == 3 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text("Audio seulement")
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("waveform")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
-		}
-		.padding(.horizontal, 20)
-		.background(Color.gray600)
-		.frame(maxHeight: .infinity)
 	}
 	
 	@ViewBuilder
