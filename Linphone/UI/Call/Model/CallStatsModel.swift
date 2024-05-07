@@ -43,6 +43,9 @@ class CallStatsModel: ObservableObject {
 						let clockRate = (payloadType?.clockRate != nil ? payloadType!.clockRate : 0) / 1000
 						let codecLabel = "Codec: " + "\(payloadType != nil ? payloadType!.mimeType : "")/\(clockRate) kHz"
 						
+						guard !(stats.uploadBandwidth.rounded().isNaN || stats.uploadBandwidth.rounded().isInfinite || stats.downloadBandwidth.rounded().isNaN || stats.downloadBandwidth.rounded().isInfinite) else {
+							return
+						}
 						let uploadBandwidth = Int(stats.uploadBandwidth.rounded())
 						let downloadBandwidth = Int(stats.downloadBandwidth.rounded())
 						let bandwidthLabel = "Bandwidth: " + "↑ \(uploadBandwidth) kbits/s ↓ \(downloadBandwidth) kbits/s"
@@ -58,6 +61,9 @@ class CallStatsModel: ObservableObject {
 						let clockRate = (payloadType?.clockRate != nil ? payloadType!.clockRate : 0) / 1000
 						let codecLabel = "Codec: " + "\(payloadType != nil ? payloadType!.mimeType : "null")/\(clockRate) kHz"
 						
+						guard !(stats.uploadBandwidth.rounded().isNaN || stats.uploadBandwidth.rounded().isInfinite || stats.downloadBandwidth.rounded().isNaN || stats.downloadBandwidth.rounded().isInfinite) else {
+							return
+						}
 						let uploadBandwidth = Int(stats.uploadBandwidth.rounded())
 						let downloadBandwidth = Int(stats.downloadBandwidth.rounded())
 						let bandwidthLabel = "Bandwidth: " + "↑ \(uploadBandwidth) kbits/s ↓ \(downloadBandwidth) kbits/s"

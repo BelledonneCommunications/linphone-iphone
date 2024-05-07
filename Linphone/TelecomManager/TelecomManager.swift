@@ -33,6 +33,7 @@ class CallAppData: NSObject {
 	
 }
 
+// swiftlint:disable type_body_length
 class TelecomManager: ObservableObject {
 	static let shared = TelecomManager()
 	static var uuidReplacedCall: String?
@@ -388,21 +389,33 @@ class TelecomManager: ObservableObject {
 				if call.conference != nil {
 					if call.conference!.activeSpeakerParticipantDevice != nil {
 						let direction = call.conference?.activeSpeakerParticipantDevice!.getStreamCapability(streamType: StreamType.Video)
-						self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+						self.remoteConfVideo = false
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+						}
 					} else if call.conference!.participantList.first != nil && call.conference!.participantDeviceList.first != nil
 								&& call.conference!.participantList.first?.address != nil
 								&& call.conference!.participantList.first!.address!.clone()!.equal(address2: (call.conference!.me?.address)!) {
 						let direction = call.conference!.participantDeviceList.first!.getStreamCapability(streamType: StreamType.Video)
-						self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+						self.remoteConfVideo = false
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+						}
 					} else if call.conference!.participantList.last != nil && call.conference!.participantDeviceList.last != nil
 								&& call.conference!.participantList.last?.address != nil {
 						let direction = call.conference!.participantDeviceList.last!.getStreamCapability(streamType: StreamType.Video)
-						self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+						self.remoteConfVideo = false
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
+						}
 					} else {
 						self.remoteConfVideo = false
 					}
 				} else {
-					self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
+					self.remoteConfVideo = false
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
+					}
 				}
 				
 				/*
@@ -715,5 +728,5 @@ class TelecomManager: ObservableObject {
 		])
 	}
 }
-
+// swiftlint:enable type_body_length
 // swiftlint:enable cyclomatic_complexity
