@@ -65,7 +65,9 @@ class ConversationsListViewModel: ObservableObject {
 				}
 				
 				DispatchQueue.main.async {
-					self.conversationsList[0] = conversationsListTmp.first!
+					if conversationsListTmp.first != nil {
+						self.conversationsList[0] = conversationsListTmp.first!
+					}
 				}
 			} else {
 				DispatchQueue.main.async {
