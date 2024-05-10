@@ -41,9 +41,7 @@ final class ContactsManager: ObservableObject {
 	
 	private var friendListSuscription: AnyCancellable?
 	
-	private init() {
-		fetchContacts()
-	}
+	private init() {}
 	
 	func fetchContacts() {
 		coreContext.doOnCoreQueue { core in

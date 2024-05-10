@@ -144,6 +144,7 @@ struct LinphoneApp: App {
 			if newPhase == .active {
 				Log.info("Entering foreground")
 				coreContext.onEnterForeground()
+				ContactsManager.shared.fetchContacts()
 			} else if newPhase == .inactive {
 			} else if newPhase == .background {
 				Log.info("Entering background")
