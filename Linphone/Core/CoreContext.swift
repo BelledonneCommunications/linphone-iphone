@@ -247,8 +247,6 @@ final class CoreContext: ObservableObject {
 				.sink { _ in
 					self.mCore.iterate()
 				}
-			
-			try? self.mCore.start()
 		}
 	}
 	
@@ -259,7 +257,7 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func onEnterForeground() {
-		coreQueue.async {
+		coreQueue.sync {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
 		
@@ -270,7 +268,7 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func onEnterBackground() {
-		coreQueue.async {
+		coreQueue.sync {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
 			Log.info("App is in background, un-PUBLISHING presence info")
