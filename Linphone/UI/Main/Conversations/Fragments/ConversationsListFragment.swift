@@ -134,18 +134,16 @@ struct ConversationsListFragment: View {
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {
-						withAnimation {
-							if conversationViewModel.displayedConversation != nil {
-								conversationViewModel.displayedConversation = nil
-								conversationViewModel.resetMessage()
-								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-								conversationViewModel.getMessages()
-							} else {
-								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-							}
-							conversationsListViewModel.conversationsList[index].markAsRead()
-							conversationsListViewModel.updateUnreadMessagesCount()
+						if conversationViewModel.displayedConversation != nil {
+							conversationViewModel.displayedConversation = nil
+							conversationViewModel.resetMessage()
+							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+							conversationViewModel.getMessages()
+						} else {
+							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
 						}
+						conversationsListViewModel.conversationsList[index].markAsRead()
+						conversationsListViewModel.updateUnreadMessagesCount()
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
 						conversationsListViewModel.selectedConversation = conversationsListViewModel.conversationsList[index]

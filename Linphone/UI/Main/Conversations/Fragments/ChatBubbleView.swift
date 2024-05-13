@@ -37,61 +37,7 @@ struct ChatBubbleView: View {
 				
 				VStack(alignment: message.isOutgoing ? .trailing : .leading) {
 					if !message.attachments.isEmpty {
-						if message.attachments.count == 1 {
-							let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
-							if message.attachments.first!.type == .image || message.attachments.first!.type == .gif {
-								if message.attachments.first!.type != .gif {
-									AsyncImage(url: message.attachments.first!.full) { image in
-										image.resizable()
-											.interpolation(.low)
-											.scaledToFit()
-											.clipShape(RoundedRectangle(cornerRadius: 4))
-									} placeholder: {
-										ProgressView()
-									}
-									.frame(
-										height: result.0 > result.1
-										? result.1 / (result.0 / (geometryProxy.size.width - 80))
-										: UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5
-									)
-								} else {
-									if result.0 < result.1 {
-										GifImageView(message.attachments.first!.full)
-											.clipShape(RoundedRectangle(cornerRadius: 4))
-											.frame(
-												width: result.1 > (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5)
-												? result.0 / (result.1 / (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5))
-												: result.0,
-												height: result.1 > (UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5)
-												? UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5
-												: result.1
-											)
-									} else {
-										GifImageView(message.attachments.first!.full)
-											.clipShape(RoundedRectangle(cornerRadius: 4))
-											.frame(
-												height: result.1 / (result.0 / (geometryProxy.size.width - 80))
-											)
-									}
-								}
-							} else {
-								let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
-								AsyncImage(url: message.attachments.first!.full) { image in
-									image.resizable()
-										.interpolation(.low)
-										.scaledToFit()
-										.clipShape(RoundedRectangle(cornerRadius: 4))
-								} placeholder: {
-									ProgressView()
-								}
-								.frame(
-									height: result.0 > result.1
-									? result.1 / (result.0 / (geometryProxy.size.width - 80))
-									: UIScreen.main.bounds.height > UIScreen.main.bounds.width ? UIScreen.main.bounds.height / 2.5 : UIScreen.main.bounds.width / 2.5
-								)
-							}
-						} else {
-						}
+						messageAttachments()
 					}
 					
 					if !message.text.isEmpty {
@@ -110,6 +56,56 @@ struct ChatBubbleView: View {
 			}
 			.padding(.leading, message.isOutgoing ? 40 : 0)
 			.padding(.trailing, !message.isOutgoing ? 40 : 0)
+		}
+	}
+	
+	@ViewBuilder
+	func messageAttachments() -> some View {
+		if message.attachments.count == 1 {
+			if message.attachments.first!.type == .image || message.attachments.first!.type == .gif {
+				let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
+				ZStack {
+					Rectangle()
+						.fill(Color(.white))
+						.aspectRatio(result.0/result.1, contentMode: .fit)
+						.if(result.0 < geometryProxy.size.width - 110) { view in
+							view.frame(maxWidth: result.0)
+						}
+						.if(result.1 < geometryProxy.size.height/2) { view in
+							view.frame(maxHeight: result.1)
+						}
+						.if(result.0 >= result.1 && result.0 >= geometryProxy.size.width - 110 && result.1 >= geometryProxy.size.height/2.5) { view in
+							view.frame(
+								maxWidth: geometryProxy.size.width - 110,
+								maxHeight: result.1 * ((geometryProxy.size.width - 110) / result.0)
+							)
+						}
+						.if(result.0 < result.1 && result.1 >= geometryProxy.size.height/2.5) { view in
+							view.frame(
+								maxWidth: result.0 * ((geometryProxy.size.height/2.5) / result.1),
+								maxHeight: geometryProxy.size.height/2.5
+							)
+						}
+					
+					if message.attachments.first!.type == .image {
+						AsyncImage(url: message.attachments.first!.full) { image in
+							image
+								.resizable()
+								.interpolation(.medium)
+								.aspectRatio(contentMode: .fill)
+						} placeholder: {
+							ProgressView()
+						}
+						.layoutPriority(-1)
+					} else {
+						GifImageView(message.attachments.first!.full)
+							.layoutPriority(-1)
+							.clipShape(RoundedRectangle(cornerRadius: 4))
+					}
+				}
+				.clipShape(RoundedRectangle(cornerRadius: 4))
+				.clipped()
+			}
 		}
 	}
 	
