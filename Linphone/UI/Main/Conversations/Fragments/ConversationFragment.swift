@@ -217,6 +217,7 @@ struct ConversationFragment: View {
 								conversationViewModel.resetMessage()
 							}
 						} else {
+							/*
 							ScrollViewReader { proxy in
 								List {
 									ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
@@ -265,6 +266,7 @@ struct ConversationFragment: View {
 									conversationViewModel.resetMessage()
 								}
 							}
+							*/
 						}
 						
 						HStack(spacing: 0) {

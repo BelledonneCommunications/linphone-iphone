@@ -36,9 +36,8 @@ class ConversationViewModel: ObservableObject {
 	
 	private var chatRoomSuscriptions = Set<AnyCancellable?>()
 	
-	@Published var conversationMessagesList: [LinphoneCustomEventLog] = []
-	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var conversationMessagesIds: [String] = []
+	@Published var conversationMessagesSection: [MessagesSection] = []
 	
 	init() {}
 	
@@ -97,13 +96,10 @@ class ConversationViewModel: ObservableObject {
 		self.getUnreadMessagesCount()
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
-				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
+				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
 				
 				var conversationMessage: [Message] = []
 				historyEvents.enumerated().forEach { index, eventLog in
-					DispatchQueue.main.async {
-						self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
-					}
 					
 					var attachmentList: [Attachment] = []
 					var contentText = ""
@@ -130,12 +126,11 @@ class ConversationViewModel: ObservableObject {
 						isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
 						text: contentText,
 					attachments: attachmentList))
-					
-					DispatchQueue.main.async {
-						if index == historyEvents.count - 1 {
-							self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: conversationMessage.reversed()))
-							self.conversationMessagesIds.append(UUID().uuidString)
-						}
+				}
+				
+				DispatchQueue.main.async {
+					if self.conversationMessagesSection.isEmpty {
+						self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: conversationMessage.reversed()))
 					}
 				}
 			}
@@ -145,14 +140,11 @@ class ConversationViewModel: ObservableObject {
 	func getOldMessages() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
-				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesList.count, end: self.conversationMessagesList.count + 30)
-				var conversationMessagesListTmp: [LinphoneCustomEventLog] = []
+				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
 				var conversationMessagesTmp: [Message] = []
 				
 				historyEvents.reversed().forEach { eventLog in
-					conversationMessagesListTmp.insert(LinphoneCustomEventLog(eventLog: eventLog), at: 0)
-					
-					var attachmentList: [Attachment] = []
+					let attachmentList: [Attachment] = []
 					var contentText = ""
 					
 					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
@@ -175,7 +167,6 @@ class ConversationViewModel: ObservableObject {
 				
 				if !conversationMessagesTmp.isEmpty {
 					DispatchQueue.main.async {
-						self.conversationMessagesList.insert(contentsOf: conversationMessagesListTmp, at: 0)
 						self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
 					}
 				}
@@ -186,10 +177,6 @@ class ConversationViewModel: ObservableObject {
 	func getNewMessages(eventLogs: [EventLog]) {
 		var conversationMessage: [Message] = []
 		eventLogs.enumerated().forEach { index, eventLog in
-			DispatchQueue.main.async {
-				self.conversationMessagesList.append(LinphoneCustomEventLog(eventLog: eventLog))
-			}
-			
 			var attachmentList: [Attachment] = []
 			var contentText = ""
 			
@@ -230,7 +217,6 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func resetMessage() {
-		conversationMessagesList = []
 		conversationMessagesSection = []
 	}
 	
