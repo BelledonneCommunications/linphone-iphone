@@ -74,13 +74,13 @@ struct ChatBubbleView: View {
 						.if(result.1 < geometryProxy.size.height/2) { view in
 							view.frame(maxHeight: result.1)
 						}
-						.if(result.0 >= result.1 && result.0 >= geometryProxy.size.width - 110 && result.1 >= geometryProxy.size.height/2.5) { view in
+						.if(result.0 >= result.1 && geometryProxy.size.width > 0 && result.0 >= geometryProxy.size.width - 110 && result.1 >= geometryProxy.size.height/2.5) { view in
 							view.frame(
 								maxWidth: geometryProxy.size.width - 110,
 								maxHeight: result.1 * ((geometryProxy.size.width - 110) / result.0)
 							)
 						}
-						.if(result.0 < result.1 && result.1 >= geometryProxy.size.height/2.5) { view in
+						.if(result.0 < result.1 && geometryProxy.size.width > 0 && result.1 >= geometryProxy.size.height/2.5) { view in
 							view.frame(
 								maxWidth: result.0 * ((geometryProxy.size.height/2.5) / result.1),
 								maxHeight: geometryProxy.size.height/2.5

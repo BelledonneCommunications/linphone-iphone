@@ -128,9 +128,7 @@ class ConversationModel: ObservableObject {
 	func call() {
 		coreContext.doOnCoreQueue { _ in
 			if self.chatRoom.peerAddress != nil {
-				TelecomManager.shared.doCallWithCore(
-					addr: self.chatRoom.peerAddress!, isVideo: false, isConference: false
-				)
+				TelecomManager.shared.doCallOrJoinConf(address: self.chatRoom.peerAddress!)
 			}
 		}
 	}

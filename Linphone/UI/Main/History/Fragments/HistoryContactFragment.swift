@@ -413,13 +413,9 @@ struct HistoryContactFragment: View {
 										if historyViewModel.displayedCallIsConference.isEmpty {
 											Button(action: {
 												if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-													telecomManager.doCallWithCore(
-														addr: historyViewModel.displayedCall!.toAddress!, isVideo: false, isConference: false
-													)
+													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.toAddress!)
 												} else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
-													telecomManager.doCallWithCore(
-														addr: historyViewModel.displayedCall!.fromAddress!, isVideo: false, isConference: false
-													)
+													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.fromAddress!)
 												}
 											}, label: {
 												VStack {
@@ -473,13 +469,9 @@ struct HistoryContactFragment: View {
 											
 											Button(action: {
 												if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-													telecomManager.doCallWithCore(
-														addr: historyViewModel.displayedCall!.toAddress!, isVideo: true, isConference: false
-													)
+													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.toAddress!, isVideo: true)
 												} else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
-													telecomManager.doCallWithCore(
-														addr: historyViewModel.displayedCall!.fromAddress!, isVideo: true, isConference: false
-													)
+													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.fromAddress!, isVideo: true)
 												}
 											}, label: {
 												VStack {
@@ -511,9 +503,7 @@ struct HistoryContactFragment: View {
 																telecomManager.meetingWaitingRoomSelected = meetingAddress
 															} catch {}
 														} else {
-															telecomManager.doCallWithCore(
-																addr: historyViewModel.displayedCall!.toAddress!, isVideo: false, isConference: false
-															)
+															telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.toAddress!)
 														}
 													} else if historyViewModel.displayedCall!.fromAddress != nil {
 														if historyViewModel.displayedCall!.fromAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
@@ -524,9 +514,7 @@ struct HistoryContactFragment: View {
 																telecomManager.meetingWaitingRoomSelected = meetingAddress
 															} catch {}
 														} else {
-															telecomManager.doCallWithCore(
-																addr: historyViewModel.displayedCall!.fromAddress!, isVideo: false, isConference: false
-															)
+															telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.fromAddress!)
 														}
 													}
 												}

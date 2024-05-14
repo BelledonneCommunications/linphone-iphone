@@ -93,9 +93,7 @@ struct ContactInnerActionsFragment: View {
 						.background(.white)
 						.onTapGesture {
 							withAnimation {
-								telecomManager.doCallWithCore(
-									addr: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index], isVideo: false, isConference: false
-								)
+								telecomManager.doCallOrJoinConf(address: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index])
 							}
 						}
 						.onLongPressGesture(minimumDuration: 0.2) {

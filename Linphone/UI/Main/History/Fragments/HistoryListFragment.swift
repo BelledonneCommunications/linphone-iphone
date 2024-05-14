@@ -257,31 +257,9 @@ struct HistoryListFragment: View {
 	
 	func doCall(index: Int) {
 		if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-			if historyListViewModel.callLogs[index].toAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
-				do {
-					let meetingAddress = try Factory.Instance.createAddress(addr: historyListViewModel.callLogs[index].toAddress!.asStringUriOnly())
-					
-					telecomManager.meetingWaitingRoomDisplayed = true
-					telecomManager.meetingWaitingRoomSelected = meetingAddress
-				} catch {}
-			} else {
-				telecomManager.doCallWithCore(
-					addr: historyListViewModel.callLogs[index].toAddress!, isVideo: false, isConference: false
-				)
-			}
+			telecomManager.doCallOrJoinConf(address: historyListViewModel.callLogs[index].toAddress!)
 		} else if historyListViewModel.callLogs[index].fromAddress != nil {
-			if historyListViewModel.callLogs[index].fromAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
-				do {
-					let meetingAddress = try Factory.Instance.createAddress(addr: historyListViewModel.callLogs[index].fromAddress!.asStringUriOnly())
-					
-					telecomManager.meetingWaitingRoomDisplayed = true
-					telecomManager.meetingWaitingRoomSelected = meetingAddress
-				} catch {}
-			} else {
-				telecomManager.doCallWithCore(
-					addr: historyListViewModel.callLogs[index].fromAddress!, isVideo: false, isConference: false
-				)
-			}
+			telecomManager.doCallOrJoinConf(address: historyListViewModel.callLogs[index].fromAddress!)
 		}
 	}
 }

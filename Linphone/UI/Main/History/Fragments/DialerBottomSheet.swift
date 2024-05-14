@@ -451,7 +451,7 @@ struct DialerBottomSheet: View {
 							if !startCallViewModel.searchField.isEmpty {
 								do {
 									let address = try Factory.Instance.createAddress(addr: String("sip:" + startCallViewModel.searchField + "@" + startCallViewModel.domain))
-									telecomManager.doCallWithCore(addr: address, isVideo: false, isConference: false)
+									telecomManager.doCallOrJoinConf(address: address)
 								} catch {
 									
 								}

@@ -219,7 +219,7 @@ struct StartCallFragment: View {
 								
 								withAnimation {
 									isShowStartCallFragment.toggle()
-									telecomManager.doCallWithCore(addr: addr, isVideo: false, isConference: false)
+									telecomManager.doCallOrJoinConf(address: addr)
 								}
 							}
 						})
@@ -304,9 +304,7 @@ struct StartCallFragment: View {
 					withAnimation {
 						isShowStartCallFragment.toggle()
 						if contactsManager.lastSearchSuggestions[index].address != nil {
-							telecomManager.doCallWithCore(
-								addr: contactsManager.lastSearchSuggestions[index].address!, isVideo: false, isConference: false
-							)
+							telecomManager.doCallOrJoinConf(address: contactsManager.lastSearchSuggestions[index].address!)
 						}
 					}
 				}
