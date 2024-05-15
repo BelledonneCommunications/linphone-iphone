@@ -306,13 +306,12 @@ final class ContactsManager: ObservableObject {
 		let clonedAddress = address.clone()
 		clonedAddress!.clean()
 		let sipUri = clonedAddress!.asStringUriOnly()
+		
 		if friendList != nil {
 			var friend: Friend?
-			self.coreContext.doOnCoreQueue { _ in
-				friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-				if friend == nil {
-					friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-				}
+			friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+			if friend == nil {
+				friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
 			}
 			
 			return friend

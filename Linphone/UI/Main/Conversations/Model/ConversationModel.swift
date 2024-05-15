@@ -221,19 +221,15 @@ class ConversationModel: ObservableObject {
 	
 	func refreshAvatarModel() {
 		coreContext.doOnCoreQueue { _ in
-			let addressFriend =
-			(self.chatRoom.participants.first != nil && self.chatRoom.participants.first!.address != nil)
-			? self.contactsManager.getFriendWithAddress(address: self.chatRoom.participants.first!.address!)
-			: nil
-			
-			if addressFriend != nil && !self.isGroup {
-				let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
-					$0.friend!.name == addressFriend!.name
-					&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-				}) ?? ContactAvatarModel(friend: nil, name: self.subject, withPresence: false)
-				
-				DispatchQueue.main.async {
-					self.avatarModel = avatarModelTmp
+			if !self.isGroup {
+				if self.chatRoom.participants.first != nil && self.chatRoom.participants.first!.address != nil {
+					let avatarModelTmp = ContactAvatarModel.getAvatarModelFromAddress(address: self.chatRoom.participants.first!.address!)
+					let subjectTmp = avatarModelTmp.name
+					
+					DispatchQueue.main.async {
+						self.avatarModel = avatarModelTmp
+						self.subject = subjectTmp
+					}
 				}
 			}
 		}
@@ -242,7 +238,6 @@ class ConversationModel: ObservableObject {
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		coreContext.doOnCoreQueue { _ in
 			let result = chatMessage.downloadContent(content: content)
-			print("resultresult download \(result)")
 		}
 	}
 	

@@ -183,10 +183,16 @@ class ConversationViewModel: ObservableObject {
 			if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
 				eventLog.chatMessage!.contents.forEach { content in
 					if content.isText {
-						print("contentscontents text")
 						contentText = content.utf8Text ?? ""
 					} else {
-						print("contentscontents \(content.isText)")
+						if content.filePath == nil || content.filePath!.isEmpty {
+							self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+						} else {
+							if URL(string: self.getNewFilePath(name: content.name ?? "")) != nil {
+								let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
+								attachmentList.append(attachment)
+							}
+						}
 					}
 				}
 			}
