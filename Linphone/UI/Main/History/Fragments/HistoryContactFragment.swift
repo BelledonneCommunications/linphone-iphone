@@ -628,7 +628,7 @@ struct HistoryContactFragment: View {
 
 #Preview {
 	HistoryContactFragment(
-		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", withPresence: false),
+		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
 		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
 		contactViewModel: ContactViewModel(),

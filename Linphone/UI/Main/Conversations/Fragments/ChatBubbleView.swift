@@ -30,32 +30,106 @@ struct ChatBubbleView: View {
 	
 	var body: some View {
 		VStack {
-			HStack {
-				if message.isOutgoing {
-					Spacer()
-				}
-				
-				VStack(alignment: message.isOutgoing ? .trailing : .leading) {
-					if !message.attachments.isEmpty {
-						messageAttachments()
+			if !message.text.isEmpty || !message.attachments.isEmpty {
+				HStack {
+					if message.isOutgoing {
+						Spacer()
 					}
 					
-					if !message.text.isEmpty {
-						Text(message.text)
-							   .foregroundStyle(Color.grayMain2c700)
-							   .default_text_style(styleSize: 16)
+					if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
+						VStack {
+							Avatar(
+								contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == message.address}) ??
+								ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
+								avatarSize: 35
+							)
+							.padding(.top, 30)
+							
+							Spacer()
+						}
+					} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing {
+						VStack {
+							Avatar(
+								contactAvatarModel: ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
+								avatarSize: 35
+							)
+							
+							Spacer()
+						}
+						.hidden()
+					}
+					
+					VStack(alignment: .leading, spacing: 0) {
+						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
+							Text(conversationViewModel.participantConversationModel.first(where: {$0.address == message.address})?.name ?? "")
+								.default_text_style(styleSize: 12)
+								.padding(.top, 10)
+								.padding(.bottom, 2)
+						}
+						ZStack {
+							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && message.isFirstMessage {
+								VStack {
+									if message.isOutgoing {
+										Spacer()
+									}
+									
+									HStack {
+										if message.isOutgoing {
+											Spacer()
+										}
+										
+										VStack {
+										}
+										.frame(width: 15, height: 15)
+										.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+										.clipShape(RoundedRectangle(cornerRadius: 2))
+										
+										if !message.isOutgoing {
+											Spacer()
+										}
+									}
+									
+									if !message.isOutgoing {
+										Spacer()
+									}
+								}
+							}
+							
+							HStack {
+								if message.isOutgoing {
+									Spacer()
+								}
+								
+								VStack(alignment: message.isOutgoing ? .trailing : .leading) {
+									if !message.attachments.isEmpty {
+										messageAttachments()
+									}
+									
+									if !message.text.isEmpty {
+										Text(message.text)
+											.foregroundStyle(Color.grayMain2c700)
+											.default_text_style(styleSize: 16)
+									}
+								}
+								.padding(.all, 15)
+								.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+								.clipShape(RoundedRectangle(cornerRadius: 16))
+								
+								if !message.isOutgoing {
+									Spacer()
+								}
+							}
+						}
+						.frame(maxWidth: .infinity)
+					}
+					
+					if !message.isOutgoing {
+						Spacer()
 					}
 				}
-				.padding(.all, 15)
-				.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-				.clipShape(RoundedRectangle(cornerRadius: 16))
-				
-				if !message.isOutgoing {
-					Spacer()
-				}
+				.padding(.leading, message.isOutgoing ? 40 : 0)
+				.padding(.trailing, !message.isOutgoing ? 40 : 0)
 			}
-			.padding(.leading, message.isOutgoing ? 40 : 0)
-			.padding(.trailing, !message.isOutgoing ? 40 : 0)
 		}
 	}
 	

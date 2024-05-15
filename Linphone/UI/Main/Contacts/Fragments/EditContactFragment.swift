@@ -155,7 +155,12 @@ struct EditContactFragment: View {
 									&& !editContactViewModel.selectedEditFriend!.photo!.isEmpty && selectedImage == nil && !removedImage {
 									
 									Avatar(contactAvatarModel: 
-											ContactAvatarModel(friend: editContactViewModel.selectedEditFriend!, name: editContactViewModel.selectedEditFriend?.name ?? "", withPresence: false), avatarSize: 100
+											ContactAvatarModel(
+												friend: editContactViewModel.selectedEditFriend!,
+												name: editContactViewModel.selectedEditFriend?.name ?? "",
+												address: editContactViewModel.selectedEditFriend?.address?.asStringUriOnly() ?? "",
+												withPresence: false
+											), avatarSize: 100
 									)
 									
 								} else if selectedImage == nil {

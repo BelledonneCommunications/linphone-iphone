@@ -61,6 +61,8 @@ public struct Message: Identifiable, Hashable {
 	public var createdAt: Date
 	public var isOutgoing: Bool
 
+	public var address: String
+	public var isFirstMessage: Bool
 	public var text: String
 	public var attachments: [Attachment]
 	public var recording: Recording?
@@ -71,6 +73,8 @@ public struct Message: Identifiable, Hashable {
 		status: Status? = nil,
 		createdAt: Date = Date(),
 		isOutgoing: Bool,
+		address: String,
+		isFirstMessage: Bool = false,
 		text: String = "",
 		attachments: [Attachment] = [],
 		recording: Recording? = nil,
@@ -80,6 +84,8 @@ public struct Message: Identifiable, Hashable {
 		self.status = status
 		self.createdAt = createdAt
 		self.isOutgoing = isOutgoing
+		self.isFirstMessage = isFirstMessage
+		self.address = address
 		self.text = text
 		self.attachments = attachments
 		self.recording = recording
@@ -111,6 +117,8 @@ public struct Message: Identifiable, Hashable {
 				status: status,
 				createdAt: draft.createdAt,
 				isOutgoing: draft.isOutgoing,
+				address: draft.address,
+				isFirstMessage: draft.isFirstMessage,
 				text: draft.text,
 				attachments: attachments,
 				recording: draft.recording,
@@ -127,7 +135,7 @@ extension Message {
 
 extension Message: Equatable {
 	public static func == (lhs: Message, rhs: Message) -> Bool {
-		lhs.id == rhs.id && lhs.status == rhs.status
+		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage
 	}
 }
 
@@ -150,18 +158,24 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 
 	public var id: String
 
+	public var address: String
+	public var isFirstMessage: Bool
 	public var text: String
 	public var isOutgoing: Bool
 	public var attachments: [Attachment]
 	public var recording: Recording?
 
 	public init(id: String,
+				address: String,
+				isFirstMessage: Bool = false,
 				text: String = "",
 				isOutgoing: Bool,
 				attachments: [Attachment] = [],
 				recording: Recording? = nil) {
 
 		self.id = id
+		self.address = address
+		self.isFirstMessage = isFirstMessage
 		self.text = text
 		self.isOutgoing = isOutgoing
 		self.attachments = attachments
@@ -169,20 +183,22 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 	}
 
 	func toMessage() -> Message {
-		Message(id: id, isOutgoing: isOutgoing, text: text, attachments: attachments, recording: recording)
+		Message(id: id, isOutgoing: isOutgoing, address: address, isFirstMessage: isFirstMessage, text: text, attachments: attachments, recording: recording)
 	}
 }
 
 public extension Message {
 
 	func toReplyMessage() -> ReplyMessage {
-		ReplyMessage(id: id, text: text, isOutgoing: isOutgoing, attachments: attachments, recording: recording)
+		ReplyMessage(id: id, address: address, isFirstMessage: isFirstMessage, text: text, isOutgoing: isOutgoing, attachments: attachments, recording: recording)
 	}
 }
 
 public struct DraftMessage {
 	public var id: String?
 	public let isOutgoing: Bool
+	public let address: String
+	public let isFirstMessage: Bool
 	public let text: String
 	public let medias: [Media]
 	public let recording: Recording?
@@ -191,6 +207,8 @@ public struct DraftMessage {
 
 	public init(id: String? = nil,
 				isOutgoing: Bool,
+				address: String,
+				isFirstMessage: Bool,
 				text: String,
 				medias: [Media],
 				recording: Recording?,
@@ -198,6 +216,8 @@ public struct DraftMessage {
 				createdAt: Date) {
 		self.id = id
 		self.isOutgoing = isOutgoing
+		self.address = address
+		self.isFirstMessage = isFirstMessage
 		self.text = text
 		self.medias = medias
 		self.recording = recording

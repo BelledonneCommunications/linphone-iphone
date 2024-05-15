@@ -86,7 +86,14 @@ final class MagicSearchSingleton: ObservableObject {
 				
 				self.contactsManager.lastSearch.forEach { searchResult in
 					if searchResult.friend != nil {
-						self.contactsManager.avatarListModel.append(ContactAvatarModel(friend: searchResult.friend!, name: searchResult.friend?.name ?? "", withPresence: true))
+						self.contactsManager.avatarListModel.append(
+							ContactAvatarModel(
+								friend: searchResult.friend!,
+								name: searchResult.friend?.name ?? "",
+								address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+								withPresence: true
+							)
+						)
 					}
 				}
 				

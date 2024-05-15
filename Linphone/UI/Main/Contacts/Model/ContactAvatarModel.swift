@@ -27,6 +27,8 @@ class ContactAvatarModel: ObservableObject {
 	
 	let name: String
 	
+	let address: String
+	
 	let withPresence: Bool?
 	
 	@Published var lastPresenceInfo: String
@@ -35,9 +37,10 @@ class ContactAvatarModel: ObservableObject {
 	
 	private var friendSuscription: AnyCancellable?
 	
-	init(friend: Friend?, name: String, withPresence: Bool?) {
+	init(friend: Friend?, name: String, address: String, withPresence: Bool?) {
 		self.friend = friend
 		self.name = name
+		self.address = address
 		self.withPresence = withPresence
 		if friend != nil &&
 			withPresence == true {
@@ -122,12 +125,12 @@ class ContactAvatarModel: ObservableObject {
 			})
 			
 			if avatarModel == nil {
-				avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, withPresence: false)
+				avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: address.asStringUriOnly(), withPresence: false)
 			}
 			return avatarModel!
 		} else {
 			let name = address.displayName != nil ? address.displayName! : address.username!
-			return ContactAvatarModel(friend: nil, name: name, withPresence: false)
+			return ContactAvatarModel(friend: nil, name: name, address: address.asStringUriOnly(), withPresence: false)
 		}
 	}
 }

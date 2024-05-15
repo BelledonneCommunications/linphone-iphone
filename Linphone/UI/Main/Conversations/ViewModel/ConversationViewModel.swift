@@ -38,6 +38,7 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var conversationMessagesIds: [String] = []
 	@Published var conversationMessagesSection: [MessagesSection] = []
+	@Published var participantConversationModel: [ContactAvatarModel] = []
 	
 	init() {}
 	
@@ -91,9 +92,25 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func getParticipantConversationModel() {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				self.displayedConversation!.chatRoom.participants.forEach { participant in
+					if participant.address != nil {
+						let avatarModelTmp = ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!)
+						DispatchQueue.main.async {
+							self.participantConversationModel.append(avatarModelTmp)
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	func getMessages() {
 		self.getHistorySize()
 		self.getUnreadMessagesCount()
+		self.getParticipantConversationModel()
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
@@ -121,11 +138,30 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					
-					conversationMessage.append(Message(
-						id: UUID().uuidString,
-						isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-						text: contentText,
-					attachments: attachmentList))
+					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					addressPrecCleaned?.clean()
+					
+					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					addressNextCleaned?.clean()
+					
+					let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+					addressCleaned?.clean()
+					
+					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
+					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
+					
+					let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+					
+					conversationMessage.append(
+						Message(
+							id: UUID().uuidString,
+							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+							address: addressCleaned?.asStringUriOnly() ?? "",
+							isFirstMessage: isFirstMessageTmp,
+							text: contentText,
+							attachments: attachmentList
+						)
+					)
 				}
 				
 				DispatchQueue.main.async {
@@ -143,7 +179,7 @@ class ConversationViewModel: ObservableObject {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
 				var conversationMessagesTmp: [Message] = []
 				
-				historyEvents.reversed().forEach { eventLog in
+				historyEvents.enumerated().reversed().forEach { index, eventLog in
 					let attachmentList: [Attachment] = []
 					var contentText = ""
 					
@@ -155,10 +191,26 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					
+					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					addressPrecCleaned?.clean()
+					
+					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					addressNextCleaned?.clean()
+					
+					let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+					addressCleaned?.clean()
+					
+					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
+					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
+					
+					let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+					
 					conversationMessagesTmp.insert(
 						Message(
 							id: UUID().uuidString,
 							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+							address: addressCleaned?.asStringUriOnly() ?? "",
+							isFirstMessage: isFirstMessageTmp,
 							text: contentText,
 							attachments: attachmentList
 						), at: 0
@@ -167,6 +219,9 @@ class ConversationViewModel: ObservableObject {
 				
 				if !conversationMessagesTmp.isEmpty {
 					DispatchQueue.main.async {
+						if self.conversationMessagesSection[0].rows.last?.address == conversationMessagesTmp.last?.address {
+							self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].isFirstMessage = false
+						}
 						self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
 					}
 				}
@@ -175,7 +230,6 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewMessages(eventLogs: [EventLog]) {
-		var conversationMessage: [Message] = []
 		eventLogs.enumerated().forEach { index, eventLog in
 			var attachmentList: [Attachment] = []
 			var contentText = ""
@@ -197,14 +251,50 @@ class ConversationViewModel: ObservableObject {
 				}
 			}
 			
+			let addressPrecCleaned = index > 0 ? eventLogs[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+			addressPrecCleaned?.clean()
+			
+			let addressNextCleaned = index <= eventLogs.count - 2 ? eventLogs[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+			addressNextCleaned?.clean()
+			
+			let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+			addressCleaned?.clean()
+			
+			let isFirstMessageIncomingTmp = index > 0
+			? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly()
+			: (
+				self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty
+				? true
+				: self.conversationMessagesSection[0].rows[0].address != addressCleaned?.asStringUriOnly()
+			)
+			
+			let isFirstMessageOutgoingTmp = index <= eventLogs.count - 2
+			? addressNextCleaned?.asStringUriOnly() == addressCleaned?.asStringUriOnly()
+			: (
+				self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty
+				? true
+				: !self.conversationMessagesSection[0].rows[0].isOutgoing || self.conversationMessagesSection[0].rows[0].address == addressCleaned?.asStringUriOnly()
+			)
+			
+			let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+			
 			let message = Message(
 				id: UUID().uuidString,
 				isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+				address: addressCleaned?.asStringUriOnly() ?? "",
+				isFirstMessage: isFirstMessageTmp,
 				text: contentText,
 				attachments: attachmentList
 			)
 			
 			DispatchQueue.main.async {
+				if !self.conversationMessagesSection.isEmpty 
+					&& !self.conversationMessagesSection[0].rows.isEmpty
+					&& self.conversationMessagesSection[0].rows[0].isOutgoing
+					&& (self.conversationMessagesSection[0].rows[0].address == message.address) {
+					self.conversationMessagesSection[0].rows[0].isFirstMessage = false
+				}
+				
 				if self.conversationMessagesSection.isEmpty {
 					self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: [message]))
 				} else {

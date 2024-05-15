@@ -728,7 +728,7 @@ struct ContentView: View {
 									&& $0.friend!.name == addressFriend!.name
 									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
 								})
-								: ContactAvatarModel(friend: nil, name: "", withPresence: false)
+								: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
 								
 								if contactAvatarModel != nil {
 									HistoryContactFragment(

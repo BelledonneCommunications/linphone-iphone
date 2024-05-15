@@ -286,7 +286,7 @@ struct ContactInnerFragment: View {
 
 #Preview {
 	ContactInnerFragment(
-		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", withPresence: true),
+		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: true),
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		isShowDeletePopup: .constant(false),

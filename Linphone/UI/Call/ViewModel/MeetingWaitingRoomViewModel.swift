@@ -68,6 +68,8 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 						? ContactsManager.shared.getFriendWithAddress(address: core.defaultAccount!.contactAddress!)
 						: nil
 					
+					let addressTmp = friend?.address?.asStringUriOnly() ?? ""
+					
 					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
 						userNameTmp = friend!.address!.displayName!
 					} else {
@@ -82,8 +84,8 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					? ContactsManager.shared.avatarListModel.first(where: {
 						   $0.friend!.name == friend!.name
 						   && $0.friend!.address!.asStringUriOnly() == core.defaultAccount!.contactAddress!.asStringUriOnly()
-					   }) ?? ContactAvatarModel(friend: nil, name: userNameTmp, withPresence: false)
-					: ContactAvatarModel(friend: nil, name: userNameTmp, withPresence: false)
+					   }) ?? ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
+					: ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
 					
 					if core.videoEnabled && !core.videoPreviewEnabled {
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
