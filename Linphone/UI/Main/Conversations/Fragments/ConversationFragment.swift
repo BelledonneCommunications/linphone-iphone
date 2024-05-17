@@ -42,6 +42,8 @@ struct ConversationFragment: View {
 	@StateObject private var viewModel = ChatViewModel()
 	@StateObject private var paginationState = PaginationState()
 	
+	@State private var displayFloatingButton = false
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -158,8 +160,7 @@ struct ConversationFragment: View {
 									   isScrolledToBottom: $isScrolledToBottom,
 									   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
 									   geometryProxy: geometry,
-									   sections: conversationViewModel.conversationMessagesSection,
-									   ids: conversationViewModel.conversationMessagesIds
+									   sections: conversationViewModel.conversationMessagesSection
 								)
 								
 								if !isScrolledToBottom {
@@ -217,56 +218,99 @@ struct ConversationFragment: View {
 								conversationViewModel.resetMessage()
 							}
 						} else {
-							/*
 							ScrollViewReader { proxy in
-								List {
-									ForEach(0..<conversationViewModel.conversationMessagesList.count, id: \.self) { index in
-										if index < conversationViewModel.conversationMessagesSection.first!.rows.count {
-											ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
-											 .id(conversationViewModel.conversationMessagesList[index])
-											 .listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
-											 .listRowSeparator(.hidden)
-											 .scaleEffect(x: 1, y: -1, anchor: .center)
-											 .onAppear {
-												 if index == conversationViewModel.conversationMessagesList.count - 1 && conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesList.count {
-													 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-														 conversationViewModel.getOldMessages()
-													 }
-												 }
-											 }
+								ZStack(alignment: .bottomTrailing) {
+									List {
+										if conversationViewModel.conversationMessagesSection.first != nil {
+											let counter = conversationViewModel.conversationMessagesSection.first!.rows.count
+											ForEach(0..<counter, id: \.self) { index in
+												ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
+													.id(conversationViewModel.conversationMessagesSection.first!.rows[index].id)
+													.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
+													.listRowSeparator(.hidden)
+													.scaleEffect(x: 1, y: -1, anchor: .center)
+													.onAppear {
+														if index == counter - 1
+															&& conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesSection.first!.rows.count {
+															DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+																conversationViewModel.getOldMessages()
+															}
+														}
+														
+														if index == 0 {
+															displayFloatingButton = false
+														}
+													}
+													.onDisappear {
+														if index == 0 {
+															displayFloatingButton = true
+														}
+													}
+											}
 										}
 									}
+									.scaleEffect(x: 1, y: -1, anchor: .center)
+									.listStyle(.plain)
+									
+									if displayFloatingButton {
+										Button {
+											if conversationViewModel.conversationMessagesSection.first != nil && conversationViewModel.conversationMessagesSection.first!.rows.first != nil {
+												withAnimation {
+													proxy.scrollTo(conversationViewModel.conversationMessagesSection.first!.rows.first!.id)
+												}
+											}
+										} label: {
+											ZStack {
+												
+												Image("caret-down")
+													.renderingMode(.template)
+													.foregroundStyle(.white)
+													.padding()
+													.background(Color.orangeMain500)
+													.clipShape(Circle())
+													.shadow(color: .black.opacity(0.2), radius: 4)
+												
+												if conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
+													VStack {
+														HStack {
+															Spacer()
+															
+															HStack {
+																Text(
+																	conversationViewModel.displayedConversationUnreadMessagesCount < 99
+																	? String(conversationViewModel.displayedConversationUnreadMessagesCount)
+																	: "99+"
+																)
+																.foregroundStyle(.white)
+																.default_text_style(styleSize: 10)
+																.lineLimit(1)
+																
+															}
+															.frame(width: 18, height: 18)
+															.background(Color.redDanger500)
+															.cornerRadius(50)
+														}
+														
+														Spacer()
+													}
+												}
+											}
+											
+										}
+										.frame(width: 50, height: 50)
+										.padding()
+									}
 								}
-								.scaleEffect(x: 1, y: -1, anchor: .center)
-								.listStyle(.plain)
 								.onTapGesture {
 									UIApplication.shared.endEditing()
 								}
 								.onAppear {
 									conversationViewModel.getMessages()
 								}
-								.onChange(of: conversationViewModel.conversationMessagesList) { _ in
-									/*
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-										if conversationViewModel.conversationMessagesList.count <= 30 {
-											proxy.scrollTo(
-												conversationViewModel.conversationMessagesList.first, anchor: .top
-											)
-										} else if conversationViewModel.conversationMessagesList.count >= conversationViewModel.displayedConversationHistorySize {
-											proxy.scrollTo(
-												conversationViewModel.conversationMessagesList[conversationViewModel.displayedConversationHistorySize%30], anchor: .top
-											)
-										} else {
-											proxy.scrollTo(30, anchor: .top)
-										}
-									}
-									 */
-								}
 								.onDisappear {
 									conversationViewModel.resetMessage()
 								}
 							}
-							*/
 						}
 						
 						HStack(spacing: 0) {
@@ -396,6 +440,13 @@ struct ConversationFragment: View {
 			}
 		}
 		.navigationViewStyle(.stack)
+	}
+}
+
+struct ScrollOffsetPreferenceKey: PreferenceKey {
+	static var defaultValue: CGPoint = .zero
+	
+	static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
 	}
 }
 

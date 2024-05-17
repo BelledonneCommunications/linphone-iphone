@@ -21,6 +21,7 @@ import SwiftUI
 import linphonesw
 
 struct Avatar: View {
+	@State var id = UUID()
 	
 	private var contactsManager = ContactsManager.shared
 	
@@ -73,6 +74,7 @@ struct Avatar: View {
 					EmptyView()
 				}
 			}
+			.id(id)
 		} else if !contactAvatarModel.name.isEmpty {
 			Image(uiImage: contactsManager.textToImage(
 				firstName: contactAvatarModel.name,

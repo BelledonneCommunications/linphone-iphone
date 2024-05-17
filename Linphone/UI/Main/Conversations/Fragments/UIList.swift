@@ -35,7 +35,6 @@ struct UIList: UIViewRepresentable {
 	let showMessageMenuOnLongPress: Bool
 	let geometryProxy: GeometryProxy
 	let sections: [MessagesSection]
-	let ids: [String]
 
 	@State private var isScrolledToTop = false
 
@@ -153,7 +152,6 @@ struct UIList: UIViewRepresentable {
 					// apply the rest of the changes to table's dataSource, i.e. inserts
 					//print("5 apply inserts")
 					context.coordinator.sections = sections
-					context.coordinator.ids = ids
 
 					tableView.beginUpdates()
 					for operation in insertOperations {
@@ -164,7 +162,6 @@ struct UIList: UIViewRepresentable {
 					updateSemaphore.signal()
 				}
 			} else {
-				context.coordinator.ids = ids
 				updateSemaphore.signal()
 			}
 		}
@@ -312,8 +309,7 @@ struct UIList: UIViewRepresentable {
 			isScrolledToTop: $isScrolledToTop,
 			showMessageMenuOnLongPress: showMessageMenuOnLongPress,
 			geometryProxy: geometryProxy,
-			sections: sections,
-			ids: ids
+			sections: sections
 		)
 	}
 	
@@ -329,9 +325,8 @@ struct UIList: UIViewRepresentable {
 		let showMessageMenuOnLongPress: Bool
 		let geometryProxy: GeometryProxy
 		var sections: [MessagesSection]
-		var ids: [String]
 
-		init(conversationViewModel: ConversationViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, showMessageMenuOnLongPress: Bool, geometryProxy: GeometryProxy, sections: [MessagesSection], ids: [String]) {
+		init(conversationViewModel: ConversationViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, showMessageMenuOnLongPress: Bool, geometryProxy: GeometryProxy, sections: [MessagesSection]) {
 			self.conversationViewModel = conversationViewModel
 			self.viewModel = viewModel
 			self.paginationState = paginationState
@@ -340,7 +335,6 @@ struct UIList: UIViewRepresentable {
 			self.showMessageMenuOnLongPress = showMessageMenuOnLongPress
 			self.geometryProxy = geometryProxy
 			self.sections = sections
-			self.ids = ids
 		}
 
 		func numberOfSections(in tableView: UITableView) -> Int {
@@ -384,8 +378,6 @@ struct UIList: UIViewRepresentable {
 				}
 				.minSize(width: 0, height: 0)
 				.margins(.all, 0)
-			} else {
-				// Fallback on earlier versions
 			}
 			
 			tableViewCell.transform = CGAffineTransformMakeScale(1, -1)
@@ -395,7 +387,7 @@ struct UIList: UIViewRepresentable {
 
 		func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 			let row = sections[indexPath.section].rows[indexPath.row]
-			paginationState.handle(row, ids: ids)
+			paginationState.handle(row)
 		}
 
 		func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -452,12 +444,9 @@ final class PaginationState: ObservableObject {
 		self.offset = offset
 	}
 
-	func handle(_ message: Message, ids: [String]) {
+	func handle(_ message: Message) {
 		guard shouldHandlePagination else {
 			return
-		}
-		if ids.prefix(offset + 1).contains(message.id) {
-			onEvent?(message)
 		}
 	}
 }

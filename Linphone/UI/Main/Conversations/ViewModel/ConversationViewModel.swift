@@ -36,7 +36,6 @@ class ConversationViewModel: ObservableObject {
 	
 	private var chatRoomSuscriptions = Set<AnyCancellable?>()
 	
-	@Published var conversationMessagesIds: [String] = []
 	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var participantConversationModel: [ContactAvatarModel] = []
 	
