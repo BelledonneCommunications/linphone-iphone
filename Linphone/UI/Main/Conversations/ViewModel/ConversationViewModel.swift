@@ -31,7 +31,6 @@ class ConversationViewModel: ObservableObject {
 	@Published var displayedConversationHistorySize: Int = 0
 	@Published var displayedConversationUnreadMessagesCount: Int = 0
 	
-	
 	@Published var messageText: String = ""
 	
 	private var chatRoomSuscriptions = Set<AnyCancellable?>()
@@ -151,10 +150,26 @@ class ConversationViewModel: ObservableObject {
 					
 					let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 					
+					var statusTmp: Message.Status? = .sending
+					switch eventLog.chatMessage?.state {
+					case .InProgress:
+						statusTmp = .sending
+					case .Delivered:
+						statusTmp = .sent
+					case .DeliveredToUser:
+						statusTmp = .received
+					case .Displayed:
+						statusTmp = .read
+					default:
+						statusTmp = nil
+					}
+					
 					conversationMessage.append(
 						Message(
 							id: UUID().uuidString,
+							status: statusTmp,
 							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+							dateReceived: eventLog.chatMessage?.time ?? 0,
 							address: addressCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: isFirstMessageTmp,
 							text: contentText,
@@ -204,10 +219,26 @@ class ConversationViewModel: ObservableObject {
 					
 					let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 					
+					var statusTmp: Message.Status? = .sending
+					switch eventLog.chatMessage?.state {
+					case .InProgress:
+						statusTmp = .sending
+					case .Delivered:
+						statusTmp = .sent
+					case .DeliveredToUser:
+						statusTmp = .received
+					case .Displayed:
+						statusTmp = .read
+					default:
+						statusTmp = nil
+					}
+					
 					conversationMessagesTmp.insert(
 						Message(
 							id: UUID().uuidString,
+							status: statusTmp,
 							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+							dateReceived: eventLog.chatMessage?.time ?? 0,
 							address: addressCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: isFirstMessageTmp,
 							text: contentText,
@@ -277,9 +308,25 @@ class ConversationViewModel: ObservableObject {
 			
 			let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 			
+			var statusTmp: Message.Status? = .sending
+			switch eventLog.chatMessage?.state {
+			case .InProgress:
+				statusTmp = .sending
+			case .Delivered:
+				statusTmp = .sent
+			case .DeliveredToUser:
+				statusTmp = .received
+			case .Displayed:
+				statusTmp = .read
+			default:
+				statusTmp = nil
+			}
+			
 			let message = Message(
 				id: UUID().uuidString,
+				status: statusTmp,
 				isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+				dateReceived: eventLog.chatMessage?.time ?? 0,
 				address: addressCleaned?.asStringUriOnly() ?? "",
 				isFirstMessage: isFirstMessageTmp,
 				text: contentText,
@@ -426,6 +473,42 @@ class ConversationViewModel: ObservableObject {
 	func getNewFilePath(name: String) -> String {
 		return "file://" + Factory.Instance.getDownloadDir(context: nil) + name
 	}
+	
+	func getMessageTime(startDate: time_t) -> String {
+		let timeInterval = TimeInterval(startDate)
+		
+		let myNSDate = Date(timeIntervalSince1970: timeInterval)
+		
+		if Calendar.current.isDateInToday(myNSDate) {
+			let formatter = DateFormatter()
+			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+			return formatter.string(from: myNSDate)
+		} else if Calendar.current.isDate(myNSDate, equalTo: .now, toGranularity: .year) {
+			let formatter = DateFormatter()
+			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "dd/MM HH:mm" : "MM/dd h:mm a"
+			return formatter.string(from: myNSDate)
+		} else {
+			let formatter = DateFormatter()
+			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "dd/MM/yy HH:mm" : "MM/dd/yy h:mm a"
+			return formatter.string(from: myNSDate)
+		}
+	}
+	
+	func getImageIMDN(status: Message.Status) -> String {
+		switch status {
+		case .sending:
+			return ""
+		case .sent:
+			return "envelope-simple"
+		case .received:
+			return "check"
+		case .read:
+			return "checks"
+		case .error:
+			return ""
+		}
+	}
+	
 }
 struct LinphoneCustomEventLog: Hashable {
 	var id = UUID()

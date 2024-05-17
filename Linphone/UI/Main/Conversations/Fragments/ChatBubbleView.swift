@@ -110,6 +110,30 @@ struct ChatBubbleView: View {
 											.foregroundStyle(Color.grayMain2c700)
 											.default_text_style(styleSize: 16)
 									}
+									
+									HStack(alignment: .center) {
+										Text(conversationViewModel.getMessageTime(startDate: message.dateReceived))
+											.foregroundStyle(Color.grayMain2c500)
+											.default_text_style_300(styleSize: 14)
+											.padding(.top, 1)
+										
+										if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || message.isOutgoing {
+											if message.status == .sending {
+												ProgressView()
+													.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+													.frame(width: 15, height: 15)
+													.padding(.top, 1)
+											} else if message.status != nil {
+												Image(conversationViewModel.getImageIMDN(status: message.status!))
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.orangeMain500)
+													.frame(width: 15, height: 15)
+													.padding(.top, 1)
+											}
+										}
+									}
+									.padding(.top, -4)
 								}
 								.padding(.all, 15)
 								.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)

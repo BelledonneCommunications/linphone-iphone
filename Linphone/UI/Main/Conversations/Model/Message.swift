@@ -24,6 +24,7 @@ public struct Message: Identifiable, Hashable {
 	public enum Status: Equatable, Hashable {
 		case sending
 		case sent
+		case received
 		case read
 		case error(DraftMessage)
 
@@ -33,6 +34,8 @@ public struct Message: Identifiable, Hashable {
 				return hasher.combine("sending")
 			case .sent:
 				return hasher.combine("sent")
+			case .received:
+				return hasher.combine("received")
 			case .read:
 				return hasher.combine("read")
 			case .error:
@@ -45,6 +48,8 @@ public struct Message: Identifiable, Hashable {
 			case (.sending, .sending):
 				return true
 			case (.sent, .sent):
+				return true
+			case (.received, .received):
 				return true
 			case (.read, .read):
 				return true
@@ -60,6 +65,7 @@ public struct Message: Identifiable, Hashable {
 	public var status: Status?
 	public var createdAt: Date
 	public var isOutgoing: Bool
+	public var dateReceived: time_t
 
 	public var address: String
 	public var isFirstMessage: Bool
@@ -73,6 +79,7 @@ public struct Message: Identifiable, Hashable {
 		status: Status? = nil,
 		createdAt: Date = Date(),
 		isOutgoing: Bool,
+		dateReceived: time_t,
 		address: String,
 		isFirstMessage: Bool = false,
 		text: String = "",
@@ -84,6 +91,7 @@ public struct Message: Identifiable, Hashable {
 		self.status = status
 		self.createdAt = createdAt
 		self.isOutgoing = isOutgoing
+		self.dateReceived = dateReceived
 		self.isFirstMessage = isFirstMessage
 		self.address = address
 		self.text = text
@@ -117,6 +125,7 @@ public struct Message: Identifiable, Hashable {
 				status: status,
 				createdAt: draft.createdAt,
 				isOutgoing: draft.isOutgoing,
+				dateReceived: draft.dateReceived,
 				address: draft.address,
 				isFirstMessage: draft.isFirstMessage,
 				text: draft.text,
@@ -162,6 +171,7 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 	public var isFirstMessage: Bool
 	public var text: String
 	public var isOutgoing: Bool
+	public var dateReceived: time_t
 	public var attachments: [Attachment]
 	public var recording: Recording?
 
@@ -170,6 +180,7 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 				isFirstMessage: Bool = false,
 				text: String = "",
 				isOutgoing: Bool,
+				dateReceived: time_t,
 				attachments: [Attachment] = [],
 				recording: Recording? = nil) {
 
@@ -178,25 +189,27 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 		self.isFirstMessage = isFirstMessage
 		self.text = text
 		self.isOutgoing = isOutgoing
+		self.dateReceived = dateReceived
 		self.attachments = attachments
 		self.recording = recording
 	}
 
 	func toMessage() -> Message {
-		Message(id: id, isOutgoing: isOutgoing, address: address, isFirstMessage: isFirstMessage, text: text, attachments: attachments, recording: recording)
+		Message(id: id, isOutgoing: isOutgoing, dateReceived: dateReceived, address: address, isFirstMessage: isFirstMessage, text: text, attachments: attachments, recording: recording)
 	}
 }
 
 public extension Message {
 
 	func toReplyMessage() -> ReplyMessage {
-		ReplyMessage(id: id, address: address, isFirstMessage: isFirstMessage, text: text, isOutgoing: isOutgoing, attachments: attachments, recording: recording)
+		ReplyMessage(id: id, address: address, isFirstMessage: isFirstMessage, text: text, isOutgoing: isOutgoing, dateReceived: dateReceived, attachments: attachments, recording: recording)
 	}
 }
 
 public struct DraftMessage {
 	public var id: String?
 	public let isOutgoing: Bool
+	public var dateReceived: time_t
 	public let address: String
 	public let isFirstMessage: Bool
 	public let text: String
@@ -207,6 +220,7 @@ public struct DraftMessage {
 
 	public init(id: String? = nil,
 				isOutgoing: Bool,
+				dateReceived: time_t,
 				address: String,
 				isFirstMessage: Bool,
 				text: String,
@@ -216,6 +230,7 @@ public struct DraftMessage {
 				createdAt: Date) {
 		self.id = id
 		self.isOutgoing = isOutgoing
+		self.dateReceived = dateReceived
 		self.address = address
 		self.isFirstMessage = isFirstMessage
 		self.text = text
