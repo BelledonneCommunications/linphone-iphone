@@ -194,13 +194,22 @@ class ConversationViewModel: ObservableObject {
 				var conversationMessagesTmp: [Message] = []
 				
 				historyEvents.enumerated().reversed().forEach { index, eventLog in
-					let attachmentList: [Attachment] = []
+					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
 					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
 						eventLog.chatMessage!.contents.forEach { content in
 							if content.isText {
 								contentText = content.utf8Text ?? ""
+							} else {
+								if content.filePath == nil || content.filePath!.isEmpty {
+									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+								} else {
+									if URL(string: self.getNewFilePath(name: content.name ?? "")) != nil {
+										let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
+										attachmentList.append(attachment)
+									}
+								}
 							}
 						}
 					}
@@ -458,7 +467,7 @@ class ConversationViewModel: ObservableObject {
 			let contentName = content.name
 			if contentName != nil {
 				let isImage = FileUtil.isExtensionImage(path: contentName!)
-				let file = FileUtil.getFileStoragePath(fileName: contentName!, isImage: isImage)
+				let file = FileUtil.getFileStoragePath(fileName: contentName!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "", isImage: isImage)
 				content.filePath = file
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath)"
@@ -471,7 +480,7 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewFilePath(name: String) -> String {
-		return "file://" + Factory.Instance.getDownloadDir(context: nil) + name
+		return "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
 	}
 	
 	func getMessageTime(startDate: time_t) -> String {

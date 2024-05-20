@@ -194,9 +194,11 @@ struct ChatBubbleView: View {
 						} placeholder: {
 							ProgressView()
 						}
+						.id(UUID())
 						.layoutPriority(-1)
-					} else {
+					} else if message.attachments.first!.type == .gif {
 						GifImageView(message.attachments.first!.full)
+							.id(UUID())
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 					}
@@ -204,6 +206,39 @@ struct ChatBubbleView: View {
 				.clipShape(RoundedRectangle(cornerRadius: 4))
 				.clipped()
 			}
+		} else if message.attachments.count > 1 {
+			let isGroup = conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
+			LazyVGrid(columns: [
+				GridItem(.adaptive(minimum: 120), spacing: 1)
+			], spacing: 3) {
+				ForEach(message.attachments) { attachment in
+					if attachment.type == .image || attachment.type == .gif {
+						ZStack {
+							Rectangle()
+								.fill(Color(.white))
+								.frame(width: 120, height: 120)
+							
+							AsyncImage(url: attachment.full) { image in
+								image
+									.resizable()
+									.interpolation(.medium)
+									.aspectRatio(contentMode: .fill)
+							} placeholder: {
+								ProgressView()
+							}
+							.id(UUID())
+							.layoutPriority(-1)
+						}
+						.clipShape(RoundedRectangle(cornerRadius: 4))
+						.clipped()
+					}
+				}
+			}
+			.frame(
+				width: geometryProxy.size.width > 0 && CGFloat(122 * message.attachments.count) > geometryProxy.size.width - 110 - (isGroup ? 40 : 0)
+				? 122 * floor(CGFloat(geometryProxy.size.width - 110 - (isGroup ? 40 : 0)) / 122)
+				: CGFloat(122 * message.attachments.count)
+			)
 		}
 	}
 	
