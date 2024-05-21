@@ -28,6 +28,7 @@ class MeetingsListViewModel: ObservableObject {
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	var selectedMeeting: ConversationModel?
 	
+	@Published var sortedMeetingsList: [String: [String: [MeetingsListItemModel]]] = [:]
 	@Published var meetingsList: [MeetingsListItemModel] = []
 	@Published var currentFilter = ""
 	
@@ -105,7 +106,29 @@ class MeetingsListViewModel: ObservableObject {
 			
 			DispatchQueue.main.sync {
 				self.meetingsList = meetingsListTmp
+				self.sortMeetingsListByWeek()
 			}
 		}
+	}
+	
+	func sortMeetingsListByWeek() {
+		var sortedList: [String: [String: [MeetingsListItemModel]]] = [:]
+		
+		var currentMonthString = ""
+		var currentWeekString = ""
+		for meeting in self.meetingsList {
+			
+			if currentMonthString != meeting.monthStr {
+				sortedList[currentMonthString] = [:]
+				currentMonthString = meeting.monthStr
+			}
+			
+			if currentWeekString != meeting.weekStr {
+				sortedList[currentMonthString]?[currentWeekString] = []
+				currentWeekString = meeting.weekStr
+			}
+			sortedList[currentMonthString]?[currentWeekString]?.append(meeting)
+		}
+		self.sortedMeetingsList = sortedList
 	}
 }

@@ -20,7 +20,6 @@ class MeetingModel: ObservableObject {
 	var time: String // "$startTime - $endTime"
 	var day: String
 	var dayNumber: String
-	var month: String
 
 	@Published var isBroadcast: Bool
 	@Published var subject: String
@@ -41,7 +40,6 @@ class MeetingModel: ObservableObject {
 		
 		day = meetingDate.formatted(Date.FormatStyle().weekday(.abbreviated))
 		dayNumber = meetingDate.formatted(Date.FormatStyle().day(.twoDigits))
-		month = meetingDate.formatted(Date.FormatStyle().month(.wide)) // February
 		
 		isToday = Calendar.current.isDateInToday(meetingDate)
 		if isToday {
