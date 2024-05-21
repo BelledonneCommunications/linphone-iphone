@@ -160,7 +160,7 @@ struct ChatBubbleView: View {
 	@ViewBuilder
 	func messageAttachments() -> some View {
 		if message.attachments.count == 1 {
-			if message.attachments.first!.type == .image || message.attachments.first!.type == .gif {
+			if message.attachments.first!.type == .image || message.attachments.first!.type == .gif || message.attachments.first!.type == .video {
 				let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
 				ZStack {
 					Rectangle()
@@ -185,12 +185,22 @@ struct ChatBubbleView: View {
 							)
 						}
 					
-					if message.attachments.first!.type == .image {
+					if message.attachments.first!.type == .image || message.attachments.first!.type == .video {
 						AsyncImage(url: message.attachments.first!.full) { image in
-							image
-								.resizable()
-								.interpolation(.medium)
-								.aspectRatio(contentMode: .fill)
+							ZStack {
+								image
+									.resizable()
+									.interpolation(.medium)
+									.aspectRatio(contentMode: .fill)
+								
+								if message.attachments.first!.type == .video {
+									Image("play-fill")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 40, height: 40, alignment: .leading)
+								}
+							}
 						} placeholder: {
 							ProgressView()
 						}
@@ -212,26 +222,34 @@ struct ChatBubbleView: View {
 				GridItem(.adaptive(minimum: 120), spacing: 1)
 			], spacing: 3) {
 				ForEach(message.attachments) { attachment in
-					if attachment.type == .image || attachment.type == .gif {
-						ZStack {
-							Rectangle()
-								.fill(Color(.white))
-								.frame(width: 120, height: 120)
-							
-							AsyncImage(url: attachment.full) { image in
+					ZStack {
+						Rectangle()
+							.fill(Color(.white))
+							.frame(width: 120, height: 120)
+						
+						AsyncImage(url: attachment.full) { image in
+							ZStack {
 								image
 									.resizable()
 									.interpolation(.medium)
 									.aspectRatio(contentMode: .fill)
-							} placeholder: {
-								ProgressView()
+								
+								if attachment.type == .video {
+									Image("play-fill")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 40, height: 40, alignment: .leading)
+								}
 							}
-							.id(UUID())
-							.layoutPriority(-1)
+						} placeholder: {
+							ProgressView()
 						}
-						.clipShape(RoundedRectangle(cornerRadius: 4))
-						.clipped()
+						.id(UUID())
+						.layoutPriority(-1)
 					}
+					.clipShape(RoundedRectangle(cornerRadius: 4))
+					.clipped()
 				}
 			}
 			.frame(

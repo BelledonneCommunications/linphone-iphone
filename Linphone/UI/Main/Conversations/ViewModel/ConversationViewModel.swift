@@ -127,9 +127,28 @@ class ConversationViewModel: ObservableObject {
 								if content.filePath == nil || content.filePath!.isEmpty {
 									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 								} else {
-									if URL(string: self.getNewFilePath(name: content.name ?? "")) != nil {
-										let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
-										attachmentList.append(attachment)
+									if content.type != "video" {
+										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										if path != nil {
+											let attachment =
+											Attachment(
+												id: UUID().uuidString,
+												url: path!,
+												type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+											)
+											attachmentList.append(attachment)
+										}
+									} else if content.type == "video" {
+										let path = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										if path != nil {
+											let attachment =
+											Attachment(
+												id: UUID().uuidString,
+												url: path!,
+												type: .video
+											)
+											attachmentList.append(attachment)
+										}
 									}
 								}
 							}
@@ -481,6 +500,32 @@ class ConversationViewModel: ObservableObject {
 	
 	func getNewFilePath(name: String) -> String {
 		return "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+	}
+	
+	func generateThumbnail(name: String) -> String {
+		do {
+			let path = URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+			let asset = AVURLAsset(url: path!, options: nil)
+			let imgGenerator = AVAssetImageGenerator(asset: asset)
+			imgGenerator.appliesPreferredTrackTransform = true
+			let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+			let thumbnail = UIImage(cgImage: cgImage)
+			
+			guard let data = thumbnail.jpegData(compressionQuality: 1) ?? thumbnail.pngData() else {
+				return ""
+			}
+			
+			let urlName = URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + "preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
+			
+			if urlName != nil {
+				let decodedData: () = try data.write(to: urlName!)
+			}
+			
+			return urlName!.absoluteString
+		} catch let error {
+			print("*** Error generating thumbnail: \(error.localizedDescription)")
+			return ""
+		}
 	}
 	
 	func getMessageTime(startDate: time_t) -> String {
