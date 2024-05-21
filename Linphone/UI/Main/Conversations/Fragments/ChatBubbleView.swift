@@ -161,7 +161,7 @@ struct ChatBubbleView: View {
 	func messageAttachments() -> some View {
 		if message.attachments.count == 1 {
 			if message.attachments.first!.type == .image || message.attachments.first!.type == .gif || message.attachments.first!.type == .video {
-				let result = imageDimensions(url: message.attachments.first!.full.absoluteString)
+				let result = imageDimensions(url: message.attachments.first!.thumbnail.absoluteString)
 				ZStack {
 					Rectangle()
 						.fill(Color(.white))
@@ -186,31 +186,59 @@ struct ChatBubbleView: View {
 						}
 					
 					if message.attachments.first!.type == .image || message.attachments.first!.type == .video {
-						AsyncImage(url: message.attachments.first!.full) { image in
-							ZStack {
-								image
-									.resizable()
-									.interpolation(.medium)
-									.aspectRatio(contentMode: .fill)
-								
-								if message.attachments.first!.type == .video {
-									Image("play-fill")
-										.renderingMode(.template)
+						if #available(iOS 16.0, *) {
+							AsyncImage(url: message.attachments.first!.thumbnail) { image in
+								ZStack {
+									image
 										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 40, height: 40, alignment: .leading)
+										.interpolation(.medium)
+										.aspectRatio(contentMode: .fill)
+									
+									if message.attachments.first!.type == .video {
+										Image("play-fill")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 40, height: 40, alignment: .leading)
+									}
 								}
+							} placeholder: {
+								ProgressView()
 							}
-						} placeholder: {
-							ProgressView()
-						}
-						.id(UUID())
-						.layoutPriority(-1)
-					} else if message.attachments.first!.type == .gif {
-						GifImageView(message.attachments.first!.full)
+							.layoutPriority(-1)
+						} else {
+							AsyncImage(url: message.attachments.first!.thumbnail) { image in
+								ZStack {
+									image
+										.resizable()
+										.interpolation(.medium)
+										.aspectRatio(contentMode: .fill)
+									
+									if message.attachments.first!.type == .video {
+										Image("play-fill")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 40, height: 40, alignment: .leading)
+									}
+								}
+							} placeholder: {
+								ProgressView()
+							}
 							.id(UUID())
 							.layoutPriority(-1)
-							.clipShape(RoundedRectangle(cornerRadius: 4))
+						}
+					} else if message.attachments.first!.type == .gif {
+						if #available(iOS 16.0, *) {
+							GifImageView(message.attachments.first!.thumbnail)
+								.layoutPriority(-1)
+								.clipShape(RoundedRectangle(cornerRadius: 4))
+						} else {
+							GifImageView(message.attachments.first!.thumbnail)
+								.id(UUID())
+								.layoutPriority(-1)
+								.clipShape(RoundedRectangle(cornerRadius: 4))
+						}
 					}
 				}
 				.clipShape(RoundedRectangle(cornerRadius: 4))
@@ -227,29 +255,51 @@ struct ChatBubbleView: View {
 							.fill(Color(.white))
 							.frame(width: 120, height: 120)
 						
-						AsyncImage(url: attachment.full) { image in
-							ZStack {
-								image
-									.resizable()
-									.interpolation(.medium)
-									.aspectRatio(contentMode: .fill)
-								
-								if attachment.type == .video {
-									Image("play-fill")
-										.renderingMode(.template)
+						if #available(iOS 16.0, *) {
+							AsyncImage(url: attachment.thumbnail) { image in
+								ZStack {
+									image
 										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 40, height: 40, alignment: .leading)
+										.interpolation(.medium)
+										.aspectRatio(contentMode: .fill)
+									
+									if attachment.type == .video {
+										Image("play-fill")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 40, height: 40, alignment: .leading)
+									}
 								}
+							} placeholder: {
+								ProgressView()
 							}
-						} placeholder: {
-							ProgressView()
+							.layoutPriority(-1)
+						} else {
+							AsyncImage(url: attachment.thumbnail) { image in
+								ZStack {
+									image
+										.resizable()
+										.interpolation(.medium)
+										.aspectRatio(contentMode: .fill)
+									
+									if attachment.type == .video {
+										Image("play-fill")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 40, height: 40, alignment: .leading)
+									}
+								}
+							} placeholder: {
+								ProgressView()
+							}
+							.id(UUID())
+							.layoutPriority(-1)
 						}
-						.id(UUID())
-						.layoutPriority(-1)
 					}
 					.clipShape(RoundedRectangle(cornerRadius: 4))
-					.clipped()
+					.contentShape(Rectangle())
 				}
 			}
 			.frame(

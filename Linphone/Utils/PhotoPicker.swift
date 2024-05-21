@@ -23,14 +23,16 @@ import PhotosUI
 struct PhotoPicker: UIViewControllerRepresentable {
 	typealias UIViewControllerType = PHPickerViewController
 	
-	let filter: PHPickerFilter
+	let filter: PHPickerFilter?
 	var limit: Int = 0
 	let onComplete: ([PHPickerResult]) -> Void
 	
 	func makeUIViewController(context: Context) -> PHPickerViewController {
 		
 		var configuration = PHPickerConfiguration()
-		configuration.filter = filter
+		if filter != nil {
+			configuration.filter = filter
+		}
 		configuration.selectionLimit = limit
 		
 		let controller = PHPickerViewController(configuration: configuration)
@@ -61,6 +63,89 @@ struct PhotoPicker: UIViewControllerRepresentable {
 		dispatchGroup.notify(queue: .main) {
 			onComplete(images, nil)
 		}
+	}
+	
+	static func convertToAttachmentArray(fromResults results: [PHPickerResult], onComplete: @escaping ([Attachment]?, Error?) -> Void) {
+		var medias = [Attachment]()
+		
+		let dispatchGroup = DispatchGroup()
+		for result in results {
+			dispatchGroup.enter()
+			let itemProvider = result.itemProvider
+			if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+				itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { urlFile, error in
+					if urlFile != nil {
+						do {
+							let dataResult = try Data(contentsOf: urlFile!)
+							let urlImage = self.saveMedia(name: urlFile!.lastPathComponent, data: dataResult, type: .image)
+							if urlImage != nil {
+								let attachment = Attachment(id: UUID().uuidString, url: urlImage!, type: .image)
+								medias.append(attachment)
+							}
+						} catch {
+							
+						}
+					}
+					
+					dispatchGroup.leave()
+				}
+			} else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+				itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { urlFile, error in
+					if urlFile != nil {
+						do {
+							let dataResult = try Data(contentsOf: urlFile!)
+							let urlImage = self.saveMedia(name: urlFile!.lastPathComponent, data: dataResult, type: .video)
+							let urlThumbnail = getURLThumbnail(name: urlFile!.lastPathComponent)
+							
+							if urlImage != nil {
+								let attachment = Attachment(id: UUID().uuidString, thumbnail: urlThumbnail, full: urlImage!, type: .video)
+								medias.append(attachment)
+							}
+						} catch {
+							
+						}
+					}
+					dispatchGroup.leave()
+				}
+			}
+		}
+		
+		dispatchGroup.notify(queue: .main) {
+			onComplete(medias, nil)
+		}
+	}
+	
+	static func saveMedia(name: String, data: Data, type: AttachmentType) -> URL? {
+		do {
+			let path = FileManager.default.temporaryDirectory.appendingPathComponent((name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+			
+			let decodedData: () = try data.write(to: path)
+			
+			if type == .video {
+				let asset = AVURLAsset(url: path, options: nil)
+				let imgGenerator = AVAssetImageGenerator(asset: asset)
+				imgGenerator.appliesPreferredTrackTransform = true
+				let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+				let thumbnail = UIImage(cgImage: cgImage)
+				
+				guard let data = thumbnail.jpegData(compressionQuality: 1) ?? thumbnail.pngData() else {
+					return nil
+				}
+				
+				let urlName = FileManager.default.temporaryDirectory.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
+				
+				let decodedData: () = try data.write(to: urlName)
+			}
+			
+			return path
+		} catch let error {
+			print("*** Error generating thumbnail: \(error.localizedDescription)")
+			return nil
+		}
+	}
+	
+	static func getURLThumbnail(name: String) -> URL {
+		return FileManager.default.temporaryDirectory.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
 	}
 	
 	func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}

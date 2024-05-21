@@ -44,6 +44,13 @@ struct ConversationFragment: View {
 	
 	@State private var displayFloatingButton = false
 	
+	@State private var isShowPhotoLibrary = false
+	@State private var isShowCamera = false
+	
+	@State private var mediasToSend: [Attachment] = []
+	@State private var mediasIsLoading = false
+	@State private var maxMediaCount = 12
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -313,6 +320,93 @@ struct ConversationFragment: View {
 							}
 						}
 						
+						if !mediasToSend.isEmpty || mediasIsLoading {
+							ZStack(alignment: .top) {
+								HStack {
+									if mediasIsLoading {
+										HStack {
+											Spacer()
+											
+											ProgressView()
+											
+											Spacer()
+										}
+										.frame(height: 120)
+									}
+									
+									LazyVGrid(columns: [
+										GridItem(.adaptive(minimum: 100), spacing: 1)
+									], spacing: 3) {
+											ForEach(mediasToSend, id: \.id) { attachment in
+											ZStack {
+												Rectangle()
+													.fill(Color(.white))
+													.frame(width: 100, height: 100)
+												
+												AsyncImage(url: attachment.thumbnail) { image in
+													ZStack {
+														image
+															.resizable()
+															.interpolation(.medium)
+															.aspectRatio(contentMode: .fill)
+														
+														if attachment.type == .video {
+															Image("play-fill")
+																.renderingMode(.template)
+																.resizable()
+																.foregroundStyle(.white)
+																.frame(width: 40, height: 40, alignment: .leading)
+														}
+													}
+												} placeholder: {
+													ProgressView()
+												}
+												.layoutPriority(-1)
+												.onTapGesture {
+													   if mediasToSend.count == 1 {
+														   withAnimation {
+															   mediasToSend = []
+														   }
+													   } else {
+														   guard let index = self.mediasToSend.firstIndex(of: attachment) else { return }
+														   self.mediasToSend.remove(at: index)
+													   }
+												   }
+											}
+											.clipShape(RoundedRectangle(cornerRadius: 4))
+											.contentShape(Rectangle())
+										}
+									}
+									.frame(
+										width: geometry.size.width > 0 && CGFloat(102 * mediasToSend.count) > geometry.size.width - 20
+										? 102 * floor(CGFloat(geometry.size.width - 20) / 102)
+										: CGFloat(102 * mediasToSend.count)
+									)
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.all, mediasToSend.isEmpty ? 0 : 10)
+								.background(Color.gray100)
+								
+								if !mediasIsLoading {
+									HStack {
+										Spacer()
+										
+										Button(action: {
+											withAnimation {
+												mediasToSend = []
+											}
+										}, label: {
+											Image("x")
+												.resizable()
+												.frame(width: 30, height: 30, alignment: .leading)
+												.padding(.all, 10)
+										})
+									}
+								}
+							}
+							.transition(.move(edge: .bottom))
+						}
+						
 						HStack(spacing: 0) {
 							Button {
 							} label: {
@@ -327,26 +421,31 @@ struct ConversationFragment: View {
 							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
 							
 							Button {
+								self.isShowPhotoLibrary = true
+								self.mediasIsLoading = true
 							} label: {
 								Image("paperclip")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.foregroundStyle(maxMediaCount <= mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
 									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
 									.padding(.all, isMessageTextFocused ? 0 : 6)
 									.padding(.top, 4)
+									.disabled(maxMediaCount <= mediasToSend.count || mediasIsLoading)
 							}
 							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
 							
 							Button {
+								self.isShowCamera = true
 							} label: {
 								Image("camera")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.foregroundStyle(maxMediaCount <= mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
 									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
 									.padding(.all, isMessageTextFocused ? 0 : 6)
 									.padding(.top, 4)
+									.disabled(maxMediaCount <= mediasToSend.count || mediasIsLoading)
 							}
 							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
 							
@@ -437,6 +536,28 @@ struct ConversationFragment: View {
 				.onDisappear {
 					conversationViewModel.removeConversationDelegate()
 				}
+				.sheet(isPresented: $isShowPhotoLibrary) {
+					PhotoPicker(filter: nil, limit: maxMediaCount - mediasToSend.count) { results in
+						PhotoPicker.convertToAttachmentArray(fromResults: results) { mediasOrNil, errorOrNil in
+							if let error = errorOrNil {
+								print(error)
+							}
+							
+							if let medias = mediasOrNil {
+								mediasToSend.append(contentsOf: medias)
+							}
+							
+							self.mediasIsLoading = false
+						}
+					}
+					.edgesIgnoringSafeArea(.all)
+				}
+				/*
+				.fullScreenCover(isPresented: $isShowCamera) {
+					ImagePicker(selectedImage: self.$image, sourceType: .camera)
+						.edgesIgnoringSafeArea(.all)
+				}
+				 */
 			}
 		}
 		.navigationViewStyle(.stack)
@@ -453,6 +574,48 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
 extension UIApplication {
 	func endEditing() {
 		sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+	}
+}
+
+struct ImagePicker: UIViewControllerRepresentable {
+	@Binding var selectedImage: UIImage
+	@Environment(\.presentationMode) private var presentationMode
+	
+	var sourceType: UIImagePickerController.SourceType = .photoLibrary
+ 
+	final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+	 
+		var parent: ImagePicker
+	 
+		init(_ parent: ImagePicker) {
+			self.parent = parent
+		}
+	 
+		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+	 
+			if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+				parent.selectedImage = image
+			}
+	 
+			parent.presentationMode.wrappedValue.dismiss()
+		}
+	}
+	
+	func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
+		let imagePicker = UIImagePickerController()
+		imagePicker.allowsEditing = false
+		imagePicker.sourceType = sourceType
+		imagePicker.delegate = context.coordinator
+ 
+		return imagePicker
+	}
+ 
+	func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {
+ 
+	}
+	
+	func makeCoordinator() -> Coordinator {
+		Coordinator(self)
 	}
 }
 
