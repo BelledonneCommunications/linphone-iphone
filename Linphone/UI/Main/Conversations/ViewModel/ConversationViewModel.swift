@@ -139,12 +139,14 @@ class ConversationViewModel: ObservableObject {
 											attachmentList.append(attachment)
 										}
 									} else if content.type == "video" {
-										let path = URL(string: self.generateThumbnail(name: content.name ?? ""))
-										if path != nil {
+										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										if path != nil && pathThumbnail != nil {
 											let attachment =
 											Attachment(
 												id: UUID().uuidString,
-												url: path!,
+												thumbnail: pathThumbnail!,
+												full: path!,
 												type: .video
 											)
 											attachmentList.append(attachment)
@@ -502,9 +504,11 @@ class ConversationViewModel: ObservableObject {
 		return "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
 	}
 	
-	func generateThumbnail(name: String) -> String {
+	func generateThumbnail(name: String, pathThumbnail: URL? = nil) -> String {
 		do {
-			let path = URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+			let path = pathThumbnail == nil
+			? URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+			: pathThumbnail!.appendingPathComponent((name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
 			let asset = AVURLAsset(url: path!, options: nil)
 			let imgGenerator = AVAssetImageGenerator(asset: asset)
 			imgGenerator.appliesPreferredTrackTransform = true
@@ -515,7 +519,9 @@ class ConversationViewModel: ObservableObject {
 				return ""
 			}
 			
-			let urlName = URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + "preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
+			let urlName = pathThumbnail == nil
+			? URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + "preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
+			: pathThumbnail!.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
 			
 			if urlName != nil {
 				let decodedData: () = try data.write(to: urlName!)

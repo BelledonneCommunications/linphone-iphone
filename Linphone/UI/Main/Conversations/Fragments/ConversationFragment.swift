@@ -334,54 +334,56 @@ struct ConversationFragment: View {
 										.frame(height: 120)
 									}
 									
-									LazyVGrid(columns: [
-										GridItem(.adaptive(minimum: 100), spacing: 1)
-									], spacing: 3) {
+									if !mediasIsLoading {
+										LazyVGrid(columns: [
+											GridItem(.adaptive(minimum: 100), spacing: 1)
+										], spacing: 3) {
 											ForEach(mediasToSend, id: \.id) { attachment in
-											ZStack {
-												Rectangle()
-													.fill(Color(.white))
-													.frame(width: 100, height: 100)
-												
-												AsyncImage(url: attachment.thumbnail) { image in
-													ZStack {
-														image
-															.resizable()
-															.interpolation(.medium)
-															.aspectRatio(contentMode: .fill)
-														
-														if attachment.type == .video {
-															Image("play-fill")
-																.renderingMode(.template)
+												ZStack {
+													Rectangle()
+														.fill(Color(.white))
+														.frame(width: 100, height: 100)
+													
+													AsyncImage(url: attachment.thumbnail) { image in
+														ZStack {
+															image
 																.resizable()
-																.foregroundStyle(.white)
-																.frame(width: 40, height: 40, alignment: .leading)
+																.interpolation(.medium)
+																.aspectRatio(contentMode: .fill)
+															
+															if attachment.type == .video {
+																Image("play-fill")
+																	.renderingMode(.template)
+																	.resizable()
+																	.foregroundStyle(.white)
+																	.frame(width: 40, height: 40, alignment: .leading)
+															}
+														}
+													} placeholder: {
+														ProgressView()
+													}
+													.layoutPriority(-1)
+													.onTapGesture {
+														if mediasToSend.count == 1 {
+															withAnimation {
+																mediasToSend = []
+															}
+														} else {
+															guard let index = self.mediasToSend.firstIndex(of: attachment) else { return }
+															self.mediasToSend.remove(at: index)
 														}
 													}
-												} placeholder: {
-													ProgressView()
 												}
-												.layoutPriority(-1)
-												.onTapGesture {
-													   if mediasToSend.count == 1 {
-														   withAnimation {
-															   mediasToSend = []
-														   }
-													   } else {
-														   guard let index = self.mediasToSend.firstIndex(of: attachment) else { return }
-														   self.mediasToSend.remove(at: index)
-													   }
-												   }
+												.clipShape(RoundedRectangle(cornerRadius: 4))
+												.contentShape(Rectangle())
 											}
-											.clipShape(RoundedRectangle(cornerRadius: 4))
-											.contentShape(Rectangle())
 										}
+										.frame(
+											width: geometry.size.width > 0 && CGFloat(102 * mediasToSend.count) > geometry.size.width - 20
+											? 102 * floor(CGFloat(geometry.size.width - 20) / 102)
+											: CGFloat(102 * mediasToSend.count)
+										)
 									}
-									.frame(
-										width: geometry.size.width > 0 && CGFloat(102 * mediasToSend.count) > geometry.size.width - 20
-										? 102 * floor(CGFloat(geometry.size.width - 20) / 102)
-										: CGFloat(102 * mediasToSend.count)
-									)
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.all, mediasToSend.isEmpty ? 0 : 10)
@@ -552,12 +554,10 @@ struct ConversationFragment: View {
 					}
 					.edgesIgnoringSafeArea(.all)
 				}
-				/*
 				.fullScreenCover(isPresented: $isShowCamera) {
-					ImagePicker(selectedImage: self.$image, sourceType: .camera)
+					ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$mediasToSend)
 						.edgesIgnoringSafeArea(.all)
 				}
-				 */
 			}
 		}
 		.navigationViewStyle(.stack)
@@ -578,10 +578,9 @@ extension UIApplication {
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
-	@Binding var selectedImage: UIImage
+	@ObservedObject var conversationViewModel: ConversationViewModel
+	@Binding var selectedMedia: [Attachment]
 	@Environment(\.presentationMode) private var presentationMode
-	
-	var sourceType: UIImagePickerController.SourceType = .photoLibrary
  
 	final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	 
@@ -592,9 +591,49 @@ struct ImagePicker: UIViewControllerRepresentable {
 		}
 	 
 		func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-	 
-			if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-				parent.selectedImage = image
+			let mediaType = info[UIImagePickerController.InfoKey.mediaType] as? String
+			switch mediaType {
+			case "public.image":
+				let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+				
+				let date = Date()
+				let df = DateFormatter()
+				df.dateFormat = "yyyy-MM-dd-HHmmss"
+				let dateString = df.string(from: date)
+				
+				let path = FileManager.default.temporaryDirectory.appendingPathComponent((dateString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".jpeg")
+				
+				if image != nil {
+					let data  = image!.jpegData(compressionQuality: 1)
+					if data != nil {
+						do {
+							let decodedData: () = try data!.write(to: path)
+							let attachment = Attachment(id: UUID().uuidString, url: path, type: .image)
+							parent.selectedMedia.append(attachment)
+						} catch {
+						}
+					}
+				}
+			case "public.movie":
+				let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? URL
+				if videoUrl != nil {
+					let name = videoUrl!.lastPathComponent
+					let path = videoUrl!.deletingLastPathComponent()
+					let pathThumbnail = URL(string: parent.conversationViewModel.generateThumbnail(name: name, pathThumbnail: path))
+					
+					if pathThumbnail != nil {
+						let attachment =
+						Attachment(
+							id: UUID().uuidString,
+							thumbnail: pathThumbnail!,
+							full: videoUrl!,
+							type: .video
+						)
+						parent.selectedMedia.append(attachment)
+					}
+				}
+			default:
+				Log.info("Mismatched type: \(mediaType)")
 			}
 	 
 			parent.presentationMode.wrappedValue.dismiss()
@@ -603,8 +642,8 @@ struct ImagePicker: UIViewControllerRepresentable {
 	
 	func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
 		let imagePicker = UIImagePickerController()
-		imagePicker.allowsEditing = false
-		imagePicker.sourceType = sourceType
+		imagePicker.sourceType = .camera
+		imagePicker.mediaTypes = ["public.image", "public.movie"]
 		imagePicker.delegate = context.coordinator
  
 		return imagePicker
