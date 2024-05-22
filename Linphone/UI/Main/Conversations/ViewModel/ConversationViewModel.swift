@@ -38,6 +38,9 @@ class ConversationViewModel: ObservableObject {
 	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var participantConversationModel: [ContactAvatarModel] = []
 	
+	@Published var mediasToSend: [Attachment] = []
+	var maxMediaCount = 12
+	
 	init() {}
 	
 	func addConversationDelegate() {
@@ -422,30 +425,45 @@ class ConversationViewModel: ObservableObject {
 			 Log.e("$TAG Voice recording content couldn't be created!")
 			 }
 			 } else {
-			 for (attachment in attachments.value.orEmpty()) {
-			 val content = Factory.instance().createContent()
-			 
-			 content.type = when (attachment.mimeType) {
-			 FileUtils.MimeType.Image -> "image"
-			 FileUtils.MimeType.Audio -> "audio"
-			 FileUtils.MimeType.Video -> "video"
-			 FileUtils.MimeType.Pdf -> "application"
-			 FileUtils.MimeType.PlainText -> "text"
-			 else -> "file"
-			 }
-			 content.subtype = if (attachment.mimeType == FileUtils.MimeType.PlainText) {
-			 "plain"
-			 } else {
-			 FileUtils.getExtensionFromFileName(attachment.fileName)
-			 }
-			 content.name = attachment.fileName
-			 // Let the file body handler take care of the upload
-			 content.filePath = attachment.file
-			 
-			 message.addFileContent(content)
-			 }
-			 }
 			 */
+			self.mediasToSend.forEach { attachment in
+				do {
+					let content = try Factory.Instance.createContent()
+					
+					switch attachment.type {
+					case .image:
+						content.type = "image"
+						/*
+						 case .audio:
+						 content.type = "audio"
+						 */
+					case .video:
+						content.type = "video"
+						/*
+						 case .pdf:
+						 content.type = "application"
+						 case .plainText:
+						 content.type = "text"
+						 */
+					default:
+						content.type = "file"
+					}
+					
+					//content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
+					content.subtype = attachment.full.pathExtension
+					
+					content.name = attachment.full.lastPathComponent
+					
+					let filePathTmp = attachment.full.absoluteString
+					content.filePath = String(filePathTmp.dropFirst(7))
+					
+					if message != nil {
+						message!.addFileContent(content: content)
+					}
+				} catch {
+				}
+			}
+			//}
 			
 			if message != nil && !message!.contents.isEmpty {
 				Log.info("[ConversationViewModel] Sending message")
@@ -455,6 +473,9 @@ class ConversationViewModel: ObservableObject {
 			Log.info("[ConversationViewModel] Message sent, re-setting defaults")
 			
 			DispatchQueue.main.async {
+				withAnimation {
+					self.mediasToSend.removeAll()
+				}
 				self.messageText = ""
 			}
 			

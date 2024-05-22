@@ -47,9 +47,7 @@ struct ConversationFragment: View {
 	@State private var isShowPhotoLibrary = false
 	@State private var isShowCamera = false
 	
-	@State private var mediasToSend: [Attachment] = []
 	@State private var mediasIsLoading = false
-	@State private var maxMediaCount = 12
 	
 	var body: some View {
 		NavigationView {
@@ -320,7 +318,7 @@ struct ConversationFragment: View {
 							}
 						}
 						
-						if !mediasToSend.isEmpty || mediasIsLoading {
+						if !conversationViewModel.mediasToSend.isEmpty || mediasIsLoading {
 							ZStack(alignment: .top) {
 								HStack {
 									if mediasIsLoading {
@@ -338,7 +336,7 @@ struct ConversationFragment: View {
 										LazyVGrid(columns: [
 											GridItem(.adaptive(minimum: 100), spacing: 1)
 										], spacing: 3) {
-											ForEach(mediasToSend, id: \.id) { attachment in
+											ForEach(conversationViewModel.mediasToSend, id: \.id) { attachment in
 												ZStack {
 													Rectangle()
 														.fill(Color(.white))
@@ -364,13 +362,13 @@ struct ConversationFragment: View {
 													}
 													.layoutPriority(-1)
 													.onTapGesture {
-														if mediasToSend.count == 1 {
+														if conversationViewModel.mediasToSend.count == 1 {
 															withAnimation {
-																mediasToSend = []
+																conversationViewModel.mediasToSend.removeAll()
 															}
 														} else {
-															guard let index = self.mediasToSend.firstIndex(of: attachment) else { return }
-															self.mediasToSend.remove(at: index)
+															guard let index = self.conversationViewModel.mediasToSend.firstIndex(of: attachment) else { return }
+															self.conversationViewModel.mediasToSend.remove(at: index)
 														}
 													}
 												}
@@ -379,14 +377,14 @@ struct ConversationFragment: View {
 											}
 										}
 										.frame(
-											width: geometry.size.width > 0 && CGFloat(102 * mediasToSend.count) > geometry.size.width - 20
+											width: geometry.size.width > 0 && CGFloat(102 * conversationViewModel.mediasToSend.count) > geometry.size.width - 20
 											? 102 * floor(CGFloat(geometry.size.width - 20) / 102)
-											: CGFloat(102 * mediasToSend.count)
+											: CGFloat(102 * conversationViewModel.mediasToSend.count)
 										)
 									}
 								}
 								.frame(maxWidth: .infinity)
-								.padding(.all, mediasToSend.isEmpty ? 0 : 10)
+								.padding(.all, conversationViewModel.mediasToSend.isEmpty ? 0 : 10)
 								.background(Color.gray100)
 								
 								if !mediasIsLoading {
@@ -395,7 +393,7 @@ struct ConversationFragment: View {
 										
 										Button(action: {
 											withAnimation {
-												mediasToSend = []
+												conversationViewModel.mediasToSend.removeAll()
 											}
 										}, label: {
 											Image("x")
@@ -429,11 +427,11 @@ struct ConversationFragment: View {
 								Image("paperclip")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(maxMediaCount <= mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+									.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
 									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
 									.padding(.all, isMessageTextFocused ? 0 : 6)
 									.padding(.top, 4)
-									.disabled(maxMediaCount <= mediasToSend.count || mediasIsLoading)
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
 							}
 							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
 							
@@ -443,11 +441,11 @@ struct ConversationFragment: View {
 								Image("camera")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(maxMediaCount <= mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+									.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
 									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
 									.padding(.all, isMessageTextFocused ? 0 : 6)
 									.padding(.top, 4)
-									.disabled(maxMediaCount <= mediasToSend.count || mediasIsLoading)
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
 							}
 							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
 							
@@ -479,7 +477,7 @@ struct ConversationFragment: View {
 									}
 								}
 								
-								if conversationViewModel.messageText.isEmpty {
+								if conversationViewModel.messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
 									Button {
 									} label: {
 										Image("microphone")
@@ -539,14 +537,14 @@ struct ConversationFragment: View {
 					conversationViewModel.removeConversationDelegate()
 				}
 				.sheet(isPresented: $isShowPhotoLibrary) {
-					PhotoPicker(filter: nil, limit: maxMediaCount - mediasToSend.count) { results in
+					PhotoPicker(filter: nil, limit: conversationViewModel.maxMediaCount - conversationViewModel.mediasToSend.count) { results in
 						PhotoPicker.convertToAttachmentArray(fromResults: results) { mediasOrNil, errorOrNil in
 							if let error = errorOrNil {
 								print(error)
 							}
 							
 							if let medias = mediasOrNil {
-								mediasToSend.append(contentsOf: medias)
+								conversationViewModel.mediasToSend.append(contentsOf: medias)
 							}
 							
 							self.mediasIsLoading = false
@@ -555,7 +553,7 @@ struct ConversationFragment: View {
 					.edgesIgnoringSafeArea(.all)
 				}
 				.fullScreenCover(isPresented: $isShowCamera) {
-					ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$mediasToSend)
+					ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$conversationViewModel.mediasToSend)
 						.edgesIgnoringSafeArea(.all)
 				}
 			}
