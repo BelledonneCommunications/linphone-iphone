@@ -114,8 +114,10 @@ class TelecomManager: ObservableObject {
 			
 			setHeldOtherCalls(core: core, exceptCallid: "")
 			requestTransaction(transaction, action: "startCall")
-			withAnimation {
-				self.callDisplayed = true
+			DispatchQueue.main.async {
+				withAnimation {
+					self.callDisplayed = true
+				}
 			}
 		} else {
 			try doCall(core: core, addr: addr!, isSas: isSas, isVideo: isVideo, isConference: isConference)
@@ -397,98 +399,114 @@ class TelecomManager: ObservableObject {
 		if cstate == .PushIncomingReceived {
 			Log.info("PushIncomingReceived on TelecomManager -- Ignore, should be processed by a the dedicated CoreDelegate for callkit display")
 		} else {
+			let oldRemoteConfVideo = self.remoteConfVideo
 			
-			DispatchQueue.main.async {
-				let oldRemoteConfVideo = self.remoteConfVideo
-				
-				if call.conference != nil {
-					if call.conference!.activeSpeakerParticipantDevice != nil {
-						let direction = call.conference?.activeSpeakerParticipantDevice!.getStreamCapability(streamType: StreamType.Video)
+			if call.conference != nil {
+				if call.conference!.activeSpeakerParticipantDevice != nil {
+					let direction = call.conference?.activeSpeakerParticipantDevice!.getStreamCapability(streamType: StreamType.Video)
+					
+					DispatchQueue.main.async {
 						self.remoteConfVideo = false
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
 						}
-					} else if call.conference!.participantList.first != nil && call.conference!.participantDeviceList.first != nil
-								&& call.conference!.participantList.first?.address != nil
-								&& call.conference!.participantList.first!.address!.clone()!.equal(address2: (call.conference!.me?.address)!) {
-						let direction = call.conference!.participantDeviceList.first!.getStreamCapability(streamType: StreamType.Video)
+					}
+				} else if call.conference!.participantList.first != nil && call.conference!.participantDeviceList.first != nil
+							&& call.conference!.participantList.first?.address != nil
+							&& call.conference!.participantList.first!.address!.clone()!.equal(address2: (call.conference!.me?.address)!) {
+					let direction = call.conference!.participantDeviceList.first!.getStreamCapability(streamType: StreamType.Video)
+					
+					DispatchQueue.main.async {
 						self.remoteConfVideo = false
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
 						}
-					} else if call.conference!.participantList.last != nil && call.conference!.participantDeviceList.last != nil
-								&& call.conference!.participantList.last?.address != nil {
-						let direction = call.conference!.participantDeviceList.last!.getStreamCapability(streamType: StreamType.Video)
+					}
+				} else if call.conference!.participantList.last != nil && call.conference!.participantDeviceList.last != nil
+							&& call.conference!.participantList.last?.address != nil {
+					let direction = call.conference!.participantDeviceList.last!.getStreamCapability(streamType: StreamType.Video)
+					
+					DispatchQueue.main.async {
 						self.remoteConfVideo = false
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
 						}
-					} else {
-						self.remoteConfVideo = false
 					}
 				} else {
+					DispatchQueue.main.async {
+						self.remoteConfVideo = false
+					}
+				}
+			} else {
+				DispatchQueue.main.async {
 					self.remoteConfVideo = false
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
 					}
 				}
+			}
+			
+			/*
+			 if self.remoteConfVideo && self.remoteConfVideo != oldRemoteConfVideo {
+			 	do {
+			 		try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+				} catch _ {
+			 	}
+			 }
+			 */
+			
+			if self.remoteConfVideo {
+				Log.info("[Call] Remote video is activated")
+			}
+			
+			let isRecordingByRemoteTmp = call.remoteParams?.isRecording ?? false
+			
+			if isRecordingByRemoteTmp && ToastViewModel.shared.toastMessage.isEmpty {
 				
-				/*
-				if self.remoteConfVideo && self.remoteConfVideo != oldRemoteConfVideo {
-					do {
-						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-					} catch _ {
-						
+				var displayName = ""
+				let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
+				if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+					displayName = friend!.address!.displayName!
+				} else {
+					if call.remoteAddress!.displayName != nil {
+						displayName = call.remoteAddress!.displayName!
+					} else if call.remoteAddress!.username != nil {
+						displayName = call.remoteAddress!.username!
 					}
 				}
-				 */
 				
-				if self.remoteConfVideo {
-					Log.info("[Call] Remote video is activated")
-				}
-				
-				self.isRecordingByRemote = call.remoteParams?.isRecording ?? false
-				
-				if self.isRecordingByRemote && ToastViewModel.shared.toastMessage.isEmpty {
-					
-					var displayName = ""
-					let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
-					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-						displayName = friend!.address!.displayName!
-					} else {
-						if call.remoteAddress!.displayName != nil {
-							displayName = call.remoteAddress!.displayName!
-						} else if call.remoteAddress!.username != nil {
-							displayName = call.remoteAddress!.username!
-						}
-					}
-					
+				DispatchQueue.main.async {
+					self.isRecordingByRemote = isRecordingByRemoteTmp
 					ToastViewModel.shared.toastMessage = "\(displayName) is recording"
 					ToastViewModel.shared.displayToast = true
-					
-					Log.info("[Call] Call is recording by \(call.remoteAddress!.asStringUriOnly())")
 				}
 				
-				if !self.isRecordingByRemote && ToastViewModel.shared.toastMessage.contains("is recording") {
-					
-					withAnimation {
-						ToastViewModel.shared.toastMessage = ""
-						ToastViewModel.shared.displayToast = false
-					}
-					
-					Log.info("[Call] Recording is stopped by \(call.remoteAddress!.asStringUriOnly())")
+				Log.info("[Call] Call is recording by \(call.remoteAddress!.asStringUriOnly())")
+			}
+			
+			if !isRecordingByRemoteTmp && ToastViewModel.shared.toastMessage.contains("is recording") {
+				DispatchQueue.main.async {
+					self.isRecordingByRemote = isRecordingByRemoteTmp
+					ToastViewModel.shared.toastMessage = ""
+					ToastViewModel.shared.displayToast = false
 				}
-				
-				switch call.state {
-				case Call.State.PausedByRemote:
+				Log.info("[Call] Recording is stopped by \(call.remoteAddress!.asStringUriOnly())")
+			}
+			
+			switch call.state {
+			case Call.State.PausedByRemote:
+				DispatchQueue.main.async {
 					self.isPausedByRemote = true
-				default:
+				}
+			default:
+				DispatchQueue.main.async {
 					self.isPausedByRemote = false
 				}
-				
-				if cstate == Call.State.Connected {
+			}
+			
+			if cstate == Call.State.Connected {
+				DispatchQueue.main.async {
 					self.callConnected = true
-					
 					self.meetingWaitingRoomSelected = nil
 					self.meetingWaitingRoomDisplayed = false
 				}
