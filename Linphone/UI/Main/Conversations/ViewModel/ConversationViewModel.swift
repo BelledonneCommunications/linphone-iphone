@@ -46,7 +46,7 @@ class ConversationViewModel: ObservableObject {
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
-				self.chatRoomSuscriptions.insert(self.displayedConversation?.chatRoom.publisher?.onChatMessageSent?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
+				self.chatRoomSuscriptions.insert(self.displayedConversation?.chatRoom.publisher?.onChatMessageSending?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
 					self.getNewMessages(eventLogs: [cbValue.eventLog])
 				})
 				
@@ -454,11 +454,27 @@ class ConversationViewModel: ObservableObject {
 					
 					content.name = attachment.full.lastPathComponent
 					
-					let filePathTmp = attachment.full.absoluteString
-					content.filePath = String(filePathTmp.dropFirst(7))
-					
 					if message != nil {
-						message!.addFileContent(content: content)
+						
+						let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+						let newPath = URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+						/*
+						let data = try Data(contentsOf: path)
+						let decodedData: () = try data.write(to: path)
+						*/
+						
+						do {
+							if FileManager.default.fileExists(atPath: newPath!.path) {
+								try FileManager.default.removeItem(atPath: newPath!.path)
+							}
+							try FileManager.default.moveItem(atPath: path.path, toPath: newPath!.path)
+							
+							let filePathTmp = newPath?.absoluteString
+							content.filePath = String(filePathTmp!.dropFirst(7))
+							message!.addFileContent(content: content)
+						} catch {
+							Log.error(error.localizedDescription)
+						}
 					}
 				} catch {
 				}
