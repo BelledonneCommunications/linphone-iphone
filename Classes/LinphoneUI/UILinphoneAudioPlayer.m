@@ -42,7 +42,7 @@
 - (instancetype)initWithFilePath:(NSString *)filePath {
     if (self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]]) {
         player = linphone_core_create_local_player(LC, NULL, "IOSDisplay", NULL);
-        cbs = linphone_player_get_callbacks(player);
+        cbs = linphone_factory_create_player_cbs(linphone_factory_get());
         linphone_player_set_user_data(player, (__bridge void *)self);
         linphone_player_cbs_set_eof_reached(cbs, on_eof_reached);
         file = filePath;
