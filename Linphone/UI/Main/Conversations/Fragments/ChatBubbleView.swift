@@ -315,7 +315,8 @@ struct ChatBubbleView: View {
 			if let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as Dictionary? {
 				let pixelWidth = imageProperties[kCGImagePropertyPixelWidth] as? CGFloat
 				let pixelHeight = imageProperties[kCGImagePropertyPixelHeight] as? CGFloat
-				return (pixelWidth ?? 0, pixelHeight ?? 0)
+				let orientation = imageProperties[kCGImagePropertyOrientation] as? Int
+				return orientation != nil && orientation == 6 ? (pixelHeight ?? 0, pixelWidth ?? 0) : (pixelWidth ?? 0, pixelHeight ?? 0)
 			}
 		}
 		return (0, 0)
