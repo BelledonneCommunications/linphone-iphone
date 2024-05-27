@@ -77,40 +77,28 @@ struct HistoryListBottomSheet: View {
 				
 				index = 0
 				
-				if contactsManager.getFriendWithAddress(
-					address: historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing
-					   ? historyViewModel.selectedCall!.toAddress!
-					   : historyViewModel.selectedCall!.fromAddress!
-				) != nil {
-					let addressCall = historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing
-					? historyViewModel.selectedCall!.toAddress!
-					: historyViewModel.selectedCall!.fromAddress!
+				if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.addressFriend != nil {
+					let addressCall = historyViewModel.selectedCall!.address
 					
-					let friendIndex = contactsManager.lastSearch.firstIndex(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall.asStringUriOnly()})})
+					let friendIndex = contactsManager.lastSearch.firstIndex(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall})})
 					if friendIndex != nil {
 						withAnimation {
 							contactViewModel.indexDisplayedFriend = friendIndex
 						}
 					}
-				} else {
-					let addressCall = historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing
-					? historyViewModel.selectedCall!.toAddress!
-					: historyViewModel.selectedCall!.fromAddress!
+				} else if historyViewModel.selectedCall != nil {
+					let addressCall = historyViewModel.selectedCall!.address
 					
 					withAnimation {
 						isShowEditContactFragment.toggle()
 						editContactViewModel.sipAddresses.removeAll()
-						editContactViewModel.sipAddresses.append(String(addressCall.asStringUriOnly().dropFirst(4)))
+						editContactViewModel.sipAddresses.append(String(addressCall.dropFirst(4)))
 						editContactViewModel.sipAddresses.append("")
 					}
 				}
 			} label: {
 				HStack {
-					if contactsManager.getFriendWithAddress(
-						address: historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing
-						   ? historyViewModel.selectedCall!.toAddress!
-						   : historyViewModel.selectedCall!.fromAddress!
-					) != nil {
+					if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.addressFriend != nil {
 						Image("user-circle")
 							.renderingMode(.template)
 							.resizable()
@@ -143,14 +131,14 @@ struct HistoryListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
-				if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.dir == .Outgoing {
+				if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.isOutgoing {
 					UIPasteboard.general.setValue(
-						historyViewModel.selectedCall!.toAddress!.asStringUriOnly().dropFirst(4),
+						historyViewModel.selectedCall!.address.dropFirst(4),
 						forPasteboardType: UTType.plainText.identifier
 					)
 				} else {
 					UIPasteboard.general.setValue(
-						historyViewModel.selectedCall!.fromAddress!.asStringUriOnly().dropFirst(4),
+						historyViewModel.selectedCall!.address.dropFirst(4),
 						forPasteboardType: UTType.plainText.identifier
 					)
 				}
@@ -193,11 +181,8 @@ struct HistoryListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
-				CoreContext.shared.doOnCoreQueue { core in
-					if historyViewModel.selectedCall != nil {
-						core.removeCallLog(callLog: historyViewModel.selectedCall!)
-						historyListViewModel.removeCallLog(callLog: historyViewModel.selectedCall!)
-					}
+				if historyViewModel.selectedCall != nil {
+					historyListViewModel.removeCallLog(historyModel: historyViewModel.selectedCall!)
 				}
 				
 				if #available(iOS 16.0, *) {

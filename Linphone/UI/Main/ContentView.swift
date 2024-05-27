@@ -718,21 +718,9 @@ struct ContentView: View {
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
 							} else if self.index == 1 {
-								let fromAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
-								let toAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
-								let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
-								
-								let contactAvatarModel = addressFriend != nil
-								? ContactsManager.shared.avatarListModel.first(where: {
-									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-									&& $0.friend!.name == addressFriend!.name
-									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-								})
-								: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
-								
-								if contactAvatarModel != nil {
+								if historyViewModel.displayedCall!.avatarModel != nil {
 									HistoryContactFragment(
-										contactAvatarModel: contactAvatarModel!,
+										contactAvatarModel: historyViewModel.displayedCall!.avatarModel!,
 										historyViewModel: historyViewModel,
 										historyListViewModel: historyListViewModel,
 										contactViewModel: contactViewModel,
@@ -984,6 +972,7 @@ struct ContentView: View {
 			}
 			.onReceive(pub) { _ in
 				conversationsListViewModel.refreshContactAvatarModel()
+				historyListViewModel.refreshHistoryAvatarModel()
 		 	}
 		}
 		.overlay {

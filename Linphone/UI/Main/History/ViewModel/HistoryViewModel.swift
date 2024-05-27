@@ -22,23 +22,9 @@ import linphonesw
 
 class HistoryViewModel: ObservableObject {
 	
-	@Published var displayedCall: CallLog?
-	@Published var displayedCallIsConference: String = ""
+	@Published var displayedCall: HistoryModel?
 	
-	var selectedCall: CallLog?
+	var selectedCall: HistoryModel?
 	
 	init() {}
-	
-	func getConferenceSubject() {
-		CoreContext.shared.doOnCoreQueue { core in
-			var displayedCallIsConferenceTmp = ""
-			if self.displayedCall?.conferenceInfo != nil {
-				displayedCallIsConferenceTmp = self.displayedCall?.conferenceInfo?.subject ?? ""
-			}
-			
-			DispatchQueue.main.async {
-				self.displayedCallIsConference = displayedCallIsConferenceTmp
-			}
-		}
-	}
 }

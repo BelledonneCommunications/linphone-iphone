@@ -38,97 +38,30 @@ struct HistoryListFragment: View {
 				ForEach(0..<historyListViewModel.callLogs.count, id: \.self) { index in
 					HStack {
 						HStack {
-							if historyListViewModel.callLogsIsConference[index].isEmpty {
-								let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
-								let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
-								let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
-								
-								let contactAvatarModel = addressFriend != nil
-								? ContactsManager.shared.avatarListModel.first(where: {
-									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-									&& $0.friend!.name == addressFriend!.name
-									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-								})
-								: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
-								
-								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-									if contactAvatarModel != nil {
-										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 50)
-									} else {
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
-									}
+							if !historyListViewModel.callLogs[index].isConf {
+								if historyListViewModel.callLogs[index].avatarModel != nil {
+									Avatar(contactAvatarModel: historyListViewModel.callLogs[index].avatarModel!, avatarSize: 50)
 								} else {
-									if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-										if historyListViewModel.callLogs[index].toAddress!.displayName != nil {
-											Image(uiImage: contactsManager.textToImage(
-												firstName: historyListViewModel.callLogs[index].toAddress!.displayName!,
-												lastName: historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ").count > 1
-												? historyListViewModel.callLogs[index].toAddress!.displayName!.components(separatedBy: " ")[1]
-												: ""))
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
-											
-										} else if historyListViewModel.callLogs[index].toAddress!.username != nil {
-											Image(uiImage: contactsManager.textToImage(
-												firstName: historyListViewModel.callLogs[index].toAddress!.username!,
-												lastName: historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ").count > 1
-												? historyListViewModel.callLogs[index].toAddress!.username!.components(separatedBy: " ")[1]
-												: ""))
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
-										} else {
-											VStack {
-												Image("users-three-square")
-													.renderingMode(.template)
-													.resizable()
-													.frame(width: 28, height: 28)
-													.foregroundStyle(Color.grayMain2c600)
-											}
-											.frame(width: 50, height: 50)
-											.background(Color.grayMain2c200)
-											.clipShape(Circle())
-										}
-									} else if historyListViewModel.callLogs[index].fromAddress != nil {
-										if historyListViewModel.callLogs[index].fromAddress!.displayName != nil {
-											Image(uiImage: contactsManager.textToImage(
-												firstName: historyListViewModel.callLogs[index].fromAddress!.displayName!,
-												lastName: historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ").count > 1
-												? historyListViewModel.callLogs[index].fromAddress!.displayName!.components(separatedBy: " ")[1]
-												: ""))
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
-										} else if historyListViewModel.callLogs[index].fromAddress!.username != nil {
-											Image(uiImage: contactsManager.textToImage(
-												firstName: historyListViewModel.callLogs[index].fromAddress!.username!,
-												lastName: historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ").count > 1
-												? historyListViewModel.callLogs[index].fromAddress!.username!.components(separatedBy: " ")[1]
-												: ""))
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
-										} else {
-											VStack {
-												Image("users-three-square")
-													.renderingMode(.template)
-													.resizable()
-													.frame(width: 28, height: 28)
-													.foregroundStyle(Color.grayMain2c600)
-											}
-											.frame(width: 50, height: 50)
-											.background(Color.grayMain2c200)
-											.clipShape(Circle())
-										}
+									if !historyListViewModel.callLogs[index].addressName.isEmpty {
+										Image(uiImage: contactsManager.textToImage(
+											firstName: historyListViewModel.callLogs[index].addressName,
+											lastName: historyListViewModel.callLogs[index].addressName.components(separatedBy: " ").count > 1
+											? historyListViewModel.callLogs[index].addressName.components(separatedBy: " ")[1]
+											: ""))
+										.resizable()
+										.frame(width: 50, height: 50)
+										.clipShape(Circle())
 									} else {
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
+										VStack {
+											Image("profil-picture-default")
+												.renderingMode(.template)
+												.resizable()
+												.frame(width: 28, height: 28)
+												.foregroundStyle(Color.grayMain2c600)
+										}
+										.frame(width: 50, height: 50)
+										.background(Color.grayMain2c200)
+										.clipShape(Circle())
 									}
 								}
 							} else {
@@ -146,47 +79,24 @@ struct HistoryListFragment: View {
 							
 							VStack(spacing: 0) {
 								Spacer()
-								if historyListViewModel.callLogsIsConference[index].isEmpty {
-									let fromAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].fromAddress!)
-									let toAddressFriend = contactsManager.getFriendWithAddress(address: historyListViewModel.callLogs[index].toAddress!)
-									let addressFriend = historyListViewModel.callLogs[index].dir == .Incoming ? fromAddressFriend : toAddressFriend
-									
-									if addressFriend != nil {
-										Text(addressFriend!.name!)
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity, alignment: .leading)
-											.lineLimit(1)
-									} else {
-										if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-											Text(historyListViewModel.callLogs[index].toAddress!.displayName != nil
-												 ? historyListViewModel.callLogs[index].toAddress!.displayName!
-												 : historyListViewModel.callLogs[index].toAddress!.username ?? "")
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity, alignment: .leading)
-											.lineLimit(1)
-										} else if historyListViewModel.callLogs[index].fromAddress != nil {
-											Text(historyListViewModel.callLogs[index].fromAddress!.displayName != nil
-												 ? historyListViewModel.callLogs[index].fromAddress!.displayName!
-												 : historyListViewModel.callLogs[index].fromAddress!.username ?? "")
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity, alignment: .leading)
-											.lineLimit(1)
-										}
-									}
+								if !historyListViewModel.callLogs[index].isConf {
+									Text(historyListViewModel.callLogs[index].addressName)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
 								} else {
-									Text(historyListViewModel.callLogsIsConference[index])
+									Text(historyListViewModel.callLogs[index].subject)
 										.default_text_style(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.lineLimit(1)
 								}
 								
 								HStack {
-									Image(historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, callDir: historyListViewModel.callLogs[index].dir))
+									Image(historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, isOutgoing: historyListViewModel.callLogs[index].isOutgoing))
 										.resizable()
 										.frame(
-											width: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, callDir: historyListViewModel.callLogs[index].dir).contains("rejected") ? 12 : 8,
-											height: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, callDir: historyListViewModel.callLogs[index].dir).contains("rejected") ? 6 : 8)
-									
+											width: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, isOutgoing: historyListViewModel.callLogs[index].isOutgoing).contains("rejected") ? 12 : 8,
+											height: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, isOutgoing: historyListViewModel.callLogs[index].isOutgoing).contains("rejected") ? 6 : 8)
 									Text(historyListViewModel.getCallTime(startDate: historyListViewModel.callLogs[index].startDate))
 										.default_text_style_300(styleSize: 12)
 										.frame(maxWidth: .infinity, alignment: .leading)
@@ -197,7 +107,7 @@ struct HistoryListFragment: View {
 								Spacer()
 							}
 							
-							if historyListViewModel.callLogsIsConference[index].isEmpty {
+							if !historyListViewModel.callLogs[index].isConf {
 								Image("phone")
 									.resizable()
 									.frame(width: 25, height: 25)
@@ -223,7 +133,6 @@ struct HistoryListFragment: View {
 					.onTapGesture {
 						withAnimation {
 							historyViewModel.displayedCall = historyListViewModel.callLogs[index]
-							historyViewModel.getConferenceSubject()
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
@@ -256,11 +165,7 @@ struct HistoryListFragment: View {
 	}
 	
 	func doCall(index: Int) {
-		if historyListViewModel.callLogs[index].dir == .Outgoing && historyListViewModel.callLogs[index].toAddress != nil {
-			telecomManager.doCallOrJoinConf(address: historyListViewModel.callLogs[index].toAddress!)
-		} else if historyListViewModel.callLogs[index].fromAddress != nil {
-			telecomManager.doCallOrJoinConf(address: historyListViewModel.callLogs[index].fromAddress!)
-		}
+		telecomManager.doCallOrJoinConf(address: historyListViewModel.callLogs[index].addressLinphone)
 	}
 }
 

@@ -76,551 +76,381 @@ struct HistoryContactFragment: View {
 						Spacer()
 						
 						Menu {
-							let fromAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
-							let toAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
-							let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
-							
-							if historyViewModel.displayedCallIsConference.isEmpty {
+							if historyViewModel.displayedCall != nil && !historyViewModel.displayedCall!.isConf {
 								Button {
 									isMenuOpen = false
 									
-									if contactsManager.getFriendWithAddress(
-										address: historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
-										? historyViewModel.displayedCall!.toAddress!
-										: historyViewModel.displayedCall!.fromAddress!
-									) != nil {
-										let addressCall = historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
-										? historyViewModel.displayedCall!.toAddress!
-										: historyViewModel.displayedCall!.fromAddress!
+									if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.addressFriend != nil {
+										let addressCall = historyViewModel.displayedCall!.addressFriend!.address
 										
-										let friendIndex = contactsManager.lastSearch.firstIndex(
-											where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall.asStringUriOnly()})})
-										if friendIndex != nil {
-											
-											withAnimation {
-												historyViewModel.displayedCall = nil
-												indexPage = 0
+										if addressCall != nil {
+											let friendIndex = contactsManager.lastSearch.firstIndex(
+												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall!.asStringUriOnly()})})
+											if friendIndex != nil {
 												
-												contactViewModel.indexDisplayedFriend = friendIndex
+												withAnimation {
+													historyViewModel.displayedCall = nil
+													indexPage = 0
+													
+													contactViewModel.indexDisplayedFriend = friendIndex
+												}
 											}
 										}
 									} else {
-										let addressCall = historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing
-										? historyViewModel.displayedCall!.toAddress!
-										: historyViewModel.displayedCall!.fromAddress!
-										
 										withAnimation {
 											historyViewModel.displayedCall = nil
 											indexPage = 0
 											
 											isShowEditContactFragment.toggle()
 											editContactViewModel.sipAddresses.removeAll()
-											editContactViewModel.sipAddresses.append(String(addressCall.asStringUriOnly().dropFirst(4)))
+											editContactViewModel.sipAddresses.append(String(historyViewModel.displayedCall?.address.dropFirst(4) ?? ""))
 											editContactViewModel.sipAddresses.append("")
 										}
 									}
 									
 								} label: {
 									HStack {
-										Text(addressFriend != nil ? "See contact" : "Add to contacts")
+										Text(historyViewModel.displayedCall!.addressFriend != nil ? "See contact" : "Add to contacts")
 										Spacer()
-										Image(addressFriend != nil ? "user-circle" : "plus-circle")
+										Image(historyViewModel.displayedCall!.addressFriend != nil ? "user-circle" : "plus-circle")
 											.resizable()
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
 									}
 								}
 							}
+							
+							Button {
+								isMenuOpen = false
 								
-								Button {
-									isMenuOpen = false
-									
-									if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing {
-										UIPasteboard.general.setValue(
-											historyViewModel.displayedCall!.toAddress!.asStringUriOnly().dropFirst(4),
-											forPasteboardType: UTType.plainText.identifier
-										)
-									} else {
-										UIPasteboard.general.setValue(
-											historyViewModel.displayedCall!.fromAddress!.asStringUriOnly().dropFirst(4),
-											forPasteboardType: UTType.plainText.identifier
-										)
-									}
-									
-									ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
-									ToastViewModel.shared.displayToast.toggle()
-									
-								} label: {
-									HStack {
-										Text("Copy SIP address")
-										Spacer()
-										Image("copy")
-											.resizable()
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
+								if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.isOutgoing {
+									UIPasteboard.general.setValue(
+										historyViewModel.displayedCall!.address.dropFirst(4),
+										forPasteboardType: UTType.plainText.identifier
+									)
+								} else {
+									UIPasteboard.general.setValue(
+										historyViewModel.displayedCall!.address.dropFirst(4),
+										forPasteboardType: UTType.plainText.identifier
+									)
 								}
 								
-								Button(role: .destructive) {
-									isMenuOpen = false
-									
-									if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.dir == .Outgoing {
-										historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.toAddress!.asStringUriOnly()
-									} else {
-										historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.fromAddress!.asStringUriOnly()
-									}
-									
-									isShowDeleteAllHistoryPopup.toggle()
-									
-								} label: {
-									HStack {
-										Text("Delete history")
-										Spacer()
-										Image("trash-simple-red")
-											.resizable()
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
-								}
+								ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+								ToastViewModel.shared.displayToast.toggle()
+								
 							} label: {
-								Image("dots-three-vertical")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.orangeMain500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
+								HStack {
+									Text("Copy SIP address")
+									Spacer()
+									Image("copy")
+										.resizable()
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+								}
 							}
-							.padding(.leading)
-							.onTapGesture {
-								isMenuOpen = true
+							
+							Button(role: .destructive) {
+								isMenuOpen = false
+								
+								if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.isOutgoing {
+									historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.address
+								} else {
+									historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.address
+								}
+								
+								isShowDeleteAllHistoryPopup.toggle()
+								
+							} label: {
+								HStack {
+									Text("Delete history")
+									Spacer()
+									Image("trash-simple-red")
+										.resizable()
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+								}
 							}
+						} label: {
+							Image("dots-three-vertical")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.all, 10)
+						}
+						.padding(.leading)
+						.onTapGesture {
+							isMenuOpen = true
+						}
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 50)
+					.padding(.horizontal)
+					.padding(.bottom, 4)
+					.background(.white)
+					
+					ScrollView {
+						VStack(spacing: 0) {
+							VStack(spacing: 0) {
+								if #unavailable(iOS 16.0) {
+									Rectangle()
+										.foregroundColor(Color.gray100)
+										.frame(height: 7)
+								}
+								
+								VStack(spacing: 0) {
+									if historyViewModel.displayedCall != nil && !historyViewModel.displayedCall!.isConf {
+										if historyViewModel.displayedCall!.avatarModel != nil {
+											Avatar(contactAvatarModel: historyViewModel.displayedCall!.avatarModel!, avatarSize: 100)
+										}
+										
+										Text(historyViewModel.displayedCall!.addressName)
+											.foregroundStyle(Color.grayMain2c700)
+											.multilineTextAlignment(.center)
+											.default_text_style(styleSize: 14)
+											.frame(maxWidth: .infinity)
+											.padding(.top, 10)
+										
+										Text(historyViewModel.displayedCall!.address)
+											.foregroundStyle(Color.grayMain2c700)
+											.multilineTextAlignment(.center)
+											.default_text_style(styleSize: 14)
+											.frame(maxWidth: .infinity)
+											.padding(.top, 5)
+										
+										if historyViewModel.displayedCall!.avatarModel != nil {
+											Text(contactAvatarModel.lastPresenceInfo)
+												.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
+																 ? Color.greenSuccess500
+																 : Color.orangeWarning600)
+												.multilineTextAlignment(.center)
+												.default_text_style_300(styleSize: 12)
+												.frame(maxWidth: .infinity)
+												.frame(height: 20)
+												.padding(.top, 5)
+										} else {
+											Text("")
+												.multilineTextAlignment(.center)
+												.default_text_style_300(styleSize: 12)
+												.frame(maxWidth: .infinity)
+												.frame(height: 20)
+										}
+									} else {
+										VStack {
+											Image("users-three-square")
+												.renderingMode(.template)
+												.resizable()
+												.frame(width: 60, height: 60)
+												.foregroundStyle(Color.grayMain2c600)
+										}
+										.frame(width: 100, height: 100)
+										.background(Color.grayMain2c200)
+										.clipShape(Circle())
+										
+										Text(historyViewModel.displayedCall!.subject)
+											.foregroundStyle(Color.grayMain2c700)
+											.multilineTextAlignment(.center)
+											.default_text_style(styleSize: 14)
+											.frame(maxWidth: .infinity)
+											.padding(.top, 10)
+									}
+								}
+								.frame(minHeight: 150)
+								.frame(maxWidth: .infinity)
+								.padding(.top, 10)
+								.padding(.bottom, 2)
+								.background(Color.gray100)
+								
+								HStack {
+									Spacer()
+									
+									if historyViewModel.displayedCall != nil && !historyViewModel.displayedCall!.isConf {
+										Button(action: {
+											telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.addressLinphone)
+										}, label: {
+											VStack {
+												HStack(alignment: .center) {
+													Image("phone")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+												}
+												.padding(16)
+												.background(Color.grayMain2c200)
+												.cornerRadius(40)
+												
+												Text("Appel")
+													.default_text_style(styleSize: 14)
+													.frame(minWidth: 80)
+											}
+										})
+										
+										Spacer()
+										
+										Button(action: {
+											
+										}, label: {
+											VStack {
+												HStack(alignment: .center) {
+													Image("chat-teardrop-text")
+														.renderingMode(.template)
+														.resizable()
+													//.foregroundStyle(Color.grayMain2c600)
+														.foregroundStyle(Color.grayMain2c300)
+														.frame(width: 25, height: 25)
+														.onTapGesture {
+															withAnimation {
+																
+															}
+														}
+												}
+												.padding(16)
+												.background(Color.grayMain2c200)
+												.cornerRadius(40)
+												
+												Text("Message")
+													.default_text_style(styleSize: 14)
+													.frame(minWidth: 80)
+											}
+										})
+										
+										Spacer()
+										
+										Button(action: {
+											telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.addressLinphone, isVideo: true)
+										}, label: {
+											VStack {
+												HStack(alignment: .center) {
+													Image("video-camera")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+												}
+												.padding(16)
+												.background(Color.grayMain2c200)
+												.cornerRadius(40)
+												
+												Text("Video Call")
+													.default_text_style(styleSize: 14)
+													.frame(minWidth: 80)
+											}
+										})
+									} else {
+										Button(action: {
+											withAnimation {
+												if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.address.hasPrefix("sip:conference-focus@sip.linphone.org") {
+													do {
+														let meetingAddress = try Factory.Instance.createAddress(addr: historyViewModel.displayedCall!.address)
+														
+														telecomManager.meetingWaitingRoomDisplayed = true
+														telecomManager.meetingWaitingRoomSelected = meetingAddress
+													} catch {}
+												} else {
+													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.addressLinphone)
+												}
+											}
+										}, label: {
+											VStack {
+												HStack(alignment: .center) {
+													Image("users-three-square")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+												}
+												.padding(16)
+												.background(Color.grayMain2c200)
+												.cornerRadius(40)
+												
+												Text("Rejoindre")
+													.default_text_style(styleSize: 14)
+													.frame(minWidth: 80)
+											}
+										})
+									}
+									
+									Spacer()
+								}
+								.padding(.top, 20)
+								.padding(.bottom, 10)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								
+								VStack(spacing: 0) {
+									
+									let addressFriend = historyViewModel.displayedCall != nil
+									? historyViewModel.displayedCall!.address : nil
+									
+									let callLogsFilter = historyListViewModel.callLogs.filter({ $0.address == addressFriend})
+									
+									ForEach(0..<callLogsFilter.count, id: \.self) { index in
+										HStack {
+											VStack {
+												Image(historyListViewModel.getCallIconResId(callStatus: callLogsFilter[index].status, isOutgoing: callLogsFilter[index].isOutgoing))
+													.resizable()
+													.frame(
+														width: historyListViewModel.getCallIconResId(
+															callStatus: callLogsFilter[index].status,
+															isOutgoing: callLogsFilter[index].isOutgoing
+														).contains("rejected") ? 12 : 8,
+														height: historyListViewModel.getCallIconResId(
+															callStatus: callLogsFilter[index].status,
+															isOutgoing: callLogsFilter[index].isOutgoing
+														).contains("rejected") ? 6 : 8)
+													.padding(.top, 6)
+												
+												Spacer()
+											}
+											
+											VStack {
+												Text(historyListViewModel.getCallText(
+													callStatus: callLogsFilter[index].status,
+													isOutgoing: callLogsFilter[index].isOutgoing)
+												)
+												.default_text_style(styleSize: 14)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												
+												Text(historyListViewModel.getCallTime(startDate: callLogsFilter[index].startDate))
+													.foregroundStyle(
+														callLogsFilter[index].status != .Success
+														? Color.redDanger500
+														: Color.grayMain2c600
+													)
+													.default_text_style_300(styleSize: 12)
+													.frame(maxWidth: .infinity, alignment: .leading)
+											}
+											
+											VStack {
+												Spacer()
+												Text(callLogsFilter[index].duration.convertDurationToString())
+													.default_text_style_300(styleSize: 12)
+												Spacer()
+											}
+										}
+										.padding(.vertical, 15)
+										.padding(.horizontal, 20)
+										.frame(maxHeight: 65)
+									}
+								}
+								.background(.white)
+								.cornerRadius(15)
+								.padding(.all)
+							}
+							.frame(maxWidth: sharedMainViewModel.maxWidth)
 						}
 						.frame(maxWidth: .infinity)
-						.frame(height: 50)
-						.padding(.horizontal)
-						.padding(.bottom, 4)
-						.background(.white)
-						
-						ScrollView {
-							VStack(spacing: 0) {
-								VStack(spacing: 0) {
-									if #unavailable(iOS 16.0) {
-										Rectangle()
-											.foregroundColor(Color.gray100)
-											.frame(height: 7)
-									}
-									VStack(spacing: 0) {
-										if historyViewModel.displayedCallIsConference.isEmpty {
-											let fromAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.fromAddress!) : nil
-											let toAddressFriend = historyViewModel.displayedCall != nil ? contactsManager.getFriendWithAddress(address: historyViewModel.displayedCall!.toAddress!) : nil
-											let addressFriend = historyViewModel.displayedCall != nil ? (historyViewModel.displayedCall!.dir == .Incoming ? fromAddressFriend : toAddressFriend) : nil
-											
-											if historyViewModel.displayedCall != nil
-												&& addressFriend != nil
-												&& addressFriend!.photo != nil
-												&& !addressFriend!.photo!.isEmpty {
-												Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
-											} else if historyViewModel.displayedCall != nil {
-												if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-													if historyViewModel.displayedCall!.toAddress!.displayName != nil {
-														Image(uiImage: contactsManager.textToImage(
-															firstName: historyViewModel.displayedCall!.toAddress!.displayName!,
-															lastName: historyViewModel.displayedCall!.toAddress!.displayName!.components(separatedBy: " ").count > 1
-															? historyViewModel.displayedCall!.toAddress!.displayName!.components(separatedBy: " ")[1]
-															: ""))
-														.resizable()
-														.frame(width: 100, height: 100)
-														.clipShape(Circle())
-														
-														Text(historyViewModel.displayedCall!.toAddress!.displayName!)
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 10)
-														
-														Text(historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 5)
-														
-														Text("")
-															.multilineTextAlignment(.center)
-															.default_text_style_300(styleSize: 12)
-															.frame(maxWidth: .infinity)
-															.frame(height: 20)
-													} else {
-														Image(uiImage: contactsManager.textToImage(
-															firstName: historyViewModel.displayedCall!.toAddress!.username ?? "Username Error",
-															lastName: historyViewModel.displayedCall!.toAddress!.username!.components(separatedBy: " ").count > 1
-															? historyViewModel.displayedCall!.toAddress!.username!.components(separatedBy: " ")[1]
-															: ""))
-														.resizable()
-														.frame(width: 100, height: 100)
-														.clipShape(Circle())
-														
-														Text(historyViewModel.displayedCall!.toAddress!.username ?? "Username Error")
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 10)
-														
-														Text(historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 5)
-														
-														Text("")
-															.multilineTextAlignment(.center)
-															.default_text_style_300(styleSize: 12)
-															.frame(maxWidth: .infinity)
-															.frame(height: 20)
-													}
-													
-												} else if historyViewModel.displayedCall!.fromAddress != nil {
-													if historyViewModel.displayedCall!.fromAddress!.displayName != nil {
-														Image(uiImage: contactsManager.textToImage(
-															firstName: historyViewModel.displayedCall!.fromAddress!.displayName!,
-															lastName: historyViewModel.displayedCall!.fromAddress!.displayName!.components(separatedBy: " ").count > 1
-															? historyViewModel.displayedCall!.fromAddress!.displayName!.components(separatedBy: " ")[1]
-															: ""))
-														.resizable()
-														.frame(width: 100, height: 100)
-														.clipShape(Circle())
-														
-														Text(historyViewModel.displayedCall!.fromAddress!.displayName!)
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 10)
-														
-														Text(historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 5)
-														
-														Text("")
-															.multilineTextAlignment(.center)
-															.default_text_style_300(styleSize: 12)
-															.frame(maxWidth: .infinity)
-															.frame(height: 20)
-													} else {
-														Image(uiImage: contactsManager.textToImage(
-															firstName: historyViewModel.displayedCall!.fromAddress!.username ?? "Username Error",
-															lastName: historyViewModel.displayedCall!.fromAddress!.username!.components(separatedBy: " ").count > 1
-															? historyViewModel.displayedCall!.fromAddress!.username!.components(separatedBy: " ")[1]
-															: ""))
-														.resizable()
-														.frame(width: 100, height: 100)
-														.clipShape(Circle())
-														
-														Text(historyViewModel.displayedCall!.fromAddress!.username ?? "Username Error")
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 10)
-														
-														Text(historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
-															.foregroundStyle(Color.grayMain2c700)
-															.multilineTextAlignment(.center)
-															.default_text_style(styleSize: 14)
-															.frame(maxWidth: .infinity)
-															.padding(.top, 5)
-														
-														Text("")
-															.multilineTextAlignment(.center)
-															.default_text_style_300(styleSize: 12)
-															.frame(maxWidth: .infinity)
-															.frame(height: 20)
-													}
-												}
-											}
-											
-											if historyViewModel.displayedCall != nil
-												&& addressFriend != nil
-												&& addressFriend!.name != nil {
-												Text((addressFriend!.name)!)
-													.foregroundStyle(Color.grayMain2c700)
-													.multilineTextAlignment(.center)
-													.default_text_style(styleSize: 14)
-													.frame(maxWidth: .infinity)
-													.padding(.top, 10)
-												
-												if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-													Text(historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
-														.foregroundStyle(Color.grayMain2c700)
-														.multilineTextAlignment(.center)
-														.default_text_style(styleSize: 14)
-														.frame(maxWidth: .infinity)
-														.padding(.top, 5)
-												} else if historyViewModel.displayedCall!.fromAddress != nil {
-													Text(historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
-														.foregroundStyle(Color.grayMain2c700)
-														.multilineTextAlignment(.center)
-														.default_text_style(styleSize: 14)
-														.frame(maxWidth: .infinity)
-														.padding(.top, 5)
-												}
-												
-												Text(contactAvatarModel.lastPresenceInfo)
-													.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
-																	 ? Color.greenSuccess500
-																	 : Color.orangeWarning600)
-													.multilineTextAlignment(.center)
-													.default_text_style_300(styleSize: 12)
-													.frame(maxWidth: .infinity)
-													.frame(height: 20)
-													.padding(.top, 5)
-											}
-										} else {
-											VStack {
-												Image("users-three-square")
-													.renderingMode(.template)
-													.resizable()
-													.frame(width: 60, height: 60)
-													.foregroundStyle(Color.grayMain2c600)
-											}
-											.frame(width: 100, height: 100)
-											.background(Color.grayMain2c200)
-											.clipShape(Circle())
-											
-											Text(historyViewModel.displayedCallIsConference ?? "")
-												.foregroundStyle(Color.grayMain2c700)
-												.multilineTextAlignment(.center)
-												.default_text_style(styleSize: 14)
-												.frame(maxWidth: .infinity)
-												.padding(.top, 10)
-										}
-									}
-									.frame(minHeight: 150)
-									.frame(maxWidth: .infinity)
-									.padding(.top, 10)
-									.padding(.bottom, 2)
-									.background(Color.gray100)
-									
-									HStack {
-										Spacer()
-										
-										if historyViewModel.displayedCallIsConference.isEmpty {
-											Button(action: {
-												if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.toAddress!)
-												} else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
-													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.fromAddress!)
-												}
-											}, label: {
-												VStack {
-													HStack(alignment: .center) {
-														Image("phone")
-															.renderingMode(.template)
-															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
-															.frame(width: 25, height: 25)
-													}
-													.padding(16)
-													.background(Color.grayMain2c200)
-													.cornerRadius(40)
-													
-													Text("Appel")
-														.default_text_style(styleSize: 14)
-														.frame(minWidth: 80)
-												}
-											})
-											
-											Spacer()
-											
-											Button(action: {
-												
-											}, label: {
-												VStack {
-													HStack(alignment: .center) {
-														Image("chat-teardrop-text")
-															.renderingMode(.template)
-															.resizable()
-														//.foregroundStyle(Color.grayMain2c600)
-															.foregroundStyle(Color.grayMain2c300)
-															.frame(width: 25, height: 25)
-															.onTapGesture {
-																withAnimation {
-																	
-																}
-															}
-													}
-													.padding(16)
-													.background(Color.grayMain2c200)
-													.cornerRadius(40)
-													
-													Text("Message")
-														.default_text_style(styleSize: 14)
-														.frame(minWidth: 80)
-												}
-											})
-											
-											Spacer()
-											
-											Button(action: {
-												if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.toAddress!, isVideo: true)
-												} else if historyViewModel.displayedCall!.dir == .Incoming && historyViewModel.displayedCall!.fromAddress != nil {
-													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.fromAddress!, isVideo: true)
-												}
-											}, label: {
-												VStack {
-													HStack(alignment: .center) {
-														Image("video-camera")
-															.renderingMode(.template)
-															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
-															.frame(width: 25, height: 25)
-													}
-													.padding(16)
-													.background(Color.grayMain2c200)
-													.cornerRadius(40)
-													
-													Text("Video Call")
-														.default_text_style(styleSize: 14)
-														.frame(minWidth: 80)
-												}
-											})
-										} else {
-											Button(action: {
-												withAnimation {
-													if historyViewModel.displayedCall!.dir == .Outgoing && historyViewModel.displayedCall!.toAddress != nil {
-														if historyViewModel.displayedCall!.toAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
-															do {
-																let meetingAddress = try Factory.Instance.createAddress(addr: historyViewModel.displayedCall!.toAddress!.asStringUriOnly())
-																
-																telecomManager.meetingWaitingRoomDisplayed = true
-																telecomManager.meetingWaitingRoomSelected = meetingAddress
-															} catch {}
-														} else {
-															telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.toAddress!)
-														}
-													} else if historyViewModel.displayedCall!.fromAddress != nil {
-														if historyViewModel.displayedCall!.fromAddress!.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
-															do {
-																let meetingAddress = try Factory.Instance.createAddress(addr: historyViewModel.displayedCall!.fromAddress!.asStringUriOnly())
-																
-																telecomManager.meetingWaitingRoomDisplayed = true
-																telecomManager.meetingWaitingRoomSelected = meetingAddress
-															} catch {}
-														} else {
-															telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.fromAddress!)
-														}
-													}
-												}
-											}, label: {
-												VStack {
-													HStack(alignment: .center) {
-														Image("users-three-square")
-															.renderingMode(.template)
-															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
-															.frame(width: 25, height: 25)
-													}
-													.padding(16)
-													.background(Color.grayMain2c200)
-													.cornerRadius(40)
-													
-													Text("Rejoindre")
-														.default_text_style(styleSize: 14)
-														.frame(minWidth: 80)
-												}
-											})
-										}
-										
-										Spacer()
-									}
-									.padding(.top, 20)
-									.padding(.bottom, 10)
-									.frame(maxWidth: .infinity)
-									.background(Color.gray100)
-									
-									VStack(spacing: 0) {
-										
-										let addressFriend = historyViewModel.displayedCall != nil
-										? (historyViewModel.displayedCall!.dir == .Incoming ? historyViewModel.displayedCall!.fromAddress!.asStringUriOnly()
-										   : historyViewModel.displayedCall!.toAddress!.asStringUriOnly()) : nil
-										
-										let callLogsFilter = historyListViewModel.callLogs.filter({ $0.dir == .Incoming
-											? $0.fromAddress!.asStringUriOnly() == addressFriend
-											: $0.toAddress!.asStringUriOnly() == addressFriend })
-										
-										ForEach(0..<callLogsFilter.count, id: \.self) { index in
-											HStack {
-												VStack {
-													Image(historyListViewModel.getCallIconResId(callStatus: callLogsFilter[index].status, callDir: callLogsFilter[index].dir))
-														.resizable()
-														.frame(
-															width: historyListViewModel.getCallIconResId(
-																callStatus: callLogsFilter[index].status,
-																callDir: callLogsFilter[index].dir
-															).contains("rejected") ? 12 : 8,
-															height: historyListViewModel.getCallIconResId(
-																callStatus: callLogsFilter[index].status,
-																callDir: callLogsFilter[index].dir
-															).contains("rejected") ? 6 : 8)
-														.padding(.top, 6)
-													
-													Spacer()
-												}
-												
-												VStack {
-													Text(historyListViewModel.getCallText(
-														callStatus: callLogsFilter[index].status,
-														callDir: callLogsFilter[index].dir)
-													)
-													.default_text_style(styleSize: 14)
-													.frame(maxWidth: .infinity, alignment: .leading)
-													
-													Text(historyListViewModel.getCallTime(startDate: callLogsFilter[index].startDate))
-														.foregroundStyle(
-															callLogsFilter[index].status != .Success
-															? Color.redDanger500
-															: Color.grayMain2c600
-														)
-														.default_text_style_300(styleSize: 12)
-														.frame(maxWidth: .infinity, alignment: .leading)
-												}
-												
-												VStack {
-													Spacer()
-													Text(callLogsFilter[index].duration.convertDurationToString())
-														.default_text_style_300(styleSize: 12)
-													Spacer()
-												}
-											}
-											.padding(.vertical, 15)
-											.padding(.horizontal, 20)
-											.frame(maxHeight: 65)
-										}
-									}
-									.background(.white)
-									.cornerRadius(15)
-									.padding(.all)
-								}
-								.frame(maxWidth: sharedMainViewModel.maxWidth)
-							}
-							.frame(maxWidth: .infinity)
-							.padding(.top, 2)
-						}
-						.background(Color.gray100)
+						.padding(.top, 2)
 					}
-					.background(.white)
-					.navigationBarHidden(true)
-					.onRotate { newOrientation in
-						orientation = newOrientation
-					}
+					.background(Color.gray100)
 				}
+				.background(.white)
+				.navigationBarHidden(true)
+				.onRotate { newOrientation in
+					orientation = newOrientation
+				}
+			}
 		}
 		.navigationViewStyle(.stack)
 	}

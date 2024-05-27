@@ -24,9 +24,8 @@ class HistoryListViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
 	
-	@Published var callLogs: [CallLog] = []
-	@Published var callLogsIsConference: [String] = []
-	var callLogsTmp: [CallLog] = []
+	@Published var callLogs: [HistoryModel] = []
+	var callLogsTmp: [HistoryModel] = []
 	
 	var callLogsAddressToDelete = ""
 	var callLogSubscription: AnyCancellable?
@@ -43,14 +42,13 @@ class HistoryListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
 			
-			var callLogsBis: [CallLog] = []
-			var callLogsIsConferenceBis: [String] = []
-			var callLogsTmpBis: [CallLog] = []
+			var callLogsBis: [HistoryModel] = []
+			var callLogsTmpBis: [HistoryModel] = []
 			
 			logs.forEach { log in
-				callLogsBis.append(log)
-				callLogsIsConferenceBis.append(log.conferenceInfo != nil && log.conferenceInfo!.subject != nil ? log.conferenceInfo!.subject! : "")
-				callLogsTmpBis.append(log)
+				let history = HistoryModel(callLog: log)
+				callLogsBis.append(history)
+				callLogsTmpBis.append(history)
 			}
 			
 			DispatchQueue.main.async {
@@ -58,7 +56,6 @@ class HistoryListViewModel: ObservableObject {
 				self.callLogsTmp.removeAll()
 				
 				self.callLogs = callLogsBis
-				self.callLogsIsConference = callLogsIsConferenceBis
 				self.callLogsTmp = callLogsTmpBis
 			}
 			
@@ -66,14 +63,13 @@ class HistoryListViewModel: ObservableObject {
 				let account = core.defaultAccount
 				let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
 				
-				var callLogsBis: [CallLog] = []
-				var callLogsIsConferenceBis: [String] = []
-				var callLogsTmpBis: [CallLog] = []
+				var callLogsBis: [HistoryModel] = []
+				var callLogsTmpBis: [HistoryModel] = []
 				
 				logs.forEach { log in
-					callLogsBis.append(log)
-					callLogsIsConferenceBis.append(log.conferenceInfo != nil && log.conferenceInfo!.subject != nil ? log.conferenceInfo!.subject! : "")
-					callLogsTmpBis.append(log)
+					let history = HistoryModel(callLog: log)
+					callLogsBis.append(history)
+					callLogsTmpBis.append(history)
 				}
 				
 				DispatchQueue.main.async {
@@ -81,7 +77,6 @@ class HistoryListViewModel: ObservableObject {
 					self.callLogsTmp.removeAll()
 					
 					self.callLogs = callLogsBis
-					self.callLogsIsConference = callLogsIsConferenceBis
 					self.callLogsTmp = callLogsTmpBis
 				}
 				
@@ -123,24 +118,24 @@ class HistoryListViewModel: ObservableObject {
 		}
 	}
 	
-	func getCallIconResId(callStatus: Call.Status, callDir: Call.Dir) -> String {
+	func getCallIconResId(callStatus: Call.Status, isOutgoing: Bool) -> String {
 		switch callStatus {
 		case Call.Status.Missed:
-			if callDir == .Outgoing {
+			if isOutgoing {
 				"outgoing-call-missed"
 			} else {
 				"incoming-call-missed"
 			}
 			
 		case Call.Status.Success:
-			if callDir == .Outgoing {
+			if isOutgoing {
 				"outgoing-call"
 			} else {
 				"incoming-call"
 			}
 			
 		default:
-			if callDir == .Outgoing {
+			if isOutgoing {
 				"outgoing-call-rejected"
 			} else {
 				"incoming-call-rejected"
@@ -148,24 +143,24 @@ class HistoryListViewModel: ObservableObject {
 		}
 	}
 	
-	func getCallText(callStatus: Call.Status, callDir: Call.Dir) -> String {
+	func getCallText(callStatus: Call.Status, isOutgoing: Bool) -> String {
 		switch callStatus {
 		case Call.Status.Missed:
-			if callDir == .Outgoing {
+			if isOutgoing {
 				"Outgoing Call"
 			} else {
 				"Missed Call"
 			}
 			
 		case Call.Status.Success:
-			if callDir == .Outgoing {
+			if isOutgoing {
 				"Outgoing Call"
 			} else {
 				"Incoming Call"
 			}
 			
 		default:
-			if callDir == .Outgoing {
+			if isOutgoing {
 				"Outgoing Call"
 			} else {
 				"Incoming Call"
@@ -200,18 +195,8 @@ class HistoryListViewModel: ObservableObject {
 	func filterCallLogs(filter: String) {
 		callLogs.removeAll()
 		callLogsTmp.forEach { callLog in
-			if callLog.dir == .Outgoing && callLog.toAddress != nil {
-				if callLog.toAddress!.username != nil && callLog.toAddress!.username!.contains(filter) {
-					callLogs.append(callLog)
-				} else if callLog.toAddress!.displayName != nil && callLog.toAddress!.displayName!.contains(filter) {
-					callLogs.append(callLog)
-				}
-			} else if callLog.fromAddress != nil {
-				if callLog.fromAddress!.username != nil && callLog.fromAddress!.username!.contains(filter) {
-					callLogs.append(callLog)
-				} else if callLog.fromAddress!.displayName != nil && callLog.fromAddress!.displayName!.contains(filter) {
-					callLogs.append(callLog)
-				}
+			if callLog.addressName.contains(filter) {
+				callLogs.append(callLog)
 			}
 		}
 	}
@@ -242,20 +227,26 @@ class HistoryListViewModel: ObservableObject {
 	}
 	
 	func removeCallLogsWithAddress() {
-		self.callLogs.filter { $0.toAddress!.asStringUriOnly() == callLogsAddressToDelete || $0.fromAddress!.asStringUriOnly() == callLogsAddressToDelete }.forEach { callLog in
-			removeCallLog(callLog: callLog)
-			
-			coreContext.doOnCoreQueue { core in
-				core.removeCallLog(callLog: callLog)
-			}
+		self.callLogs.filter { $0.address == callLogsAddressToDelete || $0.address == callLogsAddressToDelete }.forEach { historyModel in
+			removeCallLog(historyModel: historyModel)
 		}
 	}
 	
-	func removeCallLog(callLog: CallLog) {
-		let index = self.callLogs.firstIndex(where: {$0.callId == callLog.callId})
+	func removeCallLog(historyModel: HistoryModel) {
+		let index = self.callLogs.firstIndex(where: {$0.id == historyModel.id})
 		self.callLogs.remove(at: index!)
 		
-		let indexTmp = self.callLogsTmp.firstIndex(where: {$0.callId == callLog.callId})
+		let indexTmp = self.callLogsTmp.firstIndex(where: {$0.id == historyModel.id})
 		self.callLogsTmp.remove(at: indexTmp!)
+		
+		coreContext.doOnCoreQueue { core in
+			core.removeCallLog(callLog: historyModel.callLog)
+		}
+	}
+	
+	func refreshHistoryAvatarModel() {
+		callLogs.forEach { historyModel in
+			historyModel.refreshAvatarModel()
+		}
 	}
 }
