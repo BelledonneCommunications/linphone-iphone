@@ -20,6 +20,9 @@ class MeetingsListItemModel {
 	let model: MeetingModel? // if NIL, consider that we are using the fake TodayModel
 	var monthStr: String = ""
 	var weekStr: String = ""
+	var weekDayStr: String = ""
+	var dayStr: String = ""
+	
 	var isToday = true
 	
 	init(meetingModel: MeetingModel?) {
@@ -27,15 +30,21 @@ class MeetingsListItemModel {
 		if let mod = meetingModel {
 			monthStr = createMonthString(date: mod.meetingDate)
 			weekStr = createWeekString(date: mod.meetingDate)
+			weekDayStr = createWeekDayString(date: mod.meetingDate)
+			dayStr = createDayString(date: mod.meetingDate)
+			Log.info("debugtrace -- create new item model : \(monthStr) - \(weekStr) - \(weekDayStr) - \(dayStr)")
 			isToday = false
 		} else {
+			Log.info("debugtrace -- create new item model : TODAY")
 			monthStr = createMonthString(date: Date.now)
 			weekStr = createWeekString(date: Date.now)
+			weekDayStr = createWeekDayString(date: Date.now)
+			dayStr = createDayString(date: Date.now)
 		}
 	}
 	
 	func createMonthString(date: Date) -> String {
-		return "\(date.formatted(Date.FormatStyle().month(.wide))) \(date.formatted(Date.FormatStyle().year()))"
+		return "\(date.formatted(Date.FormatStyle().month(.wide))) \(date.formatted(Date.FormatStyle().year()))".capitalized
 	}
 	
 	func createWeekString(date: Date) -> String {
@@ -56,5 +65,13 @@ class MeetingsListItemModel {
 		} else {
 			return "\(weekFirstDay) - \(weekEndDay) \(firstMonth)"
 		}
+	}
+	
+	func createWeekDayString(date: Date) -> String {
+		return date.formatted(Date.FormatStyle().weekday(.abbreviated)).capitalized
+	}
+	
+	func createDayString(date: Date) -> String {
+		return date.formatted(Date.FormatStyle().day(.twoDigits))
 	}
 }

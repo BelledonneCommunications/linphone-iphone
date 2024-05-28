@@ -28,7 +28,6 @@ class MeetingsListViewModel: ObservableObject {
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	var selectedMeeting: ConversationModel?
 	
-	@Published var sortedMeetingsList: [String: [String: [MeetingsListItemModel]]] = [:]
 	@Published var meetingsList: [MeetingsListItemModel] = []
 	@Published var currentFilter = ""
 	
@@ -57,8 +56,8 @@ class MeetingsListViewModel: ObservableObject {
 			
 			var meetingsListTmp: [MeetingsListItemModel] = []
 			var previousModel: MeetingModel?
-			// var meetingForTodayFound = false
-			
+			var meetingForTodayFound = false
+			Log.info("debugtrace -- computeMeetingsList, \(confInfoList.count) conferences found")
 			for confInfo in confInfoList {
 				if confInfo.duration == 0 { continue }// This isn't a scheduled conference, don't display it
 				var add = true
@@ -73,62 +72,26 @@ class MeetingsListViewModel: ObservableObject {
 				
 				if add {
 					let model = MeetingModel(conferenceInfo: confInfo)
-					let firstMeetingOfTheDay = (previousModel != nil) ? previousModel?.day != model.day || previousModel?.dayNumber != model.dayNumber : true
-					model.firstMeetingOfTheDay = firstMeetingOfTheDay
 					
-					// Insert "Today" fake model before the first one of today
-					/*
-					 if firstMeetingOfTheDay && model.isToday {
-					 meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
-					 meetingForTodayFound = true
-					 }
-					 */
-					
-					// If no meeting was found for today, insert "Today" fake model before the next meeting to come
-					/*
-					 if !meetingForTodayFound && model.isAfterToday {
-					 meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
-					 meetingForTodayFound = true
-					 }
-					 */
+					if !meetingForTodayFound {
+						if model.isToday {
+							meetingForTodayFound = true
+						} else if model.isAfterToday {
+							// If no meeting was found for today, insert "Today" fake model before the next meeting to come
+							meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
+							meetingForTodayFound = true
+						}
+					}
 					
 					meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
 					previousModel = model
 				}
 			}
 			
-			// If no meeting was found after today, insert "Today" fake model at the end
-			/*
-			 if !meetingForTodayFound {
-			 meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
-			 }
-			 */
-			
+			Log.info("debugtrace -- computeMeetingsList, previous count = \(self.meetingsList.count), new count = \(meetingsListTmp.count)")
 			DispatchQueue.main.sync {
 				self.meetingsList = meetingsListTmp
-				self.sortMeetingsListByWeek()
 			}
 		}
-	}
-	
-	func sortMeetingsListByWeek() {
-		var sortedList: [String: [String: [MeetingsListItemModel]]] = [:]
-		
-		var currentMonthString = ""
-		var currentWeekString = ""
-		for meeting in self.meetingsList {
-			
-			if currentMonthString != meeting.monthStr {
-				sortedList[currentMonthString] = [:]
-				currentMonthString = meeting.monthStr
-			}
-			
-			if currentWeekString != meeting.weekStr {
-				sortedList[currentMonthString]?[currentWeekString] = []
-				currentWeekString = meeting.weekStr
-			}
-			sortedList[currentMonthString]?[currentWeekString]?.append(meeting)
-		}
-		self.sortedMeetingsList = sortedList
 	}
 }
