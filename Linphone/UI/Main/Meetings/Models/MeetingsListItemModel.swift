@@ -32,10 +32,8 @@ class MeetingsListItemModel {
 			weekStr = createWeekString(date: mod.meetingDate)
 			weekDayStr = createWeekDayString(date: mod.meetingDate)
 			dayStr = createDayString(date: mod.meetingDate)
-			Log.info("debugtrace -- create new item model : \(monthStr) - \(weekStr) - \(weekDayStr) - \(dayStr)")
 			isToday = false
 		} else {
-			Log.info("debugtrace -- create new item model : TODAY")
 			monthStr = createMonthString(date: Date.now)
 			weekStr = createWeekString(date: Date.now)
 			weekDayStr = createWeekDayString(date: Date.now)

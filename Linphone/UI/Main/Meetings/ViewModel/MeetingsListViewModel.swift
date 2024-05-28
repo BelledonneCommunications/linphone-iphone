@@ -57,7 +57,6 @@ class MeetingsListViewModel: ObservableObject {
 			var meetingsListTmp: [MeetingsListItemModel] = []
 			var previousModel: MeetingModel?
 			var meetingForTodayFound = false
-			Log.info("debugtrace -- computeMeetingsList, \(confInfoList.count) conferences found")
 			for confInfo in confInfoList {
 				if confInfo.duration == 0 { continue }// This isn't a scheduled conference, don't display it
 				var add = true
@@ -88,7 +87,6 @@ class MeetingsListViewModel: ObservableObject {
 				}
 			}
 			
-			Log.info("debugtrace -- computeMeetingsList, previous count = \(self.meetingsList.count), new count = \(meetingsListTmp.count)")
 			DispatchQueue.main.sync {
 				self.meetingsList = meetingsListTmp
 			}
