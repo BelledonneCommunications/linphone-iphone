@@ -26,7 +26,7 @@ struct MeetingsFragment: View {
 	
 	func createWeekLine(model: MeetingsListItemModel) -> some View {
 		return Text(model.weekStr)
-			.padding(.leading, 65)
+			.padding(.leading, 43)
 			.padding(.top, 3)
 			.padding(.bottom, 3)
 			.default_text_style_500(styleSize: 14)
@@ -36,6 +36,8 @@ struct MeetingsFragment: View {
 		return VStack(alignment: .leading) {
 			if model.isToday {
 				Text("No meeting today")
+					.fontWeight(.bold)
+					.default_text_style_500(styleSize: 15)
 			} else {
 				HStack(alignment: .center) {
 					Image("meetings")
@@ -43,20 +45,24 @@ struct MeetingsFragment: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c600)
 						.frame(width: 24, height: 24)
-						.padding(.top, 3)
 						.padding(.bottom, -8)
 					Text(model.model!.subject)
 						.fontWeight(.bold)
 						.padding(.trailing, 5)
-						.padding(.top, 10)
+						.padding(.top, 7)
 						.default_text_style_500(styleSize: 15)
 				}
 				Text(model.model!.time)
-					.padding(.top, -3)
-					.default_text_style_700(styleSize: 15)
+					.padding(.top, -8)
+					.default_text_style_500(styleSize: 15)
 			}
 		}
 		.padding(.leading, 20)
+		.frame(height: 63)
+		.frame(maxWidth: .infinity, alignment: .leading)
+		.background(.white)
+		.clipShape(RoundedRectangle(cornerRadius: 20))
+		.shadow(color: .black.opacity(0.2), radius: 4)
 	}
 	
 	var body: some View {
@@ -104,9 +110,16 @@ struct MeetingsFragment: View {
 										.shadow(color: .black.opacity(0.2), radius: 4)
 									*/
 								}
+								.padding(.top, -5)
 								.frame(width: 35)
-								createMeetingLine(model: itemModel)
-								Spacer()
+								if itemModel.isToday {
+									Text("No meeting today")
+										.fontWeight(.bold)
+										.padding(.leading, 20)
+										.default_text_style_500(styleSize: 15)
+								} else {
+									createMeetingLine(model: itemModel)
+								}
 							}
 						} else {
 							createMeetingLine(model: itemModel)
