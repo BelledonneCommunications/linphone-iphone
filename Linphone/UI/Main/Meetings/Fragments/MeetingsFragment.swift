@@ -17,44 +17,102 @@ struct MeetingsFragment: View {
 	
 	@State var showingSheet: Bool = false
 	
+	func createMonthLine(model: MeetingsListItemModel) -> some View {
+		return Text(model.monthStr)
+			.fontWeight(.bold)
+			.padding(5)
+			.default_text_style_500(styleSize: 22)
+	}
+	
+	func createWeekLine(model: MeetingsListItemModel) -> some View {
+		return Text(model.weekStr)
+			.padding(.leading, 65)
+			.padding(.top, 3)
+			.padding(.bottom, 3)
+			.default_text_style_500(styleSize: 14)
+	}
+	
+	func createMeetingLine(model: MeetingsListItemModel) -> some View {
+		return VStack(alignment: .leading) {
+			if model.isToday {
+				Text("No meeting today")
+			} else {
+				HStack(alignment: .center) {
+					Image("meetings")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.grayMain2c600)
+						.frame(width: 24, height: 24)
+						.padding(.top, 3)
+						.padding(.bottom, -8)
+					Text(model.model!.subject)
+						.fontWeight(.bold)
+						.padding(.trailing, 5)
+						.padding(.top, 10)
+						.default_text_style_500(styleSize: 15)
+				}
+				Text(model.model!.time)
+					.padding(.top, -3)
+					.default_text_style_700(styleSize: 15)
+			}
+		}
+		.padding(.leading, 20)
+	}
+	
 	var body: some View {
 		VStack {
 			List {
-				ForEach(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
-					HStack {
-						HStack {
-							VStack {
-								Image("users-three-square")
-									.renderingMode(.template)
-									.resizable()
-									.frame(width: 28, height: 28)
-									.foregroundStyle(Color.grayMain2c600)
-							}
-							.frame(width: 50, height: 50)
-							.background(Color.grayMain2c200)
-							.clipShape(Circle())
-							
-							VStack(spacing: 0) {
-								Text(meetingsListViewModel.meetingsList[index].model?.subject ?? "")
-									.default_text_style_500(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
+				VStack(alignment: .leading) {
+					ForEach(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
+						let itemModel = meetingsListViewModel.meetingsList[index]
+						if index == 0 || itemModel.monthStr != meetingsListViewModel.meetingsList[index-1].monthStr {
+							createMonthLine(model: meetingsListViewModel.meetingsList[index])
+							if index == 0 || itemModel.weekStr != meetingsListViewModel.meetingsList[index-1].weekStr {
+								createWeekLine(model: itemModel)
 							}
 						}
-						.frame(height: 40)
-					}
-					.frame(height: 50)
-					.buttonStyle(.borderless)
-					.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
-					.listRowSeparator(.hidden)
-					.background(.white)
-					.onTapGesture {
-						withAnimation {
-							joinMeetingWaitingRoom(index: index)
+						
+						if index == 0
+							|| itemModel.dayStr != meetingsListViewModel.meetingsList[index-1].dayStr
+							|| itemModel.weekStr != meetingsListViewModel.meetingsList[index-1].weekStr {
+							HStack {
+								VStack(alignment: .center) {
+									Text(itemModel.weekDayStr)
+										.padding(.bottom, -5)
+										.default_text_style_500(styleSize: 14)
+									if itemModel.isToday || Calendar.current.isDate(itemModel.model!.meetingDate, inSameDayAs: Date.now) {
+										Text(itemModel.dayStr)
+											.fontWeight(.bold)
+											.frame(width: 30, height: 30)
+											.foregroundStyle(.white)
+											.background(Color.orangeMain500)
+											.clipShape(Circle())
+											.default_text_style_300(styleSize: 20)
+									} else {
+										Text(itemModel.dayStr)
+											.fontWeight(.bold)
+											.padding(.top, -3)
+											.default_text_style_300(styleSize: 20)
+									}
+									/*
+									Image("check")
+										.renderingMode(.template)
+										.foregroundStyle(.white)
+										.padding()
+										.background(Color.orangeMain500)
+										.clipShape(Circle())
+										.shadow(color: .black.opacity(0.2), radius: 4)
+									*/
+								}
+								.frame(width: 35)
+								createMeetingLine(model: itemModel)
+								Spacer()
+							}
+						} else {
+							createMeetingLine(model: itemModel)
+								.padding(.leading, 43)
+								.padding(.top, -10)
 						}
-					}
-					.onLongPressGesture(minimumDuration: 0.2) {
-						//showingSheet.toggle()
 					}
 				}
 			}
