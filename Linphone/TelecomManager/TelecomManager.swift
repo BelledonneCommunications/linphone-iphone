@@ -239,7 +239,7 @@ class TelecomManager: ObservableObject {
 			
 			if isConference {
 				lcallParams.videoEnabled = true
-				lcallParams.videoDirection = isVideo ? MediaDirection.SendRecv : MediaDirection.RecvOnly
+				lcallParams.videoDirection = isVideo && core.videoPreviewEnabled ? MediaDirection.SendRecv : MediaDirection.RecvOnly
 				/*		if (ConferenceWaitingRoomViewModel.sharedModel.joinLayout.value! != .AudioOnly) {
 				 lcallParams.videoEnabled = true
 				 lcallParams.videoDirection = ConferenceWaitingRoomViewModel.sharedModel.isVideoEnabled.value == true ? .SendRecv : .RecvOnly

@@ -329,7 +329,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			CoreContext.shared.doOnCoreQueue { core in
 				do {
 					core.configureAudioSession()
-					try TelecomManager.shared.doCall(core: core, addr: addr!, isSas: callInfo?.sasEnabled ?? false, isVideo: ((callInfo?.videoEnabled ?? false) && core.videoPreviewEnabled), isConference: callInfo?.isConference ?? false)
+					try TelecomManager.shared.doCall(core: core, addr: addr!, isSas: callInfo?.sasEnabled ?? false, isVideo: callInfo?.videoEnabled ?? false, isConference: callInfo?.isConference ?? false)
 					action.fulfill()
 				} catch {
 					Log.info("CallKit: Call started failed because \(error)")
