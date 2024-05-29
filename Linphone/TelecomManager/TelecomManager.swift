@@ -340,20 +340,25 @@ class TelecomManager: ObservableObject {
 		providerDelegate.reportIncomingCall(call: call, uuid: uuid, handle: handle, hasVideo: hasVideo, displayName: displayName)
 	}
 	
-	func incomingDisplayName(call: Call) -> String {
-		if call.remoteAddress != nil {
-			let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
-			if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-				return friend!.address!.displayName!
-			} else {
-				if call.remoteAddress!.displayName != nil {
-					return call.remoteAddress!.displayName!
-				} else if call.remoteAddress!.username != nil {
-					return call.remoteAddress!.username!
+	
+	func incomingDisplayName(call: Call, completion: @escaping (String) -> Void) {
+		CoreContext.shared.doOnCoreQueue { core in
+			if call.remoteAddress != nil {
+				ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!) { friendResult in
+					let friend = friendResult
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						completion(friend!.address!.displayName!)
+					} else {
+						if call.remoteAddress!.displayName != nil {
+							completion(call.remoteAddress!.displayName!)
+						} else if call.remoteAddress!.username != nil {
+							completion(call.remoteAddress!.username!)
+						}
+					}
 				}
 			}
+			completion("IncomingDisplayName")
 		}
-		return "IncomingDisplayName"
 	}
 	
 	static func callKitEnabled(core: Core) -> Bool {
@@ -464,14 +469,16 @@ class TelecomManager: ObservableObject {
 			if isRecordingByRemoteTmp && ToastViewModel.shared.toastMessage.isEmpty {
 				
 				var displayName = ""
-				let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
-				if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-					displayName = friend!.address!.displayName!
-				} else {
-					if call.remoteAddress!.displayName != nil {
-						displayName = call.remoteAddress!.displayName!
-					} else if call.remoteAddress!.username != nil {
-						displayName = call.remoteAddress!.username!
+				ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!) { friendResult in
+					let friend = friendResult
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						displayName = friend!.address!.displayName!
+					} else {
+						if call.remoteAddress!.displayName != nil {
+							displayName = call.remoteAddress!.displayName!
+						} else if call.remoteAddress!.username != nil {
+							displayName = call.remoteAddress!.username!
+						}
 					}
 				}
 				
@@ -526,67 +533,69 @@ class TelecomManager: ObservableObject {
 			switch cstate {
 			case .IncomingReceived:
 				let addr = call.remoteAddress
-				let displayName = incomingDisplayName(call: call)
-#if targetEnvironment(simulator)
-				DispatchQueue.main.async {
-					self.outgoingCallStarted = false
-					self.callStarted = false
-					if self.callInProgress == false {
-						withAnimation {
-							self.callInProgress = true
-							self.callDisplayed = true
+				incomingDisplayName(call: call) { displayNameResult in
+					let displayName = displayNameResult
+	#if targetEnvironment(simulator)
+					DispatchQueue.main.async {
+						self.outgoingCallStarted = false
+						self.callStarted = false
+						if self.callInProgress == false {
+							withAnimation {
+								self.callInProgress = true
+								self.callDisplayed = true
+							}
 						}
 					}
+	#endif
+					if call.replacedCall != nil {
+						self.endCallKitReplacedCall = false
+						
+						let uuid = self.providerDelegate.uuids["\(TelecomManager.uuidReplacedCall ?? "")"]
+						let callInfo = self.providerDelegate.callInfos[uuid!]
+						callInfo!.callId = self.referedToCall ?? ""
+						if callInfo != nil && uuid != nil && addr != nil {
+							self.providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
+							self.providerDelegate.uuids.removeValue(forKey: callId)
+							self.providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
+							self.providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, displayName: displayName)
+						}
+					} else if TelecomManager.callKitEnabled(core: core) {
+						/*
+						 let isConference = isConferenceCall(call: call)
+						 let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
+						 if (isEarlyConference) {
+						 CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
+						 let uuid = providerDelegate.uuids["\(callId)"]
+						 if (uuid != nil) {
+						 displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
+						 providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
+						 }
+						 }
+						 }
+						 */
+						let uuid = self.providerDelegate.uuids["\(callId)"]
+						if call.replacedCall == nil {
+							TelecomManager.uuidReplacedCall = callId
+						}
+						
+						if uuid != nil {
+							// Tha app is now registered, updated the call already existed.
+							self.providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, displayName: displayName)
+						} else {
+							self.displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, callId: callId, displayName: displayName)
+						}
+					} /* else if UIApplication.shared.applicationState != .active {
+					   // not support callkit , use notif
+					   let content = UNMutableNotificationContent()
+					   content.title = NSLocalizedString("Incoming call", comment: "")
+					   content.body = displayName
+					   content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
+					   content.categoryIdentifier = "call_cat"
+					   content.userInfo = ["CallId": callId]
+					   let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
+					   UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
+					   } */
 				}
-#endif
-				if call.replacedCall != nil {
-					endCallKitReplacedCall = false
-					
-					let uuid = providerDelegate.uuids["\(TelecomManager.uuidReplacedCall ?? "")"]
-					let callInfo = providerDelegate.callInfos[uuid!]
-					callInfo!.callId = referedToCall ?? ""
-					if callInfo != nil && uuid != nil && addr != nil {
-						providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-						providerDelegate.uuids.removeValue(forKey: callId)
-						providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteConfVideo, displayName: displayName)
-					}
-				} else if TelecomManager.callKitEnabled(core: core) {
-					/*
-					 let isConference = isConferenceCall(call: call)
-					 let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
-					 if (isEarlyConference) {
-					 CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
-					 let uuid = providerDelegate.uuids["\(callId)"]
-					 if (uuid != nil) {
-					 displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
-					 providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
-					 }
-					 }
-					 }
-					 */
-					let uuid = providerDelegate.uuids["\(callId)"]
-					if call.replacedCall == nil {
-						TelecomManager.uuidReplacedCall = callId
-					}
-					
-					if uuid != nil {
-						// Tha app is now registered, updated the call already existed.
-						providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: remoteConfVideo, displayName: displayName)
-					} else {
-						displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: remoteConfVideo, callId: callId, displayName: displayName)
-					}
-				} /* else if UIApplication.shared.applicationState != .active {
-				   // not support callkit , use notif
-				   let content = UNMutableNotificationContent()
-				   content.title = NSLocalizedString("Incoming call", comment: "")
-				   content.body = displayName
-				   content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
-				   content.categoryIdentifier = "call_cat"
-				   content.userInfo = ["CallId": callId]
-				   let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
-				   UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
-				   } */
 			case .StreamsRunning:
 				if TelecomManager.callKitEnabled(core: core) {
 					
@@ -660,52 +669,53 @@ class TelecomManager: ObservableObject {
 				}
 				
 				//if core.callsNb == 0 {
-				DispatchQueue.main.async {
-					if core.callsNb == 0 {
-						do {
-							try core.setVideodevice(newValue: "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1")
-						} catch _ {
-							
-						}
-						withAnimation {
-							self.outgoingCallStarted = false
-							self.callInProgress = false
-							self.callDisplayed = false
-							self.callStarted = false
-							self.callConnected = false
-						}
-					} else {
-						if core.calls.last != nil {
-							self.setHeld(call: core.calls.last!, hold: false)
-							
-							DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-								self.remainingCall = true
-								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-									self.remainingCall = false
-								}
-							}
-						}
-					}
-					
+				self.incomingDisplayName(call: call) { displayNameResult in
 					var displayName = "Unknown"
 					if call.dir == .Incoming {
-						displayName = self.incomingDisplayName(call: call)
+						displayName = displayNameResult
 					} else { // if let addr = call.remoteAddress, let contactName = FastAddressBook.displayName(for: addr.getCobject) {
 						displayName = "TODOContactName"
 					}
-					
-					if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted) {
-						// Configure the notification's payload.
-						let content = UNMutableNotificationContent()
-						content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
-						content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
+					DispatchQueue.main.async {
+						if core.callsNb == 0 {
+							do {
+								try core.setVideodevice(newValue: "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1")
+							} catch _ {
+								
+							}
+							withAnimation {
+								self.outgoingCallStarted = false
+								self.callInProgress = false
+								self.callDisplayed = false
+								self.callStarted = false
+								self.callConnected = false
+							}
+						} else {
+							if core.calls.last != nil {
+								self.setHeld(call: core.calls.last!, hold: false)
+								
+								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+									self.remainingCall = true
+									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+										self.remainingCall = false
+									}
+								}
+							}
+						}
 						
-						// Deliver the notification.
-						let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
-						let center = UNUserNotificationCenter.current()
-						center.add(request) { (error: Error?) in
-							if error != nil {
-								Log.info("Error while adding notification request : \(error!.localizedDescription)")
+						if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted) {
+							// Configure the notification's payload.
+							let content = UNMutableNotificationContent()
+							content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
+							content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
+							
+							// Deliver the notification.
+							let request = UNNotificationRequest(identifier: "call_request", content: content, trigger: nil) // Schedule the notification.
+							let center = UNUserNotificationCenter.current()
+							center.add(request) { (error: Error?) in
+								if error != nil {
+									Log.info("Error while adding notification request : \(error!.localizedDescription)")
+								}
 							}
 						}
 					}

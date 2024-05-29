@@ -39,18 +39,26 @@ class ParticipantModel: ObservableObject {
 		
 		self.sipUri = address.asStringUriOnly()
 		
-		if let addressFriend = ContactsManager.shared.getFriendWithAddress(address: self.address) {
-			self.name = addressFriend.name!
-		} else {
-			self.name = address.displayName != nil ? address.displayName! : address.username!
-		}
+		self.name = ""
 		
-		self.avatarModel = ContactAvatarModel.getAvatarModelFromAddress(address: self.address)
+		self.avatarModel = ContactAvatarModel(friend: nil, name: "", address: address.asStringUriOnly(), withPresence: false)
 		
 		self.isJoining = isJoining
 		self.onPause = onPause
 		self.isMuted = isMuted
 		self.isAdmin = isAdmin
 		self.isSpeaking = isSpeaking
+		
+		ContactsManager.shared.getFriendWithAddress(address: self.address) { friendResult in
+			if let addressFriend = friendResult {
+				self.name = addressFriend.name!
+			} else {
+				self.name = address.displayName != nil ? address.displayName! : address.username!
+			}
+		}
+		
+		ContactAvatarModel.getAvatarModelFromAddress(address: self.address) { avatarResult in
+			self.avatarModel = avatarResult
+		}
 	}
 }

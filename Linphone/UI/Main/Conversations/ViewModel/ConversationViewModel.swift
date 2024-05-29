@@ -98,9 +98,11 @@ class ConversationViewModel: ObservableObject {
 			if self.displayedConversation != nil {
 				self.displayedConversation!.chatRoom.participants.forEach { participant in
 					if participant.address != nil {
-						let avatarModelTmp = ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!)
-						DispatchQueue.main.async {
-							self.participantConversationModel.append(avatarModelTmp)
+						ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!) { avatarResult in
+							let avatarModelTmp = avatarResult
+							DispatchQueue.main.async {
+								self.participantConversationModel.append(avatarModelTmp)
+							}
 						}
 					}
 				}

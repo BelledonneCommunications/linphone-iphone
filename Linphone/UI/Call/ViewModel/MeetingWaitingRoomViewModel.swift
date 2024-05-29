@@ -64,68 +64,69 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					let confNameTmp = conf?.subject ?? "Conference"
 					var userNameTmp = ""
 					
-					let friend = core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil 
-						? ContactsManager.shared.getFriendWithAddress(address: core.defaultAccount!.contactAddress!)
-						: nil
-					
-					let addressTmp = friend?.address?.asStringUriOnly() ?? ""
-					
-					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-						userNameTmp = friend!.address!.displayName!
-					} else {
-						if core.defaultAccount!.contactAddress!.displayName != nil {
-							userNameTmp = core.defaultAccount!.contactAddress!.displayName!
-						} else if core.defaultAccount!.contactAddress!.username != nil {
-							userNameTmp = core.defaultAccount!.contactAddress!.username!
-						}
-					}
-					
-					let avatarModelTmp = friend != nil
-					? ContactsManager.shared.avatarListModel.first(where: {
-						   $0.friend!.name == friend!.name
-						   && $0.friend!.address!.asStringUriOnly() == core.defaultAccount!.contactAddress!.asStringUriOnly()
-					   }) ?? ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
-					: ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
-					
-					if core.videoEnabled && !core.videoPreviewEnabled {
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-							core.videoPreviewEnabled = true
-							self.videoDisplayed = true
-						}
-					}
-					
-					core.micEnabled = true
-					
-					let micMuttedTmp = !core.micEnabled
-					
-					let timeInterval = TimeInterval(conf!.dateTime)
-					let date = Date(timeIntervalSince1970: timeInterval)
-					let dateFormatter = DateFormatter()
-					dateFormatter.dateStyle = .full
-					dateFormatter.timeStyle = .none
-					let dateTmp = dateFormatter.string(from: date)
-					
-					let timeFormatter = DateFormatter()
-					timeFormatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
-					let timeTmp = timeFormatter.string(from: date)
-					
-					let timeBisInterval = TimeInterval(conf!.dateTime + (Int(conf!.duration) * 60))
-					let timeBis = Date(timeIntervalSince1970: timeBisInterval)
-					let timeBisTmp = timeFormatter.string(from: timeBis)
-					
-					let meetingDateTmp = "\(dateTmp) | \(timeTmp) - \(timeBisTmp)"
-					
-					DispatchQueue.main.async {
-						if self.telecomManager.meetingWaitingRoomName.isEmpty || self.telecomManager.meetingWaitingRoomName != confNameTmp {
-							self.telecomManager.meetingWaitingRoomName = confNameTmp
+					ContactsManager.shared.getFriendWithAddress(address: core.defaultAccount?.contactAddress) { friendResult in
+						let friend = core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil
+							? friendResult
+							: nil
+						
+						let addressTmp = friend?.address?.asStringUriOnly() ?? ""
+						
+						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+							userNameTmp = friend!.address!.displayName!
+						} else {
+							if core.defaultAccount!.contactAddress!.displayName != nil {
+								userNameTmp = core.defaultAccount!.contactAddress!.displayName!
+							} else if core.defaultAccount!.contactAddress!.username != nil {
+								userNameTmp = core.defaultAccount!.contactAddress!.username!
+							}
 						}
 						
-						self.userName = userNameTmp
-						self.avatarModel = avatarModelTmp
-						self.micMutted = micMuttedTmp
-						self.meetingDate = meetingDateTmp
+						let avatarModelTmp = friend != nil
+						? ContactsManager.shared.avatarListModel.first(where: {
+							   $0.friend!.name == friend!.name
+							   && $0.friend!.address!.asStringUriOnly() == core.defaultAccount!.contactAddress!.asStringUriOnly()
+						   }) ?? ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
+						: ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
+						
+						if core.videoEnabled && !core.videoPreviewEnabled {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+								core.videoPreviewEnabled = true
+								self.videoDisplayed = true
+							}
+						}
+						
+						core.micEnabled = true
+						
+						let micMuttedTmp = !core.micEnabled
+						
+						let timeInterval = TimeInterval(conf!.dateTime)
+						let date = Date(timeIntervalSince1970: timeInterval)
+						let dateFormatter = DateFormatter()
+						dateFormatter.dateStyle = .full
+						dateFormatter.timeStyle = .none
+						let dateTmp = dateFormatter.string(from: date)
+						
+						let timeFormatter = DateFormatter()
+						timeFormatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+						let timeTmp = timeFormatter.string(from: date)
+						
+						let timeBisInterval = TimeInterval(conf!.dateTime + (Int(conf!.duration) * 60))
+						let timeBis = Date(timeIntervalSince1970: timeBisInterval)
+						let timeBisTmp = timeFormatter.string(from: timeBis)
+						
+						let meetingDateTmp = "\(dateTmp) | \(timeTmp) - \(timeBisTmp)"
+						
+						DispatchQueue.main.async {
+							if self.telecomManager.meetingWaitingRoomName.isEmpty || self.telecomManager.meetingWaitingRoomName != confNameTmp {
+								self.telecomManager.meetingWaitingRoomName = confNameTmp
+							}
+							
+							self.userName = userNameTmp
+							self.avatarModel = avatarModelTmp
+							self.micMutted = micMuttedTmp
+							self.meetingDate = meetingDateTmp
+						}
 					}
-					
 				}
 			}
 		}

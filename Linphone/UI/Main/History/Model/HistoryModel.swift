@@ -71,27 +71,29 @@ class HistoryModel: ObservableObject {
 	
 	func refreshAvatarModel() {
 		coreContext.doOnCoreQueue { _ in
-			let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(address: self.callLog.dir == .Outgoing ? self.callLog.toAddress! : self.callLog.fromAddress!)
-			if addressFriendTmp != nil {
-				self.addressFriend = addressFriendTmp
-				
-				let addressNameTmp = self.addressName
-				
-				let avatarModelTmp = addressFriendTmp != nil
-				? ContactsManager.shared.avatarListModel.first(where: {
-					$0.friend!.name == addressFriendTmp!.name
-					&& $0.friend!.address!.asStringUriOnly() == addressFriendTmp!.address!.asStringUriOnly()
-				}) ?? ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
-				: ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
-				
-				DispatchQueue.main.async {
+			ContactsManager.shared.getFriendWithAddress(address: self.callLog.dir == .Outgoing ? self.callLog.toAddress! : self.callLog.fromAddress!) { friendResult in
+				let addressFriendTmp = friendResult
+				if addressFriendTmp != nil {
 					self.addressFriend = addressFriendTmp
-					self.addressName = addressFriendTmp!.name ?? addressNameTmp
-					self.avatarModel = avatarModelTmp
-				}
-			} else {
-				DispatchQueue.main.async {
-					self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+					
+					let addressNameTmp = self.addressName
+					
+					let avatarModelTmp = addressFriendTmp != nil
+					? ContactsManager.shared.avatarListModel.first(where: {
+						$0.friend!.name == addressFriendTmp!.name
+						&& $0.friend!.address!.asStringUriOnly() == addressFriendTmp!.address!.asStringUriOnly()
+					}) ?? ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+					: ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+					
+					DispatchQueue.main.async {
+						self.addressFriend = addressFriendTmp
+						self.addressName = addressFriendTmp!.name ?? addressNameTmp
+						self.avatarModel = avatarModelTmp
+					}
+				} else {
+					DispatchQueue.main.async {
+						self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+					}
 				}
 			}
 		}

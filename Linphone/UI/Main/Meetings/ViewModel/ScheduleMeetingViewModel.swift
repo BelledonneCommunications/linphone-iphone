@@ -257,9 +257,11 @@ class ScheduleMeetingViewModel: ObservableObject {
 					var list: [SelectedAddressModel] = []
 					for partInfo in conferenceInfo.participantInfos {
 						if let addr = partInfo.address {
-							let avatarModel = ContactAvatarModel.getAvatarModelFromAddress(address: addr)
-							list.append(SelectedAddressModel(addr: addr, avModel: avatarModel))
-							Log.info("\(ScheduleMeetingViewModel.TAG) Loaded participant \(addr.asStringUriOnly())")
+							ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
+								let avatarModel = avatarResult
+								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarModel))
+							 	Log.info("\(ScheduleMeetingViewModel.TAG) Loaded participant \(addr.asStringUriOnly())")
+							}
 						}
 					}
 					Log.info("\(ScheduleMeetingViewModel.TAG) \(list.count) participants loaded from found conference info")
@@ -271,7 +273,7 @@ class ScheduleMeetingViewModel: ObservableObject {
 						self.computeDateLabels()
 						self.computeTimeLabels()
 						self.updateTimezone()
-						self.participants = list
+						//self.participants = list
 					}
 					
 				} else {

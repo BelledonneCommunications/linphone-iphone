@@ -368,49 +368,8 @@ struct CallView: View {
 								.frame(width: 206, height: 206)
 						}
 						
-						if callViewModel.remoteAddress != nil {
-							let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.remoteAddress!)
-							
-							let contactAvatarModel = addressFriend != nil
-							? ContactsManager.shared.avatarListModel.first(where: {
-								($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-								&& $0.friend!.name == addressFriend!.name
-								&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-							})
-							: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
-							
-							if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-								if contactAvatarModel != nil {
-									Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
-								}
-							} else {
-								if callViewModel.remoteAddress!.displayName != nil {
-									Image(uiImage: contactsManager.textToImage(
-										firstName: callViewModel.remoteAddress!.displayName!,
-										lastName: callViewModel.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
-										? callViewModel.remoteAddress!.displayName!.components(separatedBy: " ")[1]
-										: ""))
-									.resizable()
-									.frame(width: 200, height: 200)
-									.clipShape(Circle())
-									
-								} else {
-									Image(uiImage: contactsManager.textToImage(
-										firstName: callViewModel.remoteAddress!.username ?? "Username Error",
-										lastName: callViewModel.remoteAddress!.username!.components(separatedBy: " ").count > 1
-										? callViewModel.remoteAddress!.username!.components(separatedBy: " ")[1]
-										: ""))
-									.resizable()
-									.frame(width: 200, height: 200)
-									.clipShape(Circle())
-								}
-								
-							}
-						} else {
-							Image("profil-picture-default")
-								.resizable()
-								.frame(width: 200, height: 200)
-								.clipShape(Circle())
+						if callViewModel.avatarModel != nil {
+							Avatar(contactAvatarModel: callViewModel.avatarModel!, avatarSize: 200, hidePresence: true)
 						}
 						
 						if callViewModel.isRemoteDeviceTrusted {
@@ -722,66 +681,13 @@ struct CallView: View {
 						VStack {
 							Spacer()
 							HStack {
-								ZStack {
-									if callViewModel.activeSpeakerParticipant?.address != nil {
-										let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.activeSpeakerParticipant!.address)
-										
-										let contactAvatarModel = addressFriend != nil
-										? ContactsManager.shared.avatarListModel.first(where: {
-											($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-											&& $0.friend!.name == addressFriend!.name
-											&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-										})
-										: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
-										
-										if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-											if contactAvatarModel != nil {
-												Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 200, hidePresence: true)
-													.onAppear {
-														DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-															displayVideo = true
-														}
-													}
-											}
-										} else {
-											if callViewModel.activeSpeakerParticipant!.address.displayName != nil {
-												Image(uiImage: contactsManager.textToImage(
-													firstName: callViewModel.activeSpeakerParticipant!.address.displayName!,
-													lastName: callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ").count > 1
-													? callViewModel.activeSpeakerParticipant!.address.displayName!.components(separatedBy: " ")[1]
-													: ""))
-												.resizable()
-												.frame(width: 200, height: 200)
-												.clipShape(Circle())
-												.onAppear {
-													DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-														displayVideo = true
-													}
-												}
-												
-											} else {
-												Image(uiImage: contactsManager.textToImage(
-													firstName: callViewModel.activeSpeakerParticipant!.address.username ?? "Username Error",
-													lastName: callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ").count > 1
-													? callViewModel.activeSpeakerParticipant!.address.username!.components(separatedBy: " ")[1]
-													: ""))
-												.resizable()
-												.frame(width: 200, height: 200)
-												.clipShape(Circle())
-												.onAppear {
-													DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-														displayVideo = true
-													}
-												}
-											}
-											
-										}
-									} else {
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 200, height: 200)
-											.clipShape(Circle())
-									}
+								if callViewModel.activeSpeakerParticipant != nil {
+									Avatar(contactAvatarModel: callViewModel.activeSpeakerParticipant!.avatarModel, avatarSize: 200, hidePresence: true)
+									 .onAppear {
+										 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+											 displayVideo = true
+										 }
+									 }
 								}
 							}
 							

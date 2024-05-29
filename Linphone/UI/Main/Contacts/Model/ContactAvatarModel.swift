@@ -117,20 +117,28 @@ class ContactAvatarModel: ObservableObject {
 		}
 	}
 	
-	static func getAvatarModelFromAddress(address: Address) -> ContactAvatarModel {
-		if let addressFriend = ContactsManager.shared.getFriendWithAddress(address: address) {
-			var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
-				$0.friend!.name == addressFriend.name
-				&& $0.friend!.address!.asStringUriOnly() == address.asStringUriOnly()
-			})
-			
-			if avatarModel == nil {
-				avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: address.asStringUriOnly(), withPresence: false)
+	
+	static func getAvatarModelFromAddress(address: Address, completion: @escaping (ContactAvatarModel) -> Void) {
+		ContactsManager.shared.getFriendWithAddress(address: address) { resultFriend in
+			if let addressFriend = resultFriend {
+				if addressFriend.address != nil {
+					var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
+						$0.friend!.name == addressFriend.name
+						&& $0.friend!.address!.asStringUriOnly() == addressFriend.address!.asStringUriOnly()
+					})
+					
+					if avatarModel == nil {
+						avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: addressFriend.address!.asStringUriOnly(), withPresence: false)
+					}
+					completion(avatarModel!)
+				} else {
+					let name = address.displayName != nil ? address.displayName! : address.username!
+					completion(ContactAvatarModel(friend: nil, name: name, address: address.asStringUriOnly(), withPresence: false))
+				}
+			} else {
+				let name = address.displayName != nil ? address.displayName! : address.username!
+				completion(ContactAvatarModel(friend: nil, name: name, address: address.asStringUriOnly(), withPresence: false))
 			}
-			return avatarModel!
-		} else {
-			let name = address.displayName != nil ? address.displayName! : address.username!
-			return ContactAvatarModel(friend: nil, name: name, address: address.asStringUriOnly(), withPresence: false)
 		}
 	}
 }

@@ -302,21 +302,28 @@ final class ContactsManager: ObservableObject {
 		}
 	}
 	
-	func getFriendWithAddress(address: Address) -> Friend? {
-		let clonedAddress = address.clone()
-		clonedAddress!.clean()
-		let sipUri = clonedAddress!.asStringUriOnly()
-		
-		if friendList != nil {
-			var friend: Friend?
-			friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-			if friend == nil {
-				friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+	
+	func getFriendWithAddress(address: Address?, completion: @escaping (Friend?) -> Void) {
+		self.coreContext.doOnCoreQueue { core in
+			if address != nil {
+				let clonedAddress = address!.clone()
+				clonedAddress!.clean()
+				let sipUri = clonedAddress!.asStringUriOnly()
+				
+				if self.friendList != nil {
+					var friend: Friend?
+					friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+					if friend == nil {
+						friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+					}
+					
+					completion(friend)
+				} else {
+					completion(nil)
+				}
+			} else {
+				completion(nil)
 			}
-			
-			return friend
-		} else {
-			return nil
 		}
 	}
 }

@@ -218,57 +218,28 @@ struct CallsListFragment: View {
 					HStack {
 						HStack {
 							if callViewModel.calls[index].callLog != nil && callViewModel.calls[index].callLog!.remoteAddress != nil {
-								let addressFriend = contactsManager.getFriendWithAddress(address: callViewModel.calls[index].callLog!.remoteAddress!)
-								
-								let contactAvatarModel = addressFriend != nil
-								? ContactsManager.shared.avatarListModel.first(where: {
-									($0.friend!.consolidatedPresence == .Online || $0.friend!.consolidatedPresence == .Busy)
-									&& $0.friend!.name == addressFriend!.name
-									&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-								})
-								: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
-								
-								if addressFriend != nil && addressFriend!.photo != nil && !addressFriend!.photo!.isEmpty {
-									if contactAvatarModel != nil {
-										Avatar(contactAvatarModel: contactAvatarModel!, avatarSize: 50)
-									} else {
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 50, height: 50)
-											.clipShape(Circle())
-									}
+								if callViewModel.callsContactAvatarModel[index] != nil && callViewModel.calls[index].callLog?.conferenceInfo == nil {
+									Avatar(contactAvatarModel: callViewModel.callsContactAvatarModel[index]!, avatarSize: 50)
 								} else {
-									if callViewModel.calls[index].callLog!.remoteAddress!.displayName != nil {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: callViewModel.calls[index].callLog!.remoteAddress!.displayName!,
-											lastName: callViewModel.calls[index].callLog!.remoteAddress!.displayName!.components(separatedBy: " ").count > 1
-											? callViewModel.calls[index].callLog!.remoteAddress!.displayName!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-										
-									} else {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: callViewModel.calls[index].callLog!.remoteAddress!.username ?? "Username Error",
-											lastName: callViewModel.calls[index].callLog!.remoteAddress!.username!.components(separatedBy: " ").count > 1
-											? callViewModel.calls[index].callLog!.remoteAddress!.username!.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
+									VStack {
+										Image("users-three-square")
+											.renderingMode(.template)
+											.resizable()
+											.frame(width: 28, height: 28)
+											.foregroundStyle(Color.grayMain2c600)
 									}
+									.frame(width: 50, height: 50)
+									.background(Color.grayMain2c200)
+									.clipShape(Circle())
 								}
 								
-								if addressFriend != nil {
-									Text(addressFriend!.name!)
+								if callViewModel.calls[index].callLog?.conferenceInfo == nil {
+									Text(callViewModel.callsContactAvatarModel[index]!.name)
 										.default_text_style(styleSize: 16)
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.lineLimit(1)
 								} else {
-									Text(callViewModel.calls[index].callLog!.remoteAddress!.displayName != nil
-										 ? callViewModel.calls[index].callLog!.remoteAddress!.displayName!
-										 : callViewModel.calls[index].callLog!.remoteAddress!.username!)
+									Text(callViewModel.calls[index].callLog!.conferenceInfo!.subject ?? "Conference Name error")
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.lineLimit(1)

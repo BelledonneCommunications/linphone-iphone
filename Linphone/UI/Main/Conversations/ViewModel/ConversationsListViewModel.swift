@@ -148,29 +148,33 @@ class ConversationsListViewModel: ObservableObject {
 		}
 	}
 	
-	func getContentTextMessage(message: ChatMessage) -> String {
-		var fromAddressFriend = message.fromAddress != nil
-		? contactsManager.getFriendWithAddress(address: message.fromAddress!)?.name ?? nil
-		: nil
-		
-		if !message.isOutgoing && message.chatRoom != nil && !message.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-			if fromAddressFriend == nil {
-				if message.fromAddress!.displayName != nil {
-					fromAddressFriend = message.fromAddress!.displayName! + ": "
-				} else if message.fromAddress!.username != nil {
-					fromAddressFriend = message.fromAddress!.username! + ": "
+	func getContentTextMessage(message: ChatMessage, completion: @escaping (String) -> Void) {
+		contactsManager.getFriendWithAddress(address: message.fromAddress) { friendResult in
+			var fromAddressFriend = message.fromAddress != nil
+			? friendResult?.name ?? nil
+			: nil
+			
+			if !message.isOutgoing && message.chatRoom != nil && !message.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+				if fromAddressFriend == nil {
+					if message.fromAddress!.displayName != nil {
+						fromAddressFriend = message.fromAddress!.displayName! + ": "
+					} else if message.fromAddress!.username != nil {
+						fromAddressFriend = message.fromAddress!.username! + ": "
+					} else {
+						fromAddressFriend = ""
+					}
 				} else {
-					fromAddressFriend = ""
+					fromAddressFriend! += ": "
 				}
+				
 			} else {
-				fromAddressFriend! += ": "
+				fromAddressFriend = nil
 			}
 			
-		} else {
-			fromAddressFriend = nil
+			completion(
+				(fromAddressFriend ?? "") + (message.contents.first(where: {$0.isText == true})?.utf8Text ?? (message.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+			)
 		}
-		
-		return (fromAddressFriend ?? "") + (message.contents.first(where: {$0.isText == true})?.utf8Text ?? (message.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
 	}
 	
 	func getCallTime(startDate: time_t) -> String {
