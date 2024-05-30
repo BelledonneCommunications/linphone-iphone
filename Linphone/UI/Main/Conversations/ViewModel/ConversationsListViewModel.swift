@@ -149,7 +149,7 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func getContentTextMessage(message: ChatMessage, completion: @escaping (String) -> Void) {
-		contactsManager.getFriendWithAddress(address: message.fromAddress) { friendResult in
+		contactsManager.getFriendWithAddressInCoreQueue(address: message.fromAddress) { friendResult in
 			var fromAddressFriend = message.fromAddress != nil
 			? friendResult?.name ?? nil
 			: nil

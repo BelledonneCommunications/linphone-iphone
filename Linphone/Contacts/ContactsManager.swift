@@ -301,28 +301,31 @@ final class ContactsManager: ObservableObject {
 		}
 	}
 	
-	
-	func getFriendWithAddress(address: Address?, completion: @escaping (Friend?) -> Void) {
-		self.coreContext.doOnCoreQueue { core in
-			if address != nil {
-				let clonedAddress = address!.clone()
-				clonedAddress!.clean()
-				let sipUri = clonedAddress!.asStringUriOnly()
-				
-				if self.friendList != nil {
-					var friend: Friend?
-					friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-					if friend == nil {
-						friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-					}
-					
-					completion(friend)
-				} else {
-					completion(nil)
+	func getFriendWithAddress(address: Address?) -> Friend? {
+		if address != nil {
+			let clonedAddress = address!.clone()
+			clonedAddress!.clean()
+			let sipUri = clonedAddress!.asStringUriOnly()
+			
+			if self.friendList != nil {
+				var friend: Friend?
+				friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
+				if friend == nil {
+					friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
 				}
+				
+				return friend
 			} else {
-				completion(nil)
+				return nil
 			}
+		} else {
+			return nil
+		}
+	}
+	
+	func getFriendWithAddressInCoreQueue(address: Address?, completion: @escaping (Friend?) -> Void) {
+		self.coreContext.doOnCoreQueue { core in
+			completion(self.getFriendWithAddress(address: address))
 		}
 	}
 }

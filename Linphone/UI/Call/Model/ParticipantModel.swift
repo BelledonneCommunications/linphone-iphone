@@ -49,7 +49,7 @@ class ParticipantModel: ObservableObject {
 		self.isAdmin = isAdmin
 		self.isSpeaking = isSpeaking
 		
-		ContactsManager.shared.getFriendWithAddress(address: self.address) { friendResult in
+		ContactsManager.shared.getFriendWithAddressInCoreQueue(address: self.address) { friendResult in
 			if let addressFriend = friendResult {
 				self.name = addressFriend.name!
 			} else {

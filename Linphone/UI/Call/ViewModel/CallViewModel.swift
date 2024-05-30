@@ -138,20 +138,18 @@ class CallViewModel: ObservableObject {
 				if self.currentCall?.conference != nil {
 					displayNameTmp = self.currentCall?.conference?.subject ?? ""
 				} else if self.currentCall?.remoteAddress != nil {
-					ContactsManager.shared.getFriendWithAddress(address: self.currentCall!.remoteAddress) { friendResult in
-						let friend = friendResult
-						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-							displayNameTmp = friend!.address!.displayName!
-						} else {
-							if self.currentCall!.remoteAddress!.displayName != nil {
-								displayNameTmp = self.currentCall!.remoteAddress!.displayName!
-							} else if self.currentCall!.remoteAddress!.username != nil {
-								displayNameTmp = self.currentCall!.remoteAddress!.username!
-							}
+					let friend = ContactsManager.shared.getFriendWithAddress(address: self.currentCall!.remoteAddress)
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						displayNameTmp = friend!.address!.displayName!
+					} else {
+						if self.currentCall!.remoteAddress!.displayName != nil {
+							displayNameTmp = self.currentCall!.remoteAddress!.displayName!
+						} else if self.currentCall!.remoteAddress!.username != nil {
+							displayNameTmp = self.currentCall!.remoteAddress!.username!
 						}
-						DispatchQueue.main.async {
-							self.displayName = displayNameTmp
-						}
+					}
+					DispatchQueue.main.async {
+						self.displayName = displayNameTmp
 					}
 					
 					ContactAvatarModel.getAvatarModelFromAddress(address: self.currentCall!.remoteAddress!) { avatarResult in
@@ -291,16 +289,14 @@ class CallViewModel: ObservableObject {
 				
 				var activeSpeakerNameTmp = ""
 				if activeSpeakerParticipantTmp != nil {
-					ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp?.address) { friendResult in
-						let friend = friendResult
-						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-							activeSpeakerNameTmp = friend!.address!.displayName!
-						} else {
-							if activeSpeakerParticipantTmp!.address.displayName != nil {
-								activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
-							} else if activeSpeakerParticipantTmp!.address.username != nil {
-								activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
-							}
+					let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp?.address)
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						activeSpeakerNameTmp = friend!.address!.displayName!
+					} else {
+						if activeSpeakerParticipantTmp!.address.displayName != nil {
+							activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
+						} else if activeSpeakerParticipantTmp!.address.username != nil {
+							activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
 						}
 					}
 				}
@@ -367,48 +363,46 @@ class CallViewModel: ObservableObject {
 							isMuted: cbValue.participantDevice.isMuted
 						)
 						
-						ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp.address) { friendResult in
-							var activeSpeakerNameTmp = ""
-							let friend = friendResult
-							if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-								activeSpeakerNameTmp = friend!.address!.displayName!
-							} else {
-								if activeSpeakerParticipantTmp.address.displayName != nil {
-									activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.displayName!
-								} else if activeSpeakerParticipantTmp.address.username != nil {
-									activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.username!
-								}
+						var activeSpeakerNameTmp = ""
+						let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp.address)
+						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+							activeSpeakerNameTmp = friend!.address!.displayName!
+						} else {
+							if activeSpeakerParticipantTmp.address.displayName != nil {
+								activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.displayName!
+							} else if activeSpeakerParticipantTmp.address.username != nil {
+								activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.username!
 							}
+						}
+						
+						var participantListTmp: [ParticipantModel] = []
+						if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
+								|| ( activeSpeakerParticipantBis == nil) {
 							
-							var participantListTmp: [ParticipantModel] = []
-							if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
-									|| ( activeSpeakerParticipantBis == nil) {
-								
-								cbValue.conference.participantDeviceList.forEach({ participantDevice in
-									if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-										if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-											let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
-											participantListTmp.append(
-												ParticipantModel(
-													address: participantDevice.address!,
-													isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
-													onPause: participantDevice.state == .OnHold,
-													isMuted: participantDevice.isMuted,
-													isAdmin: isAdmin ?? false
-												)
+							cbValue.conference.participantDeviceList.forEach({ participantDevice in
+								if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+									if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
+										let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
+										participantListTmp.append(
+											ParticipantModel(
+												address: participantDevice.address!,
+												isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
+												onPause: participantDevice.state == .OnHold,
+												isMuted: participantDevice.isMuted,
+												isAdmin: isAdmin ?? false
 											)
-										}
+										)
 									}
-								})
-							}
-							
-							DispatchQueue.main.async {
-								self.activeSpeakerParticipant = activeSpeakerParticipantTmp
-								self.activeSpeakerName = activeSpeakerNameTmp
-								if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
-									|| ( activeSpeakerParticipantBis == nil) {
-									self.participantList = participantListTmp
 								}
+							})
+						}
+						
+						DispatchQueue.main.async {
+							self.activeSpeakerParticipant = activeSpeakerParticipantTmp
+							self.activeSpeakerName = activeSpeakerNameTmp
+							if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
+								|| ( activeSpeakerParticipantBis == nil) {
+								self.participantList = participantListTmp
 							}
 						}
 					}
@@ -464,21 +458,19 @@ class CallViewModel: ObservableObject {
 							}
 							
 							if activeSpeakerParticipantTmp != nil {
-								ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp?.address) { friendResult in
-									let friend = friendResult
-									if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-										activeSpeakerNameTmp = friend!.address!.displayName!
-									} else {
-										if activeSpeakerParticipantTmp!.address.displayName != nil {
-											activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
-										} else if activeSpeakerParticipantTmp!.address.username != nil {
-											activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
-										}
+								let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp?.address)
+								if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+									activeSpeakerNameTmp = friend!.address!.displayName!
+								} else {
+									if activeSpeakerParticipantTmp!.address.displayName != nil {
+										activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
+									} else if activeSpeakerParticipantTmp!.address.username != nil {
+										activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
 									}
-									DispatchQueue.main.async {
-										if self.activeSpeakerParticipant == nil {
-											self.activeSpeakerName = activeSpeakerNameTmp
-										}
+								}
+								DispatchQueue.main.async {
+									if self.activeSpeakerParticipant == nil {
+										self.activeSpeakerName = activeSpeakerNameTmp
 									}
 								}
 							}

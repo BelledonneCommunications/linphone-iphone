@@ -141,42 +141,40 @@ class ConversationModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			let lastMessage = self.chatRoom.lastMessageInHistory
 			if lastMessage != nil {
-				self.contactsManager.getFriendWithAddress(address: lastMessage!.fromAddress) { friendResult in
-					var fromAddressFriend = lastMessage!.fromAddress != nil
-					? friendResult?.name ?? nil
-					: nil
-					
-					if !lastMessage!.isOutgoing && lastMessage!.chatRoom != nil && !lastMessage!.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-						if fromAddressFriend == nil {
-							if lastMessage!.fromAddress!.displayName != nil {
-								fromAddressFriend = lastMessage!.fromAddress!.displayName! + ": "
-							} else if lastMessage!.fromAddress!.username != nil {
-								fromAddressFriend = lastMessage!.fromAddress!.username! + ": "
-							} else {
-								fromAddressFriend = ""
-							}
+				var fromAddressFriend = lastMessage!.fromAddress != nil
+				? self.contactsManager.getFriendWithAddress(address: lastMessage!.fromAddress)?.name ?? nil
+				: nil
+				
+				if !lastMessage!.isOutgoing && lastMessage!.chatRoom != nil && !lastMessage!.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+					if fromAddressFriend == nil {
+						if lastMessage!.fromAddress!.displayName != nil {
+							fromAddressFriend = lastMessage!.fromAddress!.displayName! + ": "
+						} else if lastMessage!.fromAddress!.username != nil {
+							fromAddressFriend = lastMessage!.fromAddress!.username! + ": "
 						} else {
-							fromAddressFriend! += ": "
+							fromAddressFriend = ""
 						}
-						
 					} else {
-						fromAddressFriend = nil
+						fromAddressFriend! += ": "
 					}
 					
-					let lastMessageTextTmp = (fromAddressFriend ?? "")
-					+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+				} else {
+					fromAddressFriend = nil
+				}
+				
+				let lastMessageTextTmp = (fromAddressFriend ?? "")
+				+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+				
+				let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false
+				
+				let lastMessageStateTmp = lastMessage?.state.rawValue ?? 0
+				
+				DispatchQueue.main.async {
+					self.lastMessageText = lastMessageTextTmp
 					
-					let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false
+					self.lastMessageIsOutgoing = lastMessageIsOutgoingTmp
 					
-					let lastMessageStateTmp = lastMessage?.state.rawValue ?? 0
-					
-					DispatchQueue.main.async {
-						self.lastMessageText = lastMessageTextTmp
-						
-						self.lastMessageIsOutgoing = lastMessageIsOutgoingTmp
-						
-						self.lastMessageState = lastMessageStateTmp
-					}
+					self.lastMessageState = lastMessageStateTmp
 				}
 			}
 		}
@@ -184,50 +182,47 @@ class ConversationModel: ObservableObject {
 	
 	func getChatRoomSubject() {
 		coreContext.doOnCoreQueue { _ in
-			self.contactsManager.getFriendWithAddress(address: self.chatRoom.participants.first?.address) { friendResult in
-				let addressFriend =
-				(self.chatRoom.participants.first != nil && self.chatRoom.participants.first!.address != nil)
-				? friendResult
-				: nil
-				
-				if self.isGroup {
-					self.subject = self.chatRoom.subject!
-				} else if addressFriend != nil {
-					self.subject = addressFriend!.name!
-				} else {
-					if self.chatRoom.participants.first != nil
-						&& self.chatRoom.participants.first!.address != nil {
-						
-						self.subject = self.chatRoom.participants.first!.address!.displayName != nil
-						? self.chatRoom.participants.first!.address!.displayName!
-						: self.chatRoom.participants.first!.address!.username!
-						
-					}
+			let addressFriend = (self.chatRoom.participants.first != nil && self.chatRoom.participants.first!.address != nil)
+			? self.contactsManager.getFriendWithAddress(address: self.chatRoom.participants.first?.address)
+			: nil
+			
+			if self.isGroup {
+				self.subject = self.chatRoom.subject!
+			} else if addressFriend != nil {
+				self.subject = addressFriend!.name!
+			} else {
+				if self.chatRoom.participants.first != nil
+					&& self.chatRoom.participants.first!.address != nil {
+					
+					self.subject = self.chatRoom.participants.first!.address!.displayName != nil
+					? self.chatRoom.participants.first!.address!.displayName!
+					: self.chatRoom.participants.first!.address!.username!
+					
 				}
-				
-				let addressTmp = addressFriend?.address?.asStringUriOnly() ?? ""
-				
-				let avatarModelTmp = addressFriend != nil && !self.isGroup
-				? ContactsManager.shared.avatarListModel.first(where: {
-					$0.friend!.name == addressFriend!.name
-					&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-				})
-				?? ContactAvatarModel(
-					friend: nil,
-					name: self.subject,
-					address: addressTmp,
-					withPresence: false
-				)
-				: ContactAvatarModel(
-					friend: nil,
-					name: self.subject,
-					address: addressTmp,
-					withPresence: false
-				)
-				
-				DispatchQueue.main.async {
-					self.avatarModel = avatarModelTmp
-				}
+			}
+			
+			let addressTmp = addressFriend?.address?.asStringUriOnly() ?? ""
+			
+			let avatarModelTmp = addressFriend != nil && !self.isGroup
+			? ContactsManager.shared.avatarListModel.first(where: {
+				$0.friend!.name == addressFriend!.name
+				&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
+			})
+			?? ContactAvatarModel(
+				friend: nil,
+				name: self.subject,
+				address: addressTmp,
+				withPresence: false
+			)
+			: ContactAvatarModel(
+				friend: nil,
+				name: self.subject,
+				address: addressTmp,
+				withPresence: false
+			)
+			
+			DispatchQueue.main.async {
+				self.avatarModel = avatarModelTmp
 			}
 		}
 	}

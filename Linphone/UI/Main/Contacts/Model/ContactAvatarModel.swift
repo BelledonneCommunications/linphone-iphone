@@ -119,7 +119,7 @@ class ContactAvatarModel: ObservableObject {
 	
 	
 	static func getAvatarModelFromAddress(address: Address, completion: @escaping (ContactAvatarModel) -> Void) {
-		ContactsManager.shared.getFriendWithAddress(address: address) { resultFriend in
+		ContactsManager.shared.getFriendWithAddressInCoreQueue(address: address) { resultFriend in
 			if let addressFriend = resultFriend {
 				if addressFriend.address != nil {
 					var avatarModel = ContactsManager.shared.avatarListModel.first(where: {

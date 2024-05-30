@@ -66,6 +66,8 @@ final class CoreContext: ObservableObject {
 			coreQueue.async {
 				if self.mCore.globalState != .Off {
 					lambda(self.mCore)
+				} else {
+					Log.warn("Doesn't run the asynchronous function because the core is off")
 				}
 			}
 		}

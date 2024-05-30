@@ -344,16 +344,14 @@ class TelecomManager: ObservableObject {
 	func incomingDisplayName(call: Call, completion: @escaping (String) -> Void) {
 		CoreContext.shared.doOnCoreQueue { core in
 			if call.remoteAddress != nil {
-				ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!) { friendResult in
-					let friend = friendResult
-					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-						completion(friend!.address!.displayName!)
-					} else {
-						if call.remoteAddress!.displayName != nil {
-							completion(call.remoteAddress!.displayName!)
-						} else if call.remoteAddress!.username != nil {
-							completion(call.remoteAddress!.username!)
-						}
+				let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
+				if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+					completion(friend!.address!.displayName!)
+				} else {
+					if call.remoteAddress!.displayName != nil {
+						completion(call.remoteAddress!.displayName!)
+					} else if call.remoteAddress!.username != nil {
+						completion(call.remoteAddress!.username!)
 					}
 				}
 			}
@@ -469,16 +467,14 @@ class TelecomManager: ObservableObject {
 			if isRecordingByRemoteTmp && ToastViewModel.shared.toastMessage.isEmpty {
 				
 				var displayName = ""
-				ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!) { friendResult in
-					let friend = friendResult
-					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-						displayName = friend!.address!.displayName!
-					} else {
-						if call.remoteAddress!.displayName != nil {
-							displayName = call.remoteAddress!.displayName!
-						} else if call.remoteAddress!.username != nil {
-							displayName = call.remoteAddress!.username!
-						}
+				let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
+				if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+					displayName = friend!.address!.displayName!
+				} else {
+					if call.remoteAddress!.displayName != nil {
+						displayName = call.remoteAddress!.displayName!
+					} else if call.remoteAddress!.username != nil {
+						displayName = call.remoteAddress!.username!
 					}
 				}
 				
