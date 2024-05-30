@@ -64,7 +64,9 @@ final class CoreContext: ObservableObject {
 			}
 		} else {
 			coreQueue.async {
-				lambda(self.mCore)
+				if self.mCore.globalState != .Off {
+					lambda(self.mCore)
+				}
 			}
 		}
 	}

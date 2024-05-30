@@ -145,8 +145,7 @@ final class ContactsManager: ObservableObject {
 				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 				self.friendListSuscription = nil
 			}
-																			   
-																			   
+			
 			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 		}
 	}

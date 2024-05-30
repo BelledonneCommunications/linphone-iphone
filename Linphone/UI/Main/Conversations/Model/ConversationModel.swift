@@ -109,11 +109,15 @@ class ConversationModel: ObservableObject {
 	
 	func markAsRead() {
 		coreContext.doOnCoreQueue { _ in
-			self.chatRoom.markAsRead()
-			
 			let unreadMessagesCountTmp = self.chatRoom.unreadMessagesCount
+			if unreadMessagesCountTmp > 0 {
+				self.chatRoom.markAsRead()
+			}
+			
 			DispatchQueue.main.async {
-				self.unreadMessagesCount = unreadMessagesCountTmp
+				if self.unreadMessagesCount != unreadMessagesCountTmp {
+					self.unreadMessagesCount = unreadMessagesCountTmp
+				}
 			}
 		}
 	}
