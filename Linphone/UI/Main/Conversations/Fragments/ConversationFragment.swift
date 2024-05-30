@@ -65,7 +65,7 @@ struct ConversationFragment: View {
 								Image("caret-left")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.foregroundStyle(Color.orangeMain500)
 									.frame(width: 25, height: 25, alignment: .leading)
 									.padding(.all, 10)
 									.padding(.top, 4)
