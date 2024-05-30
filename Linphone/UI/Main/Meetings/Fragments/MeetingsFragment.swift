@@ -63,6 +63,15 @@ struct MeetingsFragment: View {
 		.background(.white)
 		.clipShape(RoundedRectangle(cornerRadius: 20))
 		.shadow(color: .black.opacity(0.2), radius: 4)
+		.onTapGesture {
+			do {
+				let meetingAddress = try Factory.Instance.createAddress(addr: model.model?.address ?? "")
+				TelecomManager.shared.meetingWaitingRoomDisplayed = true
+				TelecomManager.shared.meetingWaitingRoomSelected = meetingAddress
+			} catch {
+				Log.error("[MeetingsFragment] Couldn't create address from \(model.model?.address ?? "")")
+			}
+		}
 	}
 	
 	var body: some View {
