@@ -394,10 +394,10 @@
 	{
 		[self transformCodecsToKeys:linphone_core_get_video_codecs(LC)];
 
-		const LinphoneVideoPolicy *pol;
-		pol = linphone_core_get_video_policy(LC);
-		[self setBool:(pol->automatically_initiate) forKey:@"start_video_preference"];
-		[self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
+		const LinphoneVideoActivationPolicy *pol;
+		pol = linphone_core_get_video_activation_policy(LC);
+		[self setBool:(linphone_video_activation_policy_get_automatically_initiate(pol)) forKey:@"start_video_preference"];
+		[self setBool:(linphone_video_activation_policy_get_automatically_accept(pol)) forKey:@"accept_video_preference"];
 		[self setBool:linphone_core_self_view_enabled(LC) forKey:@"self_video_preference"];
 		BOOL previewEnabled = [lm lpConfigBoolForKey:@"preview_preference" withDefault:YES];
 		[self setBool:IPAD && previewEnabled forKey:@"preview_preference"];
@@ -923,10 +923,10 @@
 		// video section
 		[self synchronizeCodecs:linphone_core_get_video_codecs(LC)];
 
-		LinphoneVideoPolicy policy;
-		policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
-		policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
-		linphone_core_set_video_policy(LC, &policy);
+		LinphoneVideoActivationPolicy *policy = linphone_factory_create_video_activation_policy(linphone_factory_get());
+		linphone_video_activation_policy_set_automatically_initiate(policy, [self boolForKey:@"start_video_preference"]);
+		linphone_video_activation_policy_set_automatically_accept(policy, [self boolForKey:@"accept_video_preference"]);
+		linphone_core_set_video_activation_policy(LC, policy);
 		linphone_core_enable_self_view(LC, [self boolForKey:@"self_video_preference"]);
 		BOOL preview_preference = IPAD && [self boolForKey:@"preview_preference"];
 		[lm lpConfigSetInt:preview_preference forKey:@"preview_preference"];

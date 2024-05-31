@@ -1551,8 +1551,8 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 	const bctbx_list_t *calls = linphone_core_get_calls(theLinphoneCore);
 	bctbx_list_t *call = bctbx_list_find_custom(calls, (bctbx_compare_func)comp_call_id, [callid UTF8String]);
 	if (call != NULL) {
-		const LinphoneVideoPolicy *video_policy = linphone_core_get_video_policy(theLinphoneCore);
-		bool with_video = video_policy->automatically_accept;
+		const LinphoneVideoActivationPolicy *vpol = linphone_core_get_video_activation_policy(LC);
+		bool with_video = linphone_video_activation_policy_get_automatically_accept(vpol);
 		[CallManager.instance acceptCallWithCall:(LinphoneCall *)call->data hasVideo:with_video];
 		return;
 	};
@@ -2351,11 +2351,11 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 
 
-void conference_participant_changed(LinphoneConference *conference, const LinphoneParticipant *participant) {
+void conference_participant_changed(LinphoneConference *conference, LinphoneParticipant *participant) {
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfStateParticipantListChanged object:nil];
 }
 
-void conference_device_changed(LinphoneConference *conference, const LinphoneParticipantDevice *participant) {
+void conference_device_changed(LinphoneConference *conference, LinphoneParticipantDevice *participant) {
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfStateParticipantListChanged object:nil];
 }
 
@@ -2365,8 +2365,8 @@ void linphone_iphone_conference_state_changed(LinphoneCore *lc, LinphoneConferen
 		LinphoneConferenceCbs * cbs = linphone_factory_create_conference_cbs(linphone_factory_get());
 		linphone_conference_cbs_set_participant_added(cbs, conference_participant_changed);
 		linphone_conference_cbs_set_participant_device_added(cbs, conference_device_changed);
-		linphone_conference_cbs_set_participant_device_removed(cbs, conference_device_changed);
-		linphone_conference_cbs_set_participant_removed(cbs, conference_participant_changed);
+		linphone_conference_cbs_set_participant_device_removed(cbs, (LinphoneConferenceCbsParticipantDeviceRemovedCb)conference_device_changed);
+		linphone_conference_cbs_set_participant_removed(cbs, (LinphoneConferenceCbsParticipantRemovedCb)conference_participant_changed);
 		linphone_conference_add_callbacks(conf, cbs);
 	}
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
