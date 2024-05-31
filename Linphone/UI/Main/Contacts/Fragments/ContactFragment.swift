@@ -35,46 +35,47 @@ struct ContactFragment: View {
 	
 	var body: some View {
 		let indexDisplayed = contactViewModel.indexDisplayedFriend != nil ? contactViewModel.indexDisplayedFriend! : 0
-		if #available(iOS 16.0, *), idiom != .pad {
-			ContactInnerFragment(
-				contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
-				contactViewModel: contactViewModel,
-				editContactViewModel: editContactViewModel,
-				cnContact: CNContact(),
-				isShowDeletePopup: $isShowDeletePopup,
-				showingSheet: $showingSheet,
-				showShareSheet: $showShareSheet,
-				isShowDismissPopup: $isShowDismissPopup
-			)
-			.sheet(isPresented: $showingSheet) {
-				ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-					.presentationDetents([.fraction(0.2)])
-			}
-			.sheet(isPresented: $showShareSheet) {
-				ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
-					.presentationDetents([.medium])
-					.edgesIgnoringSafeArea(.bottom)
-			}
-		} else {
-			ContactInnerFragment(
-				contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
-				contactViewModel: contactViewModel,
-				editContactViewModel: editContactViewModel,
-				cnContact: CNContact(),
-				isShowDeletePopup: $isShowDeletePopup,
-				showingSheet: $showingSheet,
-				showShareSheet: $showShareSheet,
-				isShowDismissPopup: $isShowDismissPopup
-			)
-			.halfSheet(showSheet: $showingSheet) {
-				ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
-			} onDismiss: {}
+		if ContactsManager.shared.avatarListModel.count > indexDisplayed {
+			if #available(iOS 16.0, *), idiom != .pad {
+				ContactInnerFragment(
+					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
+					contactViewModel: contactViewModel,
+					editContactViewModel: editContactViewModel,
+					cnContact: CNContact(),
+					isShowDeletePopup: $isShowDeletePopup,
+					showingSheet: $showingSheet,
+					showShareSheet: $showShareSheet,
+					isShowDismissPopup: $isShowDismissPopup
+				)
+				.sheet(isPresented: $showingSheet) {
+					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+						.presentationDetents([.fraction(0.2)])
+				}
 				.sheet(isPresented: $showShareSheet) {
 					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+						.presentationDetents([.medium])
 						.edgesIgnoringSafeArea(.bottom)
 				}
+			} else {
+				ContactInnerFragment(
+					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
+					contactViewModel: contactViewModel,
+					editContactViewModel: editContactViewModel,
+					cnContact: CNContact(),
+					isShowDeletePopup: $isShowDeletePopup,
+					showingSheet: $showingSheet,
+					showShareSheet: $showShareSheet,
+					isShowDismissPopup: $isShowDismissPopup
+				)
+				.halfSheet(showSheet: $showingSheet) {
+					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+				} onDismiss: {}
+					.sheet(isPresented: $showShareSheet) {
+						ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+							.edgesIgnoringSafeArea(.bottom)
+					}
+			}
 		}
-		
 	}
 }
 

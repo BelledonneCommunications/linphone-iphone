@@ -112,11 +112,9 @@ class ConversationModel: ObservableObject {
 			let unreadMessagesCountTmp = self.chatRoom.unreadMessagesCount
 			if unreadMessagesCountTmp > 0 {
 				self.chatRoom.markAsRead()
-			}
-			
-			DispatchQueue.main.async {
-				if self.unreadMessagesCount != unreadMessagesCountTmp {
-					self.unreadMessagesCount = unreadMessagesCountTmp
+				
+				DispatchQueue.main.async {
+					self.unreadMessagesCount = 0
 				}
 			}
 		}

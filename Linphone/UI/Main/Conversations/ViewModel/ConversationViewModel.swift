@@ -89,10 +89,9 @@ class ConversationViewModel: ObservableObject {
 			
 			if unreadMessagesCount > 0 {
 				self.displayedConversation!.chatRoom.markAsRead()
-			}
-			DispatchQueue.main.async {
-				if self.displayedConversationUnreadMessagesCount  != unreadMessagesCount {
-					self.displayedConversationUnreadMessagesCount = unreadMessagesCount
+				
+				DispatchQueue.main.async {
+					self.displayedConversationUnreadMessagesCount = 0
 				}
 			}
 		}
