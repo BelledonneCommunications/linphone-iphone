@@ -243,6 +243,9 @@
     "Bluetooth" : {
 
     },
+    "Call failed" : {
+
+    },
     "Call has been successfully transferred" : {
 
     },
@@ -283,6 +286,12 @@
 
     },
     "Conditions de service" : {
+
+    },
+    "Configuration failed" : {
+
+    },
+    "Configuration successfully applied" : {
 
     },
     "Connexion à la réunion" : {
@@ -776,6 +785,12 @@
 
     },
     "UDP" : {
+
+    },
+    "Unable to call, invalid address" : {
+
+    },
+    "Unable to retrieve configuration, invalid address" : {
 
     },
     "Une application de communication **sécurisée**, **open source** et **française**." : {

@@ -48,7 +48,10 @@ final class CoreContext: ObservableObject {
 	let monitor = NWPathMonitor()
 	
 	private var mCorePushIncomingDelegate: CoreDelegate!
-	
+	private var actionsToPerformOnCoreQueueWhenCoreIsStarted : [((Core)->Void)] = []
+	private var callStateCallBacks : [((Call.State)->Void)] = []
+	private var configuringStateCallBacks : [((ConfiguringState)->Void)] = []
+
 	private init() {
 		do {
 			try initialiseCore()
@@ -141,6 +144,8 @@ final class CoreContext: ObservableObject {
 						account.params = newParams
 					}
 					
+					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {$0(cbVal.core)}
+					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 				}
 			})
 			
@@ -291,6 +296,24 @@ final class CoreContext: ObservableObject {
 	func crashForCrashlytics() {
 		fatalError("Crashing app to test crashlytics")
 	}
+	
+	func performActionOnCoreQueueWhenCoreIsStarted(action:  @escaping (_ core: Core)->Void ) {
+		if (coreIsStarted) {
+			CoreContext.shared.doOnCoreQueue { core in
+				action(core)
+			}
+		} else {
+			actionsToPerformOnCoreQueueWhenCoreIsStarted.append(action)
+		}
+	}
+	
+	func addCoreDelegateStub(delegate: CoreDelegateStub) {
+		mCore.addDelegate(delegate: delegate)
+	}
+	func removeCoreDelegateStub(delegate: CoreDelegateStub) {
+		mCore.removeDelegate(delegate: delegate)
+	}
+	
 }
 
 // swiftlint:enable large_tuple

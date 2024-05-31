@@ -59,4 +59,9 @@ class LinphoneUtils: NSObject {
 	public class func getChatRoomId(localSipUri: String, remoteSipUri: String) -> String {
 		return "\(localSipUri)#~#\(remoteSipUri)"
 	}
+	
+	public class func applyInternationalPrefix(core: Core, account: Account? = nil) -> Bool {
+		return	account?.params?.useInternationalPrefixForCallsAndChats == true || core.defaultAccount?.params?.useInternationalPrefixForCallsAndChats == true
+	}
+	
 }
