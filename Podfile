@@ -26,6 +26,7 @@ target 'Linphone' do
 
   # Pods for Linphone
 	pod 'SwiftLint'
+	pod 'AppAuth'
 	basic_pods
 
 end

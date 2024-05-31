@@ -45,6 +45,8 @@ final class CoreContext: ObservableObject {
 	private var mIterateSuscription: AnyCancellable?
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	
+	var bearerAuthInfoPendingPasswordUpdate: AuthInfo? = nil
+	
 	let monitor = NWPathMonitor()
 	
 	private var mCorePushIncomingDelegate: CoreDelegate!
@@ -247,6 +249,19 @@ final class CoreContext: ObservableObject {
 				} else if cbValue.callState == Call.State.End || cbValue.callState == Call.State.Error {
 					ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
 					ToastViewModel.shared.displayToast = true
+				}
+			})
+			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAuthenticationRequested?.postOnCoreQueue { (cbValue: (_: Core, authInfo: AuthInfo, method: AuthMethod)) in
+				let authInfo = cbValue.authInfo
+				guard let username = authInfo.username, let server = authInfo.authorizationServer, !server.isEmpty else {
+					Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
+					return
+				}
+				if cbValue.method == .Bearer {
+					Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(username)")
+					self.bearerAuthInfoPendingPasswordUpdate = cbValue.authInfo
+					SingleSignOnManager.shared.setUp(ssoUrl: server, user: username)
 				}
 			})
 			
