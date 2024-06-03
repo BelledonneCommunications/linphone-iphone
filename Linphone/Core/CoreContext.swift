@@ -168,6 +168,7 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
+					ContactsManager.shared.fetchContacts()
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true
 				} else {

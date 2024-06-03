@@ -100,6 +100,7 @@ final class ContactsManager: ObservableObject {
 								CNContactOrganizationNameKey, CNContactImageDataAvailableKey, CNContactImageDataKey, CNContactThumbnailImageDataKey]
 					let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
 					do {
+						var contactCounter = 0
 						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
 							DispatchQueue.main.sync {
 								let newContact = Contact(
@@ -109,7 +110,7 @@ final class ContactsManager: ObservableObject {
 									organizationName: contact.organizationName,
 									jobTitle: "",
 									displayName: contact.nickname,
-									sipAddresses: contact.instantMessageAddresses.map { $0.value.service == "SIP" ? $0.value.username : "" },
+									sipAddresses: contact.instantMessageAddresses.map { $0.value.service.lowercased() == "SIP".lowercased() ? $0.value.username : "" },
 									phoneNumbers: contact.phoneNumbers.map { PhoneNumber(numLabel: $0.label ?? "", num: $0.value.stringValue)},
 									imageData: ""
 								)
@@ -125,8 +126,21 @@ final class ContactsManager: ObservableObject {
 										: contact.givenName, lastName: contact.familyName),
 									name: contact.givenName + contact.familyName,
 									prefix: ((imageThumbnail == nil) ? "-default" : ""),
-									contact: newContact, linphoneFriend: false, existingFriend: nil)
+									contact: newContact, linphoneFriend: false, existingFriend: nil) {
+										if (self.friendList?.friends.count ?? 0) + (self.linphoneFriendList?.friends.count ?? 0) == contactCounter {
+											self.linphoneFriendList?.updateSubscriptions()
+											self.friendList?.updateSubscriptions()
+											
+											MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+											
+											self.friendListSuscription = self.friendList?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (friendList: FriendList, friends: [Friend])) in
+												MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+												self.friendListSuscription = nil
+											}
+										}
+									}
 							}
+							contactCounter += 1
 						})
 						
 					} catch let error {
@@ -137,16 +151,6 @@ final class ContactsManager: ObservableObject {
 					print("\(#function) - access denied")
 				}
 			}
-			
-			self.linphoneFriendList?.updateSubscriptions()
-			self.friendList?.updateSubscriptions()
-			
-			self.friendListSuscription = self.friendList?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (friendList: FriendList, friends: [Friend])) in
-				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-				self.friendListSuscription = nil
-			}
-			
-			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 		}
 	}
 	
@@ -178,7 +182,7 @@ final class ContactsManager: ObservableObject {
 		return IBImgViewUserProfile
 	}
 	
-	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?) {
+	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?, completion: @escaping () -> Void) {
 		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
 			return
 		}
@@ -192,6 +196,7 @@ final class ContactsManager: ObservableObject {
 						_ = self.friendList?.addLocalFriend(linphoneFriend: resultFriend!)
 					}
 				}
+				completion()
 			}
 		}
 	}

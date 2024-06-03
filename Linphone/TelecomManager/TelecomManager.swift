@@ -443,8 +443,9 @@ class TelecomManager: ObservableObject {
 			} else {
 				DispatchQueue.main.async {
 					self.remoteConfVideo = false
+					let remoteConfVideoTmp = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-						self.remoteConfVideo = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
+						self.remoteConfVideo = remoteConfVideoTmp
 					}
 				}
 			}

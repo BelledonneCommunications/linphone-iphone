@@ -205,5 +205,7 @@ class ConversationsListViewModel: ObservableObject {
 		conversationsList.forEach { conversationModel in
 			conversationModel.refreshAvatarModel()
 		}
+		
+		reorderChatRooms()
 	}
 }

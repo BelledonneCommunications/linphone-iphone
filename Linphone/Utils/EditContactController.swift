@@ -54,9 +54,9 @@ struct EditContactView: UIViewControllerRepresentable {
 						prefix: ((imageThumbnail == nil) ? "-default" : ""),
 						contact: newContact,
 						linphoneFriend: false,
-						existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact))
-					
-					MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact)) {
+							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						}
 				}
 			}
 			viewController.dismiss(animated: true, completion: {})

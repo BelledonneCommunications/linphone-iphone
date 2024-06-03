@@ -39,19 +39,14 @@ class ConversationModel: ObservableObject {
 	@Published var subject: String
 	@Published var isComposing: Bool
 	@Published var lastUpdateTime: time_t
-	//@Published var  composingLabel: String
 	@Published var isMuted: Bool
 	@Published var isEphemeral: Bool
 	@Published var encryptionEnabled: Bool
 	@Published var lastMessageText: String
 	@Published var lastMessageIsOutgoing: Bool
 	@Published var lastMessageState: Int
-	//@Published var dateTime: String
 	@Published var unreadMessagesCount: Int
 	@Published var avatarModel: ContactAvatarModel
-	//@Published var isBeingDeleted: Bool
-
-	//private let lastMessage: ChatMessage? = nil
 	
 	init(chatRoom: ChatRoom) {
 		self.chatRoom = chatRoom
@@ -72,8 +67,6 @@ class ConversationModel: ObservableObject {
 
 		self.isComposing = chatRoom.isRemoteComposing
 
-		//self.composingLabel = chatRoom.compo
-
 		self.isMuted = chatRoom.muted
 
 		self.isEphemeral = chatRoom.ephemeralEnabled
@@ -86,15 +79,9 @@ class ConversationModel: ObservableObject {
 		
 		self.lastMessageState = 0
 
-		//self.dateTime = chatRoom.date
-
 		self.unreadMessagesCount = 0
 
-		self.avatarModel = ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false)
-
-		//self.isBeingDeleted = MutableLiveData<Boolean>()
-
-		//self.lastMessage: ChatMessage? = null
+		self.avatarModel = ContactAvatarModel(friend: nil, name: chatRoom.subject ?? "", address: chatRoom.peerAddress?.asStringUriOnly() ?? "", withPresence: false)
 		
 		getContentTextMessage()
 		getChatRoomSubject()

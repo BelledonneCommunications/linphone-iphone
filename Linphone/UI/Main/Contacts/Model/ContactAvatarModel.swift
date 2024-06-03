@@ -117,7 +117,6 @@ class ContactAvatarModel: ObservableObject {
 		}
 	}
 	
-	
 	static func getAvatarModelFromAddress(address: Address, completion: @escaping (ContactAvatarModel) -> Void) {
 		ContactsManager.shared.getFriendWithAddressInCoreQueue(address: address) { resultFriend in
 			if let addressFriend = resultFriend {
