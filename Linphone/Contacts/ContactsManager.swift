@@ -312,10 +312,10 @@ final class ContactsManager: ObservableObject {
 			clonedAddress!.clean()
 			let sipUri = clonedAddress!.asStringUriOnly()
 			
-			if self.friendList != nil {
+			if self.friendList != nil && !self.friendList!.friends.isEmpty {
 				var friend: Friend?
 				friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-				if friend == nil {
+				if friend == nil && self.linphoneFriendList != nil && !self.linphoneFriendList!.friends.isEmpty {
 					friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
 				}
 				
