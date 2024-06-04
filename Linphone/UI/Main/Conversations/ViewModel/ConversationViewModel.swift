@@ -23,6 +23,7 @@ import Combine
 import SwiftUI
 import AVFoundation
 
+// swiftlint:disable type_body_length
 class ConversationViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
@@ -194,18 +195,20 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = nil
 					}
 					
-					conversationMessage.append(
-						Message(
-							id: UUID().uuidString,
-							status: statusTmp,
-							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-							dateReceived: eventLog.chatMessage?.time ?? 0,
-							address: addressCleaned?.asStringUriOnly() ?? "",
-							isFirstMessage: isFirstMessageTmp,
-							text: contentText,
-							attachments: attachmentList
+					if eventLog.chatMessage != nil {
+						conversationMessage.append(
+							Message(
+								id: UUID().uuidString,
+								status: statusTmp,
+								isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+								dateReceived: eventLog.chatMessage?.time ?? 0,
+								address: addressCleaned?.asStringUriOnly() ?? "",
+								isFirstMessage: isFirstMessageTmp,
+								text: contentText,
+								attachments: attachmentList
+							)
 						)
-					)
+					}
 				}
 				
 				DispatchQueue.main.async {
@@ -235,9 +238,30 @@ class ConversationViewModel: ObservableObject {
 								if content.filePath == nil || content.filePath!.isEmpty {
 									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 								} else {
-									if URL(string: self.getNewFilePath(name: content.name ?? "")) != nil {
-										let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
-										attachmentList.append(attachment)
+									if content.type != "video" {
+										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										if path != nil {
+											let attachment =
+											Attachment(
+												id: UUID().uuidString,
+												url: path!,
+												type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+											)
+											attachmentList.append(attachment)
+										}
+									} else if content.type == "video" {
+										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										if path != nil && pathThumbnail != nil {
+											let attachment =
+											Attachment(
+												id: UUID().uuidString,
+												thumbnail: pathThumbnail!,
+												full: path!,
+												type: .video
+											)
+											attachmentList.append(attachment)
+										}
 									}
 								}
 							}
@@ -272,18 +296,20 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = nil
 					}
 					
-					conversationMessagesTmp.insert(
-						Message(
-							id: UUID().uuidString,
-							status: statusTmp,
-							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-							dateReceived: eventLog.chatMessage?.time ?? 0,
-							address: addressCleaned?.asStringUriOnly() ?? "",
-							isFirstMessage: isFirstMessageTmp,
-							text: contentText,
-							attachments: attachmentList
-						), at: 0
-					)
+					if eventLog.chatMessage != nil {
+						conversationMessagesTmp.insert(
+							Message(
+								id: UUID().uuidString,
+								status: statusTmp,
+								isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+								dateReceived: eventLog.chatMessage?.time ?? 0,
+								address: addressCleaned?.asStringUriOnly() ?? "",
+								isFirstMessage: isFirstMessageTmp,
+								text: contentText,
+								attachments: attachmentList
+							), at: 0
+						)
+					}
 				}
 				
 				if !conversationMessagesTmp.isEmpty {
@@ -311,9 +337,30 @@ class ConversationViewModel: ObservableObject {
 						if content.filePath == nil || content.filePath!.isEmpty {
 							self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 						} else {
-							if URL(string: self.getNewFilePath(name: content.name ?? "")) != nil {
-								let attachment = Attachment(id: UUID().uuidString, url: URL(string: self.getNewFilePath(name: content.name ?? ""))!, type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image)
-								attachmentList.append(attachment)
+							if content.type != "video" {
+								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+								if path != nil {
+									let attachment =
+									Attachment(
+										id: UUID().uuidString,
+										url: path!,
+										type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+									)
+									attachmentList.append(attachment)
+								}
+							} else if content.type == "video" {
+								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+								let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+								if path != nil && pathThumbnail != nil {
+									let attachment =
+									Attachment(
+										id: UUID().uuidString,
+										thumbnail: pathThumbnail!,
+										full: path!,
+										type: .video
+									)
+									attachmentList.append(attachment)
+								}
 							}
 						}
 					}
@@ -361,33 +408,35 @@ class ConversationViewModel: ObservableObject {
 				statusTmp = nil
 			}
 			
-			let message = Message(
-				id: UUID().uuidString,
-				status: statusTmp,
-				isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-				dateReceived: eventLog.chatMessage?.time ?? 0,
-				address: addressCleaned?.asStringUriOnly() ?? "",
-				isFirstMessage: isFirstMessageTmp,
-				text: contentText,
-				attachments: attachmentList
-			)
-			
-			DispatchQueue.main.async {
-				if !self.conversationMessagesSection.isEmpty 
-					&& !self.conversationMessagesSection[0].rows.isEmpty
-					&& self.conversationMessagesSection[0].rows[0].isOutgoing
-					&& (self.conversationMessagesSection[0].rows[0].address == message.address) {
-					self.conversationMessagesSection[0].rows[0].isFirstMessage = false
-				}
+			if eventLog.chatMessage != nil {
+				let message = Message(
+					id: UUID().uuidString,
+					status: statusTmp,
+					isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+					dateReceived: eventLog.chatMessage?.time ?? 0,
+					address: addressCleaned?.asStringUriOnly() ?? "",
+					isFirstMessage: isFirstMessageTmp,
+					text: contentText,
+					attachments: attachmentList
+				)
 				
-				if self.conversationMessagesSection.isEmpty {
-					self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: [message]))
-				} else {
-					self.conversationMessagesSection[0].rows.insert(message, at: 0)
-				}
-				
-				if !message.isOutgoing {
-					self.displayedConversationUnreadMessagesCount += 1
+				DispatchQueue.main.async {
+					if !self.conversationMessagesSection.isEmpty 
+						&& !self.conversationMessagesSection[0].rows.isEmpty
+						&& self.conversationMessagesSection[0].rows[0].isOutgoing
+						&& (self.conversationMessagesSection[0].rows[0].address == message.address) {
+						self.conversationMessagesSection[0].rows[0].isFirstMessage = false
+					}
+					
+					if self.conversationMessagesSection.isEmpty {
+						self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: [message]))
+					} else {
+						self.conversationMessagesSection[0].rows.insert(message, at: 0)
+					}
+					
+					if !message.isOutgoing {
+						self.displayedConversationUnreadMessagesCount += 1
+					}
 				}
 			}
 			
@@ -627,3 +676,4 @@ extension LinphoneCustomEventLog {
 		return lhs.id == rhs.id
 	}
 }
+// swiftlint:enable type_body_length
