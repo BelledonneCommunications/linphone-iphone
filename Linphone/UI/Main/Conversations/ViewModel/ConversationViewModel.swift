@@ -133,7 +133,7 @@ class ConversationViewModel: ObservableObject {
 						eventLog.chatMessage!.contents.forEach { content in
 							if content.isText {
 								contentText = content.utf8Text ?? ""
-							} else {
+							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
 									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 								} else {
@@ -234,7 +234,7 @@ class ConversationViewModel: ObservableObject {
 						eventLog.chatMessage!.contents.forEach { content in
 							if content.isText {
 								contentText = content.utf8Text ?? ""
-							} else {
+							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
 									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 								} else {
@@ -336,7 +336,7 @@ class ConversationViewModel: ObservableObject {
 					} else {
 						if content.filePath == nil || content.filePath!.isEmpty {
 							self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
-						} else {
+						} else if content.name != nil && !content.name!.isEmpty {
 							if content.type != "video" {
 								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 								if path != nil {
@@ -580,7 +580,7 @@ class ConversationViewModel: ObservableObject {
 			let contentName = content.name
 			if contentName != nil {
 				let isImage = FileUtil.isExtensionImage(path: contentName!)
-				let file = FileUtil.getFileStoragePath(fileName: contentName!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "", isImage: isImage)
+				let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
 				content.filePath = file
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath)"
