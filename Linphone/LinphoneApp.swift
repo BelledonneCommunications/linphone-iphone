@@ -86,7 +86,12 @@ struct LinphoneApp: App {
 		WindowGroup {
 			if coreContext.coreIsStarted {
 				if !sharedMainViewModel.welcomeViewDisplayed {
-					WelcomeView()
+					ZStack {
+						WelcomeView()
+
+						ToastView()
+							.zIndex(3)
+					}
 				} else if !coreContext.hasDefaultAccount || sharedMainViewModel.displayProfileMode {
 					ZStack {
 						AssistantView()
@@ -119,9 +124,13 @@ struct LinphoneApp: App {
 						conversationViewModel: conversationViewModel!,
 						meetingsListViewModel: meetingsListViewModel!,
 						scheduleMeetingViewModel: scheduleMeetingViewModel!
-					)
+					).onOpenURL { url in
+						URIHandler.handleURL(url: url)
+					}
 				} else {
-					SplashScreen()
+					SplashScreen().onOpenURL { url in
+						URIHandler.handleURL(url: url)
+					}
 				}
 			} else {
 				SplashScreen()
@@ -137,6 +146,8 @@ struct LinphoneApp: App {
 						conversationViewModel = ConversationViewModel()
 						meetingsListViewModel = MeetingsListViewModel()
 						scheduleMeetingViewModel = ScheduleMeetingViewModel()
+					}.onOpenURL { url in
+						URIHandler.handleURL(url: url)
 					}
 			}
 		}.onChange(of: scenePhase) { newPhase in

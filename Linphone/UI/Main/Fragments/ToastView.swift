@@ -136,7 +136,42 @@ struct ToastView: View {
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
+			
+					case "Failed_uri_handler_call_failed":
+						Text("Call failed")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
 						
+					case "Failed_uri_handler_config_failed":
+						Text("Configuration failed")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "uri_handler_config_success":
+						Text("Configuration successfully applied")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+			
+					case "Failed_uri_handler_bad_call_address":
+						Text("Unable to call, invalid address")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_uri_handler_bad_config_address":
+						Text("Unable to retrieve configuration, invalid address")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+												
 					default:
 						Text("Error")
 							.multilineTextAlignment(.center)
