@@ -173,6 +173,14 @@ final class CoreContext: ObservableObject {
 				if cbVal.state == .Ok {
 					self.loggingInProgress = false
 					self.loggedIn = true
+					
+					let newParams = cbVal.account.params?.clone()
+					newParams?.internationalPrefix = "33"
+					newParams?.internationalPrefixIsoCountryCode = "FRA"
+					newParams?.useInternationalPrefixForCallsAndChats = true
+					
+					cbVal.account.params = newParams
+					
 					ContactsManager.shared.fetchContacts()
 				} else if cbVal.state == .Progress {
 					self.loggingInProgress = true

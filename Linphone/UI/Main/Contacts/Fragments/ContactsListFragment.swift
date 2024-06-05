@@ -32,21 +32,21 @@ struct ContactsListFragment: View {
     var startCallFunc: (_ addr: Address) -> Void
 	
 	var body: some View {
-		ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
+		ForEach(0..<contactsManager.avatarListModel.count, id: \.self) { index in
 			HStack {
 				HStack {
 					if index == 0 
-						|| contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
+						|| contactsManager.avatarListModel[index].name.lowercased().folding(
 							options: .diacriticInsensitive,
 							locale: .current
 						).first
-						!= contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
+						!= contactsManager.avatarListModel[index-1].name.lowercased().folding(
 							options: .diacriticInsensitive,
 							locale: .current
 						).first {
 						Text(
 							String(
-								(contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
+								(contactsManager.avatarListModel[index].name.uppercased().folding(
 									options: .diacriticInsensitive,
 									locale: .current
 								).first)!))
@@ -72,7 +72,7 @@ struct ContactsListFragment: View {
 							.frame(width: 50, height: 50)
 							.clipShape(Circle())
 					}
-					Text((contactsManager.lastSearch[index].friend?.name)!)
+					Text(contactsManager.avatarListModel[index].name)
 						.default_text_style(styleSize: 16)
 						.frame(maxWidth: .infinity, alignment: .leading)
 						.foregroundStyle(Color.orangeMain500)

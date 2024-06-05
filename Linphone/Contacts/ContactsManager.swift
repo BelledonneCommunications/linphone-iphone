@@ -133,9 +133,31 @@ final class ContactsManager: ObservableObject {
 											
 											MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											
-											self.friendListSuscription = self.friendList?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (friendList: FriendList, friends: [Friend])) in
-												MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-												self.friendListSuscription = nil
+											self.friendListSuscription = self.friendList?.publisher?.onNewSipAddressDiscovered?.postOnMainQueue { (cbValue: (friendList: FriendList, linphoneFriend: Friend, sipUri: String)) in
+												
+												cbValue.linphoneFriend.phoneNumbers.forEach { phone in
+													do {
+														let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
+														
+														let presence = cbValue.linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
+														if address != nil && presence != nil {
+															cbValue.linphoneFriend.edit()
+															cbValue.linphoneFriend.addAddress(address: address!)
+															cbValue.linphoneFriend.done()
+															
+															self.avatarListModel.append(
+																ContactAvatarModel(
+																	friend: cbValue.linphoneFriend,
+																	name: cbValue.linphoneFriend.name ?? "",
+																	address: cbValue.linphoneFriend.address?.clone()?.asStringUriOnly() ?? "",
+																	withPresence: true
+																)
+															)
+														}
+													} catch let error {
+														print("\(#function) - Failed to create friend phone number for \(phone):", error)
+													}
+												}
 											}
 										}
 									}
@@ -224,11 +246,13 @@ final class ContactsManager: ObservableObject {
 					friend.removeAddress(address: address)
 				})
 				contact.sipAddresses.forEach { sipAddress in
-					let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true)
-					
-					if address != nil && ((friendAddresses.firstIndex(where: {$0.asString() == address?.asString()})) == nil) {
-						friend.addAddress(address: address!)
-						friendAddresses.append(address!)
+					if !sipAddress.isEmpty {
+						let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true)
+						
+						if address != nil && ((friendAddresses.firstIndex(where: {$0.asString() == address?.asString()})) == nil) {
+							friend.addAddress(address: address!)
+							friendAddresses.append(address!)
+						}
 					}
 				}
 				
