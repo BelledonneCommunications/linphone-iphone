@@ -67,36 +67,38 @@ final class MagicSearchSingleton: ObservableObject {
 						lastSearchSuggestions.append(searchResult)
 					}
 				}
+				lastSearchSuggestions.sort(by: {
+					$0.address!.asStringUriOnly() < $1.address!.asStringUriOnly()
+				})
+				let sortedLastSearch = lastSearchFriend.sorted(by: {
+					$0.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
+					<
+						$1.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
+				})
+				
+				var addedAvatarListModel : [ContactAvatarModel] = []
+				sortedLastSearch.forEach { searchResult in
+					if searchResult.friend != nil {
+						addedAvatarListModel.append(
+							ContactAvatarModel(
+								friend: searchResult.friend!,
+								name: searchResult.friend?.name ?? "",
+								address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+								withPresence: true
+							)
+						)
+					}
+				}
 				
 				DispatchQueue.main.async {
-					self.contactsManager.lastSearch = lastSearchFriend.sorted(by: {
-						$0.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
-						<
-							$1.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
-					})
-					
-					self.contactsManager.lastSearchSuggestions = lastSearchSuggestions.sorted(by: {
-						$0.address!.asStringUriOnly() < $1.address!.asStringUriOnly()
-					})
+					self.contactsManager.lastSearch = sortedLastSearch
+					self.contactsManager.lastSearchSuggestions = lastSearchSuggestions
 					
 					self.contactsManager.avatarListModel.forEach { contactAvatarModel in
 						contactAvatarModel.removeAllSuscription()
 					}
-					
 					self.contactsManager.avatarListModel.removeAll()
-					
-					self.contactsManager.lastSearch.forEach { searchResult in
-						if searchResult.friend != nil {
-							self.contactsManager.avatarListModel.append(
-								ContactAvatarModel(
-									friend: searchResult.friend!,
-									name: searchResult.friend?.name ?? "",
-									address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
-									withPresence: true
-								)
-							)
-						}
-					}
+					self.contactsManager.avatarListModel += addedAvatarListModel
 					
 					NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
 				}

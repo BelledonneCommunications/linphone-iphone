@@ -72,12 +72,15 @@ class ContactAvatarModel: ObservableObject {
 	
 	func addSubscription() {
 		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnCoreQueue { (cbValue: (Friend)) in
+			
+			let latestActivityTimestamp = cbValue.presenceModel?.latestActivityTimestamp ?? -1
+			
 			DispatchQueue.main.async {
 				self.presenceStatus = cbValue.consolidatedPresence
 				if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
-					if cbValue.consolidatedPresence == .Online || cbValue.presenceModel!.latestActivityTimestamp != -1 {
+					if cbValue.consolidatedPresence == .Online || latestActivityTimestamp != -1 {
 						self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ?
-						"Online" : self.getCallTime(startDate: cbValue.presenceModel!.latestActivityTimestamp)
+						"Online" : self.getCallTime(startDate: latestActivityTimestamp)
 					} else {
 						self.lastPresenceInfo = "Away"
 					}
