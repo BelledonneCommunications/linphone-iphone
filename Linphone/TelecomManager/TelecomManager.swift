@@ -343,19 +343,22 @@ class TelecomManager: ObservableObject {
 	
 	func incomingDisplayName(call: Call, completion: @escaping (String) -> Void) {
 		CoreContext.shared.doOnCoreQueue { core in
-			if call.remoteAddress != nil {
-				let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
-				if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-					completion(friend!.address!.displayName!)
-				} else {
-					if call.remoteAddress!.displayName != nil {
-						completion(call.remoteAddress!.displayName!)
-					} else if call.remoteAddress!.username != nil {
-						completion(call.remoteAddress!.username!)
+			ContactsManager.shared.getFriendWithAddressInCoreQueue(address: call.remoteAddress!) { friendResult in
+				if call.remoteAddress != nil {
+					if friendResult != nil && friendResult!.address != nil && friendResult!.address!.displayName != nil {
+						completion(friendResult!.address!.displayName!)
+					} else {
+						if call.remoteAddress!.displayName != nil {
+							completion(call.remoteAddress!.displayName!)
+						} else if call.remoteAddress!.username != nil {
+							completion(call.remoteAddress!.username!)
+						}
 					}
+					
+				} else {
+					completion("IncomingDisplayName")
 				}
 			}
-			completion("IncomingDisplayName")
 		}
 	}
 	
