@@ -117,18 +117,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
 			self.mCore.videoPreviewEnabled = false
-			
 			self.mCore.fecEnabled = true
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnMainQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
-				if cbVal.state == GlobalState.On {
-					self.hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
-					self.coreIsStarted = true
-				} else if cbVal.state == GlobalState.Off {
-					self.hasDefaultAccount = false
-					self.coreIsStarted = false
-				}
-			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
@@ -146,16 +135,28 @@ final class CoreContext: ObservableObject {
 					
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {$0(cbVal.core)}
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
+					
+					DispatchQueue.main.async {
+						if cbVal.state == GlobalState.On {
+							self.hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
+							self.coreIsStarted = true
+						} else if cbVal.state == GlobalState.Off {
+							self.hasDefaultAccount = false
+							self.coreIsStarted = false
+						}
+					}
 				}
 			})
 			
 			// Create a Core listener to listen for the callback we need
 			// In this case, we want to know about the account registration status
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnMainQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnCoreQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
 				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
-				if cbVal.status == ConfiguringState.Successful {
-					ToastViewModel.shared.toastMessage = "Successful"
-					ToastViewModel.shared.displayToast = true
+				DispatchQueue.main.async {
+					if cbVal.status == ConfiguringState.Successful {
+						ToastViewModel.shared.toastMessage = "Successful"
+						ToastViewModel.shared.displayToast = true
+					}
 				}
 				/*
 				 else {
@@ -165,35 +166,21 @@ final class CoreContext: ObservableObject {
 				 */
 			})
 			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnMainQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
+				
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
 				Log.info("New registration state is \(cbVal.state) for user id " +
 						 "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
+				
 				if cbVal.state == .Ok {
-					self.loggingInProgress = false
-					self.loggedIn = true
-					
 					let newParams = cbVal.account.params?.clone()
 					newParams?.internationalPrefix = "33"
 					newParams?.internationalPrefixIsoCountryCode = "FRA"
 					newParams?.useInternationalPrefixForCallsAndChats = true
-					
 					cbVal.account.params = newParams
 					
 					ContactsManager.shared.fetchContacts()
-				} else if cbVal.state == .Progress {
-					self.loggingInProgress = true
-				} else {
-					self.loggingInProgress = false
-					self.loggedIn = false
-					ToastViewModel.shared.toastMessage = "Registration failed"
-					ToastViewModel.shared.displayToast = true
-				}
-			})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
-				if cbVal.state == .Ok {
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}
@@ -213,6 +200,20 @@ final class CoreContext: ObservableObject {
 					}
 				}
 				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
+				
+				DispatchQueue.main.async {
+					if cbVal.state == .Ok {
+						self.loggingInProgress = false
+						self.loggedIn = true
+					} else if cbVal.state == .Progress {
+						self.loggingInProgress = true
+					} else {
+						self.loggingInProgress = false
+						self.loggedIn = false
+						ToastViewModel.shared.toastMessage = "Registration failed"
+						ToastViewModel.shared.displayToast = true
+					}
+				}
 			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onCallStateChanged?.postOnCoreQueue { (cbVal: (core: Core, call: Call, state: Call.State, message: String)) in
@@ -229,33 +230,36 @@ final class CoreContext: ObservableObject {
 			})
 			self.mCore.addDelegate(delegate: self.mCorePushIncomingDelegate)
 			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnMainQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnCoreQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
+				
 				if cbValue.info.starts(with: "https") {
-					UIPasteboard.general.setValue(
-						cbValue.info,
-						forPasteboardType: UTType.plainText.identifier
-					)
-					
 					DispatchQueue.main.async {
+						UIPasteboard.general.setValue(
+							cbValue.info,
+							forPasteboardType: UTType.plainText.identifier
+						)
 						ToastViewModel.shared.toastMessage = "Success_send_logs"
 						ToastViewModel.shared.displayToast = true
 					}
 				}
 			})
 			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onTransferStateChanged?.postOnMainQueue { (cbValue: (_: Core, transfered: Call, callState: Call.State)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onTransferStateChanged?.postOnCoreQueue { (cbValue: (_: Core, transfered: Call, callState: Call.State)) in
 				Log.info(
 					"[CoreContext] Transferred call \(cbValue.transfered.remoteAddress!.asStringUriOnly()) state changed \(cbValue.callState)"
 				)
-				if cbValue.callState == Call.State.Connected {
-					ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_successful"
-					ToastViewModel.shared.displayToast = true
-				} else if cbValue.callState == Call.State.OutgoingProgress {
-					ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_in_progress"
-					ToastViewModel.shared.displayToast = true
-				} else if cbValue.callState == Call.State.End || cbValue.callState == Call.State.Error {
-					ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
-					ToastViewModel.shared.displayToast = true
+				
+				DispatchQueue.main.async {
+					if cbValue.callState == Call.State.Connected {
+						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_successful"
+						ToastViewModel.shared.displayToast = true
+					} else if cbValue.callState == Call.State.OutgoingProgress {
+						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_in_progress"
+						ToastViewModel.shared.displayToast = true
+					} else if cbValue.callState == Call.State.End || cbValue.callState == Call.State.Error {
+						ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
+						ToastViewModel.shared.displayToast = true
+					}
 				}
 			})
 			

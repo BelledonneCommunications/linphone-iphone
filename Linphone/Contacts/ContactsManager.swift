@@ -133,8 +133,9 @@ final class ContactsManager: ObservableObject {
 											
 											MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											
-											self.friendListSuscription = self.friendList?.publisher?.onNewSipAddressDiscovered?.postOnMainQueue { (cbValue: (friendList: FriendList, linphoneFriend: Friend, sipUri: String)) in
+											self.friendListSuscription = self.friendList?.publisher?.onNewSipAddressDiscovered?.postOnCoreQueue { (cbValue: (friendList: FriendList, linphoneFriend: Friend, sipUri: String)) in
 												
+												var addedAvatarListModel : [ContactAvatarModel] = []
 												cbValue.linphoneFriend.phoneNumbers.forEach { phone in
 													do {
 														let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
@@ -145,7 +146,7 @@ final class ContactsManager: ObservableObject {
 															cbValue.linphoneFriend.addAddress(address: address!)
 															cbValue.linphoneFriend.done()
 															
-															self.avatarListModel.append(
+															addedAvatarListModel.append(
 																ContactAvatarModel(
 																	friend: cbValue.linphoneFriend,
 																	name: cbValue.linphoneFriend.name ?? "",
@@ -157,6 +158,10 @@ final class ContactsManager: ObservableObject {
 													} catch let error {
 														print("\(#function) - Failed to create friend phone number for \(phone):", error)
 													}
+												}
+												
+												DispatchQueue.main.async {
+													self.avatarListModel += addedAvatarListModel
 												}
 											}
 										}

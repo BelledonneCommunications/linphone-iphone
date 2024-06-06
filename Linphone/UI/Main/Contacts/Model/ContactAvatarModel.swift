@@ -71,17 +71,19 @@ class ContactAvatarModel: ObservableObject {
 	}
 	
 	func addSubscription() {
-		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnMainQueue { (cbValue: (Friend)) in
-			self.presenceStatus = cbValue.consolidatedPresence
-			if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
-				if cbValue.consolidatedPresence == .Online || cbValue.presenceModel!.latestActivityTimestamp != -1 {
-					self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ?
-					"Online" : self.getCallTime(startDate: cbValue.presenceModel!.latestActivityTimestamp)
+		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnCoreQueue { (cbValue: (Friend)) in
+			DispatchQueue.main.async {
+				self.presenceStatus = cbValue.consolidatedPresence
+				if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
+					if cbValue.consolidatedPresence == .Online || cbValue.presenceModel!.latestActivityTimestamp != -1 {
+						self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ?
+						"Online" : self.getCallTime(startDate: cbValue.presenceModel!.latestActivityTimestamp)
+					} else {
+						self.lastPresenceInfo = "Away"
+					}
 				} else {
-					self.lastPresenceInfo = "Away"
+					self.lastPresenceInfo = ""
 				}
-			} else {
-				self.lastPresenceInfo = ""
 			}
 		}
 	}

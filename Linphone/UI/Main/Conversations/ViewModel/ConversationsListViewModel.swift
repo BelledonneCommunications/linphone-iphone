@@ -81,7 +81,7 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { core in
-			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnMainQueue { (cbValue: (core: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
+			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnCoreQueue { (cbValue: (core: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
 				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				switch cbValue.state {
 				case ChatRoom.State.Created:
@@ -96,11 +96,11 @@ class ConversationsListViewModel: ObservableObject {
 				}
 			})
 			
-			self.mCoreSuscriptions.insert(core.publisher?.onMessageSent?.postOnMainQueue { _ in
+			self.mCoreSuscriptions.insert(core.publisher?.onMessageSent?.postOnCoreQueue { _ in
 				self.computeChatRoomsList(filter: "")
 			})
 			
-			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnMainQueue { _ in
+			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnCoreQueue { _ in
 				self.computeChatRoomsList(filter: "")
 			})
 		}

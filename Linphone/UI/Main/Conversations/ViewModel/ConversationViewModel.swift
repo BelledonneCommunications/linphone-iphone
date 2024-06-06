@@ -51,7 +51,7 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: [cbValue.eventLog])
 				})
 				
-				self.chatRoomSuscriptions.insert(self.displayedConversation?.chatRoom.publisher?.onChatMessagesReceived?.postOnMainQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
+				self.chatRoomSuscriptions.insert(self.displayedConversation?.chatRoom.publisher?.onChatMessagesReceived?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
 					self.getNewMessages(eventLogs: cbValue.eventLogs)
 				})
 			}
