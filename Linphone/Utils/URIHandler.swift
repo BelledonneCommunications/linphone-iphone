@@ -27,12 +27,12 @@ class URIHandler {
 	private static let callSchemes = ["sip", "sip-linphone", "linphone-sip", "tel"]
 	private static let secureCallSchemes = ["sips", "sips-linphone", "linphone-sips"]
 	private static let configurationSchemes = ["linphone-config"]
-	
-	private static var uriHandlerCoreDelegate:  CoreDelegateStub? = nil
+
+	private static var uriHandlerCoreDelegate: CoreDelegateStub?
 	
 	static func addCoreDelegate() {
 		uriHandlerCoreDelegate = CoreDelegateStub(
-			onCallStateChanged: { (core: Core, call: Call, state: Call.State, message: String) in
+			onCallStateChanged: { (_: Core, _: Call, state: Call.State, _: String) in
 				if state == .Error {
 					toast("Failed_uri_handler_call_failed")
 					CoreContext.shared.removeCoreDelegateStub(delegate: uriHandlerCoreDelegate!)
@@ -41,7 +41,7 @@ class URIHandler {
 					CoreContext.shared.removeCoreDelegateStub(delegate: uriHandlerCoreDelegate!)
 				}
 			},
-			onConfiguringStatus: { (core:Core, state:ConfiguringState, status: String) in
+			onConfiguringStatus: { (_: Core, state: ConfiguringState, _: String) in
 				if state == .Failed {
 					toast("Failed_uri_handler_config_failed")
 					CoreContext.shared.removeCoreDelegateStub(delegate: uriHandlerCoreDelegate!)
@@ -54,7 +54,6 @@ class URIHandler {
 		CoreContext.shared.addCoreDelegateStub(delegate: uriHandlerCoreDelegate!)
 	}
 	
-	
 	static func handleURL(url: URL) {
 		Log.info("[URIHandler] handleURL: \(url)")
 		if let scheme = url.scheme {
@@ -64,6 +63,8 @@ class URIHandler {
 				initiateCall(url: url, withScheme: "sip")
 			} else if configurationSchemes.contains(scheme) {
 				initiateConfiguration(url: url)
+			} else if scheme == SingleSignOnManager.shared.ssoRedirectUri.scheme {
+				continueSSO(url: url)
 			} else {
 				Log.error("[URIHandler] unhandled URL \(url) (check Info.plist)")
 			}
@@ -107,10 +108,17 @@ class URIHandler {
 		}
 	}
 	
+	private static func continueSSO(url: URL) {
+		if let authorizationFlow = SingleSignOnManager.shared.currentAuthorizationFlow,
+		   authorizationFlow.resumeExternalUserAgentFlow(with: url) {
+			SingleSignOnManager.shared.currentAuthorizationFlow = nil
+		}
+	}
+	
 	private static func autoRemoteProvisioningOnConfigUriHandler() -> Bool {
 		return Config.get().getBool(section: "app", key: "auto_apply_provisioning_config_uri_handler", defaultValue: true)
 	}
-
+	
 	private static func toast(_ message: String) {
 		DispatchQueue.main.async {
 			ToastViewModel.shared.toastMessage = message
