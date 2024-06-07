@@ -87,7 +87,7 @@ struct ContactsListFragment: View {
 				withAnimation {
 					contactViewModel.indexDisplayedFriend = index
 				}
-				if contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.address != nil {
+				if index < contactsManager.lastSearch.count && contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.address != nil {
 					startCallFunc(contactsManager.lastSearch[index].friend!.address!)
 				}
 		  	}

@@ -139,6 +139,7 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										
 										if path != nil {
 											let attachment =
 											Attachment(
@@ -151,6 +152,7 @@ class ConversationViewModel: ObservableObject {
 									} else if content.type == "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										
 										if path != nil && pathThumbnail != nil {
 											let attachment =
 											Attachment(
@@ -240,6 +242,7 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										
 										if path != nil {
 											let attachment =
 											Attachment(
@@ -252,6 +255,7 @@ class ConversationViewModel: ObservableObject {
 									} else if content.type == "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										
 										if path != nil && pathThumbnail != nil {
 											let attachment =
 											Attachment(
@@ -339,6 +343,7 @@ class ConversationViewModel: ObservableObject {
 						} else if content.name != nil && !content.name!.isEmpty {
 							if content.type != "video" {
 								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+								
 								if path != nil {
 									let attachment =
 									Attachment(
@@ -350,6 +355,7 @@ class ConversationViewModel: ObservableObject {
 								}
 							} else if content.type == "video" {
 								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+								
 								let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
 								if path != nil && pathThumbnail != nil {
 									let attachment =
@@ -512,7 +518,8 @@ class ConversationViewModel: ObservableObject {
 					if message != nil {
 						
 						let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-						let newPath = URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+						let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
+										  + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
 						/*
 						let data = try Data(contentsOf: path)
 						let decodedData: () = try data.write(to: path)
@@ -581,7 +588,7 @@ class ConversationViewModel: ObservableObject {
 			if contentName != nil {
 				let isImage = FileUtil.isExtensionImage(path: contentName!)
 				let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
-				content.filePath = file
+				content.filePath = String(file.dropFirst(7))
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath)"
 				)
@@ -593,13 +600,14 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewFilePath(name: String) -> String {
-		return "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
+		return FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
 	}
 	
 	func generateThumbnail(name: String, pathThumbnail: URL? = nil) -> String {
 		do {
 			let path = pathThumbnail == nil
-			? URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+			? URL(string: "file://" + FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
 			: pathThumbnail!.appendingPathComponent((name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
 			let asset = AVURLAsset(url: path!, options: nil)
 			let imgGenerator = AVAssetImageGenerator(asset: asset)
@@ -612,7 +620,12 @@ class ConversationViewModel: ObservableObject {
 			}
 			
 			let urlName = pathThumbnail == nil
-			? URL(string: "file://" + Factory.Instance.getDownloadDir(context: nil) + "preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
+			? URL(string: "file://" 
+				  + FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
+				  + "preview_"
+				  + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+				  + ".png"
+			)
 			: pathThumbnail!.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
 			
 			if urlName != nil {

@@ -187,46 +187,62 @@ struct ChatBubbleView: View {
 					
 					if message.attachments.first!.type == .image || message.attachments.first!.type == .video {
 						if #available(iOS 16.0, *) {
-							AsyncImage(url: message.attachments.first!.thumbnail) { image in
-								ZStack {
-									image
-										.resizable()
-										.interpolation(.medium)
-										.aspectRatio(contentMode: .fill)
-									
-									if message.attachments.first!.type == .video {
-										Image("play-fill")
-											.renderingMode(.template)
+							AsyncImage(url: message.attachments.first!.thumbnail) { phase in
+								switch phase {
+								case .empty:
+									ProgressView()
+								case .success(let image):
+									ZStack {
+										image
 											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 40, height: 40, alignment: .leading)
+											.interpolation(.medium)
+											.aspectRatio(contentMode: .fill)
+										
+										if message.attachments.first!.type == .video {
+											Image("play-fill")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 40, height: 40, alignment: .leading)
+										}
 									}
+								case .failure:
+									Image("image-broken")
+								@unknown default:
+									EmptyView()
 								}
-							} placeholder: {
-								ProgressView()
 							}
 							.layoutPriority(-1)
+							.clipShape(RoundedRectangle(cornerRadius: 4))
 						} else {
-							AsyncImage(url: message.attachments.first!.thumbnail) { image in
-								ZStack {
-									image
-										.resizable()
-										.interpolation(.medium)
-										.aspectRatio(contentMode: .fill)
-									
-									if message.attachments.first!.type == .video {
-										Image("play-fill")
-											.renderingMode(.template)
+							AsyncImage(url: message.attachments.first!.thumbnail) { phase in
+								switch phase {
+								case .empty:
+									ProgressView()
+								case .success(let image):
+									ZStack {
+										image
 											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 40, height: 40, alignment: .leading)
+											.interpolation(.medium)
+											.aspectRatio(contentMode: .fill)
+										
+										if message.attachments.first!.type == .video {
+											Image("play-fill")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(.white)
+												.frame(width: 40, height: 40, alignment: .leading)
+										}
 									}
+								case .failure:
+									Image("image-broken")
+								@unknown default:
+									EmptyView()
 								}
-							} placeholder: {
-								ProgressView()
 							}
-							.id(UUID())
 							.layoutPriority(-1)
+							.clipShape(RoundedRectangle(cornerRadius: 4))
+							.id(UUID())
 						}
 					} else if message.attachments.first!.type == .gif {
 						if #available(iOS 16.0, *) {
@@ -319,7 +335,7 @@ struct ChatBubbleView: View {
 				return orientation != nil && orientation == 6 ? (pixelHeight ?? 0, pixelWidth ?? 0) : (pixelWidth ?? 0, pixelHeight ?? 0)
 			}
 		}
-		return (0, 0)
+		return (100, 100)
 	}
 }
 
