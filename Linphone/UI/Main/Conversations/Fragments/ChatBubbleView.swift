@@ -161,7 +161,6 @@ struct ChatBubbleView: View {
 	func messageAttachments() -> some View {
 		if message.attachments.count == 1 {
 			if message.attachments.first!.type == .image || message.attachments.first!.type == .gif || message.attachments.first!.type == .video {
-				/*
 				let result = imageDimensions(url: message.attachments.first!.thumbnail.absoluteString)
 				ZStack {
 					Rectangle()
@@ -185,6 +184,7 @@ struct ChatBubbleView: View {
 								maxHeight: UIScreen.main.bounds.height/2.5
 							)
 						}
+					
 					if message.attachments.first!.type == .image || message.attachments.first!.type == .video {
 						if #available(iOS 16.0, *) {
 							AsyncImage(url: message.attachments.first!.thumbnail) { image in
@@ -243,140 +243,6 @@ struct ChatBubbleView: View {
 				}
 				.clipShape(RoundedRectangle(cornerRadius: 4))
 				.clipped()
-				 */
-				
-				if message.attachments.first!.type == .image || message.attachments.first!.type == .video {
-					if #available(iOS 16.0, *) {
-						/*
-						AsyncImage(url: message.attachments.first?.thumbnail) { phase in
-							switch phase {
-							case .empty:
-								ProgressView()
-							case .success(let image):
-								ZStack {
-									image
-										.resizable()
-										.interpolation(.medium)
-										.scaledToFit()
-										.frame(maxWidth: geometryProxy.size.width - 110, maxHeight: UIScreen.main.bounds.height/2.5)
-										//.aspectRatio(contentMode: .fit)
-										//.frame(maxWidth: geometryProxy.size.width - 110, maxHeight: UIScreen.main.bounds.height/2.5)
-									
-									if message.attachments.first!.type == .video {
-										Image("play-fill")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 40, height: 40, alignment: .leading)
-									}
-								}
-							case .failure:
-								Image(systemName: "photo")
-							@unknown default:
-								EmptyView()
-							}
-						}
-						*/
-						
-						AsyncImage(url: message.attachments.first?.thumbnail) { phase in
-							switch phase {
-							case .success(let image):
-								image
-									.resizable()
-									.scaledToFit()
-									.frame(maxHeight: geometryProxy.size.width * 0.36)
-								
-							case .failure:
-								Image(systemName: "ant.circle.fill")
-									.resizable()
-									.scaledToFit()
-									.frame(maxWidth: geometryProxy.size.width * 0.36, maxHeight: geometryProxy.size.width * 0.36)
-									.foregroundColor(.teal)
-									.opacity(0.6)
-								
-							case .empty:
-								Image(systemName: "photo.circle.fill")
-									.resizable()
-									.scaledToFit()
-									.frame(maxWidth: geometryProxy.size.width * 0.36, maxHeight: geometryProxy.size.width * 0.36)
-									.foregroundColor(.teal)
-									.opacity(0.6)
-								
-							@unknown default:
-								ProgressView()
-							}
-						}
-						.clipShape(RoundedRectangle(cornerRadius: 4))
-						.onAppear {
-							print("AsyncImageAsyncImage \(geometryProxy.size.width) \(geometryProxy.size.width - 264) \(geometryProxy.size.width * 0.36)")
-						}
-					} else {
-						/*
-						AsyncImage(url: message.attachments.first!.thumbnail) { image in
-							ZStack {
-								image
-									.resizable()
-									.interpolation(.medium)
-									.aspectRatio(contentMode: .fit)
-								
-								if message.attachments.first!.type == .video {
-									Image("play-fill")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 40, height: 40, alignment: .leading)
-								}
-							}
-						} placeholder: {
-							ProgressView()
-						}
-						.id(UUID())
-						*/
-						
-						AsyncImage(url: message.attachments.first?.thumbnail) { phase in
-							switch phase {
-							case .success(let image):
-								image
-									.resizable()
-									.scaledToFit()
-									.frame(maxHeight: geometryProxy.size.width * 0.36)
-								
-							case .failure:
-								Image(systemName: "ant.circle.fill")
-									.resizable()
-									.scaledToFit()
-									.frame(maxWidth: geometryProxy.size.width * 0.36, maxHeight: geometryProxy.size.width * 0.36)
-									.foregroundColor(.teal)
-									.opacity(0.6)
-								
-							case .empty:
-								Image(systemName: "photo.circle.fill")
-									.resizable()
-									.scaledToFit()
-									.frame(maxWidth: geometryProxy.size.width * 0.36, maxHeight: geometryProxy.size.width * 0.36)
-									.foregroundColor(.teal)
-									.opacity(0.6)
-								
-							@unknown default:
-								ProgressView()
-							}
-						}
-						.clipShape(RoundedRectangle(cornerRadius: 4))
-						.onAppear {
-							print("AsyncImageAsyncImage \(geometryProxy.size.width) \(geometryProxy.size.width - 264) \(geometryProxy.size.width * 0.36)")
-						}
-						.id(UUID())
-					}
-				} else if message.attachments.first!.type == .gif {
-					if #available(iOS 16.0, *) {
-						GifImageView(message.attachments.first!.thumbnail)
-							.clipShape(RoundedRectangle(cornerRadius: 4))
-					} else {
-						GifImageView(message.attachments.first!.thumbnail)
-							.id(UUID())
-							.clipShape(RoundedRectangle(cornerRadius: 4))
-					}
-				}
 			}
 		} else if message.attachments.count > 1 {
 			let isGroup = conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
