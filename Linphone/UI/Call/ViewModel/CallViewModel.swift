@@ -70,6 +70,11 @@ class CallViewModel: ObservableObject {
 	
 	private var callSuscriptions = Set<AnyCancellable?>()
 	
+	@Published var letters1: String = "AA"
+	@Published var letters2: String = "BB"
+	@Published var letters3: String = "CC"
+	@Published var letters4: String = "DD"
+	
 	init() {
 		do {
 			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
@@ -164,8 +169,9 @@ class CallViewModel: ObservableObject {
 				let isPausedTmp = self.isCallPaused()
 				let timeElapsedTmp = self.currentCall?.duration ?? 0
 				
-				let authToken = self.currentCall!.authenticationToken
-				let isDeviceTrusted = self.currentCall!.authenticationTokenVerified && authToken != nil
+				let authToken = self.currentCall!.localAuthenticationToken
+				let cacheMismatchFlag = self.currentCall!.zrtpCacheMismatchFlag
+				let isDeviceTrusted = !cacheMismatchFlag && self.currentCall!.authenticationTokenVerified && authToken != nil
 				let isRemoteDeviceTrustedTmp = self.telecomManager.callInProgress ? isDeviceTrusted : false
 				
 				if self.currentCall != nil {
@@ -215,11 +221,9 @@ class CallViewModel: ObservableObject {
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnCoreQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
-					DispatchQueue.main.async {
-						_ = self.updateEncryption()
-						if self.currentCall != nil {
-							self.callMediaEncryptionModel.update(call: self.currentCall!)
-						}
+					self.updateEncryption()
+					if self.currentCall != nil {
+						self.callMediaEncryptionModel.update(call: self.currentCall!)
 					}
 				})
 				
@@ -230,6 +234,18 @@ class CallViewModel: ObservableObject {
 						}
 					}
 				})
+				
+				
+				self.callSuscriptions.insert(
+					self.currentCall!.publisher?.onAuthenticationTokenVerified?.postOnCoreQueue {(call: Call, verified: Bool) in
+						Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
+						
+						self.updateEncryption()
+						if self.currentCall != nil {
+							self.callMediaEncryptionModel.update(call: self.currentCall!)
+						}
+					}
+				)
 				
 				self.updateCallQualityIcon()
 			}
@@ -832,81 +848,114 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	func lettersClicked(letters: String) {
-		let verified = letters == self.upperCaseAuthTokenToListen
+	func skipZrtpAuthentication() {
 		Log.info(
-			"[ZRTPPopup] User clicked on \(verified ? "right" : "wrong") letters"
+			"[ZRTPPopup] User skipped SAS validation in ZRTP call"
 		)
 		
-		if verified {
-			coreContext.doOnCoreQueue { core in
-				if core.currentCall != nil {
-					core.currentCall!.authenticationTokenVerified = verified
-				}
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				core.currentCall!.skipZrtpAuthentication()
 			}
 		}
 	}
 	
-	private func updateEncryption() -> Bool {
-		if currentCall != nil && currentCall!.currentParams != nil {
-			switch currentCall!.currentParams!.mediaEncryption {
-			case MediaEncryption.ZRTP:
-				let authToken = currentCall!.authenticationToken
-				let isDeviceTrusted = currentCall!.authenticationTokenVerified && authToken != nil
-				
-				Log.info(
-					"[CallViewModel] Current call media encryption is ZRTP, auth token is \(isDeviceTrusted ? "trusted" : "not trusted yet")"
-				)
-				
-				isRemoteDeviceTrusted = isDeviceTrusted
-				
-				if isDeviceTrusted {
-					ToastViewModel.shared.toastMessage = "Info_call_securised"
-					ToastViewModel.shared.displayToast = true
+	func updateZrtpSas(authTokenClicked: String) {
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				if authTokenClicked.isEmpty {
+					Log.error(
+						"[ZRTPPopup] Doing a fake ZRTP SAS check with empty token because user clicked on 'Not Found' button!"
+					)
+				} else {
+					Log.info(
+						"[ZRTPPopup] Checking if ZRTP SAS auth token \(authTokenClicked) is the right one"
+					)
 				}
-				
-				/*
-				 let securityLevel = isDeviceTrusted ? SecurityLevel.Safe : SecurityLevel.Encrypted
-				 let avatarModel = contact
-				 if (avatarModel != nil) {
-				 avatarModel.trust.postValue(securityLevel)
-				 contact.postValue(avatarModel!!)
-				 } else {
-				 Log.error("$TAG No avatar model found!")
-				 }
-				 */
-				
-				isMediaEncrypted = true
-				// When Post Quantum is available, ZRTP is Post Quantum
-				isZrtpPq = Core.getPostQuantumAvailable
-				
-				if !isDeviceTrusted && authToken != nil && !authToken!.isEmpty {
-					Log.info("[CallViewModel] Showing ZRTP SAS confirmation dialog")
-					showZrtpSasDialog(authToken: authToken!)
-				}
-				
-				return isDeviceTrusted
-			case MediaEncryption.SRTP, MediaEncryption.DTLS:
-				isMediaEncrypted = true
-				isZrtpPq = false
-				return false
-			default:
-				isMediaEncrypted = false
-				isZrtpPq = false
-				return false
+				core.currentCall!.checkAuthenticationTokenSelected(selectedValue: authTokenClicked)
 			}
 		}
-		return false
+	}
+	
+	func remoteAuthenticationTokens() {
+		coreContext.doOnCoreQueue { core in
+			if core.currentCall != nil {
+				let tokens = core.currentCall!.remoteAuthenticationTokens
+				self.letters1 = tokens[0]
+				self.letters2 = tokens[1]
+				self.letters3 = tokens[2]
+				self.letters4 = tokens[3]
+			}
+		}
+	}
+	
+	private func updateEncryption() {
+		coreContext.doOnCoreQueue { core in
+			if self.currentCall != nil && self.currentCall!.currentParams != nil {
+				switch self.currentCall!.currentParams!.mediaEncryption {
+				case MediaEncryption.ZRTP:
+					let authToken = self.currentCall!.localAuthenticationToken
+					let isDeviceTrusted = self.currentCall!.authenticationTokenVerified && authToken != nil
+					
+					Log.info(
+						"[CallViewModel] Current call media encryption is ZRTP, auth token is \(isDeviceTrusted ? "trusted" : "not trusted yet")"
+					)
+					
+					let cacheMismatchFlag = self.currentCall!.zrtpCacheMismatchFlag
+					let isRemoteDeviceTrustedTmp = !cacheMismatchFlag && isDeviceTrusted
+					
+					/*
+					 let securityLevel = isDeviceTrusted ? SecurityLevel.Safe : SecurityLevel.Encrypted
+					 let avatarModel = contact
+					 if (avatarModel != nil) {
+					 avatarModel.trust.postValue(securityLevel)
+					 contact.postValue(avatarModel!!)
+					 } else {
+					 Log.error("$TAG No avatar model found!")
+					 }
+					 */
+					
+					// When Post Quantum is available, ZRTP is Post Quantum
+					let isZrtpPqTmp = Core.getPostQuantumAvailable
+					
+					DispatchQueue.main.async {
+						self.isRemoteDeviceTrusted = isRemoteDeviceTrustedTmp
+						self.isMediaEncrypted = true
+						self.isZrtpPq = isZrtpPqTmp
+						
+						if isDeviceTrusted {
+							ToastViewModel.shared.toastMessage = "Info_call_securised"
+							ToastViewModel.shared.displayToast = true
+						}
+					}
+					
+					if !isDeviceTrusted && authToken != nil && !authToken!.isEmpty {
+						Log.info("[CallViewModel] Showing ZRTP SAS confirmation dialog")
+						self.showZrtpSasDialog(authToken: authToken!)
+					}
+				case MediaEncryption.SRTP, MediaEncryption.DTLS:
+					DispatchQueue.main.async {
+						self.isMediaEncrypted = true
+						self.isZrtpPq = false
+					}
+				default:
+					DispatchQueue.main.async {
+						self.isMediaEncrypted = false
+						self.isZrtpPq = false
+					}
+				}
+			}
+		}
 	}
 	
 	func showZrtpSasDialogIfPossible() {
 		if currentCall != nil && currentCall!.currentParams != nil && currentCall!.currentParams!.mediaEncryption == MediaEncryption.ZRTP {
-			let authToken = currentCall!.authenticationToken
+			let authToken = currentCall!.localAuthenticationToken
 			let isDeviceTrusted = currentCall!.authenticationTokenVerified && authToken != nil
 			Log.info(
 				"[CallViewModel] Current call media encryption is ZRTP, auth token is \(isDeviceTrusted ? "trusted" : "not trusted yet")"
 			)
-			if (authToken != nil && !authToken!.isEmpty) {
+			if authToken != nil && !authToken!.isEmpty {
 				showZrtpSasDialog(authToken: authToken!)
 			}
 		}

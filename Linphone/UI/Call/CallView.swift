@@ -210,18 +210,6 @@ struct CallView: View {
 		ZStack {
 			VStack {
 				if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
-					if #available(iOS 16.0, *) {
-						Rectangle()
-							.foregroundColor(Color.orangeMain500)
-							.edgesIgnoringSafeArea(.top)
-							.frame(height: 0)
-					} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
-												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-						Rectangle()
-							.foregroundColor(Color.orangeMain500)
-							.edgesIgnoringSafeArea(.top)
-							.frame(height: 1)
-					}
 					ZStack {
 						HStack {
 							Button {

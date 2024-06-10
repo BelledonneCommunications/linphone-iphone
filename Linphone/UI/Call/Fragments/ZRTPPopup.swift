@@ -27,11 +27,6 @@ struct ZRTPPopup: View {
 	
 	@ObservedObject var callViewModel: CallViewModel
 	
-	@State private var letters1: String = "AA"
-	@State private var letters2: String = "BB"
-	@State private var letters3: String = "CC"
-	@State private var letters4: String = "DD"
-	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(alignment: .leading) {
@@ -46,7 +41,7 @@ struct ZRTPPopup: View {
 					Spacer()
 					
 					HStack(alignment: .center) {
-						Text(letters1)
+						Text(callViewModel.letters1)
 							.default_text_style(styleSize: 30)
 							.frame(width: 60, height: 60)
 					}
@@ -54,12 +49,12 @@ struct ZRTPPopup: View {
 					.background(Color.grayMain2c200)
 					.cornerRadius(40)
 					.onTapGesture {
-						callViewModel.lettersClicked(letters: letters1)
+						callViewModel.updateZrtpSas(authTokenClicked: callViewModel.letters1)
 						callViewModel.zrtpPopupDisplayed = false
 					}
 					
 					HStack(alignment: .center) {
-						Text(letters2)
+						Text(callViewModel.letters2)
 							.default_text_style(styleSize: 30)
 							.frame(width: 60, height: 60)
 					}
@@ -67,7 +62,7 @@ struct ZRTPPopup: View {
 					.background(Color.grayMain2c200)
 					.cornerRadius(40)
 					.onTapGesture {
-						callViewModel.lettersClicked(letters: letters2)
+						callViewModel.updateZrtpSas(authTokenClicked: callViewModel.letters2)
 						callViewModel.zrtpPopupDisplayed = false
 					}
 					
@@ -79,7 +74,7 @@ struct ZRTPPopup: View {
 					Spacer()
 					
 					HStack(alignment: .center) {
-						Text(letters3)
+						Text(callViewModel.letters3)
 							.default_text_style(styleSize: 30)
 							.frame(width: 60, height: 60)
 					}
@@ -87,12 +82,12 @@ struct ZRTPPopup: View {
 					.background(Color.grayMain2c200)
 					.cornerRadius(40)
 					.onTapGesture {
-						callViewModel.lettersClicked(letters: letters3)
+						callViewModel.updateZrtpSas(authTokenClicked: callViewModel.letters3)
 						callViewModel.zrtpPopupDisplayed = false
 					}
 					
 					HStack(alignment: .center) {
-						Text(letters4)
+						Text(callViewModel.letters4)
 							.default_text_style(styleSize: 30)
 							.frame(width: 60, height: 60)
 					}
@@ -100,7 +95,7 @@ struct ZRTPPopup: View {
 					.background(Color.grayMain2c200)
 					.cornerRadius(40)
 					.onTapGesture {
-						callViewModel.lettersClicked(letters: letters4)
+						callViewModel.updateZrtpSas(authTokenClicked: callViewModel.letters4)
 						callViewModel.zrtpPopupDisplayed = false
 					}
 					
@@ -118,10 +113,12 @@ struct ZRTPPopup: View {
 				.frame(maxWidth: .infinity)
 				.padding(.bottom, 30)
 				.onTapGesture {
+					callViewModel.skipZrtpAuthentication()
 					callViewModel.zrtpPopupDisplayed = false
 				}
 				
 				Button(action: {
+					callViewModel.updateZrtpSas(authTokenClicked: "")
 					callViewModel.zrtpPopupDisplayed = false
 				}, label: {
 					Text("Letters don't match!")
@@ -149,29 +146,9 @@ struct ZRTPPopup: View {
 			.frame(maxWidth: sharedMainViewModel.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 			.onAppear {
-				
-				var random = SystemRandomNumberGenerator()
-				let correctLetters = Int(random.next(upperBound: UInt32(4)))
-				
-				letters1 = (correctLetters == 0) ? callViewModel.upperCaseAuthTokenToListen : self.randomAlphanumericString(2)
-				letters2 = (correctLetters == 1) ? callViewModel.upperCaseAuthTokenToListen : self.randomAlphanumericString(2)
-				letters3 = (correctLetters == 2) ? callViewModel.upperCaseAuthTokenToListen : self.randomAlphanumericString(2)
-				letters4 = (correctLetters == 3) ? callViewModel.upperCaseAuthTokenToListen : self.randomAlphanumericString(2)
+				callViewModel.remoteAuthenticationTokens()
 			}
 		}
-	}
-	
-	func randomAlphanumericString(_ length: Int) -> String {
-		let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-		let len = UInt32(letters.count)
-		var random = SystemRandomNumberGenerator()
-		var randomString = ""
-		for _ in 0..<length {
-			let randomIndex = Int(random.next(upperBound: len))
-			let randomCharacter = letters[letters.index(letters.startIndex, offsetBy: randomIndex)]
-			randomString.append(randomCharacter)
-		}
-		return randomString
 	}
 }
 
