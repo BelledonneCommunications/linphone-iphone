@@ -34,6 +34,8 @@
 #include "linphone/linphonecore.h"
 #include "bctoolbox/list.h"
 #import "OrderedDictionary.h"
+#import "linphone/api/c-api.h"
+#import "linphone/chat.h"
 
 
 extern NSString *const LINPHONERC_APPLICATION_KEY;
