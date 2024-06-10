@@ -284,6 +284,7 @@ final class CoreContext: ObservableObject {
 				.sink { _ in
 					self.mCore.iterate()
 				}
+			try? self.mCore.start()
 		}
 	}
 	
