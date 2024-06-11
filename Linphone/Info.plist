@@ -94,6 +94,16 @@
 				<string>org.linphone</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>org.linphone.phone</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>callto</string>
+			</array>
+		</dict>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
