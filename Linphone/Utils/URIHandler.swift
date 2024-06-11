@@ -24,7 +24,7 @@ import Combine
 class URIHandler {
 	
 	// Need to cover all Info.plist URL schemes.
-	private static let callSchemes = ["sip", "sip-linphone", "linphone-sip", "tel"]
+	private static let callSchemes = ["sip", "sip-linphone", "linphone-sip", "tel", "callto"]
 	private static let secureCallSchemes = ["sips", "sips-linphone", "linphone-sips"]
 	private static let configurationSchemes = ["linphone-config"]
 
