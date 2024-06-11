@@ -46,33 +46,14 @@ class ConversationsListViewModel: ObservableObject {
 			var conversationsListTmp: [ConversationModel] = []
 			
 			chatRooms.forEach { chatRoom in
-				if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-				}
-				
 				if filter.isEmpty {
 					let model = ConversationModel(chatRoom: chatRoom)
 					conversationsListTmp.append(model)
 				}
 			}
 			
-			if !self.conversationsList.isEmpty {
-				for (index, element) in conversationsListTmp.enumerated() {
-					if index > 0 && index < self.conversationsList.count && element.id != self.conversationsList[index].id {
-						DispatchQueue.main.async {
-							self.conversationsList[index] = element
-						}
-					}
-				}
-				
-				DispatchQueue.main.async {
-					if conversationsListTmp.first != nil {
-						self.conversationsList[0] = conversationsListTmp.first!
-					}
-				}
-			} else {
-				DispatchQueue.main.async {
-					self.conversationsList = conversationsListTmp
-				}
+			DispatchQueue.main.async {
+				self.conversationsList = conversationsListTmp
 			}
 			
 			self.updateUnreadMessagesCount()
@@ -85,8 +66,7 @@ class ConversationsListViewModel: ObservableObject {
 				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				switch cbValue.state {
 				case ChatRoom.State.Created:
-					let model = ConversationModel(chatRoom: cbValue.chatRoom)
-					self.addChatRoom(cbChatRoom: model)
+					self.computeChatRoomsList(filter: "")
 				case ChatRoom.State.Deleted:
 					self.computeChatRoomsList(filter: "")
 					//ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
@@ -104,19 +84,6 @@ class ConversationsListViewModel: ObservableObject {
 				self.computeChatRoomsList(filter: "")
 			})
 		}
-	}
-	
-	func addChatRoom(cbChatRoom: ConversationModel) {
-		Log.info("[ConversationsListViewModel] Re-ordering conversations")
-		var sortedList: [ConversationModel] = []
-		sortedList.append(cbChatRoom)
-		sortedList.append(contentsOf: self.conversationsList)
-		
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-			self.conversationsList = sortedList.sorted { $0.lastUpdateTime > $1.lastUpdateTime }
-		}
-		
-		updateUnreadMessagesCount()
 	}
 	
 	func reorderChatRooms() {
@@ -139,10 +106,12 @@ class ConversationsListViewModel: ObservableObject {
 				
 				DispatchQueue.main.async {
 					self.unreadMessages = count
+					UIApplication.shared.applicationIconBadgeNumber = count
 				}
 			} else {
 				DispatchQueue.main.async {
 					self.unreadMessages = 0
+					UIApplication.shared.applicationIconBadgeNumber = 0
 				}
 			}
 		}
