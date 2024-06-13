@@ -208,6 +208,54 @@
     "Appel chiffré de bout en bout" : {
 
     },
+    "assistant_account_create" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer"
+          }
+        }
+      }
+    },
+    "assistant_account_creation_sms_confirmation_explanation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We have sent a verification code on your phone number %@.  Please enter the verification code below:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On vous a envoyé un code de vérification par SMS au numéro %@.  Merci de le saisir ci-dessous :"
+          }
+        }
+      }
+    },
+    "assistant_account_creation_wrong_phone_number" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong number?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mauvais numéro ?"
+          }
+        }
+      }
+    },
     "assistant_account_login" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -221,6 +269,87 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Login en FR"
+          }
+        }
+      }
+    },
+    "assistant_account_register" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Register"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’inscrire"
+          }
+        }
+      }
+    },
+    "assistant_already_have_an_account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Already have an account?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez déjà un compte ?"
+          }
+        }
+      }
+    },
+    "assistant_create_account_using_email_on_our_web_platform" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create an account with your email on:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créez un compte avec votre email ici :"
+          }
+        }
+      }
+    },
+    "assistant_dialog_confirm_phone_number_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to use %@ phone number?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sûr de vouloir utiliser le numéro de téléphone %@ ?"
+          }
+        }
+      }
+    },
+    "assistant_dialog_confirm_phone_number_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm phone number"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmez votre numéro de téléphone"
           }
         }
       }
@@ -265,7 +394,20 @@
 
     },
     "Cancel" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        }
+      }
     },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
 
@@ -304,7 +446,20 @@
 
     },
     "Continue" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
+          }
+        }
+      }
     },
     "Conversations" : {
 
@@ -643,6 +798,9 @@
     "Log out" : {
 
     },
+    "Login" : {
+
+    },
     "Logout" : {
 
     },
@@ -807,7 +965,14 @@
       }
     },
     "Register" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’inscrire"
+          }
+        }
+      }
     },
     "Rejoindre" : {
 
@@ -909,6 +1074,9 @@
 
     },
     "Subject" : {
+
+    },
+    "subscribe.linphone.org" : {
 
     },
     "Suggestions" : {

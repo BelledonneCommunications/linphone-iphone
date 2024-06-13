@@ -259,19 +259,15 @@ struct LoginFragment: View {
 										.foregroundStyle(Color.grayMain2c700)
 										.padding(.horizontal, 10)
 									
-									NavigationLink(destination: RegisterFragment(), isActive: $isLinkREGActive, label: {Text("Register")
-											.default_text_style_orange_600(styleSize: 20)
+									NavigationLink(destination: RegisterFragment(registerViewModel: RegisterViewModel()), isActive: $isLinkREGActive, label: {Text("Register")
+											.default_text_style_white_600(styleSize: 20)
 											.frame(height: 35)
 									})
 									.disabled(!sharedMainViewModel.generalTermsAccepted)
 									.padding(.horizontal, 20)
 									.padding(.vertical, 10)
+									.background(Color.orangeMain500)
 									.cornerRadius(60)
-									.overlay(
-										RoundedRectangle(cornerRadius: 60)
-											.inset(by: 0.5)
-											.stroke(Color.orangeMain500, lineWidth: 1)
-									)
 									.padding(.horizontal, 10)
 									.simultaneousGesture(
 										TapGesture().onEnded {

@@ -57,6 +57,8 @@
 		D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */; };
 		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D714035B2BE11E00004BD8CA /* CallMediaEncryptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */; };
+		D714DE602C1B3B34006C1F1D /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714DE5F2C1B3B34006C1F1D /* RegisterViewModel.swift */; };
+		D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714DE612C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift */; };
 		D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
 		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
 		D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */; };
@@ -229,6 +231,8 @@
 		D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFragment.swift; sourceTree = "<group>"; };
 		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMediaEncryptionModel.swift; sourceTree = "<group>"; };
+		D714DE5F2C1B3B34006C1F1D /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
+		D714DE612C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterCodeConfirmationFragment.swift; sourceTree = "<group>"; };
 		D717071D2AC5922E0037746F /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
 		D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneUtils.swift; sourceTree = "<group>"; };
@@ -578,6 +582,7 @@
 				D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */,
 				D72343332ACEFFC3009AA24E /* QRScanner.swift */,
 				D72343312ACEFF58009AA24E /* QRScannerController.swift */,
+				D714DE5F2C1B3B34006C1F1D /* RegisterViewModel.swift */,
 			);
 			path = Viewmodel;
 			sourceTree = "<group>";
@@ -837,6 +842,7 @@
 				D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */,
 				D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */,
 				D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */,
+				D714DE612C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -1123,9 +1129,11 @@
 				D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */,
 				D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */,
 				D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */,
+				D714DE602C1B3B34006C1F1D /* RegisterViewModel.swift in Sources */,
 				D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */,
+				D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */,
 				D7CEE0352B7A210300FD79B7 /* ConversationsView.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
 				D71968922B86369D00DF4459 /* ChatBubbleView.swift in Sources */,
@@ -1171,6 +1179,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"DEBUG=1",
+					"USE_CRASHLYTICS=1",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = msgNotificationService/Info.plist;
@@ -1184,7 +1193,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1210,7 +1219,10 @@
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"USE_CRASHLYTICS=1",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = msgNotificationService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = msgNotificationService;
@@ -1223,7 +1235,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1370,6 +1382,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"DEBUG=1",
+					"USE_CRASHLYTICS=1",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
@@ -1396,7 +1409,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MARKETING_VERSION = 6.0;
-				OTHER_SWIFT_FLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1422,7 +1435,10 @@
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"USE_CRASHLYTICS=1",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
@@ -1448,7 +1464,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MARKETING_VERSION = 6.0;
-				OTHER_SWIFT_FLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
