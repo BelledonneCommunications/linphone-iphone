@@ -27,8 +27,6 @@ struct ConversationsListFragment: View {
 	
 	@Binding var showingSheet: Bool
 	
-	@State var canChangeChatRoom: Bool = true
-	
 	var body: some View {
 		VStack {
 			List {
@@ -136,34 +134,16 @@ struct ConversationsListFragment: View {
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {
-						if canChangeChatRoom {
-							if conversationViewModel.displayedConversation != nil {
-								conversationViewModel.displayedConversation = nil
-								conversationViewModel.resetMessage()
+						if conversationViewModel.displayedConversation != nil {
+							conversationViewModel.displayedConversation = nil
+							conversationViewModel.resetMessage()
+							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+							
+							conversationViewModel.getMessages()
+						} else {
+							withAnimation {
 								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-								
-								let firstScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-								if firstScene != nil {
-									let firstWindow = firstScene!.windows.first
-									if firstWindow != nil {
-										firstWindow!.layer.speed = 20.0
-										canChangeChatRoom = false
-										
-										DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-											firstWindow!.layer.speed = 1.0
-											canChangeChatRoom = true
-										}
-									}
-								}
-								
-								conversationViewModel.getMessages()
-							} else {
-								withAnimation {
-									conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-								}
 							}
-							conversationsListViewModel.conversationsList[index].markAsRead()
-							conversationsListViewModel.updateUnreadMessagesCount()
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {

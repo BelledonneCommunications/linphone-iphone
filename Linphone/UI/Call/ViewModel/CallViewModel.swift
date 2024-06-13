@@ -881,10 +881,12 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil {
 				let tokens = core.currentCall!.remoteAuthenticationTokens
-				self.letters1 = tokens[0]
-				self.letters2 = tokens[1]
-				self.letters3 = tokens[2]
-				self.letters4 = tokens[3]
+				DispatchQueue.main.async {
+					self.letters1 = tokens[0]
+					self.letters2 = tokens[1]
+					self.letters3 = tokens[2]
+					self.letters4 = tokens[3]
+				}
 			}
 		}
 	}

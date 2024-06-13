@@ -162,6 +162,7 @@ struct ConversationFragment: View {
 								UIList(viewModel: viewModel,
 									   paginationState: paginationState,
 									   conversationViewModel: conversationViewModel,
+									   conversationsListViewModel: conversationsListViewModel,
 									   isScrolledToBottom: $isScrolledToBottom,
 									   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
 									   geometryProxy: geometry,

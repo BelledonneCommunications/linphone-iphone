@@ -62,11 +62,21 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { core in
+			let account = core.defaultAccount
+			let chatRoomsCounter = account?.chatRooms != nil ? account!.chatRooms.count : core.chatRooms.count
+			var counter = 0
 			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnCoreQueue { (cbValue: (core: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
 				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				switch cbValue.state {
 				case ChatRoom.State.Created:
-					self.computeChatRoomsList(filter: "")
+					if !(cbValue.chatRoom.isEmpty && cbValue.chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue)) {
+						counter += 1
+					}
+					
+					if counter >= chatRoomsCounter {
+						self.computeChatRoomsList(filter: "")
+						counter = 0
+					}
 				case ChatRoom.State.Deleted:
 					self.computeChatRoomsList(filter: "")
 					//ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
@@ -176,5 +186,16 @@ class ConversationsListViewModel: ObservableObject {
 		}
 		
 		reorderChatRooms()
+	}
+	
+	func markAsReadSelectedConversation() {
+		coreContext.doOnCoreQueue { _ in
+			let unreadMessagesCount = self.selectedConversation!.chatRoom.unreadMessagesCount
+			
+			if unreadMessagesCount > 0 {
+				self.selectedConversation!.chatRoom.markAsRead()
+				self.selectedConversation!.unreadMessagesCount = 0
+			}
+		}
 	}
 }

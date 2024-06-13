@@ -400,6 +400,8 @@ class ConversationViewModel: ObservableObject {
 			
 			let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 			
+			let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+			
 			var statusTmp: Message.Status? = .sending
 			switch eventLog.chatMessage?.state {
 			case .InProgress:
@@ -441,13 +443,9 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					if !message.isOutgoing {
-						self.displayedConversationUnreadMessagesCount += 1
+						self.displayedConversationUnreadMessagesCount = unreadMessagesCount
 					}
 				}
-			}
-			
-			if self.displayedConversation != nil {
-				self.displayedConversation!.markAsRead()
 			}
 		}
 	}
@@ -581,13 +579,35 @@ class ConversationViewModel: ObservableObject {
 		self.displayedConversation = conversationModel
 	}
 	
+	func resetDisplayedChatRoom(conversationsList: [ConversationModel]) {
+		removeConversationDelegate()
+		
+		if self.displayedConversation != nil {
+			conversationsList.forEach { conversation in
+				if conversation.id == self.displayedConversation!.id {
+					self.displayedConversation = conversation
+					
+					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessageSending?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
+						self.getNewMessages(eventLogs: [cbValue.eventLog])
+					})
+					
+					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessagesReceived?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
+						self.getNewMessages(eventLogs: cbValue.eventLogs)
+					})
+				}
+			}
+		}
+	}
+	
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		//Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
 		if content.filePath == nil || content.filePath!.isEmpty {
 			let contentName = content.name
 			if contentName != nil {
 				let isImage = FileUtil.isExtensionImage(path: contentName!)
-				let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
+				let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
+				let file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+				//let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
 				content.filePath = String(file.dropFirst(7))
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath)"

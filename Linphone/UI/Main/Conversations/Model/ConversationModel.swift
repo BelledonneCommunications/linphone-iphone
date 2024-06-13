@@ -94,19 +94,6 @@ class ConversationModel: ObservableObject {
 		}
 	}
 	
-	func markAsRead() {
-		coreContext.doOnCoreQueue { _ in
-			let unreadMessagesCountTmp = self.chatRoom.unreadMessagesCount
-			if unreadMessagesCountTmp > 0 {
-				self.chatRoom.markAsRead()
-				
-				DispatchQueue.main.async {
-					self.unreadMessagesCount = 0
-				}
-			}
-		}
-	}
-	
 	func toggleMute() {
 		coreContext.doOnCoreQueue { _ in
 			self.chatRoom.muted.toggle()

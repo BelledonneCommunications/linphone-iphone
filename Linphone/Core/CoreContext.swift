@@ -120,6 +120,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.videoDisplayEnabled = true
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
+			self.mCore.friendListSubscriptionEnabled = true
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {

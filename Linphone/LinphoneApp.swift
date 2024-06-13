@@ -154,6 +154,12 @@ struct LinphoneApp: App {
 			if newPhase == .active {
 				Log.info("Entering foreground")
 				coreContext.onEnterForeground()
+				
+				DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+					if conversationViewModel != nil && conversationViewModel!.displayedConversation != nil && conversationsListViewModel != nil {
+						conversationViewModel!.resetDisplayedChatRoom(conversationsList: conversationsListViewModel!.conversationsList)
+					}
+				}
 			} else if newPhase == .inactive {
 			} else if newPhase == .background {
 				Log.info("Entering background")
