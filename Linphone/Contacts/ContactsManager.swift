@@ -131,11 +131,9 @@ final class ContactsManager: ObservableObject {
 											self.linphoneFriendList?.updateSubscriptions()
 											self.friendList?.updateSubscriptions()
 											
-											MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											
 											self.friendListSuscription = self.friendList?.publisher?.onNewSipAddressDiscovered?.postOnCoreQueue { (cbValue: (friendList: FriendList, linphoneFriend: Friend, sipUri: String)) in
 												
-												var addedAvatarListModel : [ContactAvatarModel] = []
+												var addedAvatarListModel: [ContactAvatarModel] = []
 												cbValue.linphoneFriend.phoneNumbers.forEach { phone in
 													do {
 														let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
@@ -163,11 +161,16 @@ final class ContactsManager: ObservableObject {
 												DispatchQueue.main.async {
 													self.avatarListModel += addedAvatarListModel
 												}
+												
+												MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											}
 										}
 									}
 							}
-							contactCounter += 1
+							
+							if !(contact.givenName.isEmpty && contact.familyName.isEmpty) {
+								contactCounter += 1
+							}
 						})
 						
 					} catch let error {
