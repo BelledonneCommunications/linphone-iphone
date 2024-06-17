@@ -64,6 +64,7 @@ struct ContentView: View {
 	@State var fullscreenVideo = false
 	
 	@State var isShowScheduleMeetingFragment = false
+	@State private var isShowLoginFragment: Bool = false
 	
 	var body: some View {
 		let pub = NotificationCenter.default
@@ -765,14 +766,29 @@ struct ContentView: View {
 					}
 					
 					SideMenu(
-						callViewModel: callViewModel, 
 						width: geometry.size.width / 5 * 4,
 						isOpen: self.sideMenuIsOpen,
 						menuClose: self.openMenu,
-						safeAreaInsets: geometry.safeAreaInsets
+						safeAreaInsets: geometry.safeAreaInsets,
+						isShowLoginFragment: $isShowLoginFragment
 					)
 					.ignoresSafeArea(.all)
 					.zIndex(2)
+					
+					if isShowLoginFragment {
+						LoginFragment(
+							accountLoginViewModel: AccountLoginViewModel(),
+							isShowBack: true,
+							onBackPressed: {
+								withAnimation {
+									isShowLoginFragment.toggle()
+								}
+							})
+						.zIndex(3)
+						.transition(.move(edge: .bottom))
+						.onAppear {
+						}
+					}
 					
 					if isShowEditContactFragment {
 						EditContactFragment(

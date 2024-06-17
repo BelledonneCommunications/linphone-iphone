@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023 Belledonne Communications SARL.
+ * Copyright (c) 2010-2024 Belledonne Communications SARL.
  *
  * This file is part of linphone-iphone
  *
@@ -23,114 +23,165 @@ import UniformTypeIdentifiers
 
 struct SideMenu: View {
 	
-	@ObservedObject private var coreContext = CoreContext.shared
+	let width: CGFloat
+	let isOpen: Bool
+	let menuClose: () -> Void
+	let safeAreaInsets: EdgeInsets
+	@Binding var isShowLoginFragment: Bool
+	@State private var showHelp = false
+	@State private var selectedAccountIndex: Int = 0
 	
-	@ObservedObject var callViewModel: CallViewModel
-	
-    let width: CGFloat
-    let isOpen: Bool
-    let menuClose: () -> Void
-    let safeAreaInsets: EdgeInsets
-    
-    var body: some View {
-        ZStack {
-            GeometryReader { _ in
-                EmptyView()
-            }
-            .background(Color.gray.opacity(0.3))
-            .opacity(self.isOpen ? 1.0 : 0.0)
-            .onTapGesture {
-                self.menuClose()
-            }
-            
-            HStack {
-                List {
-					/*
-                    Text("My Profile")
-					 	.frame(height: 40)
-					 	.frame(maxWidth: .infinity, alignment: .leading)
-						.background(Color.white)
-						.onTapGesture {
-							print("My Profile")
-							self.menuClose()
-                    	}
-					 */
-                    Text("Send logs")
-						.frame(height: 40)
-						.frame(maxWidth: .infinity, alignment: .leading)
-						.background(Color.white)
-						.onTapGesture {
-							print("Send logs")
-							sendLogs()
-							self.menuClose()
-                    	}
-					Text("Clear logs")
-						.frame(height: 40)
-						.frame(maxWidth: .infinity, alignment: .leading)
-						.background(Color.white)
-						.onTapGesture {
-							print("Clear logs")
-							clearLogs()
-							self.menuClose()
-	 					}
-                    Text("Logout")
-					 	.frame(height: 40)
-					 	.frame(maxWidth: .infinity, alignment: .leading)
-						.background(Color.white)
-						.onTapGesture {
-                        	print("Logout")
-							logout()
-							self.menuClose()
-                    	}
-                }
-                .frame(width: self.width - safeAreaInsets.leading)
-                .background(Color.white)
-                .offset(x: self.isOpen ? 0 : -self.width)
-                
-                Spacer()
-            }
-            .padding(.leading, safeAreaInsets.leading)
-			.padding(.top, TelecomManager.shared.callInProgress ? 0 : safeAreaInsets.top)
-            .padding(.bottom, safeAreaInsets.bottom)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-	
-	func sendLogs() {
-		coreContext.doOnCoreQueue { core in
-			core.uploadLogCollection()
-		}
-	}
-	
-	func clearLogs() {
-		coreContext.doOnCoreQueue { core in
-			Core.resetLogCollection()
-			DispatchQueue.main.async {
-				ToastViewModel.shared.toastMessage = "Success_clear_logs"
-				ToastViewModel.shared.displayToast = true
+	var body: some View {
+		ZStack {
+			GeometryReader { _ in
+				EmptyView()
 			}
-		}
-	}
-	
-	func logout() {
-		coreContext.doOnCoreQueue { core in
-			if core.defaultAccount != nil {
-				let authInfo = core.defaultAccount!.findAuthInfo()
-				if authInfo != nil {
-					Log.info("$TAG Found auth info for account, removing it")
-					core.removeAuthInfo(info: authInfo!)
-				} else {
-					Log.warn("$TAG Failed to find matching auth info for account")
+			.background(.gray.opacity(0.3))
+			.opacity(self.isOpen ? 1.0 : 0.0)
+			.onTapGesture {
+				self.menuClose()
+			}
+			VStack {
+				VStack {
+					HStack {
+						Image("linphone")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 32, height: 32)
+							.padding(10)
+						Text(Bundle.main.displayName)
+							.default_text_style_800(styleSize: 16)
+						Spacer()
+						Image("x")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c600)
+							.frame(width: 24, height: 24)
+							.padding(10)
+					}
+					.padding(.leading, 10)
+					.onTapGesture {
+						self.menuClose()
+					}
+					
+					List {
+						ForEach(0..<CoreContext.shared.accounts.count, id: \.self) { index in
+							SideMenuAccountRow(
+								model: AccountModel(account: CoreContext.shared.accounts[0],
+													corePublisher: CoreContext.shared.getCorePublisher()),
+								backgroundColor: self.selectedAccountIndex == index ? Color.grayMain2c100 : .clear
+							)
+							.background()
+							.onTapGesture {
+								self.selectedAccountIndex = index
+							}
+							.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+							.listRowSeparator(.hidden)
+						}
+					}
+					.listStyle(.plain)
+					
+					if CoreContext.shared.accounts.isEmpty {
+						Text("drawer_menu_no_account_configured_yet")
+							.text_style(fontSize: 16, fontWeight: 800, fontColor: Color.grayMain2c600)
+							.padding(.bottom, 30)
+					}
+					
+					HStack {
+						Image("plus-circle")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 20, height: 20)
+						
+						Text("drawer_menu_add_account")
+							.default_text_style_orange_600(styleSize: 20)
+							.frame(height: 35)
+					}
+					.frame(maxWidth: .infinity)
+					.padding(.horizontal, 20)
+					.padding(.vertical, 10)
+					.cornerRadius(60)
+					.overlay(
+						RoundedRectangle(cornerRadius: 60)
+							.inset(by: 0.5)
+							.stroke(Color.orangeMain500, lineWidth: 1)
+					)
+					.padding(.leading, 16)
+					.padding(.trailing, 16)
+					.padding(.bottom, 23)
+					.background()
+					.onTapGesture {
+						self.menuClose()
+						withAnimation {
+							isShowLoginFragment = true
+						}
+					}
+					
+					Rectangle()
+						.fill(Color.grayMain2c300)
+						.padding(.leading, 16)
+						.padding(.trailing, 16)
+						.frame(height: 1)
+					
+					VStack(spacing: 19) {
+						SideMenuEntry(
+							iconName: "gear",
+							title: "settings_title"
+						)
+						SideMenuEntry(
+							iconName: "record-fill",
+							title: "recordings_title"
+						)
+						SideMenuEntry(
+							iconName: "question",
+							title: "help_title"
+						).onTapGesture {
+							showHelp = true
+						}
+						.confirmationDialog("Temp Help", isPresented: $showHelp, titleVisibility: .visible) {
+							Button("Send Logs") {
+								HelpView.sendLogs()
+							}
+							Button("Clear Logs") {
+								HelpView.clearLogs()
+							}
+							Button("Logout") {
+								HelpView.logout()
+							}
+						}
+					}
+					.padding(.bottom, safeAreaInsets.bottom + 13)
+					.padding(.top, 13)
+					.padding(.leading, 16)
+					.padding(.trailing, 16)
 				}
-
-				core.removeAccount(account: core.defaultAccount!)
-				Log.info("$TAG Account has been removed")
+				.frame(width: self.width - safeAreaInsets.leading)
+				.background(.white)
+				.offset(x: self.isOpen ? 0 : -self.width)
 				
-				DispatchQueue.main.async {
-					coreContext.hasDefaultAccount = false
-					coreContext.loggedIn = false
-				}
 			}
+			.frame(maxWidth: .infinity, alignment: .leading)
+			.padding(.leading, safeAreaInsets.leading)
+			.padding(.top, TelecomManager.shared.callInProgress ? 0 : safeAreaInsets.top)
 		}
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
+	}
+	
+}
+
+#Preview {
+	GeometryReader { geometry in
+		@State var triggerNavigateToLogin: Bool = false
+		SideMenu(
+			width: geometry.size.width / 5 * 4,
+			isOpen: true,
+			menuClose: {},
+			safeAreaInsets: geometry.safeAreaInsets,
+			isShowLoginFragment: $triggerNavigateToLogin
+		)
+		.ignoresSafeArea(.all)
+		.zIndex(2)
 	}
 }

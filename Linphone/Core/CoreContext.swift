@@ -40,6 +40,7 @@ final class CoreContext: ObservableObject {
 	@Published var loggingInProgress: Bool = false
 	@Published var hasDefaultAccount: Bool = false
 	@Published var coreIsStarted: Bool = false
+	@Published var accounts: [Account] = []
 	
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
@@ -143,6 +144,7 @@ final class CoreContext: ObservableObject {
 						if cbVal.state == GlobalState.On {
 							self.hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
 							self.coreIsStarted = true
+							self.accounts = self.mCore.accountList
 						} else if cbVal.state == GlobalState.Off {
 							self.hasDefaultAccount = false
 							self.coreIsStarted = false
@@ -159,6 +161,7 @@ final class CoreContext: ObservableObject {
 					if cbVal.status == ConfiguringState.Successful {
 						ToastViewModel.shared.toastMessage = "Successful"
 						ToastViewModel.shared.displayToast = true
+						self.accounts = self.mCore.accountList
 					}
 				}
 				/*
@@ -208,7 +211,7 @@ final class CoreContext: ObservableObject {
 					if cbVal.state == .Ok {
 						self.loggingInProgress = false
 						self.loggedIn = true
-					} else if cbVal.state == .Progress {
+					} else if cbVal.state == .Progress || cbVal.state == .Refreshing {
 						self.loggingInProgress = true
 					} else {
 						self.loggingInProgress = false
@@ -279,6 +282,16 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountAdded?
+				.postOnMainQueue { _ in
+					self.accounts = self.mCore.accountList
+				})
+			
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRemoved?
+				.postOnMainQueue { _ in
+					self.accounts = self.mCore.accountList
+				})
+			
 			self.mIterateSuscription = Timer.publish(every: 0.02, on: .main, in: .common)
 				.autoconnect()
 				.receive(on: coreQueue)
@@ -342,6 +355,10 @@ final class CoreContext: ObservableObject {
 	}
 	func removeCoreDelegateStub(delegate: CoreDelegateStub) {
 		mCore.removeDelegate(delegate: delegate)
+	}
+	
+	func getCorePublisher() -> CoreDelegatePublisher? {
+		return mCore.publisher
 	}
 	
 }

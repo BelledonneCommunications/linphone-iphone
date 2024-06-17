@@ -276,7 +276,7 @@
     "Chiffrement du média" : {
 
     },
-    "Clear logs" : {
+    "Clear Logs" : {
 
     },
     "Close" : {
@@ -366,6 +366,124 @@
     "Don’t save modifications?" : {
 
     },
+    "drawer_menu_account_connection_status_cleared" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_connected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecté"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cours de connexion…"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_refreshing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refreshing ..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cours de rafraîchissement…"
+          }
+        }
+      }
+    },
+    "drawer_menu_add_account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add an account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter un compte"
+          }
+        }
+      }
+    },
+    "drawer_menu_no_account_configured_yet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No account configured yet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun compte configuré"
+          }
+        }
+      }
+    },
     "Earpiece" : {
 
     },
@@ -434,6 +552,23 @@
     "Headphones" : {
 
     },
+    "help_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aide"
+          }
+        }
+      }
+    },
     "History has been deleted" : {
 
     },
@@ -488,6 +623,12 @@
 
     },
     "Key" : {
+      "extractionState" : "manual"
+    },
+    "Key 1" : {
+      "extractionState" : "manual"
+    },
+    "Key 2" : {
       "extractionState" : "manual"
     },
     "Last name" : {
@@ -648,6 +789,23 @@
     "Record" : {
 
     },
+    "recordings_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recordings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrements"
+          }
+        }
+      }
+    },
     "Register" : {
 
     },
@@ -706,8 +864,25 @@
     "Send invitations to participants" : {
 
     },
-    "Send logs" : {
+    "Send Logs" : {
 
+    },
+    "settings_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
     },
     "Share" : {
 
@@ -746,6 +921,9 @@
 
     },
     "TCP" : {
+
+    },
+    "Temp Help" : {
 
     },
     "The user name or password is incorrects" : {

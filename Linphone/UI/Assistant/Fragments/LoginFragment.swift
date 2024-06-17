@@ -37,6 +37,10 @@ struct LoginFragment: View {
 	@State private var isLinkSIPActive = false
 	@State private var isLinkREGActive = false
 	
+	var isShowBack = false
+	
+	var onBackPressed: (() -> Void)?
+
 	var body: some View {
 		NavigationView {
 			ZStack {
@@ -49,6 +53,31 @@ struct LoginFragment: View {
 									.scaledToFill()
 									.frame(width: geometry.size.width, height: 100)
 									.clipped()
+								
+								if isShowBack {
+									VStack(alignment: .leading) {
+										HStack {
+											Image("caret-left")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+												.padding(.top, -75)
+												.padding(.leading, -10)
+												.onTapGesture {
+													withAnimation {
+														onBackPressed?()
+													}
+												}
+											
+											Spacer()
+										}
+										.padding(.leading)
+									}
+									.frame(width: geometry.size.width)
+								}
+								
 								Text("assistant_account_login")
 									.default_text_style_white_800(styleSize: 20)
 									.padding(.top, 20)

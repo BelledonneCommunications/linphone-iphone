@@ -20,6 +20,18 @@
 import Foundation
 import SwiftUI
 
+let cssWeightToFontWeightName = [
+	100: "UltraLight",
+	200: "Thin",
+	300: "Light",
+	400: "Regular",
+	500: "Medium",
+	600: "SemiBold",
+	700: "Bold",
+	800: "Heavy",
+	900: "Black"
+]
+
 extension View {
 	
 	func default_text_style_300(styleSize: CGFloat) -> some View {
@@ -141,4 +153,18 @@ extension View {
         self.font(Font.custom("NotoSans-Medium", size: styleSize))
             .foregroundStyle(Color.grayMain2c400)
     }
+	
+	func default_text_style_grey_400(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans", size: styleSize))
+			.foregroundStyle(Color.grayMain2c700)
+	}
+	
+	func default_text_style_uncolored(styleSize: CGFloat) -> some View {
+		self.font(Font.custom("NotoSans-Light", size: styleSize))
+	}
+	
+	func text_style(fontSize: CGFloat, fontWeight: Int, fontColor: Color) -> some View {
+		return self.font(Font.custom("NotoSans-"+cssWeightToFontWeightName[fontWeight]!, size: fontSize))
+			.foregroundStyle(fontColor)
+	}
 }
