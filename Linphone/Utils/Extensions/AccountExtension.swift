@@ -33,4 +33,8 @@ extension Account {
 		}
 		return address.asStringUriOnly()
 	}
+	
+	static func == (lhs: Account, rhs: Account) -> Bool {
+		return lhs.params?.identityAddress?.asString() == rhs.params?.identityAddress?.asString()
+	}
 }

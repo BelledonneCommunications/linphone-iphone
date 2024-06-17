@@ -29,7 +29,6 @@ struct SideMenu: View {
 	let safeAreaInsets: EdgeInsets
 	@Binding var isShowLoginFragment: Bool
 	@State private var showHelp = false
-	@State private var selectedAccountIndex: Int = 0
 	
 	var body: some View {
 		ZStack {
@@ -69,13 +68,9 @@ struct SideMenu: View {
 						ForEach(0..<CoreContext.shared.accounts.count, id: \.self) { index in
 							SideMenuAccountRow(
 								model: AccountModel(account: CoreContext.shared.accounts[0],
-													corePublisher: CoreContext.shared.getCorePublisher()),
-								backgroundColor: self.selectedAccountIndex == index ? Color.grayMain2c100 : .clear
+													corePublisher: CoreContext.shared.getCorePublisher())
 							)
 							.background()
-							.onTapGesture {
-								self.selectedAccountIndex = index
-							}
 							.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
 							.listRowSeparator(.hidden)
 						}

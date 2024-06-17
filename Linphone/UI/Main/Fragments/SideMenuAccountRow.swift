@@ -23,7 +23,6 @@ import UniformTypeIdentifiers
 
 struct SideMenuAccountRow: View {
 	@ObservedObject var model: AccountModel
-	var backgroundColor: Color
 	var body: some View {
 		HStack {
 			
@@ -82,6 +81,6 @@ struct SideMenuAccountRow: View {
 			.padding(.bottom, 12)
 		}
 		.frame(height: 61)
-		.background(backgroundColor)
+		.background(model.isDefaultAccount ? Color.grayMain2c100 : .clear)
 	}
 }

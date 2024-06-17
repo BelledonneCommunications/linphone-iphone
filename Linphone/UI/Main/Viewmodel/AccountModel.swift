@@ -26,51 +26,63 @@ class AccountModel: ObservableObject {
 	@Published var humanReadableRegistrationState: String = ""
 	@Published var registrationStateAssociatedUIColor: Color = .clear
 	@Published var notificationsCount: Int = 0
+	@Published var isDefaultAccount: Bool = false
 	
 	init(account: Account, corePublisher: CoreDelegatePublisher?) {
 		self.account = account
-		update()
-		account.publisher?.onRegistrationStateChanged?
-			.postOnMainQueue { _ in
-				self.update()
-			}
-		corePublisher?.onChatRoomRead?.postOnMainQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-		})
-		corePublisher?.onMessagesReceived?.postOnMainQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-		})
-		corePublisher?.onCallStateChanged?.postOnMainQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-		})
-	}
-	
-	func update() {
-		switch account.state {
-		case .Cleared, .None:
-			humanReadableRegistrationState = "drawer_menu_account_connection_status_cleared".localized()
-			registrationStateAssociatedUIColor = .orangeWarning600
-		case .Progress:
-			humanReadableRegistrationState = "drawer_menu_account_connection_status_progress".localized()
-			registrationStateAssociatedUIColor = .greenSuccess500
-		case .Failed: 
-			humanReadableRegistrationState = "drawer_menu_account_connection_status_failed".localized()
-			registrationStateAssociatedUIColor = .redDanger500
-		case .Ok:
-			humanReadableRegistrationState = "drawer_menu_account_connection_status_connected".localized()
-			registrationStateAssociatedUIColor = .greenSuccess500
-		case .Refreshing: 
-			humanReadableRegistrationState = "drawer_menu_account_connection_status_refreshing".localized()
-			registrationStateAssociatedUIColor = .grayMain2c500
+		CoreContext.shared.doOnCoreQueue { _ in
+			self.update()
 		}
-		computeNotificationsCount()
+		account.publisher?.onRegistrationStateChanged?.postOnCoreQueue { _ in
+			self.update()
+		}
+		corePublisher?.onChatRoomRead?.postOnCoreQueue(
+			receiveValue: { _ in
+				self.computeNotificationsCount()
+			})
+		corePublisher?.onMessagesReceived?.postOnCoreQueue(
+			receiveValue: { _ in
+				self.computeNotificationsCount()
+			})
+		corePublisher?.onCallStateChanged?.postOnCoreQueue(
+			receiveValue: { _ in
+				self.computeNotificationsCount()
+			})
 	}
 	
-	func computeNotificationsCount() {
-		notificationsCount = account.unreadChatMessageCount + account.missedCallsCount
+	private func update() {
+		let state = account.state
+		var isDefault: Bool = false
+		if let defaultAccount = account.core?.defaultAccount {
+			isDefault = (defaultAccount == account)
+		}
+		DispatchQueue.main.async { [self] in
+			switch state {
+			case .Cleared, .None:
+				humanReadableRegistrationState = "drawer_menu_account_connection_status_cleared".localized()
+				registrationStateAssociatedUIColor = .orangeWarning600
+			case .Progress:
+				humanReadableRegistrationState = "drawer_menu_account_connection_status_progress".localized()
+				registrationStateAssociatedUIColor = .greenSuccess500
+			case .Failed:
+				humanReadableRegistrationState = "drawer_menu_account_connection_status_failed".localized()
+				registrationStateAssociatedUIColor = .redDanger500
+			case .Ok:
+				humanReadableRegistrationState = "drawer_menu_account_connection_status_connected".localized()
+				registrationStateAssociatedUIColor = .greenSuccess500
+			case .Refreshing:
+				humanReadableRegistrationState = "drawer_menu_account_connection_status_refreshing".localized()
+				registrationStateAssociatedUIColor = .grayMain2c500
+			}
+			isDefaultAccount = isDefault
+		}
+	}
+	
+	private func computeNotificationsCount() {
+		let count = account.unreadChatMessageCount + account.missedCallsCount
+		DispatchQueue.main.async { [self] in
+			notificationsCount = count
+		}
 	}
 	
 	func refreshRegiter() {
