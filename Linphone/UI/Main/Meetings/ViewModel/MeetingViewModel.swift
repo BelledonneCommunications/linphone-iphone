@@ -22,7 +22,7 @@ import linphonesw
 
 class MeetingViewModel: ObservableObject {
 	static let TAG = "[Meeting ViewModel]"
-	
+	/*
 	private var coreContext = CoreContext.shared
 	
 	@Published var showBackbutton: Bool = false
@@ -40,20 +40,20 @@ class MeetingViewModel: ObservableObject {
 	@Published var participants: [ParticipantModel] = []
 	@Published var conferenceInfoFoundEvent: Bool = false
 	
-	var conferenceInfo: ConferenceInfo?
+	var meetingModel: MeetingModel
 	
-	init() {
-		
+	init(model: MeetingModel) {
+		meetingModel = model
 	}
 	
 	func findConferenceInfo(uri: String) {
 		coreContext.doOnCoreQueue { core in
 			var confInfoFound = false
 			if let address = try? Factory.Instance.createAddress(addr: uri) {
-				let foundConfInfo = core.findConferenceInformationFromUri(uri: address)
-				if foundConfInfo != nil {
+				
+				if let confInfo = core.findConferenceInformationFromUri(uri: address) {
 					Log.info("\(MeetingViewModel.TAG) Conference info with SIP URI \(uri) was found")
-					self.conferenceInfo = foundConfInfo
+					self.meetingModel.confInfo = confInfo
 					self.configureConferenceInfo(core: core)
 					confInfoFound = true
 				} else {
@@ -71,68 +71,65 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	private func configureConferenceInfo(core: Core) {
-		if let confInfo = self.conferenceInfo {
+		/*
+		 timezone.postValue(
+		 AppUtils.getFormattedString(
+		 R.string.meeting_schedule_timezone_title,
+		 TimeZone.getDefault().displayName
+		 )
+		 .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+		 )
+		 */
+		
+		var isEditable = false
+		
+		if let organizerAddress = meetingModel.confInfo.organizer {
+			let localAccount = core.accountList.first(where: {
+				if let address = $0.params?.identityAddress {
+					return organizerAddress.weakEqual(address2: address)
+				} else {
+					return false
+				}
+			})
 			
-			/*
-			 timezone.postValue(
-			 AppUtils.getFormattedString(
-			 R.string.meeting_schedule_timezone_title,
-			 TimeZone.getDefault().displayName
-			 )
-			 .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-			 )
-			 */
-			
-			var isEditable = false
-			
-			if let organizerAddress = confInfo.organizer {
-				let localAccount = core.accountList.first(where: {
-					if let address = $0.params?.identityAddress {
-						return organizerAddress.weakEqual(address2: address)
-					} else {
-						return false
-					}
-				})
-				
-				isEditable = localAccount != nil
-			} else {
-				Log.error("\(MeetingViewModel.TAG) No organizer SIP URI found for: \(confInfo.uri?.asStringUriOnly() ?? "(empty)")")
-			}
-			
-			let startDate = Date(timeIntervalSince1970: TimeInterval(confInfo.dateTime))
-			let endDate = Calendar.current.date(byAdding: .minute, value: Int(confInfo.duration), to: startDate)!
-			
-			let formatter = DateFormatter()
-			formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
-			let startTime = formatter.string(from: startDate)
-			let endTime = formatter.string(from: endDate)
-			let dateTime = "\(startTime) - \(endTime)"
-			
-			DispatchQueue.main.sync {
-				self.subject = confInfo.subject ?? ""
-				self.sipUri = confInfo.uri?.asStringUriOnly() ?? ""
-				self.description = confInfo.description
-				self.startDate = startDate
-				self.endDate = endDate
-				self.dateTime = dateTime
-				self.isEditable = isEditable
-			}
-			
-			self.computeParticipantsList(core: core, confInfo: confInfo)
+			isEditable = localAccount != nil
+		} else {
+			Log.error("\(MeetingViewModel.TAG) No organizer SIP URI found for: \(meetingModel.confInfo.uri?.asStringUriOnly() ?? "(empty)")")
 		}
+		
+		let startDate = Date(timeIntervalSince1970: TimeInterval(meetingModel.confInfo.dateTime))
+		let endDate = Calendar.current.date(byAdding: .minute, value: Int(meetingModel.confInfo.duration), to: startDate)!
+		
+		let formatter = DateFormatter()
+		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+		let startTime = formatter.string(from: startDate)
+		let endTime = formatter.string(from: endDate)
+		let dateTime = "\(startTime) - \(endTime)"
+		
+		DispatchQueue.main.async {
+			self.subject = self.meetingModel.confInfo.subject ?? ""
+			self.sipUri = self.meetingModel.confInfo.uri?.asStringUriOnly() ?? ""
+			self.description = self.meetingModel.confInfo.description
+			self.startDate = startDate
+			self.endDate = endDate
+			self.dateTime = dateTime
+			self.isEditable = isEditable
+		}
+		
+		self.computeParticipantsList()
 	}
 	
-	private func computeParticipantsList(core: Core, confInfo: ConferenceInfo) {
+	private func computeParticipantsList() {
 		var speakersList: [ParticipantModel] = []
 		var participantsList: [ParticipantModel] = []
 		var allSpeaker = true
-		let organizer = confInfo.organizer
+		let organizer = meetingModel.confInfo.organizer
 		var organizerFound = false
-		for pInfo in confInfo.participantInfos {
+		for pInfo in meetingModel.confInfo.participantInfos {
 			if let participantAddress = pInfo.address {
 				let isOrganizer = organizer != nil && organizer!.weakEqual(address2: participantAddress)
 				
-				Log.info("\(MeetingViewModel.TAG) Conference \(confInfo.subject)[${conferenceInfo.subject}] \(isOrganizer ? "organizer: " : "participant: ") \(participantAddress.asStringUriOnly()) is a \(pInfo.role)")
+				Log.info("\(MeetingViewModel.TAG) Conference \(meetingModel.confInfo.subject)[${conferenceInfo.subject}] \(isOrganizer ? "organizer: " : "participant: ") \(participantAddress.asStringUriOnly()) is a \(pInfo.role)")
 				if isOrganizer {
 					organizerFound = true
 				}
@@ -156,10 +153,11 @@ class MeetingViewModel: ObservableObject {
 			participantsList.append(ParticipantModel(address: organizerAddress))
 		}
 		
-		DispatchQueue.main.sync {
+		DispatchQueue.main.async {
 			self.isBroadcast = !allSpeaker
-			speakers = speakersList
-			participants = participantsList
+			self.speakers = speakersList
+			self.participants = participantsList
 		}
 	}
+	*/
 }

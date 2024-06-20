@@ -9,9 +9,10 @@ import linphonesw
 
 class MeetingModel: ObservableObject {
 
-	private var confInfo: ConferenceInfo
+	var confInfo: ConferenceInfo
 	var id: String
 	var meetingDate: Date
+	var endDate: Date
 	var isToday: Bool
 	var isAfterToday: Bool
 	
@@ -24,7 +25,6 @@ class MeetingModel: ObservableObject {
 	@Published var isBroadcast: Bool
 	@Published var subject: String
 	@Published var address: String
-	@Published var firstMeetingOfTheDay: Bool = false
 	
 	init(conferenceInfo: ConferenceInfo) {
 		confInfo = conferenceInfo
@@ -34,7 +34,7 @@ class MeetingModel: ObservableObject {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
 		startTime = formatter.string(from: meetingDate)
-		let endDate = Calendar.current.date(byAdding: .minute, value: Int(confInfo.duration), to: meetingDate)!
+		endDate = Calendar.current.date(byAdding: .minute, value: Int(confInfo.duration), to: meetingDate)!
 		endTime = formatter.string(from: endDate)
 		time = "\(startTime) - \(endTime)"
 		

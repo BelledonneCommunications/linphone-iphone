@@ -38,13 +38,16 @@ class ScheduleMeetingViewModel: ObservableObject {
 	@Published var participants: [SelectedAddressModel] = []
 	@Published var operationInProgress: Bool = false
 	@Published var conferenceCreatedEvent: Bool = false
+	@Published var conferenceUri: String = ""
 	
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
 	var conferenceInfoToEdit: ConferenceInfo?
-	
+	@Published var displayedMeeting: MeetingModel? // if nil, then we are currently creating a new meeting
+	@Published var myself: SelectedAddressModel?
 	@Published var fromDate: Date
 	@Published var toDate: Date
+	@Published var errorMsg: String = ""
 	
 	init() {
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
@@ -65,7 +68,7 @@ class ScheduleMeetingViewModel: ObservableObject {
 		participants = []
 		operationInProgress = false
 		conferenceCreatedEvent = false
-		
+		conferenceUri = ""
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
 		computeDateLabels()
@@ -92,6 +95,14 @@ class ScheduleMeetingViewModel: ObservableObject {
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
 		fromTime = formatter.string(from: fromDate)
 		toTime = formatter.string(from: toDate)
+	}
+	
+	func getFullDateString() -> String {
+		var day = fromDate.formatted(Date.FormatStyle().weekday(.abbreviated))
+		var dayNumber = fromDate.formatted(Date.FormatStyle().day(.twoDigits))
+		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
+		var year = fromDate.formatted(Date.FormatStyle().year(.defaultDigits))
+		return "\(day). \(dayNumber) \(month) \(year) | \(allDayMeeting ? "All day" : "\(fromTime) - \(toTime)")"
 	}
 	
 	private func updateTimezone() {
@@ -143,6 +154,8 @@ class ScheduleMeetingViewModel: ObservableObject {
 			if cbVal.state == ConferenceScheduler.State.Error {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
+					
+					self.errorMsg = (self.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
 					// TODO: show error toast
 				}
 			} else if cbVal.state == ConferenceScheduler.State.Ready {
@@ -207,11 +220,9 @@ class ScheduleMeetingViewModel: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("\(ScheduleMeetingViewModel.TAG) Scheduling \(self.isBroadcastSelected ? "broadcast" : "meeting")")
 			
-			let localAccount = core.defaultAccount
-			let localAddress = localAccount?.params?.identityAddress
-			
-			if let conferenceInfo = try? Factory.Instance.createConferenceInfo() {
-				conferenceInfo.organizer = localAddress
+			if let conferenceInfo = self.displayedMeeting != nil ? self.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo() {
+				let localAccount = core.defaultAccount
+				conferenceInfo.organizer = localAccount?.params?.identityAddress
 				self.fillConferenceInfo(confInfo: conferenceInfo)
 				if self.conferenceScheduler == nil {
 					self.initConferenceSchedulerAndListeners(core: core)
@@ -240,6 +251,45 @@ class ScheduleMeetingViewModel: ObservableObject {
 				Log.error("No conference info to edit found!")
 				return
 			}
+		}
+	}
+	
+	func loadExistingMeeting(meeting: MeetingModel) {
+		DispatchQueue.main.async {
+			self.resetViewModelData()
+			self.subject = meeting.confInfo.subject ?? ""
+			self.description = meeting.confInfo.description ?? ""
+			self.fromDate = meeting.meetingDate
+			self.toDate = meeting.endDate
+			self.participants = []
+			
+			let organizer = meeting.confInfo.organizer
+			CoreContext.shared.doOnCoreQueue { core in
+				if let myAddr = core.defaultAccount?.contactAddress {
+					ContactAvatarModel.getAvatarModelFromAddress(address: myAddr) { avatarResult in
+						DispatchQueue.main.async {
+							let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
+							self.myself = SelectedAddressModel(addr: myAddr, avModel: avatarResult, isOrg: isOrganizer)
+						}
+					}
+				}
+			}
+			
+			for pInfo in meeting.confInfo.participantInfos {
+				if let addr = pInfo.address {
+					ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
+						DispatchQueue.main.async {
+							let isOrganizer = (organizer != nil) ? addr.weakEqual(address2: organizer!) : false
+							self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg:isOrganizer))
+						}
+					}
+				}
+			}
+			self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
+			self.computeDateLabels()
+			self.computeTimeLabels()
+			self.updateTimezone()
+			self.displayedMeeting = meeting
 		}
 	}
 	

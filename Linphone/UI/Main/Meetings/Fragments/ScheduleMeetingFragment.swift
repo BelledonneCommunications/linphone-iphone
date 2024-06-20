@@ -74,11 +74,15 @@ struct ScheduleMeetingFragment: View {
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
+									if let meeting = scheduleMeetingViewModel.displayedMeeting {
+										// reload meeting to cancel change from edit
+										scheduleMeetingViewModel.loadExistingMeeting(meeting: meeting)
+									}
 									isShowScheduleMeetingFragment.toggle()
 								}
 							}
 						
-						Text("New meeting" )
+						Text("\(scheduleMeetingViewModel.displayedMeeting != nil ? "Edit" : "New") meeting" )
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 						
@@ -143,10 +147,10 @@ struct ScheduleMeetingFragment: View {
 					 }
 					 */
 					HStack(alignment: .center, spacing: 8) {
-						Image("users-three")
+						Image("video-conference")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.foregroundStyle(Color.grayMain2c800)
 							.frame(width: 24, height: 24)
 							.padding(.leading, 16)
 						TextField("Subject", text: $scheduleMeetingViewModel.subject)

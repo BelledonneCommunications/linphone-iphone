@@ -17,19 +17,254 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// swiftlint:disable line_length
 import SwiftUI
+import linphonesw
 
 struct MeetingFragment: View {
 	
-	@ObservedObject var meetingViewModel: MeetingViewModel
+	@Environment(\.dismiss) var dismiss
+	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	@State private var orientation = UIDevice.current.orientation
+	
+	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
+	
+	@State private var showDatePicker = false
+	@State private var showTimePicker = false
+	
+	@State var selectedDate = Date.now
+	@State var setFromDate: Bool = true
+	@State var selectedHours: Int = 0
+	@State var selectedMinutes: Int = 0
+	
+	@State var addParticipantsViewModel = AddParticipantsViewModel()
+	@Binding var isShowScheduleMeetingFragment: Bool
+	
+	@ViewBuilder
+	func getParticipantLine(participant: SelectedAddressModel) -> some View {
+		HStack(spacing: 0) {
+			Avatar(contactAvatarModel: participant.avatarModel, avatarSize: 50)
+				.padding(.leading, 10)
+			
+			Text(participant.avatarModel.name)
+				.default_text_style(styleSize: 14)
+				.padding(.leading, 10)
+				.padding(.trailing, 40)
+			
+			Text("Organizer")
+				.font(Font.custom("NotoSans-Light", size: 12))
+				.foregroundStyle(Color.grayMain2c600)
+				.opacity(participant.isOrganizer ? 1 : 0)
+		}.padding(.bottom, 5)
+	}
 	
 	var body: some View {
-		ZStack {
-			Text("TODO")
+		NavigationView {
+			ZStack(alignment: .bottomTrailing) {
+				VStack(spacing: 0) {
+					if #available(iOS 16.0, *) {
+						Rectangle()
+							.foregroundColor(Color.orangeMain500)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 0)
+					} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
+												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+						Rectangle()
+							.foregroundColor(Color.orangeMain500)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 1)
+					}
+					
+					HStack {
+						Image("caret-left")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+							.padding(.leading, -10)
+							.onTapGesture {
+								withAnimation {
+									scheduleMeetingViewModel.displayedMeeting = nil
+								}
+							}
+						Spacer()
+						if scheduleMeetingViewModel.myself != nil && scheduleMeetingViewModel.myself!.isOrganizer {
+							Image("pencil-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.trailing, 5)
+								.onTapGesture {
+									withAnimation {
+										isShowScheduleMeetingFragment.toggle()
+									}
+								}
+						}
+						Image("dots-three-vertical")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.onTapGesture {
+							}
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 50)
+					.padding(.horizontal)
+					.padding(.bottom, 5)
+					.background(.white)
+					
+					ScrollView(.vertical) {
+						HStack(alignment: .center, spacing: 10) {
+							Image("video-conference")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							Text(scheduleMeetingViewModel.subject)
+								.fontWeight(.bold)
+								.default_text_style(styleSize: 20)
+								.frame(height: 29, alignment: .leading)
+							Spacer()
+						}.padding(.bottom, 5)
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						HStack(alignment: .center, spacing: 10) {
+							Image("video-camera")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							Text(scheduleMeetingViewModel.conferenceUri)
+								.underline()
+								.default_text_style(styleSize: 14)
+							Spacer()
+							
+							Image("share-network")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 25, height: 25)
+								.padding(.trailing, 15)
+						}
+						
+						HStack(alignment: .center, spacing: 10) {
+							Image("clock")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							Text(scheduleMeetingViewModel.getFullDateString())
+								.default_text_style(styleSize: 14)
+							Spacer()
+						}
+						
+						HStack(alignment: .center, spacing: 10) {
+							Image("earth")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							Text("TODO : timezone")
+								.default_text_style(styleSize: 14)
+							Spacer()
+						}
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						HStack(alignment: .top, spacing: 10) {
+							Image("note")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c600)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							
+							Text(scheduleMeetingViewModel.description)
+								.default_text_style(styleSize: 14)
+							Spacer()
+						}.padding(.top, 10)
+							.padding(.bottom, 10)
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						HStack(alignment: .top, spacing: 10) {
+							Image("users")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c600)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							
+							ScrollView {
+								VStack(alignment: .leading, spacing: 0) {
+									if scheduleMeetingViewModel.myself != nil {
+										getParticipantLine(participant: scheduleMeetingViewModel.myself!)
+									}
+									ForEach(0..<scheduleMeetingViewModel.participants.count, id: \.self) { index in
+										getParticipantLine(participant: scheduleMeetingViewModel.participants[index])
+									}
+								}
+							}.frame(maxHeight: 170)
+							Spacer()
+						}.padding(.top, 10)
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+					}
+					.background(.white)
+				}.frame(maxHeight: .infinity)
+				
+				Spacer()
+				
+				Button(action: {
+					TelecomManager.shared.meetingWaitingRoomSelected = try? Factory.Instance.createAddress(addr: scheduleMeetingViewModel.displayedMeeting?.address ?? "")
+					TelecomManager.shared.meetingWaitingRoomDisplayed = true
+				}, label: {
+					Text("Join the meeting now")
+						.bold()
+						.default_text_style_white_500(styleSize: 16)
+						.frame(maxWidth: .infinity, maxHeight: 47, alignment: .center)
+						.frame(height: 47)
+						.background(Color.orangeMain500)
+						.clipShape(RoundedRectangle(cornerRadius: 48))
+						.padding(.leading, 15)
+						.padding(.trailing, 15)
+				})
+			}
 		}
+		.navigationViewStyle(StackNavigationViewStyle())
 	}
 }
 
 #Preview {
-	MeetingFragment(meetingViewModel: MeetingViewModel())
+	let model = ScheduleMeetingViewModel()
+	model.subject = "Meeting subject"
+	model.conferenceUri = "linphone.com/lalalal.fr"
+	model.description = "description du meeting ça va être la bringue wesh wesh gros bien ou bien ça roule"
+	return MeetingFragment(scheduleMeetingViewModel: model
+						   , meetingsListViewModel: MeetingsListViewModel()
+						   , isShowScheduleMeetingFragment: .constant(true))
 }
+
+// swiftlint:enable line_length

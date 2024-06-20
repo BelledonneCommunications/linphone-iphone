@@ -241,7 +241,7 @@ struct ContentView: View {
 											conversationViewModel.displayedConversation = nil
 										}, label: {
 											VStack {
-												Image("meetings")
+												Image("video-conference")
 													.renderingMode(.template)
 													.resizable()
 													.foregroundStyle(self.index == 3 ? Color.orangeMain500 : Color.grayMain2c600)
@@ -669,7 +669,7 @@ struct ContentView: View {
 										conversationViewModel.displayedConversation = nil
 									}, label: {
 										VStack {
-											Image("meetings")
+											Image("video-conference")
 												.renderingMode(.template)
 												.resizable()
 												.foregroundStyle(self.index == 3 ? Color.orangeMain500 : Color.grayMain2c600)
@@ -698,7 +698,9 @@ struct ContentView: View {
 						}
 					}
 					
-					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil {
+					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil ||
+						scheduleMeetingViewModel.displayedMeeting != nil
+					{
 						HStack(spacing: 0) {
 							Spacer()
 								.frame(maxWidth:
@@ -739,7 +741,13 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
+							} else if self.index == 3 {
+								MeetingFragment(scheduleMeetingViewModel: scheduleMeetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								.ignoresSafeArea(.keyboard)
 							}
+
 						}
 						.onAppear {
 							if !(orientation == .landscapeLeft

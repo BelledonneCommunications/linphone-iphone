@@ -12,10 +12,12 @@ import Combine
 class SelectedAddressModel: ObservableObject {
 	var address: Address
 	var avatarModel: ContactAvatarModel
+	var isOrganizer: Bool = false
 	
-	init (addr: Address, avModel: ContactAvatarModel) {
+	init (addr: Address, avModel: ContactAvatarModel, isOrg: Bool = false) {
 		address = addr
 		avatarModel = avModel
+		isOrganizer = isOrg
 	}
 }
 

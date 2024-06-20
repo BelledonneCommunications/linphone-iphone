@@ -17,6 +17,7 @@ struct MeetingsFragment: View {
 	
 	@State var showingSheet: Bool = false
 	
+	@ViewBuilder
 	func createMonthLine(model: MeetingsListItemModel) -> some View {
 		return Text(model.monthStr)
 			.fontWeight(.bold)
@@ -24,6 +25,7 @@ struct MeetingsFragment: View {
 			.default_text_style_500(styleSize: 22)
 	}
 	
+	@ViewBuilder
 	func createWeekLine(model: MeetingsListItemModel) -> some View {
 		return Text(model.weekStr)
 			.padding(.leading, 43)
@@ -31,7 +33,7 @@ struct MeetingsFragment: View {
 			.padding(.bottom, 3)
 			.default_text_style_500(styleSize: 14)
 	}
-	
+	@ViewBuilder
 	func createMeetingLine(model: MeetingsListItemModel) -> some View {
 		return VStack(alignment: .leading) {
 			if model.isToday {
@@ -40,7 +42,7 @@ struct MeetingsFragment: View {
 					.default_text_style_500(styleSize: 15)
 			} else {
 				HStack(alignment: .center) {
-					Image("meetings")
+					Image("video-conference")
 						.renderingMode(.template)
 						.resizable()
 						.foregroundStyle(Color.grayMain2c600)
@@ -64,12 +66,10 @@ struct MeetingsFragment: View {
 		.clipShape(RoundedRectangle(cornerRadius: 20))
 		.shadow(color: .black.opacity(0.2), radius: 4)
 		.onTapGesture {
-			do {
-				let meetingAddress = try Factory.Instance.createAddress(addr: model.model?.address ?? "")
-				TelecomManager.shared.meetingWaitingRoomDisplayed = true
-				TelecomManager.shared.meetingWaitingRoomSelected = meetingAddress
-			} catch {
-				Log.error("[MeetingsFragment] Couldn't create address from \(model.model?.address ?? "")")
+			withAnimation {
+				if let meetingModel = model.model {
+					scheduleMeetingViewModel.loadExistingMeeting(meeting: meetingModel)
+				}
 			}
 		}
 	}
