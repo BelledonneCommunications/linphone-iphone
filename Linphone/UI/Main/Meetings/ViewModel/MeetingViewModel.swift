@@ -19,145 +19,321 @@
 
 import Foundation
 import linphonesw
+import Combine
 
 class MeetingViewModel: ObservableObject {
-	static let TAG = "[Meeting ViewModel]"
-	/*
-	private var coreContext = CoreContext.shared
+	static let TAG = "[MeetingViewModel]"
 	
-	@Published var showBackbutton: Bool = false
-	@Published var isBroadcast: Bool = false
-	@Published var isEditable: Bool = false
+	@Published var isBroadcastSelected: Bool = false
+	@Published var showBroadcastHelp: Bool = false
 	@Published var subject: String = ""
-	@Published var sipUri: String = ""
-	@Published var description: String?
+	@Published var description: String = ""
+	@Published var allDayMeeting: Bool = false
+	@Published var fromDateStr: String = ""
+	@Published var fromTime: String = ""
+	@Published var toDateStr: String = ""
+	@Published var toTime: String = ""
 	@Published var timezone: String = ""
-	@Published var startDate: Date?
-	@Published var endDate: Date?
-	@Published var dateTime: String = ""
+	@Published var sendInvitations: Bool = true
+	@Published var participants: [SelectedAddressModel] = []
+	@Published var operationInProgress: Bool = false
+	@Published var conferenceCreatedEvent: Bool = false
+	@Published var conferenceUri: String = ""
 	
-	@Published var speakers: [ParticipantModel] = []
-	@Published var participants: [ParticipantModel] = []
-	@Published var conferenceInfoFoundEvent: Bool = false
+	var conferenceScheduler: ConferenceScheduler?
+	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
+	var conferenceInfoToEdit: ConferenceInfo?
+	@Published var displayedMeeting: MeetingModel? // if nil, then we are currently creating a new meeting
+	@Published var myself: SelectedAddressModel?
+	@Published var fromDate: Date
+	@Published var toDate: Date
+	@Published var errorMsg: String = ""
 	
-	var meetingModel: MeetingModel
-	
-	init(model: MeetingModel) {
-		meetingModel = model
+	init() {
+		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
+		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
+		computeDateLabels()
+		computeTimeLabels()
+		updateTimezone()
 	}
 	
-	func findConferenceInfo(uri: String) {
-		coreContext.doOnCoreQueue { core in
-			var confInfoFound = false
-			if let address = try? Factory.Instance.createAddress(addr: uri) {
-				
-				if let confInfo = core.findConferenceInformationFromUri(uri: address) {
-					Log.info("\(MeetingViewModel.TAG) Conference info with SIP URI \(uri) was found")
-					self.meetingModel.confInfo = confInfo
-					self.configureConferenceInfo(core: core)
-					confInfoFound = true
-				} else {
-					Log.error("\(MeetingViewModel.TAG) Conference info with SIP URI \(uri) couldn't be found!")
-					confInfoFound = false
-				}
-			} else {
-				Log.error("\(MeetingViewModel.TAG) Failed to parse SIP URI \(uri) as Address!")
-				confInfoFound = false
-			}
-			DispatchQueue.main.sync {
-				self.conferenceInfoFoundEvent = confInfoFound
-			}
-		}
+	func resetViewModelData() {
+		isBroadcastSelected = false
+		showBroadcastHelp = false
+		subject = ""
+		description = ""
+		allDayMeeting = false
+		timezone = ""
+		sendInvitations = true
+		participants = []
+		operationInProgress = false
+		conferenceCreatedEvent = false
+		conferenceUri = ""
+		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
+		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
+		computeDateLabels()
+		computeTimeLabels()
+		updateTimezone()
 	}
 	
-	private func configureConferenceInfo(core: Core) {
-		/*
-		 timezone.postValue(
-		 AppUtils.getFormattedString(
-		 R.string.meeting_schedule_timezone_title,
-		 TimeZone.getDefault().displayName
-		 )
-		 .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-		 )
-		 */
+	func computeDateLabels() {
+		var day = fromDate.formatted(Date.FormatStyle().weekday(.wide))
+		var dayNumber = fromDate.formatted(Date.FormatStyle().day(.twoDigits))
+		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
+		fromDateStr = "\(day) \(dayNumber), \(month)"
+		Log.info("\(MeetingViewModel.TAG) computed start date is \(fromDateStr)")
 		
-		var isEditable = false
-		
-		if let organizerAddress = meetingModel.confInfo.organizer {
-			let localAccount = core.accountList.first(where: {
-				if let address = $0.params?.identityAddress {
-					return organizerAddress.weakEqual(address2: address)
-				} else {
-					return false
-				}
-			})
-			
-			isEditable = localAccount != nil
-		} else {
-			Log.error("\(MeetingViewModel.TAG) No organizer SIP URI found for: \(meetingModel.confInfo.uri?.asStringUriOnly() ?? "(empty)")")
-		}
-		
-		let startDate = Date(timeIntervalSince1970: TimeInterval(meetingModel.confInfo.dateTime))
-		let endDate = Calendar.current.date(byAdding: .minute, value: Int(meetingModel.confInfo.duration), to: startDate)!
-		
+		day = toDate.formatted(Date.FormatStyle().weekday(.wide))
+		dayNumber = toDate.formatted(Date.FormatStyle().day(.twoDigits))
+		month = toDate.formatted(Date.FormatStyle().month(.wide))
+		toDateStr = "\(day) \(dayNumber), \(month)"
+		Log.info("\(MeetingViewModel.TAG)) computed end date is \(toDateStr)")
+	}
+	
+	func computeTimeLabels() {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
-		let startTime = formatter.string(from: startDate)
-		let endTime = formatter.string(from: endDate)
-		let dateTime = "\(startTime) - \(endTime)"
-		
-		DispatchQueue.main.async {
-			self.subject = self.meetingModel.confInfo.subject ?? ""
-			self.sipUri = self.meetingModel.confInfo.uri?.asStringUriOnly() ?? ""
-			self.description = self.meetingModel.confInfo.description
-			self.startDate = startDate
-			self.endDate = endDate
-			self.dateTime = dateTime
-			self.isEditable = isEditable
-		}
-		
-		self.computeParticipantsList()
+		fromTime = formatter.string(from: fromDate)
+		toTime = formatter.string(from: toDate)
 	}
 	
-	private func computeParticipantsList() {
-		var speakersList: [ParticipantModel] = []
-		var participantsList: [ParticipantModel] = []
-		var allSpeaker = true
-		let organizer = meetingModel.confInfo.organizer
-		var organizerFound = false
-		for pInfo in meetingModel.confInfo.participantInfos {
-			if let participantAddress = pInfo.address {
-				let isOrganizer = organizer != nil && organizer!.weakEqual(address2: participantAddress)
-				
-				Log.info("\(MeetingViewModel.TAG) Conference \(meetingModel.confInfo.subject)[${conferenceInfo.subject}] \(isOrganizer ? "organizer: " : "participant: ") \(participantAddress.asStringUriOnly()) is a \(pInfo.role)")
-				if isOrganizer {
-					organizerFound = true
-				}
-				
-				if pInfo.role == Participant.Role.Listener {
-					allSpeaker = false
-					participantsList.append(ParticipantModel(address: participantAddress))
-				} else {
-					speakersList.append(ParticipantModel(address: participantAddress))
-				}
+	func getFullDateString() -> String {
+		var day = fromDate.formatted(Date.FormatStyle().weekday(.abbreviated))
+		var dayNumber = fromDate.formatted(Date.FormatStyle().day(.twoDigits))
+		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
+		var year = fromDate.formatted(Date.FormatStyle().year(.defaultDigits))
+		return "\(day). \(dayNumber) \(month) \(year) | \(allDayMeeting ? "All day" : "\(fromTime) - \(toTime)")"
+	}
+	
+	private func updateTimezone() {
+		// TODO
+	}
+	
+	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
+		var list = participants
+		for selectedAddr in participantsToAdd {
+			if let found = list.first(where: { $0.address.weakEqual(address2: selectedAddr.address) }) {
+				Log.info("\(MeetingViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
+				continue
+			}
+			
+			list.append(selectedAddr)
+			Log.info("\(MeetingViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
+		}
+		Log.info("\(MeetingViewModel.TAG) [\(list.count - participants.count) participants added, now there are \(list.count) participants in list")
+
+		participants = list
+	}
+	
+	private func fillConferenceInfo(confInfo: ConferenceInfo) {
+		confInfo.subject = self.subject
+		confInfo.description = self.description
+		confInfo.dateTime = time_t(self.fromDate.timeIntervalSince1970)
+		confInfo.duration = UInt(self.fromDate.distance(to: self.toDate) / 60)
+		
+		let participantsList = self.participants
+		var participantsInfoList: [ParticipantInfo] = []
+		for participant in participantsList {
+			if let info = try? Factory.Instance.createParticipantInfo(address: participant.address) {
+				// For meetings, all participants must have Speaker role
+				info.role = Participant.Role.Speaker
+				participantsInfoList.append(info)
+			} else {
+				Log.error("\(MeetingViewModel.TAG) Failed to create Participant Info from address \(participant.address.asStringUriOnly())")
 			}
 		}
+		confInfo.participantInfos = participantsInfoList
+	}
+	
+	private func initConferenceSchedulerAndListeners(core: Core) {
+		self.conferenceScheduler = try? core.createConferenceScheduler()
 		
-		if allSpeaker {
-			Log.info("$TAG All participants have Speaker role, considering it is a meeting")
-			participantsList = speakersList
+		self.mSchedulerSubscriptions.insert(self.conferenceScheduler?.publisher?.onStateChanged?.postOnCoreQueue { (cbVal: (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State)) in
+			
+			Log.info("\(MeetingViewModel.TAG) Conference state changed \(cbVal.state)")
+			if cbVal.state == ConferenceScheduler.State.Error {
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+					
+					self.errorMsg = (self.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
+					// TODO: show error toast
+				}
+			} else if cbVal.state == ConferenceScheduler.State.Ready {
+				let conferenceAddress = self.conferenceScheduler?.info?.uri
+				if let confInfoToEdit = self.conferenceInfoToEdit {
+					Log.info("\(MeetingViewModel.TAG) Conference info \(confInfoToEdit.uri?.asStringUriOnly() ?? "'nil'") has been updated")
+				} else {
+					Log.info("\(MeetingViewModel.TAG) Conference info created, address will be \(conferenceAddress?.asStringUriOnly() ?? "'nil'")")
+				}
+				
+				if self.sendInvitations {
+					Log.info("\(MeetingViewModel.TAG) User asked for invitations to be sent, let's do it")
+					if let chatRoomParams = try? core.createDefaultChatRoomParams() {
+						chatRoomParams.groupEnabled = false
+						chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
+						chatRoomParams.encryptionEnabled = true
+						chatRoomParams.subject = "Meeting invitation" // Won't be used
+						self.conferenceScheduler?.sendInvitations(chatRoomParams: chatRoomParams)
+					} else {
+						Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
+					}
+				} else {
+					Log.info("\(MeetingViewModel.TAG) User didn't asked for invitations to be sent")
+					DispatchQueue.main.async {
+						self.operationInProgress = false
+						self.conferenceCreatedEvent = true
+					}
+				}
+			}
+		})
+		
+		self.mSchedulerSubscriptions.insert(self.conferenceScheduler?.publisher?.onInvitationsSent?.postOnCoreQueue { (cbVal: (conferenceScheduler: ConferenceScheduler, failedInvitations: [Address])) in
+			
+			if cbVal.failedInvitations.isEmpty {
+				Log.info("\(MeetingViewModel.TAG) All invitations have been sent")
+			} else if cbVal.failedInvitations.count == self.participants.count {
+				Log.error("\(MeetingViewModel.TAG) No invitation sent!")
+				// TODO: show error toast
+			} else {
+				Log.warn("\(MeetingViewModel.TAG) \(cbVal.failedInvitations.count) invitations couldn't have been sent for:")
+				for failInv in cbVal.failedInvitations {
+					Log.warn(failInv.asStringUriOnly())
+				}
+				// TODO: show error toast
+			}
+			
+			DispatchQueue.main.async {
+				self.operationInProgress = false
+				self.conferenceCreatedEvent = true
+			}
+		})
+	}
+	
+	func schedule() {
+		if subject.isEmpty || participants.isEmpty {
+			Log.error("\(MeetingViewModel.TAG) Either no subject was set or no participant was selected, can't schedule meeting.")
+			// TODO: show red toast
+			return
 		}
+		operationInProgress = true
 		
-		if !organizerFound, let organizerAddress = organizer {
-			Log.info("$TAG Organizer not found in participants list, adding it to participants list")
-			participantsList.append(ParticipantModel(address: organizerAddress))
-		}
-		
-		DispatchQueue.main.async {
-			self.isBroadcast = !allSpeaker
-			self.speakers = speakersList
-			self.participants = participantsList
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("\(MeetingViewModel.TAG) Scheduling \(self.isBroadcastSelected ? "broadcast" : "meeting")")
+			
+			if let conferenceInfo = self.displayedMeeting != nil ? self.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo() {
+				let localAccount = core.defaultAccount
+				conferenceInfo.organizer = localAccount?.params?.identityAddress
+				self.fillConferenceInfo(confInfo: conferenceInfo)
+				if self.conferenceScheduler == nil {
+					self.initConferenceSchedulerAndListeners(core: core)
+				}
+				self.conferenceScheduler?.account = localAccount
+				// Will trigger the conference creation automatically
+				self.conferenceScheduler?.info = conferenceInfo
+			}
 		}
 	}
-	*/
+	
+	func update() {
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("\(MeetingViewModel.TAG) Updating \(self.isBroadcastSelected ? "broadcast" : "meeting")")
+			
+			if let conferenceInfo = self.conferenceInfoToEdit {
+				self.fillConferenceInfo(confInfo: conferenceInfo)
+				if self.conferenceScheduler == nil {
+					self.initConferenceSchedulerAndListeners(core: core)
+				}
+				
+				// Will trigger the conference update automatically
+				self.conferenceScheduler?.info = conferenceInfo
+			} else {
+				Log.error("No conference info to edit found!")
+				return
+			}
+		}
+	}
+	
+	func loadExistingMeeting(meeting: MeetingModel) {
+		DispatchQueue.main.async {
+			self.resetViewModelData()
+			self.subject = meeting.confInfo.subject ?? ""
+			self.description = meeting.confInfo.description ?? ""
+			self.fromDate = meeting.meetingDate
+			self.toDate = meeting.endDate
+			self.participants = []
+			
+			let organizer = meeting.confInfo.organizer
+			CoreContext.shared.doOnCoreQueue { core in
+				if let myAddr = core.defaultAccount?.contactAddress {
+					ContactAvatarModel.getAvatarModelFromAddress(address: myAddr) { avatarResult in
+						DispatchQueue.main.async {
+							let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
+							self.myself = SelectedAddressModel(addr: myAddr, avModel: avatarResult, isOrg: isOrganizer)
+						}
+					}
+				}
+			}
+			
+			for pInfo in meeting.confInfo.participantInfos {
+				if let addr = pInfo.address {
+					ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
+						DispatchQueue.main.async {
+							let isOrganizer = (organizer != nil) ? addr.weakEqual(address2: organizer!) : false
+							self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg:isOrganizer))
+						}
+					}
+				}
+			}
+			self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
+			self.computeDateLabels()
+			self.computeTimeLabels()
+			self.updateTimezone()
+			self.displayedMeeting = meeting
+		}
+	}
+	
+	func loadExistingConferenceInfoFromUri(conferenceUri: String) {
+		CoreContext.shared.doOnCoreQueue { core in
+			if let conferenceAddress = core.interpretUrl(url: conferenceUri, applyInternationalPrefix: false) {
+				if let conferenceInfo = core.findConferenceInformationFromUri(uri: conferenceAddress) {
+					
+					self.conferenceInfoToEdit = conferenceInfo
+					Log.info("\(MeetingViewModel.TAG)  Found conference info matching URI \(conferenceInfo.uri?.asString()) with subject \(conferenceInfo.subject)")
+					
+					self.fromDate = Date(timeIntervalSince1970: TimeInterval(conferenceInfo.dateTime))
+					self.toDate = Calendar.current.date(byAdding: .minute, value: Int(conferenceInfo.duration), to: self.fromDate)!
+					
+					var list: [SelectedAddressModel] = []
+					for partInfo in conferenceInfo.participantInfos {
+						if let addr = partInfo.address {
+							ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
+								let avatarModel = avatarResult
+								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarModel))
+								Log.info("\(MeetingViewModel.TAG) Loaded participant \(addr.asStringUriOnly())")
+							}
+						}
+					}
+					Log.info("\(MeetingViewModel.TAG) \(list.count) participants loaded from found conference info")
+					
+					DispatchQueue.main.async {
+						self.subject = conferenceInfo.subject ?? ""
+						self.description = conferenceInfo.description ?? ""
+						self.isBroadcastSelected = false // TODO FIXME
+						self.computeDateLabels()
+						self.computeTimeLabels()
+						self.updateTimezone()
+						//self.participants = list
+					}
+					
+				} else {
+					Log.error("\(MeetingViewModel.TAG) Failed to find a conference info matching URI [${conferenceAddress.asString()}], abort")
+				}
+			} else {
+				Log.error("\(MeetingViewModel.TAG) Failed to parse conference URI [$conferenceUri], abort")
+			}
+			
+		}
+	}
+	
 }

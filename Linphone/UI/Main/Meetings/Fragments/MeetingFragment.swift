@@ -28,7 +28,7 @@ struct MeetingFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@State private var showDatePicker = false
@@ -87,11 +87,11 @@ struct MeetingFragment: View {
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
-									scheduleMeetingViewModel.displayedMeeting = nil
+									meetingViewModel.displayedMeeting = nil
 								}
 							}
 						Spacer()
-						if scheduleMeetingViewModel.myself != nil && scheduleMeetingViewModel.myself!.isOrganizer {
+						if meetingViewModel.myself != nil && meetingViewModel.myself!.isOrganizer {
 							Image("pencil-simple")
 								.renderingMode(.template)
 								.resizable()
@@ -126,7 +126,7 @@ struct MeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text(scheduleMeetingViewModel.subject)
+							Text(meetingViewModel.subject)
 								.fontWeight(.bold)
 								.default_text_style(styleSize: 20)
 								.frame(height: 29, alignment: .leading)
@@ -145,7 +145,7 @@ struct MeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text(scheduleMeetingViewModel.conferenceUri)
+							Text(meetingViewModel.conferenceUri)
 								.underline()
 								.default_text_style(styleSize: 14)
 							Spacer()
@@ -165,7 +165,7 @@ struct MeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text(scheduleMeetingViewModel.getFullDateString())
+							Text(meetingViewModel.getFullDateString())
 								.default_text_style(styleSize: 14)
 							Spacer()
 						}
@@ -195,7 +195,7 @@ struct MeetingFragment: View {
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
 							
-							Text(scheduleMeetingViewModel.description)
+							Text(meetingViewModel.description)
 								.default_text_style(styleSize: 14)
 							Spacer()
 						}.padding(.top, 10)
@@ -216,11 +216,11 @@ struct MeetingFragment: View {
 							
 							ScrollView {
 								VStack(alignment: .leading, spacing: 0) {
-									if scheduleMeetingViewModel.myself != nil {
-										getParticipantLine(participant: scheduleMeetingViewModel.myself!)
+									if meetingViewModel.myself != nil {
+										getParticipantLine(participant: meetingViewModel.myself!)
 									}
-									ForEach(0..<scheduleMeetingViewModel.participants.count, id: \.self) { index in
-										getParticipantLine(participant: scheduleMeetingViewModel.participants[index])
+									ForEach(0..<meetingViewModel.participants.count, id: \.self) { index in
+										getParticipantLine(participant: meetingViewModel.participants[index])
 									}
 								}
 							}.frame(maxHeight: 170)
@@ -238,7 +238,7 @@ struct MeetingFragment: View {
 				Spacer()
 				
 				Button(action: {
-					TelecomManager.shared.meetingWaitingRoomSelected = try? Factory.Instance.createAddress(addr: scheduleMeetingViewModel.displayedMeeting?.address ?? "")
+					TelecomManager.shared.meetingWaitingRoomSelected = try? Factory.Instance.createAddress(addr: meetingViewModel.displayedMeeting?.address ?? "")
 					TelecomManager.shared.meetingWaitingRoomDisplayed = true
 				}, label: {
 					Text("Join the meeting now")
@@ -258,11 +258,11 @@ struct MeetingFragment: View {
 }
 
 #Preview {
-	let model = ScheduleMeetingViewModel()
+	let model = MeetingViewModel()
 	model.subject = "Meeting subject"
 	model.conferenceUri = "linphone.com/lalalal.fr"
 	model.description = "description du meeting ça va être la bringue wesh wesh gros bien ou bien ça roule"
-	return MeetingFragment(scheduleMeetingViewModel: model
+	return MeetingFragment(meetingViewModel: model
 						   , meetingsListViewModel: MeetingsListViewModel()
 						   , isShowScheduleMeetingFragment: .constant(true))
 }

@@ -44,7 +44,7 @@ struct ContentView: View {
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
-	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -509,7 +509,7 @@ struct ContentView: View {
 								} else if self.index == 3 {
 									MeetingsView(
 										meetingsListViewModel: meetingsListViewModel,
-										scheduleMeetingViewModel: scheduleMeetingViewModel,
+										meetingViewModel: meetingViewModel,
 										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 									)
 								}
@@ -699,7 +699,7 @@ struct ContentView: View {
 					}
 					
 					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil ||
-						scheduleMeetingViewModel.displayedMeeting != nil
+						meetingViewModel.displayedMeeting != nil
 					{
 						HStack(spacing: 0) {
 							Spacer()
@@ -742,7 +742,7 @@ struct ContentView: View {
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
 							} else if self.index == 3 {
-								MeetingFragment(scheduleMeetingViewModel: scheduleMeetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment)
+								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
@@ -951,7 +951,7 @@ struct ContentView: View {
 					
 					if isShowScheduleMeetingFragment {
 						ScheduleMeetingFragment(
-							scheduleMeetingViewModel: scheduleMeetingViewModel,
+							meetingViewModel: meetingViewModel,
 							meetingsListViewModel: meetingsListViewModel,
 							isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 						)
@@ -1038,7 +1038,7 @@ struct ContentView: View {
 		conversationsListViewModel: ConversationsListViewModel(),
 		conversationViewModel: ConversationViewModel(),
 		meetingsListViewModel: MeetingsListViewModel(),
-		scheduleMeetingViewModel: ScheduleMeetingViewModel()
+		meetingViewModel: MeetingViewModel()
 	)
 }
 // swiftlint:enable type_body_length

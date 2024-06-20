@@ -28,7 +28,7 @@ struct ScheduleMeetingFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@State private var delayedColor = Color.white
@@ -74,15 +74,15 @@ struct ScheduleMeetingFragment: View {
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
-									if let meeting = scheduleMeetingViewModel.displayedMeeting {
+									if let meeting = meetingViewModel.displayedMeeting {
 										// reload meeting to cancel change from edit
-										scheduleMeetingViewModel.loadExistingMeeting(meeting: meeting)
+										meetingViewModel.loadExistingMeeting(meeting: meeting)
 									}
 									isShowScheduleMeetingFragment.toggle()
 								}
 							}
 						
-						Text("\(scheduleMeetingViewModel.displayedMeeting != nil ? "Edit" : "New") meeting" )
+						Text("\(meetingViewModel.displayedMeeting != nil ? "Edit" : "New") meeting" )
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 						
@@ -98,17 +98,17 @@ struct ScheduleMeetingFragment: View {
 					 Spacer()
 					 HStack(alignment: .center) {
 					 Button(action: {
-					 scheduleMeetingViewModel.isBroadcastSelected.toggle()
+					 meetingViewModel.isBroadcastSelected.toggle()
 					 }, label: {
 					 Image("users-three")
 					 .renderingMode(.template)
 					 .resizable()
-					 .foregroundStyle(scheduleMeetingViewModel.isBroadcastSelected ? .white : Color.orangeMain500)
+					 .foregroundStyle(meetingViewModel.isBroadcastSelected ? .white : Color.orangeMain500)
 					 .frame(width: 25, height: 25)
 					 })
 					 Text("Meeting")
 					 .default_text_style_orange_500( styleSize: 15)
-					 .foregroundStyle(scheduleMeetingViewModel.isBroadcastSelected ? .white : Color.orangeMain500)
+					 .foregroundStyle(meetingViewModel.isBroadcastSelected ? .white : Color.orangeMain500)
 					 }
 					 .padding(.horizontal, 40)
 					 .padding(.vertical, 10)
@@ -117,13 +117,13 @@ struct ScheduleMeetingFragment: View {
 					 RoundedRectangle(cornerRadius: 60)
 					 .inset(by: 0.5)
 					 .stroke(Color.orangeMain500, lineWidth: 1)
-					 .background(scheduleMeetingViewModel.isBroadcastSelected ? Color.orangeMain500 : Color.white)
+					 .background(meetingViewModel.isBroadcastSelected ? Color.orangeMain500 : Color.white)
 					 )
 					 Spacer()
 					 
 					 HStack(alignment: .center) {
 					 Button(action: {
-					 scheduleMeetingViewModel.isBroadcastSelected.toggle()
+					 meetingViewModel.isBroadcastSelected.toggle()
 					 }, label: {
 					 Image("slideshow")
 					 .renderingMode(.template)
@@ -153,7 +153,7 @@ struct ScheduleMeetingFragment: View {
 							.foregroundStyle(Color.grayMain2c800)
 							.frame(width: 24, height: 24)
 							.padding(.leading, 16)
-						TextField("Subject", text: $scheduleMeetingViewModel.subject)
+						TextField("Subject", text: $meetingViewModel.subject)
 							.default_text_style_700(styleSize: 20)
 							.frame(height: 29, alignment: .leading)
 						Spacer()
@@ -171,43 +171,43 @@ struct ScheduleMeetingFragment: View {
 							.foregroundStyle(Color.grayMain2c800)
 							.frame(width: 24, height: 24)
 							.padding(.leading, 16)
-						Text(scheduleMeetingViewModel.fromDateStr)
+						Text(meetingViewModel.fromDateStr)
 							.fontWeight(.bold)
 							.default_text_style_500(styleSize: 16)
 							.onTapGesture {
 								setFromDate = true
-								selectedDate = scheduleMeetingViewModel.fromDate
+								selectedDate = meetingViewModel.fromDate
 								showDatePicker.toggle()
 							}
 						Spacer()
 					}
 					
-					if !scheduleMeetingViewModel.allDayMeeting {
+					if !meetingViewModel.allDayMeeting {
 						HStack(spacing: 8) {
-							Text(scheduleMeetingViewModel.fromTime)
+							Text(meetingViewModel.fromTime)
 								.fontWeight(.bold)
 								.padding(.leading, 48)
 								.frame(height: 29, alignment: .leading)
 								.default_text_style_500(styleSize: 16)
-								.opacity(scheduleMeetingViewModel.allDayMeeting ? 0 : 1)
+								.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
 								.onTapGesture {
 									setFromDate = true
-									selectedDate = scheduleMeetingViewModel.fromDate
+									selectedDate = meetingViewModel.fromDate
 									showTimePicker.toggle()
 								}
-							Text(scheduleMeetingViewModel.toTime)
+							Text(meetingViewModel.toTime)
 								.fontWeight(.bold)
 								.padding(.leading, 8)
 								.frame(height: 29, alignment: .leading)
 								.default_text_style_500(styleSize: 16)
-								.opacity(scheduleMeetingViewModel.allDayMeeting ? 0 : 1)
+								.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
 								.onTapGesture {
 									setFromDate = false
-									selectedDate = scheduleMeetingViewModel.toDate
+									selectedDate = meetingViewModel.toDate
 									showTimePicker.toggle()
 								}
 							Spacer()
-							Toggle("", isOn: $scheduleMeetingViewModel.allDayMeeting)
+							Toggle("", isOn: $meetingViewModel.allDayMeeting)
 								.labelsHidden()
 								.tint(Color.orangeMain300)
 							Text("All day")
@@ -222,16 +222,16 @@ struct ScheduleMeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 16)
-							Text(scheduleMeetingViewModel.toDateStr)
+							Text(meetingViewModel.toDateStr)
 								.fontWeight(.bold)
 								.default_text_style_500(styleSize: 16)
 								.onTapGesture {
 									setFromDate = false
-									selectedDate = scheduleMeetingViewModel.toDate
+									selectedDate = meetingViewModel.toDate
 									showDatePicker.toggle()
 								}
 							Spacer()
-							Toggle("", isOn: $scheduleMeetingViewModel.allDayMeeting)
+							Toggle("", isOn: $meetingViewModel.allDayMeeting)
 								.labelsHidden()
 								.tint(Color.orangeMain300)
 							Text("All day")
@@ -279,7 +279,7 @@ struct ScheduleMeetingFragment: View {
 							.frame(width: 24, height: 24)
 							.padding(.leading, 16)
 						
-						TextField("Add a description", text: $scheduleMeetingViewModel.description)
+						TextField("Add a description", text: $meetingViewModel.description)
 							.default_text_style_700(styleSize: 16)
 					}
 					
@@ -290,9 +290,9 @@ struct ScheduleMeetingFragment: View {
 					
 					VStack {
 						NavigationLink(destination: {
-							AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: scheduleMeetingViewModel.addParticipants)
+							AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: meetingViewModel.addParticipants)
 								.onAppear {
-									addParticipantsViewModel.participantsToAdd = scheduleMeetingViewModel.participants
+									addParticipantsViewModel.participantsToAdd = meetingViewModel.participants
 								}
 						}, label: {
 							HStack(alignment: .center, spacing: 8) {
@@ -310,20 +310,20 @@ struct ScheduleMeetingFragment: View {
 							}
 						})
 						
-						if !scheduleMeetingViewModel.participants.isEmpty {
+						if !meetingViewModel.participants.isEmpty {
 							ScrollView {
-								ForEach(0..<scheduleMeetingViewModel.participants.count, id: \.self) { index in
+								ForEach(0..<meetingViewModel.participants.count, id: \.self) { index in
 									VStack {
 										HStack {
-											Avatar(contactAvatarModel: scheduleMeetingViewModel.participants[index].avatarModel, avatarSize: 50)
+											Avatar(contactAvatarModel: meetingViewModel.participants[index].avatarModel, avatarSize: 50)
 												.padding(.leading, 20)
 											
-											Text(scheduleMeetingViewModel.participants[index].avatarModel.name)
+											Text(meetingViewModel.participants[index].avatarModel.name)
 												.default_text_style(styleSize: 16)
 												.frame(maxWidth: .infinity, alignment: .leading)
 											Spacer()
 											Button(action: {
-												scheduleMeetingViewModel.participants.remove(at: index)
+												meetingViewModel.participants.remove(at: index)
 											}, label: {
 												Image("x")
 													.renderingMode(.template)
@@ -344,7 +344,7 @@ struct ScheduleMeetingFragment: View {
 						.background(Color.gray200)
 					
 					HStack(spacing: 8) {
-						Toggle("", isOn: $scheduleMeetingViewModel.sendInvitations)
+						Toggle("", isOn: $meetingViewModel.sendInvitations)
 							.padding(.leading, 16)
 							.labelsHidden()
 							.tint(Color.orangeMain300)
@@ -358,7 +358,7 @@ struct ScheduleMeetingFragment: View {
 				
 				Button {
 					withAnimation {
-						scheduleMeetingViewModel.schedule()
+						meetingViewModel.schedule()
 					}
 				} label: {
 					Image("check")
@@ -371,7 +371,7 @@ struct ScheduleMeetingFragment: View {
 					
 				}
 				.padding()
-				if scheduleMeetingViewModel.operationInProgress {
+				if meetingViewModel.operationInProgress {
 					HStack {
 						Spacer()
 						VStack {
@@ -384,7 +384,7 @@ struct ScheduleMeetingFragment: View {
 						Spacer()
 					}.onDisappear {
 						withAnimation {
-							if scheduleMeetingViewModel.conferenceCreatedEvent {
+							if meetingViewModel.conferenceCreatedEvent {
 								meetingsListViewModel.computeMeetingsList()
 								isShowScheduleMeetingFragment.toggle()
 							}
@@ -463,26 +463,26 @@ struct ScheduleMeetingFragment: View {
 	}
 
 	func pickDate() {
-		let duration = min(scheduleMeetingViewModel.fromDate.distance(to: scheduleMeetingViewModel.toDate), 86400) // Limit auto correction of dates to 24h
+		let duration = min(meetingViewModel.fromDate.distance(to: meetingViewModel.toDate), 86400) // Limit auto correction of dates to 24h
 		if setFromDate {
-			scheduleMeetingViewModel.fromDate = selectedDate
+			meetingViewModel.fromDate = selectedDate
 			// If new startdate is after previous end date, bump up the end date
-			if selectedDate > scheduleMeetingViewModel.toDate {
-				scheduleMeetingViewModel.toDate = Calendar.current.date(byAdding: .second, value: Int(duration), to: selectedDate)!
+			if selectedDate > meetingViewModel.toDate {
+				meetingViewModel.toDate = Calendar.current.date(byAdding: .second, value: Int(duration), to: selectedDate)!
 			}
 		} else {
-			scheduleMeetingViewModel.toDate = selectedDate
-			if selectedDate < scheduleMeetingViewModel.fromDate {
+			meetingViewModel.toDate = selectedDate
+			if selectedDate < meetingViewModel.fromDate {
 				// If new end date is before the previous start date, bump down the start date to the earlier possible from current time
 				if (Date.now.distance(to: selectedDate) < duration) {
-					scheduleMeetingViewModel.fromDate = Date.now
+					meetingViewModel.fromDate = Date.now
 				} else {
-					scheduleMeetingViewModel.fromDate = Calendar.current.date(byAdding: .second, value: (-1)*Int(duration), to: selectedDate)!
+					meetingViewModel.fromDate = Calendar.current.date(byAdding: .second, value: (-1)*Int(duration), to: selectedDate)!
 				}
 			}
 		}
-		scheduleMeetingViewModel.computeDateLabels()
-		scheduleMeetingViewModel.computeTimeLabels()
+		meetingViewModel.computeDateLabels()
+		meetingViewModel.computeTimeLabels()
 	}
 	
 	@Sendable private func delayColor() async {
@@ -499,7 +499,7 @@ struct ScheduleMeetingFragment: View {
 }
 
 #Preview {
-	ScheduleMeetingFragment(scheduleMeetingViewModel: ScheduleMeetingViewModel()
+	ScheduleMeetingFragment(meetingViewModel: MeetingViewModel()
 							, meetingsListViewModel: MeetingsListViewModel()
 							, isShowScheduleMeetingFragment: .constant(true))
 }

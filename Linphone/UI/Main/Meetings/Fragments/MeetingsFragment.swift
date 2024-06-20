@@ -1,9 +1,21 @@
-//
-//  MeetingsFragment.swift
-//  Linphone
-//
-//  Created by QuentinArguillere on 18/04/2024.
-//
+/*
+ * Copyright (c) 2010-2024 Belledonne Communications SARL.
+ *
+ * This file is part of linphone-iphone
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 import SwiftUI
 import linphonesw
@@ -11,7 +23,7 @@ import linphonesw
 struct MeetingsFragment: View {
 	
 	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
-	@ObservedObject var scheduleMeetingViewModel: ScheduleMeetingViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
@@ -68,7 +80,7 @@ struct MeetingsFragment: View {
 		.onTapGesture {
 			withAnimation {
 				if let meetingModel = model.model {
-					scheduleMeetingViewModel.loadExistingMeeting(meeting: meetingModel)
+					meetingViewModel.loadExistingMeeting(meeting: meetingModel)
 				}
 			}
 		}
@@ -172,5 +184,5 @@ struct MeetingsFragment: View {
 }
 
 #Preview {
-	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(), scheduleMeetingViewModel: ScheduleMeetingViewModel())
+	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(), meetingViewModel: MeetingViewModel())
 }

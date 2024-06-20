@@ -12,7 +12,6 @@
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
 		6613A0B02BAEB7F4008923A4 /* MeetingsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */; };
 		6613A0B42BAEBE3F008923A4 /* MeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */; };
-		6613A0B62BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */; };
 		66162A202BDFC2F900DCE913 /* AddParticipantsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66162A1F2BDFC2F900DCE913 /* AddParticipantsViewModel.swift */; };
 		662B69D92B25DE18007118BF /* TelecomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69D82B25DE18007118BF /* TelecomManager.swift */; };
 		662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69DA2B25DE25007118BF /* ProviderDelegate.swift */; };
@@ -192,7 +191,6 @@
 		6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingFragment.swift; sourceTree = "<group>"; };
 		6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListFragment.swift; sourceTree = "<group>"; };
 		6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeetingViewModel.swift; sourceTree = "<group>"; };
-		6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleMeetingViewModel.swift; sourceTree = "<group>"; };
 		66162A1F2BDFC2F900DCE913 /* AddParticipantsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsViewModel.swift; sourceTree = "<group>"; };
 		662B69D82B25DE18007118BF /* TelecomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelecomManager.swift; sourceTree = "<group>"; };
 		662B69DA2B25DE25007118BF /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
@@ -423,7 +421,6 @@
 			children = (
 				66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */,
 				6613A0B32BAEBE3F008923A4 /* MeetingViewModel.swift */,
-				6613A0B52BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -1109,7 +1106,6 @@
 				66C492012B24DB6900CEA16D /* Log.swift in Sources */,
 				C6A5A9432C10B5ED0070FEA4 /* DecodableExtension.swift in Sources */,
 				D714035B2BE11E00004BD8CA /* CallMediaEncryptionModel.swift in Sources */,
-				6613A0B62BAEBE5C008923A4 /* ScheduleMeetingViewModel.swift in Sources */,
 				D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */,
 				D7CEE0382B7A214F00FD79B7 /* ConversationsListViewModel.swift in Sources */,
 				D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */,
