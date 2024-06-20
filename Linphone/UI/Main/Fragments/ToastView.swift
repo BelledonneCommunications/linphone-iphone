@@ -171,6 +171,27 @@ struct ToastView: View {
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
+						
+					case "Failed_push_notification_not_received_error":
+						Text("assistant_account_register_push_notification_not_received_error")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_account_register_unexpected_error":
+						Text("assistant_account_register_unexpected_error")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case let str where str.contains("Error: "):
+						Text(toastViewModel.toastMessage)
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
 												
 					default:
 						Text("Error")

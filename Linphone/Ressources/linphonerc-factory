@@ -45,8 +45,7 @@ store_friends=0
 record_aware=1
 
 [account_creator]
-url=https://flexisip-staging-master.linphone.org/login # For testing
-# url=https://subscribe.linphone.org/api/
+url=https://subscribe.linphone.org/api/
 
 [lime]
 lime_update_threshold=86400

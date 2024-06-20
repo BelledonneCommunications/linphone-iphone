@@ -31,7 +31,6 @@ struct RegisterFragment: View {
 	@FocusState var isPhoneNumberFocused: Bool
 	@FocusState var isPasswordFocused: Bool
 	
-	@State private var isLinkActive = false
 	@State private var isShowPopup = false
 	
 	var body: some View {
@@ -103,14 +102,14 @@ struct RegisterFragment: View {
 								
 								HStack {
 									Menu {
-										Picker("", selection: $registerViewModel.dialPlanSelected) {
+										Picker("", selection: $registerViewModel.dialPlanValueSelected) {
 											ForEach(Array(registerViewModel.dialPlansLabelList.enumerated()), id: \.offset) { index, dialPlan in
 												Text(dialPlan).tag(registerViewModel.dialPlansShortLabelList[index])
 											}
 										}
 									} label: {
 										HStack {
-											Text(registerViewModel.dialPlanSelected)
+											Text(registerViewModel.dialPlanValueSelected)
 											
 											Image("caret-down")
 												.renderingMode(.template)
@@ -183,7 +182,7 @@ struct RegisterFragment: View {
 								)
 								.padding(.bottom)
 								
-								NavigationLink(isActive: $isLinkActive, destination: {
+								NavigationLink(isActive: $registerViewModel.isLinkActive, destination: {
 									RegisterCodeConfirmationFragment(registerViewModel: registerViewModel)
 								}, label: {
 									Text("assistant_account_create")
@@ -196,7 +195,7 @@ struct RegisterFragment: View {
 								.padding(.vertical, 10)
 								.background((registerViewModel.username.isEmpty || registerViewModel.phoneNumber.isEmpty || registerViewModel.passwd.isEmpty) ? Color.orangeMain100 : Color.orangeMain500)
 								.cornerRadius(60)
-								.disabled(!isLinkActive)
+								.disabled(!registerViewModel.isLinkActive)
 								.padding(.bottom)
 								.simultaneousGesture(
 									TapGesture().onEnded {
@@ -283,7 +282,9 @@ struct RegisterFragment: View {
 							titleSecondButton: Text("Continue"),
 							actionSecondButton: {
 								self.isShowPopup = false
-								self.isLinkActive = true
+								registerViewModel.createInProgress = true
+								registerViewModel.startAccountCreation()
+								registerViewModel.phoneNumberConfirmedByUser()
 							}
 						)
 						.background(.black.opacity(0.65))
@@ -292,6 +293,10 @@ struct RegisterFragment: View {
 						}
 					}
 					
+					if registerViewModel.createInProgress {
+						PopupLoadingView()
+							.background(.black.opacity(0.65))
+					}
 				}
 			}
 			.navigationTitle("")

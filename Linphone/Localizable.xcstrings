@@ -290,6 +290,38 @@
         }
       }
     },
+    "assistant_account_register_push_notification_not_received_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push notification with auth token not received in 5 seconds, please try again later"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La notification poussée avec le jeton d\\'authentification n'a pas été reçue dans les 5 secondes, merci de réessayer plus tard"
+          }
+        }
+      }
+    },
+    "assistant_account_register_unexpected_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unexpected error occurred, please try again later"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un erreur inattendue est survenue, merci de réessayer plus tard"
+          }
+        }
+      }
+    },
     "assistant_already_have_an_account" : {
       "localizations" : {
         "en" : {

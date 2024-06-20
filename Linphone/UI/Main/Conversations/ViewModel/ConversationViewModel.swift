@@ -400,7 +400,7 @@ class ConversationViewModel: ObservableObject {
 			
 			let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 			
-			let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+			let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
 			
 			var statusTmp: Message.Status? = .sending
 			switch eventLog.chatMessage?.state {
