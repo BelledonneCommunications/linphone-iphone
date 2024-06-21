@@ -216,7 +216,7 @@ struct MeetingFragment: View {
 							
 							ScrollView {
 								VStack(alignment: .leading, spacing: 0) {
-									if meetingViewModel.myself != nil {
+									if meetingViewModel.myself != nil && meetingViewModel.myself!.isOrganizer {
 										getParticipantLine(participant: meetingViewModel.myself!)
 									}
 									ForEach(0..<meetingViewModel.participants.count, id: \.self) { index in

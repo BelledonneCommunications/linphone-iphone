@@ -263,28 +263,43 @@ class MeetingViewModel: ObservableObject {
 			self.toDate = meeting.endDate
 			self.participants = []
 			
-			let organizer = meeting.confInfo.organizer
+			
 			CoreContext.shared.doOnCoreQueue { core in
+				let organizer = meeting.confInfo.organizer
+				var organizerFound = false
+				
 				if let myAddr = core.defaultAccount?.contactAddress {
+					let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
+					organizerFound = organizerFound || isOrganizer
 					ContactAvatarModel.getAvatarModelFromAddress(address: myAddr) { avatarResult in
 						DispatchQueue.main.async {
-							let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
 							self.myself = SelectedAddressModel(addr: myAddr, avModel: avatarResult, isOrg: isOrganizer)
+						}
+					}
+				}
+				
+				for pInfo in meeting.confInfo.participantInfos {
+					if let addr = pInfo.address {
+						let isOrganizer = (organizer != nil) ? addr.weakEqual(address2: organizer!) : false
+						organizerFound = organizerFound || isOrganizer
+						ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
+							DispatchQueue.main.async {
+								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg:isOrganizer))
+							}
+						}
+					}
+				}
+				
+				// if didn't find organizer, add him
+				if !organizerFound, let org = organizer {
+					ContactAvatarModel.getAvatarModelFromAddress(address: org) { avatarResult in
+						DispatchQueue.main.async {
+							self.participants.append(SelectedAddressModel(addr: org, avModel: avatarResult, isOrg: true))
 						}
 					}
 				}
 			}
 			
-			for pInfo in meeting.confInfo.participantInfos {
-				if let addr = pInfo.address {
-					ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
-						DispatchQueue.main.async {
-							let isOrganizer = (organizer != nil) ? addr.weakEqual(address2: organizer!) : false
-							self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg:isOrganizer))
-						}
-					}
-				}
-			}
 			self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
 			self.computeDateLabels()
 			self.computeTimeLabels()
