@@ -47,7 +47,7 @@ struct ScheduleMeetingFragment: View {
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				VStack(spacing: 16) {
+				VStack(spacing: 10) {
 					if #available(iOS 16.0, *) {
 						Rectangle()
 							.foregroundColor(delayedColor)
@@ -70,7 +70,6 @@ struct ScheduleMeetingFragment: View {
 							.foregroundStyle(Color.orangeMain500)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
-							.padding(.top, 2)
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
@@ -91,270 +90,219 @@ struct ScheduleMeetingFragment: View {
 					.frame(maxWidth: .infinity)
 					.frame(height: 50)
 					.padding(.horizontal)
-					.padding(.bottom, 4)
 					.background(.white)
-					/*
-					 HStack {
-					 Spacer()
-					 HStack(alignment: .center) {
-					 Button(action: {
-					 meetingViewModel.isBroadcastSelected.toggle()
-					 }, label: {
-					 Image("users-three")
-					 .renderingMode(.template)
-					 .resizable()
-					 .foregroundStyle(meetingViewModel.isBroadcastSelected ? .white : Color.orangeMain500)
-					 .frame(width: 25, height: 25)
-					 })
-					 Text("Meeting")
-					 .default_text_style_orange_500( styleSize: 15)
-					 .foregroundStyle(meetingViewModel.isBroadcastSelected ? .white : Color.orangeMain500)
-					 }
-					 .padding(.horizontal, 40)
-					 .padding(.vertical, 10)
-					 .cornerRadius(60)
-					 .overlay(
-					 RoundedRectangle(cornerRadius: 60)
-					 .inset(by: 0.5)
-					 .stroke(Color.orangeMain500, lineWidth: 1)
-					 .background(meetingViewModel.isBroadcastSelected ? Color.orangeMain500 : Color.white)
-					 )
-					 Spacer()
-					 
-					 HStack(alignment: .center) {
-					 Button(action: {
-					 meetingViewModel.isBroadcastSelected.toggle()
-					 }, label: {
-					 Image("slideshow")
-					 .renderingMode(.template)
-					 .resizable()
-					 .foregroundStyle(Color.orangeMain500)
-					 .frame(width: 25, height: 25)
-					 })
-					 
-					 Text("Broadcast")
-					 .default_text_style_orange_500( styleSize: 15)
-					 }
-					 .padding(.horizontal, 40)
-					 .padding(.vertical, 10)
-					 .cornerRadius(60)
-					 .overlay(
-					 RoundedRectangle(cornerRadius: 60)
-					 .inset(by: 0.5)
-					 .stroke(Color.orangeMain500, lineWidth: 1)
-					 )
-					 Spacer()
-					 }
-					 */
-					HStack(alignment: .center, spacing: 8) {
-						Image("video-conference")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c800)
-							.frame(width: 24, height: 24)
-							.padding(.leading, 16)
-						TextField("Subject", text: $meetingViewModel.subject)
-							.default_text_style_700(styleSize: 20)
-							.frame(height: 29, alignment: .leading)
-						Spacer()
-					}
 					
-					Rectangle()
-						.foregroundStyle(.clear)
-						.frame(height: 1)
-						.background(Color.gray200)
-					
-					HStack(alignment: .center, spacing: 8) {
-						Image("clock")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c800)
-							.frame(width: 24, height: 24)
-							.padding(.leading, 16)
-						Text(meetingViewModel.fromDateStr)
-							.fontWeight(.bold)
-							.default_text_style_500(styleSize: 16)
-							.onTapGesture {
-								setFromDate = true
-								selectedDate = meetingViewModel.fromDate
-								showDatePicker.toggle()
-							}
-						Spacer()
-					}
-					
-					if !meetingViewModel.allDayMeeting {
-						HStack(spacing: 8) {
-							Text(meetingViewModel.fromTime)
-								.fontWeight(.bold)
-								.padding(.leading, 48)
+					ScrollView(.vertical) {
+						HStack(alignment: .center, spacing: 10) {
+							Image("video-conference")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							TextField("Subject", text: $meetingViewModel.subject)
+								.default_text_style_700(styleSize: 20)
 								.frame(height: 29, alignment: .leading)
-								.default_text_style_500(styleSize: 16)
-								.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
-								.onTapGesture {
-									setFromDate = true
-									selectedDate = meetingViewModel.fromDate
-									showTimePicker.toggle()
-								}
-							Text(meetingViewModel.toTime)
-								.fontWeight(.bold)
-								.padding(.leading, 8)
-								.frame(height: 29, alignment: .leading)
-								.default_text_style_500(styleSize: 16)
-								.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
-								.onTapGesture {
-									setFromDate = false
-									selectedDate = meetingViewModel.toDate
-									showTimePicker.toggle()
-								}
 							Spacer()
-							Toggle("", isOn: $meetingViewModel.allDayMeeting)
-								.labelsHidden()
-								.tint(Color.orangeMain300)
-							Text("All day")
-								.default_text_style_500(styleSize: 16)
-								.padding(.trailing, 16)
 						}
-					} else {
-						HStack(alignment: .center, spacing: 8) {
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						HStack(alignment: .center, spacing: 10) {
 							Image("clock")
 								.renderingMode(.template)
 								.resizable()
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
-								.padding(.leading, 16)
-							Text(meetingViewModel.toDateStr)
+								.padding(.leading, 15)
+							Text(meetingViewModel.fromDateStr)
 								.fontWeight(.bold)
 								.default_text_style_500(styleSize: 16)
 								.onTapGesture {
-									setFromDate = false
-									selectedDate = meetingViewModel.toDate
+									setFromDate = true
+									selectedDate = meetingViewModel.fromDate
 									showDatePicker.toggle()
 								}
 							Spacer()
-							Toggle("", isOn: $meetingViewModel.allDayMeeting)
-								.labelsHidden()
-								.tint(Color.orangeMain300)
-							Text("All day")
-								.default_text_style_500(styleSize: 16)
-								.padding(.trailing, 16)						}
-					}
-					HStack(alignment: .center, spacing: 8) {
-						Image("earth")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c800)
-							.frame(width: 24, height: 24)
-							.padding(.leading, 16)
-						Text("TODO : timezone")
-							.fontWeight(.bold)
-							.padding(.leading, 8)
-							.default_text_style_500(styleSize: 16)
-						Spacer()
-					}
-					
-					HStack(alignment: .center, spacing: 8) {
-						Image("arrow-clockwise")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c800)
-							.frame(width: 24, height: 24)
-							.padding(.leading, 16)
-						Text("TODO : repeat")
-							.fontWeight(.bold)
-							.padding(.leading, 8)
-							.default_text_style_500(styleSize: 16)
-						Spacer()
-					}
-					
-					Rectangle()
-						.foregroundStyle(.clear)
-						.frame(height: 1)
-						.background(Color.gray200)
-					
-					HStack(alignment: .top, spacing: 8) {
-						Image("note")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
-							.frame(width: 24, height: 24)
-							.padding(.leading, 16)
+						}
 						
-						TextField("Add a description", text: $meetingViewModel.description)
-							.default_text_style_700(styleSize: 16)
-					}
-					
-					Rectangle()
-						.foregroundStyle(.clear)
-						.frame(height: 1)
-						.background(Color.gray200)
-					
-					VStack {
-						NavigationLink(destination: {
-							AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: meetingViewModel.addParticipants)
-								.onAppear {
-									addParticipantsViewModel.participantsToAdd = meetingViewModel.participants
-								}
-						}, label: {
-							HStack(alignment: .center, spacing: 8) {
-								Image("users")
+						if !meetingViewModel.allDayMeeting {
+							HStack(spacing: 10) {
+								Text(meetingViewModel.fromTime)
+									.fontWeight(.bold)
+									.padding(.leading, 50)
+									.frame(height: 29, alignment: .leading)
+									.default_text_style_500(styleSize: 16)
+									.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
+									.onTapGesture {
+										setFromDate = true
+										selectedDate = meetingViewModel.fromDate
+										showTimePicker.toggle()
+									}
+								Text(meetingViewModel.toTime)
+									.fontWeight(.bold)
+									.padding(.leading, 10)
+									.frame(height: 29, alignment: .leading)
+									.default_text_style_500(styleSize: 16)
+									.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
+									.onTapGesture {
+										setFromDate = false
+										selectedDate = meetingViewModel.toDate
+										showTimePicker.toggle()
+									}
+								Spacer()
+								Toggle("", isOn: $meetingViewModel.allDayMeeting)
+									.labelsHidden()
+									.tint(Color.orangeMain300)
+								Text("All day")
+									.default_text_style_500(styleSize: 16)
+									.padding(.trailing, 15)
+							}
+						} else {
+							HStack(alignment: .center, spacing: 10) {
+								Image("clock")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
+									.foregroundStyle(Color.grayMain2c800)
 									.frame(width: 24, height: 24)
-									.padding(.leading, 16)
-								
-								Text("Add participants")
-									.default_text_style_700(styleSize: 16)
-									.frame(height: 29, alignment: .leading)
+									.padding(.leading, 15)
+								Text(meetingViewModel.toDateStr)
+									.fontWeight(.bold)
+									.default_text_style_500(styleSize: 16)
+									.onTapGesture {
+										setFromDate = false
+										selectedDate = meetingViewModel.toDate
+										showDatePicker.toggle()
+									}
 								Spacer()
-							}
-						})
+								Toggle("", isOn: $meetingViewModel.allDayMeeting)
+									.labelsHidden()
+									.tint(Color.orangeMain300)
+								Text("All day")
+									.default_text_style_500(styleSize: 16)
+								.padding(.trailing, 15)						}
+						}
+						HStack(alignment: .center, spacing: 10) {
+							Image("earth")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							Text("TODO : timezone")
+								.fontWeight(.bold)
+								.padding(.leading, 5)
+								.default_text_style_500(styleSize: 16)
+							Spacer()
+						}
 						
-						if !meetingViewModel.participants.isEmpty {
-							ScrollView {
-								ForEach(0..<meetingViewModel.participants.count, id: \.self) { index in
-									VStack {
-										HStack {
-											Avatar(contactAvatarModel: meetingViewModel.participants[index].avatarModel, avatarSize: 50)
-												.padding(.leading, 20)
-											
-											Text(meetingViewModel.participants[index].avatarModel.name)
-												.default_text_style(styleSize: 16)
-												.frame(maxWidth: .infinity, alignment: .leading)
-											Spacer()
-											Button(action: {
-												meetingViewModel.participants.remove(at: index)
-											}, label: {
-												Image("x")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(Color.orangeMain500)
-													.frame(width: 25, height: 25)
-													.padding(.trailing, 16)
-											})
+						HStack(alignment: .center, spacing: 10) {
+							Image("arrow-clockwise")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c800)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 15)
+							Text("TODO : repeat")
+								.fontWeight(.bold)
+								.padding(.leading, 5)
+								.default_text_style_500(styleSize: 16)
+							Spacer()
+						}
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						HStack(alignment: .top, spacing: 8) {
+							Image("note")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c600)
+								.frame(width: 24, height: 24)
+								.padding(.leading, 16)
+							
+							TextField("Add a description", text: $meetingViewModel.description)
+								.default_text_style_700(styleSize: 16)
+						}
+						
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						VStack {
+							NavigationLink(destination: {
+								AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: meetingViewModel.addParticipants)
+									.onAppear {
+										addParticipantsViewModel.participantsToAdd = meetingViewModel.participants
+									}
+							}, label: {
+								HStack(alignment: .center, spacing: 8) {
+									Image("users")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c600)
+										.frame(width: 24, height: 24)
+										.padding(.leading, 16)
+									
+									Text("Add participants")
+										.default_text_style_700(styleSize: 16)
+										.frame(height: 29, alignment: .leading)
+									Spacer()
+								}
+							})
+							
+							if !meetingViewModel.participants.isEmpty {
+								ScrollView {
+									ForEach(0..<meetingViewModel.participants.count, id: \.self) { index in
+										VStack {
+											HStack {
+												Avatar(contactAvatarModel: meetingViewModel.participants[index].avatarModel, avatarSize: 50)
+													.padding(.leading, 20)
+												
+												Text(meetingViewModel.participants[index].avatarModel.name)
+													.default_text_style(styleSize: 16)
+													.frame(maxWidth: .infinity, alignment: .leading)
+												Spacer()
+												Button(action: {
+													meetingViewModel.participants.remove(at: index)
+												}, label: {
+													Image("x")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.orangeMain500)
+														.frame(width: 25, height: 25)
+														.padding(.trailing, 16)
+												})
+											}
 										}
 									}
-								}
-							}.frame(maxHeight: 170)
+								}.frame(maxHeight: 170)
+							}
 						}
-					}
-					Rectangle()
-						.foregroundStyle(.clear)
-						.frame(height: 1)
-						.background(Color.gray200)
-					
-					HStack(spacing: 8) {
-						Toggle("", isOn: $meetingViewModel.sendInvitations)
-							.padding(.leading, 16)
-							.labelsHidden()
-							.tint(Color.orangeMain300)
-						Text("Send invitations to participants")
-							.default_text_style_500(styleSize: 14)
+						Rectangle()
+							.foregroundStyle(.clear)
+							.frame(height: 1)
+							.background(Color.gray200)
+						
+						HStack(spacing: 8) {
+							Toggle("", isOn: $meetingViewModel.sendInvitations)
+								.padding(.leading, 16)
+								.labelsHidden()
+								.tint(Color.orangeMain300)
+							Text("Send invitations to participants")
+								.default_text_style_500(styleSize: 14)
+							Spacer()
+						}
 						Spacer()
 					}
-					Spacer()
+					.background(.white)
 				}
-				.background(.white)
 				
 				Button {
 					withAnimation {
@@ -404,8 +352,9 @@ struct ScheduleMeetingFragment: View {
 		.navigationViewStyle(StackNavigationViewStyle())
 	}
 	
+	@ViewBuilder
 	func getDatePopup(isTimeSelection: Bool) -> some View {
-		return GeometryReader { geometry in
+		GeometryReader { geometry in
 			VStack(alignment: .leading) {
 				Text("Select \(setFromDate ? "start" : "end") \(isTimeSelection ? "time" : "date")")
 					.default_text_style_800(styleSize: 16)

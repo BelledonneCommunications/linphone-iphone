@@ -31,7 +31,7 @@ struct MeetingsFragment: View {
 	
 	@ViewBuilder
 	func createMonthLine(model: MeetingsListItemModel) -> some View {
-		return Text(model.monthStr)
+		Text(model.monthStr)
 			.fontWeight(.bold)
 			.padding(5)
 			.default_text_style_500(styleSize: 22)
@@ -39,15 +39,15 @@ struct MeetingsFragment: View {
 	
 	@ViewBuilder
 	func createWeekLine(model: MeetingsListItemModel) -> some View {
-		return Text(model.weekStr)
+		Text(model.weekStr)
 			.padding(.leading, 43)
-			.padding(.top, 3)
-			.padding(.bottom, 3)
+			.padding(.top, 5)
+			.padding(.bottom, 5)
 			.default_text_style_500(styleSize: 14)
 	}
 	@ViewBuilder
 	func createMeetingLine(model: MeetingsListItemModel) -> some View {
-		return VStack(alignment: .leading) {
+		VStack(alignment: .leading, spacing: 0) {
 			if model.isToday {
 				Text("No meeting today")
 					.fontWeight(.bold)
@@ -59,15 +59,14 @@ struct MeetingsFragment: View {
 						.resizable()
 						.foregroundStyle(Color.grayMain2c600)
 						.frame(width: 24, height: 24)
-						.padding(.bottom, -8)
+						.padding(.bottom, -5)
 					Text(model.model!.subject)
 						.fontWeight(.bold)
 						.padding(.trailing, 5)
-						.padding(.top, 7)
+						.padding(.top, 5)
 						.default_text_style_500(styleSize: 15)
 				}
 				Text(model.model!.time)
-					.padding(.top, -8)
 					.default_text_style_500(styleSize: 15)
 			}
 		}
@@ -77,6 +76,7 @@ struct MeetingsFragment: View {
 		.background(.white)
 		.clipShape(RoundedRectangle(cornerRadius: 20))
 		.shadow(color: .black.opacity(0.2), radius: 4)
+		.padding(.bottom, 5)
 		.onTapGesture {
 			withAnimation {
 				if let meetingModel = model.model {
@@ -89,7 +89,7 @@ struct MeetingsFragment: View {
 	var body: some View {
 		VStack {
 			List {
-				VStack(alignment: .leading) {
+				VStack(alignment: .leading, spacing: 0) {
 					ForEach(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
 						let itemModel = meetingsListViewModel.meetingsList[index]
 						if index == 0 || itemModel.monthStr != meetingsListViewModel.meetingsList[index-1].monthStr {
@@ -102,10 +102,9 @@ struct MeetingsFragment: View {
 						if index == 0
 							|| itemModel.dayStr != meetingsListViewModel.meetingsList[index-1].dayStr
 							|| itemModel.weekStr != meetingsListViewModel.meetingsList[index-1].weekStr {
-							HStack {
-								VStack(alignment: .center) {
+							HStack(alignment: .top) {
+								VStack(alignment: .center, spacing: 0) {
 									Text(itemModel.weekDayStr)
-										.padding(.bottom, -5)
 										.default_text_style_500(styleSize: 14)
 									if itemModel.isToday || Calendar.current.isDate(itemModel.model!.meetingDate, inSameDayAs: Date.now) {
 										Text(itemModel.dayStr)
@@ -118,20 +117,9 @@ struct MeetingsFragment: View {
 									} else {
 										Text(itemModel.dayStr)
 											.fontWeight(.bold)
-											.padding(.top, -3)
 											.default_text_style_300(styleSize: 20)
 									}
-									/*
-									Image("check")
-										.renderingMode(.template)
-										.foregroundStyle(.white)
-										.padding()
-										.background(Color.orangeMain500)
-										.clipShape(Circle())
-										.shadow(color: .black.opacity(0.2), radius: 4)
-									*/
 								}
-								.padding(.top, -5)
 								.frame(width: 35)
 								if itemModel.isToday {
 									Text("No meeting today")
@@ -141,11 +129,10 @@ struct MeetingsFragment: View {
 								} else {
 									createMeetingLine(model: itemModel)
 								}
-							}
+							}.padding(.top, 10)
 						} else {
 							createMeetingLine(model: itemModel)
-								.padding(.leading, 43)
-								.padding(.top, -10)
+								.padding(.leading, 40)
 						}
 					}
 				}
@@ -171,15 +158,6 @@ struct MeetingsFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
-	}
-	
-	func joinMeetingWaitingRoom(index: Int) {
-		do {
-			let meetingAddress = try Factory.Instance.createAddress(addr: meetingsListViewModel.meetingsList[index].model?.address ?? "")
-			
-			TelecomManager.shared.meetingWaitingRoomDisplayed = true
-			TelecomManager.shared.meetingWaitingRoomSelected = meetingAddress
-		} catch {}
 	}
 }
 
