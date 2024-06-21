@@ -20,6 +20,7 @@
 // swiftlint:disable line_length
 import SwiftUI
 import linphonesw
+import UniformTypeIdentifiers
 
 struct MeetingFragment: View {
 	
@@ -150,12 +151,26 @@ struct MeetingFragment: View {
 								.default_text_style(styleSize: 14)
 							Spacer()
 							
-							Image("share-network")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c800)
-								.frame(width: 25, height: 25)
-								.padding(.trailing, 15)
+							Button(action: {
+								UIPasteboard.general.setValue(
+									meetingViewModel.conferenceUri,
+									forPasteboardType: UTType.plainText.identifier
+								)
+								
+								DispatchQueue.main.async {
+									ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+									ToastViewModel.shared.displayToast = true
+								}
+							}, label: {
+								HStack {
+									Image("share-network")
+									 .renderingMode(.template)
+									 .resizable()
+									 .foregroundStyle(Color.grayMain2c800)
+									 .frame(width: 25, height: 25)
+									 .padding(.trailing, 15)
+								}
+							})
 						}
 						
 						HStack(alignment: .center, spacing: 10) {
