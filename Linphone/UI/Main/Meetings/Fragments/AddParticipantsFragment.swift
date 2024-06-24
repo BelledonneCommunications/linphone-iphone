@@ -33,7 +33,6 @@ struct AddParticipantsFragment: View {
 	@ObservedObject var addParticipantsViewModel: AddParticipantsViewModel
 	var confirmAddParticipantsFunc: ([SelectedAddressModel]) -> Void
 	
-	@State private var delayedColor = Color.white
 	@FocusState var isSearchFieldFocused: Bool
 	
 	var body: some View {
@@ -41,17 +40,15 @@ struct AddParticipantsFragment: View {
 			VStack(spacing: 16) {
 				if #available(iOS 16.0, *) {
 					Rectangle()
-						.foregroundColor(delayedColor)
+						.foregroundColor(Color.orangeMain500)
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 0)
-						.task(delayColor)
 				} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
 											 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
 					Rectangle()
-						.foregroundColor(delayedColor)
+						.foregroundColor(Color.orangeMain500)
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 1)
-						.task(delayColor)
 				}
 				HStack {
 					Image("caret-left")
@@ -250,11 +247,6 @@ struct AddParticipantsFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
-	}
-	
-	@Sendable private func delayColor() async {
-		try? await Task.sleep(nanoseconds: 250_000_000)
-		delayedColor = Color.orangeMain500
 	}
 	
 	var suggestionsList: some View {
