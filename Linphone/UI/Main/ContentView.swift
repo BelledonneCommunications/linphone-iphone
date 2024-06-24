@@ -355,7 +355,7 @@ struct ContentView: View {
 													}
 												}
 											} label: {
-												Image(index == 0 ? "funnel" : "dots-three-vertical")
+												Image(index == 0 ? "funnel" : (index == 3 ? "calendar" : "dots-three-vertical"))
 													.renderingMode(.template)
 													.resizable()
 													.foregroundStyle(.white)
@@ -390,8 +390,11 @@ struct ContentView: View {
 													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											} else if index == 1 {
 												historyListViewModel.resetFilterCallLogs()
-											} else {
+											} else if index == 2 {
 												//TODO Conversations List reset
+											} else if index == 3 {
+												meetingsListViewModel.currentFilter = ""
+												meetingsListViewModel.computeMeetingsList()
 											}
 										} label: {
 											Image("caret-left")
@@ -431,8 +434,11 @@ struct ContentView: View {
 														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 												} else if index == 1 {
 													historyListViewModel.filterCallLogs(filter: text)
-												} else {
-													//TODO Conversations List Filter
+												} else if index == 2 {
+													//TODO Conversations List reset
+												} else if index == 3 {
+													meetingsListViewModel.currentFilter = text
+													meetingsListViewModel.computeMeetingsList()
 												}
 											}
 										} else {
@@ -461,8 +467,11 @@ struct ContentView: View {
 														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 												} else if index == 1 {
 													historyListViewModel.filterCallLogs(filter: text)
-												} else {
-													//TODO Conversations List Filter
+												} else if index == 2 {
+													//TODO Conversations List reset
+												} else if index == 3 {
+													meetingsListViewModel.currentFilter = text
+													meetingsListViewModel.computeMeetingsList()
 												}
 											}
 										}

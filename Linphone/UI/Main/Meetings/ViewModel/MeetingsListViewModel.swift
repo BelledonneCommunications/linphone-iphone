@@ -30,6 +30,7 @@ class MeetingsListViewModel: ObservableObject {
 	
 	@Published var meetingsList: [MeetingsListItemModel] = []
 	@Published var currentFilter = ""
+	@Published var todayIdx = 0
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
@@ -42,7 +43,8 @@ class MeetingsListViewModel: ObservableObject {
 	}
 	
 	func computeMeetingsList() {
-		let filter = self.currentFilter
+		let filter = self.currentFilter.uppercased()
+		let isFiltering = !filter.isEmpty
 		
 		coreContext.doOnCoreQueue { core in
 			var confInfoList: [ConferenceInfo] = []
@@ -55,8 +57,9 @@ class MeetingsListViewModel: ObservableObject {
 			}
 			
 			var meetingsListTmp: [MeetingsListItemModel] = []
-			var previousModel: MeetingModel?
 			var meetingForTodayFound = false
+			var currentIdx = 0
+			var todayIdx = 0
 			for confInfo in confInfoList {
 				if confInfo.duration == 0 { continue }// This isn't a scheduled conference, don't display it
 				var add = true
@@ -72,24 +75,40 @@ class MeetingsListViewModel: ObservableObject {
 				if add {
 					let model = MeetingModel(conferenceInfo: confInfo)
 					
-					if !meetingForTodayFound {
+					if !meetingForTodayFound && !isFiltering {
 						if model.isToday {
 							meetingForTodayFound = true
+							todayIdx = currentIdx
 						} else if model.isAfterToday {
 							// If no meeting was found for today, insert "Today" fake model before the next meeting to come
 							meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
 							meetingForTodayFound = true
+							todayIdx = currentIdx
 						}
 					}
 					
-					meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
-					previousModel = model
+					var matchFilter = !isFiltering
+					if isFiltering {
+							matchFilter = matchFilter || confInfo.subject?.uppercased().contains(filter) ?? false
+							matchFilter = matchFilter || confInfo.description?.uppercased().contains(filter) ?? false
+							matchFilter = matchFilter || confInfo.organizer?.asStringUriOnly().uppercased().contains(filter) ?? false
+							for pInfo in confInfo.participantInfos {
+								matchFilter = matchFilter || pInfo.address?.asStringUriOnly().uppercased().contains(filter) ?? false
+							}
+					}
+					
+					if matchFilter {
+						meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
+						currentIdx += 1
+					}
 				}
 			}
 			
 			DispatchQueue.main.sync {
+				self.todayIdx = todayIdx
 				self.meetingsList = meetingsListTmp
 			}
 		}
 	}
+
 }
