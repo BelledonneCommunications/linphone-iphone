@@ -46,6 +46,7 @@ class RegisterViewModel: ObservableObject {
 	private let HASHALGORITHM = "SHA-256"
 	
 	private var accountManagerServices: AccountManagerServices?
+	private var accountManagerServicesRequest: AccountManagerServicesRequest?
 	private var accountCreationToken: String?
 	private var accountCreatedAuthInfo: AuthInfo?
 	private var accountCreated: Account?
@@ -94,78 +95,6 @@ class RegisterViewModel: ObservableObject {
 	init() {
 		getDialPlansList()
 		getAccountCreationToken()
-	}
-	
-	func addDelegate(core: Core) {
-		self.accountManagerServicesSuscriptions.insert(self.accountManagerServices!.publisher?.onRequestSuccessful?.postOnCoreQueue {
-			(ams: AccountManagerServices, request: AccountManagerServices.Request, data: String) in
-			Log.info("\(RegisterViewModel.TAG) Request \(request) was successful, data is \(data)")
-			switch request {
-			case AccountManagerServices.Request.CreateAccountUsingToken:
-				if !data.isEmpty {
-					self.storeAccountInCore(core: core, identity: data)
-					self.sendCodeBySms()
-				} else {
-					Log.error(
-						"\(RegisterViewModel.TAG) No data found for createAccountUsingToken request, can't continue!"
-					)
-				}
-				
-			case AccountManagerServices.Request.SendPhoneNumberLinkingCodeBySms:
-				DispatchQueue.main.async {
-					self.createInProgress = false
-					self.isLinkActive = true
-				}
-				
-			case AccountManagerServices.Request.LinkPhoneNumberUsingCode:
-				let account = self.accountCreated
-				if account != nil {
-					Log.info(
-						"\(RegisterViewModel.TAG) Account \(account?.params?.identityAddress?.asStringUriOnly()) has been created & activated, setting it as default"
-					)
-					
-					if let assistantLinphone = Bundle.main.path(forResource: "assistant_linphone_default_values", ofType: nil) {
-						core.loadConfigFromXml(xmlUri: assistantLinphone)
-					}
-					
-					DispatchQueue.main.async {
-						self.createInProgress = false
-					}
-					
-					do {
-						try core.addAccount(account: account!)
-						core.defaultAccount = account
-					} catch {
-					}
-				}
-				
-			default: break
-			}
-		})
-		
-		self.accountManagerServicesSuscriptions.insert(self.accountManagerServices!.publisher?.onRequestError?.postOnCoreQueue {
-			(ams: AccountManagerServices, request: AccountManagerServices.Request, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
-			Log.error(
-				"\(RegisterViewModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
-			)
-			
-			if !errorMessage.isEmpty {
-				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Error: \(errorMessage)"
-					ToastViewModel.shared.displayToast = true
-				}
-			}
-			
-			switch request {
-			case AccountManagerServices.Request.SendAccountCreationTokenByPush:
-				Log.warn("\(RegisterViewModel.TAG) Cancelling job waiting for push notification")
-			default: break
-			}
-			
-			DispatchQueue.main.async {
-				self.createInProgress = false
-			}
-		})
 		
 		NotificationCenter.default.addObserver(forName: accountTokenNotification, object: nil, queue: nil) { notification in
 			if !(self.username.isEmpty || self.passwd.isEmpty) {
@@ -182,6 +111,80 @@ class RegisterViewModel: ObservableObject {
 					}
 				}
 			}
+		}
+	}
+	func addDelegate(request: AccountManagerServicesRequest) {
+		coreContext.doOnCoreQueue { core in
+			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestSuccessful?.postOnCoreQueue {
+				(request: AccountManagerServicesRequest, data: String) in
+				Log.info("\(RegisterViewModel.TAG) Request \(request) was successful, data is \(data)")
+				switch request.type {
+				case .CreateAccountUsingToken:
+					if !data.isEmpty {
+						self.storeAccountInCore(core: core, identity: data)
+						self.sendCodeBySms()
+					} else {
+						Log.error(
+							"\(RegisterViewModel.TAG) No data found for createAccountUsingToken request, can't continue!"
+						)
+					}
+					
+				case .SendPhoneNumberLinkingCodeBySms:
+					DispatchQueue.main.async {
+						self.createInProgress = false
+						self.isLinkActive = true
+					}
+					
+				case .LinkPhoneNumberUsingCode:
+					let account = self.accountCreated
+					if account != nil {
+						Log.info(
+							"\(RegisterViewModel.TAG) Account \(account?.params?.identityAddress?.asStringUriOnly()) has been created & activated, setting it as default"
+						)
+						
+						if let assistantLinphone = Bundle.main.path(forResource: "assistant_linphone_default_values", ofType: nil) {
+							core.loadConfigFromXml(xmlUri: assistantLinphone)
+						}
+						
+						DispatchQueue.main.async {
+							self.createInProgress = false
+						}
+						
+						do {
+							try core.addAccount(account: account!)
+							core.defaultAccount = account
+							self.accountManagerServicesSuscriptions.removeAll()
+						} catch {
+						}
+					}
+					
+				default: break
+				}
+			})
+			
+			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestError?.postOnCoreQueue {
+				(request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+				Log.error(
+					"\(RegisterViewModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
+				)
+				
+				if !errorMessage.isEmpty {
+					DispatchQueue.main.async {
+						ToastViewModel.shared.toastMessage = "Error: \(errorMessage)"
+						ToastViewModel.shared.displayToast = true
+					}
+				}
+				
+				switch request.type {
+				case .SendAccountCreationTokenByPush:
+					Log.warn("\(RegisterViewModel.TAG) Cancelling job waiting for push notification")
+				default: break
+				}
+				
+				DispatchQueue.main.async {
+					self.createInProgress = false
+				}
+			})
 		}
 	}
 	
@@ -206,7 +209,6 @@ class RegisterViewModel: ObservableObject {
 				self.accountManagerServices = try core.createAccountManagerServices()
 				if self.accountManagerServices != nil {
 					self.accountManagerServices!.language = Locale.current.identifier
-					self.addDelegate(core: core)
 				}
 			} catch {
 				
@@ -303,7 +305,17 @@ class RegisterViewModel: ObservableObject {
 			if coreRemoteToken != nil {
 				formatedRemoteToken = String(coreRemoteToken!.prefix(64))
 				pushConfig!.prid = formatedRemoteToken.uppercased()
-				self.accountManagerServices!.requestAccountCreationTokenByPush(pnProvider: pushConfig?.provider ?? "", pnParam: pushConfig?.param ?? "", pnPrid: pushConfig?.prid ?? "")
+				do {
+					let request = try self.accountManagerServices!.createSendAccountCreationTokenByPushRequest(
+						pnProvider: pushConfig?.provider ?? "",
+						pnParam: pushConfig?.param ?? "",
+						pnPrid: pushConfig?.prid ?? ""
+					)
+					self.addDelegate(request: request)
+					request.submit()
+				} catch {
+					Log.error("\(RegisterViewModel.TAG) Can't create account creation token by push request")
+				}
 			} else {
 				Log.warn("\(RegisterViewModel.TAG) No remote push token available in core for account creator configuration")
 			}
@@ -338,11 +350,19 @@ class RegisterViewModel: ObservableObject {
 				Log.info(
 					"\(RegisterViewModel.TAG) Account \(identity!.asStringUriOnly()) should now be created, asking account manager to send a confirmation code by SMS to \(phoneNumberValue ?? "")"
 				)
-				
-				accountManagerServices!.requestPhoneNumberLinkingCodeBySms(
-					sipIdentity: identity!,
-					phoneNumber: phoneNumberValue!
-				)
+				do {
+					let request = try accountManagerServices?.createSendPhoneNumberLinkingCodeBySmsRequest(
+						sipIdentity: identity!,
+						phoneNumber: phoneNumberValue!
+					)
+					
+					if request != nil {
+						self.addDelegate(request: request!)
+						request!.submit()
+					}
+				} catch {
+					Log.error("\(RegisterViewModel.TAG) Can't create send phone number linking code by SMS request")
+				}
 			}
 		}
 	}
@@ -365,33 +385,33 @@ class RegisterViewModel: ObservableObject {
 			)
 			
 			do {
-				try accountManagerServices!.createAccountUsingToken(
+				let request = try accountManagerServices!.createNewAccountUsingTokenRequest(
 					username: username,
 					password: passwd,
 					algorithm: HASHALGORITHM,
 					token: token!
 				)
+				self.addDelegate(request: request)
+				request.submit()
 			} catch {
-				Log.info(
-					"\(RegisterViewModel.TAG) Can't create account using token"
-				)
+				Log.error("\(RegisterViewModel.TAG) Can't create account using token")
 			}
 		}
 	}
 	
 	func phoneNumberConfirmedByUser() {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			if self.accountManagerServices != nil {
 				var dialPlan: DialPlan?
 				
-				self.dialPlansList.forEach { dial in
+				for dial in self.dialPlansList {
 					let countryCode = self.dialPlanValueSelected.components(separatedBy: "+")
-					Log.info("dialPlansListdialPlansList \(dial.countryCallingCode) \(countryCode[1])")
 					if dial.countryCallingCode == countryCode[1] {
 						dialPlan = dial
+						break
 					}
 				}
-				if (dialPlan == nil) {
+				if dialPlan == nil {
 					Log.error("\(RegisterViewModel.TAG) No dial plan (country) selected!")
 				}
 				
@@ -414,17 +434,26 @@ class RegisterViewModel: ObservableObject {
 	}
 	
 	func validateCode() {
-			createInProgress = true
-			let account = accountCreated
-			if accountManagerServices != nil && account != nil {
-				let code = otpField
-				let identity = account!.params?.identityAddress
-				if identity != nil {
-					Log.info(
-						"\(RegisterViewModel.TAG) Activating account using code \(code) for account \(identity!.asStringUriOnly())"
-					)
-					accountManagerServices!.linkPhoneNumberToAccountUsingCode(sipIdentity: identity!, code: code)
+		createInProgress = true
+		let account = accountCreated
+		if accountManagerServices != nil && account != nil {
+			let code = otpField
+			let identity = account!.params?.identityAddress
+			if identity != nil {
+				Log.info(
+					"\(RegisterViewModel.TAG) Activating account using code \(code) for account \(identity!.asStringUriOnly())"
+				)
+				
+				do {
+					let request = try accountManagerServices?.createLinkPhoneNumberToAccountUsingCodeRequest(sipIdentity: identity!, code: code)
+					if request != nil {
+						self.addDelegate(request: request!)
+						request!.submit()
+					}
+				} catch {
+					Log.error("\(RegisterViewModel.TAG) Can't create link phone number to account using code request")
 				}
 			}
 		}
+	}
 }
