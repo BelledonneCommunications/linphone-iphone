@@ -23,6 +23,7 @@ import Combine
 
 class MeetingsListViewModel: ObservableObject {
 	static let TAG = "[Meetings ListViewModel]"
+	static let ScrollToTodayNotification = Notification.Name("ScrollToToday")
 	
 	private var coreContext = CoreContext.shared
 	private var mCoreSuscriptions = Set<AnyCancellable?>()

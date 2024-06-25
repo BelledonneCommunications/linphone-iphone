@@ -28,6 +28,7 @@ struct MeetingsFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@State var showingSheet: Bool = false
+	@State var reader : ScrollViewProxy?
 	
 	@ViewBuilder
 	func createMonthLine(model: MeetingsListItemModel) -> some View {
@@ -76,7 +77,6 @@ struct MeetingsFragment: View {
 		.background(.white)
 		.clipShape(RoundedRectangle(cornerRadius: 20))
 		.shadow(color: .black.opacity(0.2), radius: 4)
-		.padding(.bottom, 5)
 		.onTapGesture {
 			withAnimation {
 				if let meetingModel = model.model {
@@ -88,15 +88,15 @@ struct MeetingsFragment: View {
 	
 	var body: some View {
 		VStack {
-			List {
-				VStack(alignment: .leading, spacing: 0) {
-					ForEach(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
+			ScrollViewReader { proxyReader in
+				List(0..<meetingsListViewModel.meetingsList.count, id: \.self) { index in
+					VStack(alignment: .leading, spacing: 0) {
 						let itemModel = meetingsListViewModel.meetingsList[index]
 						if index == 0 || itemModel.monthStr != meetingsListViewModel.meetingsList[index-1].monthStr {
 							createMonthLine(model: meetingsListViewModel.meetingsList[index])
-							if index == 0 || itemModel.weekStr != meetingsListViewModel.meetingsList[index-1].weekStr {
-								createWeekLine(model: itemModel)
-							}
+						}
+						if index == 0 || itemModel.weekStr != meetingsListViewModel.meetingsList[index-1].weekStr {
+							createWeekLine(model: itemModel)
 						}
 						
 						if index == 0
@@ -129,35 +129,47 @@ struct MeetingsFragment: View {
 								} else {
 									createMeetingLine(model: itemModel)
 								}
-							}.padding(.top, 10)
+							}
 						} else {
 							createMeetingLine(model: itemModel)
-								.padding(.leading, 40)
+								.padding(.leading, 45)
 						}
 					}
+					.id(index)
+					.listRowInsets(.init(top: 5, leading: 10, bottom: 5, trailing: 15))
+					.listRowSeparator(.hidden)
 				}
-			}
-			.listStyle(.plain)
-			.overlay(
-				VStack {
-					if meetingsListViewModel.meetingsList.isEmpty {
-						Spacer()
-						Image("illus-belledonne")
-							.resizable()
-							.scaledToFit()
-							.clipped()
-							.padding(.all)
-						Text("No meeting for the moment...")
-							.default_text_style_800(styleSize: 16)
-						Spacer()
-						Spacer()
+				.onAppear {
+					proxyReader.scrollTo(meetingsListViewModel.todayIdx)
+				}
+				.onReceive(NotificationCenter.default.publisher(for: MeetingsListViewModel.ScrollToTodayNotification)) { _ in
+					withAnimation {
+						Log.info("debugtrace - List ScrollToTodayNotification")
+						proxyReader.scrollTo(meetingsListViewModel.todayIdx)
 					}
 				}
-					.padding(.all)
-			)
+				.listStyle(.plain)
+				.overlay(
+					VStack {
+						if meetingsListViewModel.meetingsList.isEmpty {
+							Spacer()
+							Image("illus-belledonne")
+								.resizable()
+								.scaledToFit()
+								.clipped()
+								.padding(.all)
+							Text("No meeting for the moment...")
+								.default_text_style_800(styleSize: 16)
+							Spacer()
+							Spacer()
+						}
+					}
+						.padding(.all)
+				)
+			}
+			.navigationTitle("")
+			.navigationBarHidden(true)
 		}
-		.navigationTitle("")
-		.navigationBarHidden(true)
 	}
 }
 

@@ -299,7 +299,18 @@ struct ContentView: View {
 										}
 										.padding(.trailing, index == 2 ? 10 : 0)
 										
-										if index != 2 {
+										if index == 3 {
+											Button {
+												NotificationCenter.default.post(name: MeetingsListViewModel.ScrollToTodayNotification, object: nil)
+											} label: {
+												Image("calendar")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(.white)
+													.frame(width: 25, height: 25, alignment: .leading)
+													.padding(.all, 10)
+											}
+										} else if index != 2 {
 											Menu {
 												if index == 0 {
 													Button {
@@ -355,7 +366,7 @@ struct ContentView: View {
 													}
 												}
 											} label: {
-												Image(index == 0 ? "funnel" : (index == 3 ? "calendar" : "dots-three-vertical"))
+												Image(index == 0 ? "funnel" : "dots-three-vertical")
 													.renderingMode(.template)
 													.resizable()
 													.foregroundStyle(.white)
