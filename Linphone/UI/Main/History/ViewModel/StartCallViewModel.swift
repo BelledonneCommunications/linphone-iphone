@@ -48,14 +48,14 @@ class StartCallViewModel: ObservableObject {
 		var list = participants
 		for selectedAddr in participantsToAdd {
 			if let found = list.first(where: { $0.address.weakEqual(address2: selectedAddr.address) }) {
-				Log.info("\(ScheduleMeetingViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
+				Log.info("\(StartCallViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
 				continue
 			}
 			
 			list.append(selectedAddr)
-			Log.info("\(ScheduleMeetingViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
+			Log.info("\(StartCallViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
 		}
-		Log.info("\(ScheduleMeetingViewModel.TAG) [\(list.count - participants.count) participants added, now there are \(list.count) participants in list")
+		Log.info("\(StartCallViewModel.TAG) [\(list.count - participants.count) participants added, now there are \(list.count) participants in list")
 		
 		participants = list
 	}
