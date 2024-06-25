@@ -192,7 +192,15 @@ struct ToastView: View {
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
-												
+						
+						
+					case "Failed_to_create_group_call_error":
+						Text("conference_failed_to_create_group_call_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					default:
 						Text("Error")
 							.multilineTextAlignment(.center)

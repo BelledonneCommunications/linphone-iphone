@@ -462,11 +462,44 @@
     "Conditions de service" : {
 
     },
+    "conference_failed_to_create_group_call_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to create a group call!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'appel de groupe n'a pas pu être créé!"
+          }
+        }
+      }
+    },
     "Configuration failed" : {
 
     },
     "Configuration successfully applied" : {
 
+    },
+    "Confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmer"
+          }
+        }
+      }
     },
     "Connexion à la réunion" : {
 
@@ -758,6 +791,54 @@
     },
     "History has been deleted" : {
 
+    },
+    "history_call_start_create_group_call" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a group call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer un appel de groupe"
+          }
+        }
+      }
+    },
+    "history_group_call_start_dialog_set_subject" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set group call subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nommer l'appel de groupe"
+          }
+        }
+      }
+    },
+    "history_group_call_start_dialog_subject_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group call subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l'appel de groupe"
+          }
+        }
+      }
     },
     "I prefere create an account" : {
 

@@ -570,12 +570,6 @@ struct ScrollOffsetPreferenceKey: PreferenceKey {
 	}
 }
 
-extension UIApplication {
-	func endEditing() {
-		sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-	}
-}
-
 struct ImagePicker: UIViewControllerRepresentable {
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@Binding var selectedMedia: [Attachment]

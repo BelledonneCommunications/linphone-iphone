@@ -32,7 +32,9 @@ class AddParticipantsViewModel: ObservableObject {
 		} else {
 			Log.info("[\(AddParticipantsViewModel.TAG)] Adding participant \(addr.asStringUriOnly()) to selection")
 			ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
-				self.participantsToAdd.append(SelectedAddressModel(addr: addr, avModel: avatarResult))
+				DispatchQueue.main.async {
+					self.participantsToAdd.append(SelectedAddressModel(addr: addr, avModel: avatarResult))
+				}
 			}
 		}
 	}
