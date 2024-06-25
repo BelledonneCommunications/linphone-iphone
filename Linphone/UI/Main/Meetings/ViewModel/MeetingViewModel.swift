@@ -145,7 +145,8 @@ class MeetingViewModel: ObservableObject {
 		confInfo.participantInfos = participantsInfoList
 	}
 	
-	private func initConferenceSchedulerAndListeners(core: Core) {
+	private func resetConferenceSchedulerAndListeners(core: Core) {
+		self.mSchedulerSubscriptions.removeAll()
 		self.conferenceScheduler = try? core.createConferenceScheduler()
 		
 		self.mSchedulerSubscriptions.insert(self.conferenceScheduler?.publisher?.onStateChanged?.postOnCoreQueue { (cbVal: (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State)) in
@@ -220,13 +221,11 @@ class MeetingViewModel: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("\(MeetingViewModel.TAG) Scheduling \(self.isBroadcastSelected ? "broadcast" : "meeting")")
 			
-			if let conferenceInfo = self.displayedMeeting != nil ? self.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo() {
+			if let conferenceInfo = (self.displayedMeeting != nil ? self.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo()) {
 				let localAccount = core.defaultAccount
 				conferenceInfo.organizer = localAccount?.params?.identityAddress
 				self.fillConferenceInfo(confInfo: conferenceInfo)
-				if self.conferenceScheduler == nil {
-					self.initConferenceSchedulerAndListeners(core: core)
-				}
+				self.resetConferenceSchedulerAndListeners(core: core)
 				self.conferenceScheduler?.account = localAccount
 				// Will trigger the conference creation automatically
 				self.conferenceScheduler?.info = conferenceInfo
@@ -241,9 +240,7 @@ class MeetingViewModel: ObservableObject {
 			
 			if let conferenceInfo = self.conferenceInfoToEdit {
 				self.fillConferenceInfo(confInfo: conferenceInfo)
-				if self.conferenceScheduler == nil {
-					self.initConferenceSchedulerAndListeners(core: core)
-				}
+				self.resetConferenceSchedulerAndListeners(core: core)
 				
 				// Will trigger the conference update automatically
 				self.conferenceScheduler?.info = conferenceInfo

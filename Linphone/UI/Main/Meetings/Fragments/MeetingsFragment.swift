@@ -144,7 +144,6 @@ struct MeetingsFragment: View {
 				}
 				.onReceive(NotificationCenter.default.publisher(for: MeetingsListViewModel.ScrollToTodayNotification)) { _ in
 					withAnimation {
-						Log.info("debugtrace - List ScrollToTodayNotification")
 						proxyReader.scrollTo(meetingsListViewModel.todayIdx)
 					}
 				}
