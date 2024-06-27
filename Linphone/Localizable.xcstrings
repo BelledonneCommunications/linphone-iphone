@@ -205,9 +205,6 @@
     "Appel" : {
 
     },
-    "Appel chiffré de bout en bout" : {
-
-    },
     "assistant_account_create" : {
       "localizations" : {
         "en" : {
@@ -421,6 +418,278 @@
     },
     "Call transfer failed!" : {
 
+    },
+    "call_action_hang_up" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hang up"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raccrocher"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_security_alert_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This call confidentiality may be compromise!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La confidentialité de votre appel peut être compromise !"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_security_alert_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Security alert"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerte de sécurité"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_security_alert_try_again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayer"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_letters_do_not_match" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing matches"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune correspondance"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_local_code_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your code:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre code :"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For your safety, we need to authenticate your correspondent device. Please exchange your codes:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour garantir le chiffrement, nous avons besoin d’authentifier l’appareil de votre correspondant. Veuillez échanger vos codes :"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_remote_code_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correspondent code:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code correspondant :"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Validate the device"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification de sécurité"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_warning_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For your safety, we need to re-authenticate your correspondent device. Please re-exchange your codes:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour garantir le chiffrement, nous avons besoin de réauthentifier l’appareil de votre correspondant. Veuillez ré-échanger vos codes :"
+          }
+        }
+      }
+    },
+    "call_not_encrypted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call is not encrypted"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel non chiffré"
+          }
+        }
+      }
+    },
+    "call_srtp_point_to_point_encrypted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Point-to-point encrypted by SRTP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel chiffré de point à point"
+          }
+        }
+      }
+    },
+    "call_waiting_for_encryption_info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for encryption…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente du chiffrement…"
+          }
+        }
+      }
+    },
+    "call_zrtp_end_to_end_encrypted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End-to-end encrypted by ZRTP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel chiffré de bout en bout"
+          }
+        }
+      }
+    },
+    "call_zrtp_sas_validation_required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Validation required"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vérification nécessaire"
+          }
+        }
+      }
+    },
+    "call_zrtp_sas_validation_skip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer"
+          }
+        }
+      }
     },
     "Calls" : {
 
@@ -890,19 +1159,7 @@
     "Joining..." : {
 
     },
-    "Key" : {
-      "extractionState" : "manual"
-    },
-    "Key 1" : {
-      "extractionState" : "manual"
-    },
-    "Key 2" : {
-      "extractionState" : "manual"
-    },
     "Last name" : {
-
-    },
-    "Letters don't match!" : {
 
     },
     "Linphone" : {
@@ -1102,9 +1359,6 @@
     "Resuming" : {
 
     },
-    "Say %@ and click on the letters given by your correspondent:" : {
-
-    },
     "Say something..." : {
 
     },
@@ -1282,9 +1536,6 @@
       }
     },
     "Username error" : {
-
-    },
-    "Validate the device" : {
 
     },
     "Vidéo" : {

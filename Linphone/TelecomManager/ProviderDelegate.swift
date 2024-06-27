@@ -225,7 +225,12 @@ extension ProviderDelegate: CXProviderDelegate {
 			DispatchQueue.main.async {
 				if UIApplication.shared.applicationState != .active {
 					TelecomManager.shared.backgroundContextCall = call
-					TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
+					if call?.callLog != nil {
+						TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
+					} else {
+						TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true
+					}
+					
 					if #available(iOS 16.0, *) {
 						if call?.cameraEnabled == true {
 							call?.cameraEnabled = AVCaptureSession().isMultitaskingCameraAccessSupported

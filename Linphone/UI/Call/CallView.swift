@@ -177,11 +177,19 @@ struct CallView: View {
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
-					ZRTPPopup(callViewModel: callViewModel)
-						.background(.black.opacity(0.65))
-						.onTapGesture {
-							callViewModel.zrtpPopupDisplayed = false
-						}
+					if idiom != .pad 
+						&& (orientation == .landscapeLeft
+							|| orientation == .landscapeRight
+							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+						&& buttonSize != 45 {
+						ZRTPPopup(callViewModel: callViewModel, resizeView: 1.5)
+							.background(.black.opacity(0.65))
+							.frame(maxHeight: geo.size.height)
+					} else {
+						ZRTPPopup(callViewModel: callViewModel, resizeView: buttonSize == 45 ? 1.5 : 1)
+							.background(.black.opacity(0.65))
+							.frame(maxHeight: geo.size.height)
+					}
 				}
 				
 				if telecomManager.remainingCall {
@@ -226,7 +234,7 @@ struct CallView: View {
 							}
 							
 							Text(callViewModel.displayName)
-							 .default_text_style_white_800(styleSize: 16)
+								.default_text_style_white_800(styleSize: 16)
 							
 							if !telecomManager.outgoingCallStarted && telecomManager.callInProgress {
 								Text("|")
@@ -281,26 +289,114 @@ struct CallView: View {
 						.frame(height: 40)
 						.zIndex(1)
 						
-						if callViewModel.isMediaEncrypted {
-							HStack {
-								Image("lock_simple")
-									.resizable()
-									.frame(width: 15, height: 15, alignment: .leading)
-									.padding(.leading, 50)
-									.padding(.top, 35)
-								
-								Text("Appel chiffré de bout en bout")
-									.foregroundStyle(Color.blueInfo500)
-									.default_text_style_white(styleSize: 12)
-									.padding(.top, 35)
-								
-								Spacer()
+						if !telecomManager.outgoingCallStarted && telecomManager.callInProgress {
+							if callViewModel.isMediaEncrypted && callViewModel.isRemoteDeviceTrusted && callViewModel.isZrtp {
+								HStack {
+									Image("lock-key")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.blueInfo500)
+										.frame(width: 15, height: 15, alignment: .leading)
+										.padding(.leading, 50)
+										.padding(.top, 35)
+									
+									Text("call_zrtp_end_to_end_encrypted")
+										.foregroundStyle(Color.blueInfo500)
+										.default_text_style_white(styleSize: 12)
+										.padding(.top, 35)
+									
+									Spacer()
+								}
+								.onTapGesture {
+									mediaEncryptedSheet = true
+								}
+								.frame(height: 40)
+								.zIndex(1)
+							} else if callViewModel.isMediaEncrypted && !callViewModel.isZrtp {
+								HStack {
+									Image("lock_simple")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.blueInfo500)
+										.frame(width: 15, height: 15, alignment: .leading)
+										.padding(.leading, 50)
+										.padding(.top, 35)
+									
+									Text("call_srtp_point_to_point_encrypted")
+										.foregroundStyle(Color.blueInfo500)
+										.default_text_style_white(styleSize: 12)
+										.padding(.top, 35)
+									
+									Spacer()
+								}
+								.onTapGesture {
+									mediaEncryptedSheet = true
+								}
+								.frame(height: 40)
+								.zIndex(1)
+							} else if callViewModel.isMediaEncrypted && (!callViewModel.isRemoteDeviceTrusted && callViewModel.isZrtp) || callViewModel.cacheMismatch {
+								HStack {
+									Image("warning-circle")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.orangeWarning600)
+										.frame(width: 15, height: 15, alignment: .leading)
+										.padding(.leading, 50)
+										.padding(.top, 35)
+									
+									Text("call_zrtp_sas_validation_required")
+										.foregroundStyle(Color.orangeWarning600)
+										.default_text_style_white(styleSize: 12)
+										.padding(.top, 35)
+									
+									Spacer()
+								}
+								.onTapGesture {
+									mediaEncryptedSheet = true
+								}
+								.frame(height: 40)
+								.zIndex(1)
+							} else if callViewModel.isNotEncrypted {
+								HStack {
+									Image("lock_simple")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 15, height: 15, alignment: .leading)
+										.padding(.leading, 50)
+										.padding(.top, 35)
+									
+									Text("call_not_encrypted")
+										.foregroundStyle(.white)
+										.default_text_style_white(styleSize: 12)
+										.padding(.top, 35)
+									
+									Spacer()
+								}
+								.onTapGesture {
+									mediaEncryptedSheet = true
+								}
+								.frame(height: 40)
+								.zIndex(1)
+							} else {
+								HStack {
+									ProgressView()
+										.controlSize(.mini)
+										.progressViewStyle(CircularProgressViewStyle(tint: .white))
+										.frame(width: 15, height: 15, alignment: .leading)
+										.padding(.leading, 50)
+										.padding(.top, 35)
+									
+									Text("call_waiting_for_encryption_info")
+										.foregroundStyle(.white)
+										.default_text_style_white(styleSize: 12)
+										.padding(.top, 35)
+									
+									Spacer()
+								}
+								.frame(height: 40)
+								.zIndex(1)
 							}
-							.onTapGesture {
-								mediaEncryptedSheet = true
-							}
-							.frame(height: 40)
-						 	.zIndex(1)
 						}
 					}
 				}

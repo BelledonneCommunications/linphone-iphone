@@ -42,8 +42,11 @@ class CallViewModel: ObservableObject {
 	@Published var upperCaseAuthTokenToRead = ""
 	@Published var upperCaseAuthTokenToListen = ""
 	@Published var isMediaEncrypted: Bool = false
-	@Published var isZrtpPq: Bool = false
+	@Published var isNotEncrypted: Bool = false
+	@Published var isZrtp: Bool = false
 	@Published var isRemoteDeviceTrusted: Bool = false
+	@Published var cacheMismatch: Bool = false
+	@Published var isNotVerified: Bool = false
 	@Published var selectedCall: Call?
 	@Published var isTransferInsteadCall: Bool = false
 	@Published var isOneOneCall: Bool = false
@@ -125,14 +128,14 @@ class CallViewModel: ObservableObject {
 				}
 				
 				var isMediaEncryptedTmp = false
-				var isZrtpPqTmp = false
+				var isZrtpTmp = false
 				if self.currentCall != nil && self.currentCall!.currentParams != nil {
 					if self.currentCall!.currentParams!.mediaEncryption == .ZRTP ||
 						self.currentCall!.currentParams!.mediaEncryption == .SRTP ||
 						self.currentCall!.currentParams!.mediaEncryption == .DTLS {
 						
 						isMediaEncryptedTmp = true
-						isZrtpPqTmp = self.currentCall!.currentParams!.mediaEncryption == .ZRTP
+						isZrtpTmp = self.currentCall!.currentParams!.mediaEncryption == .ZRTP
 					}
 				}
 				
@@ -200,6 +203,9 @@ class CallViewModel: ObservableObject {
 					self.zrtpPopupDisplayed = false
 					self.upperCaseAuthTokenToRead = ""
 					self.upperCaseAuthTokenToListen = ""
+					self.isNotVerified = false
+					
+					self.updateEncryption()
 					self.isConference = false
 					self.participantList = []
 					self.activeSpeakerParticipant = nil
@@ -209,7 +215,9 @@ class CallViewModel: ObservableObject {
 					self.videoDisplayed = videoDisplayedTmp
 					self.isOneOneCall = isOneOneCallTmp
 					self.isMediaEncrypted = isMediaEncryptedTmp
-					self.isZrtpPq = isZrtpPqTmp
+					self.isNotEncrypted = false
+					self.isZrtp = isZrtpTmp
+					self.cacheMismatch = cacheMismatchFlag
 					
 					self.getCallsList()
 					
@@ -228,21 +236,35 @@ class CallViewModel: ObservableObject {
 				})
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onStatsUpdated?.postOnCoreQueue {(cbVal: (call: Call, stats: CallStats)) in
-					if self.currentCall != nil {
-						DispatchQueue.main.async {
+					DispatchQueue.main.async {
+						if self.currentCall != nil {
 							self.callStatsModel.update(call: self.currentCall!, stats: cbVal.stats)
 						}
 					}
 				})
 				
-				
 				self.callSuscriptions.insert(
 					self.currentCall!.publisher?.onAuthenticationTokenVerified?.postOnCoreQueue {(call: Call, verified: Bool) in
 						Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
-						
-						self.updateEncryption()
-						if self.currentCall != nil {
-							self.callMediaEncryptionModel.update(call: self.currentCall!)
+						if verified {
+							self.updateEncryption()
+							if self.currentCall != nil {
+								self.callMediaEncryptionModel.update(call: self.currentCall!)
+							}
+						} else {
+							if self.telecomManager.isNotVerifiedCounter == 0 {
+								DispatchQueue.main.async {
+									self.isNotVerified = true
+									self.telecomManager.isNotVerifiedCounter += 1
+								}
+								self.showZrtpSasDialogIfPossible()
+							} else {
+								DispatchQueue.main.async {
+									self.isNotVerified = true
+									self.telecomManager.isNotVerifiedCounter += 1
+									self.zrtpPopupDisplayed = true
+								}
+							}
 						}
 					}
 				)
@@ -641,6 +663,7 @@ class CallViewModel: ObservableObject {
 			telecomManager.callInProgress = true
 			telecomManager.callDisplayed = true
 			telecomManager.callStarted = true
+			telecomManager.isNotVerifiedCounter = 0
 		}
 		
 		coreContext.doOnCoreQueue { core in
@@ -881,18 +904,20 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil {
 				let tokens = core.currentCall!.remoteAuthenticationTokens
-				DispatchQueue.main.async {
-					self.letters1 = tokens[0]
-					self.letters2 = tokens[1]
-					self.letters3 = tokens[2]
-					self.letters4 = tokens[3]
+				if !tokens.isEmpty {
+					DispatchQueue.main.async {
+						self.letters1 = tokens[0]
+						self.letters2 = tokens[1]
+						self.letters3 = tokens[2]
+						self.letters4 = tokens[3]
+					}
 				}
 			}
 		}
 	}
 	
 	private func updateEncryption() {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			if self.currentCall != nil && self.currentCall!.currentParams != nil {
 				switch self.currentCall!.currentParams!.mediaEncryption {
 				case MediaEncryption.ZRTP:
@@ -918,12 +943,14 @@ class CallViewModel: ObservableObject {
 					 */
 					
 					// When Post Quantum is available, ZRTP is Post Quantum
-					let isZrtpPqTmp = Core.getPostQuantumAvailable
+					let isZrtpPQTmp = Core.getPostQuantumAvailable
 					
 					DispatchQueue.main.async {
 						self.isRemoteDeviceTrusted = isRemoteDeviceTrustedTmp
 						self.isMediaEncrypted = true
-						self.isZrtpPq = isZrtpPqTmp
+						self.isZrtp = true
+						self.cacheMismatch = cacheMismatchFlag
+						self.isNotEncrypted = false
 						
 						if isDeviceTrusted {
 							ToastViewModel.shared.toastMessage = "Info_call_securised"
@@ -938,12 +965,18 @@ class CallViewModel: ObservableObject {
 				case MediaEncryption.SRTP, MediaEncryption.DTLS:
 					DispatchQueue.main.async {
 						self.isMediaEncrypted = true
-						self.isZrtpPq = false
+						self.isZrtp = false
+						self.isNotEncrypted = false
 					}
-				default:
+				case MediaEncryption.None:
 					DispatchQueue.main.async {
 						self.isMediaEncrypted = false
-						self.isZrtpPq = false
+						self.isZrtp = false
+						if self.currentCall!.state == .StreamsRunning {
+							self.isNotEncrypted = true
+						} else {
+							self.isNotEncrypted = false
+						}
 					}
 				}
 			}
@@ -971,26 +1004,28 @@ class CallViewModel: ObservableObject {
 			
 			let mySubstringSuffix = upperCaseAuthToken.suffix(2)
 			
-			switch self.currentCall!.dir {
-			case Call.Dir.Incoming:
-				self.upperCaseAuthTokenToRead = String(mySubstringPrefix)
-				self.upperCaseAuthTokenToListen = String(mySubstringSuffix)
-			default:
-				self.upperCaseAuthTokenToRead = String(mySubstringSuffix)
-				self.upperCaseAuthTokenToListen = String(mySubstringPrefix)
+			DispatchQueue.main.async {
+				switch self.currentCall!.dir {
+				case Call.Dir.Incoming:
+					self.upperCaseAuthTokenToRead = String(mySubstringPrefix)
+					self.upperCaseAuthTokenToListen = String(mySubstringSuffix)
+				default:
+					self.upperCaseAuthTokenToRead = String(mySubstringSuffix)
+					self.upperCaseAuthTokenToListen = String(mySubstringPrefix)
+				}
+				
+				self.zrtpPopupDisplayed = true
 			}
-			
-			self.zrtpPopupDisplayed = true
 		}
 	}
 	
 	func transferClicked() {
 		coreContext.doOnCoreQueue { core in
-			var callToTransferTo = core.calls.last { call in
+			let callToTransferTo = core.calls.last { call in
 				call.state == Call.State.Paused && call.callLog?.callId != self.currentCall?.callLog?.callId
 			}
 			
-			if (callToTransferTo == nil) {
+			if callToTransferTo == nil {
 				Log.error(
 					"[CallViewModel] Couldn't find a call in Paused state to transfer current call to"
 				)

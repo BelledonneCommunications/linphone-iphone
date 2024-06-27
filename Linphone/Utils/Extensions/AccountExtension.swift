@@ -35,6 +35,10 @@ extension Account {
 	}
 	
 	static func == (lhs: Account, rhs: Account) -> Bool {
-		return lhs.params?.identityAddress?.asString() == rhs.params?.identityAddress?.asString()
+		if lhs.params != nil && lhs.params?.identityAddress != nil && rhs.params != nil && rhs.params?.identityAddress != nil {
+			return lhs.params?.identityAddress?.asString() == rhs.params?.identityAddress?.asString()
+		} else {
+			return false
+		}
 	}
 }
