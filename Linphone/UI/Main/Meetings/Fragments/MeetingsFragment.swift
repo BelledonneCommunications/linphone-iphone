@@ -74,7 +74,7 @@ struct MeetingsFragment: View {
 		.frame(height: 63)
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.background(.white)
-		.clipShape(RoundedRectangle(cornerRadius: 20))
+		.clipShape(RoundedRectangle(cornerRadius: 10))
 		.shadow(color: .black.opacity(0.2), radius: 4)
 		.onTapGesture {
 			withAnimation {
@@ -84,8 +84,10 @@ struct MeetingsFragment: View {
 			}
 		}
 		.onLongPressGesture(minimumDuration: 0.2) {
-			meetingViewModel.displayedMeeting = model.model
-			showingSheet.toggle()
+			if let meetingModel = model.model {
+				meetingsListViewModel.selectedMeetingToDelete = meetingModel
+				showingSheet.toggle()
+			}
 		}
 	}
 	
