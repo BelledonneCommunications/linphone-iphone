@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
@@ -29,6 +30,7 @@
 		66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */; };
 		66E56BCC2BA9A1E0006CE56F /* MeetingsListItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BCB2BA9A1E0006CE56F /* MeetingsListItemModel.swift */; };
 		66E56BCE2BA9A1F8006CE56F /* MeetingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BCD2BA9A1F8006CE56F /* MeetingModel.swift */; };
+		66F08C892C2AFEF700D9AE2F /* MeetingsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F08C882C2AFEF700D9AE2F /* MeetingsListBottomSheet.swift */; };
 		66F626B22BCEBB86003E2DEC /* AddParticipantsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F626B12BCEBB86003E2DEC /* AddParticipantsFragment.swift */; };
 		66FBFC482B83B8CC00BC6AB1 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
 		66FBFC492B83BD2400BC6AB1 /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
@@ -207,6 +209,7 @@
 		66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListViewModel.swift; sourceTree = "<group>"; };
 		66E56BCB2BA9A1E0006CE56F /* MeetingsListItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListItemModel.swift; sourceTree = "<group>"; };
 		66E56BCD2BA9A1F8006CE56F /* MeetingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingModel.swift; sourceTree = "<group>"; };
+		66F08C882C2AFEF700D9AE2F /* MeetingsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListBottomSheet.swift; sourceTree = "<group>"; };
 		66F626B12BCEBB86003E2DEC /* AddParticipantsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddParticipantsFragment.swift; sourceTree = "<group>"; };
 		C60E8F182C0F649200A06DB8 /* UIApplicationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplicationExtension.swift; sourceTree = "<group>"; };
 		C62817272C1B389700DBA646 /* SideMenuAccountRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuAccountRow.swift; sourceTree = "<group>"; };
@@ -349,6 +352,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +414,7 @@
 				66E50A4A2BD12B7800AD61CA /* MeetingsFragment.swift */,
 				6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */,
 				6613A0AF2BAEB7F4008923A4 /* MeetingsListFragment.swift */,
+				66F08C882C2AFEF700D9AE2F /* MeetingsListBottomSheet.swift */,
 				6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */,
 				66F626B12BCEBB86003E2DEC /* AddParticipantsFragment.swift */,
 			);
@@ -1126,6 +1131,7 @@
 				D7B99E9B2B29F7C300BE7BF2 /* ActivityIndicator.swift in Sources */,
 				66F626B22BCEBB86003E2DEC /* AddParticipantsFragment.swift in Sources */,
 				D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */,
+				66F08C892C2AFEF700D9AE2F /* MeetingsListBottomSheet.swift in Sources */,
 				D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */,
 				D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */,
 				D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */,

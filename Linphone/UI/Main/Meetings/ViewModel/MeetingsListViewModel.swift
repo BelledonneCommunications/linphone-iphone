@@ -27,7 +27,7 @@ class MeetingsListViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
-	var selectedMeeting: ConversationModel?
+	var selectedMeetingToDelete: MeetingModel?
 	
 	@Published var meetingsList: [MeetingsListItemModel] = []
 	@Published var currentFilter = ""
@@ -112,4 +112,25 @@ class MeetingsListViewModel: ObservableObject {
 		}
 	}
 
+	func deleteSelectedMeeting() {
+		guard let meetingToDelete = selectedMeetingToDelete else {
+			Log.error("\(MeetingsListViewModel.TAG) Could not delete meeting because none was selected")
+			return
+		}
+		
+		coreContext.doOnCoreQueue { core in
+			core.deleteConferenceInformation(conferenceInfo: meetingToDelete.confInfo)
+			DispatchQueue.main.async {
+				if let index = self.meetingsList.firstIndex(where: { $0.model?.address == meetingToDelete.address }) {
+					if self.todayIdx > index {
+						// bump todayIdx one place up
+						self.todayIdx -= 1
+					}
+					self.meetingsList.remove(at: index)
+					ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
+					ToastViewModel.shared.displayToast = true
+				}
+			}
+		}
+	}
 }

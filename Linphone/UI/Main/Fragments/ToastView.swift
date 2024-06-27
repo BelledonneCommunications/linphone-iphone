@@ -130,6 +130,13 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_toast_meeting_deleted":
+						Text("Successfully removed meeting")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Failed_toast_call_transfer_failed":
 						Text("Call transfer failed!")
 							.multilineTextAlignment(.center)

@@ -42,6 +42,7 @@ struct MeetingFragment: View {
 	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	@Binding var isShowScheduleMeetingFragment: Bool
+	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	
 	@ViewBuilder
 	func getParticipantLine(participant: SelectedAddressModel) -> some View {
@@ -105,13 +106,34 @@ struct MeetingFragment: View {
 									}
 								}
 						}
-						Image("dots-three-vertical")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.orangeMain500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.onTapGesture {
+						
+						Menu {
+							Button(role: .destructive) {
+								withAnimation {
+									meetingsListViewModel.selectedMeetingToDelete = meetingViewModel.displayedMeeting
+									meetingViewModel.displayedMeeting = nil
+									meetingsListViewModel.deleteSelectedMeeting()
+									isShowSendCancelMeetingNotificationPopup.toggle()
+								}
+							} label: {
+								HStack {
+									Image("trash-simple")
+										.renderingMode(.template)
+										.resizable()
+										.frame(width: 25, height: 25, alignment: .leading)
+									Text("Delete this meeting")
+										.foregroundStyle(Color.redDanger500)
+										.default_text_style(styleSize: 16)
+									Spacer()
+								}
 							}
+						} label: {
+							Image("dots-three-vertical")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+						}
 					}
 					.frame(maxWidth: .infinity)
 					.frame(height: 50)
@@ -279,7 +301,8 @@ struct MeetingFragment: View {
 	model.description = "description du meeting ça va être la bringue wesh wesh gros bien ou bien ça roule"
 	return MeetingFragment(meetingViewModel: model
 						   , meetingsListViewModel: MeetingsListViewModel()
-						   , isShowScheduleMeetingFragment: .constant(true))
+						   , isShowScheduleMeetingFragment: .constant(true)
+						   , isShowSendCancelMeetingNotificationPopup: .constant(false))
 }
 
 // swiftlint:enable line_length

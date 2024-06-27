@@ -60,6 +60,7 @@ struct ContentView: View {
 	@State var isShowEditContactFragment = false
 	@State var isShowStartCallFragment = false
 	@State var isShowDismissPopup = false
+	@State var isShowSendCancelMeetingNotificationPopup = false
 	
 	@State var fullscreenVideo = false
 	
@@ -530,7 +531,8 @@ struct ContentView: View {
 									MeetingsView(
 										meetingsListViewModel: meetingsListViewModel,
 										meetingViewModel: meetingViewModel,
-										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
+										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+										isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
 									)
 								}
 							}
@@ -762,7 +764,7 @@ struct ContentView: View {
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
 							} else if self.index == 3 {
-								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment)
+								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
@@ -980,6 +982,28 @@ struct ContentView: View {
 						.onAppear {
 						}
 					}
+					
+					if isShowSendCancelMeetingNotificationPopup {
+						PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
+								  title: Text("The meeting has been cancelled"),
+								  content: Text("Send notification to participants ?"),
+								  titleFirstButton: Text("Cancel"),
+								  actionFirstButton: { self.isShowSendCancelMeetingNotificationPopup.toggle() },
+								  titleSecondButton: Text("Ok"),
+								  actionSecondButton: {
+							if let meetingToDelete = self.meetingsListViewModel.selectedMeetingToDelete {
+								// We're in the meeting list view
+								self.meetingViewModel.sendMeetingCancelledNotifications(meeting: meetingToDelete)
+								self.isShowSendCancelMeetingNotificationPopup.toggle()
+							}
+						})
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowSendCancelMeetingNotificationPopup.toggle()
+						}
+					}
+					
 					if telecomManager.meetingWaitingRoomDisplayed {
 						MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: meetingWaitingRoomViewModel)
 							.zIndex(3)

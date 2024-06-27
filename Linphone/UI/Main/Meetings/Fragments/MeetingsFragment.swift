@@ -27,8 +27,7 @@ struct MeetingsFragment: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@State var showingSheet: Bool = false
-	@State var reader : ScrollViewProxy?
+	@Binding var showingSheet: Bool
 	
 	@ViewBuilder
 	func createMonthLine(model: MeetingsListItemModel) -> some View {
@@ -83,6 +82,10 @@ struct MeetingsFragment: View {
 					meetingViewModel.loadExistingMeeting(meeting: meetingModel)
 				}
 			}
+		}
+		.onLongPressGesture(minimumDuration: 0.2) {
+			meetingViewModel.displayedMeeting = model.model
+			showingSheet.toggle()
 		}
 	}
 	
@@ -173,5 +176,7 @@ struct MeetingsFragment: View {
 }
 
 #Preview {
-	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(), meetingViewModel: MeetingViewModel())
+	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(),
+					 meetingViewModel: MeetingViewModel(),
+					 showingSheet: .constant(false))
 }

@@ -20,16 +20,40 @@
 import SwiftUI
 
 struct MeetingsView: View {
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
+	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
+	
+	@State private var showingSheet = false
 		
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel)
+				
+				if #available(iOS 16.0, *), idiom != .pad {
+					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet)
+						.sheet(isPresented: $showingSheet) {
+							MeetingsListBottomSheet(
+								meetingsListViewModel: meetingsListViewModel,
+								showingSheet: $showingSheet,
+								isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
+							)
+							.presentationDetents([.fraction(0.1)])
+						}
+				} else {
+					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet)
+						.halfSheet(showSheet: $showingSheet) {
+							MeetingsListBottomSheet(
+								meetingsListViewModel: meetingsListViewModel,
+								showingSheet: $showingSheet,
+								isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
+							)
+						} onDismiss: {}
+				}
 				
 				Button {
 					withAnimation {
@@ -57,6 +81,7 @@ struct MeetingsView: View {
 	MeetingsView(
 		meetingsListViewModel: MeetingsListViewModel(),
 		meetingViewModel: MeetingViewModel(),
-		isShowScheduleMeetingFragment: .constant(false)
+		isShowScheduleMeetingFragment: .constant(false),
+		isShowSendCancelMeetingNotificationPopup: .constant(false)
 	)
 }
