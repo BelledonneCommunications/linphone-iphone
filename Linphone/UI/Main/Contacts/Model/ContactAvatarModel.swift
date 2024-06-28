@@ -29,6 +29,10 @@ class ContactAvatarModel: ObservableObject {
 	
 	let address: String
 	
+	@Published var addresses: [String]
+	
+	let nativeUri: String
+	
 	let withPresence: Bool?
 	
 	@Published var lastPresenceInfo: String
@@ -41,6 +45,14 @@ class ContactAvatarModel: ObservableObject {
 		self.friend = friend
 		self.name = name
 		self.address = address
+		var addressesTmp: [String] = []
+		if friend != nil {
+			friend!.addresses.forEach { address in
+				addressesTmp.append(address.asStringUriOnly())
+			}
+		}
+		self.addresses = addressesTmp
+		self.nativeUri = friend?.nativeUri ?? ""
 		self.withPresence = withPresence
 		if friend != nil &&
 			withPresence == true {

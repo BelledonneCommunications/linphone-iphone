@@ -20,6 +20,7 @@
 import SwiftUI
 import Contacts
 import ContactsUI
+import linphonesw
 
 struct ContactInnerFragment: View {
 	
@@ -69,9 +70,7 @@ struct ContactInnerFragment: View {
 					
 					Spacer()
 					if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-						&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-						&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
-						&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
+						&& !contactAvatarModel.nativeUri.isEmpty {
 						Button(action: {
 							editNativeContact()
 						}, label: {
@@ -99,7 +98,7 @@ struct ContactInnerFragment: View {
 							}
 							.simultaneousGesture(
 								TapGesture().onEnded {
-									editContactViewModel.selectedEditFriend = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+									editContactViewModel.selectedEditFriend = contactAvatarModel.friend
 									editContactViewModel.resetValues()
 								}
 							)
@@ -115,24 +114,19 @@ struct ContactInnerFragment: View {
 					VStack(spacing: 0) {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
-								if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo != nil
-									&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.photo!.isEmpty {
+								if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count {
 									Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
 								} else if contactViewModel.indexDisplayedFriend != nil 
 											&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-											&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+											&& contactAvatarModel != nil {
 									Image("profil-picture-default")
 										.resizable()
 										.frame(width: 100, height: 100)
 										.clipShape(Circle())
 								}
 								if contactViewModel.indexDisplayedFriend != nil
-									&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-									&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name != nil {
-									Text((contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend?.name)!)
+									&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count {
+									Text(contactAvatarModel.name)
 										.foregroundStyle(Color.grayMain2c700)
 										.multilineTextAlignment(.center)
 										.default_text_style(styleSize: 14)
@@ -158,7 +152,12 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-									telecomManager.doCallOrJoinConf(address: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!)
+									do {
+										let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+										telecomManager.doCallOrJoinConf(address: address)
+									} catch {
+										Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+									}
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -208,7 +207,12 @@ struct ContactInnerFragment: View {
 								Spacer()
 								
 								Button(action: {
-									telecomManager.doCallOrJoinConf(address: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.address!, isVideo: true)
+									do {
+										let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+										telecomManager.doCallOrJoinConf(address: address, isVideo: true)
+									} catch {
+										Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+									}
 								}, label: {
 									VStack {
 										HStack(alignment: .center) {
@@ -236,7 +240,7 @@ struct ContactInnerFragment: View {
 							ContactInnerActionsFragment(
 								contactViewModel: contactViewModel,
 								editContactViewModel: editContactViewModel,
-								showingSheet: $showingSheet,
+								contactAvatarModel: contactAvatarModel, showingSheet: $showingSheet,
 								showShareSheet: $showShareSheet,
 								isShowDeletePopup: $isShowDeletePopup,
 								isShowDismissPopup: $isShowDismissPopup,
@@ -271,7 +275,7 @@ struct ContactInnerFragment: View {
 			let store = CNContactStore()
 			let descriptor = CNContactViewController.descriptorForRequiredKeys()
 			cnContact = try store.unifiedContact(
-				withIdentifier: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!,
+				withIdentifier: contactAvatarModel.nativeUri,
 				keysToFetch: [descriptor]
 			)
 			

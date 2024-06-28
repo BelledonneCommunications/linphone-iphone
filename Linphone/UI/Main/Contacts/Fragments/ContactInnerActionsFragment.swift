@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import linphonesw
 
 struct ContactInnerActionsFragment: View {
 	
@@ -26,6 +27,7 @@ struct ContactInnerActionsFragment: View {
 	
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	
 	@State private var informationIsOpen = true
 	
@@ -62,126 +64,125 @@ struct ContactInnerActionsFragment: View {
 		
 		if informationIsOpen {
 			VStack(spacing: 0) {
-				if contactViewModel.indexDisplayedFriend != nil
-					&& contactsManager.lastSearch.count > contactViewModel.indexDisplayedFriend!
-					&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
-					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count, id: \.self) { index in
+				ForEach(0..<contactAvatarModel.addresses.count, id: \.self) { index in
+					HStack {
 						HStack {
-							HStack {
-								VStack {
-									Text("SIP address :")
-										.default_text_style_700(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-									Text(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly().dropFirst(4))
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-										.fixedSize(horizontal: false, vertical: true)
-								}
-								Spacer()
-								
-								Image("phone")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25)
-									.padding(.all, 10)
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						.background(.white)
-						.onTapGesture {
-							withAnimation {
-								telecomManager.doCallOrJoinConf(address: contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index])
-							}
-						}
-						.onLongPressGesture(minimumDuration: 0.2) {
-							contactViewModel.stringToCopy = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses[index].asStringUriOnly()
-							showingSheet.toggle()
-						}
-						
-						if !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.isEmpty
-							|| index < contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.addresses.count - 1 {
 							VStack {
-								Divider()
+								Text("SIP address :")
+									.default_text_style_700(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+								Text(contactAvatarModel.addresses[index].dropFirst(4))
+									.default_text_style(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+									.fixedSize(horizontal: false, vertical: true)
 							}
-							.padding(.horizontal)
+							Spacer()
+							
+							Image("phone")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c600)
+								.frame(width: 25, height: 25)
+								.padding(.all, 10)
+						}
+						.padding(.vertical, 15)
+						.padding(.horizontal, 20)
+					}
+					.background(.white)
+					.onTapGesture {
+						do {
+							let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
+							withAnimation {
+								telecomManager.doCallOrJoinConf(address: address)
+							}
+						} catch {
+							Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
 						}
 					}
+					.onLongPressGesture(minimumDuration: 0.2) {
+						contactViewModel.stringToCopy = contactAvatarModel.addresses[index]
+						showingSheet.toggle()
+					}
 					
-					ForEach(0..<contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count, id: \.self) { index in
+					if contactAvatarModel.friend != nil && !contactAvatarModel.friend!.phoneNumbers.isEmpty
+						|| index < contactAvatarModel.addresses.count - 1 {
+						VStack {
+							Divider()
+						}
+						.padding(.horizontal)
+					}
+				}
+				if contactAvatarModel.friend != nil {
+					ForEach(0..<contactAvatarModel.friend!.phoneNumbers.count, id: \.self) { index in
+					HStack {
 						HStack {
-							HStack {
-								VStack {
-									if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label != nil
-										&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label!.isEmpty {
-										Text("Phone (\(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].label!)) :")
-											.default_text_style_700(styleSize: 14)
-											.frame(maxWidth: .infinity, alignment: .leading)
-									} else {
-										Text("Phone :")
-											.default_text_style_700(styleSize: 14)
-											.frame(maxWidth: .infinity, alignment: .leading)
-									}
-									Text(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber)
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-										.fixedSize(horizontal: false, vertical: true)
-								}
-								Spacer()
-							}
-							.padding(.vertical, 15)
-							.padding(.horizontal, 20)
-						}
-						.background(.white)
-						.onLongPressGesture(minimumDuration: 0.2) {
-							contactViewModel.stringToCopy =
-							   contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbersWithLabel[index].phoneNumber
-							showingSheet.toggle()
-						}
-						
-						if index < contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.phoneNumbers.count - 1 {
 							VStack {
-								Divider()
+								if contactAvatarModel.friend!.phoneNumbersWithLabel[index].label != nil
+									&& !contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!.isEmpty {
+									Text("Phone (\(contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!)) :")
+										.default_text_style_700(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+								} else {
+									Text("Phone :")
+										.default_text_style_700(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+								}
+								Text(contactAvatarModel.friend!.phoneNumbersWithLabel[index].phoneNumber)
+									.default_text_style(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+									.fixedSize(horizontal: false, vertical: true)
 							}
-							.padding(.horizontal)
+							Spacer()
 						}
+						.padding(.vertical, 15)
+						.padding(.horizontal, 20)
+					}
+					.background(.white)
+					.onLongPressGesture(minimumDuration: 0.2) {
+						contactViewModel.stringToCopy =
+						contactAvatarModel.friend!.phoneNumbersWithLabel[index].phoneNumber
+						showingSheet.toggle()
+					}
+					
+					if index < contactAvatarModel.friend!.phoneNumbers.count - 1 {
+						VStack {
+							Divider()
+						}
+						.padding(.horizontal)
 					}
 				}
 			}
+		}
 			.background(.white)
 			.cornerRadius(15)
 			.padding(.horizontal)
 			.zIndex(-1)
 			.transition(.move(edge: .top))
-		}
+	}
 		
-		if contactViewModel.indexDisplayedFriend != nil
-			&& contactsManager.lastSearch.count > contactViewModel.indexDisplayedFriend!
-			&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-			&& ((contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
-				 && !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty)
-				|| (contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle != nil
-					&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty)) {
+		if contactAvatarModel.friend != nil && (contactAvatarModel.friend!.organization != nil
+				 && !contactAvatarModel.friend!.organization!.isEmpty)
+				|| (contactAvatarModel.friend!.jobTitle != nil
+					&& !contactAvatarModel.friend!.jobTitle!.isEmpty) {
 			VStack {
-				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
-					&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty {
-					Text("**Company :** \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!)")
+				if contactAvatarModel.friend!.organization != nil
+					&& !contactAvatarModel.friend!.organization!.isEmpty {
+					Text("**Company :** \(contactAvatarModel.friend!.organization!)")
 						.default_text_style(styleSize: 14)
 						.padding(.vertical, 15)
 						.padding(.horizontal, 20)
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
 				
-				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle != nil
-					&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!.isEmpty {
-					Text("**Job :** \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.jobTitle!)")
+				if contactAvatarModel.friend!.jobTitle != nil
+					&& !contactAvatarModel.friend!.jobTitle!.isEmpty {
+					Text("**Job :** \(contactAvatarModel.friend!.jobTitle!)")
 						.default_text_style(styleSize: 14)
 						.padding(.top, 
-								 contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization != nil
-								 && !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.organization!.isEmpty 
+								 contactAvatarModel.friend!.organization != nil
+								 && !contactAvatarModel.friend!.organization!.isEmpty
 								 ? 0 : 15
 						)
 						.padding(.bottom, 15)
@@ -212,11 +213,7 @@ struct ContactInnerActionsFragment: View {
 		.background(Color.gray100)
 		
 		VStack(spacing: 0) {
-			if contactViewModel.indexDisplayedFriend != nil 
-				&& contactsManager.lastSearch.count > contactViewModel.indexDisplayedFriend!
-				&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-				&& contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri != nil
-				&& !contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.nativeUri!.isEmpty {
+			if !contactAvatarModel.nativeUri.isEmpty {
 				Button {
 					actionEditButton()
 				} label: {
@@ -264,7 +261,7 @@ struct ContactInnerActionsFragment: View {
 				}
 				.simultaneousGesture(
 					TapGesture().onEnded {
-						editContactViewModel.selectedEditFriend = contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend
+						editContactViewModel.selectedEditFriend = contactAvatarModel.friend!
 						editContactViewModel.resetValues()
 					}
 				)
@@ -276,30 +273,21 @@ struct ContactInnerActionsFragment: View {
 			.padding(.horizontal)
 			
 			Button {
-				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+				if contactAvatarModel.friend != nil {
 					contactViewModel.objectWillChange.send()
-					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.edit()
-					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred.toggle()
-					contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.done()
+					contactAvatarModel.friend!.edit()
+					contactAvatarModel.friend!.starred.toggle()
+					contactAvatarModel.friend!.done()
 				}
 			} label: {
 				HStack {
-					Image(contactViewModel.indexDisplayedFriend != nil
-						  && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-						  && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-						  && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? "heart-fill" : "heart")
+					Image(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true ? "heart-fill" : "heart")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(contactViewModel.indexDisplayedFriend != nil 
-									 && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-									 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-									 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
+					.foregroundStyle(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
 					.frame(width: 25, height: 25)
 					.padding(.all, 10)
-					Text(contactViewModel.indexDisplayedFriend != nil
-						 && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil
-						 && contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.starred == true
+					Text(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true
 						 ? "Remove from favourites"
 						 : "Add to favourites")
 					.default_text_style(styleSize: 14)
@@ -344,62 +332,8 @@ struct ContactInnerActionsFragment: View {
 			}
 			.padding(.horizontal)
 			
-			/*
-			 Button {
-			 } label: {
-			 HStack {
-			 Image("bell-simple-slash")
-			 .renderingMode(.template)
-			 .resizable()
-			 .foregroundStyle(Color.grayMain2c600)
-			 .frame(width: 25, height: 25)
-			 .padding(.all, 10)
-			 
-			 Text("Mute")
-			 .default_text_style(styleSize: 14)
-			 .frame(maxWidth: .infinity, alignment: .leading)
-			 .lineLimit(1)
-			 .fixedSize(horizontal: false, vertical: true)
-			 Spacer()
-			 }
-			 .padding(.vertical, 15)
-			 .padding(.horizontal, 20)
-			 }
-			 
-			 VStack {
-			 Divider()
-			 }
-			 .padding(.horizontal)
-			 
-			 Button {
-			 } label: {
-			 HStack {
-			 Image("x-circle")
-			 .renderingMode(.template)
-			 .resizable()
-			 .foregroundStyle(Color.grayMain2c600)
-			 .frame(width: 25, height: 25)
-			 .padding(.all, 10)
-			 
-			 Text("Block")
-			 .default_text_style(styleSize: 14)
-			 .frame(maxWidth: .infinity, alignment: .leading)
-			 .lineLimit(1)
-			 .fixedSize(horizontal: false, vertical: true)
-			 Spacer()
-			 }
-			 .padding(.vertical, 15)
-			 .padding(.horizontal, 20)
-			 }
-			 
-			 VStack {
-			 Divider()
-			 }
-			 .padding(.horizontal)
-			 */
-			
 			Button {
-				if contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend != nil {
+				if contactAvatarModel != nil {
 					isShowDeletePopup.toggle()
 				}
 			} label: {
@@ -435,6 +369,7 @@ struct ContactInnerActionsFragment: View {
 	ContactInnerActionsFragment(
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
+		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
 		showingSheet: .constant(false),
 		showShareSheet: .constant(false),
 		isShowDeletePopup: .constant(false),
