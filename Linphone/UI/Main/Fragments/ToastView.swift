@@ -82,7 +82,7 @@ struct ToastView: View {
 							.padding(8)
 						
 					case "Info_call_securised":
-						Text("This call is completely securised")
+						Text("call_can_be_trusted_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.blueInfo500)
 							.default_text_style(styleSize: 15)

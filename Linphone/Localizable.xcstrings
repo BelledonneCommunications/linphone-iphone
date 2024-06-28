@@ -52,6 +52,9 @@
     "%@" : {
 
     },
+    "%@ meeting" : {
+
+    },
     "%lld" : {
 
     },
@@ -432,6 +435,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Raccrocher"
+          }
+        }
+      }
+    },
+    "call_can_be_trusted_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authenticated device"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil authentifié"
           }
         }
       }
@@ -1156,6 +1176,9 @@
     "Job title" : {
 
     },
+    "Join the meeting now" : {
+
+    },
     "Joining..." : {
 
     },
@@ -1207,9 +1230,6 @@
     "New contact" : {
 
     },
-    "New meeting" : {
-
-    },
     "Next" : {
 
     },
@@ -1223,6 +1243,9 @@
 
     },
     "No meeting for the moment..." : {
+
+    },
+    "No meeting today" : {
 
     },
     "No participant for the moment..." : {
@@ -1241,6 +1264,9 @@
 
     },
     "Opération en cours..." : {
+
+    },
+    "Organizer" : {
 
     },
     "Other actions" : {
@@ -1464,9 +1490,6 @@
     "The user name or password is incorrects" : {
 
     },
-    "This call is completely securised" : {
-
-    },
     "This contact will be deleted definitively." : {
 
     },
@@ -1477,9 +1500,6 @@
 
     },
     "to Linphone" : {
-
-    },
-    "TODO" : {
 
     },
     "TODO : repeat" : {

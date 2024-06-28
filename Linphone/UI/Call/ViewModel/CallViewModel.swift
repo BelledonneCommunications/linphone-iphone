@@ -205,7 +205,7 @@ class CallViewModel: ObservableObject {
 					self.upperCaseAuthTokenToListen = ""
 					self.isNotVerified = false
 					
-					self.updateEncryption()
+					self.updateEncryption(withToast: false)
 					self.isConference = false
 					self.participantList = []
 					self.activeSpeakerParticipant = nil
@@ -229,7 +229,7 @@ class CallViewModel: ObservableObject {
 				}
 				
 				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnCoreQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
-					self.updateEncryption()
+					self.updateEncryption(withToast: false)
 					if self.currentCall != nil {
 						self.callMediaEncryptionModel.update(call: self.currentCall!)
 					}
@@ -247,7 +247,7 @@ class CallViewModel: ObservableObject {
 					self.currentCall!.publisher?.onAuthenticationTokenVerified?.postOnCoreQueue {(call: Call, verified: Bool) in
 						Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
 						if verified {
-							self.updateEncryption()
+							self.updateEncryption(withToast: true)
 							if self.currentCall != nil {
 								self.callMediaEncryptionModel.update(call: self.currentCall!)
 							}
@@ -916,7 +916,7 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	private func updateEncryption() {
+	private func updateEncryption(withToast: Bool) {
 		coreContext.doOnCoreQueue { _ in
 			if self.currentCall != nil && self.currentCall!.currentParams != nil {
 				switch self.currentCall!.currentParams!.mediaEncryption {
@@ -952,7 +952,7 @@ class CallViewModel: ObservableObject {
 						self.cacheMismatch = cacheMismatchFlag
 						self.isNotEncrypted = false
 						
-						if isDeviceTrusted {
+						if isDeviceTrusted && withToast {
 							ToastViewModel.shared.toastMessage = "Info_call_securised"
 							ToastViewModel.shared.displayToast = true
 						}
