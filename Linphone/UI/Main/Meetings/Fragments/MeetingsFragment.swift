@@ -40,9 +40,8 @@ struct MeetingsFragment: View {
 	@ViewBuilder
 	func createWeekLine(model: MeetingsListItemModel) -> some View {
 		Text(model.weekStr)
-			.padding(.leading, 43)
-			.padding(.top, 5)
-			.padding(.bottom, 5)
+			.padding(.leading, 50)
+			.padding(.vertical, 10)
 			.default_text_style_500(styleSize: 14)
 	}
 	@ViewBuilder
@@ -70,7 +69,7 @@ struct MeetingsFragment: View {
 					.default_text_style_500(styleSize: 15)
 			}
 		}
-		.padding(.leading, 20)
+		.padding(.leading, 30)
 		.frame(height: 63)
 		.frame(maxWidth: .infinity, alignment: .leading)
 		.background(.white)
@@ -130,6 +129,7 @@ struct MeetingsFragment: View {
 									Text("No meeting today")
 										.fontWeight(.bold)
 										.padding(.leading, 20)
+										.padding(.top, 10)
 										.default_text_style_500(styleSize: 15)
 								} else {
 									createMeetingLine(model: itemModel)
@@ -137,7 +137,7 @@ struct MeetingsFragment: View {
 							}
 						} else {
 							createMeetingLine(model: itemModel)
-								.padding(.leading, 45)
+								.padding(.leading, 55)
 						}
 					}
 					.id(index)

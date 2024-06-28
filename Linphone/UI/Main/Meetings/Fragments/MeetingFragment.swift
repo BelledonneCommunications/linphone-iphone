@@ -224,19 +224,20 @@ struct MeetingFragment: View {
 							.frame(height: 1)
 							.background(Color.gray200)
 						
-						HStack(alignment: .top, spacing: 10) {
-							Image("note")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c600)
-								.frame(width: 24, height: 24)
-								.padding(.leading, 15)
-							
-							Text(meetingViewModel.description)
-								.default_text_style(styleSize: 14)
-							Spacer()
-						}.padding(.top, 10)
-							.padding(.bottom, 10)
+						if !meetingViewModel.description.isEmpty {
+							HStack(alignment: .top, spacing: 10) {
+								Image("note")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c600)
+									.frame(width: 24, height: 24)
+									.padding(.leading, 15)
+								
+								Text(meetingViewModel.description)
+									.default_text_style(styleSize: 14)
+								Spacer()
+							}.padding(.vertical, 10)
+						}
 						
 						Rectangle()
 							.foregroundStyle(.clear)
