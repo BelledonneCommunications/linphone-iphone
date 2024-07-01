@@ -375,6 +375,8 @@ struct EditContactFragment: View {
 									HStack(alignment: .center) {
 										TextField("Phone number", text: $editContactViewModel.phoneNumbers[index])
 											.default_text_style(styleSize: 15)
+											.textContentType(.oneTimeCode)
+		   									.keyboardType(.numberPad)
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
