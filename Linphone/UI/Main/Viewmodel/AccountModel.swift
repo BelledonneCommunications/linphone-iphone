@@ -27,6 +27,8 @@ class AccountModel: ObservableObject {
 	@Published var registrationStateAssociatedUIColor: Color = .clear
 	@Published var notificationsCount: Int = 0
 	@Published var isDefaultAccount: Bool = false
+	@Published var displayName: String = ""
+	@Published var address: String = ""
 	
 	init(account: Account, corePublisher: CoreDelegatePublisher?) {
 		self.account = account
@@ -56,6 +58,8 @@ class AccountModel: ObservableObject {
 		if let defaultAccount = account.core?.defaultAccount {
 			isDefault = (defaultAccount == account)
 		}
+		let displayName = account.displayName()
+		let address = account.params?.identityAddress?.asString()
 		DispatchQueue.main.async { [self] in
 			switch state {
 			case .Cleared, .None:
@@ -75,6 +79,8 @@ class AccountModel: ObservableObject {
 				registrationStateAssociatedUIColor = .grayMain2c500
 			}
 			isDefaultAccount = isDefault
+			self.displayName = displayName
+			address.map {self.address = $0}
 		}
 	}
 	

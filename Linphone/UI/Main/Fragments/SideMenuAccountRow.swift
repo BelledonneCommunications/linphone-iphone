@@ -28,14 +28,14 @@ struct SideMenuAccountRow: View {
 			
 			Avatar(contactAvatarModel:
 					ContactAvatarModel(friend: nil,
-									   name: model.account.displayName(),
-									   address: model.account.params!.identityAddress!.asString(),
+									   name: model.displayName,
+									   address: model.address,
 									   withPresence: true),
 				   avatarSize: 45)
 			.padding(.leading, 6)
 			
 			VStack {
-				Text(model.account.displayName())
+				Text(model.displayName)
 					.default_text_style_grey_400(styleSize: 14)
 					.lineLimit(1)
 					.frame(maxWidth: .infinity, alignment: .leading)
