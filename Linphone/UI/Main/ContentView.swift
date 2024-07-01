@@ -433,6 +433,8 @@ struct ContentView: View {
 											))
 											.default_text_style_white_700(styleSize: 15)
 											.padding(.all, 6)
+											.disableAutocorrection(true)
+											.autocapitalization(.none)
 											.accentColor(.white)
 											.scrollContentBackground(.hidden)
 											.focused($focusedField)
@@ -469,6 +471,8 @@ struct ContentView: View {
 											.default_text_style_700(styleSize: 15)
 											.padding(.all, 6)
 											.focused($focusedField)
+											.disableAutocorrection(true)
+											.autocapitalization(.none)
 											.onAppear {
 												self.focusedField = true
 											}
