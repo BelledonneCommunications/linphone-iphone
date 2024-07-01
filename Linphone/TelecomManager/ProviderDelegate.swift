@@ -74,7 +74,7 @@ class ProviderDelegate: NSObject {
 			let providerConfiguration = CXProviderConfiguration()
 			// providerConfiguration.ringtoneSound = ConfigManager.instance().lpConfigBoolForKey(key: "use_device_ringtone") ? nil : "notes_of_the_optimistic.caf"
 			providerConfiguration.supportsVideo = true
-			providerConfiguration.iconTemplateImageData = UIImage(named: "callkit_logo")?.pngData()
+			providerConfiguration.iconTemplateImageData = UIImage(named: "linphone")?.pngData()
 			providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
 			
 			providerConfiguration.maximumCallsPerCallGroup = 10
