@@ -35,6 +35,14 @@ class AccountLoginViewModel: ObservableObject {
 	func login() {
 		coreContext.doOnCoreQueue { core in
 			do {
+				let usernameWithDomain = self.username.split(separator: "@")
+				
+				if usernameWithDomain.count > 1 {
+					DispatchQueue.main.async {
+						self.domain = String(usernameWithDomain.last ?? "")
+						self.username = String(usernameWithDomain.first ?? "")
+					}
+				}
 				
 				if self.domain != "sip.linphone.org" {
 					if let assistantLinphone = Bundle.main.path(forResource: "assistant_third_party_default_values", ofType: nil) {
