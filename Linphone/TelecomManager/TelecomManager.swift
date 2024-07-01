@@ -587,7 +587,9 @@ class TelecomManager: ObservableObject {
 							// Tha app is now registered, updated the call already existed.
 							self.providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, displayName: displayName)
 						} else {
-							self.displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, callId: callId, displayName: displayName)
+							let videoEnabled = call.remoteParams?.videoEnabled ?? false
+							let isConference = call.callLog?.wasConference() ?? false
+							self.displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: videoEnabled && !isConference, callId: callId, displayName: displayName)
 						}
 					} /* else if UIApplication.shared.applicationState != .active {
 					   // not support callkit , use notif
