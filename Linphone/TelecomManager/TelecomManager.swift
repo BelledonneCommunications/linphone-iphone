@@ -319,6 +319,15 @@ class TelecomManager: ObservableObject {
 			DispatchQueue.main.async {
 				self.callStarted = true
 				self.isNotVerifiedCounter = 0
+				if self.callDisplayed {
+					self.callDisplayed = core.calls.count <= 1
+				}
+			}
+			
+			if core.calls.count > 1 {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+					self.callDisplayed = true
+				}
 			}
 		} catch {
 			Log.error("accept call failed \(error)")

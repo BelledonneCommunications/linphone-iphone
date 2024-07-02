@@ -222,13 +222,18 @@ extension ProviderDelegate: CXProviderDelegate {
 			
 			let call = core.getCallByCallid(callId: callId)
 			
+			let callLogIsNil = call?.callLog != nil
+			
+			let videoEnabledTmp = call?.params?.videoEnabled
+			let wasConferenceTmp = call?.callLog?.wasConference()
+			
 			DispatchQueue.main.async {
 				if UIApplication.shared.applicationState != .active {
 					TelecomManager.shared.backgroundContextCall = call
-					if call?.callLog != nil {
-						TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
+					if callLogIsNil {
+						TelecomManager.shared.backgroundContextCameraIsEnabled = videoEnabledTmp == true || wasConferenceTmp == true
 					} else {
-						TelecomManager.shared.backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true
+						TelecomManager.shared.backgroundContextCameraIsEnabled = videoEnabledTmp == true
 					}
 					
 					if #available(iOS 16.0, *) {

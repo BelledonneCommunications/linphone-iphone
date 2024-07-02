@@ -1915,7 +1915,7 @@ struct CallView: View {
 						if callViewModel.isOneOneCall {
 							VStack {
 								Button {
-									if callViewModel.calls.count < 2 {
+									if callViewModel.callsCounter < 2 {
 										withAnimation {
 											callViewModel.isTransferInsteadCall = true
 											MagicSearchSingleton.shared.searchForSuggestions()
@@ -1938,7 +1938,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
+								Text(callViewModel.callsCounter < 2 ? "Transfer" : "Attended transfer")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2039,13 +2039,13 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								if callViewModel.calls.count > 1 {
+								if callViewModel.callsCounter > 1 {
 									VStack {
 										HStack {
 											Spacer()
 											
 											VStack {
-												Text("\(callViewModel.calls.count)")
+												Text("\(callViewModel.callsCounter)")
 													.foregroundStyle(.white)
 													.default_text_style(styleSize: 15)
 											}
@@ -2261,7 +2261,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text(callViewModel.calls.count < 2 ? "Transfer" : "Attended transfer")
+								Text(callViewModel.callsCounter < 2 ? "Transfer" : "Attended transfer")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2365,13 +2365,13 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								if callViewModel.calls.count > 1 {
+								if callViewModel.callsCounter > 1 {
 									VStack {
 										HStack {
 											Spacer()
 											
 											VStack {
-												Text("\(callViewModel.calls.count)")
+												Text("\(callViewModel.callsCounter)")
 													.foregroundStyle(.white)
 													.default_text_style(styleSize: 15)
 											}

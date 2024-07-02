@@ -73,7 +73,7 @@ struct ContentView: View {
 		
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
-				if telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.calls.count == 1) || callViewModel.calls.count > 1) {
+				if telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1) {
 					HStack {
 						Image("phone")
 							.renderingMode(.template)
@@ -82,8 +82,8 @@ struct ContentView: View {
 							.frame(width: 26, height: 26)
 							.padding(.leading, 10)
 						
-						if callViewModel.calls.count > 1 {
-							Text("\(callViewModel.calls.count) appels")
+						if callViewModel.callsCounter > 1 {
+							Text("\(callViewModel.callsCounter) appels")
 								.default_text_style_white(styleSize: 16)
 						} else {
 							Text("\(callViewModel.displayName)")
@@ -92,7 +92,7 @@ struct ContentView: View {
 						
 						Spacer()
 						
-						if callViewModel.calls.count == 1 {
+						if callViewModel.callsCounter == 1 {
 							Text("\(callViewModel.isPaused || telecomManager.isPausedByRemote ? "En pause" : "Actif")")
 								.default_text_style_white(styleSize: 16)
 								.padding(.trailing, 10)
@@ -1024,7 +1024,7 @@ struct ContentView: View {
 							.onAppear {
 								UIApplication.shared.isIdleTimerDisabled = true
 								callViewModel.resetCallView()
-								if callViewModel.calls.count >= 1 {
+								if callViewModel.callsCounter >= 1 {
 									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 										callViewModel.resetCallView()
 									}

@@ -65,6 +65,7 @@ class CallViewModel: ObservableObject {
 	private var mConferenceSuscriptions = Set<AnyCancellable?>()
 	
 	@Published var calls: [Call] = []
+	@Published var callsCounter: Int = 0
 	@Published var callsContactAvatarModel: [ContactAvatarModel?] = []
 	
 	let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -106,9 +107,10 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				self.currentCall = core.currentCall
-				
 				self.callSuscriptions.removeAll()
 				self.mConferenceSuscriptions.removeAll()
+				
+				let callsCounterTmp = core.calls.count
 				
 				var videoDisplayedTmp = false
 				do {
@@ -220,6 +222,8 @@ class CallViewModel: ObservableObject {
 					self.cacheMismatch = cacheMismatchFlag
 					
 					self.getCallsList()
+					
+					self.callsCounter = callsCounterTmp
 					
 					if self.currentCall?.conference?.state == .Created {
 						self.getConference()

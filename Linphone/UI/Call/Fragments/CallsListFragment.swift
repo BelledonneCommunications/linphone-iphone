@@ -327,7 +327,7 @@ struct CallsListFragment: View {
 			.listStyle(.plain)
 			.overlay(
 				VStack {
-					if callViewModel.calls.isEmpty {
+					if callViewModel.callsCounter == 0 {
 						Spacer()
 						Image("illus-belledonne")
 							.resizable()
