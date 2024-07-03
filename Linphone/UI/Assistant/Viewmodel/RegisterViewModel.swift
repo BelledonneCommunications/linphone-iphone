@@ -96,6 +96,10 @@ class RegisterViewModel: ObservableObject {
 		getDialPlansList()
 		getAccountCreationToken()
 		
+		self.usernameError = ""
+		self.phoneNumberError = ""
+		self.passwordError = ""
+		
 		NotificationCenter.default.addObserver(forName: accountTokenNotification, object: nil, queue: nil) { notification in
 			if !(self.username.isEmpty || self.passwd.isEmpty) {
 				if let token = notification.userInfo?["token"] as? String {
@@ -174,6 +178,21 @@ class RegisterViewModel: ObservableObject {
 						ToastViewModel.shared.displayToast = true
 					}
 				}
+				
+				parameterErrors?.keys.forEach({ parameter in
+					let parameterErrorMessage = parameterErrors?.getString(key: parameter) ?? ""
+					
+					switch parameter {
+					case "username":
+						self.usernameError = parameterErrorMessage
+					case "password":
+						self.passwordError = parameterErrorMessage
+					case "phone":
+						self.phoneNumberError = parameterErrorMessage
+					default:
+						break
+					}
+				})
 				
 				switch request.type {
 				case .SendAccountCreationTokenByPush:

@@ -91,10 +91,19 @@ struct RegisterFragment: View {
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(isNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											.stroke(isNameFocused ? Color.orangeMain500 : (!registerViewModel.usernameError.isEmpty ? Color.redDanger500 : Color.gray200), lineWidth: 1)
 									)
-									.padding(.bottom)
 									.focused($isNameFocused)
+									.onChange(of: registerViewModel.username) { _ in
+										if !registerViewModel.usernameError.isEmpty {
+											registerViewModel.usernameError = ""
+										}
+									}
+								
+								Text(registerViewModel.usernameError)
+									.foregroundStyle(Color.redDanger500)
+									.default_text_style_600(styleSize: 15)
+									.padding(.bottom)
 								
 								Text(String(localized: "Phone number")+"*")
 									.default_text_style_700(styleSize: 15)
@@ -128,6 +137,11 @@ struct RegisterFragment: View {
 										.autocapitalization(.none)
 										.padding(.leading, 5)
 										.keyboardType(.numberPad)
+										.onChange(of: registerViewModel.phoneNumber) { _ in
+											if !registerViewModel.phoneNumberError.isEmpty {
+												registerViewModel.phoneNumberError = ""
+											}
+										}
 								}
 								.frame(height: 25)
 								.padding(.horizontal, 20)
@@ -136,10 +150,14 @@ struct RegisterFragment: View {
 								.overlay(
 									RoundedRectangle(cornerRadius: 60)
 										.inset(by: 0.5)
-										.stroke(isPhoneNumberFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+										.stroke(isPhoneNumberFocused ? Color.orangeMain500 : (!registerViewModel.phoneNumberError.isEmpty ? Color.redDanger500 : Color.gray200), lineWidth: 1)
 								)
-								.padding(.bottom)
 								.focused($isPhoneNumberFocused)
+								
+								Text(registerViewModel.phoneNumberError)
+									.foregroundStyle(Color.redDanger500)
+									.default_text_style_600(styleSize: 15)
+									.padding(.bottom)
 								
 								Text(String(localized: "password")+"*")
 									.default_text_style_700(styleSize: 15)
@@ -152,6 +170,11 @@ struct RegisterFragment: View {
 												.default_text_style(styleSize: 15)
 												.frame(height: 25)
 												.focused($isPasswordFocused)
+												.onChange(of: registerViewModel.passwd) { _ in
+													if !registerViewModel.passwordError.isEmpty {
+														registerViewModel.passwordError = ""
+													}
+												}
 										} else {
 											TextField("password", text: $registerViewModel.passwd)
 												.default_text_style(styleSize: 15)
@@ -159,6 +182,11 @@ struct RegisterFragment: View {
 												.autocapitalization(.none)
 												.frame(height: 25)
 												.focused($isPasswordFocused)
+												.onChange(of: registerViewModel.passwd) { _ in
+													if !registerViewModel.passwordError.isEmpty {
+														registerViewModel.passwordError = ""
+													}
+												}
 										}
 									}
 									
@@ -178,9 +206,13 @@ struct RegisterFragment: View {
 								.overlay(
 									RoundedRectangle(cornerRadius: 60)
 										.inset(by: 0.5)
-										.stroke(isPasswordFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+										.stroke(isPasswordFocused ? Color.orangeMain500 : (!registerViewModel.passwordError.isEmpty ? Color.redDanger500 : Color.gray200), lineWidth: 1)
 								)
-								.padding(.bottom)
+								
+								Text(registerViewModel.passwordError)
+									.foregroundStyle(Color.redDanger500)
+									.default_text_style_600(styleSize: 15)
+									.padding(.bottom)
 								
 								NavigationLink(isActive: $registerViewModel.isLinkActive, destination: {
 									RegisterCodeConfirmationFragment(registerViewModel: registerViewModel)
