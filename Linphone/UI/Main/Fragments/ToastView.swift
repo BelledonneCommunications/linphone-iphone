@@ -33,6 +33,12 @@ struct ToastView: View {
 							.renderingMode(.template)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.foregroundStyle(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
+					} else if toastViewModel.toastMessage.contains("is recording") {
+						Image("record-fill")
+							.resizable()
+							.renderingMode(.template)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.foregroundStyle(Color.redDanger500)
 					} else if toastViewModel.toastMessage.contains("Info_") {
 						Image("trusted")
 							.resizable()
