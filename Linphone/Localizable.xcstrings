@@ -793,6 +793,23 @@
     "Connexion à la réunion" : {
 
     },
+    "contact_dialog_pick_phone_number_or_sip_address_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a number or a SIP address"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez un numéro ou adresse SIP"
+          }
+        }
+      }
+    },
     "Contacts" : {
 
     },

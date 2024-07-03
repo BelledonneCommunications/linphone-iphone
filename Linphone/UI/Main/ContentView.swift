@@ -61,6 +61,7 @@ struct ContentView: View {
 	@State var isShowStartCallFragment = false
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
+	@State var isShowSipAddressesPopup = false
 	
 	@State var fullscreenVideo = false
 	
@@ -741,7 +742,8 @@ struct ContentView: View {
 									contactViewModel: contactViewModel,
 									editContactViewModel: editContactViewModel,
 									isShowDeletePopup: $isShowDeleteContactPopup,
-									isShowDismissPopup: $isShowDismissPopup
+									isShowDismissPopup: $isShowDismissPopup,
+									isShowSipAddressesPopup: $isShowSipAddressesPopup
 								)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
@@ -976,6 +978,19 @@ struct ContentView: View {
 						.zIndex(3)
 						.onTapGesture {
 							self.isShowDismissPopup.toggle()
+						}
+					}
+					
+					if isShowSipAddressesPopup {
+						SipAddressesPopup(
+							contactAvatarModel: ContactsManager.shared.avatarListModel[contactViewModel.indexDisplayedFriend != nil ? contactViewModel.indexDisplayedFriend! : 0],
+							contactViewModel: contactViewModel,
+							isShowSipAddressesPopup: $isShowSipAddressesPopup
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							isShowSipAddressesPopup.toggle()
 						}
 					}
 					

@@ -29,6 +29,7 @@ struct ContactFragment: View {
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
+	@Binding var isShowSipAddressesPopup: Bool
 	
 	@State private var showingSheet = false
 	@State private var showShareSheet = false
@@ -45,7 +46,8 @@ struct ContactFragment: View {
 					isShowDeletePopup: $isShowDeletePopup,
 					showingSheet: $showingSheet,
 					showShareSheet: $showShareSheet,
-					isShowDismissPopup: $isShowDismissPopup
+					isShowDismissPopup: $isShowDismissPopup,
+					isShowSipAddressesPopup: $isShowSipAddressesPopup
 				)
 				.sheet(isPresented: $showingSheet) {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
@@ -65,7 +67,8 @@ struct ContactFragment: View {
 					isShowDeletePopup: $isShowDeletePopup,
 					showingSheet: $showingSheet,
 					showShareSheet: $showShareSheet,
-					isShowDismissPopup: $isShowDismissPopup
+					isShowDismissPopup: $isShowDismissPopup,
+					isShowSipAddressesPopup: $isShowSipAddressesPopup
 				)
 				.halfSheet(showSheet: $showingSheet) {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
@@ -84,6 +87,7 @@ struct ContactFragment: View {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		isShowDeletePopup: .constant(false),
-		isShowDismissPopup: .constant(false)
+		isShowDismissPopup: .constant(false),
+		isShowSipAddressesPopup: .constant(false)
 	)
 }
