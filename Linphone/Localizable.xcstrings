@@ -851,6 +851,9 @@
     "Delete this contact" : {
 
     },
+    "Delete this meeting" : {
+
+    },
     "Demande d’autorisations" : {
 
     },
@@ -1425,6 +1428,9 @@
     "Send Logs" : {
 
     },
+    "Send notification to participants ?" : {
+
+    },
     "settings_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1472,6 +1478,9 @@
     "subscribe.linphone.org" : {
 
     },
+    "Successfully removed meeting" : {
+
+    },
     "Suggestions" : {
 
     },
@@ -1485,6 +1494,9 @@
 
     },
     "Temp Help" : {
+
+    },
+    "The meeting has been cancelled" : {
 
     },
     "The user name or password is incorrects" : {

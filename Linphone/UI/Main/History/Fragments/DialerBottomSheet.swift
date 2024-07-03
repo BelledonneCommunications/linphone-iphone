@@ -33,10 +33,13 @@ struct DialerBottomSheet: View {
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var startCallViewModel: StartCallViewModel
+	@ObservedObject var callViewModel: CallViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
 	
 	@State var dialerField = ""
+	
+	@Binding var isShowStartCallFragment: Bool
 	@Binding var showingDialer: Bool
 	
 	let currentCall: Call?
@@ -449,11 +452,50 @@ struct DialerBottomSheet: View {
 						
 						Button {
 							if !startCallViewModel.searchField.isEmpty {
-								do {
-									let address = try Factory.Instance.createAddress(addr: String("sip:" + startCallViewModel.searchField + "@" + startCallViewModel.domain))
-									telecomManager.doCallOrJoinConf(address: address)
-								} catch {
+								if callViewModel.isTransferInsteadCall {
+									showingDialer = false
 									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+										magicSearch.searchForContacts(
+											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+										
+										if callViewModel.isTransferInsteadCall == true {
+											callViewModel.isTransferInsteadCall = false
+										}
+										
+										callViewModel.resetCallView()
+									}
+									
+									magicSearch.currentFilterSuggestions = ""
+									
+									withAnimation {
+										isShowStartCallFragment.toggle()
+										startCallViewModel.interpretAndStartCall()
+									}
+									
+									startCallViewModel.searchField = ""
+								} else {
+									showingDialer = false
+									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+										magicSearch.searchForContacts(
+											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+										
+										if callViewModel.isTransferInsteadCall == true {
+											callViewModel.isTransferInsteadCall = false
+										}
+										
+										callViewModel.resetCallView()
+									}
+									
+									magicSearch.currentFilterSuggestions = ""
+									
+									withAnimation {
+										isShowStartCallFragment.toggle()
+										startCallViewModel.interpretAndStartCall()
+									}
+									
+									startCallViewModel.searchField = ""
 								}
 							}
 						} label: {
@@ -502,6 +544,6 @@ struct DialerBottomSheet: View {
 
 #Preview {
 	DialerBottomSheet(
-		startCallViewModel: StartCallViewModel(), showingDialer: .constant(false), currentCall: nil
+		startCallViewModel: StartCallViewModel(), callViewModel: CallViewModel(), isShowStartCallFragment: .constant(false), showingDialer: .constant(false), currentCall: nil
 	)
 }

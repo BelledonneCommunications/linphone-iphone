@@ -93,6 +93,8 @@ struct CallView: View {
 						.sheet(isPresented: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: StartCallViewModel(),
+								callViewModel: callViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer,
 								currentCall: callViewModel.currentCall
 							)
@@ -128,6 +130,8 @@ struct CallView: View {
 						.sheet(isPresented: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: StartCallViewModel(),
+								callViewModel: callViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer,
 								currentCall: callViewModel.currentCall
 							)
@@ -158,6 +162,8 @@ struct CallView: View {
 						.halfSheet(showSheet: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: StartCallViewModel(),
+								callViewModel: callViewModel,
+								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer,
 								currentCall: callViewModel.currentCall
 							)
