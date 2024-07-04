@@ -714,6 +714,40 @@
     "Calls" : {
 
     },
+    "calls_list_dialog_merge_into_conference_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create conference"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une conférence"
+          }
+        }
+      }
+    },
+    "calls_list_dialog_merge_into_conference_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge all calls into conference?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fusionner les appels en une conférence ?"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "en" : {

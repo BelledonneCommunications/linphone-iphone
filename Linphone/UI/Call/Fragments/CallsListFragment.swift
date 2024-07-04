@@ -31,6 +31,7 @@ struct CallsListFragment: View {
 	
 	@State private var delayedColor = Color.white
 	@State var isShowCallsListBottomSheet: Bool = false
+	@State private var isShowPopup = false
 	
 	@Binding var isShowCallsListFragment: Bool
 	
@@ -65,6 +66,18 @@ struct CallsListFragment: View {
 					
 					Spacer()
 					
+					if callViewModel.callsCounter > 1 {
+						Button {
+							self.isShowPopup = true
+						} label: {
+							Image("arrows-merge")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.all, 10)
+						}
+					}
 				}
 				.frame(maxWidth: .infinity)
 				.frame(height: 50)
@@ -87,6 +100,24 @@ struct CallsListFragment: View {
 				}
 			}
 			.background(.white)
+			
+			if self.isShowPopup {
+				PopupView(isShowPopup: $isShowPopup,
+						  title: Text("calls_list_dialog_merge_into_conference_title"),
+						  content: nil,
+						  titleFirstButton: Text("Cancel"),
+						  actionFirstButton: {self.isShowPopup.toggle()},
+						  titleSecondButton: Text("calls_list_dialog_merge_into_conference_label"),
+						  actionSecondButton: {
+					callViewModel.mergeCallsIntoConference()
+					self.isShowPopup.toggle()
+					isShowCallsListFragment.toggle()
+				})
+				.background(.black.opacity(0.65))
+				.onTapGesture {
+					self.isShowPopup.toggle()
+				}
+			}
 		}
 		.navigationBarHidden(true)
 	}

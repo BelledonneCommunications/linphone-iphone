@@ -158,6 +158,7 @@ class CallViewModel: ObservableObject {
 							displayNameTmp = self.currentCall!.remoteAddress!.username!
 						}
 					}
+					
 					DispatchQueue.main.async {
 						self.displayName = displayNameTmp
 					}
@@ -298,7 +299,6 @@ class CallViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			if self.currentCall?.conference != nil {
 				let conf = self.currentCall!.conference!
-				self.isConference = true
 				
 				let displayNameTmp = conf.subject ?? ""
 				
@@ -367,6 +367,8 @@ class CallViewModel: ObservableObject {
 				
 				DispatchQueue.main.async {
 					self.displayName = displayNameTmp
+					
+					self.isConference = true
 					
 					self.myParticipantModel = myParticipantModelTmp
 					
@@ -1118,6 +1120,33 @@ class CallViewModel: ObservableObject {
 						self.updateCallQualityIcon()
 					}
 				}
+			}
+		}
+	}
+	
+	func mergeCallsIntoConference() {
+		self.coreContext.doOnCoreQueue { core in
+			let callsCount = core.callsNb
+			let defaultAccount = core.defaultAccount
+			var subject = ""
+			
+			if (defaultAccount != nil && defaultAccount!.params != nil && defaultAccount!.params!.audioVideoConferenceFactoryAddress != nil) {
+				Log.info("[CallViewModel] Merging \(callsCount) calls into a remotely hosted conference")
+				subject = "Remote group call"
+			} else {
+				Log.info("[CallViewModel] Merging \(callsCount) calls into a locally hosted conference")
+				subject = "Local group call"
+			}
+			do {
+				let params = try core.createConferenceParams(conference: nil)
+				params.subject = subject
+				// Prevent group call to start in audio only layout
+				params.videoEnabled = true
+				
+				let conference = try core.createConferenceWithParams(params: params)
+				try conference.addParticipants(calls: core.calls)
+			} catch {
+				
 			}
 		}
 	}
