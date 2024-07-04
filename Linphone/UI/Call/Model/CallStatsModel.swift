@@ -35,7 +35,7 @@ class CallStatsModel: ObservableObject {
 	func update(call: Call, stats: CallStats) {
 		coreContext.doOnCoreQueue { core in
 			if call.params != nil {
-				self.isVideoEnabled = call.params!.videoEnabled && call.currentParams!.videoDirection != .Inactive
+				self.isVideoEnabled = call.params!.videoEnabled && call.currentParams != nil && call.currentParams!.videoDirection != .Inactive
 				switch stats.type {
 				case .Audio:
 					if call.currentParams != nil {

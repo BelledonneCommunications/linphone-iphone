@@ -1927,6 +1927,13 @@ struct CallView: View {
 											MagicSearchSingleton.shared.searchForSuggestions()
 											isShowStartCallFragment.toggle()
 										}
+										
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+											telecomManager.callStarted = false
+											DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+												telecomManager.callStarted = true
+											}
+										}
 									} else {
 										callViewModel.transferClicked()
 									}
@@ -1955,6 +1962,13 @@ struct CallView: View {
 									withAnimation {
 										MagicSearchSingleton.shared.searchForSuggestions()
 										isShowStartCallFragment.toggle()
+									}
+									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										telecomManager.callStarted = false
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											telecomManager.callStarted = true
+										}
 									}
 								} label: {
 									HStack {
@@ -2031,6 +2045,13 @@ struct CallView: View {
 									withAnimation {
 										isShowCallsListFragment.toggle()
 									}
+									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										telecomManager.callStarted = false
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											telecomManager.callStarted = true
+										}
+									}
 								} label: {
 									HStack {
 										Image("phone-list")
@@ -2076,6 +2097,12 @@ struct CallView: View {
 							VStack {
 								Button {
 									showingDialer.toggle()
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										telecomManager.callStarted = false
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											telecomManager.callStarted = true
+										}
+									}
 								} label: {
 									HStack {
 										Image("dialer")
@@ -2248,10 +2275,21 @@ struct CallView: View {
 						if callViewModel.isOneOneCall {
 							VStack {
 								Button {
-									withAnimation {
-										callViewModel.isTransferInsteadCall = true
-										MagicSearchSingleton.shared.searchForSuggestions()
-										isShowStartCallFragment.toggle()
+									if callViewModel.callsCounter < 2 {
+										withAnimation {
+											callViewModel.isTransferInsteadCall = true
+											MagicSearchSingleton.shared.searchForSuggestions()
+											isShowStartCallFragment.toggle()
+										}
+										
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+											telecomManager.callStarted = false
+											DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+												telecomManager.callStarted = true
+											}
+										}
+									} else {
+										callViewModel.transferClicked()
 									}
 								} label: {
 									HStack {
@@ -2278,6 +2316,13 @@ struct CallView: View {
 									withAnimation {
 										MagicSearchSingleton.shared.searchForSuggestions()
 										isShowStartCallFragment.toggle()
+									}
+									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										telecomManager.callStarted = false
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											telecomManager.callStarted = true
+										}
 									}
 								} label: {
 									HStack {
@@ -2357,6 +2402,13 @@ struct CallView: View {
 									withAnimation {
 										isShowCallsListFragment.toggle()
 									}
+									
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										telecomManager.callStarted = false
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											telecomManager.callStarted = true
+										}
+									}
 								} label: {
 									HStack {
 										Image("phone-list")
@@ -2402,6 +2454,12 @@ struct CallView: View {
 							VStack {
 								Button {
 									showingDialer.toggle()
+									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										telecomManager.callStarted = false
+										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											telecomManager.callStarted = true
+										}
+									}
 								} label: {
 									HStack {
 										Image("dialer")
