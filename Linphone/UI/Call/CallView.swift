@@ -705,7 +705,7 @@ struct CallView: View {
 			if (oldOrientation != orientation && oldOrientation != .faceUp) || (oldOrientation == .faceUp && (orientation == .landscapeLeft || orientation == .landscapeRight)) {
 				telecomManager.callStarted = false
 				
-				DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 					telecomManager.callStarted = true
 				}
 			}
@@ -1883,7 +1883,7 @@ struct CallView: View {
 						if AVAudioSession.sharedInstance().availableInputs != nil
 							&& !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
 							
-							DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 								audioRouteSheet = true
 							}
 						} else {
@@ -1928,9 +1928,9 @@ struct CallView: View {
 											isShowStartCallFragment.toggle()
 										}
 										
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 											telecomManager.callStarted = false
-											DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 												telecomManager.callStarted = true
 											}
 										}
@@ -1964,9 +1964,9 @@ struct CallView: View {
 										isShowStartCallFragment.toggle()
 									}
 									
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										telecomManager.callStarted = false
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 											telecomManager.callStarted = true
 										}
 									}
@@ -2046,9 +2046,9 @@ struct CallView: View {
 										isShowCallsListFragment.toggle()
 									}
 									
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										telecomManager.callStarted = false
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 											telecomManager.callStarted = true
 										}
 									}
@@ -2097,9 +2097,9 @@ struct CallView: View {
 							VStack {
 								Button {
 									showingDialer.toggle()
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										telecomManager.callStarted = false
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 											telecomManager.callStarted = true
 										}
 									}
@@ -2282,9 +2282,9 @@ struct CallView: View {
 											isShowStartCallFragment.toggle()
 										}
 										
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 											telecomManager.callStarted = false
-											DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+											DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 												telecomManager.callStarted = true
 											}
 										}
@@ -2318,9 +2318,9 @@ struct CallView: View {
 										isShowStartCallFragment.toggle()
 									}
 									
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										telecomManager.callStarted = false
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 											telecomManager.callStarted = true
 										}
 									}
@@ -2403,9 +2403,9 @@ struct CallView: View {
 										isShowCallsListFragment.toggle()
 									}
 									
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										telecomManager.callStarted = false
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 											telecomManager.callStarted = true
 										}
 									}
@@ -2454,9 +2454,9 @@ struct CallView: View {
 							VStack {
 								Button {
 									showingDialer.toggle()
-									DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										telecomManager.callStarted = false
-										DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 											telecomManager.callStarted = true
 										}
 									}

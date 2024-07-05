@@ -26,7 +26,7 @@ struct EditContactView: UIViewControllerRepresentable {
 	class Coordinator: NSObject, CNContactViewControllerDelegate, UINavigationControllerDelegate {
 		func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
 			if let cnc = contact {
-				DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 					self.parent.contact = cnc
                     
 					let newContact = Contact(
