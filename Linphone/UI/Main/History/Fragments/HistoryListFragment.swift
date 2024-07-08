@@ -31,6 +31,7 @@ struct HistoryListFragment: View {
 	@ObservedObject var historyViewModel: HistoryViewModel
 	
 	@Binding var showingSheet: Bool
+	@Binding var text: String
 	
 	var body: some View {
 		VStack {
@@ -151,8 +152,9 @@ struct HistoryListFragment: View {
 							.scaledToFit()
 							.clipped()
 							.padding(.all)
-						Text("No call for the moment...")
+						Text(historyListViewModel.callLogs.isEmpty && !text.isEmpty ? "history_list_empty_with_filter_history" : "history_list_empty_history")
 							.default_text_style_800(styleSize: 16)
+							.multilineTextAlignment(.center)
 						Spacer()
 						Spacer()
 					}
@@ -170,7 +172,7 @@ struct HistoryListFragment: View {
 }
 
 #Preview {
-	HistoryListFragment(historyListViewModel: HistoryListViewModel(), historyViewModel: HistoryViewModel(), showingSheet: .constant(false))
+	HistoryListFragment(historyListViewModel: HistoryListViewModel(), historyViewModel: HistoryViewModel(), showingSheet: .constant(false), text: .constant(""))
 }
 
 // swiftlint:enable line_length

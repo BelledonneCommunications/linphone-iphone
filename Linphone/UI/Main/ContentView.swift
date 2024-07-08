@@ -532,7 +532,8 @@ struct ContentView: View {
 										editContactViewModel: editContactViewModel,
 										index: $index,
 										isShowStartCallFragment: $isShowStartCallFragment,
-										isShowEditContactFragment: $isShowEditContactFragment
+										isShowEditContactFragment: $isShowEditContactFragment,
+										text: $text
 									)
 								} else if self.index == 2 {
 									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)

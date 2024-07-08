@@ -30,11 +30,12 @@ struct HistoryFragment: View {
 	@State private var showingSheet = false
 	@Binding var index: Int
 	@Binding var isShowEditContactFragment: Bool
+	@Binding var text: String
 	
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet)
+				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet, text: $text)
 					.sheet(isPresented: $showingSheet) {
 						HistoryListBottomSheet(
 							historyViewModel: historyViewModel,
@@ -48,7 +49,7 @@ struct HistoryFragment: View {
 						.presentationDetents([.fraction(0.2)])
 					}
 			} else {
-				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet)
+				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet, text: $text)
 					.halfSheet(showSheet: $showingSheet) {
 						HistoryListBottomSheet(
 							historyViewModel: historyViewModel,
@@ -72,6 +73,7 @@ struct HistoryFragment: View {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		index: .constant(1),
-		isShowEditContactFragment: .constant(false)
+		isShowEditContactFragment: .constant(false),
+		text: .constant("")
 	)
 }

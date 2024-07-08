@@ -1183,6 +1183,40 @@
         }
       }
     },
+    "history_list_empty_history" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No call for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun appel dans votre historique…"
+          }
+        }
+      }
+    },
+    "history_list_empty_with_filter_history" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No entries match your search"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aucune entrée ne correspond à votre recherche"
+          }
+        }
+      }
+    },
     "I prefere create an account" : {
 
     },

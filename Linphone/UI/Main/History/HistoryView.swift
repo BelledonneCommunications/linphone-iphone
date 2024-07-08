@@ -30,6 +30,7 @@ struct HistoryView: View {
 	@Binding var index: Int
 	@Binding var isShowStartCallFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
+	@Binding var text: String
 	
 	var body: some View {
 		NavigationView {
@@ -40,7 +41,8 @@ struct HistoryView: View {
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
 					index: $index,
-					isShowEditContactFragment: $isShowEditContactFragment
+					isShowEditContactFragment: $isShowEditContactFragment,
+					text: $text
 				)
 				
 				Button {
@@ -72,6 +74,7 @@ struct HistoryView: View {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		index: .constant(1),
-		isShowEditContactFragment: .constant(false)
+		isShowEditContactFragment: .constant(false),
+		text: .constant("")
 	)
 }
