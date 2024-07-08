@@ -448,7 +448,11 @@ struct ContentView: View {
 													MagicSearchSingleton.shared.searchForContacts(
 														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 												} else if index == 1 {
-													historyListViewModel.filterCallLogs(filter: text)
+													if text.isEmpty {
+														historyListViewModel.resetFilterCallLogs()
+													} else {
+														historyListViewModel.filterCallLogs(filter: text)
+													}
 												} else if index == 2 {
 													//TODO Conversations List reset
 												} else if index == 3 {
