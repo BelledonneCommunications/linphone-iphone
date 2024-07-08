@@ -37,26 +37,41 @@ class EditContactViewModel: ObservableObject {
 	}
 	
 	func resetValues() {
-		identifier = (selectedEditFriend == nil ? "" : selectedEditFriend!.nativeUri) ?? ""
-		firstName = (selectedEditFriend == nil ? "" : selectedEditFriend!.vcard?.givenName) ?? ""
-		lastName = (selectedEditFriend == nil ? "" : selectedEditFriend!.vcard?.familyName) ?? ""
-		sipAddresses = []
-		phoneNumbers = []
-		company = (selectedEditFriend == nil ? "" : selectedEditFriend!.organization) ?? ""
-		jobTitle = (selectedEditFriend == nil ? "" : selectedEditFriend!.jobTitle) ?? ""
-		
-		if selectedEditFriend != nil {
-			selectedEditFriend?.addresses.forEach({ address in
-				sipAddresses.append(String(address.asStringUriOnly().dropFirst(4)))
-			})
+		CoreContext.shared.doOnCoreQueue { _ in
+			let nativeUriTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.nativeUri) ?? ""
+			let givenNameTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.vcard?.givenName) ?? ""
+			let familyNameTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.vcard?.familyName) ?? ""
+			let organizationTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.organization) ?? ""
+			let jobTitleTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.jobTitle) ?? ""
 			
-			selectedEditFriend?.phoneNumbers.forEach({ phoneNumber in
-				phoneNumbers.append(phoneNumber)
-			})
+			var sipAddressesTmp: [String] = []
+			var phoneNumbersTmp: [String] = []
 			
+			if self.selectedEditFriend != nil {
+				self.selectedEditFriend?.addresses.forEach({ address in
+					sipAddressesTmp.append(String(address.asStringUriOnly().dropFirst(4)))
+				})
+				
+				self.selectedEditFriend?.phoneNumbers.forEach({ phoneNumber in
+					phoneNumbersTmp.append(phoneNumber)
+				})
+			}
+			
+			DispatchQueue.main.async {
+				self.identifier = nativeUriTmp
+				self.firstName = givenNameTmp
+				self.lastName = familyNameTmp
+				self.sipAddresses = []
+				self.phoneNumbers = []
+				self.company = organizationTmp
+				self.jobTitle = jobTitleTmp
+				
+				self.sipAddresses = sipAddressesTmp
+				self.phoneNumbers = phoneNumbersTmp
+				
+				self.sipAddresses.append("")
+				self.phoneNumbers.append("")
+			}
 		}
-		
-		sipAddresses.append("")
-		phoneNumbers.append("")
 	}
 }
