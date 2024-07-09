@@ -81,7 +81,7 @@ struct ParticipantsListFragment: View {
 					HStack {
 						Spacer()
 						
-						if callViewModel.myParticipantModel!.isAdmin {
+						if callViewModel.myParticipantModel != nil && callViewModel.myParticipantModel!.isAdmin {
 							NavigationLink(destination: {
 								AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: callViewModel.addParticipants)
 									.onAppear {

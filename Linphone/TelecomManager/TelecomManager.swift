@@ -456,13 +456,18 @@ class TelecomManager: ObservableObject {
 					}
 				}
 			} else {
-				DispatchQueue.main.async {
-					self.remoteConfVideo = false
-					if call.currentParams != nil {
-						let remoteConfVideoTmp = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
+				if call.currentParams != nil {
+					let remoteConfVideoTmp = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
+					
+					DispatchQueue.main.async {
+						self.remoteConfVideo = false
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 							self.remoteConfVideo = remoteConfVideoTmp
 						}
+					}
+				} else {
+					DispatchQueue.main.async {
+						self.remoteConfVideo = false
 					}
 				}
 			}

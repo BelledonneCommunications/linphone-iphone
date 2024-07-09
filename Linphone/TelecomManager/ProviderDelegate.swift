@@ -287,12 +287,9 @@ extension ProviderDelegate: CXProviderDelegate {
 						// attempt to resume another one.
 						action.fulfill()
 					} else {
-						if call?.conference != nil && core.callsNb > 1 {
-							/*
-																		 try TelecomManager.shared.lc?.enterConference()
-																		 action.fulfill()
-																		 NotificationCenter.default.post(name: Notification.Name("LinphoneCallUpdate"), object: self)
-							*/
+						if call != nil && call?.conference != nil && core.callsNb > 1 {
+							_ = call!.conference!.enter()
+							TelecomManager.shared.actionToFulFill = action
 						} else {
 							try call!.resume()
 							// We'll notify callkit that the action is fulfilled when receiving the 200Ok, which is the point

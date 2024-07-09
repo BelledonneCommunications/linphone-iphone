@@ -26,9 +26,9 @@ class HistoryModel: ObservableObject {
 	
 	static let TAG = "[History Model]"
 	
-	let callLog: CallLog
+	var callLog: CallLog
 	
-	let id: String
+	var id: String
 	@Published var subject: String
 	@Published var isConf: Bool
 	@Published var addressLinphone: Address
@@ -38,35 +38,76 @@ class HistoryModel: ObservableObject {
 	@Published var status: Call.Status
 	@Published var startDate: time_t
 	@Published var duration: Int
-	@Published var addressFriend: Friend? = nil
-	@Published var avatarModel: ContactAvatarModel? = nil
+	@Published var addressFriend: Friend?
+	@Published var avatarModel: ContactAvatarModel?
 	
 	init(callLog: CallLog) {
 		self.callLog = callLog
-		self.id = callLog.callId ?? ""
-		self.subject = callLog.conferenceInfo != nil && callLog.conferenceInfo!.subject != nil ? callLog.conferenceInfo!.subject! : ""
-		self.isConf = callLog.conferenceInfo != nil
+		self.id = ""
+		self.subject = ""
+		self.isConf = false
 		
-		let addressLinphoneTmp = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
-		self.addressLinphone = addressLinphoneTmp
-		//let addressLinphone = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
-		self.address = addressLinphoneTmp.asStringUriOnly()
+		self.addressLinphone = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
+		self.address = ""
 		
-		let addressNameTmp = callLog.conferenceInfo != nil && callLog.conferenceInfo!.subject != nil 
-		? callLog.conferenceInfo!.subject!
-		: (addressLinphoneTmp.username != nil ? addressLinphoneTmp.username ?? "" : addressLinphoneTmp.displayName ?? "")
+		self.addressName = ""
 		
-		self.addressName = addressNameTmp
+		self.isOutgoing = false
 		
-		self.isOutgoing = callLog.dir == .Outgoing
+		self.status = .Success
 		
-		self.status = callLog.status
+		self.startDate = 0
 		
-		self.startDate = callLog.startDate
+		self.duration = 0
 		
-		self.duration = callLog.duration
-		
-		refreshAvatarModel()
+		self.initValue(callLog: callLog)
+	}
+	
+	func initValue(callLog: CallLog) {
+		coreContext.doOnCoreQueue { _ in
+			let callLogTmp = callLog
+			let idTmp = callLog.callId ?? ""
+			let subjectTmp = callLog.conferenceInfo != nil && callLog.conferenceInfo!.subject != nil ? callLog.conferenceInfo!.subject! : ""
+			let isConfTmp = callLog.conferenceInfo != nil
+			
+			let addressLinphoneTmp = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
+			
+			let addressNameTmp = callLog.conferenceInfo != nil && callLog.conferenceInfo!.subject != nil
+			? callLog.conferenceInfo!.subject!
+			: (addressLinphoneTmp.username != nil ? addressLinphoneTmp.username ?? "" : addressLinphoneTmp.displayName ?? "")
+			
+			let addressTmp = addressLinphoneTmp.asStringUriOnly()
+			
+			let isOutgoingTmp = callLog.dir == .Outgoing
+			
+			let statusTmp = callLog.status
+			
+			let startDateTmp = callLog.startDate
+			
+			let durationTmp = callLog.duration
+			
+			DispatchQueue.main.async {
+				self.callLog = callLogTmp
+				self.id = idTmp
+				self.subject = subjectTmp
+				self.isConf = isConfTmp
+				
+				self.addressLinphone = addressLinphoneTmp
+				self.address = addressTmp
+				
+				self.addressName = addressNameTmp
+				
+				self.isOutgoing = isOutgoingTmp
+				
+				self.status = statusTmp
+				
+				self.startDate = startDateTmp
+				
+				self.duration = durationTmp
+			}
+			
+			self.refreshAvatarModel()
+		}
 	}
 	
 	func refreshAvatarModel() {
