@@ -28,6 +28,8 @@ struct ParticipantsListFragment: View {
 	
 	@ObservedObject var callViewModel: CallViewModel
 	
+	@ObservedObject var addParticipantsViewModel: AddParticipantsViewModel
+	
 	@State private var delayedColor = Color.white
 	
 	@Binding var isShowParticipantsListFragment: Bool
@@ -36,89 +38,96 @@ struct ParticipantsListFragment: View {
 	@State private var indexToRemove = -1
 	
 	var body: some View {
-		ZStack {
-			VStack(spacing: 1) {
-				Rectangle()
-					.foregroundColor(delayedColor)
-					.edgesIgnoringSafeArea(.top)
-					.frame(height: 0)
-					.task(delayColor)
-				
-				HStack {
-					Image("caret-left")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.orangeMain500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-						.padding(.top, 2)
-						.padding(.leading, -10)
-						.onTapGesture {
-							delayColorDismiss()
-							withAnimation {
-								isShowParticipantsListFragment.toggle()
+		NavigationView {
+			ZStack {
+				VStack(spacing: 1) {
+					Rectangle()
+						.foregroundColor(delayedColor)
+						.edgesIgnoringSafeArea(.top)
+						.frame(height: 0)
+						.task(delayColor)
+					
+					HStack {
+						Image("caret-left")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+							.padding(.top, 2)
+							.padding(.leading, -10)
+							.onTapGesture {
+								delayColorDismiss()
+								withAnimation {
+									isShowParticipantsListFragment.toggle()
+								}
 							}
+						
+						Text("\(callViewModel.participantList.count + 1) \(callViewModel.participantList.isEmpty ? "Participant" : "Participants")")
+							.multilineTextAlignment(.leading)
+							.default_text_style_orange_800(styleSize: 16)
+						
+						Spacer()
+						
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 50)
+					.padding(.horizontal)
+					.padding(.bottom, 4)
+					.background(.white)
+					
+					participantsList
+					
+					HStack {
+						Spacer()
+						
+						if callViewModel.myParticipantModel!.isAdmin {
+							NavigationLink(destination: {
+								AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: callViewModel.addParticipants)
+									.onAppear {
+										addParticipantsViewModel.participantsToAdd = []
+									}
+							}, label: {
+								Image("plus")
+									.resizable()
+									.renderingMode(.template)
+									.frame(width: 25, height: 25)
+									.foregroundStyle(.white)
+									.padding()
+									.background(Color.orangeMain500)
+									.clipShape(Circle())
+									.shadow(color: .black.opacity(0.2), radius: 4)
+								
+							})
+							.padding()
 						}
-					
-					Text("\(callViewModel.participantList.count + 1) \(callViewModel.participantList.isEmpty ? "Participant" : "Participants")")
-						.multilineTextAlignment(.leading)
-						.default_text_style_orange_800(styleSize: 16)
-					
-					Spacer()
-					
+					}
+					.padding(.trailing, 10)
 				}
-				.frame(maxWidth: .infinity)
-				.frame(height: 50)
-				.padding(.horizontal)
-				.padding(.bottom, 4)
 				.background(.white)
 				
-				participantsList
-				
-				HStack {
-					Spacer()
-					
-					NavigationLink(destination: {
-						//AddParticipantsFragment()
-					}, label: {
-						Image("plus")
-							.resizable()
-							.renderingMode(.template)
-							.frame(width: 25, height: 25)
-							.foregroundStyle(.white)
-							.padding()
-							.background(Color.orangeMain500)
-							.clipShape(Circle())
-							.shadow(color: .black.opacity(0.2), radius: 4)
-						
+				if self.isShowPopup {
+					let contentPopup = Text("Etes-vous sûr de vouloir supprimer \(callViewModel.participantList[indexToRemove].name) ?")
+					PopupView(isShowPopup: $isShowPopup,
+							  title: Text("Supprimer un participant"),
+							  content: contentPopup,
+							  titleFirstButton: Text("Non"),
+							  actionFirstButton: {self.isShowPopup.toggle()},
+							  titleSecondButton: Text("Oui"),
+							  actionSecondButton: {
+						callViewModel.removeParticipant(index: indexToRemove)
+						self.isShowPopup.toggle()
+						indexToRemove = -1
 					})
-					.padding()
-				}
-				.padding(.trailing, 10)
-			}
-			.background(.white)
-			
-			if self.isShowPopup {
-				let contentPopup = Text("Etes-vous sûr de vouloir supprimer \(callViewModel.participantList[indexToRemove].name) ?")
-				PopupView(isShowPopup: $isShowPopup,
-						  title: Text("Supprimer un participant"),
-						  content: contentPopup,
-						  titleFirstButton: Text("Non"),
-						  actionFirstButton: {self.isShowPopup.toggle()},
-						  titleSecondButton: Text("Oui"),
-						  actionSecondButton: {
-								callViewModel.removeParticipant(index: indexToRemove)
-								self.isShowPopup.toggle()
-								indexToRemove = -1
-				})
-				.background(.black.opacity(0.65))
-				.onTapGesture {
-					self.isShowPopup.toggle()
-					indexToRemove = -1
+					.background(.black.opacity(0.65))
+					.onTapGesture {
+						self.isShowPopup.toggle()
+						indexToRemove = -1
+					}
 				}
 			}
+			.navigationBarHidden(true)
 		}
-		.navigationBarHidden(true)
 	}
 	
 	@Sendable private func delayColor() async {
@@ -256,5 +265,5 @@ struct ParticipantsListFragment: View {
 }
 
 #Preview {
-	ParticipantsListFragment(callViewModel: CallViewModel(), isShowParticipantsListFragment: .constant(true))
+	ParticipantsListFragment(callViewModel: CallViewModel(), addParticipantsViewModel: AddParticipantsViewModel(), isShowParticipantsListFragment: .constant(true))
 }

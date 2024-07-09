@@ -25,6 +25,8 @@ import Combine
 // swiftlint:disable type_body_length
 class CallViewModel: ObservableObject {
 	
+	static let TAG = "[CallViewModel]"
+	
 	var coreContext = CoreContext.shared
 	var telecomManager = TelecomManager.shared
 	
@@ -1130,7 +1132,7 @@ class CallViewModel: ObservableObject {
 			let defaultAccount = core.defaultAccount
 			var subject = ""
 			
-			if (defaultAccount != nil && defaultAccount!.params != nil && defaultAccount!.params!.audioVideoConferenceFactoryAddress != nil) {
+			if defaultAccount != nil && defaultAccount!.params != nil && defaultAccount!.params!.audioVideoConferenceFactoryAddress != nil {
 				Log.info("[CallViewModel] Merging \(callsCount) calls into a remotely hosted conference")
 				subject = "Remote group call"
 			} else {
@@ -1149,6 +1151,27 @@ class CallViewModel: ObservableObject {
 				
 			}
 		}
+	}
+	
+	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
+		var list: [SelectedAddressModel] = []
+		for selectedAddr in participantsToAdd {
+			if let found = list.first(where: { $0.address.weakEqual(address2: selectedAddr.address) }) {
+				Log.info("\(CallViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
+				continue
+			}
+			
+			list.append(selectedAddr)
+			Log.info("\(CallViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
+		}
+		
+		do {
+			try self.currentCall!.conference?.addParticipants(addresses: list.map { $0.address })
+		} catch {
+			
+		}
+		
+		Log.info("\(CallViewModel.TAG) \(list.count) participants added to conference")
 	}
 }
 // swiftlint:enable type_body_length

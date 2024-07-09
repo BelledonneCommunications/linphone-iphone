@@ -34,6 +34,8 @@ struct CallView: View {
 	
 	@ObservedObject var callViewModel: CallViewModel
 	
+	@State private var addParticipantsViewModel: AddParticipantsViewModel?
+	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
@@ -177,9 +179,12 @@ struct CallView: View {
 				}
 				
 				if isShowParticipantsListFragment {
-					ParticipantsListFragment(callViewModel: callViewModel, isShowParticipantsListFragment: $isShowParticipantsListFragment)
+					ParticipantsListFragment(callViewModel: callViewModel, addParticipantsViewModel: addParticipantsViewModel ?? AddParticipantsViewModel(), isShowParticipantsListFragment: $isShowParticipantsListFragment)
 						.zIndex(4)
 						.transition(.move(edge: .bottom))
+						.onAppear {
+							addParticipantsViewModel = AddParticipantsViewModel()
+						}
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
