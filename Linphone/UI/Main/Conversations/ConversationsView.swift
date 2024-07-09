@@ -23,11 +23,12 @@ struct ConversationsView: View {
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@Binding var text: String
 	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
+				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text)
 				
 				Button {
 				} label: {
@@ -51,6 +52,7 @@ struct ConversationsView: View {
 	ConversationsListFragment(
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
-	  	showingSheet: .constant(false)
+	  	showingSheet: .constant(false),
+		text: .constant("")
 	)
 }

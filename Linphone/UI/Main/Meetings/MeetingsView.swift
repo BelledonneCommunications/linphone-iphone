@@ -29,13 +29,14 @@ struct MeetingsView: View {
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	
 	@State private var showingSheet = false
+	@Binding var text: String
 		
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
 				
 				if #available(iOS 16.0, *), idiom != .pad {
-					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet)
+					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet, text: $text)
 						.sheet(isPresented: $showingSheet) {
 							MeetingsListBottomSheet(
 								meetingsListViewModel: meetingsListViewModel,
@@ -45,7 +46,7 @@ struct MeetingsView: View {
 							.presentationDetents([.fraction(0.1)])
 						}
 				} else {
-					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet)
+					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet, text: $text)
 						.halfSheet(showSheet: $showingSheet) {
 							MeetingsListBottomSheet(
 								meetingsListViewModel: meetingsListViewModel,
@@ -82,6 +83,7 @@ struct MeetingsView: View {
 		meetingsListViewModel: MeetingsListViewModel(),
 		meetingViewModel: MeetingViewModel(),
 		isShowScheduleMeetingFragment: .constant(false),
-		isShowSendCancelMeetingNotificationPopup: .constant(false)
+		isShowSendCancelMeetingNotificationPopup: .constant(false),
+		text: .constant("")
 	)
 }

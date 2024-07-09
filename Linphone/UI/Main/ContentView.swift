@@ -522,7 +522,8 @@ struct ContentView: View {
 										historyViewModel: historyViewModel,
 										editContactViewModel: editContactViewModel,
 										isShowEditContactFragment: $isShowEditContactFragment,
-										isShowDeletePopup: $isShowDeleteContactPopup
+										isShowDeletePopup: $isShowDeleteContactPopup,
+										text: $text
 									)
 								} else if self.index == 1 {
 									HistoryView(
@@ -536,13 +537,14 @@ struct ContentView: View {
 										text: $text
 									)
 								} else if self.index == 2 {
-									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
+									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text)
 								} else if self.index == 3 {
 									MeetingsView(
 										meetingsListViewModel: meetingsListViewModel,
 										meetingViewModel: meetingViewModel,
 										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
-										isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
+										isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
+										text: $text
 									)
 								}
 							}

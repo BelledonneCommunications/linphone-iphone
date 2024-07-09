@@ -27,11 +27,12 @@ struct ContactsView: View {
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDeletePopup: Bool
+	@Binding var text: String
 	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ContactsFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup)
+				ContactsFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, text: $text)
 				
 				Button {
 					withAnimation {
@@ -66,6 +67,7 @@ struct ContactsView: View {
 		historyViewModel: HistoryViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		isShowEditContactFragment: .constant(false),
-		isShowDeletePopup: .constant(false)
+		isShowDeletePopup: .constant(false),
+		text: .constant("")
 	)
 }

@@ -29,6 +29,7 @@ struct ContactsInnerFragment: View {
 	@State private var isFavoriteOpen = true
 	
 	@Binding var showingSheet: Bool
+	@Binding var text: String
 	
 	var body: some View {
 		VStack(alignment: .leading) {
@@ -87,7 +88,7 @@ struct ContactsInnerFragment: View {
 								.scaledToFit()
 								.clipped()
 								.padding(.all)
-							Text("No contacts for the moment...")
+							Text(!text.isEmpty ? "list_filter_no_result_found" : "contacts_list_empty")
 								.default_text_style_800(styleSize: 16)
 							Spacer()
 							Spacer()
@@ -102,5 +103,5 @@ struct ContactsInnerFragment: View {
 }
 
 #Preview {
-	ContactsInnerFragment(contactViewModel: ContactViewModel(), showingSheet: .constant(false))
+	ContactsInnerFragment(contactViewModel: ContactViewModel(), showingSheet: .constant(false), text: .constant(""))
 }

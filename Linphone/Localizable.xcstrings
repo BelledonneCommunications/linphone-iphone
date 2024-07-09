@@ -847,6 +847,23 @@
     "Contacts" : {
 
     },
+    "contacts_list_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No contact for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun contact pour le moment…"
+          }
+        }
+      }
+    },
     "Content" : {
 
     },
@@ -868,6 +885,23 @@
     },
     "Conversations" : {
 
+    },
+    "conversations_list_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No conversation for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune conversation pour le moment…"
+          }
+        }
+      }
     },
     "Copy address" : {
 
@@ -1270,11 +1304,30 @@
     "Joining..." : {
 
     },
+    "Key" : {
+      "extractionState" : "manual"
+    },
     "Last name" : {
 
     },
     "Linphone" : {
 
+    },
+    "list_filter_no_result_found" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No result found…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun résultat…"
+          }
+        }
+      }
     },
     "Log out" : {
 
@@ -1296,6 +1349,22 @@
     },
     "Meetings" : {
 
+    },
+    "meetings_list_empty" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No meeting for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune réunion pour le moment…"
+          }
+        }
+      }
     },
     "Message" : {
 
@@ -1319,18 +1388,6 @@
 
     },
     "Next" : {
-
-    },
-    "No call for the moment..." : {
-
-    },
-    "No contacts for the moment..." : {
-
-    },
-    "No conversation for the moment..." : {
-
-    },
-    "No meeting for the moment..." : {
 
     },
     "No meeting today" : {

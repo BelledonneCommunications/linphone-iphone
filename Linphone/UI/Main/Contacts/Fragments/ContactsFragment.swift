@@ -29,11 +29,12 @@ struct ContactsFragment: View {
 	
 	@State private var showingSheet = false
 	@State private var showShareSheet = false
+	@Binding var text: String
 	
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet, text: $text)
 					.sheet(isPresented: $showingSheet) {
 						ContactsListBottomSheet(
 							contactViewModel: contactViewModel,
@@ -49,7 +50,7 @@ struct ContactsFragment: View {
 							.edgesIgnoringSafeArea(.bottom)
 					}
 			} else {
-				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet, text: $text)
 					.halfSheet(showSheet: $showingSheet) {
 						ContactsListBottomSheet(
 							contactViewModel: contactViewModel,
@@ -68,5 +69,5 @@ struct ContactsFragment: View {
 }
 
 #Preview {
-	ContactsFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false))
+	ContactsFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false), text: .constant(""))
 }

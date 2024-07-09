@@ -28,6 +28,7 @@ struct MeetingsFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@Binding var showingSheet: Bool
+	@Binding var text: String
 	
 	@ViewBuilder
 	func createMonthLine(model: MeetingsListItemModel) -> some View {
@@ -162,7 +163,7 @@ struct MeetingsFragment: View {
 								.scaledToFit()
 								.clipped()
 								.padding(.all)
-							Text("No meeting for the moment...")
+							Text(!text.isEmpty ? "list_filter_no_result_found" : "meetings_list_empty")
 								.default_text_style_800(styleSize: 16)
 							Spacer()
 							Spacer()
@@ -180,5 +181,5 @@ struct MeetingsFragment: View {
 #Preview {
 	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(),
 					 meetingViewModel: MeetingViewModel(),
-					 showingSheet: .constant(false))
+					 showingSheet: .constant(false), text: .constant(""))
 }

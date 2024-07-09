@@ -152,7 +152,7 @@ struct HistoryListFragment: View {
 							.scaledToFit()
 							.clipped()
 							.padding(.all)
-						Text(historyListViewModel.callLogs.isEmpty && !text.isEmpty ? "history_list_empty_with_filter_history" : "history_list_empty_history")
+						Text(!text.isEmpty ? "list_filter_no_result_found" : "history_list_empty_history")
 							.default_text_style_800(styleSize: 16)
 							.multilineTextAlignment(.center)
 						Spacer()

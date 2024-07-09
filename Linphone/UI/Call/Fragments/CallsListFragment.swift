@@ -365,7 +365,7 @@ struct CallsListFragment: View {
 							.scaledToFit()
 							.clipped()
 							.padding(.all)
-						Text("No call for the moment...")
+						Text("history_list_empty_history")
 							.default_text_style_800(styleSize: 16)
 						Spacer()
 						Spacer()

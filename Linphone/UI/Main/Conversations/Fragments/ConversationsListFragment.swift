@@ -26,6 +26,7 @@ struct ConversationsListFragment: View {
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
+	@Binding var text: String
 	
 	var body: some View {
 		VStack {
@@ -162,7 +163,7 @@ struct ConversationsListFragment: View {
 							.scaledToFit()
 							.clipped()
 							.padding(.all)
-						Text("No conversation for the moment...")
+						Text(!text.isEmpty ? "list_filter_no_result_found" : "conversations_list_empty")
 							.default_text_style_800(styleSize: 16)
 						Spacer()
 						Spacer()
@@ -180,6 +181,7 @@ struct ConversationsListFragment: View {
 	ConversationsListFragment(
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
-		showingSheet: .constant(false)
+		showingSheet: .constant(false),
+		text: .constant("")
 	)
 }
