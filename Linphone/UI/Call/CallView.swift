@@ -2619,17 +2619,16 @@ struct CallView: View {
 	// swiftlint:enable function_body_length
 	
 	func getAudioRouteImage() {
-		imageAudioRoute = AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty
-		? (
-			AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty
-			? (
-				callViewModel.isHeadPhoneAvailable()
-				? "headset"
-				: "speaker-slash"
-			)
-			: "bluetooth"
-		)
-		: "speaker-high"
+		if !AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty {
+			imageAudioRoute = "speaker-high"
+			optionsAudioRoute = 2
+		} else if !AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+			imageAudioRoute = "bluetooth"
+			optionsAudioRoute = 3
+		} else {
+			imageAudioRoute = callViewModel.isHeadPhoneAvailable() ? "headset" : "speaker-slash"
+			optionsAudioRoute = 1
+		}
 	}
 }
 
