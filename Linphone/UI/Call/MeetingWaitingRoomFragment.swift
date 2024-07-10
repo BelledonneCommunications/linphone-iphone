@@ -50,11 +50,12 @@ struct MeetingWaitingRoomFragment: View {
 					}
 					.onAppear {
 						meetingWaitingRoomViewModel.enableAVAudioSession()
-						
-						do {
-							try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-						} catch _ {
-							
+						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+							do {
+								try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+							} catch _ {
+								
+							}
 						}
 					}
 					.onDisappear {
@@ -70,10 +71,12 @@ struct MeetingWaitingRoomFragment: View {
 					.onAppear {
 						meetingWaitingRoomViewModel.enableAVAudioSession()
 						
-						do {
-							try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-						} catch _ {
-							
+						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+							do {
+								try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+							} catch _ {
+								
+							}
 						}
 					}
 					.onDisappear {
@@ -314,9 +317,9 @@ struct MeetingWaitingRoomFragment: View {
 								.resizable()
 								.foregroundStyle(.white)
 								.frame(width: 32, height: 32)
-								.onAppear(perform: meetingWaitingRoomViewModel.getAudioRouteImage)
+								.onAppear(perform: getAudioRouteImage)
 								.onReceive(pub) { _ in
-									self.meetingWaitingRoomViewModel.getAudioRouteImage()
+									self.getAudioRouteImage()
 								}
 						}
 					}
@@ -549,6 +552,19 @@ struct MeetingWaitingRoomFragment: View {
 		.padding(.horizontal, 20)
 		.background(Color.gray600)
 		.frame(maxHeight: .infinity)
+	}
+	
+	func getAudioRouteImage() {
+		if !AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty {
+			meetingWaitingRoomViewModel.imageAudioRoute = "speaker-high"
+			options = 2
+		} else if !AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+			meetingWaitingRoomViewModel.imageAudioRoute = "bluetooth"
+			options = 3
+		} else {
+			meetingWaitingRoomViewModel.imageAudioRoute = meetingWaitingRoomViewModel.isHeadPhoneAvailable() ? "headset" : "speaker-slash"
+			options = 1
+		}
 	}
 }
 

@@ -217,23 +217,6 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 		}
 	}
 	
-	func getAudioRouteImage() {
-		print("AVAudioSessionAVAudioSession getAudioRouteImage \(imageAudioRoute)")
-		imageAudioRoute = AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty
-		? (
-			AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty
-			? (
-				isHeadPhoneAvailable()
-				? "headset"
-				: "speaker-slash"
-			)
-			: "bluetooth"
-		)
-		: "speaker-high"
-		
-		print("AVAudioSessionAVAudioSession getAudioRouteImage \(imageAudioRoute)")
-	}
-	
 	func isHeadPhoneAvailable() -> Bool {
 		guard let availableInputs = AVAudioSession.sharedInstance().availableInputs else {return false}
 		for inputDevice in availableInputs {
