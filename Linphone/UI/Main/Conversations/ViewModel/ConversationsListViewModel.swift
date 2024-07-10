@@ -29,6 +29,8 @@ class ConversationsListViewModel: ObservableObject {
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	
 	@Published var conversationsList: [ConversationModel] = []
+	var conversationsListTmp: [ConversationModel] = []
+	
 	@Published var unreadMessages: Int = 0
 	
 	var selectedConversation: ConversationModel?
@@ -43,17 +45,17 @@ class ConversationsListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let chatRooms = account?.chatRooms != nil ? account!.chatRooms : core.chatRooms
 			
-			var conversationsListTmp: [ConversationModel] = []
+			self.conversationsListTmp = []
 			
 			chatRooms.forEach { chatRoom in
 				if filter.isEmpty {
 					let model = ConversationModel(chatRoom: chatRoom)
-					conversationsListTmp.append(model)
+					self.conversationsListTmp.append(model)
 				}
 			}
 			
 			DispatchQueue.main.async {
-				self.conversationsList = conversationsListTmp
+				self.conversationsList = self.conversationsListTmp
 			}
 			
 			self.updateUnreadMessagesCount()
@@ -197,5 +199,18 @@ class ConversationsListViewModel: ObservableObject {
 				self.selectedConversation!.unreadMessagesCount = 0
 			}
 		}
+	}
+	
+	func filterConversations(filter: String) {
+		conversationsList.removeAll()
+		conversationsListTmp.forEach { conversation in
+			if conversation.subject.lowercased().contains(filter.lowercased()) || !conversation.participantsAddress.filter({ $0.lowercased().contains(filter.lowercased()) }).isEmpty {
+				conversationsList.append(conversation)
+			}
+		}
+	}
+	
+	func resetFilterConversations() {
+		conversationsList = conversationsListTmp
 	}
 }

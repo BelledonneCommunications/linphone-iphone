@@ -405,7 +405,7 @@ struct ContentView: View {
 											} else if index == 1 {
 												historyListViewModel.resetFilterCallLogs()
 											} else if index == 2 {
-												//TODO Conversations List reset
+												conversationsListViewModel.resetFilterConversations()
 											} else if index == 3 {
 												meetingsListViewModel.currentFilter = ""
 												meetingsListViewModel.computeMeetingsList()
@@ -455,7 +455,11 @@ struct ContentView: View {
 														historyListViewModel.filterCallLogs(filter: text)
 													}
 												} else if index == 2 {
-													//TODO Conversations List reset
+													if text.isEmpty {
+														conversationsListViewModel.resetFilterConversations()
+													} else {
+														conversationsListViewModel.filterConversations(filter: text)
+													}
 												} else if index == 3 {
 													meetingsListViewModel.currentFilter = text
 													meetingsListViewModel.computeMeetingsList()
@@ -490,7 +494,7 @@ struct ContentView: View {
 												} else if index == 1 {
 													historyListViewModel.filterCallLogs(filter: text)
 												} else if index == 2 {
-													//TODO Conversations List reset
+													conversationsListViewModel.filterConversations(filter: text)
 												} else if index == 3 {
 													meetingsListViewModel.currentFilter = text
 													meetingsListViewModel.computeMeetingsList()

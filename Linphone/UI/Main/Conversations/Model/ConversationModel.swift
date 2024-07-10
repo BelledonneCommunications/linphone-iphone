@@ -37,6 +37,7 @@ class ConversationModel: ObservableObject {
 	let isGroup: Bool
 	let isReadOnly: Bool
 	@Published var subject: String
+	@Published var participantsAddress: [String] = []
 	@Published var isComposing: Bool
 	@Published var lastUpdateTime: time_t
 	@Published var isMuted: Bool
@@ -158,15 +159,17 @@ class ConversationModel: ObservableObject {
 			? self.contactsManager.getFriendWithAddress(address: self.chatRoom.participants.first?.address)
 			: nil
 			
+			var subjectTmp = ""
+			
 			if self.isGroup {
-				self.subject = self.chatRoom.subject!
+				subjectTmp = self.chatRoom.subject!
 			} else if addressFriend != nil {
-				self.subject = addressFriend!.name!
+				subjectTmp = addressFriend!.name!
 			} else {
 				if self.chatRoom.participants.first != nil
 					&& self.chatRoom.participants.first!.address != nil {
 					
-					self.subject = self.chatRoom.participants.first!.address!.displayName != nil
+					subjectTmp = self.chatRoom.participants.first!.address!.displayName != nil
 					? self.chatRoom.participants.first!.address!.displayName!
 					: self.chatRoom.participants.first!.address!.username!
 					
@@ -182,19 +185,27 @@ class ConversationModel: ObservableObject {
 			})
 			?? ContactAvatarModel(
 				friend: nil,
-				name: self.subject,
+				name: subjectTmp,
 				address: addressTmp,
 				withPresence: false
 			)
 			: ContactAvatarModel(
 				friend: nil,
-				name: self.subject,
+				name: subjectTmp,
 				address: addressTmp,
 				withPresence: false
 			)
 			
+			var participantsAddressTmp: [String] = []
+			
+			self.chatRoom.participants.forEach { participant in
+				participantsAddressTmp.append(participant.address?.asStringUriOnly() ?? "")
+			}
+			
 			DispatchQueue.main.async {
+				self.subject = subjectTmp
 				self.avatarModel = avatarModelTmp
+				self.participantsAddress = participantsAddressTmp
 			}
 		}
 	}

@@ -195,7 +195,7 @@ class HistoryListViewModel: ObservableObject {
 	func filterCallLogs(filter: String) {
 		callLogs.removeAll()
 		callLogsTmp.forEach { callLog in
-			if callLog.addressName.contains(filter) {
+			if callLog.addressName.lowercased().contains(filter.lowercased()) {
 				callLogs.append(callLog)
 			}
 		}
