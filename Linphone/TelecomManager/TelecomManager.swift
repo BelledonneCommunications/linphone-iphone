@@ -605,7 +605,8 @@ class TelecomManager: ObservableObject {
 						} else {
 							let videoEnabled = call.remoteParams?.videoEnabled ?? false
 							let isConference = call.callLog?.wasConference() ?? false
-							self.displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: videoEnabled && !isConference, callId: callId, displayName: displayName)
+							let videoDir = call.remoteParams?.videoDirection != MediaDirection.Inactive
+							self.displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: videoEnabled && videoDir && !isConference, callId: callId, displayName: displayName)
 						}
 					} /* else if UIApplication.shared.applicationState != .active {
 					   // not support callkit , use notif
