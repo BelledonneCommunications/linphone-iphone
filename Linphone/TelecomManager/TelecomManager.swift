@@ -566,6 +566,7 @@ class TelecomManager: ObservableObject {
 						}
 					}
 	#endif
+					/*
 					if call.replacedCall != nil {
 						self.endCallKitReplacedCall = false
 						
@@ -578,7 +579,8 @@ class TelecomManager: ObservableObject {
 							self.providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
 							self.providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, displayName: displayName)
 						}
-					} else if TelecomManager.callKitEnabled(core: core) {
+					} else */
+					if TelecomManager.callKitEnabled(core: core) {
 						/*
 						 let isConference = isConferenceCall(call: call)
 						 let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
@@ -593,9 +595,9 @@ class TelecomManager: ObservableObject {
 						 }
 						 */
 						let uuid = self.providerDelegate.uuids["\(callId)"]
-						if call.replacedCall == nil {
+						//if call.replacedCall == nil {
 							TelecomManager.uuidReplacedCall = callId
-						}
+						//}
 						
 						if uuid != nil {
 							// Tha app is now registered, updated the call already existed.

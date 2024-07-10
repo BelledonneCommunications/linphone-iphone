@@ -144,8 +144,12 @@ class CallViewModel: ObservableObject {
 				}
 				
 				let directionTmp = self.currentCall!.dir
-				let remoteAddressStringTmp = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
-				let remoteAddressTmp = self.currentCall!.remoteAddress!
+				
+				let remoteAddressTmp = self.currentCall!.remoteAddress!.clone()
+				remoteAddressTmp!.clean()
+				
+				let remoteAddressStringTmp = remoteAddressTmp != nil ? String(remoteAddressTmp!.asStringUriOnly().dropFirst(4)) : ""
+				
 				var displayNameTmp = ""
 				if self.currentCall?.conference != nil {
 					displayNameTmp = self.currentCall?.conference?.subject ?? ""
@@ -160,6 +164,8 @@ class CallViewModel: ObservableObject {
 							displayNameTmp = self.currentCall!.remoteAddress!.username!
 						}
 					}
+					
+					
 					
 					DispatchQueue.main.async {
 						self.displayName = displayNameTmp
