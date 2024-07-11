@@ -64,4 +64,9 @@ class LinphoneUtils: NSObject {
 		return	account?.params?.useInternationalPrefixForCallsAndChats == true || core.defaultAccount?.params?.useInternationalPrefixForCallsAndChats == true
 	}
 	
+	public class func isEndToEndEncryptedChatAvailable(core: Core) -> Bool {
+		return core.limeX3DhEnabled &&
+		core.defaultAccount?.params?.limeServerUrl != nil &&
+		core.defaultAccount?.params?.conferenceFactoryUri != nil
+	}
 }

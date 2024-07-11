@@ -20,26 +20,23 @@
 import SwiftUI
 import linphonesw
 
-struct StartCallFragment: View {
-	
+struct StartConversationFragment: View {
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
-	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var callViewModel: CallViewModel
-	@ObservedObject var startCallViewModel: StartCallViewModel
+	@ObservedObject var startConversationViewModel: StartConversationViewModel
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
-	@Binding var isShowStartCallFragment: Bool
-	@Binding var showingDialer: Bool
+	@Binding var isShowStartConversationFragment: Bool
 	
 	@FocusState var isSearchFieldFocused: Bool
 	@State private var delayedColor = Color.white
 	
 	@FocusState var isMessageTextFocused: Bool
 	
-	var resetCallView: () -> Void
+	@State var operationInProgress: Bool = false
 	
 	var body: some View {
 		NavigationView {
@@ -65,23 +62,17 @@ struct StartCallFragment: View {
 								DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
 									magicSearch.searchForContacts(
 										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-									
-									if callViewModel.isTransferInsteadCall == true {
-										callViewModel.isTransferInsteadCall = false
-									}
-									
-									resetCallView()
 								}
 								
-								startCallViewModel.searchField = ""
+								startConversationViewModel.searchField = ""
 								magicSearch.currentFilterSuggestions = ""
 								delayColorDismiss()
 								withAnimation {
-									isShowStartCallFragment.toggle()
+									isShowStartConversationFragment = false
 								}
 							}
 						
-						Text(!callViewModel.isTransferInsteadCall ? "history_call_start_title" : "Transfer call to")
+						Text("new_conversation_title")
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 						
@@ -96,18 +87,15 @@ struct StartCallFragment: View {
 					
 					VStack(spacing: 0) {
 						ZStack(alignment: .trailing) {
-							TextField("history_call_start_search_bar_filter_hint", text: $startCallViewModel.searchField)
+							TextField("history_call_start_search_bar_filter_hint", text: $startConversationViewModel.searchField)
 								.default_text_style(styleSize: 15)
 								.frame(height: 25)
 								.focused($isSearchFieldFocused)
 								.padding(.horizontal, 30)
-								.onChange(of: startCallViewModel.searchField) { newValue in
+								.onChange(of: startConversationViewModel.searchField) { newValue in
 									magicSearch.currentFilterSuggestions = newValue
 									magicSearch.searchForSuggestions()
 								}
-								.simultaneousGesture(TapGesture().onEnded {
-									showingDialer = false
-								})
 							
 							HStack {
 								Button(action: {
@@ -121,31 +109,9 @@ struct StartCallFragment: View {
 								
 								Spacer()
 								
-								if startCallViewModel.searchField.isEmpty {
+								if !startConversationViewModel.searchField.isEmpty {
 									Button(action: {
-										if !showingDialer {
-											isSearchFieldFocused = false
-											
-											DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-												showingDialer = true
-											}
-										} else {
-											showingDialer = false
-											
-											DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-												isSearchFieldFocused = true
-											}
-										}
-									}, label: {
-										Image(!showingDialer ? "dialer" : "keyboard")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
-											.frame(width: 25, height: 25)
-									})
-								} else {
-									Button(action: {
-										startCallViewModel.searchField = ""
+										startConversationViewModel.searchField = ""
 										magicSearch.currentFilterSuggestions = ""
 										magicSearch.searchForSuggestions()
 									}, label: {
@@ -170,7 +136,7 @@ struct StartCallFragment: View {
 						.padding(.horizontal)
 						
 						NavigationLink(destination: {
-							StartGroupCallFragment(startCallViewModel: startCallViewModel)
+							//StartGroupConversationFragment(startConversationViewModel: startConversationViewModel)
 						}, label: {
 							HStack {
 								HStack(alignment: .center) {
@@ -218,50 +184,18 @@ struct StartCallFragment: View {
 							}
 							
 							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
-								if callViewModel.isTransferInsteadCall {
-									showingDialer = false
-									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										
-										if callViewModel.isTransferInsteadCall == true {
-											callViewModel.isTransferInsteadCall = false
-										}
-										
-										resetCallView()
-									}
-									
-									startCallViewModel.searchField = ""
-									magicSearch.currentFilterSuggestions = ""
-									delayColorDismiss()
-									
-									withAnimation {
-										isShowStartCallFragment.toggle()
-										callViewModel.blindTransferCallTo(toAddress: addr)
-									}
-								} else {
-									showingDialer = false
-									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										
-										if callViewModel.isTransferInsteadCall == true {
-											callViewModel.isTransferInsteadCall = false
-										}
-										
-										resetCallView()
-									}
-									
-									startCallViewModel.searchField = ""
-									magicSearch.currentFilterSuggestions = ""
-									delayColorDismiss()
-									
-									withAnimation {
-										isShowStartCallFragment.toggle()
-										telecomManager.doCallOrJoinConf(address: addr)
-									}
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+									magicSearch.searchForContacts(
+										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue
+									)
+								}
+								
+								startConversationViewModel.searchField = ""
+								magicSearch.currentFilterSuggestions = ""
+								delayColorDismiss()
+								
+								withAnimation {
+									startConversationViewModel.createOneToOneChatRoomWith(remote: addr)
 								}
 							})
 							.padding(.horizontal, 16)
@@ -284,8 +218,8 @@ struct StartCallFragment: View {
 				}
 				.background(.white)
 				
-				if !startCallViewModel.participants.isEmpty {
-					startCallPopup
+				if !startConversationViewModel.participants.isEmpty {
+					startConversationPopup
 						.background(.black.opacity(0.65))
 						.onAppear {
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
@@ -294,11 +228,27 @@ struct StartCallFragment: View {
 						}
 				}
 				
-				if startCallViewModel.operationInProgress {
+				if startConversationViewModel.operationInProgress {
 					PopupLoadingView()
 						.background(.black.opacity(0.65))
 						.onDisappear {
-							isShowStartCallFragment.toggle()
+							isShowStartConversationFragment = false
+							
+							if startConversationViewModel.displayedConversation != nil {
+								if self.conversationViewModel.displayedConversation != nil {
+									self.conversationViewModel.displayedConversation = nil
+									self.conversationViewModel.resetMessage()
+									self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
+									
+									self.conversationViewModel.getMessages()
+								} else {
+									withAnimation {
+										self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
+									}
+								}
+								
+								startConversationViewModel.displayedConversation = nil
+							}
 						}
 				}
 			}
@@ -321,53 +271,18 @@ struct StartCallFragment: View {
 	var suggestionsList: some View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
-				if callViewModel.isTransferInsteadCall {
-					showingDialer = false
-					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-						magicSearch.searchForContacts(
-							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-						
-						if callViewModel.isTransferInsteadCall == true {
-							callViewModel.isTransferInsteadCall = false
-						}
-						
-						resetCallView()
-					}
-					
-					startCallViewModel.searchField = ""
-					magicSearch.currentFilterSuggestions = ""
-					delayColorDismiss()
-					
-					withAnimation {
-						isShowStartCallFragment.toggle()
-						if contactsManager.lastSearchSuggestions[index].address != nil {
-							callViewModel.blindTransferCallTo(toAddress: contactsManager.lastSearchSuggestions[index].address!)
-						}
-					}
-				} else {
-					showingDialer = false
-					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-						magicSearch.searchForContacts(
-							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-						
-						if callViewModel.isTransferInsteadCall == true {
-							callViewModel.isTransferInsteadCall = false
-						}
-						
-						resetCallView()
-					}
-					
-					startCallViewModel.searchField = ""
-					magicSearch.currentFilterSuggestions = ""
-					delayColorDismiss()
-					
-					withAnimation {
-						isShowStartCallFragment.toggle()
-						if contactsManager.lastSearchSuggestions[index].address != nil {
-							telecomManager.doCallOrJoinConf(address: contactsManager.lastSearchSuggestions[index].address!)
-						}
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+					magicSearch.searchForContacts(
+						sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				}
+				
+				startConversationViewModel.searchField = ""
+				magicSearch.currentFilterSuggestions = ""
+				delayColorDismiss()
+				
+				withAnimation {
+					if contactsManager.lastSearchSuggestions[index].address != nil {
+						startConversationViewModel.createOneToOneChatRoomWith(remote: contactsManager.lastSearchSuggestions[index].address!)
 					}
 				}
 			} label: {
@@ -406,7 +321,7 @@ struct StartCallFragment: View {
 		}
 	}
 	
-	var startCallPopup: some View {
+	var startConversationPopup: some View {
 		GeometryReader { geometry in
 			VStack(alignment: .leading) {
 				Text("history_group_call_start_dialog_set_subject")
@@ -414,7 +329,7 @@ struct StartCallFragment: View {
 					.frame(alignment: .leading)
 					.padding(.bottom, 2)
 				
-				TextField("history_group_call_start_dialog_subject_hint", text: $startCallViewModel.messageText)
+				TextField("history_group_call_start_dialog_subject_hint", text: $startConversationViewModel.messageText)
 					.default_text_style(styleSize: 15)
 					.frame(height: 25)
 					.padding(.horizontal, 20)
@@ -429,7 +344,7 @@ struct StartCallFragment: View {
 					.focused($isMessageTextFocused)
 				
 				Button(action: {
-					startCallViewModel.participants.removeAll()
+					startConversationViewModel.participants.removeAll()
 				}, label: {
 					Text("Cancel")
 						.default_text_style_orange_600(styleSize: 20)
@@ -447,7 +362,7 @@ struct StartCallFragment: View {
 				.padding(.bottom, 10)
 				
 				Button(action: {
-					startCallViewModel.createGroupCall()
+					//startConversationViewModel.createGroupConversation()
 				}, label: {
 					Text("Confirm")
 						.default_text_style_white_600(styleSize: 20)
@@ -456,9 +371,9 @@ struct StartCallFragment: View {
 				})
 				.padding(.horizontal, 20)
 				.padding(.vertical, 10)
-				.background(startCallViewModel.messageText.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
+				.background(startConversationViewModel.messageText.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
 				.cornerRadius(60)
-				.disabled(startCallViewModel.messageText.isEmpty)
+				.disabled(startConversationViewModel.messageText.isEmpty)
 			}
 			.padding(.horizontal, 20)
 			.padding(.vertical, 20)
@@ -474,11 +389,9 @@ struct StartCallFragment: View {
 }
 
 #Preview {
-	StartCallFragment(
-		callViewModel: CallViewModel(),
-		startCallViewModel: StartCallViewModel(),
-		isShowStartCallFragment: .constant(true),
-		showingDialer: .constant(false),
-		resetCallView: {}
+    StartConversationFragment(
+		startConversationViewModel: StartConversationViewModel(),
+		conversationViewModel: ConversationViewModel(),
+		isShowStartConversationFragment: .constant(true)
 	)
 }

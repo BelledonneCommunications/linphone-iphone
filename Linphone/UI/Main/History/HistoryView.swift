@@ -47,8 +47,11 @@ struct HistoryView: View {
 				
 				Button {
 					withAnimation {
-						MagicSearchSingleton.shared.searchForSuggestions()
 						isShowStartCallFragment.toggle()
+					}
+					
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+						MagicSearchSingleton.shared.searchForSuggestions()
 					}
 				} label: {
 					Image("phone-plus")

@@ -135,21 +135,25 @@ struct ConversationsListFragment: View {
 					.listRowSeparator(.hidden)
 					.background(.white)
 					.onTapGesture {
-						if conversationViewModel.displayedConversation != nil {
-							conversationViewModel.displayedConversation = nil
-							conversationViewModel.resetMessage()
-							conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-							
-							conversationViewModel.getMessages()
-						} else {
-							withAnimation {
+						if index < conversationsListViewModel.conversationsList.count {
+							if conversationViewModel.displayedConversation != nil {
+								conversationViewModel.displayedConversation = nil
+								conversationViewModel.resetMessage()
 								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+								
+								conversationViewModel.getMessages()
+							} else {
+								withAnimation {
+									conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+								}
 							}
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
-						conversationsListViewModel.selectedConversation = conversationsListViewModel.conversationsList[index]
-						showingSheet.toggle()
+						if index < conversationsListViewModel.conversationsList.count {
+							conversationsListViewModel.selectedConversation = conversationsListViewModel.conversationsList[index]
+							showingSheet.toggle()
+						}
 					}
 				}
 			}

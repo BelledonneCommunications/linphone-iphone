@@ -39,6 +39,7 @@ struct ContentView: View {
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var startCallViewModel: StartCallViewModel
+	@ObservedObject var startConversationViewModel: StartConversationViewModel
 	@ObservedObject var callViewModel: CallViewModel
 	@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
@@ -59,6 +60,7 @@ struct ContentView: View {
 	@State var isShowDeleteAllHistoryPopup = false
 	@State var isShowEditContactFragment = false
 	@State var isShowStartCallFragment = false
+	@State var isShowStartConversationFragment = false
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowSipAddressesPopup = false
@@ -70,7 +72,7 @@ struct ContentView: View {
 	
 	var body: some View {
 		let pub = NotificationCenter.default
-					.publisher(for: NSNotification.Name("ContactLoaded"))
+			.publisher(for: NSNotification.Name("ContactLoaded"))
 		
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
@@ -103,9 +105,9 @@ struct ContentView: View {
 					.frame(height: 30)
 					.background(Color.greenSuccess500)
 					.onTapGesture {
-					   withAnimation {
-						   telecomManager.callDisplayed = true
-					   }
+						withAnimation {
+							telecomManager.callDisplayed = true
+						}
 					}
 				}
 				
@@ -542,7 +544,12 @@ struct ContentView: View {
 										text: $text
 									)
 								} else if self.index == 2 {
-									ConversationsView(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text)
+									ConversationsView(
+										conversationViewModel: conversationViewModel,
+										conversationsListViewModel: conversationsListViewModel,
+										text: $text,
+										isShowStartConversationFragment: $isShowStartConversationFragment
+									)
 								} else if self.index == 3 {
 									MeetingsView(
 										meetingsListViewModel: meetingsListViewModel,
@@ -778,16 +785,16 @@ struct ContentView: View {
 								}
 							} else if self.index == 2 {
 								ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
-								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
-								.ignoresSafeArea(.keyboard)
+									.frame(maxWidth: .infinity)
+									.background(Color.gray100)
+									.ignoresSafeArea(.keyboard)
 							} else if self.index == 3 {
 								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
-								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
-								.ignoresSafeArea(.keyboard)
+									.frame(maxWidth: .infinity)
+									.background(Color.gray100)
+									.ignoresSafeArea(.keyboard)
 							}
-
+							
 						}
 						.onAppear {
 							if !(orientation == .landscapeLeft
@@ -888,12 +895,22 @@ struct ContentView: View {
 								DialerBottomSheet(
 									startCallViewModel: startCallViewModel,
 									callViewModel: callViewModel,
-								 	isShowStartCallFragment: $isShowStartCallFragment,
+									isShowStartCallFragment: $isShowStartCallFragment,
 									showingDialer: $showingDialer,
 									currentCall: nil
 								)
 							} onDismiss: {}
 						}
+					}
+					
+					if isShowStartConversationFragment {
+						StartConversationFragment(
+							startConversationViewModel: startConversationViewModel,
+							conversationViewModel: conversationViewModel,
+							isShowStartConversationFragment: $isShowStartConversationFragment
+						)
+						.zIndex(6)
+						.transition(.opacity.combined(with: .move(edge: .bottom)))
 					}
 					
 					if isShowDeleteContactPopup {
@@ -1082,7 +1099,7 @@ struct ContentView: View {
 			.onReceive(pub) { _ in
 				conversationsListViewModel.refreshContactAvatarModel()
 				historyListViewModel.refreshHistoryAvatarModel()
-		 	}
+			}
 		}
 		.overlay {
 			if isMenuOpen {
@@ -1118,6 +1135,7 @@ struct ContentView: View {
 		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
 		startCallViewModel: StartCallViewModel(),
+		startConversationViewModel: StartConversationViewModel(),
 		callViewModel: CallViewModel(),
 		meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),

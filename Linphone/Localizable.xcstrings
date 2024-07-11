@@ -1188,6 +1188,40 @@
         }
       }
     },
+    "history_call_start_search_bar_filter_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search contact or history call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cherchez un contact ou une suggestion"
+          }
+        }
+      }
+    },
+    "history_call_start_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvel appel"
+          }
+        }
+      }
+    },
     "history_group_call_start_dialog_set_subject" : {
       "localizations" : {
         "en" : {
@@ -1307,9 +1341,6 @@
     "Joining..." : {
 
     },
-    "Key" : {
-      "extractionState" : "manual"
-    },
     "Last name" : {
 
     },
@@ -1389,6 +1420,23 @@
     },
     "New contact" : {
 
+    },
+    "new_conversation_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New conversation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une conversation"
+          }
+        }
+      }
     },
     "Next" : {
 
@@ -1540,9 +1588,6 @@
 
     },
     "Search contact" : {
-
-    },
-    "Search contact or history call" : {
 
     },
     "Sécurisé" : {

@@ -25,12 +25,21 @@ struct ConversationsView: View {
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@Binding var text: String
 	
+	@Binding var isShowStartConversationFragment: Bool
+	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
 				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text)
 				
 				Button {
+					withAnimation {
+						isShowStartConversationFragment = true
+					}
+					
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+						MagicSearchSingleton.shared.searchForSuggestions()
+					}
 				} label: {
 					Image("plus-circle")
 						.renderingMode(.template)
