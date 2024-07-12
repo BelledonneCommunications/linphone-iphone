@@ -41,7 +41,7 @@ struct ConversationsView: View {
 						MagicSearchSingleton.shared.searchForSuggestions()
 					}
 				} label: {
-					Image("plus-circle")
+					Image("conversation")
 						.renderingMode(.template)
 						.foregroundStyle(.white)
 						.padding()

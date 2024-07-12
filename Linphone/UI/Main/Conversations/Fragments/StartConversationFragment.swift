@@ -136,7 +136,7 @@ struct StartConversationFragment: View {
 						.padding(.horizontal)
 						
 						NavigationLink(destination: {
-							//StartGroupConversationFragment(startConversationViewModel: startConversationViewModel)
+							StartGroupConversationFragment(startConversationViewModel: startConversationViewModel)
 						}, label: {
 							HStack {
 								HStack(alignment: .center) {
@@ -150,9 +150,10 @@ struct StartConversationFragment: View {
 								.background(Color.orangeMain500)
 								.cornerRadius(40)
 								
-								Text("history_call_start_create_group_call")
+								Text("new_conversation_create_group")
 									.foregroundStyle(.black)
 									.default_text_style_800(styleSize: 16)
+									.lineLimit(1)
 								
 								Spacer()
 								
@@ -184,16 +185,6 @@ struct StartConversationFragment: View {
 							}
 							
 							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-									magicSearch.searchForContacts(
-										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue
-									)
-								}
-								
-								startConversationViewModel.searchField = ""
-								magicSearch.currentFilterSuggestions = ""
-								delayColorDismiss()
-								
 								withAnimation {
 									startConversationViewModel.createOneToOneChatRoomWith(remote: addr)
 								}
@@ -232,6 +223,16 @@ struct StartConversationFragment: View {
 					PopupLoadingView()
 						.background(.black.opacity(0.65))
 						.onDisappear {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+								magicSearch.searchForContacts(
+									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue
+								)
+							}
+							
+							startConversationViewModel.searchField = ""
+							magicSearch.currentFilterSuggestions = ""
+							delayColorDismiss()
+							
 							isShowStartConversationFragment = false
 							
 							if startConversationViewModel.displayedConversation != nil {
@@ -271,15 +272,6 @@ struct StartConversationFragment: View {
 	var suggestionsList: some View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
-				DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-					magicSearch.searchForContacts(
-						sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-				}
-				
-				startConversationViewModel.searchField = ""
-				magicSearch.currentFilterSuggestions = ""
-				delayColorDismiss()
-				
 				withAnimation {
 					if contactsManager.lastSearchSuggestions[index].address != nil {
 						startConversationViewModel.createOneToOneChatRoomWith(remote: contactsManager.lastSearchSuggestions[index].address!)
@@ -324,12 +316,12 @@ struct StartConversationFragment: View {
 	var startConversationPopup: some View {
 		GeometryReader { geometry in
 			VStack(alignment: .leading) {
-				Text("history_group_call_start_dialog_set_subject")
+				Text("conversation_dialog_set_subject")
 					.default_text_style_800(styleSize: 16)
 					.frame(alignment: .leading)
 					.padding(.bottom, 2)
 				
-				TextField("history_group_call_start_dialog_subject_hint", text: $startConversationViewModel.messageText)
+				TextField("conversation_dialog_subject_hint", text: $startConversationViewModel.messageText)
 					.default_text_style(styleSize: 15)
 					.frame(height: 25)
 					.padding(.horizontal, 20)
@@ -362,7 +354,7 @@ struct StartConversationFragment: View {
 				.padding(.bottom, 10)
 				
 				Button(action: {
-					//startConversationViewModel.createGroupConversation()
+					startConversationViewModel.createGroupChatRoom()
 				}, label: {
 					Text("Confirm")
 						.default_text_style_white_600(styleSize: 20)

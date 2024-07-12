@@ -128,6 +128,7 @@
 		D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */; };
 		D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FBF2ACC2E390081A588 /* HistoryView.swift */; };
 		D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A03FC52ACC458A0081A588 /* SplashScreen.swift */; };
+		D7A0ACBB2C415D630043AE79 /* StartGroupConversationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A0ACBA2C415D630043AE79 /* StartGroupConversationFragment.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
 		D7ADF6002AFE356400212231 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ADF5FF2AFE356400212231 /* Avatar.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
@@ -309,6 +310,7 @@
 		D7A03FBC2ACC2DB60081A588 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		D7A03FBF2ACC2E390081A588 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		D7A03FC52ACC458A0081A588 /* SplashScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		D7A0ACBA2C415D630043AE79 /* StartGroupConversationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartGroupConversationFragment.swift; sourceTree = "<group>"; };
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D7ADF5FF2AFE356400212231 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
@@ -832,6 +834,7 @@
 				D71968912B86369D00DF4459 /* ChatBubbleView.swift */,
 				D72A9A042B9750A1000DC093 /* UIList.swift */,
 				D759CB632C3FBD4200AC35E8 /* StartConversationFragment.swift */,
+				D7A0ACBA2C415D630043AE79 /* StartGroupConversationFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -1115,6 +1118,7 @@
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
 				D75759322B56D40900E7AC10 /* ZRTPPopup.swift in Sources */,
 				D78E062E2BEA69F400CE3783 /* AudioRouteBottomSheet.swift in Sources */,
+				D7A0ACBB2C415D630043AE79 /* StartGroupConversationFragment.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
 				D7E6ADF52B9876ED0009A2BC /* Attachment.swift in Sources */,
@@ -1201,7 +1205,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"DEBUG=1",
-					"USE_CRASHLYTICS=1",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = msgNotificationService/Info.plist;
@@ -1215,7 +1218,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1241,10 +1244,7 @@
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"USE_CRASHLYTICS=1",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = msgNotificationService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = msgNotificationService;
@@ -1257,7 +1257,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1404,7 +1404,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"DEBUG=1",
-					"USE_CRASHLYTICS=1",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
@@ -1431,7 +1430,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MARKETING_VERSION = 6.0.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1457,10 +1456,7 @@
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"USE_CRASHLYTICS=1",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
@@ -1486,7 +1482,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
 				MARKETING_VERSION = 6.0.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

@@ -17,11 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
+import SwiftUI
 
-extension Encodable {
-	var asDictionary: [String: Any]? {
-		guard let data = try? JSONEncoder().encode(self) else { return nil }
-		return try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+struct StartGroupConversationFragment: View {
+	@ObservedObject var startConversationViewModel: StartConversationViewModel
+	@State var addParticipantsViewModel = AddParticipantsViewModel()
+	
+	var body: some View {
+		AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: startConversationViewModel.addParticipants)
+			.onAppear {
+				addParticipantsViewModel.participantsToAdd = startConversationViewModel.participants
+			}
 	}
+}
+
+#Preview {
+	StartGroupConversationFragment(startConversationViewModel: StartConversationViewModel())
 }

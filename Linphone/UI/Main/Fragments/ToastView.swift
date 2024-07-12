@@ -206,9 +206,22 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
-						
 					case "Failed_to_create_group_call_error":
 						Text("conference_failed_to_create_group_call_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_to_create_conversation_error":
+						Text("conversation_failed_to_create_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_to_create_conversation_invalid_participant_error":
+						Text("conversation_invalid_participant_due_to_security_mode_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)

@@ -61,83 +61,105 @@ class StartConversationViewModel: ObservableObject {
 		participants = list
 	}
 	
-	/*
 	func createGroupChatRoom() {
 		coreContext.doOnCoreQueue { core in
 			let account = core.defaultAccount
-			if (account == nil) {
+			if account == nil {
 				Log.error(
 					"\(StartConversationViewModel.TAG) No default account found, can't create group conversation!"
 				)
 				return
 			}
-
-			operationInProgress = true
-
-			let groupChatRoomSubject = subject
-			val params: ChatRoomParams = coreContext.core.createDefaultChatRoomParams()
-			params.isGroupEnabled = true
-			params.subject = groupChatRoomSubject
-			params.backend = ChatRoom.Backend.FlexisipChat
-			params.isEncryptionEnabled = true
-
-			val participants = arrayListOf<Address>()
-			for (participant in selection.value.orEmpty()) {
-				participants.add(participant.address)
+			
+			DispatchQueue.main.async {
+				self.operationInProgress = true
 			}
-			val localAddress = account.params.identityAddress
-
-			val participantsArray = arrayOf<Address>()
-			val chatRoom = core.createChatRoom(
-				params,
-				localAddress,
-				participants.toArray(participantsArray)
-			)
-			if (chatRoom != null) {
-				if (params.backend == ChatRoom.Backend.FlexisipChat) {
-					if (chatRoom.state == ChatRoom.State.Created) {
-						val id = LinphoneUtils.getChatRoomId(chatRoom)
-						Log.i(
-							"$TAG Group conversation [$id] ($groupChatRoomSubject) has been created"
-						)
-						operationInProgress.postValue(false)
-						chatRoomCreatedEvent.postValue(
-							Event(
-								Pair(
-									chatRoom.localAddress.asStringUriOnly(),
-									chatRoom.peerAddress.asStringUriOnly()
-								)
-							)
-						)
-					} else {
-						Log.i(
-							"$TAG Conversation [$groupChatRoomSubject] isn't in Created state yet, wait for it"
-						)
-						chatRoom.addListener(chatRoomListener)
-					}
-				} else {
-					val id = LinphoneUtils.getChatRoomId(chatRoom)
-					Log.i("$TAG Conversation successfully created [$id] ($groupChatRoomSubject)")
-					operationInProgress.postValue(false)
-					chatRoomCreatedEvent.postValue(
-						Event(
-							Pair(
-								chatRoom.localAddress.asStringUriOnly(),
-								chatRoom.peerAddress.asStringUriOnly()
-							)
-						)
-					)
+			
+			let groupChatRoomSubject = self.messageText
+			do {
+				let params: ChatRoomParams = try core.createDefaultChatRoomParams()
+				params.groupEnabled = true
+				params.subject = groupChatRoomSubject
+				params.backend = ChatRoom.Backend.FlexisipChat
+				params.encryptionEnabled = true
+				
+				var participantsTmp: [Address] = []
+				self.participants.forEach { participant in
+					participantsTmp.append(participant.address)
 				}
-			} else {
-				Log.e("$TAG Failed to create group conversation [$groupChatRoomSubject]!")
-				operationInProgress.postValue(false)
-				chatRoomCreationErrorEvent.postValue(
-					Event(R.string.conversation_failed_to_create_toast)
-				)
+				
+				if account!.params != nil {
+					let localAddress = account!.params!.identityAddress
+					
+					let chatRoom = try core.createChatRoom(
+						params: params,
+						localAddr: localAddress,
+						participants: participantsTmp
+					)
+					
+					if params.backend == ChatRoom.Backend.FlexisipChat {
+						if chatRoom.state == ChatRoom.State.Created {
+							let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+							Log.info(
+								"\(StartConversationViewModel.TAG) Group conversation \(id) \(groupChatRoomSubject) has been created"
+							)
+							
+							let model = ConversationModel(chatRoom: chatRoom)
+							if 	self.operationInProgress == false {
+								DispatchQueue.main.async {
+									self.operationInProgress = true
+								}
+								
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+									self.operationInProgress = false
+									self.displayedConversation = model
+								}
+							} else {
+								DispatchQueue.main.async {
+									self.operationInProgress = false
+									self.displayedConversation = model
+								}
+							}
+						} else {
+							Log.info(
+								"\(StartConversationViewModel.TAG) Conversation \(groupChatRoomSubject) isn't in Created state yet, wait for it"
+							)
+							self.chatRoomAddDelegate(core: core, chatRoom: chatRoom)
+						}
+					} else {
+						let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+						Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(id) \(groupChatRoomSubject)")
+						
+						let model = ConversationModel(chatRoom: chatRoom)
+						if 	self.operationInProgress == false {
+							DispatchQueue.main.async {
+								self.operationInProgress = true
+							}
+							
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								self.operationInProgress = false
+								self.displayedConversation = model
+							}
+						} else {
+							DispatchQueue.main.async {
+								self.operationInProgress = false
+								self.displayedConversation = model
+							}
+						}
+					}
+				}
+			} catch let error {
+				Log.error("\(StartConversationViewModel.TAG) Failed to create group conversation \(groupChatRoomSubject)!")
+				Log.error("\(StartConversationViewModel.TAG) \(error)")
+				
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+					ToastViewModel.shared.displayToast = true
+				}
 			}
 		}
 	}
-	 */
 	
 	func createOneToOneChatRoomWith(remote: Address) {
 		coreContext.doOnCoreQueue { core in
@@ -184,12 +206,9 @@ class StartConversationViewModel: ObservableObject {
 					)
 					DispatchQueue.main.async {
 						self.operationInProgress = false
+						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_invalid_participant_error"
+						ToastViewModel.shared.displayToast = true
 					}
-					/*
-					 chatRoomCreationErrorEvent.postValue(
-					 Event(R.string.conversation_invalid_participant_due_to_security_mode_toast)
-					 )
-					 */
 					return
 				}
 				
@@ -207,16 +226,22 @@ class StartConversationViewModel: ObservableObject {
 							let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 							Log.info("\(StartConversationViewModel.TAG) 1-1 conversation \(id) has been created")
 							
-							/*
-							 chatRoomCreatedEvent.postValue(
-							 Event(
-							 Pair(
-							 chatRoom.localAddress.asStringUriOnly(),
-							 chatRoom.peerAddress.asStringUriOnly()
-							 )
-							 )
-							 )
-							 */
+							let model = ConversationModel(chatRoom: chatRoom)
+							if 	self.operationInProgress == false {
+								DispatchQueue.main.async {
+									self.operationInProgress = true
+								}
+								
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+									self.operationInProgress = false
+									self.displayedConversation = model
+								}
+							} else {
+								DispatchQueue.main.async {
+									self.operationInProgress = false
+									self.displayedConversation = model
+								}
+							}
 						} else {
 							Log.info("\(StartConversationViewModel.TAG) Conversation isn't in Created state yet, wait for it")
 							self.chatRoomAddDelegate(core: core, chatRoom: chatRoom)
@@ -226,20 +251,21 @@ class StartConversationViewModel: ObservableObject {
 						Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(id)")
 						
 						let model = ConversationModel(chatRoom: chatRoom)
-						DispatchQueue.main.async {
-							self.operationInProgress = false
-							self.displayedConversation = model
+						if 	self.operationInProgress == false {
+							DispatchQueue.main.async {
+								self.operationInProgress = true
+							}
+							
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								self.operationInProgress = false
+								self.displayedConversation = model
+							}
+						} else {
+							DispatchQueue.main.async {
+								self.operationInProgress = false
+								self.displayedConversation = model
+							}
 						}
-						/*
-						 chatRoomCreatedEvent.postValue(
-						 Event(
-						 Pair(
-						 chatRoom.localAddress.asStringUriOnly(),
-						 chatRoom.peerAddress.asStringUriOnly()
-						 )
-						 )
-						 )
-						 */
 					}
 				} else {
 					Log.warn(
@@ -247,74 +273,87 @@ class StartConversationViewModel: ObservableObject {
 					)
 					
 					let model = ConversationModel(chatRoom: existingChatRoom!)
-					DispatchQueue.main.async {
-						self.operationInProgress = false
-						self.displayedConversation = model
+					if 	self.operationInProgress == false {
+						DispatchQueue.main.async {
+							self.operationInProgress = true
+						}
+						
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+							self.operationInProgress = false
+							self.displayedConversation = model
+						}
+					} else {
+						DispatchQueue.main.async {
+							self.operationInProgress = false
+							self.displayedConversation = model
+						}
 					}
-					
-					
-					/*
-					 chatRoomCreatedEvent.postValue(
-					 Event(
-					 Pair(
-					 existingChatRoom.localAddress.asStringUriOnly(),
-					 existingChatRoom.peerAddress.asStringUriOnly()
-					 )
-					 )
-					 )
-					 */
 				}
 			} catch {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
+					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+					ToastViewModel.shared.displayToast = true
 				}
 				Log.error("\(StartConversationViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())!")
 			}
 		}
 	}
 	
-		func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
-			self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue {
-				(chatRoom: ChatRoom, eventLog: EventLog) in
-				let state = chatRoom.state
-				let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-				Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject) state changed: \(state)")
-				if state == ChatRoom.State.Created {
-					Log.info("\(StartConversationViewModel.TAG) Conversation \(id) successfully created")
-					self.chatRoomSuscriptions.removeAll()
-					
+	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue {
+			(chatRoom: ChatRoom, eventLog: EventLog) in
+			let state = chatRoom.state
+			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
+			if state == ChatRoom.State.Created {
+				Log.info("\(StartConversationViewModel.TAG) Conversation \(id) successfully created")
+				self.chatRoomSuscriptions.removeAll()
+				
+				let model = ConversationModel(chatRoom: chatRoom)
+				if 	self.operationInProgress == false {
 					DispatchQueue.main.async {
-						let model = ConversationModel(chatRoom: chatRoom)
+						self.operationInProgress = true
+					}
+					
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 						self.operationInProgress = false
 						self.displayedConversation = model
 					}
-					
-					/*
-					chatRoomCreatedEvent.postValue(
-						Event(
-							Pair(
-								chatRoom.localAddress.asStringUriOnly(),
-								chatRoom.peerAddress.asStringUriOnly()
-							)
-						)
-					)
-					 */
-				} else if state == ChatRoom.State.CreationFailed {
-					Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
-					self.chatRoomSuscriptions.removeAll()
+				} else {
 					DispatchQueue.main.async {
 						self.operationInProgress = false
+						self.displayedConversation = model
 					}
-					/*
-					chatRoomCreationErrorEvent.postValue(
-						Event(R.string.conversation_failed_to_create_toast)
-					)
-					 */
 				}
-			})
-		}
+			} else if state == ChatRoom.State.CreationFailed {
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
+				self.chatRoomSuscriptions.removeAll()
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+					ToastViewModel.shared.displayToast = true
+				}
+			}
+		})
 		
-		func isEndToEndEncryptionMandatory() -> Bool {
-			return false // TODO: Will be done later in SDK
-		}
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue {
+			(chatRoom: ChatRoom, state: ChatRoom.State) in
+			let state = chatRoom.state
+			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+			if state == ChatRoom.State.CreationFailed {
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
+				self.chatRoomSuscriptions.removeAll()
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+					ToastViewModel.shared.displayToast = true
+				}
+			}
+		})
+	}
+	
+	func isEndToEndEncryptionMandatory() -> Bool {
+		return false // TODO: Will be done later in SDK
+	}
 }

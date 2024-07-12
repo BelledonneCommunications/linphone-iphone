@@ -886,6 +886,74 @@
         }
       }
     },
+    "conversation_dialog_set_subject" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set conversation subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nommer la conversation"
+          }
+        }
+      }
+    },
+    "conversation_dialog_subject_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de la conversation"
+          }
+        }
+      }
+    },
+    "conversation_failed_to_create_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to create conversation!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la création de la conversation !"
+          }
+        }
+      }
+    },
+    "conversation_invalid_participant_due_to_security_mode_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't create conversation with a participant not on the same domain due to security restrictions!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé."
+          }
+        }
+      }
+    },
     "Conversations" : {
 
     },
@@ -1420,6 +1488,23 @@
     },
     "New contact" : {
 
+    },
+    "new_conversation_create_group" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a group conversation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une conversation de groupe"
+          }
+        }
+      }
     },
     "new_conversation_title" : {
       "extractionState" : "manual",
