@@ -289,21 +289,15 @@ struct HistoryContactFragment: View {
 										Spacer()
 										
 										Button(action: {
-											
+											contactViewModel.createOneToOneChatRoomWith(remote: historyViewModel.displayedCall!.addressLinphone)
 										}, label: {
 											VStack {
 												HStack(alignment: .center) {
 													Image("chat-teardrop-text")
 														.renderingMode(.template)
 														.resizable()
-													//.foregroundStyle(Color.grayMain2c600)
-														.foregroundStyle(Color.grayMain2c300)
+														.foregroundStyle(Color.grayMain2c600)
 														.frame(width: 25, height: 25)
-														.onTapGesture {
-															withAnimation {
-																
-															}
-														}
 												}
 												.padding(16)
 												.background(Color.grayMain2c200)
