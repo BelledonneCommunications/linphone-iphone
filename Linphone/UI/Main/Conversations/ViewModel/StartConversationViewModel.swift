@@ -182,11 +182,11 @@ class StartConversationViewModel: ObservableObject {
 				params.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
 				
 				let sameDomain = remote.domain == account?.params?.domain ?? ""
-				if self.isEndToEndEncryptionMandatory() && sameDomain {
+				if StartConversationViewModel.isEndToEndEncryptionMandatory() && sameDomain {
 					Log.info("\(StartConversationViewModel.TAG) Account is in secure mode & domain matches, creating a E2E conversation")
 					params.backend = ChatRoom.Backend.FlexisipChat
 					params.encryptionEnabled = true
-				} else if !self.isEndToEndEncryptionMandatory() {
+				} else if !StartConversationViewModel.isEndToEndEncryptionMandatory() {
 					if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
 						Log.info(
 							"\(StartConversationViewModel.TAG) Account is in interop mode but LIME is available, creating a E2E conversation"
@@ -353,7 +353,7 @@ class StartConversationViewModel: ObservableObject {
 		})
 	}
 	
-	func isEndToEndEncryptionMandatory() -> Bool {
+	public static func isEndToEndEncryptionMandatory() -> Bool {
 		return false // TODO: Will be done later in SDK
 	}
 }

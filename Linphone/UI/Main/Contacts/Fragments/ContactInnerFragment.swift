@@ -31,6 +31,7 @@ struct ContactInnerFragment: View {
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
 	
@@ -42,6 +43,7 @@ struct ContactInnerFragment: View {
 	@Binding var showShareSheet: Bool
 	@Binding var isShowDismissPopup: Bool
 	@Binding var isShowSipAddressesPopup: Bool
+	@Binding var isShowSipAddressesPopupType: Int
 	
 	var body: some View {
 		NavigationView {
@@ -161,6 +163,7 @@ struct ContactInnerFragment: View {
 												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
 											}
 										} else {
+											isShowSipAddressesPopupType = 0
 											isShowSipAddressesPopup = true
 										}
 									}, label: {
@@ -184,21 +187,25 @@ struct ContactInnerFragment: View {
 									Spacer()
 									
 									Button(action: {
-										
+										if contactAvatarModel.addresses.count <= 1 {
+											do {
+												let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+												contactViewModel.createOneToOneChatRoomWith(remote: address)
+											} catch {
+												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+											}
+										} else {
+											isShowSipAddressesPopupType = 1
+											isShowSipAddressesPopup = true
+										}
 									}, label: {
 										VStack {
 											HStack(alignment: .center) {
 												Image("chat-teardrop-text")
 													.renderingMode(.template)
 													.resizable()
-												//.foregroundStyle(Color.grayMain2c600)
-													.foregroundStyle(Color.grayMain2c300)
+													.foregroundStyle(Color.grayMain2c600)
 													.frame(width: 25, height: 25)
-													.onTapGesture {
-														withAnimation {
-															
-														}
-													}
 											}
 											.padding(16)
 											.background(Color.grayMain2c200)
@@ -220,6 +227,7 @@ struct ContactInnerFragment: View {
 												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
 											}
 										} else {
+											isShowSipAddressesPopupType = 2
 											isShowSipAddressesPopup = true
 										}
 									}, label: {
@@ -296,69 +304,6 @@ struct ContactInnerFragment: View {
 			print(error)
 		}
 	}
-	
-	var sipAddressesPopup: some View {
-		GeometryReader { geometry in
-			VStack(alignment: .leading) {
-				HStack {
-					Text("contact_dialog_pick_phone_number_or_sip_address_title")
-						.default_text_style_800(styleSize: 16)
-						.background(.red)
-						.padding(.bottom, 2)
-					
-					Spacer()
-					
-					Image("x")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c600)
-						.frame(width: 25, height: 25)
-						.padding(.all, 10)
-				}
-				.frame(maxWidth: .infinity)
-				
-				ForEach(0..<contactAvatarModel.addresses.count, id: \.self) { index in
-					HStack {
-						HStack {
-							VStack {
-								Text("SIP address :")
-									.default_text_style_700(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-								Text(contactAvatarModel.addresses[index].dropFirst(4))
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-							}
-							Spacer()
-						}
-						.padding(.vertical, 15)
-						.padding(.horizontal, 10)
-					}
-					.background(.white)
-					.onTapGesture {
-						do {
-							let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
-							withAnimation {
-								isShowSipAddressesPopup.toggle()
-								telecomManager.doCallOrJoinConf(address: address)
-							}
-						} catch {
-							Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
-						}
-					}
-				}
-			}
-			.padding(.horizontal, 20)
-			.padding(.vertical, 20)
-			.background(.white)
-			.cornerRadius(20)
-			.frame(maxHeight: .infinity)
-			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
-			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-		}
-	}
 }
 
 #Preview {
@@ -366,10 +311,12 @@ struct ContactInnerFragment: View {
 		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: true),
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
+		conversationViewModel: ConversationViewModel(),
 		isShowDeletePopup: .constant(false),
 		showingSheet: .constant(false),
 		showShareSheet: .constant(false),
 		isShowDismissPopup: .constant(false),
-		isShowSipAddressesPopup: .constant(false)
+		isShowSipAddressesPopup: .constant(false),
+		isShowSipAddressesPopupType: .constant(0)
 	)
 }

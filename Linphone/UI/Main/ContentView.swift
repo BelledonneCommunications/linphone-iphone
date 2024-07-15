@@ -64,6 +64,7 @@ struct ContentView: View {
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowSipAddressesPopup = false
+	@State var isShowSipAddressesPopupType = 0 //0 to call, 1  to message, 2 to video call
 	
 	@State var fullscreenVideo = false
 	
@@ -760,9 +761,11 @@ struct ContentView: View {
 								ContactFragment(
 									contactViewModel: contactViewModel,
 									editContactViewModel: editContactViewModel,
+									conversationViewModel: conversationViewModel,
 									isShowDeletePopup: $isShowDeleteContactPopup,
 									isShowDismissPopup: $isShowDismissPopup,
-									isShowSipAddressesPopup: $isShowSipAddressesPopup
+									isShowSipAddressesPopup: $isShowSipAddressesPopup,
+									isShowSipAddressesPopupType: $isShowSipAddressesPopupType
 								)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
@@ -1014,13 +1017,33 @@ struct ContentView: View {
 						SipAddressesPopup(
 							contactAvatarModel: ContactsManager.shared.avatarListModel[contactViewModel.indexDisplayedFriend != nil ? contactViewModel.indexDisplayedFriend! : 0],
 							contactViewModel: contactViewModel,
-							isShowSipAddressesPopup: $isShowSipAddressesPopup
+							isShowSipAddressesPopup: $isShowSipAddressesPopup,
+							isShowSipAddressesPopupType: $isShowSipAddressesPopupType
 						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
 							isShowSipAddressesPopup.toggle()
 						}
+					}
+					
+					if contactViewModel.operationInProgress {
+						PopupLoadingView()
+							.background(.black.opacity(0.65))
+							.zIndex(3)
+							.onDisappear {
+								if contactViewModel.displayedConversation != nil {
+									contactViewModel.indexDisplayedFriend = nil
+									index = 2
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+										withAnimation {
+											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: contactViewModel.displayedConversation!)
+										}
+										contactViewModel.displayedConversation = nil
+									}
+									
+								}
+							}
 					}
 					
 					if isShowScheduleMeetingFragment {

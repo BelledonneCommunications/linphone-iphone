@@ -26,10 +26,12 @@ struct ContactFragment: View {
 	
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
 	@Binding var isShowSipAddressesPopup: Bool
+	@Binding var isShowSipAddressesPopupType: Int
 	
 	@State private var showingSheet = false
 	@State private var showShareSheet = false
@@ -42,12 +44,14 @@ struct ContactFragment: View {
 					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
+					conversationViewModel: conversationViewModel,
 					cnContact: CNContact(),
 					isShowDeletePopup: $isShowDeletePopup,
 					showingSheet: $showingSheet,
 					showShareSheet: $showShareSheet,
 					isShowDismissPopup: $isShowDismissPopup,
-					isShowSipAddressesPopup: $isShowSipAddressesPopup
+					isShowSipAddressesPopup: $isShowSipAddressesPopup,
+					isShowSipAddressesPopupType: $isShowSipAddressesPopupType
 				)
 				.sheet(isPresented: $showingSheet) {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
@@ -63,12 +67,14 @@ struct ContactFragment: View {
 					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
+					conversationViewModel: conversationViewModel,
 					cnContact: CNContact(),
 					isShowDeletePopup: $isShowDeletePopup,
 					showingSheet: $showingSheet,
 					showShareSheet: $showShareSheet,
 					isShowDismissPopup: $isShowDismissPopup,
-					isShowSipAddressesPopup: $isShowSipAddressesPopup
+					isShowSipAddressesPopup: $isShowSipAddressesPopup,
+					isShowSipAddressesPopupType: $isShowSipAddressesPopupType
 				)
 				.halfSheet(showSheet: $showingSheet) {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
@@ -86,8 +92,10 @@ struct ContactFragment: View {
 	ContactFragment(
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
+		conversationViewModel: ConversationViewModel(),
 		isShowDeletePopup: .constant(false),
 		isShowDismissPopup: .constant(false),
-		isShowSipAddressesPopup: .constant(false)
+		isShowSipAddressesPopup: .constant(false),
+		isShowSipAddressesPopupType: .constant(0)
 	)
 }

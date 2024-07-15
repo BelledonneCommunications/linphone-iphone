@@ -29,6 +29,7 @@ struct SipAddressesPopup: View {
 	@ObservedObject var contactViewModel: ContactViewModel
 	
 	@Binding var isShowSipAddressesPopup: Bool
+	@Binding var isShowSipAddressesPopupType: Int
 	
     var body: some View {
 		GeometryReader { geometry in
@@ -71,9 +72,18 @@ struct SipAddressesPopup: View {
 					.onTapGesture {
 						do {
 							let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
-							withAnimation {
-								isShowSipAddressesPopup.toggle()
-								telecomManager.doCallOrJoinConf(address: address)
+							if isShowSipAddressesPopupType != 1 {
+								withAnimation {
+									isShowSipAddressesPopup = false
+									telecomManager.doCallOrJoinConf(address: address, isVideo: isShowSipAddressesPopupType == 2)
+									isShowSipAddressesPopupType = 0
+								}
+							} else {
+								withAnimation {
+									isShowSipAddressesPopup = false
+									contactViewModel.createOneToOneChatRoomWith(remote: address)
+									isShowSipAddressesPopupType = 0
+								}
 							}
 						} catch {
 							Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
@@ -94,5 +104,10 @@ struct SipAddressesPopup: View {
 }
 
 #Preview {
-	SipAddressesPopup(contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false), contactViewModel: ContactViewModel(), isShowSipAddressesPopup: .constant(true))
+	SipAddressesPopup(
+		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
+		contactViewModel: ContactViewModel(),
+		isShowSipAddressesPopup: .constant(true),
+		isShowSipAddressesPopupType: .constant(0)
+	)
 }
