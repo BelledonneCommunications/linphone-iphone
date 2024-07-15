@@ -496,7 +496,9 @@ struct ConversationFragment: View {
 									}
 								} else {
 									Button {
-										NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+										if conversationViewModel.displayedConversationHistorySize > 0 {
+											NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+										}
 										conversationViewModel.sendMessage()
 									} label: {
 										Image("paper-plane-tilt")
