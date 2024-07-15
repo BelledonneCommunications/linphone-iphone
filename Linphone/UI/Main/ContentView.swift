@@ -65,6 +65,7 @@ struct ContentView: View {
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowSipAddressesPopup = false
 	@State var isShowSipAddressesPopupType = 0 //0 to call, 1  to message, 2 to video call
+	@State var isShowConversationFragment = false
 	
 	@State var fullscreenVideo = false
 	
@@ -77,7 +78,7 @@ struct ContentView: View {
 		
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
-				if telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1) {
+				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
 					HStack {
 						Image("phone")
 							.renderingMode(.template)
@@ -771,7 +772,7 @@ struct ContentView: View {
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
 							} else if self.index == 1 {
-								if historyViewModel.displayedCall!.avatarModel != nil {
+								if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.avatarModel != nil {
 									HistoryContactFragment(
 										contactAvatarModel: historyViewModel.displayedCall!.avatarModel!,
 										historyViewModel: historyViewModel,
@@ -787,7 +788,7 @@ struct ContentView: View {
 									.ignoresSafeArea(.keyboard)
 								}
 							} else if self.index == 2 {
-								ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel)
+								ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, isShowConversationFragment: $isShowConversationFragment)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
 									.ignoresSafeArea(.keyboard)
@@ -1034,14 +1035,12 @@ struct ContentView: View {
 							.onDisappear {
 								if contactViewModel.displayedConversation != nil {
 									contactViewModel.indexDisplayedFriend = nil
-									historyViewModel.displayedCall = nil
 									index = 2
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 										withAnimation {
 											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: contactViewModel.displayedConversation!)
 										}
 										contactViewModel.displayedConversation = nil
-										historyViewModel.displayedConversation = nil
 									}
 								} else if historyViewModel.displayedConversation != nil {
 									historyViewModel.displayedCall = nil
@@ -1105,7 +1104,7 @@ struct ContentView: View {
 					}
 					
 					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) && !telecomManager.meetingWaitingRoomDisplayed {
-						CallView(callViewModel: callViewModel, fullscreenVideo: $fullscreenVideo, isShowStartCallFragment: $isShowStartCallFragment)
+						CallView(callViewModel: callViewModel, conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, fullscreenVideo: $fullscreenVideo, isShowStartCallFragment: $isShowStartCallFragment, isShowConversationFragment: $isShowConversationFragment)
 							.zIndex(5)
 							.transition(.scale.combined(with: .move(edge: .top)))
 							.onAppear {

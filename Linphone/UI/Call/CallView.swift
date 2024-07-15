@@ -33,6 +33,8 @@ struct CallView: View {
 	@ObservedObject private var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var callViewModel: CallViewModel
+	@ObservedObject var conversationViewModel: ConversationViewModel
+	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
 	
@@ -60,6 +62,7 @@ struct CallView: View {
 	@State var isShowCallsListFragment: Bool = false
 	@State var isShowParticipantsListFragment: Bool = false
 	@Binding var isShowStartCallFragment: Bool
+	@Binding var isShowConversationFragment: Bool
 	
 	@State var buttonSize = 60.0
 	
@@ -184,6 +187,19 @@ struct CallView: View {
 						.transition(.move(edge: .bottom))
 						.onAppear {
 							addParticipantsViewModel = AddParticipantsViewModel()
+						}
+				}
+				
+				if isShowConversationFragment && conversationViewModel.displayedConversation != nil {
+					ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, isShowConversationFragment: $isShowConversationFragment)
+						.frame(maxWidth: .infinity)
+						.background(Color.gray100)
+						.ignoresSafeArea(.keyboard)
+						.zIndex(4)
+						.transition(.move(edge: .bottom))
+						.onDisappear {
+							conversationViewModel.displayedConversation = nil
+							isShowConversationFragment = false
 						}
 				}
 				
@@ -2156,20 +2172,49 @@ struct CallView: View {
 					HStack(spacing: 0) {
 						VStack {
 							Button {
+								if callViewModel.isOneOneCall && callViewModel.remoteAddress != nil {
+									callViewModel.createOneToOneChatRoomWith(remote: callViewModel.remoteAddress!)
+								}
 							} label: {
 								HStack {
-									Image("chat-teardrop-text")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.gray500)
-										.frame(width: 32, height: 32)
+									if !callViewModel.operationInProgress {
+										Image("chat-teardrop-text")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(callViewModel.isOneOneCall ? .white : Color.gray500)
+											.frame(width: 32, height: 32)
+									} else {
+										ProgressView()
+											.controlSize(.mini)
+											.progressViewStyle(CircularProgressViewStyle(tint: .white))
+											.frame(width: 32, height: 32, alignment: .center)
+											.onDisappear {
+												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
+													if conversationViewModel.displayedConversation != nil {
+														conversationViewModel.displayedConversation = nil
+														conversationViewModel.resetMessage()
+														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+														
+														conversationViewModel.getMessages()
+														withAnimation {
+															isShowConversationFragment = true
+														}
+													} else {
+														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+														withAnimation {
+															isShowConversationFragment = true
+														}
+													}
+												}
+											}
+									}
 								}
 							}
 							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
 							.frame(width: buttonSize, height: buttonSize)
-							.background(.white)
+							.background(callViewModel.isOneOneCall ? Color.gray500 : .white)
 							.cornerRadius(40)
-							.disabled(true)
+							.disabled(!callViewModel.isOneOneCall)
 							
 							Text("Messages")
 								.foregroundStyle(.white)
@@ -2510,20 +2555,49 @@ struct CallView: View {
 						
 						VStack {
 							Button {
+							   if callViewModel.isOneOneCall && callViewModel.remoteAddress != nil {
+								   callViewModel.createOneToOneChatRoomWith(remote: callViewModel.remoteAddress!)
+							   }
 							} label: {
 								HStack {
-									Image("chat-teardrop-text")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.gray500)
-										.frame(width: 32, height: 32)
+									if !callViewModel.operationInProgress {
+										Image("chat-teardrop-text")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(callViewModel.isOneOneCall ? .white : Color.gray500)
+											.frame(width: 32, height: 32)
+									} else {
+										ProgressView()
+											.controlSize(.mini)
+											.progressViewStyle(CircularProgressViewStyle(tint: .white))
+											.frame(width: 32, height: 32, alignment: .center)
+											.onDisappear {
+												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
+													if conversationViewModel.displayedConversation != nil {
+														conversationViewModel.displayedConversation = nil
+														conversationViewModel.resetMessage()
+														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+														
+														conversationViewModel.getMessages()
+														withAnimation {
+															isShowConversationFragment = true
+														}
+													} else {
+														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+														withAnimation {
+															isShowConversationFragment = true
+														}
+													}
+												}
+											}
+									}
 								}
 							}
 							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
 							.frame(width: buttonSize, height: buttonSize)
-							.background(.white)
+							.background(callViewModel.isOneOneCall ? Color.gray500 : .white)
 							.cornerRadius(40)
-							.disabled(true)
+							.disabled(!callViewModel.isOneOneCall)
 							
 							Text("Messages")
 								.foregroundStyle(.white)
@@ -2725,7 +2799,14 @@ struct PressedButtonStyle: ButtonStyle {
 }
 
 #Preview {
-	CallView(callViewModel: CallViewModel(), fullscreenVideo: .constant(false), isShowStartCallFragment: .constant(false))
+	CallView(
+		callViewModel: CallViewModel(),
+		conversationViewModel: ConversationViewModel(),
+		conversationsListViewModel: ConversationsListViewModel(),
+		fullscreenVideo: .constant(false),
+		isShowStartCallFragment: .constant(false),
+		isShowConversationFragment: .constant(false)
+	)
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length

@@ -49,6 +49,8 @@ struct ConversationFragment: View {
 	
 	@State private var mediasIsLoading = false
 	
+	@Binding var isShowConversationFragment: Bool
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -60,8 +62,8 @@ struct ConversationFragment: View {
 							.frame(height: 0)
 						
 						HStack {
-							if !(orientation == .landscapeLeft || orientation == .landscapeRight
-								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+							if (!(orientation == .landscapeLeft || orientation == .landscapeRight
+								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)) || isShowConversationFragment {
 								Image("caret-left")
 									.renderingMode(.template)
 									.resizable()
@@ -72,6 +74,9 @@ struct ConversationFragment: View {
 									.padding(.leading, -10)
 									.onTapGesture {
 										withAnimation {
+											if isShowConversationFragment {
+												isShowConversationFragment = false
+											}
 											conversationViewModel.displayedConversation = nil
 										}
 									}
