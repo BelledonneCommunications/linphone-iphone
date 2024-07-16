@@ -135,7 +135,18 @@ class ConversationViewModel: ObservableObject {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
-									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+									
+									if path != nil {
+										let attachment =
+										Attachment(
+											id: UUID().uuidString,
+											url: path!,
+											type: .image
+										)
+										attachmentList.append(attachment)
+									}
 								} else {
 									if content.type != "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -238,7 +249,18 @@ class ConversationViewModel: ObservableObject {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
-									self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+									
+									if path != nil {
+										let attachment =
+										Attachment(
+											id: UUID().uuidString,
+											url: path!,
+											type: .image
+										)
+										attachmentList.append(attachment)
+									}
 								} else {
 									if content.type != "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -339,7 +361,18 @@ class ConversationViewModel: ObservableObject {
 						contentText = content.utf8Text ?? ""
 					} else {
 						if content.filePath == nil || content.filePath!.isEmpty {
-							self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+							//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+							let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+							
+							if path != nil {
+								let attachment =
+								Attachment(
+									id: UUID().uuidString,
+									url: path!,
+									type: .image
+								)
+								attachmentList.append(attachment)
+							}
 						} else if content.name != nil && !content.name!.isEmpty {
 							if content.type != "video" {
 								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -601,7 +634,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		//Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
-		if content.filePath == nil || content.filePath!.isEmpty {
+		if !chatMessage.isFileTransferInProgress && (content.filePath == nil || content.filePath!.isEmpty) {
 			let contentName = content.name
 			if contentName != nil {
 				let isImage = FileUtil.isExtensionImage(path: contentName!)

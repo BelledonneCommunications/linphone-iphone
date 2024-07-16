@@ -125,6 +125,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
 			self.mCore.friendListSubscriptionEnabled = true
+			self.mCore.maxSizeForAutoDownloadIncomingFiles = 0
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
