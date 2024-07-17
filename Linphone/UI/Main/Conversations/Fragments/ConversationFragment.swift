@@ -19,6 +19,7 @@
 
 import SwiftUI
 
+// swiftlint:disable type_body_length
 struct ConversationFragment: View {
 	
 	@State private var orientation = UIDevice.current.orientation
@@ -54,222 +55,130 @@ struct ConversationFragment: View {
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
-				VStack(spacing: 1) {
-					if conversationViewModel.displayedConversation != nil {
-						Rectangle()
-							.foregroundColor(Color.orangeMain500)
-							.edgesIgnoringSafeArea(.top)
-							.frame(height: 0)
-						
-						HStack {
-							if (!(orientation == .landscapeLeft || orientation == .landscapeRight
-								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)) || isShowConversationFragment {
-								Image("caret-left")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.orangeMain500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, 4)
-									.padding(.leading, -10)
-									.onTapGesture {
-										withAnimation {
-											if isShowConversationFragment {
-												isShowConversationFragment = false
+				ZStack {
+					VStack(spacing: 1) {
+						if conversationViewModel.displayedConversation != nil {
+							Rectangle()
+								.foregroundColor(Color.orangeMain500)
+								.edgesIgnoringSafeArea(.top)
+								.frame(height: 0)
+							
+							HStack {
+								if (!(orientation == .landscapeLeft || orientation == .landscapeRight
+									  || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)) || isShowConversationFragment {
+									Image("caret-left")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.orangeMain500)
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+										.padding(.top, 4)
+										.padding(.leading, -10)
+										.onTapGesture {
+											withAnimation {
+												if isShowConversationFragment {
+													isShowConversationFragment = false
+												}
+												conversationViewModel.displayedConversation = nil
 											}
-											conversationViewModel.displayedConversation = nil
 										}
-									}
-							}
-							
-							Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 50)
-								.padding(.top, 4)
-							
-							Text(conversationViewModel.displayedConversation!.subject)
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.padding(.top, 4)
-								.lineLimit(1)
-							
-							Spacer()
-							
-							Button {
-							} label: {
-								Image("phone")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, 4)
-							}
-							
-							Menu {
-								Button {
-									isMenuOpen = false
-								} label: {
-									HStack {
-										Text("See contact")
-										Spacer()
-										Image("user-circle")
-											.resizable()
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
 								}
+								
+								Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 50)
+									.padding(.top, 4)
+								
+								Text(conversationViewModel.displayedConversation!.subject)
+									.default_text_style(styleSize: 16)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.padding(.top, 4)
+									.lineLimit(1)
+								
+								Spacer()
 								
 								Button {
-									isMenuOpen = false
 								} label: {
-									HStack {
-										Text("Copy SIP address")
-										Spacer()
-										Image("copy")
-											.resizable()
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
+									Image("phone")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+										.padding(.top, 4)
 								}
 								
-								Button(role: .destructive) {
-									isMenuOpen = false
-								} label: {
-									HStack {
-										Text("Delete history")
-										Spacer()
-										Image("trash-simple-red")
-											.resizable()
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
-								}
-							} label: {
-								Image("dots-three-vertical")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, 4)
-							}
-							.onTapGesture {
-								isMenuOpen = true
-							}
-						}
-						.frame(maxWidth: .infinity)
-						.frame(height: 50)
-						.padding(.horizontal)
-						.padding(.bottom, 4)
-						.background(.white)
-						
-						if #available(iOS 16.0, *) {
-							ZStack(alignment: .bottomTrailing) {
-								UIList(viewModel: viewModel,
-									   paginationState: paginationState,
-									   conversationViewModel: conversationViewModel,
-									   conversationsListViewModel: conversationsListViewModel,
-									   isScrolledToBottom: $isScrolledToBottom,
-									   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
-									   geometryProxy: geometry,
-									   sections: conversationViewModel.conversationMessagesSection
-								)
-								
-								if !isScrolledToBottom {
+								Menu {
 									Button {
-										NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+										isMenuOpen = false
 									} label: {
-										ZStack {
-											
-											Image("caret-down")
-												.renderingMode(.template)
-												.foregroundStyle(.white)
-												.padding()
-												.background(Color.orangeMain500)
-												.clipShape(Circle())
-												.shadow(color: .black.opacity(0.2), radius: 4)
-											
-											if conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
-												VStack {
-													HStack {
-														Spacer()
-														
-														HStack {
-															Text(
-																conversationViewModel.displayedConversationUnreadMessagesCount < 99
-																? String(conversationViewModel.displayedConversationUnreadMessagesCount)
-																: "99+"
-															)
-															.foregroundStyle(.white)
-															.default_text_style(styleSize: 10)
-															.lineLimit(1)
-															
-														}
-														.frame(width: 18, height: 18)
-														.background(Color.redDanger500)
-														.cornerRadius(50)
-													}
-													
-													Spacer()
-												}
-											}
+										HStack {
+											Text("See contact")
+											Spacer()
+											Image("user-circle")
+												.resizable()
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
 										}
-										
 									}
-									.frame(width: 50, height: 50)
-									.padding()
+									
+									Button {
+										isMenuOpen = false
+									} label: {
+										HStack {
+											Text("Copy SIP address")
+											Spacer()
+											Image("copy")
+												.resizable()
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+									}
+									
+									Button(role: .destructive) {
+										isMenuOpen = false
+									} label: {
+										HStack {
+											Text("Delete history")
+											Spacer()
+											Image("trash-simple-red")
+												.resizable()
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+									}
+								} label: {
+									Image("dots-three-vertical")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+										.padding(.top, 4)
+								}
+								.onTapGesture {
+									isMenuOpen = true
 								}
 							}
-							.onTapGesture {
-								UIApplication.shared.endEditing()
-							}
-							.onAppear {
-								conversationViewModel.getMessages()
-							}
-							.onDisappear {
-								conversationViewModel.resetMessage()
-							}
-						} else {
-							ScrollViewReader { proxy in
+							.frame(maxWidth: .infinity)
+							.frame(height: 50)
+							.padding(.horizontal)
+							.padding(.bottom, 4)
+							.background(.white)
+							
+							if #available(iOS 16.0, *) {
 								ZStack(alignment: .bottomTrailing) {
-									List {
-										if conversationViewModel.conversationMessagesSection.first != nil {
-											let counter = conversationViewModel.conversationMessagesSection.first!.rows.count
-											ForEach(0..<counter, id: \.self) { index in
-												ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
-													.id(conversationViewModel.conversationMessagesSection.first!.rows[index].id)
-													.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
-													.listRowSeparator(.hidden)
-													.scaleEffect(x: 1, y: -1, anchor: .center)
-													.onAppear {
-														if index == counter - 1
-															&& conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesSection.first!.rows.count {
-															DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-																conversationViewModel.getOldMessages()
-															}
-														}
-														
-														if index == 0 {
-															displayFloatingButton = false
-														}
-													}
-													.onDisappear {
-														if index == 0 {
-															displayFloatingButton = true
-														}
-													}
-											}
-										}
-									}
-									.scaleEffect(x: 1, y: -1, anchor: .center)
-									.listStyle(.plain)
+									UIList(viewModel: viewModel,
+										   paginationState: paginationState,
+										   conversationViewModel: conversationViewModel,
+										   conversationsListViewModel: conversationsListViewModel,
+										   isScrolledToBottom: $isScrolledToBottom,
+										   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
+										   geometryProxy: geometry,
+										   sections: conversationViewModel.conversationMessagesSection
+									)
 									
-									if displayFloatingButton {
+									if !isScrolledToBottom {
 										Button {
-											if conversationViewModel.conversationMessagesSection.first != nil && conversationViewModel.conversationMessagesSection.first!.rows.first != nil {
-												withAnimation {
-													proxy.scrollTo(conversationViewModel.conversationMessagesSection.first!.rows.first!.id)
-												}
-											}
+											NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
 										} label: {
 											ZStack {
 												
@@ -321,216 +230,492 @@ struct ConversationFragment: View {
 								.onDisappear {
 									conversationViewModel.resetMessage()
 								}
-							}
-						}
-						
-						if !conversationViewModel.mediasToSend.isEmpty || mediasIsLoading {
-							ZStack(alignment: .top) {
-								HStack {
-									if mediasIsLoading {
-										HStack {
-											Spacer()
-											
-											ProgressView()
-											
-											Spacer()
-										}
-										.frame(height: 120)
-									}
-									
-									if !mediasIsLoading {
-										LazyVGrid(columns: [
-											GridItem(.adaptive(minimum: 100), spacing: 1)
-										], spacing: 3) {
-											ForEach(conversationViewModel.mediasToSend, id: \.id) { attachment in
-												ZStack {
-													Rectangle()
-														.fill(Color(.white))
-														.frame(width: 100, height: 100)
-													
-													AsyncImage(url: attachment.thumbnail) { image in
-														ZStack {
-															image
-																.resizable()
-																.interpolation(.medium)
-																.aspectRatio(contentMode: .fill)
+							} else {
+								ScrollViewReader { proxy in
+									ZStack(alignment: .bottomTrailing) {
+										List {
+											if conversationViewModel.conversationMessagesSection.first != nil {
+												let counter = conversationViewModel.conversationMessagesSection.first!.rows.count
+												ForEach(0..<counter, id: \.self) { index in
+													ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
+														.id(conversationViewModel.conversationMessagesSection.first!.rows[index].id)
+														.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
+														.listRowSeparator(.hidden)
+														.scaleEffect(x: 1, y: -1, anchor: .center)
+														.onAppear {
+															if index == counter - 1
+																&& conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesSection.first!.rows.count {
+																DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+																	conversationViewModel.getOldMessages()
+																}
+															}
 															
-															if attachment.type == .video {
-																Image("play-fill")
-																	.renderingMode(.template)
-																	.resizable()
-																	.foregroundStyle(.white)
-																	.frame(width: 40, height: 40, alignment: .leading)
+															if index == 0 {
+																displayFloatingButton = false
 															}
 														}
-													} placeholder: {
-														ProgressView()
-													}
-													.layoutPriority(-1)
-													.onTapGesture {
-														if conversationViewModel.mediasToSend.count == 1 {
-															withAnimation {
-																conversationViewModel.mediasToSend.removeAll()
+														.onDisappear {
+															if index == 0 {
+																displayFloatingButton = true
 															}
-														} else {
-															guard let index = self.conversationViewModel.mediasToSend.firstIndex(of: attachment) else { return }
-															self.conversationViewModel.mediasToSend.remove(at: index)
+														}
+												}
+											}
+										}
+										.scaleEffect(x: 1, y: -1, anchor: .center)
+										.listStyle(.plain)
+										
+										if displayFloatingButton {
+											Button {
+												if conversationViewModel.conversationMessagesSection.first != nil && conversationViewModel.conversationMessagesSection.first!.rows.first != nil {
+													withAnimation {
+														proxy.scrollTo(conversationViewModel.conversationMessagesSection.first!.rows.first!.id)
+													}
+												}
+											} label: {
+												ZStack {
+													
+													Image("caret-down")
+														.renderingMode(.template)
+														.foregroundStyle(.white)
+														.padding()
+														.background(Color.orangeMain500)
+														.clipShape(Circle())
+														.shadow(color: .black.opacity(0.2), radius: 4)
+													
+													if conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
+														VStack {
+															HStack {
+																Spacer()
+																
+																HStack {
+																	Text(
+																		conversationViewModel.displayedConversationUnreadMessagesCount < 99
+																		? String(conversationViewModel.displayedConversationUnreadMessagesCount)
+																		: "99+"
+																	)
+																	.foregroundStyle(.white)
+																	.default_text_style(styleSize: 10)
+																	.lineLimit(1)
+																	
+																}
+																.frame(width: 18, height: 18)
+																.background(Color.redDanger500)
+																.cornerRadius(50)
+															}
+															
+															Spacer()
 														}
 													}
 												}
-												.clipShape(RoundedRectangle(cornerRadius: 4))
-												.contentShape(Rectangle())
+												
 											}
-										}
-										.frame(
-											width: geometry.size.width > 0 && CGFloat(102 * conversationViewModel.mediasToSend.count) > geometry.size.width - 20
-											? 102 * floor(CGFloat(geometry.size.width - 20) / 102)
-											: CGFloat(102 * conversationViewModel.mediasToSend.count)
-										)
-									}
-								}
-								.frame(maxWidth: .infinity)
-								.padding(.all, conversationViewModel.mediasToSend.isEmpty ? 0 : 10)
-								.background(Color.gray100)
-								
-								if !mediasIsLoading {
-									HStack {
-										Spacer()
-										
-										Button(action: {
-											withAnimation {
-												conversationViewModel.mediasToSend.removeAll()
-											}
-										}, label: {
-											Image("x")
-												.resizable()
-												.frame(width: 30, height: 30, alignment: .leading)
-												.padding(.all, 10)
-										})
-									}
-								}
-							}
-							.transition(.move(edge: .bottom))
-						}
-						
-						HStack(spacing: 0) {
-							Button {
-							} label: {
-								Image("smiley")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 28, height: 28, alignment: .leading)
-									.padding(.all, 6)
-									.padding(.top, 4)
-							}
-							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-							
-							Button {
-								self.isShowPhotoLibrary = true
-								self.mediasIsLoading = true
-							} label: {
-								Image("paperclip")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
-									.padding(.all, isMessageTextFocused ? 0 : 6)
-									.padding(.top, 4)
-									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
-							}
-							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-							
-							Button {
-								self.isShowCamera = true
-							} label: {
-								Image("camera")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
-									.padding(.all, isMessageTextFocused ? 0 : 6)
-									.padding(.top, 4)
-									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
-							}
-							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-							
-							HStack {
-								if #available(iOS 16.0, *) {
-									TextField("Say something...", text: $conversationViewModel.messageText, axis: .vertical)
-										.default_text_style(styleSize: 15)
-										.focused($isMessageTextFocused)
-										.padding(.vertical, 5)
-								} else {
-									ZStack(alignment: .leading) {
-										TextEditor(text: $conversationViewModel.messageText)
-											.multilineTextAlignment(.leading)
-											.frame(maxHeight: 160)
-											.fixedSize(horizontal: false, vertical: true)
-											.default_text_style(styleSize: 15)
-											.focused($isMessageTextFocused)
-										
-										if conversationViewModel.messageText.isEmpty {
-											Text("Say something...")
-												.padding(.leading, 4)
-												.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)
-												.foregroundStyle(Color.gray300)
-												.default_text_style(styleSize: 15)
+											.frame(width: 50, height: 50)
+											.padding()
 										}
 									}
 									.onTapGesture {
-										isMessageTextFocused = true
+										UIApplication.shared.endEditing()
 									}
-								}
-								
-								if conversationViewModel.messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
-									Button {
-									} label: {
-										Image("microphone")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
-											.frame(width: 28, height: 28, alignment: .leading)
-											.padding(.all, 6)
-											.padding(.top, 4)
+									.onAppear {
+										conversationViewModel.getMessages()
 									}
-								} else {
-									Button {
-										if conversationViewModel.displayedConversationHistorySize > 0 {
-											NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
-										}
-										conversationViewModel.sendMessage()
-									} label: {
-										Image("paper-plane-tilt")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.orangeMain500)
-											.frame(width: 28, height: 28, alignment: .leading)
-											.padding(.all, 6)
-											.padding(.top, 4)
-											.rotationEffect(.degrees(45))
+									.onDisappear {
+										conversationViewModel.resetMessage()
 									}
-									.padding(.trailing, 4)
 								}
 							}
-							.padding(.leading, 15)
-							.padding(.trailing, 5)
-							.padding(.vertical, 6)
-							.frame(maxWidth: .infinity, minHeight: 55)
-							.background(.white)
-							.cornerRadius(30)
-							.overlay(
-								RoundedRectangle(cornerRadius: 30)
-									.inset(by: 0.5)
-									.stroke(Color.gray200, lineWidth: 1.5)
-							)
-							.padding(.horizontal, 4)
+							
+							if !conversationViewModel.mediasToSend.isEmpty || mediasIsLoading {
+								ZStack(alignment: .top) {
+									HStack {
+										if mediasIsLoading {
+											HStack {
+												Spacer()
+												
+												ProgressView()
+												
+												Spacer()
+											}
+											.frame(height: 120)
+										}
+										
+										if !mediasIsLoading {
+											LazyVGrid(columns: [
+												GridItem(.adaptive(minimum: 100), spacing: 1)
+											], spacing: 3) {
+												ForEach(conversationViewModel.mediasToSend, id: \.id) { attachment in
+													ZStack {
+														Rectangle()
+															.fill(Color(.white))
+															.frame(width: 100, height: 100)
+														
+														AsyncImage(url: attachment.thumbnail) { image in
+															ZStack {
+																image
+																	.resizable()
+																	.interpolation(.medium)
+																	.aspectRatio(contentMode: .fill)
+																
+																if attachment.type == .video {
+																	Image("play-fill")
+																		.renderingMode(.template)
+																		.resizable()
+																		.foregroundStyle(.white)
+																		.frame(width: 40, height: 40, alignment: .leading)
+																}
+															}
+														} placeholder: {
+															ProgressView()
+														}
+														.layoutPriority(-1)
+														.onTapGesture {
+															if conversationViewModel.mediasToSend.count == 1 {
+																withAnimation {
+																	conversationViewModel.mediasToSend.removeAll()
+																}
+															} else {
+																guard let index = self.conversationViewModel.mediasToSend.firstIndex(of: attachment) else { return }
+																self.conversationViewModel.mediasToSend.remove(at: index)
+															}
+														}
+													}
+													.clipShape(RoundedRectangle(cornerRadius: 4))
+													.contentShape(Rectangle())
+												}
+											}
+											.frame(
+												width: geometry.size.width > 0 && CGFloat(102 * conversationViewModel.mediasToSend.count) > geometry.size.width - 20
+												? 102 * floor(CGFloat(geometry.size.width - 20) / 102)
+												: CGFloat(102 * conversationViewModel.mediasToSend.count)
+											)
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.padding(.all, conversationViewModel.mediasToSend.isEmpty ? 0 : 10)
+									.background(Color.gray100)
+									
+									if !mediasIsLoading {
+										HStack {
+											Spacer()
+											
+											Button(action: {
+												withAnimation {
+													conversationViewModel.mediasToSend.removeAll()
+												}
+											}, label: {
+												Image("x")
+													.resizable()
+													.frame(width: 30, height: 30, alignment: .leading)
+													.padding(.all, 10)
+											})
+										}
+									}
+								}
+								.transition(.move(edge: .bottom))
+							}
+							
+							HStack(spacing: 0) {
+								Button {
+								} label: {
+									Image("smiley")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 28, height: 28, alignment: .leading)
+										.padding(.all, 6)
+										.padding(.top, 4)
+								}
+								.padding(.horizontal, isMessageTextFocused ? 0 : 2)
+								
+								Button {
+									self.isShowPhotoLibrary = true
+									self.mediasIsLoading = true
+								} label: {
+									Image("paperclip")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+										.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
+										.padding(.all, isMessageTextFocused ? 0 : 6)
+										.padding(.top, 4)
+										.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+								}
+								.padding(.horizontal, isMessageTextFocused ? 0 : 2)
+								
+								Button {
+									self.isShowCamera = true
+								} label: {
+									Image("camera")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+										.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
+										.padding(.all, isMessageTextFocused ? 0 : 6)
+										.padding(.top, 4)
+										.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+								}
+								.padding(.horizontal, isMessageTextFocused ? 0 : 2)
+								
+								HStack {
+									if #available(iOS 16.0, *) {
+										TextField("Say something...", text: $conversationViewModel.messageText, axis: .vertical)
+											.default_text_style(styleSize: 15)
+											.focused($isMessageTextFocused)
+											.padding(.vertical, 5)
+									} else {
+										ZStack(alignment: .leading) {
+											TextEditor(text: $conversationViewModel.messageText)
+												.multilineTextAlignment(.leading)
+												.frame(maxHeight: 160)
+												.fixedSize(horizontal: false, vertical: true)
+												.default_text_style(styleSize: 15)
+												.focused($isMessageTextFocused)
+											
+											if conversationViewModel.messageText.isEmpty {
+												Text("Say something...")
+													.padding(.leading, 4)
+													.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)
+													.foregroundStyle(Color.gray300)
+													.default_text_style(styleSize: 15)
+											}
+										}
+										.onTapGesture {
+											isMessageTextFocused = true
+										}
+									}
+									
+									if conversationViewModel.messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
+										Button {
+										} label: {
+											Image("microphone")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: 28, height: 28, alignment: .leading)
+												.padding(.all, 6)
+												.padding(.top, 4)
+										}
+									} else {
+										Button {
+											if conversationViewModel.displayedConversationHistorySize > 0 {
+												NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+											}
+											conversationViewModel.sendMessage()
+										} label: {
+											Image("paper-plane-tilt")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.orangeMain500)
+												.frame(width: 28, height: 28, alignment: .leading)
+												.padding(.all, 6)
+												.padding(.top, 4)
+												.rotationEffect(.degrees(45))
+										}
+										.padding(.trailing, 4)
+									}
+								}
+								.padding(.leading, 15)
+								.padding(.trailing, 5)
+								.padding(.vertical, 6)
+								.frame(maxWidth: .infinity, minHeight: 55)
+								.background(.white)
+								.cornerRadius(30)
+								.overlay(
+									RoundedRectangle(cornerRadius: 30)
+										.inset(by: 0.5)
+										.stroke(Color.gray200, lineWidth: 1.5)
+								)
+								.padding(.horizontal, 4)
+							}
+							.frame(maxWidth: .infinity, minHeight: 60)
+							.padding(.top, 12)
+							.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? (isMessageTextFocused ? 12 : 0) : 12)
+							.padding(.horizontal, 10)
+							.background(Color.gray100)
 						}
-						.frame(maxWidth: .infinity, minHeight: 60)
-						.padding(.top, 12)
-						.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? (isMessageTextFocused ? 12 : 0) : 12)
-						.padding(.horizontal, 10)
-						.background(Color.gray100)
+					}
+					.blur(radius: conversationViewModel.selectedMessage != nil ? 8 : 0)
+					
+					if conversationViewModel.selectedMessage != nil && conversationViewModel.displayedConversation != nil {
+						let iconSize = ((geometry.size.width - (conversationViewModel.displayedConversation!.isGroup ? 43 : 10) - 10) / 6) - 25
+						VStack {
+							Spacer()
+							
+							VStack {
+								HStack {
+									if conversationViewModel.selectedMessage!.isOutgoing {
+										Spacer()
+									}
+									
+									HStack {
+										Button {
+										} label: {
+											Text("👍")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 5)
+										
+										Button {
+										} label: {
+											Text("❤️")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 5)
+										
+										Button {
+										} label: {
+											Text("😂")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 5)
+										
+										Button {
+										} label: {
+											Text("😮")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 5)
+										
+										Button {
+										} label: {
+											Text("😢")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 5)
+										
+										Button {
+										} label: {
+											Image("plus-circle")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: iconSize > 50 ? 50 : iconSize, height: iconSize > 50 ? 50 : iconSize, alignment: .leading)
+										}
+										.padding(.trailing, 5)
+									}
+									.padding(.vertical, 5)
+									.padding(.horizontal, 10)
+									.background(.white)
+									.cornerRadius(20)
+									
+									if !conversationViewModel.selectedMessage!.isOutgoing {
+										Spacer()
+									}
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.horizontal, 10)
+								.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
+								.shadow(color: .black.opacity(0.1), radius: 10)
+								
+								ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.selectedMessage!, geometryProxy: geometry)
+									.padding(.horizontal, 10)
+									.padding(.vertical, 1)
+									.shadow(color: .black.opacity(0.1), radius: 10)
+								
+								HStack {
+									if conversationViewModel.selectedMessage!.isOutgoing {
+										Spacer()
+									}
+									
+									VStack {
+										Button {
+										} label: {
+											HStack {
+												Text("menu_reply_to_chat_message")
+													.default_text_style(styleSize: 15)
+												Spacer()
+												Image("reply")
+													.resizable()
+													.frame(width: 20, height: 20, alignment: .leading)
+											}
+											.padding(.vertical, 5)
+											.padding(.horizontal, 20)
+										}
+										
+										Divider()
+										
+										Button {
+										} label: {
+											HStack {
+												Text("menu_copy_chat_message")
+													.default_text_style(styleSize: 15)
+												Spacer()
+												Image("copy")
+													.resizable()
+													.frame(width: 20, height: 20, alignment: .leading)
+											}
+											.padding(.vertical, 5)
+											.padding(.horizontal, 20)
+										}
+										
+										Divider()
+										
+										Button {
+										} label: {
+											HStack {
+												Text("menu_forward_chat_message")
+													.default_text_style(styleSize: 15)
+												Spacer()
+												Image("forward")
+													.resizable()
+													.frame(width: 20, height: 20, alignment: .leading)
+											}
+											.padding(.vertical, 5)
+											.padding(.horizontal, 20)
+										}
+										
+										Divider()
+										
+										Button {
+										} label: {
+											HStack {
+												Text("menu_delete_selected_item")
+													.foregroundStyle(.red)
+													.default_text_style(styleSize: 15)
+												Spacer()
+												Image("trash-simple-red")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(.red)
+													.frame(width: 20, height: 20, alignment: .leading)
+											}
+											.padding(.vertical, 5)
+											.padding(.horizontal, 20)
+										}
+									}
+									.frame(maxWidth: geometry.size.width / 1.5)
+									.padding(.vertical, 8)
+									.background(.white)
+									.cornerRadius(20)
+									
+									if !conversationViewModel.selectedMessage!.isOutgoing {
+										Spacer()
+									}
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.horizontal, 10)
+								.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
+								.shadow(color: .black.opacity(0.1), radius: 10)
+							}
+							
+							Spacer()
+						}
+						.frame(maxWidth: .infinity)
+						.background(.gray.opacity(0.1))
+						.onTapGesture {
+							withAnimation {
+								conversationViewModel.selectedMessage = nil
+							}
+						}
+						.onAppear {
+							touchFeedback()
+						}
+						.onDisappear {
+							if conversationViewModel.selectedMessage != nil {
+								conversationViewModel.selectedMessage = nil
+							}
+						}
 					}
 				}
 				.background(.white)
@@ -569,6 +754,7 @@ struct ConversationFragment: View {
 		.navigationViewStyle(.stack)
 	}
 }
+// swiftlint:enable type_body_length
 
 struct ScrollOffsetPreferenceKey: PreferenceKey {
 	static var defaultValue: CGPoint = .zero

@@ -42,6 +42,8 @@ class ConversationViewModel: ObservableObject {
 	@Published var mediasToSend: [Attachment] = []
 	var maxMediaCount = 12
 	
+	@Published var selectedMessage: Message?
+	
 	init() {}
 	
 	func addConversationDelegate() {

@@ -28,10 +28,14 @@ struct ChatBubbleView: View {
 	
 	let geometryProxy: GeometryProxy
 	
+	@State private var ticker = Ticker()
+	@State private var isPressed: Bool = false
+	@State private var timePassed: TimeInterval?
+	
 	var body: some View {
 		VStack {
 			if !message.text.isEmpty || !message.attachments.isEmpty {
-				HStack {
+				HStack(alignment: .top, content: {
 					if message.isOutgoing {
 						Spacer()
 					}
@@ -44,19 +48,11 @@ struct ChatBubbleView: View {
 								avatarSize: 35
 							)
 							.padding(.top, 30)
-							
-							Spacer()
 						}
 					} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing {
 						VStack {
-							Avatar(
-								contactAvatarModel: ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
-								avatarSize: 35
-							)
-							
-							Spacer()
 						}
-						.hidden()
+						.padding(.leading, 43)
 					}
 					
 					VStack(alignment: .leading, spacing: 0) {
@@ -67,33 +63,6 @@ struct ChatBubbleView: View {
 								.padding(.bottom, 2)
 						}
 						ZStack {
-							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && message.isFirstMessage {
-								VStack {
-									if message.isOutgoing {
-										Spacer()
-									}
-									
-									HStack {
-										if message.isOutgoing {
-											Spacer()
-										}
-										
-										VStack {
-										}
-										.frame(width: 15, height: 15)
-										.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-										.clipShape(RoundedRectangle(cornerRadius: 2))
-										
-										if !message.isOutgoing {
-											Spacer()
-										}
-									}
-									
-									if !message.isOutgoing {
-										Spacer()
-									}
-								}
-							}
 							
 							HStack {
 								if message.isOutgoing {
@@ -137,7 +106,11 @@ struct ChatBubbleView: View {
 								}
 								.padding(.all, 15)
 								.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-								.clipShape(RoundedRectangle(cornerRadius: 16))
+								.clipShape(RoundedRectangle(cornerRadius: 3))
+								.roundedCorner(
+									16,
+									corners: message.isOutgoing && message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
+										(!message.isOutgoing && message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
 								
 								if !message.isOutgoing {
 									Spacer()
@@ -150,10 +123,32 @@ struct ChatBubbleView: View {
 					if !message.isOutgoing {
 						Spacer()
 					}
-				}
+				})
 				.padding(.leading, message.isOutgoing ? 40 : 0)
 				.padding(.trailing, !message.isOutgoing ? 40 : 0)
 			}
+		}
+		.onTapGesture {}
+		.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
+			self.isPressed = value
+			if value == true {
+				self.timePassed = 0
+				self.ticker.start(interval: 0.2)
+			}
+			
+		}, perform: {})
+		.onReceive(ticker.objectWillChange) { (_) in
+			// Stop timer and reset the start date if the button in not pressed
+			guard self.isPressed else {
+				self.ticker.stop()
+				return
+			}
+			
+			self.timePassed = self.ticker.timeIntervalSinceStarted
+			withAnimation {
+				conversationViewModel.selectedMessage = message
+			}
+			
 		}
 	}
 	
@@ -372,6 +367,49 @@ struct GifImageView: UIViewRepresentable {
 	
 	func updateUIView(_ uiView: WKWebView, context: Context) {
 		uiView.reload()
+	}
+}
+
+class Ticker: ObservableObject {
+
+	var startedAt: Date = Date()
+
+	var timeIntervalSinceStarted: TimeInterval {
+		return Date().timeIntervalSince(startedAt)
+	}
+
+	private var timer: Timer?
+	func start(interval: TimeInterval) {
+		stop()
+		startedAt = Date()
+		timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+			self.objectWillChange.send()
+		}
+	}
+
+	func stop() {
+		timer?.invalidate()
+	}
+
+	deinit {
+		timer?.invalidate()
+	}
+
+}
+
+struct RoundedCorner: Shape {
+	var radius: CGFloat = .infinity
+	var corners: UIRectCorner = .allCorners
+	
+	func path(in rect: CGRect) -> Path {
+		let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+		return Path(path.cgPath)
+	}
+}
+
+extension View {
+	func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+		clipShape(RoundedCorner(radius: radius, corners: corners) )
 	}
 }
 

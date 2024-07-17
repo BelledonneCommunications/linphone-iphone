@@ -138,11 +138,13 @@ struct ConversationsListFragment: View {
 						if index < conversationsListViewModel.conversationsList.count {
 							if conversationViewModel.displayedConversation != nil {
 								conversationViewModel.displayedConversation = nil
+								conversationViewModel.selectedMessage = nil
 								conversationViewModel.resetMessage()
 								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
 								
 								conversationViewModel.getMessages()
 							} else {
+								conversationViewModel.selectedMessage = nil
 								withAnimation {
 									conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
 								}
