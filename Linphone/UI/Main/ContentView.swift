@@ -1028,28 +1028,20 @@ struct ContentView: View {
 						}
 					}
 					
-					if contactViewModel.operationInProgress || historyViewModel.operationInProgress {
+					if contactViewModel.operationInProgress {
 						PopupLoadingView()
 							.background(.black.opacity(0.65))
 							.zIndex(3)
 							.onDisappear {
 								if contactViewModel.displayedConversation != nil {
 									contactViewModel.indexDisplayedFriend = nil
+									historyViewModel.displayedCall = nil
 									index = 2
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 										withAnimation {
 											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: contactViewModel.displayedConversation!)
 										}
 										contactViewModel.displayedConversation = nil
-									}
-								} else if historyViewModel.displayedConversation != nil {
-									historyViewModel.displayedCall = nil
-									index = 2
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-										withAnimation {
-											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: historyViewModel.displayedConversation!)
-										}
-										historyViewModel.displayedConversation = nil
 									}
 								}
 							}
