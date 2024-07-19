@@ -73,6 +73,8 @@ public struct Message: Identifiable, Hashable {
 	public var attachments: [Attachment]
 	public var recording: Recording?
 	public var replyMessage: ReplyMessage?
+	public var ownReaction: String
+	public var reactions: [String]
 
 	public init(
 		id: String,
@@ -85,7 +87,9 @@ public struct Message: Identifiable, Hashable {
 		text: String = "",
 		attachments: [Attachment] = [],
 		recording: Recording? = nil,
-		replyMessage: ReplyMessage? = nil
+		replyMessage: ReplyMessage? = nil,
+		ownReaction: String = "",
+		reactions: [String] = []
 	) {
 		self.id = id
 		self.status = status
@@ -98,6 +102,8 @@ public struct Message: Identifiable, Hashable {
 		self.attachments = attachments
 		self.recording = recording
 		self.replyMessage = replyMessage
+		self.ownReaction = ownReaction
+		self.reactions = reactions
 	}
 
 	public static func makeMessage(
@@ -131,7 +137,9 @@ public struct Message: Identifiable, Hashable {
 				text: draft.text,
 				attachments: attachments,
 				recording: draft.recording,
-				replyMessage: draft.replyMessage
+				replyMessage: draft.replyMessage,
+				ownReaction: draft.ownReaction,
+				reactions: draft.reactions
 			)
 		}
 }
@@ -144,7 +152,7 @@ extension Message {
 
 extension Message: Equatable {
 	public static func == (lhs: Message, rhs: Message) -> Bool {
-		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage
+		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions
 	}
 }
 
@@ -217,6 +225,8 @@ public struct DraftMessage {
 	public let recording: Recording?
 	public let replyMessage: ReplyMessage?
 	public let createdAt: Date
+	public let ownReaction: String
+	public let reactions: [String]
 
 	public init(id: String? = nil,
 				isOutgoing: Bool,
@@ -227,7 +237,10 @@ public struct DraftMessage {
 				medias: [Media],
 				recording: Recording?,
 				replyMessage: ReplyMessage?,
-				createdAt: Date) {
+				createdAt: Date,
+				ownReaction: String,
+				reactions: [String]
+	) {
 		self.id = id
 		self.isOutgoing = isOutgoing
 		self.dateReceived = dateReceived
@@ -238,6 +251,8 @@ public struct DraftMessage {
 		self.recording = recording
 		self.replyMessage = replyMessage
 		self.createdAt = createdAt
+		self.ownReaction = ownReaction
+		self.reactions = reactions
 	}
 }
 

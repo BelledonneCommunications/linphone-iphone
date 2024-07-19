@@ -80,8 +80,15 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
-					case "Success_copied_into_clipboard":
+					case "Success_address_copied_into_clipboard":
 						Text("SIP address copied into clipboard")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_message_copied_into_clipboard":
+						Text("Message copied into clipboard")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)

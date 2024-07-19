@@ -127,6 +127,7 @@ struct ContentView: View {
 											self.index = 0
 											historyViewModel.displayedCall = nil
 											conversationViewModel.displayedConversation = nil
+											meetingViewModel.displayedMeeting = nil
 										}, label: {
 											VStack {
 												Image("address-book")
@@ -171,6 +172,7 @@ struct ContentView: View {
 												self.index = 1
 												contactViewModel.indexDisplayedFriend = nil
 												conversationViewModel.displayedConversation = nil
+												meetingViewModel.displayedMeeting = nil
 												if historyListViewModel.missedCallsCount > 0 {
 													historyListViewModel.resetMissedCallsCount()
 												}
@@ -219,6 +221,7 @@ struct ContentView: View {
 												self.index = 2
 												historyViewModel.displayedCall = nil
 												contactViewModel.indexDisplayedFriend = nil
+												meetingViewModel.displayedMeeting = nil
 											}, label: {
 												VStack {
 													Image("chat-teardrop-text")
@@ -275,6 +278,11 @@ struct ContentView: View {
 							}
 							
 							VStack(spacing: 0) {
+								Rectangle()
+									   .foregroundColor(Color.orangeMain500)
+									   .edgesIgnoringSafeArea(.top)
+									   .frame(height: 1)
+								
 								if searchIsActive == false {
 									HStack {
 										Image("profile-image-example")
@@ -392,6 +400,7 @@ struct ContentView: View {
 									.padding(.top, 2.5)
 									.padding(.bottom, 2.5)
 									.background(Color.orangeMain500)
+									.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
 								} else {
 									HStack {
 										Button {
@@ -523,6 +532,7 @@ struct ContentView: View {
 									.padding(.horizontal)
 									.padding(.bottom, 5)
 									.background(Color.orangeMain500)
+									.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
 								}
 								
 								if self.index == 0 {
@@ -592,6 +602,7 @@ struct ContentView: View {
 										self.index = 0
 										historyViewModel.displayedCall = nil
 										conversationViewModel.displayedConversation = nil
+										meetingViewModel.displayedMeeting = nil
 									}, label: {
 										VStack {
 											Image("address-book")
@@ -638,6 +649,7 @@ struct ContentView: View {
 											self.index = 1
 											contactViewModel.indexDisplayedFriend = nil
 											conversationViewModel.displayedConversation = nil
+											meetingViewModel.displayedMeeting = nil
 											if historyListViewModel.missedCallsCount > 0 {
 												historyListViewModel.resetMissedCallsCount()
 											}
@@ -688,6 +700,7 @@ struct ContentView: View {
 											self.index = 2
 											historyViewModel.displayedCall = nil
 											contactViewModel.indexDisplayedFriend = nil
+											meetingViewModel.displayedMeeting = nil
 										}, label: {
 											VStack {
 												Image("chat-teardrop-text")

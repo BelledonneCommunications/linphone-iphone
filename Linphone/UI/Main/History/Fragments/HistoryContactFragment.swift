@@ -135,7 +135,7 @@ struct HistoryContactFragment: View {
 									)
 								}
 								
-								ToastViewModel.shared.toastMessage = "Success_copied_into_clipboard"
+								ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
 								ToastViewModel.shared.displayToast.toggle()
 								
 							} label: {

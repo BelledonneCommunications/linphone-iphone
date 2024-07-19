@@ -35,6 +35,7 @@ class ConversationViewModel: ObservableObject {
 	@Published var messageText: String = ""
 	
 	private var chatRoomSuscriptions = Set<AnyCancellable?>()
+	private var chatMessageSuscriptions = Set<AnyCancellable?>()
 	
 	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var participantConversationModel: [ContactAvatarModel] = []
@@ -60,8 +61,73 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func addChatMessageDelegate(message: ChatMessage) {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				/*
+				self.chatMessageSuscriptions.insert(message.publisher?.onMsgStateChanged?.postOnCoreQueue {(cbValue: (message: ChatMessage, state: ChatMessage.State)) in
+					var statusTmp: Message.Status? = .sending
+					switch cbValue.message.state {
+					case .InProgress:
+						statusTmp = .sending
+					case .Delivered:
+						statusTmp = .sent
+					case .DeliveredToUser:
+						statusTmp = .received
+					case .Displayed:
+						statusTmp = .read
+					default:
+						statusTmp = nil
+					}
+					
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+					
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.objectWillChange.send()
+							self.conversationMessagesSection[0].rows[indexMessage!].status = statusTmp
+						}
+					}
+				})
+				 */
+				
+				self.chatMessageSuscriptions.insert(message.publisher?.onNewMessageReaction?.postOnCoreQueue {(cbValue: (message: ChatMessage, reaction: ChatMessageReaction)) in
+					
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+					var reactionsTmp: [String] = []
+					cbValue.message.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
+					})
+					
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.objectWillChange.send()
+							self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+						}
+					}
+				})
+				
+				self.chatMessageSuscriptions.insert(message.publisher?.onReactionRemoved?.postOnCoreQueue {(cbValue: (message: ChatMessage, address: Address)) in
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+					var reactionsTmp: [String] = []
+					cbValue.message.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
+					})
+					
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.objectWillChange.send()
+							self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+						}
+					}
+				})
+			}
+		}
+	}
+	
 	func removeConversationDelegate() {
 		self.chatRoomSuscriptions.removeAll()
+		self.chatMessageSuscriptions.removeAll()
 	}
 	
 	func getHistorySize() {
@@ -210,19 +276,28 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = nil
 					}
 					
+					var reactionsTmp: [String] = []
+					eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
+					})
+					
 					if eventLog.chatMessage != nil {
 						conversationMessage.append(
 							Message(
-								id: UUID().uuidString,
+								id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
 								status: statusTmp,
 								isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
 								dateReceived: eventLog.chatMessage?.time ?? 0,
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
 								text: contentText,
-								attachments: attachmentList
+								attachments: attachmentList,
+								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+								reactions: reactionsTmp
 							)
 						)
+						
+						self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					}
 				}
 				
@@ -324,19 +399,28 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = nil
 					}
 					
+					var reactionsTmp: [String] = []
+					eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
+					})
+					
 					if eventLog.chatMessage != nil {
 						conversationMessagesTmp.insert(
 							Message(
-								id: UUID().uuidString,
+								id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
 								status: statusTmp,
 								isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
 								dateReceived: eventLog.chatMessage?.time ?? 0,
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
 								text: contentText,
-								attachments: attachmentList
+								attachments: attachmentList,
+								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+								reactions: reactionsTmp
 							), at: 0
 						)
+						
+						self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					}
 				}
 				
@@ -451,17 +535,26 @@ class ConversationViewModel: ObservableObject {
 				statusTmp = nil
 			}
 			
+			var reactionsTmp: [String] = []
+			eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+				reactionsTmp.append(chatMessageReaction.body)
+			})
+			
 			if eventLog.chatMessage != nil {
 				let message = Message(
-					id: UUID().uuidString,
+					id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
 					status: statusTmp,
 					isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
 					dateReceived: eventLog.chatMessage?.time ?? 0,
 					address: addressCleaned?.asStringUriOnly() ?? "",
 					isFirstMessage: isFirstMessageTmp,
 					text: contentText,
-					attachments: attachmentList
+					attachments: attachmentList,
+					ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+					reactions: reactionsTmp
 				)
+				
+				self.addChatMessageDelegate(message: eventLog.chatMessage!)
 				
 				DispatchQueue.main.async {
 					if !self.conversationMessagesSection.isEmpty 
@@ -729,6 +822,43 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func sendReaction(emoji: String) {
+		coreContext.doOnCoreQueue { _ in
+			if self.selectedMessage != nil {
+				Log.info("[ConversationViewModel] Sending reaction \(emoji) to message with ID \(self.selectedMessage!.id)")
+				let messageToSendReaction = self.displayedConversation!.chatRoom.findMessage(messageId: self.selectedMessage!.id)
+				if messageToSendReaction != nil {
+					do {
+						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji)
+						reaction.send()
+						
+						let indexMessageSelected = self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessage!)
+						
+						DispatchQueue.main.async {
+							if indexMessageSelected != nil {
+								self.conversationMessagesSection[0].rows[indexMessageSelected!].ownReaction = messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji
+							}
+							self.selectedMessage = nil
+						}
+					} catch {
+						Log.info("[ConversationViewModel] Error: Can't send reaction \(emoji) to message with ID \(self.selectedMessage!.id)")
+					}
+				}
+			}
+		}
+	}
+	
+	func resend() {
+		coreContext.doOnCoreQueue { _ in
+			if self.selectedMessage != nil {
+				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.id)")
+				let messageToResend = self.displayedConversation!.chatRoom.findMessage(messageId: self.selectedMessage!.id)
+				if messageToResend != nil {
+					messageToResend!.send()
+				}
+			}
+		}
+	}
 }
 struct LinphoneCustomEventLog: Hashable {
 	var id = UUID()

@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // swiftlint:disable type_body_length
 struct ConversationFragment: View {
@@ -538,7 +539,7 @@ struct ConversationFragment: View {
 					.blur(radius: conversationViewModel.selectedMessage != nil ? 8 : 0)
 					
 					if conversationViewModel.selectedMessage != nil && conversationViewModel.displayedConversation != nil {
-						let iconSize = ((geometry.size.width - (conversationViewModel.displayedConversation!.isGroup ? 43 : 10) - 10) / 6) - 25
+						let iconSize = ((geometry.size.width - (conversationViewModel.displayedConversation!.isGroup ? 43 : 10) - 10) / 6) - 30
 						VStack {
 							Spacer()
 							
@@ -550,39 +551,54 @@ struct ConversationFragment: View {
 									
 									HStack {
 										Button {
+											conversationViewModel.sendReaction(emoji: "👍")
 										} label: {
 											Text("👍")
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
-										.padding(.horizontal, 5)
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.ownReaction == "👍" ? Color.gray200 : .white)
+										.cornerRadius(10)
 										
 										Button {
+											conversationViewModel.sendReaction(emoji: "❤️")
 										} label: {
 											Text("❤️")
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
-										.padding(.horizontal, 5)
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.ownReaction == "❤️" ? Color.gray200 : .white)
+										.cornerRadius(10)
 										
 										Button {
+											conversationViewModel.sendReaction(emoji: "😂")
 										} label: {
 											Text("😂")
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
-										.padding(.horizontal, 5)
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.ownReaction == "😂" ? Color.gray200 : .white)
+										.cornerRadius(10)
 										
 										Button {
+											conversationViewModel.sendReaction(emoji: "😮")
 										} label: {
 											Text("😮")
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
-										.padding(.horizontal, 5)
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.ownReaction == "😮" ? Color.gray200 : .white)
+										.cornerRadius(10)
 										
 										Button {
+											conversationViewModel.sendReaction(emoji: "😢")
 										} label: {
 											Text("😢")
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
-										.padding(.horizontal, 5)
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.ownReaction == "😢" ? Color.gray200 : .white)
+										.cornerRadius(10)
 										
 										Button {
 										} label: {
@@ -635,21 +651,32 @@ struct ConversationFragment: View {
 										
 										Divider()
 										
-										Button {
-										} label: {
-											HStack {
-												Text("menu_copy_chat_message")
-													.default_text_style(styleSize: 15)
-												Spacer()
-												Image("copy")
-													.resizable()
-													.frame(width: 20, height: 20, alignment: .leading)
+										if !conversationViewModel.selectedMessage!.text.isEmpty {
+											Button {
+												UIPasteboard.general.setValue(
+													conversationViewModel.selectedMessage!.text,
+													forPasteboardType: UTType.plainText.identifier
+												)
+												
+												ToastViewModel.shared.toastMessage = "Success_message_copied_into_clipboard"
+												ToastViewModel.shared.displayToast = true
+												
+												conversationViewModel.selectedMessage = nil
+											} label: {
+												HStack {
+													Text("menu_copy_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("copy")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
 											}
-											.padding(.vertical, 5)
-											.padding(.horizontal, 20)
+											
+											Divider()
 										}
-										
-										Divider()
 										
 										Button {
 										} label: {
@@ -698,8 +725,6 @@ struct ConversationFragment: View {
 								.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
 								.shadow(color: .black.opacity(0.1), radius: 10)
 							}
-							
-							Spacer()
 						}
 						.frame(maxWidth: .infinity)
 						.background(.gray.opacity(0.1))
