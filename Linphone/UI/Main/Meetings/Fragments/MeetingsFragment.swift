@@ -107,7 +107,7 @@ struct MeetingsFragment: View {
 						if index == 0
 							|| itemModel.dayStr != meetingsListViewModel.meetingsList[index-1].dayStr
 							|| itemModel.weekStr != meetingsListViewModel.meetingsList[index-1].weekStr {
-							HStack(alignment: .top) {
+							HStack(alignment: .top, spacing: 0) {
 								VStack(alignment: .center, spacing: 0) {
 									Text(itemModel.weekDayStr)
 										.default_text_style_500(styleSize: 14)
@@ -134,11 +134,12 @@ struct MeetingsFragment: View {
 										.default_text_style_500(styleSize: 15)
 								} else {
 									createMeetingLine(model: itemModel)
+										.padding(.leading, 10)
 								}
 							}
 						} else {
 							createMeetingLine(model: itemModel)
-								.padding(.leading, 55)
+								.padding(.leading, 45)
 						}
 					}
 					.id(index)

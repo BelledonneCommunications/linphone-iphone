@@ -198,7 +198,7 @@ struct ScheduleMeetingFragment: View {
 								.default_text_style_500(styleSize: 16)
 							Spacer()
 						}
-						
+						/*
 						HStack(alignment: .center, spacing: 10) {
 							Image("arrow-clockwise")
 								.renderingMode(.template)
@@ -212,7 +212,7 @@ struct ScheduleMeetingFragment: View {
 								.default_text_style_500(styleSize: 16)
 							Spacer()
 						}
-						
+						*/
 						Rectangle()
 							.foregroundStyle(.clear)
 							.frame(height: 1)
@@ -348,6 +348,8 @@ struct ScheduleMeetingFragment: View {
 					getDatePopup(isTimeSelection: true)
 				}
 			}
+			.navigationTitle("")
+			.navigationBarHidden(true)
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 	}
