@@ -307,9 +307,9 @@ extension ProviderDelegate: CXProviderDelegate {
 							// Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
 							//
 							
-							 Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
-							 core.activateAudioSession(activated: true)
-							 TelecomManager.shared.callkitAudioSessionActivated = true
+							Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
+							core.activateAudioSession(activated: true)
+							TelecomManager.shared.callkitAudioSessionActivated = true
 						}
 					}
 				}
