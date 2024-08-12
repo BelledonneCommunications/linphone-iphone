@@ -62,65 +62,64 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func addChatMessageDelegate(message: ChatMessage) {
-		coreContext.doOnCoreQueue { _ in
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 			if self.displayedConversation != nil {
-				/*
-				self.chatMessageSuscriptions.insert(message.publisher?.onMsgStateChanged?.postOnCoreQueue {(cbValue: (message: ChatMessage, state: ChatMessage.State)) in
-					var statusTmp: Message.Status? = .sending
-					switch cbValue.message.state {
-					case .InProgress:
-						statusTmp = .sending
-					case .Delivered:
-						statusTmp = .sent
-					case .DeliveredToUser:
-						statusTmp = .received
-					case .Displayed:
-						statusTmp = .read
-					default:
-						statusTmp = nil
-					}
-					
-					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
-					
-					DispatchQueue.main.async {
-						if indexMessage != nil {
-							self.objectWillChange.send()
-							self.conversationMessagesSection[0].rows[indexMessage!].status = statusTmp
+				self.coreContext.doOnCoreQueue { _ in
+					self.chatMessageSuscriptions.insert(message.publisher?.onMsgStateChanged?.postOnCoreQueue {(cbValue: (message: ChatMessage, state: ChatMessage.State)) in
+						var statusTmp: Message.Status? = .sending
+						switch cbValue.message.state {
+						case .InProgress:
+							statusTmp = .sending
+						case .Delivered:
+							statusTmp = .sent
+						case .DeliveredToUser:
+							statusTmp = .received
+						case .Displayed:
+							statusTmp = .read
+						default:
+							statusTmp = nil
 						}
-					}
-				})
-				 */
-				
-				self.chatMessageSuscriptions.insert(message.publisher?.onNewMessageReaction?.postOnCoreQueue {(cbValue: (message: ChatMessage, reaction: ChatMessageReaction)) in
-					
-					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
-					var reactionsTmp: [String] = []
-					cbValue.message.reactions.forEach({ chatMessageReaction in
-						reactionsTmp.append(chatMessageReaction.body)
+						
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+						
+						DispatchQueue.main.async {
+							if indexMessage != nil {
+								self.objectWillChange.send()
+								self.conversationMessagesSection[0].rows[indexMessage!].status = statusTmp
+							}
+						}
 					})
 					
-					DispatchQueue.main.async {
-						if indexMessage != nil {
-							self.objectWillChange.send()
-							self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+					self.chatMessageSuscriptions.insert(message.publisher?.onNewMessageReaction?.postOnCoreQueue {(cbValue: (message: ChatMessage, reaction: ChatMessageReaction)) in
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+						var reactionsTmp: [String] = []
+						cbValue.message.reactions.forEach({ chatMessageReaction in
+							reactionsTmp.append(chatMessageReaction.body)
+						})
+						
+						DispatchQueue.main.async {
+							if indexMessage != nil {
+								self.objectWillChange.send()
+								self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+							}
 						}
-					}
-				})
-				
-				self.chatMessageSuscriptions.insert(message.publisher?.onReactionRemoved?.postOnCoreQueue {(cbValue: (message: ChatMessage, address: Address)) in
-					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
-					var reactionsTmp: [String] = []
-					cbValue.message.reactions.forEach({ chatMessageReaction in
-						reactionsTmp.append(chatMessageReaction.body)
 					})
 					
-					DispatchQueue.main.async {
-						if indexMessage != nil {
-							self.objectWillChange.send()
-							self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+					self.chatMessageSuscriptions.insert(message.publisher?.onReactionRemoved?.postOnCoreQueue {(cbValue: (message: ChatMessage, address: Address)) in
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+						var reactionsTmp: [String] = []
+						cbValue.message.reactions.forEach({ chatMessageReaction in
+							reactionsTmp.append(chatMessageReaction.body)
+						})
+						
+						DispatchQueue.main.async {
+							if indexMessage != nil {
+								self.objectWillChange.send()
+								self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+							}
 						}
-					}
-				})
+					})
+				}
 			}
 		}
 	}
@@ -312,7 +311,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func getOldMessages() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
+			if self.displayedConversation != nil && self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count{
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
 				var conversationMessagesTmp: [Message] = []
 				
