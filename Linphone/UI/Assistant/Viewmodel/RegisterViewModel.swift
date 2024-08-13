@@ -314,7 +314,12 @@ class RegisterViewModel: ObservableObject {
 		
 		let pushConfig = core.pushNotificationConfig
 		if pushConfig != nil && self.accountManagerServices != nil {
-			pushConfig!.provider = "apns.dev"
+#if DEBUG
+					let pushEnvironment = ".dev"
+#else
+					let pushEnvironment = ""
+#endif
+			pushConfig!.provider = "apns\(pushEnvironment)"
 			var formatedPnParam = pushConfig!.param
 			formatedPnParam = formatedPnParam?.replacingOccurrences(of: "voip&remote", with: "remote")
 			pushConfig!.param = formatedPnParam
