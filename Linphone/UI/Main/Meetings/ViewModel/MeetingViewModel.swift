@@ -264,8 +264,8 @@ class MeetingViewModel: ObservableObject {
 		}
 	}
 	
+	// Warning: must be called from core queue. Removed the dispatchQueue.main.async in order to have the animation properly trigger.
 	func loadExistingMeeting(meeting: MeetingModel) {
-		DispatchQueue.main.async {
 			self.resetViewModelData()
 			self.subject = meeting.confInfo.subject ?? ""
 			self.description = meeting.confInfo.description ?? ""
@@ -314,7 +314,6 @@ class MeetingViewModel: ObservableObject {
 			self.computeDateLabels()
 			self.computeTimeLabels()
 			self.displayedMeeting = meeting
-		}
 	}
 	
 	func loadExistingConferenceInfoFromUri(conferenceUri: String) {
