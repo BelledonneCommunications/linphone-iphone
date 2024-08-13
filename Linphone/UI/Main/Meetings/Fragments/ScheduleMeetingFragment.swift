@@ -128,7 +128,7 @@ struct ScheduleMeetingFragment: View {
 									showDatePicker.toggle()
 								}
 							Spacer()
-						}
+						}.padding(.bottom, -5)
 						
 						if !meetingViewModel.allDayMeeting {
 							HStack(spacing: 10) {

@@ -40,7 +40,7 @@ class MeetingViewModel: ObservableObject {
 	@Published var conferenceUri: String = ""
 	
 	@Published var selectedTimezoneIdx = 0
-	var currentTimeZone = TimeZone.current
+	var selectedTimezone = TimeZone.current
 	var knownTimezones : [String] = []
 	
 	var conferenceScheduler: ConferenceScheduler?
@@ -67,7 +67,7 @@ class MeetingViewModel: ObservableObject {
 			}
 		})
 		knownTimezones = tzIds
-		selectedTimezoneIdx = knownTimezones.firstIndex(where: {$0 == currentTimeZone.identifier}) ?? 0
+		selectedTimezoneIdx = knownTimezones.firstIndex(where: {$0 == selectedTimezone.identifier}) ?? 0
 		computeDateLabels()
 		computeTimeLabels()
 	}
@@ -85,44 +85,41 @@ class MeetingViewModel: ObservableObject {
 		conferenceUri = ""
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
+		selectedTimezone = TimeZone.current
+		selectedTimezoneIdx = knownTimezones.firstIndex(where: {$0 == selectedTimezone.identifier}) ?? 0
 		computeDateLabels()
 		computeTimeLabels()
 	}
 	
 	func updateTimezone(timeZone: TimeZone) {
-		currentTimeZone = timeZone
+		selectedTimezone = timeZone
 		computeDateLabels()
 		computeTimeLabels()
 	}
 	
 	func computeDateLabels() {
-		var weekDayFormat = Date.FormatStyle().weekday(.wide)
-		weekDayFormat.timeZone = currentTimeZone
-		var dayNumberFormat = Date.FormatStyle().day(.twoDigits)
-		dayNumberFormat.timeZone = currentTimeZone
-		var monthFormat = Date.FormatStyle().month(.wide)
-		monthFormat.timeZone = currentTimeZone
+		let formatter = DateFormatter()
+		formatter.timeZone = selectedTimezone
+		formatter.dateFormat = "EEEE d MMM"
 		
-		fromDateStr = "\(fromDate.formatted(weekDayFormat)) \(fromDate.formatted(dayNumberFormat)), \(fromDate.formatted(monthFormat))"
+		fromDateStr = formatter.string(from: fromDate)
 		Log.info("\(MeetingViewModel.TAG) computed start date is \(fromDateStr)")
-		toDateStr = "\(toDate.formatted(weekDayFormat)) \(toDate.formatted(dayNumberFormat)), \(toDate.formatted(monthFormat))"
+		fromDateStr = formatter.string(from: toDate)
 		Log.info("\(MeetingViewModel.TAG)) computed end date is \(toDateStr)")
 	}
 	
 	func computeTimeLabels() {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
-		formatter.timeZone = currentTimeZone
+		formatter.timeZone = selectedTimezone
 		fromTime = formatter.string(from: fromDate)
 		toTime = formatter.string(from: toDate)
 	}
 	
 	func getFullDateString() -> String {
-		var day = fromDate.formatted(Date.FormatStyle().weekday(.abbreviated))
-		var dayNumber = fromDate.formatted(Date.FormatStyle().day(.twoDigits))
-		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
-		var year = fromDate.formatted(Date.FormatStyle().year(.defaultDigits))
-		return "\(day). \(dayNumber) \(month) \(year) | \(allDayMeeting ? "All day" : "\(fromTime) - \(toTime)")"
+		let formatter = DateFormatter()
+		formatter.dateFormat = "EEE d MMM yyyy"
+		return "\(formatter.string(from: fromDate)) | \(allDayMeeting ? "All day" : "\(fromTime) - \(toTime)")"
 	}
 	
 	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
