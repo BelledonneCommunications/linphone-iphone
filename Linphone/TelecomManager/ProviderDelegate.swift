@@ -308,7 +308,7 @@ extension ProviderDelegate: CXProviderDelegate {
 							//
 							
 							 Log.info("Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
-							 core.activateAudioSession(actived: true)
+							 core.activateAudioSession(activated: true)
 							 TelecomManager.shared.callkitAudioSessionActivated = true
 						}
 					}
@@ -396,7 +396,7 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("CallKit: audio session activated.")
-			core.activateAudioSession(actived: true)
+			core.activateAudioSession(activated: true)
 			TelecomManager.shared.callkitAudioSessionActivated = true
 		}
 	}
@@ -404,7 +404,7 @@ extension ProviderDelegate: CXProviderDelegate {
 	func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("CallKit: audio session deactivated.")
-			core.activateAudioSession(actived: false)
+			core.activateAudioSession(activated: false)
 			TelecomManager.shared.callkitAudioSessionActivated = nil
 		}
 	}
