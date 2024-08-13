@@ -43,6 +43,7 @@ struct ScheduleMeetingFragment: View {
 	@State var selectedMinutes: Int = 0
 	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
+	@FocusState var isDescriptionTextFocused: Bool
 	
 	var body: some View {
 		NavigationView {
@@ -185,6 +186,7 @@ struct ScheduleMeetingFragment: View {
 									.default_text_style_500(styleSize: 16)
 								.padding(.trailing, 15)						}
 						}
+						
 						HStack(alignment: .center, spacing: 10) {
 							Image("earth")
 								.renderingMode(.template)
@@ -242,9 +244,32 @@ struct ScheduleMeetingFragment: View {
 								.frame(width: 24, height: 24)
 								.padding(.leading, 16)
 							
-							TextField("Add a description", text: $meetingViewModel.description)
-								.default_text_style_700(styleSize: 16)
-						}
+							if #available(iOS 16.0, *) {
+								TextField("Add a description", text: $meetingViewModel.description, axis: .vertical)
+									.default_text_style(styleSize: 15)
+									.focused($isDescriptionTextFocused)
+									.padding(.vertical, 5)
+							} else {
+								ZStack(alignment: .leading) {
+									TextEditor(text: $meetingViewModel.description)
+										.multilineTextAlignment(.leading)
+										.frame(maxHeight: 160)
+										.fixedSize(horizontal: false, vertical: true)
+										.default_text_style(styleSize: 15)
+										.focused($isDescriptionTextFocused)
+									
+									if meetingViewModel.description.isEmpty {
+										Text("Add a description")
+											.padding(.leading, 5)
+											.foregroundStyle(Color.gray300)
+											.default_text_style(styleSize: 15)
+									}
+								}
+								.onTapGesture {
+									isDescriptionTextFocused = true
+								}
+							}
+						}.frame(maxHeight: 200)
 						
 						Rectangle()
 							.foregroundStyle(.clear)
@@ -258,7 +283,7 @@ struct ScheduleMeetingFragment: View {
 										addParticipantsViewModel.participantsToAdd = meetingViewModel.participants
 									}
 							}, label: {
-								HStack(alignment: .center, spacing: 8) {
+								HStack(alignment: .center, spacing: 10) {
 									Image("users")
 										.renderingMode(.template)
 										.resizable()
@@ -298,7 +323,7 @@ struct ScheduleMeetingFragment: View {
 											}
 										}
 									}
-								}.frame(maxHeight: 170)
+								}.frame(maxHeight: .infinity)
 							}
 						}
 						Rectangle()
@@ -306,7 +331,7 @@ struct ScheduleMeetingFragment: View {
 							.frame(height: 1)
 							.background(Color.gray200)
 						
-						HStack(spacing: 8) {
+						HStack(spacing: 10) {
 							Toggle("", isOn: $meetingViewModel.sendInvitations)
 								.padding(.leading, 16)
 								.labelsHidden()

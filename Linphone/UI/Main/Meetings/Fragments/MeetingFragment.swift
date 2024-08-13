@@ -170,6 +170,7 @@ struct MeetingFragment: View {
 								.padding(.leading, 15)
 							Text(meetingViewModel.conferenceUri)
 								.underline()
+								.lineLimit(1)
 								.default_text_style(styleSize: 14)
 							Spacer()
 							
@@ -237,12 +238,12 @@ struct MeetingFragment: View {
 									.default_text_style(styleSize: 14)
 								Spacer()
 							}.padding(.vertical, 10)
+							Rectangle()
+							 .foregroundStyle(.clear)
+							 .frame(height: 1)
+							 .background(Color.gray200)
 						}
 						
-						Rectangle()
-							.foregroundStyle(.clear)
-							.frame(height: 1)
-							.background(Color.gray200)
 						
 						HStack(alignment: .top, spacing: 10) {
 							Image("users")
@@ -261,7 +262,7 @@ struct MeetingFragment: View {
 										getParticipantLine(participant: meetingViewModel.participants[index])
 									}
 								}
-							}.frame(maxHeight: 170)
+							}.frame(maxHeight: .infinity)
 							Spacer()
 						}.padding(.top, 10)
 						
