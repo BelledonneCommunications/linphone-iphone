@@ -214,7 +214,7 @@ struct MeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text("TODO : timezone")
+							Text(meetingViewModel.currentTimeZone.formattedString())
 								.default_text_style(styleSize: 14)
 							Spacer()
 						}

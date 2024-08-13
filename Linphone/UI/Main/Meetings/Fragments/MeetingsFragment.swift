@@ -66,7 +66,7 @@ struct MeetingsFragment: View {
 						.padding(.top, 5)
 						.default_text_style_500(styleSize: 15)
 				}
-				Text(model.model!.time)
+				Text(model.model!.time) // this time string is formatted for the current timezone, we use the selected timezone only when displaying details
 					.default_text_style_500(styleSize: 15)
 			}
 		}

@@ -33,12 +33,15 @@ class MeetingViewModel: ObservableObject {
 	@Published var fromTime: String = ""
 	@Published var toDateStr: String = ""
 	@Published var toTime: String = ""
-	@Published var timezone: String = ""
 	@Published var sendInvitations: Bool = true
 	@Published var participants: [SelectedAddressModel] = []
 	@Published var operationInProgress: Bool = false
 	@Published var conferenceCreatedEvent: Bool = false
 	@Published var conferenceUri: String = ""
+	
+	@Published var selectedTimezoneIdx = 0
+	var currentTimeZone = TimeZone.current
+	var knownTimezones : [String] = []
 	
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
@@ -52,9 +55,21 @@ class MeetingViewModel: ObservableObject {
 	init() {
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
+		
+		var tzIds = TimeZone.knownTimeZoneIdentifiers
+		tzIds.sort(by: {
+			let gmtOffset0 = TimeZone(identifier: $0)!.secondsFromGMT()
+			let gmtOffset1 = TimeZone(identifier: $1)!.secondsFromGMT()
+			if gmtOffset0 == gmtOffset1 {
+				return $0 < $1 // sort by name if same GMT offset
+			} else {
+				return gmtOffset0 < gmtOffset1
+			}
+		})
+		knownTimezones = tzIds
+		selectedTimezoneIdx = knownTimezones.firstIndex(where: {$0 == currentTimeZone.identifier}) ?? 0
 		computeDateLabels()
 		computeTimeLabels()
-		updateTimezone()
 	}
 	
 	func resetViewModelData() {
@@ -63,7 +78,6 @@ class MeetingViewModel: ObservableObject {
 		subject = ""
 		description = ""
 		allDayMeeting = false
-		timezone = ""
 		sendInvitations = true
 		participants = []
 		operationInProgress = false
@@ -73,26 +87,32 @@ class MeetingViewModel: ObservableObject {
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
 		computeDateLabels()
 		computeTimeLabels()
-		updateTimezone()
+	}
+	
+	func updateTimezone(timeZone: TimeZone) {
+		currentTimeZone = timeZone
+		computeDateLabels()
+		computeTimeLabels()
 	}
 	
 	func computeDateLabels() {
-		var day = fromDate.formatted(Date.FormatStyle().weekday(.wide))
-		var dayNumber = fromDate.formatted(Date.FormatStyle().day(.twoDigits))
-		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
-		fromDateStr = "\(day) \(dayNumber), \(month)"
-		Log.info("\(MeetingViewModel.TAG) computed start date is \(fromDateStr)")
+		var weekDayFormat = Date.FormatStyle().weekday(.wide)
+		weekDayFormat.timeZone = currentTimeZone
+		var dayNumberFormat = Date.FormatStyle().day(.twoDigits)
+		dayNumberFormat.timeZone = currentTimeZone
+		var monthFormat = Date.FormatStyle().month(.wide)
+		monthFormat.timeZone = currentTimeZone
 		
-		day = toDate.formatted(Date.FormatStyle().weekday(.wide))
-		dayNumber = toDate.formatted(Date.FormatStyle().day(.twoDigits))
-		month = toDate.formatted(Date.FormatStyle().month(.wide))
-		toDateStr = "\(day) \(dayNumber), \(month)"
+		fromDateStr = "\(fromDate.formatted(weekDayFormat)) \(fromDate.formatted(dayNumberFormat)), \(fromDate.formatted(monthFormat))"
+		Log.info("\(MeetingViewModel.TAG) computed start date is \(fromDateStr)")
+		toDateStr = "\(toDate.formatted(weekDayFormat)) \(toDate.formatted(dayNumberFormat)), \(toDate.formatted(monthFormat))"
 		Log.info("\(MeetingViewModel.TAG)) computed end date is \(toDateStr)")
 	}
 	
 	func computeTimeLabels() {
 		let formatter = DateFormatter()
 		formatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+		formatter.timeZone = currentTimeZone
 		fromTime = formatter.string(from: fromDate)
 		toTime = formatter.string(from: toDate)
 	}
@@ -103,10 +123,6 @@ class MeetingViewModel: ObservableObject {
 		var month = fromDate.formatted(Date.FormatStyle().month(.wide))
 		var year = fromDate.formatted(Date.FormatStyle().year(.defaultDigits))
 		return "\(day). \(dayNumber) \(month) \(year) | \(allDayMeeting ? "All day" : "\(fromTime) - \(toTime)")"
-	}
-	
-	private func updateTimezone() {
-		// TODO
 	}
 	
 	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
@@ -300,7 +316,6 @@ class MeetingViewModel: ObservableObject {
 			self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
 			self.computeDateLabels()
 			self.computeTimeLabels()
-			self.updateTimezone()
 			self.displayedMeeting = meeting
 		}
 	}
@@ -334,7 +349,6 @@ class MeetingViewModel: ObservableObject {
 						self.isBroadcastSelected = false // TODO FIXME
 						self.computeDateLabels()
 						self.computeTimeLabels()
-						self.updateTimezone()
 						//self.participants = list
 					}
 					

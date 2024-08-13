@@ -192,33 +192,49 @@ struct ScheduleMeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text("TODO : timezone")
+							Text("Time Zone:")
 								.fontWeight(.bold)
-								.padding(.leading, 5)
 								.default_text_style_500(styleSize: 16)
+							Picker(selection: $meetingViewModel.selectedTimezoneIdx, label: EmptyView()	) {
+								ForEach(0..<meetingViewModel.knownTimezones.count, id: \.self) { idx in
+									Text(TimeZone.init(identifier: meetingViewModel.knownTimezones[idx])?.formattedString() ?? "Unknown timezone").tag(idx)
+								}
+							}
+							.onReceive(meetingViewModel.$selectedTimezoneIdx) { value in
+								if let timeZone = TimeZone.init(identifier: meetingViewModel.knownTimezones[value]) {
+									meetingViewModel.updateTimezone(timeZone: timeZone)
+								} else {
+									Log.error("Could not find matching timezone for index \(value)")
+								}
+							}
+							.pickerStyle(MenuPickerStyle())
+							.tint(Color.grayMain2c800)
+							.padding(.leading, -10)
 							Spacer()
 						}
+						
 						/*
-						HStack(alignment: .center, spacing: 10) {
 							Image("arrow-clockwise")
 								.renderingMode(.template)
 								.resizable()
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
+							//Picker(selection:, label:("))
 							Text("TODO : repeat")
 								.fontWeight(.bold)
 								.padding(.leading, 5)
 								.default_text_style_500(styleSize: 16)
 							Spacer()
 						}
-						*/
+						 */
+						
 						Rectangle()
 							.foregroundStyle(.clear)
 							.frame(height: 1)
 							.background(Color.gray200)
 						
-						HStack(alignment: .top, spacing: 8) {
+						HStack(alignment: .top, spacing: 10) {
 							Image("note")
 								.renderingMode(.template)
 								.resizable()
