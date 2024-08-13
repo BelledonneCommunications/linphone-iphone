@@ -114,10 +114,15 @@ class ProviderDelegate: NSObject {
 		//CallManager.instance().setHeldOtherCalls(exceptCallid: callId ?? "") 
 		provider.reportNewIncomingCall(with: uuid, update: update) { error in
 			if error == nil {
-				if CallManager.instance().endCallkit {
+				if CallManager.instance().lastRegistrationFailed {
 					let call = CallManager.instance().lc?.getCallByCallid(callId: callId ?? "")
 					if (call?.state == .PushIncomingReceived) {
-						try? call?.terminate()
+						Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit / reportNewIncomingCall: last registration failed, trying to refresh registers ... context = call with call-id: [\(String(describing: callId))] and UUID: [\(uuid.description)] ")
+						DispatchQueue.main.async {
+							CallManager.instance().lc?.accountList.forEach {
+								$0.refreshRegister()
+							}
+						}
 					}
 				}
 			} else {

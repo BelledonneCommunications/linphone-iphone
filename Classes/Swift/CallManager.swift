@@ -44,7 +44,7 @@ import AVFoundation
 	@objc var nextCallIsTransfer: Bool = false
 	var referedFromCall: String?
 	var referedToCall: String?
-	var endCallkit: Bool = false
+	var lastRegistrationFailed: Bool = false
 	var globalState : GlobalState = .Off
 	var actionsToPerformOnceWhenCoreIsOn : [(()->Void)] = []
 	var conference: Conference?
@@ -512,9 +512,9 @@ import AVFoundation
 				
 				CallManager.instance().providerDelegate.endCall(uuid: call.value)
 			}
-			CallManager.instance().endCallkit = true
+			CallManager.instance().lastRegistrationFailed = true
 		} else {
-			CallManager.instance().endCallkit = false
+			CallManager.instance().lastRegistrationFailed = false
 		}
 	}
 	
