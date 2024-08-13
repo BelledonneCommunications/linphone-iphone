@@ -1647,6 +1647,9 @@
     "This contact will be deleted definitively." : {
 
     },
+    "Time Zone:" : {
+
+    },
     "Title" : {
 
     },
@@ -1654,12 +1657,6 @@
 
     },
     "to Linphone" : {
-
-    },
-    "TODO : repeat" : {
-
-    },
-    "TODO : timezone" : {
 
     },
     "Transfer" : {
