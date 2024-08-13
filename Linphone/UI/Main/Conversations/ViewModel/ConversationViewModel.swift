@@ -43,6 +43,8 @@ class ConversationViewModel: ObservableObject {
 	@Published var mediasToSend: [Attachment] = []
 	var maxMediaCount = 12
 	
+	var oldMessageReceived = false
+	
 	@Published var selectedMessage: Message?
 	
 	init() {}
@@ -132,7 +134,7 @@ class ConversationViewModel: ObservableObject {
 	func getHistorySize() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
-				let historySize = self.displayedConversation!.chatRoom.historySize
+				let historySize = self.displayedConversation!.chatRoom.historyEventsSize
 				DispatchQueue.main.async {
 					self.displayedConversationHistorySize = historySize
 				}
@@ -297,6 +299,21 @@ class ConversationViewModel: ObservableObject {
 						)
 						
 						self.addChatMessageDelegate(message: eventLog.chatMessage!)
+					} else {
+						conversationMessage.insert(
+							Message(
+								id: UUID().uuidString,
+								status: nil,
+								isOutgoing: false,
+								dateReceived: 0,
+								address: "",
+								isFirstMessage: false,
+								text: "",
+								attachments: [],
+								ownReaction: "",
+								reactions: []
+							), at: 0
+						)
 					}
 				}
 				
@@ -311,7 +328,8 @@ class ConversationViewModel: ObservableObject {
 	
 	func getOldMessages() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil && self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count{
+			if self.displayedConversation != nil && self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count && !self.oldMessageReceived {
+				self.oldMessageReceived = true
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
 				var conversationMessagesTmp: [Message] = []
 				
@@ -420,6 +438,21 @@ class ConversationViewModel: ObservableObject {
 						)
 						
 						self.addChatMessageDelegate(message: eventLog.chatMessage!)
+					} else {
+						conversationMessagesTmp.insert(
+							Message(
+								id: UUID().uuidString,
+								status: nil,
+								isOutgoing: false,
+								dateReceived: 0,
+								address: "",
+								isFirstMessage: false,
+								text: "",
+								attachments: [],
+								ownReaction: "",
+								reactions: []
+							), at: 0
+						)
 					}
 				}
 				
@@ -429,6 +462,7 @@ class ConversationViewModel: ObservableObject {
 							self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].isFirstMessage = false
 						}
 						self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
+						self.oldMessageReceived = false
 					}
 				}
 			}
@@ -571,6 +605,27 @@ class ConversationViewModel: ObservableObject {
 					
 					if !message.isOutgoing {
 						self.displayedConversationUnreadMessagesCount = unreadMessagesCount
+					}
+				}
+			} else {
+				let message = Message(
+					id: UUID().uuidString,
+					status: nil,
+					isOutgoing: false,
+					dateReceived: 0,
+					address: "",
+					isFirstMessage: false,
+					text: "",
+					attachments: [],
+					ownReaction: "",
+					reactions: []
+				)
+				
+				DispatchQueue.main.async {
+					if self.conversationMessagesSection.isEmpty {
+						self.conversationMessagesSection.append(MessagesSection(date: Date(), rows: [message]))
+					} else {
+						self.conversationMessagesSection[0].rows.insert(message, at: 0)
 					}
 				}
 			}
