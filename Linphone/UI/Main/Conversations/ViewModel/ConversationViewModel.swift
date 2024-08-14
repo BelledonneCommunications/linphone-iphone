@@ -46,6 +46,7 @@ class ConversationViewModel: ObservableObject {
 	var oldMessageReceived = false
 	
 	@Published var selectedMessage: Message?
+	@Published var messageToReply: Message?
 	
 	init() {}
 	
@@ -180,6 +181,15 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 				}
+				
+				if self.displayedConversation!.chatRoom.me != nil {
+					ContactAvatarModel.getAvatarModelFromAddress(address: self.displayedConversation!.chatRoom.me!.address!) { avatarResult in
+						let avatarModelTmp = avatarResult
+						DispatchQueue.main.async {
+							self.participantConversationModel.append(avatarModelTmp)
+						}
+					}
+				}
 			}
 		}
 	}
@@ -188,6 +198,10 @@ class ConversationViewModel: ObservableObject {
 		self.getHistorySize()
 		self.getUnreadMessagesCount()
 		self.getParticipantConversationModel()
+		
+		self.mediasToSend.removeAll()
+		self.messageToReply = nil
+		
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
@@ -195,6 +209,7 @@ class ConversationViewModel: ObservableObject {
 				var conversationMessage: [Message] = []
 				historyEvents.enumerated().forEach { index, eventLog in
 					
+					var attachmentNameList: String = ""
 					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
@@ -211,9 +226,11 @@ class ConversationViewModel: ObservableObject {
 										let attachment =
 										Attachment(
 											id: UUID().uuidString,
+											name: content.name!,
 											url: path!,
 											type: .image
 										)
+										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
 									}
 								} else {
@@ -224,9 +241,11 @@ class ConversationViewModel: ObservableObject {
 											let attachment =
 											Attachment(
 												id: UUID().uuidString,
+												name: content.name!,
 												url: path!,
 												type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
 											)
+											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
 										}
 									} else if content.type == "video" {
@@ -237,10 +256,12 @@ class ConversationViewModel: ObservableObject {
 											let attachment =
 											Attachment(
 												id: UUID().uuidString,
+												name: content.name!,
 												thumbnail: pathThumbnail!,
 												full: path!,
 												type: .video
 											)
+											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
 										}
 									}
@@ -282,6 +303,10 @@ class ConversationViewModel: ObservableObject {
 						reactionsTmp.append(chatMessageReaction.body)
 					})
 					
+					if !attachmentNameList.isEmpty {
+						attachmentNameList = String(attachmentNameList.dropFirst(2))
+					}
+					
 					if eventLog.chatMessage != nil {
 						conversationMessage.append(
 							Message(
@@ -292,6 +317,7 @@ class ConversationViewModel: ObservableObject {
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
 								text: contentText,
+								attachmentsNames: attachmentNameList,
 								attachments: attachmentList,
 								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 								reactions: reactionsTmp
@@ -334,6 +360,7 @@ class ConversationViewModel: ObservableObject {
 				var conversationMessagesTmp: [Message] = []
 				
 				historyEvents.enumerated().reversed().forEach { index, eventLog in
+					var attachmentNameList: String = ""
 					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
@@ -350,9 +377,11 @@ class ConversationViewModel: ObservableObject {
 										let attachment =
 										Attachment(
 											id: UUID().uuidString,
+											name: content.name!,
 											url: path!,
 											type: .image
 										)
+										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
 									}
 								} else {
@@ -363,9 +392,11 @@ class ConversationViewModel: ObservableObject {
 											let attachment =
 											Attachment(
 												id: UUID().uuidString,
+												name: content.name!,
 												url: path!,
 												type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
 											)
+											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
 										}
 									} else if content.type == "video" {
@@ -376,10 +407,12 @@ class ConversationViewModel: ObservableObject {
 											let attachment =
 											Attachment(
 												id: UUID().uuidString,
+												name: content.name!,
 												thumbnail: pathThumbnail!,
 												full: path!,
 												type: .video
 											)
+											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
 										}
 									}
@@ -421,6 +454,10 @@ class ConversationViewModel: ObservableObject {
 						reactionsTmp.append(chatMessageReaction.body)
 					})
 					
+					if !attachmentNameList.isEmpty {
+						attachmentNameList = String(attachmentNameList.dropFirst(2))
+					}
+					
 					if eventLog.chatMessage != nil {
 						conversationMessagesTmp.insert(
 							Message(
@@ -431,6 +468,7 @@ class ConversationViewModel: ObservableObject {
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
 								text: contentText,
+								attachmentsNames: attachmentNameList,
 								attachments: attachmentList,
 								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 								reactions: reactionsTmp
@@ -471,6 +509,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func getNewMessages(eventLogs: [EventLog]) {
 		eventLogs.enumerated().forEach { index, eventLog in
+			var attachmentNameList: String = ""
 			var attachmentList: [Attachment] = []
 			var contentText = ""
 			
@@ -487,9 +526,11 @@ class ConversationViewModel: ObservableObject {
 								let attachment =
 								Attachment(
 									id: UUID().uuidString,
+									name: content.name!,
 									url: path!,
 									type: .image
 								)
+								attachmentNameList += ", \(content.name!)"
 								attachmentList.append(attachment)
 							}
 						} else if content.name != nil && !content.name!.isEmpty {
@@ -500,9 +541,11 @@ class ConversationViewModel: ObservableObject {
 									let attachment =
 									Attachment(
 										id: UUID().uuidString,
+										name: content.name!,
 										url: path!,
 										type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
 									)
+									attachmentNameList += ", \(content.name!)"
 									attachmentList.append(attachment)
 								}
 							} else if content.type == "video" {
@@ -513,10 +556,12 @@ class ConversationViewModel: ObservableObject {
 									let attachment =
 									Attachment(
 										id: UUID().uuidString,
+										name: content.name!,
 										thumbnail: pathThumbnail!,
 										full: path!,
 										type: .video
 									)
+									attachmentNameList += ", \(content.name!)"
 									attachmentList.append(attachment)
 								}
 							}
@@ -573,6 +618,10 @@ class ConversationViewModel: ObservableObject {
 				reactionsTmp.append(chatMessageReaction.body)
 			})
 			
+			if !attachmentNameList.isEmpty {
+				attachmentNameList = String(attachmentNameList.dropFirst(2))
+			}
+			
 			if eventLog.chatMessage != nil {
 				let message = Message(
 					id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
@@ -582,6 +631,7 @@ class ConversationViewModel: ObservableObject {
 					address: addressCleaned?.asStringUriOnly() ?? "",
 					isFirstMessage: isFirstMessageTmp,
 					text: contentText,
+					attachmentsNames: attachmentNameList,
 					attachments: attachmentList,
 					ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 					reactions: reactionsTmp
@@ -634,6 +684,17 @@ class ConversationViewModel: ObservableObject {
 	
 	func resetMessage() {
 		conversationMessagesSection = []
+	}
+	
+	func replyToMessage(index: Int) {
+		coreContext.doOnCoreQueue { _ in
+			let messageToReplyTmp = self.conversationMessagesSection[0].rows[index]
+			DispatchQueue.main.async {
+				withAnimation(.linear(duration: 0.15)) {
+					self.messageToReply = messageToReplyTmp
+				}
+			}
+		}
 	}
 	
 	func sendMessage() {

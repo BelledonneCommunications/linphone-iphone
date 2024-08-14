@@ -28,6 +28,9 @@
     "*" : {
 
     },
+    "**%@**" : {
+
+    },
     "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
 
     },
@@ -965,6 +968,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé."
+          }
+        }
+      }
+    },
+    "conversation_reply_to_message_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replying to: "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En réponse à : "
           }
         }
       }

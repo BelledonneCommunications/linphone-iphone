@@ -70,6 +70,7 @@ public struct Message: Identifiable, Hashable {
 	public var address: String
 	public var isFirstMessage: Bool
 	public var text: String
+	public var attachmentsNames: String
 	public var attachments: [Attachment]
 	public var recording: Recording?
 	public var replyMessage: ReplyMessage?
@@ -85,6 +86,7 @@ public struct Message: Identifiable, Hashable {
 		address: String,
 		isFirstMessage: Bool = false,
 		text: String = "",
+		attachmentsNames: String = "",
 		attachments: [Attachment] = [],
 		recording: Recording? = nil,
 		replyMessage: ReplyMessage? = nil,
@@ -99,6 +101,7 @@ public struct Message: Identifiable, Hashable {
 		self.isFirstMessage = isFirstMessage
 		self.address = address
 		self.text = text
+		self.attachmentsNames = attachmentsNames
 		self.attachments = attachments
 		self.recording = recording
 		self.replyMessage = replyMessage
@@ -117,12 +120,12 @@ public struct Message: Identifiable, Hashable {
 
 				switch media.type {
 				case .image:
-					return Attachment(id: UUID().uuidString, url: thumbnailURL, type: .image)
+					return Attachment(id: UUID().uuidString, name: "", url: thumbnailURL, type: .image)
 				case .video:
 					guard let fullURL = await media.getURL() else {
 						return nil
 					}
-					return Attachment(id: UUID().uuidString, thumbnail: thumbnailURL, full: fullURL, type: .video)
+					return Attachment(id: UUID().uuidString, name: "", thumbnail: thumbnailURL, full: fullURL, type: .video)
 				}
 			}
 

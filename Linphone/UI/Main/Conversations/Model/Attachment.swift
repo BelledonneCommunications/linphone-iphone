@@ -45,18 +45,20 @@ public enum AttachmentType: String, Codable {
 
 public struct Attachment: Codable, Identifiable, Hashable {
 	public let id: String
+	public let name: String
 	public let thumbnail: URL
 	public let full: URL
 	public let type: AttachmentType
 
-	public init(id: String, thumbnail: URL, full: URL, type: AttachmentType) {
+	public init(id: String, name: String, thumbnail: URL, full: URL, type: AttachmentType) {
 		self.id = id
+		self.name = name
 		self.thumbnail = thumbnail
 		self.full = full
 		self.type = type
 	}
 
-	public init(id: String, url: URL, type: AttachmentType) {
-		self.init(id: id, thumbnail: url, full: url, type: type)
+	public init(id: String, name: String, url: URL, type: AttachmentType) {
+		self.init(id: id, name: name, thumbnail: url, full: url, type: type)
 	}
 }

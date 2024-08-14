@@ -338,6 +338,20 @@ struct UIList: UIViewRepresentable {
 			}
 			isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 200
 		}
+		
+		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+			
+			let archiveAction = UIContextualAction(style: .normal, title: "") { action, view, completionHandler in
+				self.conversationViewModel.replyToMessage(index: indexPath.row)
+				completionHandler(true)
+			}
+			
+			archiveAction.image = UIImage(named: "reply-reversed")!
+			
+			let configuration = UISwipeActionsConfiguration(actions: [archiveAction])
+			
+			return configuration
+		}
 	}
 }
 

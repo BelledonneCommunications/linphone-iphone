@@ -222,9 +222,6 @@ struct ConversationFragment: View {
 										.padding()
 									}
 								}
-								.onTapGesture {
-									UIApplication.shared.endEditing()
-								}
 								.onAppear {
 									conversationViewModel.getMessages()
 								}
@@ -315,9 +312,6 @@ struct ConversationFragment: View {
 											.padding()
 										}
 									}
-									.onTapGesture {
-										UIApplication.shared.endEditing()
-									}
 									.onAppear {
 										conversationViewModel.getMessages()
 									}
@@ -325,6 +319,53 @@ struct ConversationFragment: View {
 										conversationViewModel.resetMessage()
 									}
 								}
+							}
+							
+							if conversationViewModel.messageToReply != nil {
+								ZStack(alignment: .top) {
+									HStack {
+										VStack {
+											(
+											Text("conversation_reply_to_message_title")
+											+ Text("**\(conversationViewModel.participantConversationModel.first(where: {$0.address == conversationViewModel.messageToReply!.address})?.name ?? "")**"))
+											.default_text_style_300(styleSize: 15)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.padding(.bottom, 1)
+											.lineLimit(1)
+											
+											if conversationViewModel.messageToReply!.text.isEmpty {
+												Text(conversationViewModel.messageToReply!.attachmentsNames)
+													.default_text_style_300(styleSize: 15)
+													.frame(maxWidth: .infinity, alignment: .leading)
+													.lineLimit(1)
+											} else {
+												Text("\(conversationViewModel.messageToReply!.text)")
+													.default_text_style_300(styleSize: 15)
+													.frame(maxWidth: .infinity, alignment: .leading)
+													.lineLimit(1)
+											}
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.padding(.all, 20)
+									.background(Color.gray100)
+									
+									HStack {
+										Spacer()
+										
+										Button(action: {
+											withAnimation {
+												conversationViewModel.messageToReply = nil
+											}
+										}, label: {
+											Image("x")
+												.resizable()
+												.frame(width: 30, height: 30, alignment: .leading)
+												.padding(.all, 10)
+										})
+									}
+								}
+								.transition(.move(edge: .bottom))
 							}
 							
 							if !conversationViewModel.mediasToSend.isEmpty || mediasIsLoading {
@@ -636,6 +677,9 @@ struct ConversationFragment: View {
 									
 									VStack {
 										Button {
+											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == conversationViewModel.selectedMessage!.id})
+											conversationViewModel.selectedMessage = nil
+											conversationViewModel.replyToMessage(index: indexMessage ?? 0)
 										} label: {
 											HStack {
 												Text("menu_reply_to_chat_message")
@@ -819,7 +863,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 					if data != nil {
 						do {
 							let decodedData: () = try data!.write(to: path)
-							let attachment = Attachment(id: UUID().uuidString, url: path, type: .image)
+							let attachment = Attachment(id: UUID().uuidString, name: (dateString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".jpeg", url: path, type: .image)
 							parent.selectedMedia.append(attachment)
 						} catch {
 						}
@@ -836,6 +880,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 						let attachment =
 						Attachment(
 							id: UUID().uuidString,
+							name: name,
 							thumbnail: pathThumbnail!,
 							full: videoUrl!,
 							type: .video

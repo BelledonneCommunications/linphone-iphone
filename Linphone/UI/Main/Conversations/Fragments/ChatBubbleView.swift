@@ -33,159 +33,168 @@ struct ChatBubbleView: View {
 	@State private var timePassed: TimeInterval?
 	
 	var body: some View {
-		VStack {
-			if !message.text.isEmpty || !message.attachments.isEmpty {
-				HStack(alignment: .top, content: {
-					if message.isOutgoing {
-						Spacer()
-					}
-					
-					if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
-						VStack {
-							Avatar(
-								contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == message.address}) ??
-								ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
-								avatarSize: 35
-							)
-							.padding(.top, 30)
+		HStack {
+			VStack {
+				if !message.text.isEmpty || !message.attachments.isEmpty {
+					HStack(alignment: .top, content: {
+						if message.isOutgoing {
+							Spacer()
 						}
-					} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing {
-						VStack {
-						}
-						.padding(.leading, 43)
-					}
-					
-					VStack(alignment: .leading, spacing: 0) {
+						
 						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
-							Text(conversationViewModel.participantConversationModel.first(where: {$0.address == message.address})?.name ?? "")
-								.default_text_style(styleSize: 12)
-								.padding(.top, 10)
-								.padding(.bottom, 2)
+							VStack {
+								Avatar(
+									contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == message.address}) ??
+									ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
+									avatarSize: 35
+								)
+								.padding(.top, 30)
+							}
+						} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing {
+							VStack {
+							}
+							.padding(.leading, 43)
 						}
-						ZStack {
-							
-							HStack {
-								if message.isOutgoing {
-									Spacer()
-								}
+						
+						VStack(alignment: .leading, spacing: 0) {
+							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
+								Text(conversationViewModel.participantConversationModel.first(where: {$0.address == message.address})?.name ?? "")
+									.default_text_style(styleSize: 12)
+									.padding(.top, 10)
+									.padding(.bottom, 2)
+							}
+							ZStack {
 								
-								VStack(alignment: message.isOutgoing ? .trailing : .leading) {
+								HStack {
+									if message.isOutgoing {
+										Spacer()
+									}
+									
 									VStack(alignment: message.isOutgoing ? .trailing : .leading) {
-										if !message.attachments.isEmpty {
-											messageAttachments()
-										}
-										
-										if !message.text.isEmpty {
-											Text(message.text)
-												.foregroundStyle(Color.grayMain2c700)
-												.default_text_style(styleSize: 16)
-										}
-										
-										HStack(alignment: .center) {
-											Text(conversationViewModel.getMessageTime(startDate: message.dateReceived))
-												.foregroundStyle(Color.grayMain2c500)
-												.default_text_style_300(styleSize: 14)
-												.padding(.top, 1)
+										VStack(alignment: message.isOutgoing ? .trailing : .leading) {
+											if !message.attachments.isEmpty {
+												messageAttachments()
+											}
 											
-											if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || message.isOutgoing {
-												if message.status == .sending {
-													ProgressView()
-														.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
-														.frame(width: 15, height: 15)
-														.padding(.top, 1)
-												} else if message.status != nil {
-													Image(conversationViewModel.getImageIMDN(status: message.status!))
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(Color.orangeMain500)
-														.frame(width: 15, height: 15)
-														.padding(.top, 1)
+											if !message.text.isEmpty {
+												Text(message.text)
+													.foregroundStyle(Color.grayMain2c700)
+													.default_text_style(styleSize: 16)
+											}
+											
+											HStack(alignment: .center) {
+												Text(conversationViewModel.getMessageTime(startDate: message.dateReceived))
+													.foregroundStyle(Color.grayMain2c500)
+													.default_text_style_300(styleSize: 14)
+													.padding(.top, 1)
+												
+												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || message.isOutgoing {
+													if message.status == .sending {
+														ProgressView()
+															.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+															.frame(width: 15, height: 15)
+															.padding(.top, 1)
+													} else if message.status != nil {
+														Image(conversationViewModel.getImageIMDN(status: message.status!))
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.orangeMain500)
+															.frame(width: 15, height: 15)
+															.padding(.top, 1)
+													}
 												}
 											}
+											.padding(.top, -4)
 										}
-										.padding(.top, -4)
-									}
-									.padding(.all, 15)
-									.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-									.clipShape(RoundedRectangle(cornerRadius: 3))
-									.roundedCorner(
-										16,
-										corners: message.isOutgoing && message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
-											(!message.isOutgoing && message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
-									
-									if !message.reactions.isEmpty {
-										HStack {
-											ForEach(0..<message.reactions.count, id: \.self) { index in
-												if message.reactions.firstIndex(of: message.reactions[index]) == index {
-													Text(message.reactions[index])
+										.padding(.all, 15)
+										.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+										.clipShape(RoundedRectangle(cornerRadius: 3))
+										.roundedCorner(
+											16,
+											corners: message.isOutgoing && message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
+												(!message.isOutgoing && message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
+										
+										if !message.reactions.isEmpty {
+											HStack {
+												ForEach(0..<message.reactions.count, id: \.self) { index in
+													if message.reactions.firstIndex(of: message.reactions[index]) == index {
+														Text(message.reactions[index])
+															.default_text_style(styleSize: 14)
+															.padding(.horizontal, -2)
+													}
+												}
+												
+												if (
+													(message.reactions.contains("👍") ? 1 : 0) +
+													(message.reactions.contains("❤️") ? 1 : 0) +
+													(message.reactions.contains("😂") ? 1 : 0) +
+													(message.reactions.contains("😮") ? 1 : 0) +
+													(message.reactions.contains("😢") ? 1 : 0)
+												) != message.reactions.count {
+													Text("\(message.reactions.count)")
 														.default_text_style(styleSize: 14)
 														.padding(.horizontal, -2)
 												}
 											}
-											
-											if (
-												(message.reactions.contains("👍") ? 1 : 0) + 
-												(message.reactions.contains("❤️") ? 1 : 0) +
-												(message.reactions.contains("😂") ? 1 : 0) +
-												(message.reactions.contains("😮") ? 1 : 0) +
-												(message.reactions.contains("😢") ? 1 : 0)
-											) != message.reactions.count {
-												Text("\(message.reactions.count)")
-													.default_text_style(styleSize: 14)
-													.padding(.horizontal, -2)
-											}
+											.padding(.vertical, 6)
+											.padding(.horizontal, 10)
+											.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+											.cornerRadius(20)
+											.overlay(
+												RoundedRectangle(cornerRadius: 20)
+													.stroke(.white, lineWidth: 3)
+											)
+											.padding(.top, -20)
+											.padding(message.isOutgoing ? .trailing : .leading, 5)
 										}
-										.padding(.vertical, 6)
-										.padding(.horizontal, 10)
-										.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-										.cornerRadius(20)
-										.overlay(
-											RoundedRectangle(cornerRadius: 20)
-												.stroke(.white, lineWidth: 3)
-										)
-										.padding(.top, -20)
-										.padding(message.isOutgoing ? .trailing : .leading, 5)
+									}
+									
+									if !message.isOutgoing {
+										Spacer()
 									}
 								}
-								
-								if !message.isOutgoing {
-									Spacer()
-								}
+								.frame(maxWidth: .infinity)
 							}
 							.frame(maxWidth: .infinity)
 						}
-						.frame(maxWidth: .infinity)
-					}
-					
-					if !message.isOutgoing {
-						Spacer()
-					}
-				})
-				.padding(.leading, message.isOutgoing ? 40 : 0)
-				.padding(.trailing, !message.isOutgoing ? 40 : 0)
+						
+						if !message.isOutgoing {
+							Spacer()
+						}
+					})
+					.padding(.leading, message.isOutgoing ? 40 : 0)
+					.padding(.trailing, !message.isOutgoing ? 40 : 0)
+				}
+			}
+			.onTapGesture {}
+			.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
+				self.isPressed = value
+				if value == true {
+					self.timePassed = 0
+					self.ticker.start(interval: 0.2)
+				}
+				
+			}, perform: {})
+			.onReceive(ticker.objectWillChange) { (_) in
+				// Stop timer and reset the start date if the button in not pressed
+				guard self.isPressed else {
+					self.ticker.stop()
+					return
+				}
+				
+				self.timePassed = self.ticker.timeIntervalSinceStarted
+				withAnimation {
+					conversationViewModel.selectedMessage = message
+				}
+				
 			}
 		}
-		.onTapGesture {}
-		.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
-			self.isPressed = value
-			if value == true {
-				self.timePassed = 0
-				self.ticker.start(interval: 0.2)
+		.contentShape(Rectangle())
+		.onTapGesture {
+			if conversationViewModel.selectedMessage != nil {
+				conversationViewModel.selectedMessage = nil
 			}
-			
-		}, perform: {})
-		.onReceive(ticker.objectWillChange) { (_) in
-			// Stop timer and reset the start date if the button in not pressed
-			guard self.isPressed else {
-				self.ticker.stop()
-				return
-			}
-			
-			self.timePassed = self.ticker.timeIntervalSinceStarted
-			withAnimation {
-				conversationViewModel.selectedMessage = message
-			}
-			
+			UIApplication.shared.endEditing()
 		}
 	}
 	

@@ -79,7 +79,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
 							let dataResult = try Data(contentsOf: urlFile!)
 							let urlImage = self.saveMedia(name: urlFile!.lastPathComponent, data: dataResult, type: .image)
 							if urlImage != nil {
-								let attachment = Attachment(id: UUID().uuidString, url: urlImage!, type: .image)
+								let attachment = Attachment(id: UUID().uuidString, name: urlFile!.lastPathComponent, url: urlImage!, type: .image)
 								medias.append(attachment)
 							}
 						} catch {
@@ -98,7 +98,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
 							let urlThumbnail = getURLThumbnail(name: urlFile!.lastPathComponent)
 							
 							if urlImage != nil {
-								let attachment = Attachment(id: UUID().uuidString, thumbnail: urlThumbnail, full: urlImage!, type: .video)
+								let attachment = Attachment(id: UUID().uuidString, name: urlFile!.lastPathComponent, thumbnail: urlThumbnail, full: urlImage!, type: .video)
 								medias.append(attachment)
 							}
 						} catch {
