@@ -104,7 +104,7 @@ class MeetingViewModel: ObservableObject {
 		
 		fromDateStr = formatter.string(from: fromDate)
 		Log.info("\(MeetingViewModel.TAG) computed start date is \(fromDateStr)")
-		fromDateStr = formatter.string(from: toDate)
+		toDateStr = formatter.string(from: toDate)
 		Log.info("\(MeetingViewModel.TAG)) computed end date is \(toDateStr)")
 	}
 	
