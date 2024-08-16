@@ -34,6 +34,7 @@ struct ScheduleMeetingFragment: View {
 	@State private var delayedColor = Color.white
 	@State private var showDatePicker = false
 	@State private var showTimePicker = false
+	@State private var showTimeZonePicker = false
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
 	
@@ -194,41 +195,29 @@ struct ScheduleMeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text("Time Zone:")
+							Text("Time Zone: \(meetingViewModel.selectedTimezone.formattedString())")
 								.fontWeight(.bold)
-								.default_text_style_500(styleSize: 16)
-							Picker(selection: $meetingViewModel.selectedTimezoneIdx, label: EmptyView()	) {
-								ForEach(0..<meetingViewModel.knownTimezones.count, id: \.self) { idx in
-									Text(TimeZone.init(identifier: meetingViewModel.knownTimezones[idx])?.formattedString() ?? "Unknown timezone").tag(idx)
+								.default_text_style_500(styleSize: 15)
+								.onTapGesture {
+									showTimeZonePicker.toggle()
 								}
-							}
-							.onReceive(meetingViewModel.$selectedTimezoneIdx) { value in
-								if let timeZone = TimeZone.init(identifier: meetingViewModel.knownTimezones[value]) {
-									meetingViewModel.updateTimezone(timeZone: timeZone)
-								} else {
-									Log.error("Could not find matching timezone for index \(value)")
-								}
-							}
-							.pickerStyle(MenuPickerStyle())
-							.tint(Color.grayMain2c800)
-							.padding(.leading, -10)
 							Spacer()
 						}
 						
 						/*
-							Image("arrow-clockwise")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c800)
-								.frame(width: 24, height: 24)
-								.padding(.leading, 15)
-							//Picker(selection:, label:("))
-							Text("TODO : repeat")
-								.fontWeight(.bold)
-								.padding(.leading, 5)
-								.default_text_style_500(styleSize: 16)
-							Spacer()
-						}
+						 Image("arrow-clockwise")
+						 .renderingMode(.template)
+						 .resizable()
+						 .foregroundStyle(Color.grayMain2c800)
+						 .frame(width: 24, height: 24)
+						 .padding(.leading, 15)
+						 //Picker(selection:, label:("))
+						 Text("TODO : repeat")
+						 .fontWeight(.bold)
+						 .padding(.leading, 5)
+						 .default_text_style_500(styleSize: 16)
+						 Spacer()
+						 }
 						 */
 						
 						Rectangle()
@@ -388,6 +377,53 @@ struct ScheduleMeetingFragment: View {
 				if showTimePicker {
 					getDatePopup(isTimeSelection: true)
 				}
+				
+				if showTimeZonePicker {
+					GeometryReader { geometry in
+						ScrollViewReader { proxyReader in
+							List(0..<meetingViewModel.knownTimezones.count, id: \.self) { idx in
+								Text(TimeZone.init(identifier: meetingViewModel.knownTimezones[idx])?.formattedString() ?? "Unknown timezone")
+									.fontWeight(meetingViewModel.selectedTimezoneIdx == idx ? Font.Weight.bold : Font.Weight.regular)
+									.onTapGesture {
+										if let timeZone = TimeZone.init(identifier: meetingViewModel.knownTimezones[idx]) {
+											meetingViewModel.selectedTimezoneIdx = idx
+											meetingViewModel.updateTimezone(timeZone: timeZone)
+										}
+									}
+									.id(idx)
+							}
+							.frame(width: geometry.size.width - 30, height: 300)
+							.cornerRadius(20)
+							.onAppear {
+								proxyReader.scrollTo(meetingViewModel.selectedTimezoneIdx)
+							}
+							.listStyle(.plain)
+						}
+						.frame(width: geometry.size.width, height: geometry.size.height)
+						.background(.black.opacity(0.65))
+						.onTapGesture {
+							showTimeZonePicker = false
+						}
+					}
+				}
+				
+				/*
+				 Picker(selection: $meetingViewModel.selectedTimezoneIdx, label: EmptyView()	) {
+				 ForEach(0..<meetingViewModel.knownTimezones.count, id: \.self) { idx in
+				 Text(TimeZone.init(identifier: meetingViewModel.knownTimezones[idx])?.formattedString() ?? "Unknown timezone").tag(idx)
+				 }
+				 }
+				 .onReceive(meetingViewModel.$selectedTimezoneIdx) { value in
+				 if let timeZone = TimeZone.init(identifier: meetingViewModel.knownTimezones[value]) {
+				 meetingViewModel.updateTimezone(timeZone: timeZone)
+				 } else {
+				 Log.error("Could not find matching timezone for index \(value)")
+				 }
+				 }
+				 .pickerStyle(MenuPickerStyle())
+				 .tint(Color.grayMain2c800)
+				 .padding(.leading, -10)
+				 */
 			}
 			.navigationTitle("")
 			.navigationBarHidden(true)
