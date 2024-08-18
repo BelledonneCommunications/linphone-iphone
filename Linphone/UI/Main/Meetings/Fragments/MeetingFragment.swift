@@ -111,7 +111,13 @@ struct MeetingFragment: View {
 							Button(role: .destructive) {
 								withAnimation {
 									meetingsListViewModel.selectedMeetingToDelete = meetingViewModel.displayedMeeting
-									isShowSendCancelMeetingNotificationPopup.toggle()
+									if let myself = meetingViewModel.myself, myself.isOrganizer == true {
+										isShowSendCancelMeetingNotificationPopup.toggle()
+									} else {
+										// If we're not organizer, directly delete the conference
+										meetingViewModel.displayedMeeting = nil
+										meetingsListViewModel.deleteSelectedMeeting()
+									}
 								}
 							} label: {
 								HStack {
