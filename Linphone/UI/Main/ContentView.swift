@@ -312,6 +312,7 @@ struct ContentView: View {
 													.frame(width: 25, height: 25, alignment: .leading)
 													.padding(.all, 10)
 											}
+											.padding(.trailing, 10)
 										} else if index != 2 {
 											Menu {
 												if index == 0 {
