@@ -45,6 +45,7 @@ struct ScheduleMeetingFragment: View {
 	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	@FocusState var isDescriptionTextFocused: Bool
+	@FocusState var isSubjectTextFocused: Bool
 	
 	var body: some View {
 		NavigationView {
@@ -103,6 +104,7 @@ struct ScheduleMeetingFragment: View {
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
 							TextField("Subject", text: $meetingViewModel.subject)
+								.focused($isSubjectTextFocused)
 								.default_text_style_700(styleSize: 20)
 								.frame(height: 29, alignment: .leading)
 							Spacer()
@@ -332,6 +334,9 @@ struct ScheduleMeetingFragment: View {
 						Spacer()
 					}
 					.background(.white)
+				}.onTapGesture {
+					isDescriptionTextFocused = false
+					isSubjectTextFocused = false
 				}
 				
 				Button {
@@ -349,6 +354,8 @@ struct ScheduleMeetingFragment: View {
 					
 				}
 				.padding()
+				
+				
 				if meetingViewModel.operationInProgress {
 					HStack {
 						Spacer()
