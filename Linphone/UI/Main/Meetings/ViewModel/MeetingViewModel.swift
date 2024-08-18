@@ -359,10 +359,9 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	func sendMeetingCancelledNotifications(meeting: MeetingModel) {
-		Log.error("\(MeetingViewModel.TAG) - sendMeetingCancelledNotifications TODO")
-		//CoreContext.shared.doOnCoreQueue { core in
-		//	self.resetConferenceSchedulerAndListeners(core: core)
-		//	self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
-		//}
+		CoreContext.shared.doOnCoreQueue { core in
+			self.resetConferenceSchedulerAndListeners(core: core)
+			self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
+		}
 	}
 }

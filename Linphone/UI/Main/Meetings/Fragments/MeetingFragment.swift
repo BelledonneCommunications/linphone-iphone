@@ -111,8 +111,6 @@ struct MeetingFragment: View {
 							Button(role: .destructive) {
 								withAnimation {
 									meetingsListViewModel.selectedMeetingToDelete = meetingViewModel.displayedMeeting
-									meetingViewModel.displayedMeeting = nil
-									meetingsListViewModel.deleteSelectedMeeting()
 									isShowSendCancelMeetingNotificationPopup.toggle()
 								}
 							} label: {

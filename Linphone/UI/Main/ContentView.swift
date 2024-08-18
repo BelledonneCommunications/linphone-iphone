@@ -1016,13 +1016,19 @@ struct ContentView: View {
 					
 					if isShowSendCancelMeetingNotificationPopup {
 						PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
-								  title: Text("The meeting has been cancelled"),
+								  title: Text("The meeting will be cancelled"),
 								  content: Text("Send notification to participants ?"),
-								  titleFirstButton: Text("Cancel"),
-								  actionFirstButton: { self.isShowSendCancelMeetingNotificationPopup.toggle() },
-								  titleSecondButton: Text("Ok"),
+								  titleFirstButton: Text("Cancel for me only"),
+								  actionFirstButton: {
+							meetingViewModel.displayedMeeting = nil
+							meetingsListViewModel.deleteSelectedMeeting()
+							self.isShowSendCancelMeetingNotificationPopup.toggle(
+							) },
+								  titleSecondButton: Text("Send cancellation notifications"),
 								  actionSecondButton: {
+							meetingViewModel.displayedMeeting = nil
 							if let meetingToDelete = self.meetingsListViewModel.selectedMeetingToDelete {
+								meetingsListViewModel.deleteSelectedMeeting()
 								// We're in the meeting list view
 								self.meetingViewModel.sendMeetingCancelledNotifications(meeting: meetingToDelete)
 								self.isShowSendCancelMeetingNotificationPopup.toggle()

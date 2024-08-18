@@ -53,7 +53,6 @@ struct MeetingsListBottomSheet: View {
 			}
 			
 			Button {
-				meetingsListViewModel.deleteSelectedMeeting()
 				CoreContext.shared.doOnCoreQueue { core in
 					if let organizerUri = self.meetingsListViewModel.selectedMeetingToDelete?.confInfo.organizer {
 						if core.defaultAccount?.contactAddress?.weakEqual(address2: organizerUri) ?? false {
