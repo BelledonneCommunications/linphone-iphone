@@ -20,10 +20,12 @@
 import Foundation
 import linphonesw
 import Combine
+import EventKit
 
 // swiftlint:disable line_length
 class MeetingViewModel: ObservableObject {
 	static let TAG = "[MeetingViewModel]"
+	let eventStore : EKEventStore = EKEventStore()
 	
 	@Published var isBroadcastSelected: Bool = false
 	@Published var showBroadcastHelp: Bool = false
@@ -322,6 +324,36 @@ class MeetingViewModel: ObservableObject {
 			self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
 		}
 	}
+	
+	func addMeetingToCalendar() {
+		if #available(iOS 17.0, *) {
+			eventStore.requestAccess(to: .event) { granted, error in
+				guard let meeting = self.displayedMeeting else {
+					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: no meeting selected")
+				}
+				if !granted {
+					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: access not granted")
+				} else if error == nil {
+					
+					let event:EKEvent = EKEvent(eventStore: self.eventStore)
+					event.title = self.subject
+					event.startDate = self.fromDate
+					event.endDate = self.toDate
+					event.notes = self.description
+					event.calendar = self.eventStore.defaultCalendarForNewEvents
+					do {
+						try self.eventStore.save(event, span: .thisEvent)
+					} catch let error as NSError {
+						Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error)")
+					}
+					Log.info("\(MeetingViewModel.TAG) Meeting '\(meeting.subject)': \(error ?? "")")
+				} else {
+					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error ?? "")")
+				}
+			}
+		}
+	}
+	// eventStore.requestAccess(to: EKEntityType.event) { granted, error in
 }
 
 // swiftlint:enable line_length
