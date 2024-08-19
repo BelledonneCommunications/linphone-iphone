@@ -89,22 +89,6 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
-	func enableAVAudioSession() {
-		do {
-			try AVAudioSession.sharedInstance().setActive(true)
-		} catch _ {
-			
-		}
-	}
-	
-	func disableAVAudioSession() {
-		do {
-			try AVAudioSession.sharedInstance().setActive(false)
-		} catch _ {
-			
-		}
-	}
-	
 	func resetCallView() {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {

@@ -212,14 +212,10 @@ struct CallView: View {
 				}
 			}
 			.onAppear {
-				callViewModel.enableAVAudioSession()
 				fullscreenVideo = false
 				if geo.size.width < 350 || geo.size.height < 350 {
 					buttonSize = 45.0
 				}
-			}
-			.onDisappear {
-				callViewModel.disableAVAudioSession()
 			}
 		}
 	}
