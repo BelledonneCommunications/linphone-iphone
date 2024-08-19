@@ -764,6 +764,9 @@
         }
       }
     },
+    "Cancel for me only" : {
+
+    },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
 
     },
@@ -1564,6 +1567,9 @@
         }
       }
     },
+    "Send cancellation notifications" : {
+
+    },
     "Send invitations to participants" : {
 
     },
@@ -1638,7 +1644,7 @@
     "Temp Help" : {
 
     },
-    "The meeting has been cancelled" : {
+    "The meeting will be cancelled" : {
 
     },
     "The user name or password is incorrects" : {
