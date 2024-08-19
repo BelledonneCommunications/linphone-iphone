@@ -62,7 +62,7 @@ struct MeetingsView: View {
 						isShowScheduleMeetingFragment.toggle()
 					}
 				} label: {
-					Image("plus-circle")
+					Image("meeting_plus")
 						.renderingMode(.template)
 						.foregroundStyle(.white)
 						.padding()
