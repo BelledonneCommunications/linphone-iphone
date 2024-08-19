@@ -360,7 +360,7 @@ class MeetingViewModel: ObservableObject {
 	
 	func sendMeetingCancelledNotifications(meeting: MeetingModel) {
 		CoreContext.shared.doOnCoreQueue { core in
-			self.resetConferenceSchedulerAndListeners(core: core)
+			self.conferenceScheduler = try? core.createConferenceScheduler()
 			self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
 		}
 	}
