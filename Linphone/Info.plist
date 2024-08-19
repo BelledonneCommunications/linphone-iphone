@@ -130,5 +130,9 @@
 		<key>UIImageName</key>
 		<string>linphone</string>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Deprecated - Prior to iOS 17 full calendar access is required</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string></string>
 </dict>
 </plist>
