@@ -316,47 +316,6 @@ class MeetingViewModel: ObservableObject {
 			self.displayedMeeting = meeting
 	}
 	
-	func loadExistingConferenceInfoFromUri(conferenceUri: String) {
-		CoreContext.shared.doOnCoreQueue { core in
-			if let conferenceAddress = core.interpretUrl(url: conferenceUri, applyInternationalPrefix: false) {
-				if let conferenceInfo = core.findConferenceInformationFromUri(uri: conferenceAddress) {
-					
-					self.conferenceInfoToEdit = conferenceInfo
-					Log.info("\(MeetingViewModel.TAG)  Found conference info matching URI \(conferenceInfo.uri?.asString() ?? "NIL") with subject \(conferenceInfo.subject ?? "NIL")")
-					
-					self.fromDate = Date(timeIntervalSince1970: TimeInterval(conferenceInfo.dateTime))
-					self.toDate = Calendar.current.date(byAdding: .minute, value: Int(conferenceInfo.duration), to: self.fromDate)!
-					
-					let list: [SelectedAddressModel] = []
-					for partInfo in conferenceInfo.participantInfos {
-						if let addr = partInfo.address {
-							ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
-								let avatarModel = avatarResult
-								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarModel))
-								Log.info("\(MeetingViewModel.TAG) Loaded participant \(addr.asStringUriOnly())")
-							}
-						}
-					}
-					Log.info("\(MeetingViewModel.TAG) \(list.count) participants loaded from found conference info")
-					
-					DispatchQueue.main.async {
-						self.subject = conferenceInfo.subject ?? ""
-						self.description = conferenceInfo.description ?? ""
-						self.isBroadcastSelected = false
-						self.computeDateLabels()
-						self.computeTimeLabels()
-					}
-					
-				} else {
-					Log.error("\(MeetingViewModel.TAG) Failed to find a conference info matching URI [${conferenceAddress.asString()}], abort")
-				}
-			} else {
-				Log.error("\(MeetingViewModel.TAG) Failed to parse conference URI [$conferenceUri], abort")
-			}
-			
-		}
-	}
-	
 	func sendMeetingCancelledNotifications(meeting: MeetingModel) {
 		CoreContext.shared.doOnCoreQueue { core in
 			self.conferenceScheduler = try? core.createConferenceScheduler()
