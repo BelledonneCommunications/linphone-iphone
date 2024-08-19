@@ -326,31 +326,40 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	func addMeetingToCalendar() {
-		if #available(iOS 17.0, *) {
-			eventStore.requestAccess(to: .event) { granted, error in
-				guard let meeting = self.displayedMeeting else {
-					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: no meeting selected")
-				}
-				if !granted {
-					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: access not granted")
-				} else if error == nil {
-					
-					let event:EKEvent = EKEvent(eventStore: self.eventStore)
-					event.title = self.subject
-					event.startDate = self.fromDate
-					event.endDate = self.toDate
-					event.notes = self.description
-					event.calendar = self.eventStore.defaultCalendarForNewEvents
-					do {
-						try self.eventStore.save(event, span: .thisEvent)
-					} catch let error as NSError {
-						Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error)")
-					}
-					Log.info("\(MeetingViewModel.TAG) Meeting '\(meeting.subject)': \(error ?? "")")
-				} else {
-					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error ?? "")")
-				}
+		
+		let addToCalendar = { (granted: Bool, error: (any Error)?) in
+			guard let meeting = self.displayedMeeting else {
+				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: no meeting selected")
+				return
 			}
+			if !granted {
+				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: access not granted")
+			} else if error == nil {
+				let event: EKEvent = EKEvent(eventStore: self.eventStore)
+				event.title = self.subject
+				event.startDate = self.fromDate
+				event.endDate = self.toDate
+				event.notes = self.description
+				event.calendar = self.eventStore.defaultCalendarForNewEvents
+				do {
+					try self.eventStore.save(event, span: .thisEvent)
+					Log.info("\(MeetingViewModel.TAG) Meeting '\(meeting.subject)' added to calendar")
+					ToastViewModel.shared.toastMessage = "Meeting_added_to_calendar"
+					ToastViewModel.shared.displayToast = true
+				} catch let error as NSError {
+					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error)")
+					ToastViewModel.shared.toastMessage = "Error: \(error)"
+					ToastViewModel.shared.displayToast = true
+				}
+			} else {
+				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error?.localizedDescription ?? "")")
+			}
+		}
+		
+		if #available(iOS 17.0, *) {
+			eventStore.requestWriteOnlyAccessToEvents(completion: addToCalendar)
+		} else {
+			eventStore.requestAccess(to: .event, completion: addToCalendar)
 		}
 	}
 	// eventStore.requestAccess(to: EKEntityType.event) { granted, error in

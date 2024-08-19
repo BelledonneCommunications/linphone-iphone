@@ -231,6 +231,11 @@ struct ToastView: View {
 						Text("conversation_invalid_participant_due_to_security_mode_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
+						
+					case "Meeting_added_to_calendar":
+						Text("Meeting added to iPhone calendar")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
