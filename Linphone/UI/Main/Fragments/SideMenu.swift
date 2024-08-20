@@ -66,10 +66,7 @@ struct SideMenu: View {
 					
 					List {
 						ForEach(0..<CoreContext.shared.accounts.count, id: \.self) { index in
-							SideMenuAccountRow(
-								model: AccountModel(account: CoreContext.shared.accounts[0],
-													corePublisher: CoreContext.shared.getCorePublisher())
-							)
+							SideMenuAccountRow(	model: CoreContext.shared.accounts[index])
 							.background()
 							.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
 							.listRowSeparator(.hidden)

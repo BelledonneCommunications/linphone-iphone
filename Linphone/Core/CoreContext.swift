@@ -40,7 +40,7 @@ final class CoreContext: ObservableObject {
 	@Published var loggingInProgress: Bool = false
 	@Published var hasDefaultAccount: Bool = false
 	@Published var coreIsStarted: Bool = false
-	@Published var accounts: [Account] = []
+	@Published var accounts: [AccountModel] = []
 	
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
@@ -128,6 +128,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.maxSizeForAutoDownloadIncomingFiles = 0
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			
+			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 #if DEBUG
@@ -142,18 +143,23 @@ final class CoreContext: ObservableObject {
 						account.params = newParams
 					}
 					
-					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {$0(cbVal.core)}
+					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {	$0(cbVal.core) }
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					
+					let hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
+					var accountModels: [AccountModel] = []
+					for account in self.mCore.accountList {
+						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+					}
 					DispatchQueue.main.async {
-						if cbVal.state == GlobalState.On {
-							self.hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
-							self.coreIsStarted = true
-							self.accounts = self.mCore.accountList
-						} else if cbVal.state == GlobalState.Off {
-							self.hasDefaultAccount = false
-							self.coreIsStarted = false
-						}
+						self.hasDefaultAccount = hasDefaultAccount
+						self.coreIsStarted = true
+						self.accounts = accountModels
+					}
+				} else if cbVal.state == GlobalState.Off {
+					DispatchQueue.main.async {
+						self.hasDefaultAccount = false
+						self.coreIsStarted = false
 					}
 				}
 			})
@@ -162,11 +168,15 @@ final class CoreContext: ObservableObject {
 			// In this case, we want to know about the account registration status
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnCoreQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
 				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
+				var accountModels: [AccountModel] = []
+				for account in self.mCore.accountList {
+					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+				}
 				DispatchQueue.main.async {
 					if cbVal.status == ConfiguringState.Successful {
 						ToastViewModel.shared.toastMessage = "Successful"
 						ToastViewModel.shared.displayToast = true
-						self.accounts = self.mCore.accountList
+						self.accounts = accountModels
 					}
 				}
 				/*
@@ -288,13 +298,25 @@ final class CoreContext: ObservableObject {
 			})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountAdded?
-				.postOnMainQueue { _ in
-					self.accounts = self.mCore.accountList
+				.postOnCoreQueue { _ in
+					var accountModels: [AccountModel] = []
+					for account in self.mCore.accountList {
+						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+					}
+					DispatchQueue.main.async {
+						self.accounts = accountModels
+					}
 				})
 			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRemoved?
-				.postOnMainQueue { _ in
-					self.accounts = self.mCore.accountList
+				.postOnCoreQueue { _ in
+					var accountModels: [AccountModel] = []
+					for account in self.mCore.accountList {
+						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+					}
+					DispatchQueue.main.async {
+						self.accounts = accountModels
+					}
 				})
 			
 			self.mIterateSuscription = Timer.publish(every: 0.02, on: .main, in: .common)

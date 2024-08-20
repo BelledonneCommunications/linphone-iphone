@@ -20,6 +20,7 @@
 import Foundation
 import linphonesw
 import SwiftUI
+import Combine
 
 class AccountModel: ObservableObject {
 	let account: Account
@@ -30,26 +31,30 @@ class AccountModel: ObservableObject {
 	@Published var displayName: String = ""
 	@Published var address: String = ""
 	
+	private var mSuscriptions = Set<AnyCancellable?>()
+	
 	init(account: Account, corePublisher: CoreDelegatePublisher?) {
 		self.account = account
+		
+		mSuscriptions.insert(account.publisher?.onRegistrationStateChanged?.postOnCoreQueue { _ in
+			self.update()
+		})
+		mSuscriptions.insert(corePublisher?.onChatRoomRead?.postOnCoreQueue(
+			receiveValue: { _ in
+				self.computeNotificationsCount()
+			}))
+		mSuscriptions.insert(corePublisher?.onMessagesReceived?.postOnCoreQueue(
+			receiveValue: { _ in
+				self.computeNotificationsCount()
+			}))
+		mSuscriptions.insert(corePublisher?.onCallStateChanged?.postOnCoreQueue(
+			receiveValue: { _ in
+				self.computeNotificationsCount()
+			}))
+		
 		CoreContext.shared.doOnCoreQueue { _ in
 			self.update()
 		}
-		account.publisher?.onRegistrationStateChanged?.postOnCoreQueue { _ in
-			self.update()
-		}
-		corePublisher?.onChatRoomRead?.postOnCoreQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-			})
-		corePublisher?.onMessagesReceived?.postOnCoreQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-			})
-		corePublisher?.onCallStateChanged?.postOnCoreQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-			})
 	}
 	
 	private func update() {
