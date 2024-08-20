@@ -307,6 +307,37 @@ class ConversationViewModel: ObservableObject {
 						attachmentNameList = String(attachmentNameList.dropFirst(2))
 					}
 					
+					var replyMessageTmp: ReplyMessage?
+					if eventLog.chatMessage?.replyMessage != nil {
+						let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+						addressCleaned?.clean()
+						
+						let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+						
+						var attachmentNameReplyList: String = ""
+						
+						eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+							if !content.isText {
+								attachmentNameReplyList += ", \(content.name!)"
+							}
+						}
+						
+						if !attachmentNameReplyList.isEmpty {
+							attachmentNameReplyList = String(attachmentNameReplyList.dropFirst(2))
+						}
+						
+						replyMessageTmp = ReplyMessage(
+							id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+							address: addressReplyCleaned?.asStringUriOnly() ?? "",
+							isFirstMessage: false,
+							text: contentReplyText,
+							isOutgoing: false,
+							dateReceived: 0,
+							attachmentsNames: attachmentNameReplyList,
+							attachments: []
+						)
+					}
+					
 					if eventLog.chatMessage != nil {
 						conversationMessage.append(
 							Message(
@@ -319,6 +350,7 @@ class ConversationViewModel: ObservableObject {
 								text: contentText,
 								attachmentsNames: attachmentNameList,
 								attachments: attachmentList,
+								replyMessage: replyMessageTmp,
 								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 								reactions: reactionsTmp
 							)
@@ -458,6 +490,37 @@ class ConversationViewModel: ObservableObject {
 						attachmentNameList = String(attachmentNameList.dropFirst(2))
 					}
 					
+					var replyMessageTmp: ReplyMessage?
+					if eventLog.chatMessage?.replyMessage != nil {
+						let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+						addressCleaned?.clean()
+						
+						let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+						
+						var attachmentNameReplyList: String = ""
+						
+						eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+							if !content.isText {
+								attachmentNameReplyList += ", \(content.name!)"
+							}
+						}
+						
+						if !attachmentNameReplyList.isEmpty {
+							attachmentNameReplyList = String(attachmentNameReplyList.dropFirst(2))
+						}
+						
+						replyMessageTmp = ReplyMessage(
+							id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+							address: addressReplyCleaned?.asStringUriOnly() ?? "",
+							isFirstMessage: false,
+							text: contentReplyText,
+							isOutgoing: false,
+							dateReceived: 0,
+							attachmentsNames: attachmentNameReplyList,
+							attachments: []
+						)
+					}
+					
 					if eventLog.chatMessage != nil {
 						conversationMessagesTmp.insert(
 							Message(
@@ -470,6 +533,7 @@ class ConversationViewModel: ObservableObject {
 								text: contentText,
 								attachmentsNames: attachmentNameList,
 								attachments: attachmentList,
+								replyMessage: replyMessageTmp,
 								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 								reactions: reactionsTmp
 							), at: 0
@@ -622,6 +686,37 @@ class ConversationViewModel: ObservableObject {
 				attachmentNameList = String(attachmentNameList.dropFirst(2))
 			}
 			
+			var replyMessageTmp: ReplyMessage?
+			if eventLog.chatMessage?.replyMessage != nil {
+				let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+				addressCleaned?.clean()
+				
+				let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+				
+				var attachmentNameReplyList: String = ""
+				
+				eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+					if !content.isText {
+						attachmentNameReplyList += ", \(content.name!)"
+					}
+				}
+				
+				if !attachmentNameReplyList.isEmpty {
+					attachmentNameReplyList = String(attachmentNameReplyList.dropFirst(2))
+				}
+				
+				replyMessageTmp = ReplyMessage(
+					id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+					address: addressReplyCleaned?.asStringUriOnly() ?? "",
+					isFirstMessage: false,
+					text: contentReplyText,
+					isOutgoing: false,
+					dateReceived: 0,
+					attachmentsNames: attachmentNameReplyList,
+					attachments: []
+				)
+			}
+			
 			if eventLog.chatMessage != nil {
 				let message = Message(
 					id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
@@ -633,6 +728,7 @@ class ConversationViewModel: ObservableObject {
 					text: contentText,
 					attachmentsNames: attachmentNameList,
 					attachments: attachmentList,
+					replyMessage: replyMessageTmp,
 					ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 					reactions: reactionsTmp
 				)
@@ -706,6 +802,18 @@ class ConversationViewModel: ObservableObject {
 			//} else {
 			let message = try? self.displayedConversation!.chatRoom.createEmptyMessage()
 			//}
+			
+			/*
+			var message: Message?
+			if messageToReply != nil {
+				let chatMessageToReply = try? self.displayedConversation!.chatRoom.findMessage(messageId: messageToReply!.id)
+				if chatMessageToReply != nil {
+					message = try? self.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
+				}
+			} else {
+				message = try? self.displayedConversation!.chatRoom.createEmptyMessage()
+			}
+			 */
 			
 			let toSend = self.messageText.trimmingCharacters(in: .whitespacesAndNewlines)
 			if !toSend.isEmpty {

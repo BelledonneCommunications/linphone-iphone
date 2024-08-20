@@ -63,8 +63,42 @@ struct ChatBubbleView: View {
 									.padding(.top, 10)
 									.padding(.bottom, 2)
 							}
+							
+							if message.replyMessage != nil {
+								HStack {
+									if message.isOutgoing {
+										Spacer()
+									}
+									
+									VStack(alignment: message.isOutgoing ? .trailing : .leading) {
+										VStack(alignment: message.isOutgoing ? .trailing : .leading) {
+											if !message.replyMessage!.text.isEmpty {
+												Text(message.replyMessage!.text)
+													.foregroundStyle(Color.grayMain2c700)
+													.default_text_style(styleSize: 16)
+													.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
+											} else if !message.replyMessage!.attachmentsNames.isEmpty {
+												Text(message.replyMessage!.attachmentsNames)
+													.foregroundStyle(Color.grayMain2c700)
+													.default_text_style(styleSize: 16)
+													.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
+											}
+										}
+										.padding(.all, 15)
+										.padding(.bottom, 20)
+										.background(Color.gray200)
+										.clipShape(RoundedRectangle(cornerRadius: 16))
+									}
+									
+									if !message.isOutgoing {
+										Spacer()
+									}
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.bottom, -20)
+							}
+							
 							ZStack {
-								
 								HStack {
 									if message.isOutgoing {
 										Spacer()

@@ -183,6 +183,7 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 	public var text: String
 	public var isOutgoing: Bool
 	public var dateReceived: time_t
+	public var attachmentsNames: String
 	public var attachments: [Attachment]
 	public var recording: Recording?
 
@@ -192,6 +193,7 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 				text: String = "",
 				isOutgoing: Bool,
 				dateReceived: time_t,
+				attachmentsNames: String = "",
 				attachments: [Attachment] = [],
 				recording: Recording? = nil) {
 
@@ -201,6 +203,7 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 		self.text = text
 		self.isOutgoing = isOutgoing
 		self.dateReceived = dateReceived
+		self.attachmentsNames = attachmentsNames
 		self.attachments = attachments
 		self.recording = recording
 	}
