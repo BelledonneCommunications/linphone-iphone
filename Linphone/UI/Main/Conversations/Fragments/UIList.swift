@@ -22,6 +22,7 @@ import SwiftUI
 
 public extension Notification.Name {
 	static let onScrollToBottom = Notification.Name("onScrollToBottom")
+	static let onScrollToIndex = Notification.Name("onScrollToIndex")
 }
 
 struct UIList: UIViewRepresentable {
@@ -41,7 +42,7 @@ struct UIList: UIViewRepresentable {
 	
 	func makeUIView(context: Context) -> UITableView {
 		let tableView = UITableView(frame: .zero, style: .grouped)
-		tableView.contentInset = UIEdgeInsets(top: -10, left: 0, bottom: -20, right: 0)
+		tableView.contentInset = UIEdgeInsets(top: -10, left: 0, bottom: 0, right: 0)
 		tableView.translatesAutoresizingMaskIntoConstraints = false
 		tableView.separatorStyle = .none
 		tableView.dataSource = context.coordinator
@@ -58,7 +59,37 @@ struct UIList: UIViewRepresentable {
 		NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
 			DispatchQueue.main.async {
 				if !context.coordinator.sections.isEmpty {
-					tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+					if context.coordinator.sections.first != nil
+						&& conversationViewModel.conversationMessagesSection.first != nil
+						&& conversationViewModel.displayedConversation != nil
+						&& context.coordinator.sections.first!.chatRoomID == conversationViewModel.displayedConversation!.id
+						&& context.coordinator.sections.first!.rows.count == conversationViewModel.conversationMessagesSection.first!.rows.count {
+						tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+					} else {
+						NotificationCenter.default.removeObserver(self, name: .onScrollToBottom, object: nil)
+					}
+				}
+			}
+		}
+		
+		NotificationCenter.default.addObserver(forName: .onScrollToIndex, object: nil, queue: nil) { notification in
+			DispatchQueue.main.async {
+				if !context.coordinator.sections.isEmpty {
+					if context.coordinator.sections.first != nil
+						&& conversationViewModel.conversationMessagesSection.first != nil
+						&& conversationViewModel.displayedConversation != nil
+						&& context.coordinator.sections.first!.chatRoomID == conversationViewModel.displayedConversation!.id
+						&& context.coordinator.sections.first!.rows.count == conversationViewModel.conversationMessagesSection.first!.rows.count {
+						if let dict = notification.userInfo as NSDictionary? {
+							if let index = dict["index"] as? Int {
+								if let animated = dict["animated"] as? Bool {
+									tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .bottom, animated: animated)
+								}
+							}
+						}
+					} else {
+						NotificationCenter.default.removeObserver(self, name: .onScrollToIndex, object: nil)
+					}
 				}
 			}
 		}
@@ -308,7 +339,7 @@ struct UIList: UIViewRepresentable {
 			if #available(iOS 16.0, *) {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
 					ChatBubbleView(conversationViewModel: conversationViewModel, message: row, geometryProxy: geometryProxy)
-						.padding(.vertical, 1)
+						.padding(.vertical, 2)
 						.padding(.horizontal, 10)
 						.onTapGesture { }
 				}
@@ -358,6 +389,7 @@ struct UIList: UIViewRepresentable {
 struct MessagesSection: Equatable {
 	
 	let date: Date
+	let chatRoomID: String
 	var rows: [Message]
 	
 	static var formatter = {
@@ -366,8 +398,9 @@ struct MessagesSection: Equatable {
 		return formatter
 	}()
 	
-	init(date: Date, rows: [Message]) {
+	init(date: Date, chatRoomID: String, rows: [Message]) {
 		self.date = date
+		self.chatRoomID = chatRoomID
 		self.rows = rows
 	}
 	

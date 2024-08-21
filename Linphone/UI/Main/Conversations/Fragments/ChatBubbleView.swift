@@ -85,9 +85,16 @@ struct ChatBubbleView: View {
 											}
 										}
 										.padding(.all, 15)
-										.padding(.bottom, 20)
+										.padding(.bottom, 15)
 										.background(Color.gray200)
-										.clipShape(RoundedRectangle(cornerRadius: 16))
+										.clipShape(RoundedRectangle(cornerRadius: 1))
+										.roundedCorner(
+											16,
+											corners: message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
+										)
+									}
+									.onTapGesture {
+										conversationViewModel.scrollToMessage(message: message)
 									}
 									
 									if !message.isOutgoing {
