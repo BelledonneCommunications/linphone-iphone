@@ -80,7 +80,7 @@ class ConversationViewModel: ObservableObject {
 						case .Displayed:
 							statusTmp = .read
 						default:
-							statusTmp = nil
+							statusTmp = .sending
 						}
 						
 						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
@@ -295,7 +295,7 @@ class ConversationViewModel: ObservableObject {
 					case .Displayed:
 						statusTmp = .read
 					default:
-						statusTmp = nil
+						statusTmp = .sending
 					}
 					
 					var reactionsTmp: [String] = []
@@ -478,7 +478,7 @@ class ConversationViewModel: ObservableObject {
 					case .Displayed:
 						statusTmp = .read
 					default:
-						statusTmp = nil
+						statusTmp = .sending
 					}
 					
 					var reactionsTmp: [String] = []
@@ -674,7 +674,7 @@ class ConversationViewModel: ObservableObject {
 			case .Displayed:
 				statusTmp = .read
 			default:
-				statusTmp = nil
+				statusTmp = .sending
 			}
 			
 			var reactionsTmp: [String] = []
@@ -912,7 +912,7 @@ class ConversationViewModel: ObservableObject {
 							case .Displayed:
 								statusTmp = .read
 							default:
-								statusTmp = nil
+								statusTmp = .sending
 							}
 							
 							var reactionsTmp: [String] = []
