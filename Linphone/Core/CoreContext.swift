@@ -156,11 +156,6 @@ final class CoreContext: ObservableObject {
 						self.coreIsStarted = true
 						self.accounts = accountModels
 					}
-				} else if cbVal.state == GlobalState.Off {
-					DispatchQueue.main.async {
-						self.hasDefaultAccount = false
-						self.coreIsStarted = false
-					}
 				}
 			})
 			
