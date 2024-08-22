@@ -590,11 +590,11 @@ class ConversationViewModel: ObservableObject {
 								let attachment =
 								Attachment(
 									id: UUID().uuidString,
-									name: content.name!,
+									name: content.name ?? "???",
 									url: path!,
 									type: .image
 								)
-								attachmentNameList += ", \(content.name!)"
+								attachmentNameList += ", \(content.name ?? "???")"
 								attachmentList.append(attachment)
 							}
 						} else if content.name != nil && !content.name!.isEmpty {
