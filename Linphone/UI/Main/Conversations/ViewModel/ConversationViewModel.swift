@@ -294,6 +294,8 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = .received
 					case .Displayed:
 						statusTmp = .read
+					case .NotDelivered:
+						statusTmp = .error
 					default:
 						statusTmp = .sending
 					}
@@ -1255,7 +1257,7 @@ class ConversationViewModel: ObservableObject {
 		case .read:
 			return "checks"
 		case .error:
-			return ""
+			return "warning-circle"
 		}
 	}
 	

@@ -132,8 +132,9 @@ struct ChatBubbleView: View {
 												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || message.isOutgoing {
 													if message.status == .sending {
 														ProgressView()
+															.controlSize(.mini)
 															.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
-															.frame(width: 15, height: 15)
+															.frame(width: 10, height: 10)
 															.padding(.top, 1)
 													} else if message.status != nil {
 														Image(conversationViewModel.getImageIMDN(status: message.status!))

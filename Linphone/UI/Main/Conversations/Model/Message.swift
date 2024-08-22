@@ -26,7 +26,7 @@ public struct Message: Identifiable, Hashable {
 		case sent
 		case received
 		case read
-		case error(DraftMessage)
+		case error
 
 		public func hash(into hasher: inout Hasher) {
 			switch self {
@@ -53,7 +53,7 @@ public struct Message: Identifiable, Hashable {
 				return true
 			case (.read, .read):
 				return true
-			case ( .error(_), .error(_)):
+			case ( .error, .error):
 				return true
 			default:
 				return false
