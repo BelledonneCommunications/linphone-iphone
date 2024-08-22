@@ -137,13 +137,16 @@ struct ConversationsListFragment: View {
 						.background(.white)
 						.onTapGesture {
 							if index < conversationsListViewModel.conversationsList.count {
-								if conversationViewModel.displayedConversation != nil {
+								if conversationViewModel.displayedConversation != nil { 
 									conversationViewModel.displayedConversation = nil
-									conversationViewModel.selectedMessage = nil
-									conversationViewModel.resetMessage()
-									conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-									
-									conversationViewModel.getMessages()
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+										conversationViewModel.selectedMessage = nil
+										conversationViewModel.resetMessage()
+										withAnimation {
+											conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
+										}
+										conversationViewModel.getMessages()
+									}
 								} else {
 									conversationViewModel.selectedMessage = nil
 									withAnimation {
