@@ -235,8 +235,8 @@ struct ConversationFragment: View {
 											if conversationViewModel.conversationMessagesSection.first != nil {
 												let counter = conversationViewModel.conversationMessagesSection.first!.rows.count
 												ForEach(0..<counter, id: \.self) { index in
-													ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
-														.id(conversationViewModel.conversationMessagesSection.first!.rows[index].id)
+													ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
+														.id(conversationViewModel.conversationMessagesSection.first!.rows[index].message.id)
 														.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
 														.listRowSeparator(.hidden)
 														.scaleEffect(x: 1, y: -1, anchor: .center)
@@ -250,6 +250,8 @@ struct ConversationFragment: View {
 															
 															if index == 0 {
 																displayFloatingButton = false
+																conversationViewModel.markAsRead()
+																conversationsListViewModel.computeChatRoomsList(filter: "")
 															}
 														}
 														.onDisappear {
@@ -262,12 +264,16 @@ struct ConversationFragment: View {
 										}
 										.scaleEffect(x: 1, y: -1, anchor: .center)
 										.listStyle(.plain)
+										.onAppear {
+											conversationViewModel.markAsRead()
+											conversationsListViewModel.computeChatRoomsList(filter: "")
+										}
 										
 										if displayFloatingButton {
 											Button {
 												if conversationViewModel.conversationMessagesSection.first != nil && conversationViewModel.conversationMessagesSection.first!.rows.first != nil {
 													withAnimation {
-														proxy.scrollTo(conversationViewModel.conversationMessagesSection.first!.rows.first!.id)
+														proxy.scrollTo(conversationViewModel.conversationMessagesSection.first!.rows.first!.message.id)
 													}
 												}
 											} label: {
@@ -327,19 +333,19 @@ struct ConversationFragment: View {
 										VStack {
 											(
 											Text("conversation_reply_to_message_title")
-											+ Text("**\(conversationViewModel.participantConversationModel.first(where: {$0.address == conversationViewModel.messageToReply!.address})?.name ?? "")**"))
+											+ Text("**\(conversationViewModel.participantConversationModel.first(where: {$0.address == conversationViewModel.messageToReply!.message.address})?.name ?? "")**"))
 											.default_text_style_300(styleSize: 15)
 											.frame(maxWidth: .infinity, alignment: .leading)
 											.padding(.bottom, 1)
 											.lineLimit(1)
 											
-											if conversationViewModel.messageToReply!.text.isEmpty {
-												Text(conversationViewModel.messageToReply!.attachmentsNames)
+											if conversationViewModel.messageToReply!.message.text.isEmpty {
+												Text(conversationViewModel.messageToReply!.message.attachmentsNames)
 													.default_text_style_300(styleSize: 15)
 													.frame(maxWidth: .infinity, alignment: .leading)
 													.lineLimit(1)
 											} else {
-												Text("\(conversationViewModel.messageToReply!.text)")
+												Text("\(conversationViewModel.messageToReply!.message.text)")
 													.default_text_style_300(styleSize: 15)
 													.frame(maxWidth: .infinity, alignment: .leading)
 													.lineLimit(1)
@@ -586,7 +592,7 @@ struct ConversationFragment: View {
 							
 							VStack {
 								HStack {
-									if conversationViewModel.selectedMessage!.isOutgoing {
+									if conversationViewModel.selectedMessage!.message.isOutgoing {
 										Spacer()
 									}
 									
@@ -598,7 +604,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.ownReaction == "👍" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "👍" ? Color.gray200 : .white)
 										.cornerRadius(10)
 										
 										Button {
@@ -608,7 +614,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.ownReaction == "❤️" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "❤️" ? Color.gray200 : .white)
 										.cornerRadius(10)
 										
 										Button {
@@ -618,7 +624,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.ownReaction == "😂" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😂" ? Color.gray200 : .white)
 										.cornerRadius(10)
 										
 										Button {
@@ -628,7 +634,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.ownReaction == "😮" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😮" ? Color.gray200 : .white)
 										.cornerRadius(10)
 										
 										Button {
@@ -638,7 +644,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.ownReaction == "😢" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😢" ? Color.gray200 : .white)
 										.cornerRadius(10)
 										
 										Button {
@@ -656,7 +662,7 @@ struct ConversationFragment: View {
 									.background(.white)
 									.cornerRadius(20)
 									
-									if !conversationViewModel.selectedMessage!.isOutgoing {
+									if !conversationViewModel.selectedMessage!.message.isOutgoing {
 										Spacer()
 									}
 								}
@@ -665,19 +671,19 @@ struct ConversationFragment: View {
 								.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
 								.shadow(color: .black.opacity(0.1), radius: 10)
 								
-								ChatBubbleView(conversationViewModel: conversationViewModel, message: conversationViewModel.selectedMessage!, geometryProxy: geometry)
+								ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: conversationViewModel.selectedMessage!, geometryProxy: geometry)
 									.padding(.horizontal, 10)
 									.padding(.vertical, 1)
 									.shadow(color: .black.opacity(0.1), radius: 10)
 								
 								HStack {
-									if conversationViewModel.selectedMessage!.isOutgoing {
+									if conversationViewModel.selectedMessage!.message.isOutgoing {
 										Spacer()
 									}
 									
 									VStack {
 										Button {
-											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == conversationViewModel.selectedMessage!.id})
+											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
 											conversationViewModel.selectedMessage = nil
 											conversationViewModel.replyToMessage(index: indexMessage ?? 0)
 										} label: {
@@ -695,10 +701,10 @@ struct ConversationFragment: View {
 										
 										Divider()
 										
-										if !conversationViewModel.selectedMessage!.text.isEmpty {
+										if !conversationViewModel.selectedMessage!.message.text.isEmpty {
 											Button {
 												UIPasteboard.general.setValue(
-													conversationViewModel.selectedMessage!.text,
+													conversationViewModel.selectedMessage!.message.text,
 													forPasteboardType: UTType.plainText.identifier
 												)
 												
@@ -760,7 +766,7 @@ struct ConversationFragment: View {
 									.background(.white)
 									.cornerRadius(20)
 									
-									if !conversationViewModel.selectedMessage!.isOutgoing {
+									if !conversationViewModel.selectedMessage!.message.isOutgoing {
 										Spacer()
 									}
 								}

@@ -24,7 +24,7 @@ struct ChatBubbleView: View {
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	
-	let message: Message
+	let eventLogMessage: EventLogMessage
 	
 	let geometryProxy: GeometryProxy
 	
@@ -35,50 +35,50 @@ struct ChatBubbleView: View {
 	var body: some View {
 		HStack {
 			VStack {
-				if !message.text.isEmpty || !message.attachments.isEmpty {
+				if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty {
 					HStack(alignment: .top, content: {
-						if message.isOutgoing {
+						if eventLogMessage.message.isOutgoing {
 							Spacer()
 						}
 						
-						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
+						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
 							VStack {
 								Avatar(
-									contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == message.address}) ??
+									contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address}) ??
 									ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
 									avatarSize: 35
 								)
 								.padding(.top, 30)
 							}
-						} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing {
+						} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
 							VStack {
 							}
 							.padding(.leading, 43)
 						}
 						
 						VStack(alignment: .leading, spacing: 0) {
-							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !message.isOutgoing && message.isFirstMessage {
-								Text(conversationViewModel.participantConversationModel.first(where: {$0.address == message.address})?.name ?? "")
+							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
+								Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address})?.name ?? "")
 									.default_text_style(styleSize: 12)
 									.padding(.top, 10)
 									.padding(.bottom, 2)
 							}
 							
-							if message.replyMessage != nil {
+							if eventLogMessage.message.replyMessage != nil {
 								HStack {
-									if message.isOutgoing {
+									if eventLogMessage.message.isOutgoing {
 										Spacer()
 									}
 									
-									VStack(alignment: message.isOutgoing ? .trailing : .leading) {
-										VStack(alignment: message.isOutgoing ? .trailing : .leading) {
-											if !message.replyMessage!.text.isEmpty {
-												Text(message.replyMessage!.text)
+									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+											if !eventLogMessage.message.replyMessage!.text.isEmpty {
+												Text(eventLogMessage.message.replyMessage!.text)
 													.foregroundStyle(Color.grayMain2c700)
 													.default_text_style(styleSize: 16)
 													.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
-											} else if !message.replyMessage!.attachmentsNames.isEmpty {
-												Text(message.replyMessage!.attachmentsNames)
+											} else if !eventLogMessage.message.replyMessage!.attachmentsNames.isEmpty {
+												Text(eventLogMessage.message.replyMessage!.attachmentsNames)
 													.foregroundStyle(Color.grayMain2c700)
 													.default_text_style(styleSize: 16)
 													.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
@@ -90,14 +90,14 @@ struct ChatBubbleView: View {
 										.clipShape(RoundedRectangle(cornerRadius: 1))
 										.roundedCorner(
 											16,
-											corners: message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
+											corners: eventLogMessage.message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
 										)
 									}
 									.onTapGesture {
-										conversationViewModel.scrollToMessage(message: message)
+										conversationViewModel.scrollToMessage(message: eventLogMessage.message)
 									}
 									
-									if !message.isOutgoing {
+									if !eventLogMessage.message.isOutgoing {
 										Spacer()
 									}
 								}
@@ -107,37 +107,37 @@ struct ChatBubbleView: View {
 							
 							ZStack {
 								HStack {
-									if message.isOutgoing {
+									if eventLogMessage.message.isOutgoing {
 										Spacer()
 									}
 									
-									VStack(alignment: message.isOutgoing ? .trailing : .leading) {
-										VStack(alignment: message.isOutgoing ? .trailing : .leading) {
-											if !message.attachments.isEmpty {
+									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+											if !eventLogMessage.message.attachments.isEmpty {
 												messageAttachments()
 											}
 											
-											if !message.text.isEmpty {
-												Text(message.text)
+											if !eventLogMessage.message.text.isEmpty {
+												Text(eventLogMessage.message.text)
 													.foregroundStyle(Color.grayMain2c700)
 													.default_text_style(styleSize: 16)
 											}
 											
 											HStack(alignment: .center) {
-												Text(conversationViewModel.getMessageTime(startDate: message.dateReceived))
+												Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
 													.foregroundStyle(Color.grayMain2c500)
 													.default_text_style_300(styleSize: 14)
 													.padding(.top, 1)
 												
-												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || message.isOutgoing {
-													if message.status == .sending {
+												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || eventLogMessage.message.isOutgoing {
+													if eventLogMessage.message.status == .sending {
 														ProgressView()
 															.controlSize(.mini)
 															.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
 															.frame(width: 10, height: 10)
 															.padding(.top, 1)
-													} else if message.status != nil {
-														Image(conversationViewModel.getImageIMDN(status: message.status!))
+													} else if eventLogMessage.message.status != nil {
+														Image(conversationViewModel.getImageIMDN(status: eventLogMessage.message.status!))
 															.renderingMode(.template)
 															.resizable()
 															.foregroundStyle(Color.orangeMain500)
@@ -149,49 +149,49 @@ struct ChatBubbleView: View {
 											.padding(.top, -4)
 										}
 										.padding(.all, 15)
-										.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+										.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
 										.clipShape(RoundedRectangle(cornerRadius: 3))
 										.roundedCorner(
 											16,
-											corners: message.isOutgoing && message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
-												(!message.isOutgoing && message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
+											corners: eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
+												(!eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
 										
-										if !message.reactions.isEmpty {
+										if !eventLogMessage.message.reactions.isEmpty {
 											HStack {
-												ForEach(0..<message.reactions.count, id: \.self) { index in
-													if message.reactions.firstIndex(of: message.reactions[index]) == index {
-														Text(message.reactions[index])
+												ForEach(0..<eventLogMessage.message.reactions.count, id: \.self) { index in
+													if eventLogMessage.message.reactions.firstIndex(of: eventLogMessage.message.reactions[index]) == index {
+														Text(eventLogMessage.message.reactions[index])
 															.default_text_style(styleSize: 14)
 															.padding(.horizontal, -2)
 													}
 												}
 												
 												if (
-													(message.reactions.contains("👍") ? 1 : 0) +
-													(message.reactions.contains("❤️") ? 1 : 0) +
-													(message.reactions.contains("😂") ? 1 : 0) +
-													(message.reactions.contains("😮") ? 1 : 0) +
-													(message.reactions.contains("😢") ? 1 : 0)
-												) != message.reactions.count {
-													Text("\(message.reactions.count)")
+													(eventLogMessage.message.reactions.contains("👍") ? 1 : 0) +
+													(eventLogMessage.message.reactions.contains("❤️") ? 1 : 0) +
+													(eventLogMessage.message.reactions.contains("😂") ? 1 : 0) +
+													(eventLogMessage.message.reactions.contains("😮") ? 1 : 0) +
+													(eventLogMessage.message.reactions.contains("😢") ? 1 : 0)
+												) != eventLogMessage.message.reactions.count {
+													Text("\(eventLogMessage.message.reactions.count)")
 														.default_text_style(styleSize: 14)
 														.padding(.horizontal, -2)
 												}
 											}
 											.padding(.vertical, 6)
 											.padding(.horizontal, 10)
-											.background(message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+											.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
 											.cornerRadius(20)
 											.overlay(
 												RoundedRectangle(cornerRadius: 20)
 													.stroke(.white, lineWidth: 3)
 											)
 											.padding(.top, -20)
-											.padding(message.isOutgoing ? .trailing : .leading, 5)
+											.padding(eventLogMessage.message.isOutgoing ? .trailing : .leading, 5)
 										}
 									}
 									
-									if !message.isOutgoing {
+									if !eventLogMessage.message.isOutgoing {
 										Spacer()
 									}
 								}
@@ -200,12 +200,12 @@ struct ChatBubbleView: View {
 							.frame(maxWidth: .infinity)
 						}
 						
-						if !message.isOutgoing {
+						if !eventLogMessage.message.isOutgoing {
 							Spacer()
 						}
 					})
-					.padding(.leading, message.isOutgoing ? 40 : 0)
-					.padding(.trailing, !message.isOutgoing ? 40 : 0)
+					.padding(.leading, eventLogMessage.message.isOutgoing ? 40 : 0)
+					.padding(.trailing, !eventLogMessage.message.isOutgoing ? 40 : 0)
 				}
 			}
 			.onTapGesture {}
@@ -226,7 +226,7 @@ struct ChatBubbleView: View {
 				
 				self.timePassed = self.ticker.timeIntervalSinceStarted
 				withAnimation {
-					conversationViewModel.selectedMessage = message
+					conversationViewModel.selectedMessage = eventLogMessage
 				}
 				
 			}
@@ -242,9 +242,9 @@ struct ChatBubbleView: View {
 	
 	@ViewBuilder
 	func messageAttachments() -> some View {
-		if message.attachments.count == 1 {
-			if message.attachments.first!.type == .image || message.attachments.first!.type == .gif || message.attachments.first!.type == .video {
-				let result = imageDimensions(url: message.attachments.first!.thumbnail.absoluteString)
+		if eventLogMessage.message.attachments.count == 1 {
+			if eventLogMessage.message.attachments.first!.type == .image || eventLogMessage.message.attachments.first!.type == .gif || eventLogMessage.message.attachments.first!.type == .video {
+				let result = imageDimensions(url: eventLogMessage.message.attachments.first!.thumbnail.absoluteString)
 				ZStack {
 					Rectangle()
 						.fill(Color(.white))
@@ -268,9 +268,9 @@ struct ChatBubbleView: View {
 							)
 						}
 					
-					if message.attachments.first!.type == .image || message.attachments.first!.type == .video {
+					if eventLogMessage.message.attachments.first!.type == .image || eventLogMessage.message.attachments.first!.type == .video {
 						if #available(iOS 16.0, *) {
-							AsyncImage(url: message.attachments.first!.thumbnail) { phase in
+							AsyncImage(url: eventLogMessage.message.attachments.first!.thumbnail) { phase in
 								switch phase {
 								case .empty:
 									ProgressView()
@@ -281,7 +281,7 @@ struct ChatBubbleView: View {
 											.interpolation(.medium)
 											.aspectRatio(contentMode: .fill)
 										
-										if message.attachments.first!.type == .video {
+										if eventLogMessage.message.attachments.first!.type == .video {
 											Image("play-fill")
 												.renderingMode(.template)
 												.resizable()
@@ -298,7 +298,7 @@ struct ChatBubbleView: View {
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 						} else {
-							AsyncImage(url: message.attachments.first!.thumbnail) { phase in
+							AsyncImage(url: eventLogMessage.message.attachments.first!.thumbnail) { phase in
 								switch phase {
 								case .empty:
 									ProgressView()
@@ -309,7 +309,7 @@ struct ChatBubbleView: View {
 											.interpolation(.medium)
 											.aspectRatio(contentMode: .fill)
 										
-										if message.attachments.first!.type == .video {
+										if eventLogMessage.message.attachments.first!.type == .video {
 											Image("play-fill")
 												.renderingMode(.template)
 												.resizable()
@@ -327,13 +327,13 @@ struct ChatBubbleView: View {
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 							.id(UUID())
 						}
-					} else if message.attachments.first!.type == .gif {
+					} else if eventLogMessage.message.attachments.first!.type == .gif {
 						if #available(iOS 16.0, *) {
-							GifImageView(message.attachments.first!.thumbnail)
+							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
 								.layoutPriority(-1)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
 						} else {
-							GifImageView(message.attachments.first!.thumbnail)
+							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
 								.id(UUID())
 								.layoutPriority(-1)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
@@ -343,12 +343,12 @@ struct ChatBubbleView: View {
 				.clipShape(RoundedRectangle(cornerRadius: 4))
 				.clipped()
 			}
-		} else if message.attachments.count > 1 {
+		} else if eventLogMessage.message.attachments.count > 1 {
 			let isGroup = conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
 			LazyVGrid(columns: [
 				GridItem(.adaptive(minimum: 120), spacing: 1)
 			], spacing: 3) {
-				ForEach(message.attachments) { attachment in
+				ForEach(eventLogMessage.message.attachments) { attachment in
 					ZStack {
 						Rectangle()
 							.fill(Color(.white))
@@ -402,9 +402,9 @@ struct ChatBubbleView: View {
 				}
 			}
 			.frame(
-				width: geometryProxy.size.width > 0 && CGFloat(122 * message.attachments.count) > geometryProxy.size.width - 110 - (isGroup ? 40 : 0)
+				width: geometryProxy.size.width > 0 && CGFloat(122 * eventLogMessage.message.attachments.count) > geometryProxy.size.width - 110 - (isGroup ? 40 : 0)
 				? 122 * floor(CGFloat(geometryProxy.size.width - 110 - (isGroup ? 40 : 0)) / 122)
-				: CGFloat(122 * message.attachments.count)
+				: CGFloat(122 * eventLogMessage.message.attachments.count)
 			)
 		}
 	}

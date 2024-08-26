@@ -62,6 +62,7 @@ public struct Message: Identifiable, Hashable {
 	}
 
 	public var id: String
+	public var appData: String
 	public var status: Status?
 	public var createdAt: Date
 	public var isOutgoing: Bool
@@ -79,6 +80,7 @@ public struct Message: Identifiable, Hashable {
 
 	public init(
 		id: String,
+		appData: String = "",
 		status: Status? = nil,
 		createdAt: Date = Date(),
 		isOutgoing: Bool,
@@ -94,6 +96,7 @@ public struct Message: Identifiable, Hashable {
 		reactions: [String] = []
 	) {
 		self.id = id
+		self.appData = appData
 		self.status = status
 		self.createdAt = createdAt
 		self.isOutgoing = isOutgoing

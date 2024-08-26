@@ -19,6 +19,7 @@
 
 // swiftlint:disable large_tuple
 import SwiftUI
+import linphonesw
 
 public extension Notification.Name {
 	static let onScrollToBottom = Notification.Name("onScrollToBottom")
@@ -64,7 +65,7 @@ struct UIList: UIViewRepresentable {
 						&& conversationViewModel.displayedConversation != nil
 						&& context.coordinator.sections.first!.chatRoomID == conversationViewModel.displayedConversation!.id
 						&& context.coordinator.sections.first!.rows.count == conversationViewModel.conversationMessagesSection.first!.rows.count {
-						tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: true)
+						tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
 					} else {
 						NotificationCenter.default.removeObserver(self, name: .onScrollToBottom, object: nil)
 					}
@@ -209,24 +210,26 @@ struct UIList: UIViewRepresentable {
 			
 			var oldRows = appliedDeletes[oldIndex].rows
 			var newRows = appliedDeletesSwapsAndEdits[newIndex].rows
-			let oldRowIDs = Set(oldRows.map { $0.id })
-			let newRowIDs = Set(newRows.map { $0.id })
+			let oldRowIDs = Set(oldRows.map { $0.message.id })
+			let newRowIDs = Set(newRows.map { $0.message.id })
 			let rowIDsToDelete = oldRowIDs.subtracting(newRowIDs)
 			let rowIDsToInsert = newRowIDs.subtracting(oldRowIDs)
+			
 			for rowId in rowIDsToDelete {
-				if let index = oldRows.firstIndex(where: { $0.id == rowId }) {
+				if let index = oldRows.firstIndex(where: { $0.message.id == rowId }) {
 					oldRows.remove(at: index)
 					deleteOperations.append(.delete(oldIndex, index))
 				}
 			}
+			
 			for rowId in rowIDsToInsert {
-				if let index = newRows.firstIndex(where: { $0.id == rowId }) {
+				if let index = newRows.firstIndex(where: { $0.message.id == rowId }) {
 					insertOperations.append(.insert(newIndex, index))
 				}
 			}
 			
 			for rowId in rowIDsToInsert {
-				if let index = newRows.firstIndex(where: { $0.id == rowId }) {
+				if let index = newRows.firstIndex(where: { $0.message.id == rowId }) {
 					newRows.remove(at: index)
 				}
 			}
@@ -234,8 +237,8 @@ struct UIList: UIViewRepresentable {
 			for row in 0..<oldRows.count {
 				let oldRow = oldRows[row]
 				let newRow = newRows[row]
-				if oldRow.id != newRow.id {
-					if let index = newRows.firstIndex(where: { $0.id == oldRow.id }) {
+				if oldRow.message.id != newRow.message.id {
+					if let index = newRows.firstIndex(where: { $0.message.id == oldRow.message.id }) {
 						if !swapsContain(swaps: swapOperations, section: oldIndex, index: row) ||
 							!swapsContain(swaps: swapOperations, section: oldIndex, index: index) {
 							swapOperations.append(.swap(oldIndex, row, index))
@@ -338,7 +341,7 @@ struct UIList: UIViewRepresentable {
 			let row = sections[indexPath.section].rows[indexPath.row]
 			if #available(iOS 16.0, *) {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
-					ChatBubbleView(conversationViewModel: conversationViewModel, message: row, geometryProxy: geometryProxy)
+					ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: row, geometryProxy: geometryProxy)
 						.padding(.vertical, 2)
 						.padding(.horizontal, 10)
 						.onTapGesture { }
@@ -354,7 +357,7 @@ struct UIList: UIViewRepresentable {
 		
 		func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 			let row = sections[indexPath.section].rows[indexPath.row]
-			paginationState.handle(row)
+			paginationState.handle(row.message)
 		}
 		
 		func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -367,7 +370,10 @@ struct UIList: UIViewRepresentable {
 			if !isScrolledToTop && scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 200 {
 				self.conversationViewModel.getOldMessages()
 			}
-			isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 200
+			
+			DispatchQueue.main.async {
+				self.isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 200
+			}
 		}
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -390,7 +396,7 @@ struct MessagesSection: Equatable {
 	
 	let date: Date
 	let chatRoomID: String
-	var rows: [Message]
+	var rows: [EventLogMessage]
 	
 	static var formatter = {
 		let formatter = DateFormatter()
@@ -398,7 +404,7 @@ struct MessagesSection: Equatable {
 		return formatter
 	}()
 	
-	init(date: Date, chatRoomID: String, rows: [Message]) {
+	init(date: Date, chatRoomID: String, rows: [EventLogMessage]) {
 		self.date = date
 		self.chatRoomID = chatRoomID
 		self.rows = rows
@@ -410,6 +416,28 @@ struct MessagesSection: Equatable {
 	
 	static func == (lhs: MessagesSection, rhs: MessagesSection) -> Bool {
 		lhs.date == rhs.date && lhs.rows == rhs.rows
+	}
+	
+}
+
+struct EventLogMessage: Equatable {
+	
+	let eventLog: EventLog
+	var message: Message
+	
+	static var formatter = {
+		let formatter = DateFormatter()
+		formatter.dateFormat = "EEEE, MMMM d"
+		return formatter
+	}()
+	
+	init(eventLog: EventLog, message: Message) {
+		self.eventLog = eventLog
+		self.message = message
+	}
+	
+	static func == (lhs: EventLogMessage, rhs: EventLogMessage) -> Bool {
+		lhs.message == rhs.message
 	}
 	
 }

@@ -45,8 +45,8 @@ class ConversationViewModel: ObservableObject {
 	
 	var oldMessageReceived = false
 	
-	@Published var selectedMessage: Message?
-	@Published var messageToReply: Message?
+	@Published var selectedMessage: EventLogMessage?
+	@Published var messageToReply: EventLogMessage?
 	
 	init() {}
 	
@@ -79,22 +79,24 @@ class ConversationViewModel: ObservableObject {
 							statusTmp = .received
 						case .Displayed:
 							statusTmp = .read
+						case .NotDelivered:
+							statusTmp = .error
 						default:
 							statusTmp = .sending
 						}
 						
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+						var indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {
 								self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage!].status = statusTmp
+								self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp
 							}
 						}
 					})
 					
 					self.chatMessageSuscriptions.insert(message.publisher?.onNewMessageReaction?.postOnCoreQueue {(cbValue: (message: ChatMessage, reaction: ChatMessageReaction)) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
 						var reactionsTmp: [String] = []
 						cbValue.message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
@@ -103,13 +105,13 @@ class ConversationViewModel: ObservableObject {
 						DispatchQueue.main.async {
 							if indexMessage != nil {
 								self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
 							}
 						}
 					})
 					
 					self.chatMessageSuscriptions.insert(message.publisher?.onReactionRemoved?.postOnCoreQueue {(cbValue: (message: ChatMessage, address: Address)) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
 						var reactionsTmp: [String] = []
 						cbValue.message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
@@ -118,7 +120,7 @@ class ConversationViewModel: ObservableObject {
 						DispatchQueue.main.async {
 							if indexMessage != nil {
 								self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage!].reactions = reactionsTmp
+								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
 							}
 						}
 					})
@@ -156,13 +158,15 @@ class ConversationViewModel: ObservableObject {
 	
 	func markAsRead() {
 		coreContext.doOnCoreQueue { _ in
-			let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
-			
-			if unreadMessagesCount > 0 {
-				self.displayedConversation!.chatRoom.markAsRead()
+			if self.displayedConversation != nil {
+				let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
 				
-				DispatchQueue.main.async {
-					self.displayedConversationUnreadMessagesCount = 0
+				if unreadMessagesCount > 0 {
+					self.displayedConversation!.chatRoom.markAsRead()
+					
+					DispatchQueue.main.async {
+						self.displayedConversationUnreadMessagesCount = 0
+					}
 				}
 			}
 		}
@@ -206,7 +210,7 @@ class ConversationViewModel: ObservableObject {
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
 				
-				var conversationMessage: [Message] = []
+				var conversationMessage: [EventLogMessage] = []
 				historyEvents.enumerated().forEach { index, eventLog in
 					
 					var attachmentNameList: String = ""
@@ -342,36 +346,42 @@ class ConversationViewModel: ObservableObject {
 					
 					if eventLog.chatMessage != nil {
 						conversationMessage.append(
-							Message(
-								id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
-								status: statusTmp,
-								isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-								dateReceived: eventLog.chatMessage?.time ?? 0,
-								address: addressCleaned?.asStringUriOnly() ?? "",
-								isFirstMessage: isFirstMessageTmp,
-								text: contentText,
-								attachmentsNames: attachmentNameList,
-								attachments: attachmentList,
-								replyMessage: replyMessageTmp,
-								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-								reactions: reactionsTmp
+							EventLogMessage(
+								eventLog: eventLog,
+								message: Message(
+									id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
+									status: statusTmp,
+									isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+									dateReceived: eventLog.chatMessage?.time ?? 0,
+									address: addressCleaned?.asStringUriOnly() ?? "",
+									isFirstMessage: isFirstMessageTmp,
+									text: contentText,
+									attachmentsNames: attachmentNameList,
+									attachments: attachmentList,
+									replyMessage: replyMessageTmp,
+									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+									reactions: reactionsTmp
+								)
 							)
 						)
 						
 						self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					} else {
 						conversationMessage.insert(
-							Message(
-								id: UUID().uuidString,
-								status: nil,
-								isOutgoing: false,
-								dateReceived: 0,
-								address: "",
-								isFirstMessage: false,
-								text: "",
-								attachments: [],
-								ownReaction: "",
-								reactions: []
+							EventLogMessage(
+								eventLog: eventLog,
+								message: Message(
+									id: UUID().uuidString,
+									status: nil,
+									isOutgoing: false,
+									dateReceived: 0,
+									address: "",
+									isFirstMessage: false,
+									text: "",
+									attachments: [],
+									ownReaction: "",
+									reactions: []
+								)
 							), at: 0
 						)
 					}
@@ -391,7 +401,7 @@ class ConversationViewModel: ObservableObject {
 			if self.displayedConversation != nil && self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count && !self.oldMessageReceived {
 				self.oldMessageReceived = true
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
-				var conversationMessagesTmp: [Message] = []
+				var conversationMessagesTmp: [EventLogMessage] = []
 				
 				historyEvents.enumerated().reversed().forEach { index, eventLog in
 					var attachmentNameList: String = ""
@@ -479,6 +489,8 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = .received
 					case .Displayed:
 						statusTmp = .read
+					case .NotDelivered:
+						statusTmp = .error
 					default:
 						statusTmp = .sending
 					}
@@ -525,36 +537,42 @@ class ConversationViewModel: ObservableObject {
 					
 					if eventLog.chatMessage != nil {
 						conversationMessagesTmp.insert(
-							Message(
-								id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
-								status: statusTmp,
-								isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-								dateReceived: eventLog.chatMessage?.time ?? 0,
-								address: addressCleaned?.asStringUriOnly() ?? "",
-								isFirstMessage: isFirstMessageTmp,
-								text: contentText,
-								attachmentsNames: attachmentNameList,
-								attachments: attachmentList,
-								replyMessage: replyMessageTmp,
-								ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-								reactions: reactionsTmp
+							EventLogMessage(
+								eventLog: eventLog,
+								message: Message(
+									id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
+									status: statusTmp,
+									isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+									dateReceived: eventLog.chatMessage?.time ?? 0,
+									address: addressCleaned?.asStringUriOnly() ?? "",
+									isFirstMessage: isFirstMessageTmp,
+									text: contentText,
+									attachmentsNames: attachmentNameList,
+									attachments: attachmentList,
+									replyMessage: replyMessageTmp,
+									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+									reactions: reactionsTmp
+								)
 							), at: 0
 						)
 						
 						self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					} else {
 						conversationMessagesTmp.insert(
-							Message(
-								id: UUID().uuidString,
-								status: nil,
-								isOutgoing: false,
-								dateReceived: 0,
-								address: "",
-								isFirstMessage: false,
-								text: "",
-								attachments: [],
-								ownReaction: "",
-								reactions: []
+							EventLogMessage(
+								eventLog: eventLog,
+								message: Message(
+									id: UUID().uuidString,
+									status: nil,
+									isOutgoing: false,
+									dateReceived: 0,
+									address: "",
+									isFirstMessage: false,
+									text: "",
+									attachments: [],
+									ownReaction: "",
+									reactions: []
+								)
 							), at: 0
 						)
 					}
@@ -562,8 +580,8 @@ class ConversationViewModel: ObservableObject {
 				
 				if !conversationMessagesTmp.isEmpty {
 					DispatchQueue.main.async {
-						if self.conversationMessagesSection[0].rows.last?.address == conversationMessagesTmp.last?.address {
-							self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].isFirstMessage = false
+						if self.conversationMessagesSection[0].rows.last?.message.address == conversationMessagesTmp.last?.message.address {
+							self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].message.isFirstMessage = false
 						}
 						self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
 						self.oldMessageReceived = false
@@ -650,7 +668,7 @@ class ConversationViewModel: ObservableObject {
 			: (
 				self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty
 				? true
-				: self.conversationMessagesSection[0].rows[0].address != addressCleaned?.asStringUriOnly()
+				: self.conversationMessagesSection[0].rows[0].message.address != addressCleaned?.asStringUriOnly()
 			)
 			
 			let isFirstMessageOutgoingTmp = index <= eventLogs.count - 2
@@ -658,7 +676,7 @@ class ConversationViewModel: ObservableObject {
 			: (
 				self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty
 				? true
-				: !self.conversationMessagesSection[0].rows[0].isOutgoing || self.conversationMessagesSection[0].rows[0].address == addressCleaned?.asStringUriOnly()
+				: !self.conversationMessagesSection[0].rows[0].message.isOutgoing || self.conversationMessagesSection[0].rows[0].message.address == addressCleaned?.asStringUriOnly()
 			)
 			
 			let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
@@ -675,6 +693,8 @@ class ConversationViewModel: ObservableObject {
 				statusTmp = .received
 			case .Displayed:
 				statusTmp = .read
+			case .NotDelivered:
+				statusTmp = .error
 			default:
 				statusTmp = .sending
 			}
@@ -720,19 +740,23 @@ class ConversationViewModel: ObservableObject {
 			}
 			
 			if eventLog.chatMessage != nil {
-				let message = Message(
-					id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
-					status: statusTmp,
-					isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-					dateReceived: eventLog.chatMessage?.time ?? 0,
-					address: addressCleaned?.asStringUriOnly() ?? "",
-					isFirstMessage: isFirstMessageTmp,
-					text: contentText,
-					attachmentsNames: attachmentNameList,
-					attachments: attachmentList,
-					replyMessage: replyMessageTmp,
-					ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-					reactions: reactionsTmp
+				let message = EventLogMessage(
+					eventLog: eventLog,
+					message: Message(
+						id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
+						appData: eventLog.chatMessage!.appdata ?? "",
+						status: statusTmp,
+						isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+						dateReceived: eventLog.chatMessage?.time ?? 0,
+						address: addressCleaned?.asStringUriOnly() ?? "",
+						isFirstMessage: isFirstMessageTmp,
+						text: contentText,
+						attachmentsNames: attachmentNameList,
+						attachments: attachmentList,
+						replyMessage: replyMessageTmp,
+						ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+						reactions: reactionsTmp
+					)
 				)
 				
 				self.addChatMessageDelegate(message: eventLog.chatMessage!)
@@ -740,9 +764,9 @@ class ConversationViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					if !self.conversationMessagesSection.isEmpty 
 						&& !self.conversationMessagesSection[0].rows.isEmpty
-						&& self.conversationMessagesSection[0].rows[0].isOutgoing
-						&& (self.conversationMessagesSection[0].rows[0].address == message.address) {
-						self.conversationMessagesSection[0].rows[0].isFirstMessage = false
+						&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
+						&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
+						self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
 					}
 					
 					if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
@@ -751,22 +775,25 @@ class ConversationViewModel: ObservableObject {
 						self.conversationMessagesSection[0].rows.insert(message, at: 0)
 					}
 					
-					if !message.isOutgoing {
+					if !message.message.isOutgoing {
 						self.displayedConversationUnreadMessagesCount = unreadMessagesCount
 					}
 				}
 			} else {
-				let message = Message(
-					id: UUID().uuidString,
-					status: nil,
-					isOutgoing: false,
-					dateReceived: 0,
-					address: "",
-					isFirstMessage: false,
-					text: "",
-					attachments: [],
-					ownReaction: "",
-					reactions: []
+				let message = EventLogMessage(
+					eventLog: eventLog,
+					message: Message(
+						id: UUID().uuidString,
+						status: nil,
+						isOutgoing: false,
+						dateReceived: 0,
+						address: "",
+						isFirstMessage: false,
+						text: "",
+						attachments: [],
+						ownReaction: "",
+						reactions: []
+					)
 				)
 				
 				DispatchQueue.main.async {
@@ -795,10 +822,11 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	// swiftlint:disable cyclomatic_complexity
 	func scrollToMessage(message: Message) {
 		coreContext.doOnCoreQueue { _ in
 			if message.replyMessage != nil {
-				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.id == message.replyMessage!.id}) {
+				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.replyMessage!.id}) {
 					NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": indexMessage, "animated": true])
 				} else {
 					if self.conversationMessagesSection[0].rows.last != nil {
@@ -825,7 +853,7 @@ class ConversationViewModel: ObservableObject {
 						
 						historyEvents.insert(contentsOf: historyEventsAfter, at: 0)
 						
-						var conversationMessagesTmp: [Message] = []
+						var conversationMessagesTmp: [EventLogMessage] = []
 						
 						historyEvents.enumerated().reversed().forEach { index, eventLog in
 							var attachmentNameList: String = ""
@@ -913,6 +941,8 @@ class ConversationViewModel: ObservableObject {
 								statusTmp = .received
 							case .Displayed:
 								statusTmp = .read
+							case .NotDelivered:
+								statusTmp = .error
 							default:
 								statusTmp = .sending
 							}
@@ -959,36 +989,42 @@ class ConversationViewModel: ObservableObject {
 							
 							if eventLog.chatMessage != nil {
 								conversationMessagesTmp.insert(
-									Message(
-										id: eventLog.chatMessage?.messageId ?? UUID().uuidString,
-										status: statusTmp,
-										isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-										dateReceived: eventLog.chatMessage?.time ?? 0,
-										address: addressCleaned?.asStringUriOnly() ?? "",
-										isFirstMessage: isFirstMessageTmp,
-										text: contentText,
-										attachmentsNames: attachmentNameList,
-										attachments: attachmentList,
-										replyMessage: replyMessageTmp,
-										ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-										reactions: reactionsTmp
+									EventLogMessage(
+										eventLog: eventLog,
+										message: Message(
+											id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
+											status: statusTmp,
+											isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
+											dateReceived: eventLog.chatMessage?.time ?? 0,
+											address: addressCleaned?.asStringUriOnly() ?? "",
+											isFirstMessage: isFirstMessageTmp,
+											text: contentText,
+											attachmentsNames: attachmentNameList,
+											attachments: attachmentList,
+											replyMessage: replyMessageTmp,
+											ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+											reactions: reactionsTmp
+										)
 									), at: 0
 								)
 								
 								self.addChatMessageDelegate(message: eventLog.chatMessage!)
 							} else {
 								conversationMessagesTmp.insert(
-									Message(
-										id: UUID().uuidString,
-										status: nil,
-										isOutgoing: false,
-										dateReceived: 0,
-										address: "",
-										isFirstMessage: false,
-										text: "",
-										attachments: [],
-										ownReaction: "",
-										reactions: []
+									EventLogMessage(
+										eventLog: eventLog,
+										message: Message(
+											id: UUID().uuidString,
+											status: nil,
+											isOutgoing: false,
+											dateReceived: 0,
+											address: "",
+											isFirstMessage: false,
+											text: "",
+											attachments: [],
+											ownReaction: "",
+											reactions: []
+										)
 									), at: 0
 								)
 							}
@@ -996,8 +1032,8 @@ class ConversationViewModel: ObservableObject {
 						
 						if !conversationMessagesTmp.isEmpty {
 							DispatchQueue.main.async {
-								if self.conversationMessagesSection[0].rows.last?.address == conversationMessagesTmp.last?.address {
-									self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].isFirstMessage = false
+								if self.conversationMessagesSection[0].rows.last?.message.address == conversationMessagesTmp.last?.message.address {
+									self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].message.isFirstMessage = false
 								}
 								self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
 								
@@ -1013,13 +1049,14 @@ class ConversationViewModel: ObservableObject {
 			}
 		}
 	}
+	// swiftlint:enable cyclomatic_complexity
 	
 	func sendMessage() {
 		coreContext.doOnCoreQueue { _ in
 			do {
 				var message: ChatMessage?
 				if self.messageToReply != nil {
-					let chatMessageToReply = self.displayedConversation!.chatRoom.findMessage(messageId: self.messageToReply!.id)
+					let chatMessageToReply = self.messageToReply!.eventLog.chatMessage
 					if chatMessageToReply != nil {
 						message = try self.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
 					}
@@ -1264,8 +1301,8 @@ class ConversationViewModel: ObservableObject {
 	func sendReaction(emoji: String) {
 		coreContext.doOnCoreQueue { _ in
 			if self.selectedMessage != nil {
-				Log.info("[ConversationViewModel] Sending reaction \(emoji) to message with ID \(self.selectedMessage!.id)")
-				let messageToSendReaction = self.displayedConversation!.chatRoom.findMessage(messageId: self.selectedMessage!.id)
+				Log.info("[ConversationViewModel] Sending reaction \(emoji) to message with ID \(self.selectedMessage!.message.id)")
+				let messageToSendReaction = self.selectedMessage!.eventLog.chatMessage
 				if messageToSendReaction != nil {
 					do {
 						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji)
@@ -1275,12 +1312,12 @@ class ConversationViewModel: ObservableObject {
 						
 						DispatchQueue.main.async {
 							if indexMessageSelected != nil {
-								self.conversationMessagesSection[0].rows[indexMessageSelected!].ownReaction = messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji
+								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji
 							}
 							self.selectedMessage = nil
 						}
 					} catch {
-						Log.info("[ConversationViewModel] Error: Can't send reaction \(emoji) to message with ID \(self.selectedMessage!.id)")
+						Log.info("[ConversationViewModel] Error: Can't send reaction \(emoji) to message with ID \(self.selectedMessage!.message.id)")
 					}
 				}
 			}
@@ -1289,28 +1326,11 @@ class ConversationViewModel: ObservableObject {
 	
 	func resend() {
 		coreContext.doOnCoreQueue { _ in
-			if self.selectedMessage != nil {
-				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.id)")
-				let messageToResend = self.displayedConversation!.chatRoom.findMessage(messageId: self.selectedMessage!.id)
-				if messageToResend != nil {
-					messageToResend!.send()
-				}
+			if self.selectedMessage != nil && self.selectedMessage!.eventLog.chatMessage != nil {
+				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.eventLog.chatMessage!)")
+				self.selectedMessage!.eventLog.chatMessage!.send()
 			}
 		}
-	}
-}
-struct LinphoneCustomEventLog: Hashable {
-	var id = UUID()
-	var eventLog: EventLog
-	
-	func hash(into hasher: inout Hasher) {
-		hasher.combine(id)
-	}
-}
-
-extension LinphoneCustomEventLog {
-	static func ==(lhs: LinphoneCustomEventLog, rhs: LinphoneCustomEventLog) -> Bool {
-		return lhs.id == rhs.id
 	}
 }
 // swiftlint:enable type_body_length
