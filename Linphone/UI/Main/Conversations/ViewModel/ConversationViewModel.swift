@@ -198,6 +198,17 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func addParticipantConversationModel(address: Address) {
+		coreContext.doOnCoreQueue { core in
+			ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
+				let avatarModelTmp = avatarResult
+				DispatchQueue.main.async {
+					self.participantConversationModel.append(avatarModelTmp)
+				}
+			}
+		}
+	}
+	
 	func getMessages() {
 		self.getHistorySize()
 		self.getUnreadMessagesCount()
@@ -283,6 +294,10 @@ class ConversationViewModel: ObservableObject {
 					let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
 					addressCleaned?.clean()
 					
+					if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
+						self.addParticipantConversationModel(address: addressCleaned!)
+					}
+					
 					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					
@@ -316,7 +331,11 @@ class ConversationViewModel: ObservableObject {
 					var replyMessageTmp: ReplyMessage?
 					if eventLog.chatMessage?.replyMessage != nil {
 						let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
-						addressCleaned?.clean()
+						addressReplyCleaned?.clean()
+						
+						if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
+							self.addParticipantConversationModel(address: addressReplyCleaned!)
+						}
 						
 						let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
 						
@@ -474,6 +493,10 @@ class ConversationViewModel: ObservableObject {
 					let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
 					addressCleaned?.clean()
 					
+					if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
+						self.addParticipantConversationModel(address: addressCleaned!)
+					}
+					
 					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					
@@ -507,7 +530,11 @@ class ConversationViewModel: ObservableObject {
 					var replyMessageTmp: ReplyMessage?
 					if eventLog.chatMessage?.replyMessage != nil {
 						let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
-						addressCleaned?.clean()
+						addressReplyCleaned?.clean()
+						
+						if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
+							self.addParticipantConversationModel(address: addressReplyCleaned!)
+						}
 						
 						let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
 						
@@ -591,6 +618,7 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	// swiftlint:disable cyclomatic_complexity
 	func getNewMessages(eventLogs: [EventLog]) {
 		eventLogs.enumerated().forEach { index, eventLog in
 			var attachmentNameList: String = ""
@@ -663,6 +691,10 @@ class ConversationViewModel: ObservableObject {
 			let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
 			addressCleaned?.clean()
 			
+			if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
+				self.addParticipantConversationModel(address: addressCleaned!)
+			}
+			
 			let isFirstMessageIncomingTmp = index > 0
 			? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly()
 			: (
@@ -711,7 +743,11 @@ class ConversationViewModel: ObservableObject {
 			var replyMessageTmp: ReplyMessage?
 			if eventLog.chatMessage?.replyMessage != nil {
 				let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
-				addressCleaned?.clean()
+				addressReplyCleaned?.clean()
+				
+				if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
+					self.addParticipantConversationModel(address: addressReplyCleaned!)
+				}
 				
 				let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
 				
@@ -806,6 +842,7 @@ class ConversationViewModel: ObservableObject {
 			}
 		}
 	}
+	// swiftlint:enable cyclomatic_complexity
 	
 	func resetMessage() {
 		conversationMessagesSection = []
@@ -926,6 +963,10 @@ class ConversationViewModel: ObservableObject {
 							let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
 							addressCleaned?.clean()
 							
+							if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
+								self.addParticipantConversationModel(address: addressCleaned!)
+							}
+							
 							let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 							let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 							
@@ -959,7 +1000,11 @@ class ConversationViewModel: ObservableObject {
 							var replyMessageTmp: ReplyMessage?
 							if eventLog.chatMessage?.replyMessage != nil {
 								let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
-								addressCleaned?.clean()
+								addressReplyCleaned?.clean()
+								
+								if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
+									self.addParticipantConversationModel(address: addressReplyCleaned!)
+								}
 								
 								let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
 								

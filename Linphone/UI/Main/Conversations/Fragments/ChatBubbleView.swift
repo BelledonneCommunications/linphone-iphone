@@ -70,7 +70,17 @@ struct ChatBubbleView: View {
 										Spacer()
 									}
 									
-									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading, spacing: 0) {
+										HStack {
+											Image("reply")
+												.resizable()
+												.frame(width: 15, height: 15, alignment: .leading)
+											
+											Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.replyMessage!.address})?.name ?? "")
+												.default_text_style(styleSize: 12)
+										}
+										.padding(.bottom, 2)
+										
 										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
 											if !eventLogMessage.message.replyMessage!.text.isEmpty {
 												Text(eventLogMessage.message.replyMessage!.text)
