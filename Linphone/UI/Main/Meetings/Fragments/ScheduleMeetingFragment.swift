@@ -401,6 +401,8 @@ struct ScheduleMeetingFragment: View {
 							.onAppear {
 								proxyReader.scrollTo(meetingViewModel.selectedTimezoneIdx)
 							}
+							.background(.white)
+							.cornerRadius(20)
 							.listStyle(.plain)
 						}
 						.frame(width: geometry.size.width, height: geometry.size.height)

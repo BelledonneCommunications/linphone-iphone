@@ -161,6 +161,18 @@ class MeetingViewModel: ObservableObject {
 		confInfo.participantInfos = participantsInfoList
 	}
 	
+	private func sendIcsInvitation(core: Core) {
+		if let chatRoomParams = try? core.createDefaultChatRoomParams() {
+			chatRoomParams.groupEnabled = false
+			chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
+			chatRoomParams.encryptionEnabled = true
+			chatRoomParams.subject = "Meeting ics"
+			self.conferenceScheduler?.sendInvitations(chatRoomParams: chatRoomParams)
+		} else {
+			Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
+		}
+	}
+	
 	private func resetConferenceSchedulerAndListeners(core: Core) {
 		self.mSchedulerSubscriptions.removeAll()
 		self.conferenceScheduler = try? core.createConferenceScheduler()
@@ -185,15 +197,7 @@ class MeetingViewModel: ObservableObject {
 				
 				if self.sendInvitations {
 					Log.info("\(MeetingViewModel.TAG) User asked for invitations to be sent, let's do it")
-					if let chatRoomParams = try? core.createDefaultChatRoomParams() {
-						chatRoomParams.groupEnabled = false
-						chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
-						chatRoomParams.encryptionEnabled = true
-						chatRoomParams.subject = "Meeting invitation" // Won't be used
-						self.conferenceScheduler?.sendInvitations(chatRoomParams: chatRoomParams)
-					} else {
-						Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
-					}
+					self.sendIcsInvitation(core: core)
 				} else {
 					Log.info("\(MeetingViewModel.TAG) User didn't asked for invitations to be sent")
 					DispatchQueue.main.async {
@@ -201,6 +205,8 @@ class MeetingViewModel: ObservableObject {
 						self.conferenceCreatedEvent = true
 					}
 				}
+			} else if cbVal.state == ConferenceScheduler.State.Updating {
+				self.sendIcsInvitation(core: core)
 			}
 		})
 		
@@ -318,9 +324,10 @@ class MeetingViewModel: ObservableObject {
 			self.displayedMeeting = meeting
 	}
 	
-	func sendMeetingCancelledNotifications(meeting: MeetingModel) {
+	func cancelMeetingWithNotifications(meeting: MeetingModel) {
 		CoreContext.shared.doOnCoreQueue { core in
-			self.conferenceScheduler = try? core.createConferenceScheduler()
+			Log.info("debugtrace - core media encryption = \(core.mediaEncryption)")
+			self.resetConferenceSchedulerAndListeners(core: core)
 			self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
 		}
 	}

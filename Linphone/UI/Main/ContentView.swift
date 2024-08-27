@@ -1085,9 +1085,8 @@ struct ContentView: View {
 								  actionSecondButton: {
 							meetingViewModel.displayedMeeting = nil
 							if let meetingToDelete = self.meetingsListViewModel.selectedMeetingToDelete {
+								self.meetingViewModel.cancelMeetingWithNotifications(meeting: meetingToDelete)
 								meetingsListViewModel.deleteSelectedMeeting()
-								// We're in the meeting list view
-								self.meetingViewModel.sendMeetingCancelledNotifications(meeting: meetingToDelete)
 								self.isShowSendCancelMeetingNotificationPopup.toggle()
 							}
 						})
