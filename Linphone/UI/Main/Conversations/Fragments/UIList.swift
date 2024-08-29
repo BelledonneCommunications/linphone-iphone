@@ -28,18 +28,18 @@ public extension Notification.Name {
 
 struct UIList: UIViewRepresentable {
 	
+	private static var sharedCoordinator: Coordinator?
+	
 	@ObservedObject var viewModel: ChatViewModel
 	@ObservedObject var paginationState: PaginationState
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
-	@Binding var isScrolledToBottom: Bool
-	
-	let showMessageMenuOnLongPress: Bool
 	let geometryProxy: GeometryProxy
 	let sections: [MessagesSection]
 	
 	@State private var isScrolledToTop = false
+	@State private var isScrolledToBottom = true
 	
 	func makeUIView(context: Context) -> UITableView {
 		let tableView = UITableView(frame: .zero, style: .grouped)
@@ -57,42 +57,11 @@ struct UIList: UIViewRepresentable {
 		tableView.backgroundColor = UIColor(.white)
 		tableView.scrollsToTop = true
 		
-		NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
-			DispatchQueue.main.async {
-				if !context.coordinator.sections.isEmpty {
-					if context.coordinator.sections.first != nil
-						&& conversationViewModel.conversationMessagesSection.first != nil
-						&& conversationViewModel.displayedConversation != nil
-						&& context.coordinator.sections.first!.chatRoomID == conversationViewModel.displayedConversation!.id
-						&& context.coordinator.sections.first!.rows.count == conversationViewModel.conversationMessagesSection.first!.rows.count {
-						tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-					} else {
-						NotificationCenter.default.removeObserver(self, name: .onScrollToBottom, object: nil)
-					}
-				}
-			}
-		}
+		context.coordinator.tableView = tableView
+		context.coordinator.geometryProxy = geometryProxy
 		
-		NotificationCenter.default.addObserver(forName: .onScrollToIndex, object: nil, queue: nil) { notification in
-			DispatchQueue.main.async {
-				if !context.coordinator.sections.isEmpty {
-					if context.coordinator.sections.first != nil
-						&& conversationViewModel.conversationMessagesSection.first != nil
-						&& conversationViewModel.displayedConversation != nil
-						&& context.coordinator.sections.first!.chatRoomID == conversationViewModel.displayedConversation!.id
-						&& context.coordinator.sections.first!.rows.count == conversationViewModel.conversationMessagesSection.first!.rows.count {
-						if let dict = notification.userInfo as NSDictionary? {
-							if let index = dict["index"] as? Int {
-								if let animated = dict["animated"] as? Bool {
-									tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .bottom, animated: animated)
-								}
-							}
-						}
-					} else {
-						NotificationCenter.default.removeObserver(self, name: .onScrollToIndex, object: nil)
-					}
-				}
-			}
+		DispatchQueue.main.async {
+			conversationViewModel.isScrolledToBottom = true
 		}
 		
 		return tableView
@@ -140,7 +109,7 @@ struct UIList: UIViewRepresentable {
 			tableView.endUpdates()
 		}
 		
-		if isScrolledToBottom {
+		if conversationViewModel.isScrolledToBottom && conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
 			conversationViewModel.markAsRead()
 			conversationsListViewModel.computeChatRoomsList(filter: "")
 		}
@@ -268,43 +237,85 @@ struct UIList: UIViewRepresentable {
 	// MARK: - Coordinator
 	
 	func makeCoordinator() -> Coordinator {
-		Coordinator(
-			conversationViewModel: conversationViewModel,
-			conversationsListViewModel: conversationsListViewModel,
-			viewModel: viewModel,
-			paginationState: paginationState,
-			isScrolledToBottom: $isScrolledToBottom,
-			isScrolledToTop: $isScrolledToTop,
-			showMessageMenuOnLongPress: showMessageMenuOnLongPress,
-			geometryProxy: geometryProxy,
-			sections: sections
-		)
+		if UIList.sharedCoordinator == nil {
+			UIList.sharedCoordinator = Coordinator(
+				conversationViewModel: conversationViewModel,
+				conversationsListViewModel: conversationsListViewModel,
+				viewModel: viewModel,
+				paginationState: paginationState,
+				isScrolledToTop: $isScrolledToTop,
+				isScrolledToBottom: $isScrolledToBottom,
+				geometryProxy: geometryProxy,
+				sections: sections
+			)
+		}
+		return UIList.sharedCoordinator!
 	}
 	
 	class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
+		
+		var tableView: UITableView?
 		
 		@ObservedObject var viewModel: ChatViewModel
 		@ObservedObject var paginationState: PaginationState
 		@ObservedObject var conversationViewModel: ConversationViewModel
 		@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 		
-		@Binding var isScrolledToBottom: Bool
 		@Binding var isScrolledToTop: Bool
+		@Binding var isScrolledToBottom: Bool
 		
-		let showMessageMenuOnLongPress: Bool
-		let geometryProxy: GeometryProxy
+		var geometryProxy: GeometryProxy
 		var sections: [MessagesSection]
 		
-		init(conversationViewModel: ConversationViewModel, conversationsListViewModel: ConversationsListViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToBottom: Binding<Bool>, isScrolledToTop: Binding<Bool>, showMessageMenuOnLongPress: Bool, geometryProxy: GeometryProxy, sections: [MessagesSection]) {
+		init(conversationViewModel: ConversationViewModel, conversationsListViewModel: ConversationsListViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToTop: Binding<Bool>, isScrolledToBottom: Binding<Bool>, geometryProxy: GeometryProxy, sections: [MessagesSection]) {
 			self.conversationViewModel = conversationViewModel
 			self.conversationsListViewModel = conversationsListViewModel
 			self.viewModel = viewModel
 			self.paginationState = paginationState
-			self._isScrolledToBottom = isScrolledToBottom
 			self._isScrolledToTop = isScrolledToTop
-			self.showMessageMenuOnLongPress = showMessageMenuOnLongPress
+			self._isScrolledToBottom = isScrolledToBottom
 			self.geometryProxy = geometryProxy
 			self.sections = sections
+			
+			super.init()
+			
+			NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
+				DispatchQueue.main.async {
+					if !self.sections.isEmpty {
+						if self.sections.first != nil
+							&& self.conversationViewModel.conversationMessagesSection.first != nil
+							&& self.conversationViewModel.displayedConversation != nil
+							&& self.sections.first!.chatRoomID == self.conversationViewModel.displayedConversation!.id
+							&& self.sections.first!.rows.count == self.conversationViewModel.conversationMessagesSection.first!.rows.count {
+							self.tableView!.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+						}
+					}
+				}
+			}
+			
+			NotificationCenter.default.addObserver(forName: .onScrollToIndex, object: nil, queue: nil) { notification in
+				DispatchQueue.main.async {
+					if !self.sections.isEmpty {
+						if self.sections.first != nil
+							&& self.conversationViewModel.conversationMessagesSection.first != nil
+							&& self.conversationViewModel.displayedConversation != nil
+							&& self.sections.first!.chatRoomID == self.conversationViewModel.displayedConversation!.id
+							&& self.sections.first!.rows.count == self.conversationViewModel.conversationMessagesSection.first!.rows.count {
+							if let dict = notification.userInfo as NSDictionary? {
+								if let index = dict["index"] as? Int {
+									if let animated = dict["animated"] as? Bool {
+										self.tableView!.scrollToRow(at: IndexPath(row: index, section: 0), at: .bottom, animated: animated)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		deinit {
+			NotificationCenter.default.removeObserver(self)
 		}
 		
 		func numberOfSections(in tableView: UITableView) -> Int {
@@ -361,19 +372,22 @@ struct UIList: UIViewRepresentable {
 		}
 		
 		func scrollViewDidScroll(_ scrollView: UIScrollView) {
-			isScrolledToBottom = scrollView.contentOffset.y <= 10
-			if isScrolledToBottom && conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
-				conversationViewModel.markAsRead()
-				conversationsListViewModel.computeChatRoomsList(filter: "")
+			self.isScrolledToBottom = scrollView.contentOffset.y <= 10
+			
+			if self.isScrolledToBottom != self.conversationViewModel.isScrolledToBottom {
+				self.conversationViewModel.isScrolledToBottom = self.isScrolledToBottom
 			}
 			
-			if !isScrolledToTop && scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 200 {
+			if self.conversationViewModel.isScrolledToBottom && self.conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
+				self.conversationViewModel.markAsRead()
+				self.conversationsListViewModel.computeChatRoomsList(filter: "")
+			}
+			
+			if !self.isScrolledToTop && scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 500 {
 				self.conversationViewModel.getOldMessages()
 			}
 			
-			DispatchQueue.main.async {
-				self.isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 200
-			}
+			self.isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 500
 		}
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

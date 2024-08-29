@@ -48,6 +48,8 @@ class ConversationViewModel: ObservableObject {
 	@Published var selectedMessage: EventLogMessage?
 	@Published var messageToReply: EventLogMessage?
 	
+	@Published var isScrolledToBottom: Bool = true
+	
 	init() {}
 	
 	func addConversationDelegate() {
@@ -417,7 +419,8 @@ class ConversationViewModel: ObservableObject {
 	
 	func getOldMessages() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil && self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count && !self.oldMessageReceived {
+			if self.displayedConversation != nil && !self.conversationMessagesSection.isEmpty
+				&& self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count && !self.oldMessageReceived {
 				self.oldMessageReceived = true
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
 				var conversationMessagesTmp: [EventLogMessage] = []

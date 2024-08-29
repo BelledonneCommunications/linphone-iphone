@@ -38,9 +38,6 @@ struct ConversationFragment: View {
 	
 	private let ids: [String] = []
 	
-	@State private var isScrolledToBottom: Bool = true
-	var showMessageMenuOnLongPress: Bool = true
-	
 	@StateObject private var viewModel = ChatViewModel()
 	@StateObject private var paginationState = PaginationState()
 	
@@ -171,13 +168,11 @@ struct ConversationFragment: View {
 										   paginationState: paginationState,
 										   conversationViewModel: conversationViewModel,
 										   conversationsListViewModel: conversationsListViewModel,
-										   isScrolledToBottom: $isScrolledToBottom,
-										   showMessageMenuOnLongPress: showMessageMenuOnLongPress,
 										   geometryProxy: geometry,
 										   sections: conversationViewModel.conversationMessagesSection
 									)
 									
-									if !isScrolledToBottom {
+									if !conversationViewModel.isScrolledToBottom {
 										Button {
 											NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
 										} label: {
