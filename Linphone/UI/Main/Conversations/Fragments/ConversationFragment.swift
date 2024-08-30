@@ -164,58 +164,14 @@ struct ConversationFragment: View {
 							
 							if #available(iOS 16.0, *) {
 								ZStack(alignment: .bottomTrailing) {
-									UIList(viewModel: viewModel,
-										   paginationState: paginationState,
-										   conversationViewModel: conversationViewModel,
-										   conversationsListViewModel: conversationsListViewModel,
-										   geometryProxy: geometry,
-										   sections: conversationViewModel.conversationMessagesSection
+									UIList(
+										viewModel: viewModel,
+										paginationState: paginationState,
+										conversationViewModel: conversationViewModel,
+										conversationsListViewModel: conversationsListViewModel,
+										geometryProxy: geometry,
+										sections: conversationViewModel.conversationMessagesSection
 									)
-									
-									if !conversationViewModel.isScrolledToBottom {
-										Button {
-											NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
-										} label: {
-											ZStack {
-												
-												Image("caret-down")
-													.renderingMode(.template)
-													.foregroundStyle(.white)
-													.padding()
-													.background(Color.orangeMain500)
-													.clipShape(Circle())
-													.shadow(color: .black.opacity(0.2), radius: 4)
-												
-												if conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
-													VStack {
-														HStack {
-															Spacer()
-															
-															HStack {
-																Text(
-																	conversationViewModel.displayedConversationUnreadMessagesCount < 99
-																	? String(conversationViewModel.displayedConversationUnreadMessagesCount)
-																	: "99+"
-																)
-																.foregroundStyle(.white)
-																.default_text_style(styleSize: 10)
-																.lineLimit(1)
-																
-															}
-															.frame(width: 18, height: 18)
-															.background(Color.redDanger500)
-															.cornerRadius(50)
-														}
-														
-														Spacer()
-													}
-												}
-											}
-											
-										}
-										.frame(width: 50, height: 50)
-										.padding()
-									}
 								}
 								.onAppear {
 									conversationViewModel.getMessages()

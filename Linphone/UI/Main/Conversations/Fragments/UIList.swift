@@ -26,6 +26,64 @@ public extension Notification.Name {
 	static let onScrollToIndex = Notification.Name("onScrollToIndex")
 }
 
+class FloatingButton: UIButton {
+
+	var unreadMessageCount: Int = 0 {
+		didSet {
+			updateUnreadBadge()
+		}
+	}
+
+	override init(frame: CGRect) {
+		super.init(frame: frame)
+		setupButton()
+	}
+
+	required init?(coder: NSCoder) {
+		super.init(coder: coder)
+		setupButton()
+	}
+
+	private func setupButton() {
+		// Set the button's appearance
+		self.setImage(UIImage(named: "caret-down")?.withRenderingMode(.alwaysTemplate), for: .normal)
+		self.tintColor = .white
+		self.backgroundColor = UIColor(Color.orangeMain500)
+		self.layer.cornerRadius = 30
+		self.layer.shadowColor = UIColor.black.withAlphaComponent(0.2).cgColor
+		self.layer.shadowOffset = CGSize(width: 0, height: 2)
+		self.layer.shadowOpacity = 1
+		self.layer.shadowRadius = 4
+		
+		// Add target action
+		self.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+	}
+
+	private func updateUnreadBadge() {
+		// Remove old badge if exists
+		self.viewWithTag(100)?.removeFromSuperview()
+		
+		if unreadMessageCount > 0 {
+			// Create the badge view
+			let badgeLabel = UILabel()
+			badgeLabel.tag = 100
+			badgeLabel.text = unreadMessageCount < 99 ? "\(unreadMessageCount)" : "99+"
+			badgeLabel.textColor = .white
+			badgeLabel.font = UIFont.systemFont(ofSize: 10)
+			badgeLabel.textAlignment = .center
+			badgeLabel.backgroundColor = UIColor(Color.redDanger500)
+			badgeLabel.layer.cornerRadius = 9
+			badgeLabel.layer.masksToBounds = true
+			badgeLabel.frame = CGRect(x: self.frame.size.width - 18, y: 0, width: 18, height: 18)
+			self.addSubview(badgeLabel)
+		}
+	}
+
+	@objc private func buttonTapped() {
+		NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+	}
+}
+
 struct UIList: UIViewRepresentable {
 	
 	private static var sharedCoordinator: Coordinator?
@@ -41,7 +99,11 @@ struct UIList: UIViewRepresentable {
 	@State private var isScrolledToTop = false
 	@State private var isScrolledToBottom = true
 	
-	func makeUIView(context: Context) -> UITableView {
+	func makeUIView(context: Context) -> UIView {
+		// Create a UIView to contain the UITableView and UIButton
+		let containerView = UIView()
+
+		// Create the UITableView
 		let tableView = UITableView(frame: .zero, style: .grouped)
 		tableView.contentInset = UIEdgeInsets(top: -10, left: 0, bottom: 0, right: 0)
 		tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -57,49 +119,81 @@ struct UIList: UIViewRepresentable {
 		tableView.backgroundColor = UIColor(.white)
 		tableView.scrollsToTop = true
 		
+		// Create the floating UIButton
+		let button = FloatingButton(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
+		button.translatesAutoresizingMaskIntoConstraints = false
+		button.isHidden = isScrolledToBottom
+		
+		// Add the tableView and floating button to the containerView
+		containerView.addSubview(tableView)
+		containerView.addSubview(button)
+		
+		// Set up constraints
+		NSLayoutConstraint.activate([
+			// TableView constraints
+			tableView.topAnchor.constraint(equalTo: containerView.topAnchor),
+			tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+			tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+			tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+			
+			// Floating Button constraints
+			button.widthAnchor.constraint(equalToConstant: 60),
+			button.heightAnchor.constraint(equalToConstant: 60),
+			button.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+			button.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20)
+		])
+		
+		// Set the tableView as a tag for easy access in updateUIView
+		tableView.tag = 101
+		// Set the button as a tag for easy access in updateUIView
+		button.tag = 102
+		
+		context.coordinator.parent = self
 		context.coordinator.tableView = tableView
+		context.coordinator.floatingButton = button
 		context.coordinator.geometryProxy = geometryProxy
-		
-		DispatchQueue.main.async {
-			conversationViewModel.isScrolledToBottom = true
-		}
-		
-		return tableView
+
+		return containerView
 	}
 	
-	func updateUIView(_ tableView: UITableView, context: Context) {
-		if context.coordinator.sections == sections {
-			return
-		}
-		if context.coordinator.sections == sections {
-			return
+	//func updateUIView(_ tableView: UITableView, context: Context) {
+	func updateUIView(_ uiView: UIView, context: Context) {
+		if let button = uiView.viewWithTag(102) as? FloatingButton {
+			button.unreadMessageCount = conversationViewModel.displayedConversationUnreadMessagesCount
 		}
 		
-		let prevSections = context.coordinator.sections
-		let (appliedDeletes, appliedDeletesSwapsAndEdits, deleteOperations, swapOperations, editOperations, insertOperations) = operationsSplit(oldSections: prevSections, newSections: sections)
-		
-		tableView.performBatchUpdates {
-			context.coordinator.sections = appliedDeletes
-			for operation in deleteOperations {
-				applyOperation(operation, tableView: tableView)
+		if let tableView = uiView.viewWithTag(101) as? UITableView {
+			if context.coordinator.sections == sections {
+				return
 			}
-		}
-		
-		tableView.performBatchUpdates {
-			context.coordinator.sections = appliedDeletesSwapsAndEdits // NOTE: this array already contains necessary edits, but won't be a problem for appplying swaps
-			for operation in swapOperations {
-				applyOperation(operation, tableView: tableView)
+			if context.coordinator.sections == sections {
+				return
 			}
-		}
-		
-		tableView.performBatchUpdates {
-			context.coordinator.sections = appliedDeletesSwapsAndEdits
-			for operation in editOperations {
-				applyOperation(operation, tableView: tableView)
+			
+			let prevSections = context.coordinator.sections
+			let (appliedDeletes, appliedDeletesSwapsAndEdits, deleteOperations, swapOperations, editOperations, insertOperations) = operationsSplit(oldSections: prevSections, newSections: sections)
+			
+			tableView.performBatchUpdates {
+				context.coordinator.sections = appliedDeletes
+				for operation in deleteOperations {
+					applyOperation(operation, tableView: tableView)
+				}
 			}
-		}
-		
-		if isScrolledToBottom || isScrolledToTop {
+			
+			tableView.performBatchUpdates {
+				context.coordinator.sections = appliedDeletesSwapsAndEdits // NOTE: this array already contains necessary edits, but won't be a problem for appplying swaps
+				for operation in swapOperations {
+					applyOperation(operation, tableView: tableView)
+				}
+			}
+			
+			tableView.performBatchUpdates {
+				context.coordinator.sections = appliedDeletesSwapsAndEdits
+				for operation in editOperations {
+					applyOperation(operation, tableView: tableView)
+				}
+			}
+			
 			context.coordinator.sections = sections
 			
 			tableView.beginUpdates()
@@ -107,11 +201,11 @@ struct UIList: UIViewRepresentable {
 				applyOperation(operation, tableView: tableView)
 			}
 			tableView.endUpdates()
-		}
-		
-		if conversationViewModel.isScrolledToBottom && conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
-			conversationViewModel.markAsRead()
-			conversationsListViewModel.computeChatRoomsList(filter: "")
+			
+			if isScrolledToBottom && conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
+				conversationViewModel.markAsRead()
+				conversationsListViewModel.computeChatRoomsList(filter: "")
+			}
 		}
 	}
 	
@@ -239,12 +333,7 @@ struct UIList: UIViewRepresentable {
 	func makeCoordinator() -> Coordinator {
 		if UIList.sharedCoordinator == nil {
 			UIList.sharedCoordinator = Coordinator(
-				conversationViewModel: conversationViewModel,
-				conversationsListViewModel: conversationsListViewModel,
-				viewModel: viewModel,
-				paginationState: paginationState,
-				isScrolledToTop: $isScrolledToTop,
-				isScrolledToBottom: $isScrolledToBottom,
+				parent: self,
 				geometryProxy: geometryProxy,
 				sections: sections
 			)
@@ -254,26 +343,15 @@ struct UIList: UIViewRepresentable {
 	
 	class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
 		
+		var parent: UIList
 		var tableView: UITableView?
-		
-		@ObservedObject var viewModel: ChatViewModel
-		@ObservedObject var paginationState: PaginationState
-		@ObservedObject var conversationViewModel: ConversationViewModel
-		@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-		
-		@Binding var isScrolledToTop: Bool
-		@Binding var isScrolledToBottom: Bool
+		var floatingButton: FloatingButton?
 		
 		var geometryProxy: GeometryProxy
 		var sections: [MessagesSection]
 		
-		init(conversationViewModel: ConversationViewModel, conversationsListViewModel: ConversationsListViewModel, viewModel: ChatViewModel, paginationState: PaginationState, isScrolledToTop: Binding<Bool>, isScrolledToBottom: Binding<Bool>, geometryProxy: GeometryProxy, sections: [MessagesSection]) {
-			self.conversationViewModel = conversationViewModel
-			self.conversationsListViewModel = conversationsListViewModel
-			self.viewModel = viewModel
-			self.paginationState = paginationState
-			self._isScrolledToTop = isScrolledToTop
-			self._isScrolledToBottom = isScrolledToBottom
+		init(parent: UIList, geometryProxy: GeometryProxy, sections: [MessagesSection]) {
+			self.parent = parent
 			self.geometryProxy = geometryProxy
 			self.sections = sections
 			
@@ -283,10 +361,10 @@ struct UIList: UIViewRepresentable {
 				DispatchQueue.main.async {
 					if !self.sections.isEmpty {
 						if self.sections.first != nil
-							&& self.conversationViewModel.conversationMessagesSection.first != nil
-							&& self.conversationViewModel.displayedConversation != nil
-							&& self.sections.first!.chatRoomID == self.conversationViewModel.displayedConversation!.id
-							&& self.sections.first!.rows.count == self.conversationViewModel.conversationMessagesSection.first!.rows.count {
+							&& parent.conversationViewModel.conversationMessagesSection.first != nil
+							&& parent.conversationViewModel.displayedConversation != nil
+							&& self.sections.first!.chatRoomID == parent.conversationViewModel.displayedConversation!.id
+							&& self.sections.first!.rows.count == parent.conversationViewModel.conversationMessagesSection.first!.rows.count {
 							self.tableView!.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
 						}
 					}
@@ -297,10 +375,10 @@ struct UIList: UIViewRepresentable {
 				DispatchQueue.main.async {
 					if !self.sections.isEmpty {
 						if self.sections.first != nil
-							&& self.conversationViewModel.conversationMessagesSection.first != nil
-							&& self.conversationViewModel.displayedConversation != nil
-							&& self.sections.first!.chatRoomID == self.conversationViewModel.displayedConversation!.id
-							&& self.sections.first!.rows.count == self.conversationViewModel.conversationMessagesSection.first!.rows.count {
+							&& parent.conversationViewModel.conversationMessagesSection.first != nil
+							&& parent.conversationViewModel.displayedConversation != nil
+							&& self.sections.first!.chatRoomID == parent.conversationViewModel.displayedConversation!.id
+							&& self.sections.first!.rows.count == parent.conversationViewModel.conversationMessagesSection.first!.rows.count {
 							if let dict = notification.userInfo as NSDictionary? {
 								if let index = dict["index"] as? Int {
 									if let animated = dict["animated"] as? Bool {
@@ -331,8 +409,8 @@ struct UIList: UIViewRepresentable {
 		}
 		
 		func progressView(_ section: Int) -> UIView? {
-			if section > conversationViewModel.conversationMessagesSection.count
-				&& conversationViewModel.conversationMessagesSection[section].rows.count < conversationViewModel.displayedConversationHistorySize {
+			if section > parent.conversationViewModel.conversationMessagesSection.count
+				&& parent.conversationViewModel.conversationMessagesSection[section].rows.count < parent.conversationViewModel.displayedConversationHistorySize {
 				let header = UIHostingController(rootView:
 					ProgressView()
 						.frame(idealWidth: .infinity, maxWidth: .infinity, alignment: .center)
@@ -352,7 +430,7 @@ struct UIList: UIViewRepresentable {
 			let row = sections[indexPath.section].rows[indexPath.row]
 			if #available(iOS 16.0, *) {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
-					ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: row, geometryProxy: geometryProxy)
+					ChatBubbleView(conversationViewModel: parent.conversationViewModel, eventLogMessage: row, geometryProxy: geometryProxy)
 						.padding(.vertical, 2)
 						.padding(.horizontal, 10)
 						.onTapGesture { }
@@ -368,32 +446,39 @@ struct UIList: UIViewRepresentable {
 		
 		func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 			let row = sections[indexPath.section].rows[indexPath.row]
-			paginationState.handle(row.message)
+			parent.paginationState.handle(row.message)
 		}
 		
 		func scrollViewDidScroll(_ scrollView: UIScrollView) {
-			self.isScrolledToBottom = scrollView.contentOffset.y <= 10
-			
-			if self.isScrolledToBottom != self.conversationViewModel.isScrolledToBottom {
-				self.conversationViewModel.isScrolledToBottom = self.isScrolledToBottom
+			let isScrolledToBottomTmp = scrollView.contentOffset.y <= 10
+			DispatchQueue.main.async {
+				if self.parent.isScrolledToBottom != isScrolledToBottomTmp {
+					self.parent.isScrolledToBottom = isScrolledToBottomTmp
+					
+					if self.parent.isScrolledToBottom {
+						self.floatingButton!.isHidden = true
+					} else {
+						self.floatingButton!.isHidden = false
+					}
+					
+					if self.parent.isScrolledToBottom && self.parent.conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
+						self.parent.conversationViewModel.markAsRead()
+						self.parent.conversationsListViewModel.computeChatRoomsList(filter: "")
+					}
+				}
 			}
 			
-			if self.conversationViewModel.isScrolledToBottom && self.conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
-				self.conversationViewModel.markAsRead()
-				self.conversationsListViewModel.computeChatRoomsList(filter: "")
+			if !parent.isScrolledToTop && scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 500 {
+				parent.conversationViewModel.getOldMessages()
 			}
 			
-			if !self.isScrolledToTop && scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 500 {
-				self.conversationViewModel.getOldMessages()
-			}
-			
-			self.isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 500
+			parent.isScrolledToTop = scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.height - 500
 		}
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
 			
 			let archiveAction = UIContextualAction(style: .normal, title: "") { action, view, completionHandler in
-				self.conversationViewModel.replyToMessage(index: indexPath.row)
+				self.parent.conversationViewModel.replyToMessage(index: indexPath.row)
 				completionHandler(true)
 			}
 			

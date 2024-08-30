@@ -48,8 +48,6 @@ class ConversationViewModel: ObservableObject {
 	@Published var selectedMessage: EventLogMessage?
 	@Published var messageToReply: EventLogMessage?
 	
-	@Published var isScrolledToBottom: Bool = true
-	
 	init() {}
 	
 	func addConversationDelegate() {
