@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 
+// swiftlint:disable type_body_length
 struct StartConversationFragment: View {
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
@@ -184,7 +185,8 @@ struct StartConversationFragment: View {
 								.padding(.horizontal, 16)
 							}
 							
-							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
+							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false)
+												 , startCallFunc: { addr in
 								withAnimation {
 									startConversationViewModel.createOneToOneChatRoomWith(remote: addr)
 								}
@@ -389,3 +391,5 @@ struct StartConversationFragment: View {
 		isShowStartConversationFragment: .constant(true)
 	)
 }
+
+// swiftlint:enable type_body_length

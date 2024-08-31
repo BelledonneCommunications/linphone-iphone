@@ -141,7 +141,7 @@ struct ProfileModeFragment: View {
 			}
 			.onAppear {
 				UserDefaults.standard.set(false, forKey: "display_profile_mode")
-				//Skip this view
+				// Skip this view
 				sharedMainViewModel.changeHideProfileMode()
 			}
 			

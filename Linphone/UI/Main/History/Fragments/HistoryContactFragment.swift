@@ -21,7 +21,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import linphonesw
 
-// swiftlint:disable line_length
 // swiftlint:disable type_body_length
 struct HistoryContactFragment: View {
 	
@@ -462,5 +461,4 @@ struct HistoryContactFragment: View {
 		indexPage: .constant(1)
 	)
 }
-// swiftlint:enable line_length
 // swiftlint:enable type_body_length

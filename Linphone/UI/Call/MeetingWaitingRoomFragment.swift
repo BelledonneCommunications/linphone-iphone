@@ -21,6 +21,9 @@ import SwiftUI
 import linphonesw
 import AVFAudio
 
+// swiftlint:disable type_body_length
+// swiftlint:disable cyclomatic_complexity
+
 struct MeetingWaitingRoomFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
@@ -44,10 +47,9 @@ struct MeetingWaitingRoomFragment: View {
 				innerView(geometry: geometry)
 					.sheet(isPresented: $audioRouteSheet, onDismiss: {
 						audioRouteSheet = false
-					}) {
-						innerBottomSheet()
-							.presentationDetents([.fraction(0.3)])
-					}
+					}, content: {
+						innerBottomSheet().presentationDetents([.fraction(0.3)])
+					})
 					.onAppear {
 						meetingWaitingRoomViewModel.enableAVAudioSession()
 						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
@@ -87,6 +89,7 @@ struct MeetingWaitingRoomFragment: View {
 	}
 	
 	@ViewBuilder
+	// swiftlint:disable:next function_body_length
 	func innerView(geometry: GeometryProxy) -> some View {
 		VStack {
 			if #available(iOS 16.0, *) {
@@ -261,7 +264,8 @@ struct MeetingWaitingRoomFragment: View {
 					Spacer()
 					
 					Button {
-						!meetingWaitingRoomViewModel.videoDisplayed ? meetingWaitingRoomViewModel.enableVideoPreview() : meetingWaitingRoomViewModel.disableVideoPreview()
+						!meetingWaitingRoomViewModel.videoDisplayed
+						? meetingWaitingRoomViewModel.enableVideoPreview() : meetingWaitingRoomViewModel.disableVideoPreview()
 					} label: {
 						HStack {
 							Image(meetingWaitingRoomViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
@@ -302,13 +306,9 @@ struct MeetingWaitingRoomFragment: View {
 						} else {
 							do {
 								try AVAudioSession.sharedInstance().overrideOutputAudioPort(
-									AVAudioSession.sharedInstance().currentRoute.outputs.filter(
-										{ $0.portType.rawValue == "Speaker" }
-									).isEmpty ? .speaker : .none
-								)
-							} catch _ {
-								
-							}
+									AVAudioSession.sharedInstance().currentRoute
+										.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
+							} catch _ {}
 						}
 					} label: {
 						HStack {
@@ -378,12 +378,10 @@ struct MeetingWaitingRoomFragment: View {
 						.multilineTextAlignment(.center)
 						.padding(.bottom, 10)
 					
-					
 					Text("Vous allez rejoindre la réunion dans quelques instants...")
 						.default_text_style_white(styleSize: 16)
 						.multilineTextAlignment(.center)
 						.padding(.bottom, 20)
-					
 					
 					ActivityIndicator(color: Color.orangeMain500)
 						.frame(width: 35, height: 35)
@@ -411,7 +409,6 @@ struct MeetingWaitingRoomFragment: View {
 		}
 		.background(Color.gray900)
 		.onRotate { newOrientation in
-			let oldOrientation = orientation
 			orientation = newOrientation
 			if orientation == .portrait || orientation == .portraitUpsideDown {
 				angleDegree = 0
@@ -453,7 +450,8 @@ struct MeetingWaitingRoomFragment: View {
 				do {
 					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
 					if meetingWaitingRoomViewModel.isHeadPhoneAvailable() {
-						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
+						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance()
+							.availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
 					} else {
 						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
 					}
@@ -521,7 +519,8 @@ struct MeetingWaitingRoomFragment: View {
 				
 				do {
 					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-					try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
+					try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?
+						.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
 				} catch _ {
 					
 				}
@@ -571,3 +570,5 @@ struct MeetingWaitingRoomFragment: View {
 #Preview {
 	MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel())
 }
+// swiftlint:enable type_body_length
+// swiftlint:enable cyclomatic_complexity

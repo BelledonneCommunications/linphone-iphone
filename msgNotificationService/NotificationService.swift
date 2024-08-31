@@ -98,7 +98,7 @@ class NotificationService: UNNotificationServiceExtension {
 		if let bestAttemptContent = bestAttemptContent {
 			createCore()
 			
-			//if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
+			// if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
 				Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 				
 				/*
@@ -178,7 +178,7 @@ class NotificationService: UNNotificationServiceExtension {
 						Log.info("Message not found for callid ["+callId+"]")
 					}
 				}
-			//}
+			// }
 			serviceExtensionTimeWillExpire()
 		}
 		
@@ -196,7 +196,7 @@ class NotificationService: UNNotificationServiceExtension {
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
 				bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 				bestAttemptContent.body = ""
-				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) // TODO : temporary fix, to be removed after flexisip release
+				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) 
 			} else {
 				bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
 				bestAttemptContent.body = NSLocalizedString("IM_MSG", comment: "")

@@ -248,7 +248,9 @@ struct ToastView: View {
 				.overlay(
 					RoundedRectangle(cornerRadius: 50)
 						.inset(by: 0.5)
-						.stroke(toastViewModel.toastMessage.contains("Success") ? Color.greenSuccess500 : (toastViewModel.toastMessage.contains("Info_") ? Color.blueInfo500 : Color.redDanger500), lineWidth: 1)
+						.stroke(toastViewModel.toastMessage.contains("Success") 
+								? Color.greenSuccess500 : (toastViewModel.toastMessage.contains("Info_")
+														   ? Color.blueInfo500 : Color.redDanger500), lineWidth: 1)
 				)
 				.onTapGesture {
 					if !toastViewModel.toastMessage.contains("is recording") {

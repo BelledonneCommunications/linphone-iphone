@@ -20,6 +20,7 @@
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
 class ContactViewModel: ObservableObject {
 	
 	@Published var indexDisplayedFriend: Int?
@@ -177,8 +178,7 @@ class ContactViewModel: ObservableObject {
 	}
 	
 	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue {
-			(chatRoom: ChatRoom, eventLog: EventLog) in
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue { (chatRoom: ChatRoom, _: EventLog) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
@@ -213,8 +213,7 @@ class ContactViewModel: ObservableObject {
 			}
 		})
 		
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue {
-			(chatRoom: ChatRoom, state: ChatRoom.State) in
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue { (chatRoom: ChatRoom, state: ChatRoom.State) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			if state == ChatRoom.State.CreationFailed {
@@ -229,3 +228,4 @@ class ContactViewModel: ObservableObject {
 		})
 	}
 }
+// swiftlint:enable line_length

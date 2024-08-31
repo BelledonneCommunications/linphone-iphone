@@ -19,6 +19,8 @@
 
 // swiftlint:disable large_tuple
 // swiftlint:disable line_length
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable identifier_name
 
 import linphonesw
 import linphone // needed for unwrapped function linphone_core_set_push_and_app_delegate_dispatch_queue
@@ -46,14 +48,14 @@ final class CoreContext: ObservableObject {
 	private var mIterateSuscription: AnyCancellable?
 	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	
-	var bearerAuthInfoPendingPasswordUpdate: AuthInfo? = nil
+	var bearerAuthInfoPendingPasswordUpdate: AuthInfo?
 	
 	let monitor = NWPathMonitor()
 	
 	private var mCorePushIncomingDelegate: CoreDelegate!
-	private var actionsToPerformOnCoreQueueWhenCoreIsStarted : [((Core)->Void)] = []
-	private var callStateCallBacks : [((Call.State)->Void)] = []
-	private var configuringStateCallBacks : [((ConfiguringState)->Void)] = []
+	private var actionsToPerformOnCoreQueueWhenCoreIsStarted: [((Core) -> Void)] = []
+	private var callStateCallBacks: [((Call.State) -> Void)] = []
+	private var configuringStateCallBacks: [((ConfiguringState) -> Void)] = []
 
 	private init() {
 		do {
@@ -128,7 +130,6 @@ final class CoreContext: ObservableObject {
 			self.mCore.maxSizeForAutoDownloadIncomingFiles = 0
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
-			
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
 				if cbVal.state == GlobalState.On {
 #if DEBUG
@@ -236,7 +237,7 @@ final class CoreContext: ObservableObject {
 				TelecomManager.shared.onCallStateChanged(core: cbVal.core, call: cbVal.call, state: cbVal.state, message: cbVal.message)
 			})
 			
-			self.mCorePushIncomingDelegate = CoreDelegateStub(onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
+			self.mCorePushIncomingDelegate = CoreDelegateStub(onCallStateChanged: { (_, call: Call, cstate: Call.State, _) in
 				if cstate == .PushIncomingReceived {
 					let callLog = call.callLog
 					let callId = callLog?.callId ?? ""
@@ -260,9 +261,9 @@ final class CoreContext: ObservableObject {
 				}
 			})
 			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onTransferStateChanged?.postOnCoreQueue { (cbValue: (_: Core, transfered: Call, callState: Call.State)) in
+			self.mCoreSuscriptions.insert(self.mCore.publisher?.onTransferStateChanged?.postOnCoreQueue { (cbValue: (_: Core, transferred: Call, callState: Call.State)) in
 				Log.info(
-					"[CoreContext] Transferred call \(cbValue.transfered.remoteAddress!.asStringUriOnly()) state changed \(cbValue.callState)"
+					"[CoreContext] Transferred call \(cbValue.transferred.remoteAddress!.asStringUriOnly()) state changed \(cbValue.callState)"
 				)
 				
 				DispatchQueue.main.async {
@@ -362,8 +363,8 @@ final class CoreContext: ObservableObject {
 		fatalError("Crashing app to test crashlytics")
 	}
 	
-	func performActionOnCoreQueueWhenCoreIsStarted(action:  @escaping (_ core: Core)->Void ) {
-		if (coreIsStarted) {
+	func performActionOnCoreQueueWhenCoreIsStarted(action: @escaping (_ core: Core) -> Void ) {
+		if coreIsStarted {
 			CoreContext.shared.doOnCoreQueue { core in
 				action(core)
 			}
@@ -387,3 +388,5 @@ final class CoreContext: ObservableObject {
 
 // swiftlint:enable large_tuple
 // swiftlint:enable line_length
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable identifier_name

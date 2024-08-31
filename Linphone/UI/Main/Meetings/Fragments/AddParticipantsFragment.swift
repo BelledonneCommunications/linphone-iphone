@@ -89,7 +89,7 @@ struct AddParticipantsFragment: View {
 									
 									Text(addParticipantsViewModel.participantsToAdd[index].avatarModel.name)
 										.default_text_style(styleSize: 12)
-										.frame(minWidth: 60, maxWidth:80)
+										.frame(minWidth: 60, maxWidth: 80)
 								}
 								Image("x-circle")
 									.renderingMode(.template)
@@ -293,5 +293,5 @@ struct AddParticipantsFragment: View {
 }
 
 #Preview {
-	AddParticipantsFragment(addParticipantsViewModel: AddParticipantsViewModel(), confirmAddParticipantsFunc: {_ in } )
+	AddParticipantsFragment(addParticipantsViewModel: AddParticipantsViewModel(), confirmAddParticipantsFunc: { _ in })
 }

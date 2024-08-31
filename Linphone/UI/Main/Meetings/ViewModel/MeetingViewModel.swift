@@ -21,6 +21,7 @@ import Foundation
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
 class MeetingViewModel: ObservableObject {
 	static let TAG = "[MeetingViewModel]"
 	
@@ -41,7 +42,7 @@ class MeetingViewModel: ObservableObject {
 	
 	@Published var selectedTimezoneIdx = 0
 	var selectedTimezone = TimeZone.current
-	var knownTimezones : [String] = []
+	var knownTimezones: [String] = []
 	
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
@@ -272,8 +273,7 @@ class MeetingViewModel: ObservableObject {
 			self.fromDate = meeting.meetingDate
 			self.toDate = meeting.endDate
 			self.participants = []
-			
-			
+						
 			CoreContext.shared.doOnCoreQueue { core in
 				let organizer = meeting.confInfo.organizer
 				var organizerFound = false
@@ -294,7 +294,7 @@ class MeetingViewModel: ObservableObject {
 						organizerFound = organizerFound || isOrganizer
 						ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
 							DispatchQueue.main.async {
-								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg:isOrganizer))
+								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg: isOrganizer))
 							}
 						}
 					}
@@ -322,12 +322,12 @@ class MeetingViewModel: ObservableObject {
 				if let conferenceInfo = core.findConferenceInformationFromUri(uri: conferenceAddress) {
 					
 					self.conferenceInfoToEdit = conferenceInfo
-					Log.info("\(MeetingViewModel.TAG)  Found conference info matching URI \(conferenceInfo.uri?.asString()) with subject \(conferenceInfo.subject)")
+					Log.info("\(MeetingViewModel.TAG)  Found conference info matching URI \(conferenceInfo.uri?.asString() ?? "NIL") with subject \(conferenceInfo.subject ?? "NIL")")
 					
 					self.fromDate = Date(timeIntervalSince1970: TimeInterval(conferenceInfo.dateTime))
 					self.toDate = Calendar.current.date(byAdding: .minute, value: Int(conferenceInfo.duration), to: self.fromDate)!
 					
-					var list: [SelectedAddressModel] = []
+					let list: [SelectedAddressModel] = []
 					for partInfo in conferenceInfo.participantInfos {
 						if let addr = partInfo.address {
 							ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
@@ -342,10 +342,9 @@ class MeetingViewModel: ObservableObject {
 					DispatchQueue.main.async {
 						self.subject = conferenceInfo.subject ?? ""
 						self.description = conferenceInfo.description ?? ""
-						self.isBroadcastSelected = false // TODO FIXME
+						self.isBroadcastSelected = false
 						self.computeDateLabels()
 						self.computeTimeLabels()
-						//self.participants = list
 					}
 					
 				} else {
@@ -365,3 +364,5 @@ class MeetingViewModel: ObservableObject {
 		}
 	}
 }
+
+// swiftlint:enable line_length

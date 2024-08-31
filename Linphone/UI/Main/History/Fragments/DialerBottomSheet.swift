@@ -21,6 +21,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 import linphonesw
 
+// swiftlint:disable type_body_length
 struct DialerBottomSheet: View {
 	
 	@Environment(\.dismiss) var dismiss
@@ -544,6 +545,11 @@ struct DialerBottomSheet: View {
 
 #Preview {
 	DialerBottomSheet(
-		startCallViewModel: StartCallViewModel(), callViewModel: CallViewModel(), isShowStartCallFragment: .constant(false), showingDialer: .constant(false), currentCall: nil
-	)
+		startCallViewModel: StartCallViewModel()
+		, callViewModel: CallViewModel()
+		, isShowStartCallFragment: .constant(false)
+		, showingDialer: .constant(false)
+		, currentCall: nil)
 }
+
+// swiftlint:enable type_body_length

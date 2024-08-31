@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 
+// swiftlint:disable type_body_length
 struct CallsListFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
@@ -88,10 +89,10 @@ struct CallsListFragment: View {
 				if #available(iOS 16.0, *), idiom != .pad {
 					callsList
 						.sheet(isPresented: $isShowCallsListBottomSheet, onDismiss: {
-						}) {
+						}, content: {
 							innerBottomSheet()
 								.presentationDetents([.fraction(0.2)])
-						}
+						})
 				} else {
 					callsList
 						.halfSheet(showSheet: $isShowCallsListBottomSheet) {
@@ -382,3 +383,4 @@ struct CallsListFragment: View {
 #Preview {
 	CallsListFragment(callViewModel: CallViewModel(), isShowCallsListFragment: .constant(true))
 }
+// swiftlint:enable type_body_length

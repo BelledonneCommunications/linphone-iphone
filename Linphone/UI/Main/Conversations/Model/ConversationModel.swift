@@ -21,6 +21,7 @@ import Foundation
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
 class ConversationModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
@@ -236,7 +237,9 @@ class ConversationModel: ObservableObject {
 	
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		coreContext.doOnCoreQueue { _ in
-			let result = chatMessage.downloadContent(content: content)
+			if !chatMessage.downloadContent(content: content) {
+				Log.error("\(ConversationModel.TAG) An error occured when downloading content of chat message. MessageID=\(chatMessage.messageId)")
+			}
 		}
 	}
 	
@@ -246,3 +249,4 @@ class ConversationModel: ObservableObject {
 	   }
 	}
 }
+// swiftlint:enable line_length

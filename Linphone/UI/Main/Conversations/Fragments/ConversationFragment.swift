@@ -20,6 +20,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+// swiftlint:disable line_length
 // swiftlint:disable type_body_length
 struct ConversationFragment: View {
 	
@@ -780,7 +781,6 @@ struct ConversationFragment: View {
 		.navigationViewStyle(.stack)
 	}
 }
-// swiftlint:enable type_body_length
 
 struct ScrollOffsetPreferenceKey: PreferenceKey {
 	static var defaultValue: CGPoint = .zero
@@ -809,9 +809,9 @@ struct ImagePicker: UIViewControllerRepresentable {
 				let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
 				
 				let date = Date()
-				let df = DateFormatter()
-				df.dateFormat = "yyyy-MM-dd-HHmmss"
-				let dateString = df.string(from: date)
+				let dformater = DateFormatter()
+				dformater.dateFormat = "yyyy-MM-dd-HHmmss"
+				let dateString = dformater.string(from: date)
 				
 				let path = FileManager.default.temporaryDirectory.appendingPathComponent((dateString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".jpeg")
 				
@@ -819,7 +819,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 					let data  = image!.jpegData(compressionQuality: 1)
 					if data != nil {
 						do {
-							let decodedData: () = try data!.write(to: path)
+							_ = try data!.write(to: path)
 							let attachment = Attachment(id: UUID().uuidString, name: (dateString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".jpeg", url: path, type: .image)
 							parent.selectedMedia.append(attachment)
 						} catch {
@@ -846,7 +846,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 					}
 				}
 			default:
-				Log.info("Mismatched type: \(mediaType)")
+				Log.info("Mismatched type: \(mediaType ?? "mediaType is nil")")
 			}
 	 
 			parent.presentationMode.wrappedValue.dismiss()
@@ -876,3 +876,6 @@ struct ImagePicker: UIViewControllerRepresentable {
 	ConversationFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel(), sections: [MessagesSection], ids: [""])
 }
 */
+
+// swiftlint:enable type_body_length
+// swiftlint:enable line_length

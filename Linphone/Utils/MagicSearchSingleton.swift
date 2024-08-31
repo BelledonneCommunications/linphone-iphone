@@ -76,7 +76,7 @@ final class MagicSearchSingleton: ObservableObject {
 						$1.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
 				})
 				
-				var addedAvatarListModel : [ContactAvatarModel] = []
+				var addedAvatarListModel: [ContactAvatarModel] = []
 				sortedLastSearch.forEach { searchResult in
 					if searchResult.friend != nil {
 						addedAvatarListModel.append(

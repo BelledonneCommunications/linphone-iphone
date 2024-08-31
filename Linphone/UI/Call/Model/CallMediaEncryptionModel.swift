@@ -33,8 +33,8 @@ class CallMediaEncryptionModel: ObservableObject {
 	@Published var zrtpAuthSas = ""
 	
 	func update(call: Call) {
-		coreContext.doOnCoreQueue { core in
-			var stats = call.getStats(type: StreamType.Audio)
+		coreContext.doOnCoreQueue { _ in
+			let stats = call.getStats(type: StreamType.Audio)
 			if stats != nil {
 				// ZRTP stats are only available when authentication token isn't null !
 				if call.currentParams!.mediaEncryption == .ZRTP && call.authenticationToken != nil {
@@ -82,7 +82,7 @@ class CallMediaEncryptionModel: ObservableObject {
 						self.zrtpAuthSas = zrtpAuthSasTmp
 					}
 				} else {
-					let mediaEncryptionTmp = "Media encryption: " + call.currentParams!.mediaEncryption.rawValue.description //call.currentParams.mediaEncryption
+					let mediaEncryptionTmp = "Media encryption: " + call.currentParams!.mediaEncryption.rawValue.description // call.currentParams.mediaEncryption
 					
 					DispatchQueue.main.async {
 						self.mediaEncryption = mediaEncryptionTmp

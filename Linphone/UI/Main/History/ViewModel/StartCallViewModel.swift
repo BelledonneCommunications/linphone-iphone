@@ -20,6 +20,7 @@
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
 class StartCallViewModel: ObservableObject {
 	
 	static let TAG = "[StartCallViewModel]"
@@ -115,8 +116,7 @@ class StartCallViewModel: ObservableObject {
 	}
 	
 	func conferenceAddDelegate(core: Core, conferenceScheduler: ConferenceScheduler) {
-		self.conferenceSuscriptions.insert(conferenceScheduler.publisher?.onStateChanged?.postOnCoreQueue {
-			(conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
+		self.conferenceSuscriptions.insert(conferenceScheduler.publisher?.onStateChanged?.postOnCoreQueue { (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
 			Log.info("\(StartCallViewModel.TAG) Conference scheduler state is \(state)")
 			if state == ConferenceScheduler.State.Ready {
 				self.conferenceSuscriptions.removeAll()
@@ -153,13 +153,7 @@ class StartCallViewModel: ObservableObject {
 	}
 	
 	func startVideoCall(core: Core, conferenceAddress: Address) {
-		do {
-			TelecomManager.shared.doCallWithCore(addr: conferenceAddress, isVideo: true, isConference: true)
-		} catch let error {
-			Log.error(
-				"\(StartCallViewModel.TAG) StartVideoCall: \(error)"
-			)
-		}
+		TelecomManager.shared.doCallWithCore(addr: conferenceAddress, isVideo: true, isConference: true)
 	}
 	
 	func interpretAndStartCall() {
@@ -171,3 +165,4 @@ class StartCallViewModel: ObservableObject {
 		}
 	}
 }
+// swiftlint:enable line_length

@@ -37,7 +37,6 @@ extension Config {
 	public static func get() -> Config {
 		if _instance == nil {
 			let factoryPath = FileUtil.bundleFilePath("linphonerc-factory")!
-			let configDir = Factory.Instance.getConfigDir(context: nil)
 			_instance =  Config.newForSharedCore(appGroupId: Config.appGroupName, configFilename: "linphonerc", factoryConfigFilename: factoryPath)!
 		}
 		return _instance!

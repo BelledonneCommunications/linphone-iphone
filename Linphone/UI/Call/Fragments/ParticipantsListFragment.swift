@@ -265,5 +265,7 @@ struct ParticipantsListFragment: View {
 }
 
 #Preview {
-	ParticipantsListFragment(callViewModel: CallViewModel(), addParticipantsViewModel: AddParticipantsViewModel(), isShowParticipantsListFragment: .constant(true))
+	ParticipantsListFragment(callViewModel: CallViewModel(), 
+							 addParticipantsViewModel: AddParticipantsViewModel(),
+							 isShowParticipantsListFragment: .constant(true))
 }

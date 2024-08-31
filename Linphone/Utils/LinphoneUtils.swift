@@ -61,7 +61,8 @@ class LinphoneUtils: NSObject {
 	}
 	
 	public class func applyInternationalPrefix(core: Core, account: Account? = nil) -> Bool {
-		return	account?.params?.useInternationalPrefixForCallsAndChats == true || core.defaultAccount?.params?.useInternationalPrefixForCallsAndChats == true
+		return	account?.params?.useInternationalPrefixForCallsAndChats == true 
+		|| core.defaultAccount?.params?.useInternationalPrefixForCallsAndChats == true
 	}
 	
 	public class func isEndToEndEncryptedChatAvailable(core: Core) -> Bool {

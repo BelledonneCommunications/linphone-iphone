@@ -38,7 +38,8 @@ struct AudioRouteBottomSheet: View {
 				do {
 					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
 					if callViewModel.isHeadPhoneAvailable() {
-						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
+						try AVAudioSession.sharedInstance().setPreferredInput(
+							AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
 					} else {
 						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
 					}
@@ -106,7 +107,8 @@ struct AudioRouteBottomSheet: View {
 				
 				do {
 					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-					try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
+					try AVAudioSession.sharedInstance().setPreferredInput(
+						AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
 				} catch _ {
 					
 				}

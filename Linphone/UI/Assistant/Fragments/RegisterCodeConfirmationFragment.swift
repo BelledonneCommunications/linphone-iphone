@@ -19,6 +19,7 @@
 
 import SwiftUI
 
+// swiftlint:disable line_length
 struct RegisterCodeConfirmationFragment: View {
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var registerViewModel: RegisterViewModel
@@ -196,3 +197,4 @@ struct RegisterCodeConfirmationFragment: View {
 #Preview {
 	RegisterCodeConfirmationFragment(registerViewModel: RegisterViewModel())
 }
+// swiftlint:enable line_length

@@ -155,7 +155,7 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	func switchCamera() {
 		coreContext.doOnCoreQueue { core in
 			let currentDevice = core.videoDevice
-			Log.info("[CallViewModel] Current camera device is \(currentDevice)")
+			Log.info("[CallViewModel] Current camera device is \(currentDevice ?? "nil")")
 			
 			core.videoDevicesList.forEach { camera in
 				if camera != currentDevice && camera != "StaticImage: Static picture" {
@@ -246,7 +246,8 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 				case "bluetooth":
 					do {
 						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
+						try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?
+							.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
 					} catch _ {
 						
 					}
@@ -260,7 +261,8 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					do {
 						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
 						if self.isHeadPhoneAvailable() {
-							try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
+							try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance()
+								.availableInputs?.filter({ $0.portType.rawValue.contains("Receiver") }).first)
 						} else {
 							try AVAudioSession.sharedInstance().setPreferredInput(AVAudioSession.sharedInstance().availableInputs?.first)
 						}

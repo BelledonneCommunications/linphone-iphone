@@ -18,6 +18,9 @@
  */
 
 // swiftlint:disable large_tuple
+// swiftlint:disable line_length
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable type_body_length
 import SwiftUI
 import linphonesw
 
@@ -156,7 +159,7 @@ struct UIList: UIViewRepresentable {
 		return containerView
 	}
 	
-	//func updateUIView(_ tableView: UITableView, context: Context) {
+	// func updateUIView(_ tableView: UITableView, context: Context) {
 	func updateUIView(_ uiView: UIView, context: Context) {
 		if let button = uiView.viewWithTag(102) as? FloatingButton {
 			button.unreadMessageCount = conversationViewModel.displayedConversationUnreadMessagesCount
@@ -253,17 +256,17 @@ struct UIList: UIViewRepresentable {
 		let newDates = newSections.map { $0.date }
 		let commonDates = Array(Set(oldDates + newDates)).sorted(by: >)
 		for date in commonDates {
-			let oldIndex = appliedDeletes.firstIndex(where: { $0.date == date } )
-			let newIndex = appliedDeletesSwapsAndEdits.firstIndex(where: { $0.date == date } )
+			let oldIndex = appliedDeletes.firstIndex(where: { $0.date == date })
+			let newIndex = appliedDeletesSwapsAndEdits.firstIndex(where: { $0.date == date })
 			if oldIndex == nil, let newIndex {
-				if let operationIndex = newSections.firstIndex(where: { $0.date == date } ) {
+				if let operationIndex = newSections.firstIndex(where: { $0.date == date }) {
 					appliedDeletesSwapsAndEdits.remove(at: newIndex)
 					insertOperations.append(.insertSection(operationIndex))
 				}
 				continue
 			}
 			if newIndex == nil, let oldIndex {
-				if let operationIndex = oldSections.firstIndex(where: { $0.date == date } ) {
+				if let operationIndex = oldSections.firstIndex(where: { $0.date == date }) {
 					appliedDeletes.remove(at: oldIndex)
 					deleteOperations.append(.deleteSection(operationIndex))
 				}
@@ -476,8 +479,8 @@ struct UIList: UIViewRepresentable {
 		}
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-			
-			let archiveAction = UIContextualAction(style: .normal, title: "") { action, view, completionHandler in
+
+			let archiveAction = UIContextualAction(style: .normal, title: "") { _, _, completionHandler in
 				self.parent.conversationViewModel.replyToMessage(index: indexPath.row)
 				completionHandler(true)
 			}
@@ -530,11 +533,6 @@ struct EventLogMessage: Equatable {
 		return formatter
 	}()
 	
-	init(eventLog: EventLog, message: Message) {
-		self.eventLog = eventLog
-		self.message = message
-	}
-	
 	static func == (lhs: EventLogMessage, rhs: EventLogMessage) -> Bool {
 		lhs.message == rhs.message
 	}
@@ -565,7 +563,7 @@ public typealias ChatPaginationClosure = (Message) -> Void
 
 final class ChatViewModel: ObservableObject {
 	
-	@Published private(set) var fullscreenAttachmentItem: Optional<Attachment> = nil
+	@Published private(set) var fullscreenAttachmentItem: Attachment?
 	@Published var fullscreenAttachmentPresented = false
 	
 	@Published var messageMenuRow: Message?
@@ -586,5 +584,7 @@ final class ChatViewModel: ObservableObject {
 		didSendMessage(message)
 	}
 }
-
 // swiftlint:enable large_tuple
+// swiftlint:enable line_length
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable type_body_length

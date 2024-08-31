@@ -21,6 +21,8 @@ import Foundation
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
+// swiftlint:disable type_body_length
 class RegisterViewModel: ObservableObject {
 	
 	static let TAG = "[RegisterViewModel]"
@@ -119,8 +121,7 @@ class RegisterViewModel: ObservableObject {
 	}
 	func addDelegate(request: AccountManagerServicesRequest) {
 		coreContext.doOnCoreQueue { core in
-			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestSuccessful?.postOnCoreQueue {
-				(request: AccountManagerServicesRequest, data: String) in
+			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestSuccessful?.postOnCoreQueue { (request: AccountManagerServicesRequest, data: String) in
 				Log.info("\(RegisterViewModel.TAG) Request \(request) was successful, data is \(data)")
 				switch request.type {
 				case .CreateAccountUsingToken:
@@ -142,9 +143,7 @@ class RegisterViewModel: ObservableObject {
 				case .LinkPhoneNumberUsingCode:
 					let account = self.accountCreated
 					if account != nil {
-						Log.info(
-							"\(RegisterViewModel.TAG) Account \(account?.params?.identityAddress?.asStringUriOnly()) has been created & activated, setting it as default"
-						)
+						Log.info( "\(RegisterViewModel.TAG) Account \(account?.params?.identityAddress?.asStringUriOnly() ?? "NIL") has been created & activated, setting it as default")
 						
 						if let assistantLinphone = Bundle.main.path(forResource: "assistant_linphone_default_values", ofType: nil) {
 							core.loadConfigFromXml(xmlUri: assistantLinphone)
@@ -166,8 +165,7 @@ class RegisterViewModel: ObservableObject {
 				}
 			})
 			
-			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestError?.postOnCoreQueue {
-				(request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestError?.postOnCoreQueue { (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
 				Log.error(
 					"\(RegisterViewModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
 				)
@@ -371,9 +369,7 @@ class RegisterViewModel: ObservableObject {
 			
 			let identity = account!.params!.identityAddress
 			if identity != nil {
-				Log.info(
-					"\(RegisterViewModel.TAG) Account \(identity!.asStringUriOnly()) should now be created, asking account manager to send a confirmation code by SMS to \(phoneNumberValue ?? "")"
-				)
+				Log.info("\(RegisterViewModel.TAG) Account \(identity!.asStringUriOnly()) should now be created, asking account manager to send a confirmation code by SMS to \(phoneNumberValue ?? "")")
 				do {
 					let request = try accountManagerServices?.createSendPhoneNumberLinkingCodeBySmsRequest(
 						sipIdentity: identity!,
@@ -404,9 +400,7 @@ class RegisterViewModel: ObservableObject {
 				return
 			}
 			
-			Log.info(
-				"\(RegisterViewModel.TAG) Account creation token is \(token ?? "Error token"), creating account with username \(username) and algorithm \(HASHALGORITHM)"
-			)
+			Log.info( "\(RegisterViewModel.TAG) Account creation token is \(token ?? "Error token"), creating account with username \(username) and algorithm \(HASHALGORITHM)")
 			
 			do {
 				let request = try accountManagerServices!.createNewAccountUsingTokenRequest(
@@ -441,9 +435,7 @@ class RegisterViewModel: ObservableObject {
 				
 				let number = self.phoneNumber
 				let formattedPhoneNumber = dialPlan?.formatPhoneNumber(phoneNumber: number, escapePlus: false)
-				Log.info(
-					"\(RegisterViewModel.TAG) Formatted phone number \(number) using dial plan \(dialPlan?.country ?? "Error country") is \(formattedPhoneNumber ?? "Error phone number")"
-				)
+				Log.info( "\(RegisterViewModel.TAG) Formatted phone number \(number) using dial plan \(dialPlan?.country ?? "Error country") is \(formattedPhoneNumber ?? "Error phone number")")
 				
 				self.normalizedPhoneNumber = formattedPhoneNumber
 			} else {
@@ -481,3 +473,6 @@ class RegisterViewModel: ObservableObject {
 		}
 	}
 }
+
+// swiftlint:enable line_length
+// swiftlint:enable type_body_length

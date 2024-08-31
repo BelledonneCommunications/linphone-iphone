@@ -17,8 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// swiftlint:disable line_length
-
 import SwiftUI
 import linphonesw
 
@@ -38,5 +36,3 @@ struct MeetingsListFragment: View {
 #Preview {
 	MeetingsListFragment(meetingsListViewModel: MeetingsListViewModel(), showingSheet: .constant(false))
 }
-
-// swiftlint:enable line_length

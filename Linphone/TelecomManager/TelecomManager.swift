@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable line_length
+// swiftlint:disable type_body_length
 
 import Foundation
 import linphonesw
@@ -33,7 +35,6 @@ class CallAppData: NSObject {
 	
 }
 
-// swiftlint:disable type_body_length
 class TelecomManager: ObservableObject {
 	static let shared = TelecomManager()
 	static var uuidReplacedCall: String?
@@ -127,7 +128,7 @@ class TelecomManager: ObservableObject {
 	
 	func setHeldOtherCalls(core: Core, exceptCallid: String) {
 		for call in core.calls {
-			if (call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote) {
+			if call.callLog?.callId != exceptCallid && call.state != .Paused && call.state != .Pausing && call.state != .PausedByRemote {
 				setHeld(call: call, hold: true)
 			} else if call.callLog?.callId == exceptCallid && (call.state == .Paused || call.state == .Pausing || call.state == .PausedByRemote) {
 				setHeld(call: call, hold: true)
@@ -138,7 +139,7 @@ class TelecomManager: ObservableObject {
 	func setHeld(call: Call, hold: Bool) {
 		
 #if targetEnvironment(simulator)
-		if (hold) {
+		if hold {
 			try?call.pause()
 		} else {
 			try?call.resume()
@@ -146,7 +147,7 @@ class TelecomManager: ObservableObject {
 #else
 		let callid = call.callLog?.callId ?? ""
 		let uuid = providerDelegate.uuids["\(callid)"]
-		if (uuid == nil) {
+		if uuid == nil {
 			Log.error("Can not find correspondant call to set held.")
 			return
 		}
@@ -352,9 +353,8 @@ class TelecomManager: ObservableObject {
 		providerDelegate.reportIncomingCall(call: call, uuid: uuid, handle: handle, hasVideo: hasVideo, displayName: displayName)
 	}
 	
-	
 	func incomingDisplayName(call: Call, completion: @escaping (String) -> Void) {
-		CoreContext.shared.doOnCoreQueue { core in
+		CoreContext.shared.doOnCoreQueue { _ in
 			ContactsManager.shared.getFriendWithAddressInCoreQueue(address: call.remoteAddress!) { friendResult in
 				if call.remoteAddress != nil {
 					if friendResult != nil && friendResult!.address != nil && friendResult!.address!.displayName != nil {
@@ -377,8 +377,9 @@ class TelecomManager: ObservableObject {
 	static func callKitEnabled(core: Core) -> Bool {
 #if !targetEnvironment(simulator)
 		return core.callkitEnabled
-#endif
+#else
 		return false
+#endif
 	}
 	
 	func requestTransaction(_ transaction: CXTransaction, action: String) {
@@ -417,7 +418,7 @@ class TelecomManager: ObservableObject {
 		if cstate == .PushIncomingReceived {
 			Log.info("PushIncomingReceived on TelecomManager -- Ignore, should be processed by a the dedicated CoreDelegate for callkit display")
 		} else {
-			let oldRemoteConfVideo = self.remoteConfVideo
+			// let oldRemoteConfVideo = self.remoteConfVideo
 			
 			if call.conference != nil {
 				if call.conference!.activeSpeakerParticipantDevice != nil {
@@ -595,9 +596,9 @@ class TelecomManager: ObservableObject {
 						 }
 						 */
 						let uuid = self.providerDelegate.uuids["\(callId)"]
-						//if call.replacedCall == nil {
+						// if call.replacedCall == nil {
 							TelecomManager.uuidReplacedCall = callId
-						//}
+						// }
 						
 						if uuid != nil {
 							// Tha app is now registered, updated the call already existed.
@@ -692,7 +693,7 @@ class TelecomManager: ObservableObject {
 					// bluetoothEnabled = false
 				}
 				
-				//if core.callsNb == 0 {
+				// if core.callsNb == 0 {
 				self.incomingDisplayName(call: call) { displayNameResult in
 					var displayName = "Unknown"
 					if call.dir == .Incoming {
@@ -744,7 +745,7 @@ class TelecomManager: ObservableObject {
 						}
 					}
 				}
-				//}
+				// }
 				
 				if TelecomManager.callKitEnabled(core: core) {
 					var uuid = providerDelegate.uuids["\(callId)"]
@@ -795,5 +796,7 @@ class TelecomManager: ObservableObject {
 		])
 	}
 }
+
 // swiftlint:enable type_body_length
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable line_length

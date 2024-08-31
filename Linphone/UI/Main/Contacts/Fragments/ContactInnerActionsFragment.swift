@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 
+// swiftlint:disable type_body_length
 struct ContactInnerActionsFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
@@ -333,9 +334,7 @@ struct ContactInnerActionsFragment: View {
 			.padding(.horizontal)
 			
 			Button {
-				if contactAvatarModel != nil {
-					isShowDeletePopup.toggle()
-				}
+				isShowDeletePopup.toggle()
 			} label: {
 				HStack {
 					Image("trash-simple")
@@ -377,3 +376,5 @@ struct ContactInnerActionsFragment: View {
 		actionEditButton: {}
 	)
 }
+
+// swiftlint:enable type_body_length

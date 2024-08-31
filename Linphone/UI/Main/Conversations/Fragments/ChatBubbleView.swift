@@ -20,6 +20,8 @@
 import SwiftUI
 import WebKit
 
+// swiftlint:disable type_body_length
+// swiftlint:disable cyclomatic_complexity
 struct ChatBubbleView: View {
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
@@ -40,8 +42,8 @@ struct ChatBubbleView: View {
 						if eventLogMessage.message.isOutgoing {
 							Spacer()
 						}
-						
-						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
+						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup 
+							&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
 							VStack {
 								Avatar(
 									contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address}) ??
@@ -50,14 +52,16 @@ struct ChatBubbleView: View {
 								)
 								.padding(.top, 30)
 							}
-						} else if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
+						} else if conversationViewModel.displayedConversation != nil 
+									&& conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
 							VStack {
 							}
 							.padding(.leading, 43)
 						}
 						
 						VStack(alignment: .leading, spacing: 0) {
-							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
+							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup 
+								&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
 								Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address})?.name ?? "")
 									.default_text_style(styleSize: 12)
 									.padding(.top, 10)
@@ -76,7 +80,8 @@ struct ChatBubbleView: View {
 												.resizable()
 												.frame(width: 15, height: 15, alignment: .leading)
 											
-											Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.replyMessage!.address})?.name ?? "")
+											Text(conversationViewModel.participantConversationModel.first(
+												where: {$0.address == eventLogMessage.message.replyMessage!.address})?.name ?? "")
 												.default_text_style(styleSize: 12)
 										}
 										.padding(.bottom, 2)
@@ -139,7 +144,8 @@ struct ChatBubbleView: View {
 													.default_text_style_300(styleSize: 14)
 													.padding(.top, 1)
 												
-												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) || eventLogMessage.message.isOutgoing {
+												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) 
+													|| eventLogMessage.message.isOutgoing {
 													if eventLogMessage.message.status == .sending {
 														ProgressView()
 															.controlSize(.mini)
@@ -253,7 +259,8 @@ struct ChatBubbleView: View {
 	@ViewBuilder
 	func messageAttachments() -> some View {
 		if eventLogMessage.message.attachments.count == 1 {
-			if eventLogMessage.message.attachments.first!.type == .image || eventLogMessage.message.attachments.first!.type == .gif || eventLogMessage.message.attachments.first!.type == .video {
+			if eventLogMessage.message.attachments.first!.type == .image || eventLogMessage.message.attachments.first!.type == .gif 
+				|| eventLogMessage.message.attachments.first!.type == .video {
 				let result = imageDimensions(url: eventLogMessage.message.attachments.first!.thumbnail.absoluteString)
 				ZStack {
 					Rectangle()
@@ -265,7 +272,8 @@ struct ChatBubbleView: View {
 						.if(result.1 < UIScreen.main.bounds.height/2) { view in
 							view.frame(maxHeight: result.1)
 						}
-						.if(result.0 >= result.1 && geometryProxy.size.width > 0 && result.0 >= geometryProxy.size.width - 110 && result.1 >= UIScreen.main.bounds.height/2.5) { view in
+						.if(result.0 >= result.1 && geometryProxy.size.width > 0 && result.0 >= geometryProxy.size.width - 110 
+							&& result.1 >= UIScreen.main.bounds.height/2.5) { view in
 							view.frame(
 								maxWidth: geometryProxy.size.width - 110,
 								maxHeight: result.1 * ((geometryProxy.size.width - 110) / result.0)
@@ -411,8 +419,8 @@ struct ChatBubbleView: View {
 					.contentShape(Rectangle())
 				}
 			}
-			.frame(
-				width: geometryProxy.size.width > 0 && CGFloat(122 * eventLogMessage.message.attachments.count) > geometryProxy.size.width - 110 - (isGroup ? 40 : 0)
+			.frame( width: geometryProxy.size.width > 0
+					&& CGFloat(122 * eventLogMessage.message.attachments.count) > geometryProxy.size.width - 110 - (isGroup ? 40 : 0)
 				? 122 * floor(CGFloat(geometryProxy.size.width - 110 - (isGroup ? 40 : 0)) / 122)
 				: CGFloat(122 * eventLogMessage.message.attachments.count)
 			)
@@ -516,3 +524,6 @@ extension View {
  ChatBubbleView(conversationViewModel: ConversationViewModel(), index: 0)
  }
  */
+
+// swiftlint:enable type_body_length
+// swiftlint:enable cyclomatic_complexity

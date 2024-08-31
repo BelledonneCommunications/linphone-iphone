@@ -33,7 +33,7 @@ class CallStatsModel: ObservableObject {
 	@Published var videoFps = ""
 	
 	func update(call: Call, stats: CallStats) {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			if call.params != nil {
 				self.isVideoEnabled = call.params!.videoEnabled && call.currentParams != nil && call.currentParams!.videoDirection != .Inactive
 				switch stats.type {
@@ -43,7 +43,8 @@ class CallStatsModel: ObservableObject {
 						let clockRate = (payloadType?.clockRate != nil ? payloadType!.clockRate : 0) / 1000
 						let codecLabel = "Codec: " + "\(payloadType != nil ? payloadType!.mimeType : "")/\(clockRate) kHz"
 						
-						if stats.uploadBandwidth.rounded().isNaN || stats.uploadBandwidth.rounded().isInfinite || stats.downloadBandwidth.rounded().isNaN || stats.downloadBandwidth.rounded().isInfinite {
+						if stats.uploadBandwidth.rounded().isNaN || stats.uploadBandwidth.rounded().isInfinite 
+							|| stats.downloadBandwidth.rounded().isNaN || stats.downloadBandwidth.rounded().isInfinite {
 							return
 						}
 						
@@ -62,7 +63,8 @@ class CallStatsModel: ObservableObject {
 						let clockRate = (payloadType?.clockRate != nil ? payloadType!.clockRate : 0) / 1000
 						let codecLabel = "Codec: " + "\(payloadType != nil ? payloadType!.mimeType : "null")/\(clockRate) kHz"
 						
-						if stats.uploadBandwidth.rounded().isNaN || stats.uploadBandwidth.rounded().isInfinite || stats.downloadBandwidth.rounded().isNaN || stats.downloadBandwidth.rounded().isInfinite {
+						if stats.uploadBandwidth.rounded().isNaN || stats.uploadBandwidth.rounded().isInfinite 
+							|| stats.downloadBandwidth.rounded().isNaN || stats.downloadBandwidth.rounded().isInfinite {
 							return
 						}
 						

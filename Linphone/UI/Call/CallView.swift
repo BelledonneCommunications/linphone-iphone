@@ -23,6 +23,7 @@ import AVFAudio
 import linphonesw
 import UniformTypeIdentifiers
 
+// swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
 // swiftlint:disable file_length
@@ -73,28 +74,28 @@ struct CallView: View {
 					innerView(geometry: geo)
 						.sheet(isPresented: $mediaEncryptedSheet, onDismiss: {
 							mediaEncryptedSheet = false
-						}) {
+						}, content: {
 							MediaEncryptedSheetBottomSheet(callViewModel: callViewModel, mediaEncryptedSheet: $mediaEncryptedSheet)
 								.presentationDetents([.medium])
-						}
+						})
 						.sheet(isPresented: $callStatisticsSheet, onDismiss: {
 							callStatisticsSheet = false
-						}) {
+						}, content: {
 							CallStatisticsSheetBottomSheet(callViewModel: callViewModel, callStatisticsSheet: $callStatisticsSheet)
 								.presentationDetents(!callViewModel.callStatsModel.isVideoEnabled ? [.fraction(0.3)] : [.medium])
-						}
+						})
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
-						}) {
+						}, content: {
 							AudioRouteBottomSheet(callViewModel: callViewModel, optionsAudioRoute: $optionsAudioRoute)
 								.presentationDetents([.fraction(0.3)])
-						}
+						})
 						.sheet(isPresented: $changeLayoutSheet, onDismiss: {
 							changeLayoutSheet = false
-						}) {
+						}, content: {
 							ChangeLayoutBottomSheet(callViewModel: callViewModel, changeLayoutSheet: $changeLayoutSheet, optionsChangeLayout: $optionsChangeLayout)
 								.presentationDetents([.fraction(0.3)])
-						}
+						})
 						.sheet(isPresented: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: StartCallViewModel(),
@@ -110,28 +111,28 @@ struct CallView: View {
 					innerView(geometry: geo)
 						.sheet(isPresented: $mediaEncryptedSheet, onDismiss: {
 							mediaEncryptedSheet = false
-						}) {
+						}, content: {
 							MediaEncryptedSheetBottomSheet(callViewModel: callViewModel, mediaEncryptedSheet: $mediaEncryptedSheet)
 								.presentationDetents([.medium])
-						}
+						})
 						.sheet(isPresented: $callStatisticsSheet, onDismiss: {
 							callStatisticsSheet = false
-						}) {
+						}, content: {
 							CallStatisticsSheetBottomSheet(callViewModel: callViewModel, callStatisticsSheet: $callStatisticsSheet)
 								.presentationDetents(!callViewModel.callStatsModel.isVideoEnabled ? [.fraction(0.3)] : [.medium])
-						}
+						})
 						.sheet(isPresented: $audioRouteSheet, onDismiss: {
 							audioRouteSheet = false
-						}) {
+						}, content: {
 							AudioRouteBottomSheet(callViewModel: callViewModel, optionsAudioRoute: $optionsAudioRoute)
 								.presentationDetents([.fraction(0.3)])
-						}
+						})
 						.sheet(isPresented: $changeLayoutSheet, onDismiss: {
 							changeLayoutSheet = false
-						}) {
+						}, content: {
 							ChangeLayoutBottomSheet(callViewModel: callViewModel, changeLayoutSheet: $changeLayoutSheet, optionsChangeLayout: $optionsChangeLayout)
 								.presentationDetents([.fraction(0.3)])
-						}
+						})
 						.sheet(isPresented: $showingDialer) {
 							DialerBottomSheet(
 								startCallViewModel: StartCallViewModel(),
@@ -237,7 +238,6 @@ struct CallView: View {
 	}
 	
 	@ViewBuilder
-	// swiftlint:disable:next cyclomatic_complexity
 	func innerView(geometry: GeometryProxy) -> some View {
 		ZStack {
 			VStack {
@@ -432,8 +432,7 @@ struct CallView: View {
 			.frame(height: geometry.size.height)
 			.frame(maxWidth: .infinity)
 			.background(Color.gray900)
-			
-			
+						
 			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 				if telecomManager.callStarted {
 					let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -451,7 +450,7 @@ struct CallView: View {
 						currentOffset = (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)
 						pointingUp = -(((currentOffset - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)) / ((maxBottomSheetHeight * geometry.size.height) - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78))) - 0.5) * 2
 					}
-					.onChange(of: optionsChangeLayout) { optionsChangeLayoutValue in
+					.onChange(of: optionsChangeLayout) { _ in
 						currentOffset = (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)
 						pointingUp = -(((currentOffset - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78)) / ((maxBottomSheetHeight * geometry.size.height) - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78))) - 0.5) * 2
 					}
@@ -461,7 +460,6 @@ struct CallView: View {
 		}
 	}
 	
-	// swiftlint:disable function_body_length
 	// swiftlint:disable:next cyclomatic_complexity
 	func simpleCallView(geometry: GeometryProxy) -> some View {
 		ZStack {
@@ -748,7 +746,6 @@ struct CallView: View {
 			callViewModel.orientationUpdate(orientation: orientation)
 		}
 	}
-	// swiftlint:enable function_body_length
 	
 	// swiftlint:disable:next cyclomatic_complexity
 	func activeSpeakerMode(geometry: GeometryProxy) -> some View {
@@ -1821,7 +1818,7 @@ struct CallView: View {
 		}
 	}
 	
-	// swiftlint:disable function_body_length
+	// swiftlint:disable:next cyclomatic_complexity
 	func bottomSheetContent(geo: GeometryProxy) -> some View {
 		GeometryReader { _ in
 			VStack(spacing: 0) {
@@ -2689,7 +2686,6 @@ struct CallView: View {
 			.frame(maxHeight: .infinity, alignment: .top)
 		}
 	}
-	// swiftlint:enable function_body_length
 	
 	func getAudioRouteImage() {
 		if !AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty {
@@ -2810,4 +2806,5 @@ struct PressedButtonStyle: ButtonStyle {
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length

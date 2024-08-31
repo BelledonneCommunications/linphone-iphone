@@ -20,6 +20,7 @@
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
 class StartConversationViewModel: ObservableObject {
 	
 	static let TAG = "[StartConversationViewModel]"
@@ -301,8 +302,7 @@ class StartConversationViewModel: ObservableObject {
 	}
 	
 	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue {
-			(chatRoom: ChatRoom, eventLog: EventLog) in
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue { (chatRoom: ChatRoom, _: EventLog) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
@@ -337,8 +337,7 @@ class StartConversationViewModel: ObservableObject {
 			}
 		})
 		
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue {
-			(chatRoom: ChatRoom, state: ChatRoom.State) in
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue { (chatRoom: ChatRoom, state: ChatRoom.State) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			if state == ChatRoom.State.CreationFailed {
@@ -357,3 +356,5 @@ class StartConversationViewModel: ObservableObject {
 		return false // TODO: Will be done later in SDK
 	}
 }
+
+// swiftlint:enable line_length

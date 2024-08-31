@@ -36,7 +36,7 @@ class MeetingsListViewModel: ObservableObject {
 	init() {
 		coreContext.doOnCoreQueue { core in
 			self.mCoreSuscriptions.insert(core.publisher?.onConferenceInfoReceived?.postOnCoreQueue { (cbVal: (core: Core, conferenceInfo: ConferenceInfo)) in
-				Log.info("\(MeetingsListViewModel.TAG) Conference info received [\(cbVal.conferenceInfo.uri?.asStringUriOnly())")
+				Log.info("\(MeetingsListViewModel.TAG) Conference info received [\(cbVal.conferenceInfo.uri?.asStringUriOnly() ?? "NIL")")
 				self.computeMeetingsList()
 			})
 		}
@@ -68,7 +68,9 @@ class MeetingsListViewModel: ObservableObject {
 					let organizerCheck = confInfo.organizer?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil
 					let subjectCheck = confInfo.subject?.range(of: filter, options: .caseInsensitive) != nil
 					let descriptionCheck = confInfo.description?.range(of: filter, options: .caseInsensitive) != nil
-					let participantsCheck = confInfo.participantInfos.first(where: {$0.address?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil}) != nil
+					let participantsCheck = confInfo.participantInfos.first(
+						where: {$0.address?.asStringUriOnly().range(of: filter, options: .caseInsensitive) != nil}
+					) != nil
 					
 					add = organizerCheck || subjectCheck || descriptionCheck || participantsCheck
 				}

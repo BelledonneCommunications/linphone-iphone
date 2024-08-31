@@ -112,7 +112,9 @@ class HistoryModel: ObservableObject {
 	
 	func refreshAvatarModel() {
 		coreContext.doOnCoreQueue { _ in
-			let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(address: self.callLog.dir == .Outgoing ? self.callLog.toAddress! : self.callLog.fromAddress!)
+			let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(
+				address: self.callLog.dir == .Outgoing ? self.callLog.toAddress! : self.callLog.fromAddress!
+			)
 			if addressFriendTmp != nil {
 				self.addressFriend = addressFriendTmp
 				

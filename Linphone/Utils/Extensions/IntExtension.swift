@@ -19,6 +19,7 @@
 
 import Foundation
 
+// swiftlint:disable large_tuple
 extension Int {
     
     public func hmsFrom() -> (Int, Int, Int) {
@@ -65,3 +66,4 @@ extension Int {
         return "\(second)"
     }
 }
+// swiftlint:enable large_tuple

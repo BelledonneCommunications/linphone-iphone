@@ -23,7 +23,10 @@ import Combine
 import SwiftUI
 import AVFoundation
 
+// swiftlint:disable line_length
 // swiftlint:disable type_body_length
+// swiftlint:disable cyclomatic_complexity
+
 class ConversationViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
@@ -85,7 +88,7 @@ class ConversationViewModel: ObservableObject {
 							statusTmp = .sending
 						}
 						
-						var indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {
@@ -199,7 +202,7 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func addParticipantConversationModel(address: Address) {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
 				let avatarModelTmp = avatarResult
 				DispatchQueue.main.async {
@@ -234,7 +237,7 @@ class ConversationViewModel: ObservableObject {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
-									//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 									
 									if path != nil {
@@ -434,7 +437,7 @@ class ConversationViewModel: ObservableObject {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
-									//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 									
 									if path != nil {
@@ -619,7 +622,6 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	// swiftlint:disable cyclomatic_complexity
 	func getNewMessages(eventLogs: [EventLog]) {
 		eventLogs.enumerated().forEach { index, eventLog in
 			var attachmentNameList: String = ""
@@ -632,7 +634,7 @@ class ConversationViewModel: ObservableObject {
 						contentText = content.utf8Text ?? ""
 					} else {
 						if content.filePath == nil || content.filePath!.isEmpty {
-							//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+							// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 							let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 							
 							if path != nil {
@@ -843,7 +845,6 @@ class ConversationViewModel: ObservableObject {
 			}
 		}
 	}
-	// swiftlint:enable cyclomatic_complexity
 	
 	func resetMessage() {
 		conversationMessagesSection = []
@@ -860,7 +861,6 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	// swiftlint:disable cyclomatic_complexity
 	func scrollToMessage(message: Message) {
 		coreContext.doOnCoreQueue { _ in
 			if message.replyMessage != nil {
@@ -904,7 +904,7 @@ class ConversationViewModel: ObservableObject {
 										contentText = content.utf8Text ?? ""
 									} else if content.name != nil && !content.name!.isEmpty {
 										if content.filePath == nil || content.filePath!.isEmpty {
-											//self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+											// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
 											let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 											
 											if path != nil {
@@ -1095,7 +1095,6 @@ class ConversationViewModel: ObservableObject {
 			}
 		}
 	}
-	// swiftlint:enable cyclomatic_complexity
 	
 	func sendMessage() {
 		coreContext.doOnCoreQueue { _ in
@@ -1155,7 +1154,7 @@ class ConversationViewModel: ObservableObject {
 							content.type = "file"
 						}
 						
-						//content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
+						// content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
 						content.subtype = attachment.full.pathExtension
 						
 						content.name = attachment.full.lastPathComponent
@@ -1186,7 +1185,7 @@ class ConversationViewModel: ObservableObject {
 					} catch {
 					}
 				}
-				//}
+				// }
 				
 				if message != nil && !message!.contents.isEmpty {
 					Log.info("[ConversationViewModel] Sending message")
@@ -1250,17 +1249,15 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
-		//Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
+		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
 		if !chatMessage.isFileTransferInProgress && (content.filePath == nil || content.filePath!.isEmpty) {
-			let contentName = content.name
-			if contentName != nil {
-				let isImage = FileUtil.isExtensionImage(path: contentName!)
-				let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
-				let file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-				//let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
+			if let contentName = content.name {
+				// let isImage = FileUtil.isExtensionImage(path: contentName)
+				let file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+				// let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
 				content.filePath = String(file.dropFirst(7))
 				Log.info(
-					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath)"
+					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
 				)
 				self.displayedConversation?.downloadContent(chatMessage: chatMessage, content: content)
 			} else {
@@ -1270,7 +1267,6 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewFilePath(name: String) -> String {
-		let groupName = "group.\(Bundle.main.bundleIdentifier ?? "").linphoneExtension"
 		return FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
 	}
 	
@@ -1299,7 +1295,7 @@ class ConversationViewModel: ObservableObject {
 			: pathThumbnail!.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
 			
 			if urlName != nil {
-				let decodedData: () = try data.write(to: urlName!)
+				_ = try data.write(to: urlName!)
 			}
 			
 			return urlName!.absoluteString
@@ -1379,4 +1375,6 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 }
+// swiftlint:enable line_length
 // swiftlint:enable type_body_length
+// swiftlint:enable cyclomatic_complexity

@@ -22,7 +22,10 @@ import linphonesw
 import AVFAudio
 import Combine
 
+// swiftlint:disable line_length
 // swiftlint:disable type_body_length
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable large_tuple
 class CallViewModel: ObservableObject {
 	
 	static let TAG = "[CallViewModel]"
@@ -154,8 +157,6 @@ class CallViewModel: ObservableObject {
 						}
 					}
 					
-					
-					
 					DispatchQueue.main.async {
 						self.displayName = displayNameTmp
 					}
@@ -230,7 +231,7 @@ class CallViewModel: ObservableObject {
 					}
 				}
 				
-				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnCoreQueue {(cbVal: (call: Call, on: Bool, authenticationToken: String?)) in
+				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnCoreQueue { _ in
 					self.updateEncryption(withToast: false)
 					if self.currentCall != nil {
 						self.callMediaEncryptionModel.update(call: self.currentCall!)
@@ -246,7 +247,7 @@ class CallViewModel: ObservableObject {
 				})
 				
 				self.callSuscriptions.insert(
-					self.currentCall!.publisher?.onAuthenticationTokenVerified?.postOnCoreQueue {(call: Call, verified: Bool) in
+					self.currentCall!.publisher?.onAuthenticationTokenVerified?.postOnCoreQueue {(_, verified: Bool) in
 						Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
 						if verified {
 							self.updateEncryption(withToast: true)
@@ -293,20 +294,20 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func getConference() {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			if self.currentCall?.conference != nil {
 				let conf = self.currentCall!.conference!
 				
 				let displayNameTmp = conf.subject ?? ""
 				
-				var myParticipantModelTmp: ParticipantModel? = nil
+				var myParticipantModelTmp: ParticipantModel?
 				if conf.me?.address != nil {
 					myParticipantModelTmp = ParticipantModel(address: conf.me!.address!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin)
 				} else if self.currentCall?.callLog?.localAddress != nil {
 					myParticipantModelTmp = ParticipantModel(address: self.currentCall!.callLog!.localAddress!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin)
 				}
 				
-				var activeSpeakerParticipantTmp: ParticipantModel? = nil
+				var activeSpeakerParticipantTmp: ParticipantModel?
 				if conf.activeSpeakerParticipantDevice?.address != nil {
 					activeSpeakerParticipantTmp = ParticipantModel(
 						address: conf.activeSpeakerParticipantDevice!.address!,
@@ -385,8 +386,8 @@ class CallViewModel: ObservableObject {
 	
 	func waitingForCreatedStateConference() {
 		self.mConferenceSuscriptions.insert(
-			self.currentCall?.conference?.publisher?.onStateChanged?.postOnCoreQueue {(cbValue: (conference: Conference, state: Conference.State)) in
-				if cbValue.state == .Created {
+			self.currentCall?.conference?.publisher?.onStateChanged?.postOnCoreQueue {(cbValue: (conference: Conference, newState: Conference.State)) in
+				if cbValue.newState == .Created {
 					DispatchQueue.main.async {
 						self.getConference()
 					}
@@ -395,9 +396,8 @@ class CallViewModel: ObservableObject {
 		)
 	}
 	
-	// swiftlint:disable:next cyclomatic_complexity
 	func addConferenceCallBacks() {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			self.mConferenceSuscriptions.insert(
 				self.currentCall?.conference?.publisher?.onActiveSpeakerParticipantDevice?.postOnCoreQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
 					if cbValue.participantDevice.address != nil {
@@ -477,7 +477,7 @@ class CallViewModel: ObservableObject {
 							}
 						})
 						
-						var activeSpeakerParticipantTmp: ParticipantModel? = nil
+						var activeSpeakerParticipantTmp: ParticipantModel?
 						var activeSpeakerNameTmp = ""
 						
 						if self.activeSpeakerParticipant == nil {
@@ -755,7 +755,7 @@ class CallViewModel: ObservableObject {
 	func switchCamera() {
 		coreContext.doOnCoreQueue { core in
 			let currentDevice = core.videoDevice
-			Log.info("[CallViewModel] Current camera device is \(currentDevice)")
+			Log.info("[CallViewModel] Current camera device is \(currentDevice ?? "nil")")
 			
 			core.videoDevicesList.forEach { camera in
 				if camera != currentDevice && camera != "StaticImage: Static picture" {
@@ -945,9 +945,6 @@ class CallViewModel: ObservableObject {
 					 }
 					 */
 					
-					// When Post Quantum is available, ZRTP is Post Quantum
-					let isZrtpPQTmp = Core.getPostQuantumAvailable
-					
 					DispatchQueue.main.async {
 						self.isRemoteDeviceTrusted = isRemoteDeviceTrustedTmp
 						self.isMediaEncrypted = true
@@ -1072,7 +1069,7 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func toggleAdminParticipant(index: Int) {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			self.currentCall?.conference?.participantList.forEach({ participant in
 				if participant.address != nil && self.participantList[index].address.clone() != nil && participant.address!.equal(address2: self.participantList[index].address.clone()!) {
 					self.currentCall?.conference?.setParticipantAdminStatus(participant: participant, isAdmin: !participant.isAdmin)
@@ -1082,7 +1079,7 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func removeParticipant(index: Int) {
-		coreContext.doOnCoreQueue { core in
+		coreContext.doOnCoreQueue { _ in
 			self.currentCall?.conference?.participantList.forEach({ participant in
 				if participant.address != nil && self.participantList[index].address.clone() != nil && participant.address!.equal(address2: self.participantList[index].address.clone()!) {
 					do {
@@ -1309,8 +1306,7 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue {
-			(chatRoom: ChatRoom, eventLog: EventLog) in
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue { (chatRoom: ChatRoom, _: EventLog) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
@@ -1345,8 +1341,7 @@ class CallViewModel: ObservableObject {
 			}
 		})
 		
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue {
-			(chatRoom: ChatRoom, state: ChatRoom.State) in
+		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue { (chatRoom: ChatRoom, state: ChatRoom.State) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			if state == ChatRoom.State.CreationFailed {
@@ -1362,3 +1357,6 @@ class CallViewModel: ObservableObject {
 	}
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable line_length
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable large_tuple

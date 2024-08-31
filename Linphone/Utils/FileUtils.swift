@@ -195,8 +195,7 @@ extension NSURL {
 		if let pathExt = self.pathExtension,
 			let mimeType = UTType(filenameExtension: pathExt)?.preferredMIMEType {
 			return mimeType
-		}
-		else {
+		} else {
 			return "application/octet-stream"
 		}
 	}
@@ -206,8 +205,7 @@ extension URL {
 	public func mimeType() -> String {
 		if let mimeType = UTType(filenameExtension: self.pathExtension)?.preferredMIMEType {
 			return mimeType
-		}
-		else {
+		} else {
 			return "application/octet-stream"
 		}
 	}
@@ -217,8 +215,7 @@ extension NSString {
 	public func mimeType() -> String {
 		if let mimeType = UTType(filenameExtension: self.pathExtension)?.preferredMIMEType {
 			return mimeType
-		}
-		else {
+		} else {
 			return "application/octet-stream"
 		}
 	}

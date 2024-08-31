@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// swiftlint:disable line_length
 import SwiftUI
 import linphonesw
 import UniformTypeIdentifiers
@@ -247,8 +246,7 @@ struct MeetingFragment: View {
 							 .frame(height: 1)
 							 .background(Color.gray200)
 						}
-						
-						
+												
 						HStack(alignment: .top, spacing: 10) {
 							Image("users")
 								.renderingMode(.template)
@@ -310,5 +308,3 @@ struct MeetingFragment: View {
 						   , isShowScheduleMeetingFragment: .constant(true)
 						   , isShowSendCancelMeetingNotificationPopup: .constant(false))
 }
-
-// swiftlint:enable line_length

@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 
+// swiftlint:disable type_body_length
 struct EditContactFragment: View {
 	
 	@ObservedObject var editContactViewModel: EditContactViewModel
@@ -531,7 +532,8 @@ struct EditContactFragment: View {
 				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend) {
 					MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 					
-					if editContactViewModel.selectedEditFriend != nil && editContactViewModel.selectedEditFriend!.name != editContactViewModel.firstName + " " + editContactViewModel.lastName {
+					if editContactViewModel.selectedEditFriend != nil 
+						&& editContactViewModel.selectedEditFriend!.name != editContactViewModel.firstName + " " + editContactViewModel.lastName {
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 							let result = ContactsManager.shared.lastSearch.firstIndex(where: {
 								$0.friend!.name == newContact.firstName + " " + newContact.lastName
@@ -562,3 +564,4 @@ struct EditContactFragment: View {
 		isShowDismissPopup: .constant(false)
 	)
 }
+// swiftlint:enable type_body_length

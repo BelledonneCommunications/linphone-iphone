@@ -17,10 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// swiftlint:disable line_length
-
 import SwiftUI
 
+// swiftlint:disable type_body_length
 struct ScheduleMeetingFragment: View {
 	
 	@Environment(\.dismiss) var dismiss
@@ -214,7 +213,6 @@ struct ScheduleMeetingFragment: View {
 						 .frame(width: 24, height: 24)
 						 .padding(.leading, 15)
 						 //Picker(selection:, label:("))
-						 Text("TODO : repeat")
 						 .fontWeight(.bold)
 						 .padding(.leading, 5)
 						 .default_text_style_500(styleSize: 16)
@@ -355,7 +353,6 @@ struct ScheduleMeetingFragment: View {
 				}
 				.padding()
 				
-				
 				if meetingViewModel.operationInProgress {
 					HStack {
 						Spacer()
@@ -491,7 +488,7 @@ struct ScheduleMeetingFragment: View {
 			.padding(.horizontal)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			//.frame(maxWidth: sharedMainViewModel.maxWidth)
+			// .frame(maxWidth: sharedMainViewModel.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
 		.background(.black.opacity(0.65))
@@ -509,7 +506,7 @@ struct ScheduleMeetingFragment: View {
 			meetingViewModel.toDate = selectedDate
 			if selectedDate < meetingViewModel.fromDate {
 				// If new end date is before the previous start date, bump down the start date to the earlier possible from current time
-				if (Date.now.distance(to: selectedDate) < duration) {
+				if Date.now.distance(to: selectedDate) < duration {
 					meetingViewModel.fromDate = Date.now
 				} else {
 					meetingViewModel.fromDate = Calendar.current.date(byAdding: .second, value: (-1)*Int(duration), to: selectedDate)!
@@ -539,4 +536,4 @@ struct ScheduleMeetingFragment: View {
 							, isShowScheduleMeetingFragment: .constant(true))
 }
 
-// swiftlint:enable line_length
+// swiftlint:enable type_body_length

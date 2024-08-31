@@ -19,6 +19,8 @@
 
 import SwiftUI
 
+// swiftlint:disable line_length
+// swiftlint:disable vertical_parameter_alignment
 public struct Message: Identifiable, Hashable {
 
 	public enum Status: Equatable, Hashable {
@@ -236,7 +238,7 @@ public struct DraftMessage {
 	public let createdAt: Date
 	public let ownReaction: String
 	public let reactions: [String]
-
+	
 	public init(id: String? = nil,
 				isOutgoing: Bool,
 				dateReceived: time_t,
@@ -324,8 +326,8 @@ extension Sequence {
 		var values = [T]()
 
 		for element in self {
-			if let el = try await transform(element) {
-				values.append(el)
+			if let elmt = try await transform(element) {
+				values.append(elmt)
 			}
 		}
 
@@ -354,3 +356,5 @@ extension DateFormatter {
 		return String(format: "%02i:%02i", minute, second)
 	}
 }
+// swiftlint:enable line_length
+// swiftlint:enable vertical_parameter_alignment

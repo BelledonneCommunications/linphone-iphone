@@ -20,6 +20,7 @@
 import SwiftUI
 import Foundation
 
+// swiftlint:disable:next type_body_length
 struct ZRTPPopup: View {
 	
 	@ObservedObject private var telecomManager = TelecomManager.shared

@@ -17,6 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// swiftlint:disable line_length
+// swiftlint:disable large_tuple
+// swiftlint:disable function_parameter_count
+
 import linphonesw
 import Contacts
 import SwiftUI
@@ -135,26 +139,22 @@ final class ContactsManager: ObservableObject {
 												
 												var addedAvatarListModel: [ContactAvatarModel] = []
 												cbValue.linphoneFriend.phoneNumbers.forEach { phone in
-													do {
-														let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
+													let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
+													
+													let presence = cbValue.linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
+													if address != nil && presence != nil {
+														cbValue.linphoneFriend.edit()
+														cbValue.linphoneFriend.addAddress(address: address!)
+														cbValue.linphoneFriend.done()
 														
-														let presence = cbValue.linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
-														if address != nil && presence != nil {
-															cbValue.linphoneFriend.edit()
-															cbValue.linphoneFriend.addAddress(address: address!)
-															cbValue.linphoneFriend.done()
-															
-															addedAvatarListModel.append(
-																ContactAvatarModel(
-																	friend: cbValue.linphoneFriend,
-																	name: cbValue.linphoneFriend.name ?? "",
-																	address: cbValue.linphoneFriend.address?.clone()?.asStringUriOnly() ?? "",
-																	withPresence: true
-																)
+														addedAvatarListModel.append(
+															ContactAvatarModel(
+																friend: cbValue.linphoneFriend,
+																name: cbValue.linphoneFriend.name ?? "",
+																address: cbValue.linphoneFriend.address?.clone()?.asStringUriOnly() ?? "",
+																withPresence: true
 															)
-														}
-													} catch let error {
-														print("\(#function) - Failed to create friend phone number for \(phone):", error)
+														)
 													}
 												}
 												
@@ -361,7 +361,7 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func getFriendWithAddressInCoreQueue(address: Address?, completion: @escaping (Friend?) -> Void) {
-		self.coreContext.doOnCoreQueue { core in
+		self.coreContext.doOnCoreQueue { _ in
 			completion(self.getFriendWithAddress(address: address))
 		}
 	}
@@ -384,3 +384,7 @@ struct Contact: Identifiable {
 	var phoneNumbers: [PhoneNumber] = []
 	var imageData: String
 }
+
+// swiftlint:enable line_length
+// swiftlint:enable large_tuple
+// swiftlint:enable function_parameter_count

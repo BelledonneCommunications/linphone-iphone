@@ -17,6 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// swiftlint:disable line_length
+
 import SwiftUI
 
 struct RegisterFragment: View {
@@ -343,3 +345,5 @@ struct RegisterFragment: View {
 #Preview {
 	RegisterFragment(registerViewModel: RegisterViewModel())
 }
+
+// swiftlint:enable line_length

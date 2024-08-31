@@ -21,6 +21,8 @@ import Foundation
 import linphonesw
 import Combine
 
+// swiftlint:disable line_length
+// swiftlint:disable large_tuple
 class ConversationsListViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
@@ -68,7 +70,7 @@ class ConversationsListViewModel: ObservableObject {
 			let chatRoomsCounter = account?.chatRooms != nil ? account!.chatRooms.count : core.chatRooms.count
 			var counter = 0
 			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnCoreQueue { (cbValue: (core: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
-				//Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
+				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				switch cbValue.state {
 				case ChatRoom.State.Created:
 					if !(cbValue.chatRoom.isEmpty && cbValue.chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue)) {
@@ -81,8 +83,8 @@ class ConversationsListViewModel: ObservableObject {
 					}
 				case ChatRoom.State.Deleted:
 					self.computeChatRoomsList(filter: "")
-					//ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
-					//ToastViewModel.shared.displayToast = true
+					// ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
+					// ToastViewModel.shared.displayToast = true
 				default:
 					break
 				}
@@ -214,3 +216,5 @@ class ConversationsListViewModel: ObservableObject {
 		conversationsList = conversationsListTmp
 	}
 }
+// swiftlint:enable line_length
+// swiftlint:enable large_tuple

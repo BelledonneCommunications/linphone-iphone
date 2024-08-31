@@ -64,7 +64,7 @@ struct ContentView: View {
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowSipAddressesPopup = false
-	@State var isShowSipAddressesPopupType = 0 //0 to call, 1  to message, 2 to video call
+	@State var isShowSipAddressesPopupType = 0 // 0 to call, 1  to message, 2 to video call
 	@State var isShowConversationFragment = false
 	
 	@State var fullscreenVideo = false
@@ -760,8 +760,7 @@ struct ContentView: View {
 					}
 					
 					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil ||
-						meetingViewModel.displayedMeeting != nil
-					{
+						meetingViewModel.displayedMeeting != nil {
 						HStack(spacing: 0) {
 							Spacer()
 								.frame(maxWidth:

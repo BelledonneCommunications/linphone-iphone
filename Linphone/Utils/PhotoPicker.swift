@@ -20,6 +20,7 @@
 import SwiftUI
 import PhotosUI
 
+// swiftlint:disable line_length
 struct PhotoPicker: UIViewControllerRepresentable {
 	typealias UIViewControllerType = PHPickerViewController
 	
@@ -85,6 +86,8 @@ struct PhotoPicker: UIViewControllerRepresentable {
 						} catch {
 							
 						}
+					} else {
+						Log.error("Could not load file representation: \(error?.localizedDescription ?? "unknown error")")
 					}
 					
 					dispatchGroup.leave()
@@ -104,6 +107,8 @@ struct PhotoPicker: UIViewControllerRepresentable {
 						} catch {
 							
 						}
+					} else {
+						Log.error("Could not load file representation: \(error?.localizedDescription ?? "unknown error")")
 					}
 					dispatchGroup.leave()
 				}
@@ -119,7 +124,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
 		do {
 			let path = FileManager.default.temporaryDirectory.appendingPathComponent((name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
 			
-			let decodedData: () = try data.write(to: path)
+			_ = try data.write(to: path)
 			
 			if type == .video {
 				let asset = AVURLAsset(url: path, options: nil)
@@ -134,7 +139,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
 				
 				let urlName = FileManager.default.temporaryDirectory.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
 				
-				let decodedData: () = try data.write(to: urlName)
+				_ = try data.write(to: urlName)
 			}
 			
 			return path
@@ -168,3 +173,5 @@ struct PhotoPicker: UIViewControllerRepresentable {
 		}
 	}
 }
+
+// swiftlint:enable line_length

@@ -26,9 +26,7 @@ extension URL {
 		return components?.url
 	}
 	var resourceSpecifier: String {
-		get {
-			let nrl : NSURL = self as NSURL
-			return nrl.resourceSpecifier ?? self.absoluteString
-		}
+		let nrl: NSURL = self as NSURL
+		return nrl.resourceSpecifier ?? self.absoluteString
 	}
 }

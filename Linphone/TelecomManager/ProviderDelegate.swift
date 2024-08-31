@@ -70,21 +70,19 @@ class ProviderDelegate: NSObject {
 	}
 	
 	static var providerConfiguration: CXProviderConfiguration {
-		get {
-			let providerConfiguration = CXProviderConfiguration()
-			// providerConfiguration.ringtoneSound = ConfigManager.instance().lpConfigBoolForKey(key: "use_device_ringtone") ? nil : "notes_of_the_optimistic.caf"
-			providerConfiguration.supportsVideo = true
-			providerConfiguration.iconTemplateImageData = UIImage(named: "linphone")?.pngData()
-			providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
-			
-			providerConfiguration.maximumCallsPerCallGroup = 10
-			providerConfiguration.maximumCallGroups = 10
-			
-			// not show app's calls in tel's history
-			// providerConfiguration.includesCallsInRecents = YES;
-			
-			return providerConfiguration
-		}
+		let providerConfiguration = CXProviderConfiguration()
+		// providerConfiguration.ringtoneSound = ConfigManager.instance().lpConfigBoolForKey(key: "use_device_ringtone") ? nil : "notes_of_the_optimistic.caf"
+		providerConfiguration.supportsVideo = true
+		providerConfiguration.iconTemplateImageData = UIImage(named: "linphone")?.pngData()
+		providerConfiguration.supportedHandleTypes = [.generic, .phoneNumber, .emailAddress]
+		
+		providerConfiguration.maximumCallsPerCallGroup = 10
+		providerConfiguration.maximumCallGroups = 10
+		
+		// not show app's calls in tel's history
+		// providerConfiguration.includesCallsInRecents = YES;
+		
+		return providerConfiguration
 	}
 	
 	func reportIncomingCall(call: Call?, uuid: UUID, handle: String, hasVideo: Bool, displayName: String) {

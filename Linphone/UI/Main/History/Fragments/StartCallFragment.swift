@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 
+// swiftlint:disable type_body_length
 struct StartCallFragment: View {
 	
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
@@ -217,7 +218,8 @@ struct StartCallFragment: View {
 								.padding(.horizontal, 16)
 							}
 							
-							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false), startCallFunc: { addr in
+							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false)
+												 , startCallFunc: { addr in
 								if callViewModel.isTransferInsteadCall {
 									showingDialer = false
 									
@@ -482,3 +484,5 @@ struct StartCallFragment: View {
 		resetCallView: {}
 	)
 }
+
+// swiftlint:enable type_body_length
