@@ -66,8 +66,14 @@ struct MeetingsFragment: View {
 						.padding(.top, 5)
 						.default_text_style_500(styleSize: 15)
 				}
-				Text(model.model!.time) // this time string is formatted for the current timezone, we use the selected timezone only when displaying details
-					.default_text_style_500(styleSize: 15)
+				if model.model!.confInfo.state != ConferenceInfo.State.Cancelled {
+					Text(model.model!.time) // this time string is formatted for the current device timezone, we use the selected timezone only when displaying details
+						.default_text_style_500(styleSize: 15)
+				} else {
+					Text("Cancelled")
+						.foregroundStyle(Color.redDanger500)
+						.default_text_style_500(styleSize: 15)
+				}
 			}
 		}
 		.padding(.leading, 30)
