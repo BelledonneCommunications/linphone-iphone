@@ -25,7 +25,7 @@ import EventKit
 // swiftlint:disable line_length
 class MeetingViewModel: ObservableObject {
 	static let TAG = "[MeetingViewModel]"
-	let eventStore : EKEventStore = EKEventStore()
+	let eventStore: EKEventStore = EKEventStore()
 	
 	@Published var isBroadcastSelected: Bool = false
 	@Published var showBroadcastHelp: Bool = false
@@ -325,25 +325,26 @@ class MeetingViewModel: ObservableObject {
 		}
 	}
 	
+	func createMeetingEKEvent() -> EKEvent {
+		let event: EKEvent = EKEvent(eventStore: eventStore)
+		event.title = subject
+		event.startDate = fromDate
+		event.endDate = toDate
+		event.notes = description
+		event.calendar = eventStore.defaultCalendarForNewEvents
+		event.location = "Linphone video meeting"
+		return event
+	}
+	// For iOS 16 and below
 	func addMeetingToCalendar() {
-		
-		let addToCalendar = { (granted: Bool, error: (any Error)?) in
-			guard let meeting = self.displayedMeeting else {
-				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: no meeting selected")
-				return
-			}
+		eventStore.requestAccess(to: .event, completion: { (granted: Bool, error: (any Error)?) in
 			if !granted {
 				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: access not granted")
 			} else if error == nil {
-				let event: EKEvent = EKEvent(eventStore: self.eventStore)
-				event.title = self.subject
-				event.startDate = self.fromDate
-				event.endDate = self.toDate
-				event.notes = self.description
-				event.calendar = self.eventStore.defaultCalendarForNewEvents
+				let event = self.createMeetingEKEvent()
 				do {
 					try self.eventStore.save(event, span: .thisEvent)
-					Log.info("\(MeetingViewModel.TAG) Meeting '\(meeting.subject)' added to calendar")
+					Log.info("\(MeetingViewModel.TAG) Meeting '\(self.subject)' added to calendar")
 					ToastViewModel.shared.toastMessage = "Meeting_added_to_calendar"
 					ToastViewModel.shared.displayToast = true
 				} catch let error as NSError {
@@ -354,15 +355,8 @@ class MeetingViewModel: ObservableObject {
 			} else {
 				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error?.localizedDescription ?? "")")
 			}
-		}
-		
-		if #available(iOS 17.0, *) {
-			eventStore.requestWriteOnlyAccessToEvents(completion: addToCalendar)
-		} else {
-			eventStore.requestAccess(to: .event, completion: addToCalendar)
-		}
+		})
 	}
-	// eventStore.requestAccess(to: EKEntityType.event) { granted, error in
 }
 
 // swiftlint:enable line_length

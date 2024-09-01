@@ -33,6 +33,7 @@ struct MeetingFragment: View {
 	
 	@State private var showDatePicker = false
 	@State private var showTimePicker = false
+	@State private var showEventEditView = false
 	
 	@State var selectedDate = Date.now
 	@State var setFromDate: Bool = true
@@ -107,6 +108,25 @@ struct MeetingFragment: View {
 						}
 						
 						Menu {
+							Button {
+								if #available(iOS 17.0, *) {
+									withAnimation {
+										showEventEditView.toggle()
+									}
+								} else {
+									meetingViewModel.addMeetingToCalendar()
+								}
+							} label: {
+								HStack {
+									Image("calendar")
+										.renderingMode(.template)
+										.resizable()
+										.frame(width: 25, height: 25, alignment: .leading)
+									Text("Add to calendar")
+										.default_text_style(styleSize: 16)
+									Spacer()
+								}
+							}
 							Button(role: .destructive) {
 								withAnimation {
 									meetingsListViewModel.selectedMeetingToDelete = meetingViewModel.displayedMeeting
@@ -292,7 +312,9 @@ struct MeetingFragment: View {
 						.padding(.leading, 15)
 						.padding(.trailing, 15)
 				})
-			}
+			}.sheet(isPresented: $showEventEditView, content: { // $showEventEditView only edited on iOS17+
+				EventEditViewController(meetingViewModel: self.meetingViewModel)
+			})
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 	}

@@ -199,6 +199,9 @@
     "Add the contact" : {
 
     },
+    "Add to calendar" : {
+
+    },
     "Add to contacts" : {
 
     },
@@ -1484,6 +1487,9 @@
     "Marquer comme non lu" : {
 
     },
+    "Meeting added to iPhone calendar" : {
+
+    },
     "Meetings" : {
 
     },
@@ -1906,7 +1912,7 @@
     "This contact will be deleted definitively." : {
 
     },
-    "Time Zone:" : {
+    "Time Zone: %@" : {
 
     },
     "Title" : {
