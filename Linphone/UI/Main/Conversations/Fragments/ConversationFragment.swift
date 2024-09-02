@@ -30,6 +30,7 @@ struct ConversationFragment: View {
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
 	@State var isMenuOpen = false
 	
@@ -48,6 +49,8 @@ struct ConversationFragment: View {
 	@State private var isShowCamera = false
 	
 	@State private var mediasIsLoading = false
+	
+	@State private var isShowConversationForwardMessageFragment = false
 	
 	@Binding var isShowConversationFragment: Bool
 	
@@ -681,6 +684,12 @@ struct ConversationFragment: View {
 										}
 										
 										Button {
+											conversationForwardMessageViewModel.initConversationsLists(convsList: conversationsListViewModel.conversationsListTmp)
+											conversationForwardMessageViewModel.selectedMessage = conversationViewModel.selectedMessage
+											conversationViewModel.selectedMessage = nil
+											withAnimation {
+												isShowConversationForwardMessageFragment = true
+											}
 										} label: {
 											HStack {
 												Text("menu_forward_chat_message")
@@ -743,6 +752,17 @@ struct ConversationFragment: View {
 								conversationViewModel.selectedMessage = nil
 							}
 						}
+					}
+					
+					if isShowConversationForwardMessageFragment {
+						ConversationForwardMessageFragment(
+							conversationViewModel: conversationViewModel,
+							conversationsListViewModel: conversationsListViewModel,
+							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+							isShowConversationForwardMessageFragment: $isShowConversationForwardMessageFragment
+						)
+						.zIndex(5)
+						.transition(.move(edge: .trailing))
 					}
 				}
 				.background(.white)

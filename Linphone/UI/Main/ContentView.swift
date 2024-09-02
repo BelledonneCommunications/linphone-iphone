@@ -46,6 +46,7 @@ struct ContentView: View {
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	@ObservedObject var meetingViewModel: MeetingViewModel
+	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
 	@State var index = 0
 	@State private var orientation = UIDevice.current.orientation
@@ -800,7 +801,12 @@ struct ContentView: View {
 									.ignoresSafeArea(.keyboard)
 								}
 							} else if self.index == 2 {
-								ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, isShowConversationFragment: $isShowConversationFragment)
+								ConversationFragment(
+									conversationViewModel: conversationViewModel,
+									conversationsListViewModel: conversationsListViewModel,
+									conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+									isShowConversationFragment: $isShowConversationFragment
+								)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
 									.ignoresSafeArea(.keyboard)
@@ -1107,21 +1113,29 @@ struct ContentView: View {
 					}
 					
 					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) && !telecomManager.meetingWaitingRoomDisplayed {
-						CallView(callViewModel: callViewModel, conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, fullscreenVideo: $fullscreenVideo, isShowStartCallFragment: $isShowStartCallFragment, isShowConversationFragment: $isShowConversationFragment)
-							.zIndex(5)
-							.transition(.scale.combined(with: .move(edge: .top)))
-							.onAppear {
-								UIApplication.shared.isIdleTimerDisabled = true
-								callViewModel.resetCallView()
-								if callViewModel.callsCounter >= 1 {
-									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-										callViewModel.resetCallView()
-									}
+						CallView(
+							callViewModel: callViewModel,
+							conversationViewModel: conversationViewModel,
+							conversationsListViewModel: conversationsListViewModel,
+							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+							fullscreenVideo: $fullscreenVideo,
+							isShowStartCallFragment: $isShowStartCallFragment,
+							isShowConversationFragment: $isShowConversationFragment
+						)
+						.zIndex(5)
+						.transition(.scale.combined(with: .move(edge: .top)))
+						.onAppear {
+							UIApplication.shared.isIdleTimerDisabled = true
+							callViewModel.resetCallView()
+							if callViewModel.callsCounter >= 1 {
+								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+									callViewModel.resetCallView()
 								}
 							}
-							.onDisappear {
-								UIApplication.shared.isIdleTimerDisabled = false
-							}
+						}
+						.onDisappear {
+							UIApplication.shared.isIdleTimerDisabled = false
+						}
 					}
 					
 					ToastView()
@@ -1176,7 +1190,8 @@ struct ContentView: View {
 		conversationsListViewModel: ConversationsListViewModel(),
 		conversationViewModel: ConversationViewModel(),
 		meetingsListViewModel: MeetingsListViewModel(),
-		meetingViewModel: MeetingViewModel()
+		meetingViewModel: MeetingViewModel(),
+		conversationForwardMessageViewModel: ConversationForwardMessageViewModel()
 	)
 }
 // swiftlint:enable type_body_length

@@ -68,6 +68,31 @@ struct ChatBubbleView: View {
 									.padding(.bottom, 2)
 							}
 							
+							if eventLogMessage.message.isForward {
+								HStack {
+									if eventLogMessage.message.isOutgoing {
+										Spacer()
+									}
+									
+									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading, spacing: 0) {
+										HStack {
+											Image("forward")
+												.resizable()
+												.frame(width: 15, height: 15, alignment: .leading)
+											
+											Text("message_forwarded_label")
+												.default_text_style(styleSize: 12)
+										}
+										.padding(.bottom, 2)
+									}
+									
+									if !eventLogMessage.message.isOutgoing {
+										Spacer()
+									}
+								}
+								.frame(maxWidth: .infinity)
+							}
+							
 							if eventLogMessage.message.replyMessage != nil {
 								HStack {
 									if eventLogMessage.message.isOutgoing {

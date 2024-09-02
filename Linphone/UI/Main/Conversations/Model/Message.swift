@@ -77,6 +77,7 @@ public struct Message: Identifiable, Hashable {
 	public var attachments: [Attachment]
 	public var recording: Recording?
 	public var replyMessage: ReplyMessage?
+	public var isForward: Bool
 	public var ownReaction: String
 	public var reactions: [String]
 
@@ -94,6 +95,7 @@ public struct Message: Identifiable, Hashable {
 		attachments: [Attachment] = [],
 		recording: Recording? = nil,
 		replyMessage: ReplyMessage? = nil,
+		isForward: Bool = false,
 		ownReaction: String = "",
 		reactions: [String] = []
 	) {
@@ -110,6 +112,7 @@ public struct Message: Identifiable, Hashable {
 		self.attachments = attachments
 		self.recording = recording
 		self.replyMessage = replyMessage
+		self.isForward = isForward
 		self.ownReaction = ownReaction
 		self.reactions = reactions
 	}

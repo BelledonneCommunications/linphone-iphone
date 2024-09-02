@@ -788,6 +788,9 @@
     "Cancel for me only" : {
 
     },
+    "Cancelled" : {
+
+    },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
 
     },
@@ -958,6 +961,23 @@
         }
       }
     },
+    "conversation_forward_message_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forward message to…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transférer à…"
+          }
+        }
+      }
+    },
     "conversation_invalid_participant_due_to_security_mode_toast" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -971,6 +991,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé."
+          }
+        }
+      }
+    },
+    "conversation_message_forward_cancelled_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message forward was cancelled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfert du message abandonné"
+          }
+        }
+      }
+    },
+    "conversation_message_forwarded_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message was forwarded"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le message a été transféré"
           }
         }
       }
@@ -1599,6 +1653,23 @@
     },
     "Message copied into clipboard" : {
 
+    },
+    "message_forwarded_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forwarded"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transféré"
+          }
+        }
+      }
     },
     "Messages" : {
 

@@ -82,6 +82,7 @@ struct LinphoneApp: App {
 	@State private var conversationViewModel: ConversationViewModel?
 	@State private var meetingsListViewModel: MeetingsListViewModel?
 	@State private var meetingViewModel: MeetingViewModel?
+	@State private var conversationForwardMessageViewModel: ConversationForwardMessageViewModel?
 	
 	var body: some Scene {
 		WindowGroup {
@@ -113,7 +114,8 @@ struct LinphoneApp: App {
 							&& conversationsListViewModel != nil
 							&& conversationViewModel != nil 
 							&& meetingsListViewModel != nil
-							&& meetingViewModel != nil {
+							&& meetingViewModel != nil 
+							&& conversationForwardMessageViewModel != nil {
 					ContentView(
 						contactViewModel: contactViewModel!,
 						editContactViewModel: editContactViewModel!,
@@ -126,7 +128,8 @@ struct LinphoneApp: App {
 						conversationsListViewModel: conversationsListViewModel!,
 						conversationViewModel: conversationViewModel!,
 						meetingsListViewModel: meetingsListViewModel!,
-						meetingViewModel: meetingViewModel!
+						meetingViewModel: meetingViewModel!,
+						conversationForwardMessageViewModel: conversationForwardMessageViewModel!
 					).onOpenURL { url in
 						URIHandler.handleURL(url: url)
 					}
@@ -150,6 +153,7 @@ struct LinphoneApp: App {
 						conversationViewModel = ConversationViewModel()
 						meetingsListViewModel = MeetingsListViewModel()
 						meetingViewModel = MeetingViewModel()
+						conversationForwardMessageViewModel = ConversationForwardMessageViewModel()
 					}.onOpenURL { url in
 						URIHandler.handleURL(url: url)
 					}

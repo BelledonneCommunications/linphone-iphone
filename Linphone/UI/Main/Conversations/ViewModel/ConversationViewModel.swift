@@ -70,6 +70,33 @@ class ConversationViewModel: ObservableObject {
 	func addChatMessageDelegate(message: ChatMessage) {
 		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 			if self.displayedConversation != nil {
+				var statusTmp: Message.Status? = .sending
+				switch message.state {
+				case .InProgress:
+					statusTmp = .sending
+				case .Delivered:
+					statusTmp = .sent
+				case .DeliveredToUser:
+					statusTmp = .received
+				case .Displayed:
+					statusTmp = .read
+				case .NotDelivered:
+					statusTmp = .error
+				default:
+					statusTmp = .sending
+				}
+				
+				let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
+				
+				if self.conversationMessagesSection[0].rows[indexMessage!].message.status != statusTmp {
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.objectWillChange.send()
+							self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp
+						}
+					}
+				}
+				
 				self.coreContext.doOnCoreQueue { _ in
 					self.chatMessageSuscriptions.insert(message.publisher?.onMsgStateChanged?.postOnCoreQueue {(cbValue: (message: ChatMessage, state: ChatMessage.State)) in
 						var statusTmp: Message.Status? = .sending
@@ -381,6 +408,7 @@ class ConversationViewModel: ObservableObject {
 									attachmentsNames: attachmentNameList,
 									attachments: attachmentList,
 									replyMessage: replyMessageTmp,
+									isForward: eventLog.chatMessage?.isForward ?? false,
 									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 									reactions: reactionsTmp
 								)
@@ -581,6 +609,7 @@ class ConversationViewModel: ObservableObject {
 									attachmentsNames: attachmentNameList,
 									attachments: attachmentList,
 									replyMessage: replyMessageTmp,
+									isForward: eventLog.chatMessage?.isForward ?? false,
 									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 									reactions: reactionsTmp
 								)
@@ -793,6 +822,7 @@ class ConversationViewModel: ObservableObject {
 						attachmentsNames: attachmentNameList,
 						attachments: attachmentList,
 						replyMessage: replyMessageTmp,
+						isForward: eventLog.chatMessage?.isForward ?? false,
 						ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 						reactions: reactionsTmp
 					)
@@ -1048,6 +1078,7 @@ class ConversationViewModel: ObservableObject {
 											attachmentsNames: attachmentNameList,
 											attachments: attachmentList,
 											replyMessage: replyMessageTmp,
+											isForward: eventLog.chatMessage?.isForward ?? false,
 											ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
 											reactions: reactionsTmp
 										)

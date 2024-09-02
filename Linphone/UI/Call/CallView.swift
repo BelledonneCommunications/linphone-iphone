@@ -36,6 +36,7 @@ struct CallView: View {
 	@ObservedObject var callViewModel: CallViewModel
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
 	
@@ -192,16 +193,21 @@ struct CallView: View {
 				}
 				
 				if isShowConversationFragment && conversationViewModel.displayedConversation != nil {
-					ConversationFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, isShowConversationFragment: $isShowConversationFragment)
-						.frame(maxWidth: .infinity)
-						.background(Color.gray100)
-						.ignoresSafeArea(.keyboard)
-						.zIndex(4)
-						.transition(.move(edge: .bottom))
-						.onDisappear {
-							conversationViewModel.displayedConversation = nil
-							isShowConversationFragment = false
-						}
+					ConversationFragment(
+						conversationViewModel: conversationViewModel,
+						conversationsListViewModel: conversationsListViewModel,
+						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+						isShowConversationFragment: $isShowConversationFragment
+					)
+					.frame(maxWidth: .infinity)
+					.background(Color.gray100)
+					.ignoresSafeArea(.keyboard)
+					.zIndex(4)
+					.transition(.move(edge: .bottom))
+					.onDisappear {
+						conversationViewModel.displayedConversation = nil
+						isShowConversationFragment = false
+					}
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
@@ -2799,6 +2805,7 @@ struct PressedButtonStyle: ButtonStyle {
 		callViewModel: CallViewModel(),
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
+		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
 		isShowConversationFragment: .constant(false)
