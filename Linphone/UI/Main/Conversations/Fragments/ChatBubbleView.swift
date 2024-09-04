@@ -187,6 +187,10 @@ struct ChatBubbleView: View {
 													}
 												}
 											}
+											.onTapGesture {
+												conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+												conversationViewModel.prepareBottomSheetForDeliveryStatus()
+											}
 											.padding(.top, -4)
 										}
 										.padding(.all, 15)

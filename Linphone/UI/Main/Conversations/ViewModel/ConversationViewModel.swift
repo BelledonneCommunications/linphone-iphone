@@ -48,8 +48,24 @@ class ConversationViewModel: ObservableObject {
 	
 	var oldMessageReceived = false
 	
+	@Published var isShowSelectedMessageToDisplayDetailsBottomSheet: Bool = false
+	@Published var selectedMessageToDisplayDetails: EventLogMessage?
 	@Published var selectedMessage: EventLogMessage?
 	@Published var messageToReply: EventLogMessage?
+	
+	struct SheetCategory: Identifiable {
+		let id = UUID()
+		let name: String
+		let innerCategory: [InnerSheetCategory]
+	}
+	
+	struct InnerSheetCategory: Identifiable {
+		let id = UUID()
+		let contact: ContactAvatarModel
+		let detail: String
+	}
+	
+	@Published var sheetCategories: [SheetCategory] = []
 	
 	init() {}
 	
@@ -1402,6 +1418,67 @@ class ConversationViewModel: ObservableObject {
 			if self.selectedMessage != nil && self.selectedMessage!.eventLog.chatMessage != nil {
 				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.eventLog.chatMessage!)")
 				self.selectedMessage!.eventLog.chatMessage!.send()
+			}
+		}
+	}
+	
+	func prepareBottomSheetForDeliveryStatus() {
+		self.sheetCategories.removeAll()
+		coreContext.doOnCoreQueue { _ in
+			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventLog.chatMessage != nil {
+				
+				let participantsImdnDisplayed = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .Displayed)
+				var participantListDisplayed: [InnerSheetCategory] = []
+				participantsImdnDisplayed.forEach({ participantImdn in
+					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
+						ContactAvatarModel.getAvatarModelFromAddress(address: participantImdn.participant!.address!) { avatarResult in
+							let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: self.getMessageTime(startDate: participantImdn.stateChangeTime))
+							participantListDisplayed.append(innerSheetCat)
+						}
+					}
+				})
+				
+				let participantsImdnDeliveredToUser = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .DeliveredToUser)
+				var participantListDeliveredToUser: [InnerSheetCategory] = []
+				participantsImdnDeliveredToUser.forEach({ participantImdn in
+					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
+						ContactAvatarModel.getAvatarModelFromAddress(address: participantImdn.participant!.address!) { avatarResult in
+							let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: self.getMessageTime(startDate: participantImdn.stateChangeTime))
+							participantListDeliveredToUser.append(innerSheetCat)
+						}
+					}
+				})
+				
+				let participantsImdnDelivered = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .Delivered)
+				var participantListDelivered: [InnerSheetCategory] = []
+				participantsImdnDelivered.forEach({ participantImdn in
+					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
+						ContactAvatarModel.getAvatarModelFromAddress(address: participantImdn.participant!.address!) { avatarResult in
+							let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: self.getMessageTime(startDate: participantImdn.stateChangeTime))
+							participantListDelivered.append(innerSheetCat)
+						}
+					}
+				})
+				
+				let participantsImdnNotDelivered = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .NotDelivered)
+				var participantListNotDelivered: [InnerSheetCategory] = []
+				participantsImdnNotDelivered.forEach({ participantImdn in
+					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
+						ContactAvatarModel.getAvatarModelFromAddress(address: participantImdn.participant!.address!) { avatarResult in
+							let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: self.getMessageTime(startDate: participantImdn.stateChangeTime))
+							participantListNotDelivered.append(innerSheetCat)
+						}
+					}
+				})
+				
+				DispatchQueue.main.async {
+					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_read_title" + "\(participantListDisplayed.count)", innerCategory: participantListDisplayed))
+					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_received_title" + "\(participantListDeliveredToUser.count)", innerCategory: participantListDeliveredToUser))
+					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_sent_title" + "\(participantListDelivered.count)", innerCategory: participantListDelivered))
+					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_error_title" + "\(participantListNotDelivered.count)", innerCategory: participantListNotDelivered))
+					
+					self.isShowSelectedMessageToDisplayDetailsBottomSheet = true
+				}
 			}
 		}
 	}

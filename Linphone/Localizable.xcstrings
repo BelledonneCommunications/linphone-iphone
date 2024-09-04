@@ -791,6 +791,9 @@
     "Cancelled" : {
 
     },
+    "Categories" : {
+
+    },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
 
     },
@@ -1653,6 +1656,74 @@
     },
     "Message copied into clipboard" : {
 
+    },
+    "message_delivery_info_error_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En erreur"
+          }
+        }
+      }
+    },
+    "message_delivery_info_read_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lu"
+          }
+        }
+      }
+    },
+    "message_delivery_info_received_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Received"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reçu"
+          }
+        }
+      }
+    },
+    "message_delivery_info_sent_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sent"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoyé"
+          }
+        }
+      }
     },
     "message_forwarded_label" : {
       "extractionState" : "manual",
