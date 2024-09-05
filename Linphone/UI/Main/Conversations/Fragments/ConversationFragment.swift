@@ -73,10 +73,10 @@ struct ConversationFragment: View {
 						.onDisappear {
 							conversationViewModel.removeConversationDelegate()
 						}
-						.sheet(isPresented: $conversationViewModel.isShowSelectedMessageToDisplayDetailsBottomSheet, onDismiss: {
-							conversationViewModel.isShowSelectedMessageToDisplayDetailsBottomSheet = false
+						.sheet(isPresented: $conversationViewModel.isShowSelectedMessageToDisplayDetails, onDismiss: {
+							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}, content: {
-							imdnSheet()
+							imdnOrReactionsSheet()
 								.presentationDetents([.medium])
 				 				.presentationDragIndicator(.visible)
 						})
@@ -115,10 +115,10 @@ struct ConversationFragment: View {
 						.onDisappear {
 							conversationViewModel.removeConversationDelegate()
 						}
-						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetailsBottomSheet) {
-							imdnSheet()
+						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetails) {
+							imdnOrReactionsSheet()
 						} onDismiss: {
-							conversationViewModel.isShowSelectedMessageToDisplayDetailsBottomSheet = false
+							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}
 						.sheet(isPresented: $isShowPhotoLibrary, onDismiss: {
 							isShowPhotoLibrary = false
@@ -864,42 +864,67 @@ struct ConversationFragment: View {
 	//swiftlint:enable function_body_length
 	
 	@ViewBuilder
-	func imdnSheet() -> some View {
-			VStack {
-				Picker("Categories", selection: $selectedCategoryIndex) {
-					ForEach(0..<conversationViewModel.sheetCategories.count, id: \.self) { index in
-						Text(conversationViewModel.sheetCategories[index].name)
-					}
+	func imdnOrReactionsSheet() -> some View {
+		VStack {
+			Picker("Categories", selection: $selectedCategoryIndex) {
+				ForEach(0..<conversationViewModel.sheetCategories.count, id: \.self) { index in
+					Text(conversationViewModel.sheetCategories[index].name)
 				}
-				.pickerStyle(SegmentedPickerStyle())
-				.padding()
-				
-				List {
-					ForEach(conversationViewModel.sheetCategories[selectedCategoryIndex].innerCategory, id: \.id) { participant in
-						HStack {
-							Avatar(contactAvatarModel: participant.contact, avatarSize: 50)
-							
-							Text(participant.contact.name)
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.lineLimit(1)
-							
-							Spacer()
-							
-							Text(participant.detail)
-								.default_text_style(styleSize: 16)
-								.lineLimit(1)
-						}
-						.font(.system(size: 40))
-						.buttonStyle(.borderless)
-						.listRowSeparator(.hidden)
-						.background(.white)
-					}
-				}
-				.listStyle(.plain)
 			}
-			.padding(.top)
-			.background(.white)
+			.pickerStyle(SegmentedPickerStyle())
+			.padding()
+			
+			ScrollView {
+				LazyVStack {
+					if selectedCategoryIndex < conversationViewModel.sheetCategories.count && !conversationViewModel.sheetCategories[selectedCategoryIndex].innerCategory.isEmpty {
+						ForEach(conversationViewModel.sheetCategories[selectedCategoryIndex].innerCategory, id: \.id) { participant in
+							Button(
+								action: {
+									if participant.isMe {
+										conversationViewModel.removeReaction()
+									}
+								},
+								label: {
+									Avatar(contactAvatarModel: participant.contact, avatarSize: 50)
+									
+									VStack {
+										
+										Text(participant.contact.name)
+											.default_text_style(styleSize: 16)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.lineLimit(1)
+										
+										if participant.isMe {
+											Text("message_reaction_click_to_remove_label")
+												.foregroundStyle(Color.grayMain2c400)
+												.default_text_style_300(styleSize: 14)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												.lineLimit(1)
+										}
+									}
+									
+									Spacer()
+									
+									Text(participant.detail)
+										.default_text_style(styleSize: 16)
+										.lineLimit(1)
+								}
+							)
+							.disabled(!participant.isMe)
+							.padding(.horizontal)
+							.buttonStyle(.borderless)
+							.background(.white)
+						}
+					}
+				}
+			}
+			.listStyle(.plain)
+		}
+		.onAppear {
+			selectedCategoryIndex = 0
+		}
+		.padding(.top)
+		.background(.white)
 	}
 }
 

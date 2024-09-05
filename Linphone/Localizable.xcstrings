@@ -1742,6 +1742,40 @@
         }
       }
     },
+    "message_reaction_click_to_remove_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click to remove"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cliquez pour supprimer"
+          }
+        }
+      }
+    },
+    "message_reactions_info_all_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reactions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réactions"
+          }
+        }
+      }
+    },
     "Messages" : {
 
     },

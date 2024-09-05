@@ -191,6 +191,7 @@ struct ChatBubbleView: View {
 												conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
 												conversationViewModel.prepareBottomSheetForDeliveryStatus()
 											}
+											.disabled(conversationViewModel.selectedMessage != nil)
 											.padding(.top, -4)
 										}
 										.padding(.all, 15)
@@ -211,18 +212,17 @@ struct ChatBubbleView: View {
 													}
 												}
 												
-												if (
-													(eventLogMessage.message.reactions.contains("👍") ? 1 : 0) +
-													(eventLogMessage.message.reactions.contains("❤️") ? 1 : 0) +
-													(eventLogMessage.message.reactions.contains("😂") ? 1 : 0) +
-													(eventLogMessage.message.reactions.contains("😮") ? 1 : 0) +
-													(eventLogMessage.message.reactions.contains("😢") ? 1 : 0)
-												) != eventLogMessage.message.reactions.count {
+												if containsDuplicates(strings: eventLogMessage.message.reactions) {
 													Text("\(eventLogMessage.message.reactions.count)")
 														.default_text_style(styleSize: 14)
 														.padding(.horizontal, -2)
 												}
 											}
+											.onTapGesture {
+												conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+												conversationViewModel.prepareBottomSheetForReactions()
+											}
+											.disabled(conversationViewModel.selectedMessage != nil)
 											.padding(.vertical, 6)
 											.padding(.horizontal, 10)
 											.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
@@ -283,6 +283,11 @@ struct ChatBubbleView: View {
 			}
 			UIApplication.shared.endEditing()
 		}
+	}
+	
+	func containsDuplicates(strings: [String]) -> Bool {
+		let uniqueStrings = Set(strings)
+		return uniqueStrings.count != strings.count
 	}
 	
 	@ViewBuilder

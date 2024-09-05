@@ -48,7 +48,7 @@ class ConversationViewModel: ObservableObject {
 	
 	var oldMessageReceived = false
 	
-	@Published var isShowSelectedMessageToDisplayDetailsBottomSheet: Bool = false
+	@Published var isShowSelectedMessageToDisplayDetails: Bool = false
 	@Published var selectedMessageToDisplayDetails: EventLogMessage?
 	@Published var selectedMessage: EventLogMessage?
 	@Published var messageToReply: EventLogMessage?
@@ -63,6 +63,7 @@ class ConversationViewModel: ObservableObject {
 		let id = UUID()
 		let contact: ContactAvatarModel
 		let detail: String
+		var isMe: Bool = false
 	}
 	
 	@Published var sheetCategories: [SheetCategory] = []
@@ -1387,6 +1388,33 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func removeReaction() {
+		coreContext.doOnCoreQueue { _ in
+			if self.selectedMessageToDisplayDetails != nil {
+				Log.info("[ConversationViewModel] Remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
+				let messageToSendReaction = self.selectedMessageToDisplayDetails!.eventLog.chatMessage
+				if messageToSendReaction != nil {
+					do {
+						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: "")
+						reaction.send()
+						
+						let indexMessageSelected = self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessageToDisplayDetails!)
+						
+						DispatchQueue.main.async {
+							if indexMessageSelected != nil {
+								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = ""
+							}
+							self.selectedMessageToDisplayDetails = nil
+							self.isShowSelectedMessageToDisplayDetails = false
+						}
+					} catch {
+						Log.info("[ConversationViewModel] Error: Can't remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
+					}
+				}
+			}
+		}
+	}
+	
 	func sendReaction(emoji: String) {
 		coreContext.doOnCoreQueue { _ in
 			if self.selectedMessage != nil {
@@ -1472,12 +1500,69 @@ class ConversationViewModel: ObservableObject {
 				})
 				
 				DispatchQueue.main.async {
-					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_read_title" + "\(participantListDisplayed.count)", innerCategory: participantListDisplayed))
-					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_received_title" + "\(participantListDeliveredToUser.count)", innerCategory: participantListDeliveredToUser))
-					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_sent_title" + "\(participantListDelivered.count)", innerCategory: participantListDelivered))
-					self.sheetCategories.append(SheetCategory(name: "message_delivery_info_error_title" + "\(participantListNotDelivered.count)", innerCategory: participantListNotDelivered))
+					self.sheetCategories.append(SheetCategory(name: NSLocalizedString("message_delivery_info_read_title", comment: "") + " \(participantListDisplayed.count)", innerCategory: participantListDisplayed))
+					self.sheetCategories.append(SheetCategory(name: NSLocalizedString("message_delivery_info_received_title", comment: "") + " \(participantListDeliveredToUser.count)", innerCategory: participantListDeliveredToUser))
+					self.sheetCategories.append(SheetCategory(name: NSLocalizedString("message_delivery_info_sent_title", comment: "") + " \(participantListDelivered.count)", innerCategory: participantListDelivered))
+					self.sheetCategories.append(SheetCategory(name: NSLocalizedString("message_delivery_info_error_title", comment: "") + " \(participantListNotDelivered.count)", innerCategory: participantListNotDelivered))
 					
-					self.isShowSelectedMessageToDisplayDetailsBottomSheet = true
+					self.isShowSelectedMessageToDisplayDetails = true
+				}
+			}
+		}
+	}
+	
+	func prepareBottomSheetForReactions() {
+		self.sheetCategories.removeAll()
+		coreContext.doOnCoreQueue { core in
+			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventLog.chatMessage != nil {
+				let dispatchGroup = DispatchGroup()
+				
+				var sheetCategoriesTmp: [SheetCategory] = []
+				
+				var participantList: [[InnerSheetCategory]] = [[]]
+				var reactionList: [String] = []
+				
+				self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.reactions.forEach { chatMessageReaction in
+					if chatMessageReaction.fromAddress != nil {
+						dispatchGroup.enter()
+						ContactAvatarModel.getAvatarModelFromAddress(address: chatMessageReaction.fromAddress!) { avatarResult in
+							if core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil && core.defaultAccount!.contactAddress!.asStringUriOnly().contains(avatarResult.address) {
+								let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: chatMessageReaction.body, isMe: true)
+								participantList[0].append(innerSheetCat)
+							} else {
+								let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: chatMessageReaction.body)
+								participantList[0].append(innerSheetCat)
+							}
+							
+							if !reactionList.contains(where: {$0 == chatMessageReaction.body}) {
+								reactionList.append(chatMessageReaction.body)
+							}
+							
+							dispatchGroup.leave()
+						}
+					}
+				}
+				
+				dispatchGroup.notify(queue: .main) {
+					reactionList.forEach { reaction in
+						participantList.append([])
+						participantList[0].forEach { innerSheetCategory in
+							if innerSheetCategory.detail == reaction {
+								participantList[participantList.count - 1].append(innerSheetCategory)
+							}
+						}
+					}
+					
+					sheetCategoriesTmp.append(SheetCategory(name: NSLocalizedString("message_reactions_info_all_title", comment: "") + " \(participantList.first!.count)", innerCategory: participantList.first!))
+					
+					reactionList.enumerated().forEach { index, reaction in
+						sheetCategoriesTmp.append(SheetCategory(name: reaction + " \(participantList[index + 1].count)", innerCategory: participantList[index + 1]))
+					}
+					
+					DispatchQueue.main.async {
+						self.sheetCategories = sheetCategoriesTmp
+						self.isShowSelectedMessageToDisplayDetails = true
+					}
 				}
 			}
 		}
