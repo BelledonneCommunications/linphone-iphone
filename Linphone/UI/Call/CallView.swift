@@ -751,6 +751,11 @@ struct CallView: View {
 			
 			callViewModel.orientationUpdate(orientation: orientation)
 		}
+		.onReceive(telecomManager.$remoteConfVideo, perform: { videoOn in
+			if videoOn {
+				fullscreenVideo = videoOn
+			}
+		})
 	}
 	
 	// swiftlint:disable:next cyclomatic_complexity

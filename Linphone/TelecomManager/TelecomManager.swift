@@ -412,6 +412,15 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
+	func updateRemoteConfVideo(remConfVideoEnabled: Bool) {
+		if self.remoteConfVideo != remConfVideoEnabled {
+			DispatchQueue.main.async {
+				self.remoteConfVideo.toggle()
+				Log.info("[Call] Remote video is \(remConfVideoEnabled ? "activated" : "not activated")")
+			}
+		}
+	}
+	
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
 		let callId = callLog?.callId ?? ""
@@ -423,64 +432,27 @@ class TelecomManager: ObservableObject {
 			if call.conference != nil {
 				if call.conference!.activeSpeakerParticipantDevice != nil {
 					let direction = call.conference?.activeSpeakerParticipantDevice!.getStreamCapability(streamType: StreamType.Video)
-					
-					DispatchQueue.main.async {
-						self.remoteConfVideo = false
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
-						}
-					}
+					updateRemoteConfVideo(remConfVideoEnabled: direction == .SendRecv || direction == .SendOnly)
 				} else if call.conference!.participantList.first != nil && call.conference!.participantDeviceList.first != nil
 							&& call.conference!.participantList.first?.address != nil
 							&& call.conference!.participantList.first!.address!.clone()!.equal(address2: (call.conference!.me?.address)!) {
 					let direction = call.conference!.participantDeviceList.first!.getStreamCapability(streamType: StreamType.Video)
-					
-					DispatchQueue.main.async {
-						self.remoteConfVideo = false
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
-						}
-					}
+					updateRemoteConfVideo(remConfVideoEnabled: direction == .SendRecv || direction == .SendOnly)
 				} else if call.conference!.participantList.last != nil && call.conference!.participantDeviceList.last != nil
 							&& call.conference!.participantList.last?.address != nil {
 					let direction = call.conference!.participantDeviceList.last!.getStreamCapability(streamType: StreamType.Video)
-					
-					DispatchQueue.main.async {
-						self.remoteConfVideo = false
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-							self.remoteConfVideo = direction == .SendRecv || direction == .SendOnly
-						}
-					}
+					updateRemoteConfVideo(remConfVideoEnabled: direction == .SendRecv || direction == .SendOnly)
 				} else {
-					DispatchQueue.main.async {
-						self.remoteConfVideo = false
-					}
+					updateRemoteConfVideo(remConfVideoEnabled: false)
 				}
 			} else {
+				var remConfVideoEnabled = false
 				if call.currentParams != nil {
-					let remoteConfVideoTmp = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
-					
-					DispatchQueue.main.async {
-						self.remoteConfVideo = false
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-							self.remoteConfVideo = remoteConfVideoTmp
-						}
-					}
-				} else {
-					DispatchQueue.main.async {
-						self.remoteConfVideo = false
-					}
+					remConfVideoEnabled = call.currentParams!.videoEnabled && call.currentParams!.videoDirection == .SendRecv || call.currentParams!.videoDirection == .RecvOnly
 				}
+				updateRemoteConfVideo(remConfVideoEnabled: remConfVideoEnabled)
 			}
 			
-			/*
-			 if self.remoteConfVideo && self.remoteConfVideo != oldRemoteConfVideo {
-			 	do {
-			 		try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-				} catch _ {
-			 	}
-			 }
-			 */
 			
 			if self.remoteConfVideo {
 				Log.info("[Call] Remote video is activated")
