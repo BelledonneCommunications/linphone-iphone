@@ -122,10 +122,17 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
-					case "Registration failed":
+					case "Registration_failed":
 						Text("The user name or password is incorrects")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_account_logged_out":
+						Text("Account successfully logged out")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						

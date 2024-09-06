@@ -40,22 +40,9 @@ class HelpView { // TODO (basic debug moved here until halp view is implemented)
 	
 	static func logout() {
 		CoreContext.shared.doOnCoreQueue { core in
-			if core.defaultAccount != nil {
-				let authInfo = core.defaultAccount!.findAuthInfo()
-				if authInfo != nil {
-					Log.info("$TAG Found auth info for account, removing it")
-					core.removeAuthInfo(info: authInfo!)
-				} else {
-					Log.warn("$TAG Failed to find matching auth info for account")
-				}
-
-				core.removeAccount(account: core.defaultAccount!)
-				Log.info("$TAG Account has been removed")
-				
-				DispatchQueue.main.async {
-					CoreContext.shared.hasDefaultAccount = false
-					CoreContext.shared.loggedIn = false
-				}
+			if let account = core.defaultAccount {
+				Log.info("Account \(account.displayName()) has been removed")
+				core.removeAccount(account: account) // UI update and auth info removal moved into onRegistrationChanged core callback, in CoreContext
 			}
 		}
 	}

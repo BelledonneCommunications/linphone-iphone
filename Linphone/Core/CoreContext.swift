@@ -201,6 +201,14 @@ final class CoreContext: ObservableObject {
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}
+				} else if cbVal.state == .Cleared {
+					Log.info("[onAccountRegistrationStateChanged] Account \(cbVal.account.displayName()) registration was cleared. Looking for auth info")
+					if let authInfo = cbVal.account.findAuthInfo() {
+						Log.info("[onAccountRegistrationStateChanged] Found auth info for account, removing it")
+						cbVal.core.removeAuthInfo(info: authInfo)
+					} else {
+						Log.warn("[onAccountRegistrationStateChanged] Failed to find matching auth info for account")
+					}
 				} else if cbVal.state != .Ok && cbVal.state != .Progress { // If registration failed, remove account from core
 					
 					self.monitor.pathUpdateHandler = { path in
@@ -216,6 +224,7 @@ final class CoreContext: ObservableObject {
 						}
 					}
 				}
+				
 				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
 				
 				DispatchQueue.main.async {
@@ -224,10 +233,16 @@ final class CoreContext: ObservableObject {
 						self.loggedIn = true
 					} else if cbVal.state == .Progress || cbVal.state == .Refreshing {
 						self.loggingInProgress = true
+					} else if cbVal.state == .Cleared {
+						self.loggingInProgress = false
+						self.loggedIn = false
+						self.hasDefaultAccount = false
+						ToastViewModel.shared.toastMessage = "Success_account_logged_out"
+						ToastViewModel.shared.displayToast = true
 					} else {
 						self.loggingInProgress = false
 						self.loggedIn = false
-						ToastViewModel.shared.toastMessage = "Registration failed"
+						ToastViewModel.shared.toastMessage = "Registration_failed"
 						ToastViewModel.shared.displayToast = true
 					}
 				}
