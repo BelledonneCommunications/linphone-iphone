@@ -129,7 +129,7 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
-					case "Registration_failed_no_network":
+					case "Unavailable_network":
 						Text("Could not reach network")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
@@ -253,6 +253,20 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Failed_meeting_invitations_not_sent":
+						Text("Could not send ICS invitations to meeting to any participant")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_no_subject_or_participant":
+						Text("A subject and at least one participant is required to create a meeting")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+					
 					default:
 						Text("Error")
 							.multilineTextAlignment(.center)

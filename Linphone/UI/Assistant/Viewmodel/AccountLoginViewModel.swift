@@ -37,7 +37,7 @@ class AccountLoginViewModel: ObservableObject {
 			guard self.coreContext.networkStatusIsConnected else {
 				DispatchQueue.main.async {
 					self.coreContext.loggingInProgress = false
-					ToastViewModel.shared.toastMessage = "Registration_failed_no_network"
+					ToastViewModel.shared.toastMessage = "Unavailable_network"
 					ToastViewModel.shared.displayToast = true
 				}
 				return

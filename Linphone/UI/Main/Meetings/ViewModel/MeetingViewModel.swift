@@ -216,13 +216,23 @@ class MeetingViewModel: ObservableObject {
 				Log.info("\(MeetingViewModel.TAG) All invitations have been sent")
 			} else if cbVal.failedInvitations.count == self.participants.count {
 				Log.error("\(MeetingViewModel.TAG) No invitation sent!")
-				// TODO: show error toast
-			} else {
-				Log.warn("\(MeetingViewModel.TAG) \(cbVal.failedInvitations.count) invitations couldn't have been sent for:")
-				for failInv in cbVal.failedInvitations {
-					Log.warn(failInv.asStringUriOnly())
+				DispatchQueue.main.async {
+					ToastViewModel.shared.toastMessage = "Failed_meeting_invitations_not_sent"
+					ToastViewModel.shared.displayToast = true
 				}
-				// TODO: show error toast
+			} else {
+				var failInvList = ""
+				for failInv in cbVal.failedInvitations {
+					if !failInvList.isEmpty {
+						failInvList += ", "
+					}
+					failInvList.append(failInv.asStringUriOnly())
+				}
+				Log.warn("\(MeetingViewModel.TAG) \(cbVal.failedInvitations.count) invitations couldn't have been sent to: \(failInvList)")
+				DispatchQueue.main.async {
+					ToastViewModel.shared.toastMessage = "Error: \(cbVal.failedInvitations.count) invitations couldn't be sent to \(failInvList)"
+					ToastViewModel.shared.displayToast = true
+				}
 			}
 			
 			DispatchQueue.main.async {
@@ -233,13 +243,24 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	func schedule() {
-		if subject.isEmpty || participants.isEmpty {
+		guard !subject.isEmpty && participants.isEmpty else {
 			Log.error("\(MeetingViewModel.TAG) Either no subject was set or no participant was selected, can't schedule meeting.")
-			// TODO: show red toast
+			DispatchQueue.main.async {
+				ToastViewModel.shared.toastMessage = "Failed_no_subject_or_participant"
+				ToastViewModel.shared.displayToast = true
+			}
 			return
 		}
-		operationInProgress = true
 		
+		guard CoreContext.shared.networkStatusIsConnected else {
+				DispatchQueue.main.async {
+					ToastViewModel.shared.toastMessage = "Unavailable_network"
+					ToastViewModel.shared.displayToast = true
+				}
+				return
+		}
+		
+		operationInProgress = true
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("\(MeetingViewModel.TAG) Scheduling \(self.isBroadcastSelected ? "broadcast" : "meeting")")
 			
