@@ -21,6 +21,7 @@
 // swiftlint:disable line_length
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable identifier_name
+// swiftlint:disable type_body_length
 
 import linphonesw
 import linphone // needed for unwrapped function linphone_core_set_push_and_app_delegate_dispatch_queue
@@ -51,6 +52,7 @@ final class CoreContext: ObservableObject {
 	var bearerAuthInfoPendingPasswordUpdate: AuthInfo?
 	
 	let monitor = NWPathMonitor()
+	var networkStatusIsConnected: Bool = true // updated on core queue
 	
 	private var mCorePushIncomingDelegate: CoreDelegate!
 	private var actionsToPerformOnCoreQueueWhenCoreIsStarted: [((Core) -> Void)] = []
@@ -85,6 +87,20 @@ final class CoreContext: ObservableObject {
 #if USE_CRASHLYTICS
 		FirebaseApp.configure()
 #endif
+		monitor.pathUpdateHandler = { path in
+			let isConnected = path.status == .satisfied
+			if self.networkStatusIsConnected != isConnected {
+				if isConnected {
+					Log.info("Network is now satisfied")
+				} else {
+					Log.error("Network is now \(path.status)")
+				}
+				self.networkStatusIsConnected = isConnected
+			}
+			
+		}
+		monitor.start(queue: coreQueue)
+		
 		coreQueue.async {
 			LoggingService.Instance.logLevel = LogLevel.Debug
 			Factory.Instance.logCollectionPath = Factory.Instance.getConfigDir(context: nil)
@@ -148,6 +164,7 @@ final class CoreContext: ObservableObject {
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					
 					let hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
+					Log.info("debugtrace onGlobalStateChanged -- core accounts: \(self.mCore.accountList.count), hasDefaultAccount: \(self.mCore.defaultAccount != nil ? "yes" : "no")")
 					var accountModels: [AccountModel] = []
 					for account in self.mCore.accountList {
 						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
@@ -164,6 +181,7 @@ final class CoreContext: ObservableObject {
 			// In this case, we want to know about the account registration status
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnCoreQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
 				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
+				Log.info("debugtrace onConfiguringStatus -- core accounts: \(self.mCore.accountList.count), hasDefaultAccount: \(self.mCore.defaultAccount != nil ? "yes" : "no")")
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
 					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
@@ -189,8 +207,10 @@ final class CoreContext: ObservableObject {
 				// Otherwise, we will be Failed.
 				Log.info("New registration state is \(cbVal.state) for user id " +
 						 "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
+				Log.info("debugtrace onAccountRegistrationStateChanged -- core accounts: \(self.mCore.accountList.count), hasDefaultAccount: \(self.mCore.defaultAccount != nil ? "yes" : "no")")
 				
-				if cbVal.state == .Ok {
+				switch(cbVal.state) {
+				case .Ok:
 					let newParams = cbVal.account.params?.clone()
 					newParams?.internationalPrefix = "33"
 					newParams?.internationalPrefixIsoCountryCode = "FRA"
@@ -201,7 +221,7 @@ final class CoreContext: ObservableObject {
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}
-				} else if cbVal.state == .Cleared {
+				case .Cleared:
 					Log.info("[onAccountRegistrationStateChanged] Account \(cbVal.account.displayName()) registration was cleared. Looking for auth info")
 					if let authInfo = cbVal.account.findAuthInfo() {
 						Log.info("[onAccountRegistrationStateChanged] Found auth info for account, removing it")
@@ -209,20 +229,18 @@ final class CoreContext: ObservableObject {
 					} else {
 						Log.warn("[onAccountRegistrationStateChanged] Failed to find matching auth info for account")
 					}
-				} else if cbVal.state != .Ok && cbVal.state != .Progress { // If registration failed, remove account from core
-					
-					self.monitor.pathUpdateHandler = { path in
-						if path.status == .satisfied {
-							let params = cbVal.account.params
-							let clonedParams = params?.clone()
-							clonedParams?.registerEnabled = false
-							cbVal.account.params = clonedParams
-							
-							cbVal.core.removeAccount(account: cbVal.account)
-							cbVal.core.clearAccounts()
-							cbVal.core.clearAllAuthInfo()
-						}
+				case .Failed:  // If registration failed, remove account from core
+					if self.networkStatusIsConnected {
+						let params = cbVal.account.params
+						let clonedParams = params?.clone()
+						clonedParams?.registerEnabled = false
+						cbVal.account.params = clonedParams
+						
+						Log.warn("Registration failed for account \(cbVal.account.displayName()), deleting it from core")
+						cbVal.core.removeAccount(account: cbVal.account)
 					}
+				default:
+					break
 				}
 				
 				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
@@ -405,3 +423,4 @@ final class CoreContext: ObservableObject {
 // swiftlint:enable line_length
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable identifier_name
+// swiftlint:enable type_body_length
