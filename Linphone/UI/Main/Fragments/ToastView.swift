@@ -129,6 +129,13 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Registration_failed_no_network":
+						Text("Could not reach network")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_account_logged_out":
 						Text("Account successfully logged out")
 							.multilineTextAlignment(.center)
