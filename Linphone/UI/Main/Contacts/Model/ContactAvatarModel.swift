@@ -139,7 +139,7 @@ class ContactAvatarModel: ObservableObject {
 			if let addressFriend = resultFriend {
 				if addressFriend.address != nil {
 					var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
-						$0.friend!.name == addressFriend.name
+						$0.friend != nil && $0.friend!.name == addressFriend.name && $0.friend!.address != nil
 						&& $0.friend!.address!.asStringUriOnly() == addressFriend.address!.asStringUriOnly()
 					})
 					
